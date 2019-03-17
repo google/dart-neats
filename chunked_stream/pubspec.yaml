@@ -1,0 +1,14 @@
+name: chunked_stream
+version: 1.0.0
+description: |
+  Utilities for working with chunked streams, such as byte streams which is
+  often given as a stream of byte chunks with type `Stream<List<int>>`.
+homepage: https://github.com/google/dart-neats/tree/master/chunked_stream
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:chunked_stream
+dev_dependencies:
+  test: ^1.5.1
+  pedantic: ^1.4.0
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
