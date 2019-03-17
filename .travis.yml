@@ -1,0 +1,32 @@
+# Created with package:mono_repo v1.2.1
+language: dart
+
+# Custom configuration
+branches:
+  exclude: []
+
+jobs:
+  include:
+    - stage: analyze
+      name: "SDK: stable - DIR: retry - TASKS: dartanalyzer ."
+      script: ./tool/travis.sh dartanalyzer
+      env: PKG="retry"
+      dart: stable
+    - stage: analyze
+      name: "SDK: stable - DIR: retry - TASKS: dartfmt -n --set-exit-if-changed ."
+      script: ./tool/travis.sh dartfmt
+      env: PKG="retry"
+      dart: stable
+    - stage: unit_test
+      name: "SDK: stable - DIR: retry - TASKS: pub run test"
+      script: ./tool/travis.sh test
+      env: PKG="retry"
+      dart: stable
+
+stages:
+  - analyze
+  - unit_test
+
+cache:
+  directories:
+    - "$HOME/.pub-cache"

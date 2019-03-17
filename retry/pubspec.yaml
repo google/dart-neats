@@ -1,0 +1,14 @@
+name: retry
+version: 1.0.0
+description: |
+  Utility for wrapping an asynchronous function in automatic retry logic with
+  exponential backoff, useful when making requests over network.
+homepage: https://github.com/google/dart-neats/tree/master/retry
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:retry
+dev_dependencies:
+  test: ^1.5.1
+  pedantic: ^1.4.0
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
