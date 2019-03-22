@@ -1,13 +1,13 @@
 name: slugid
-version: 1.0.0
+version: 1.0.0+1
 authors:
   - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
   A URL-safe base64 encoding for UUIDv4 stripped of padding. Useful when
   embedding short random UUIDs in URLs.
-homepage: https://github.com/google/dart-neats/tree/master/slugid½
+homepage: https://github.com/google/dart-neats/tree/master/slugid
 repository: https://github.com/google/dart-neats.git
-issue_tracker: https://github.com/google/dart-neats/labels/pkg:slugid½
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:slugid
 dependencies:
   convert: ^2.0.2
 dev_dependencies:
