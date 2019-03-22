@@ -4,3 +4,4 @@ name: dart_neats
 publish_to: none
 dev_dependencies:
   mono_repo: ^1.2.1
+  pubspec_parse: ^0.1.4

@@ -64,13 +64,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.2"
-  pedantic:
-    dependency: "direct dev"
-    description:
-      name: pedantic
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.4.0"
   pub_semver:
     dependency: transitive
     description:
@@ -79,7 +72,7 @@ packages:
     source: hosted
     version: "1.4.2"
   pubspec_parse:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: pubspec_parse
       url: "https://pub.dartlang.org"
