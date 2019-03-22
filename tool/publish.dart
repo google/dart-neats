@@ -51,7 +51,8 @@ Future<int> main(List<String> args) async {
     print('Changelog should start with "## v${pubspec.version}\\n"');
     return 1;
   }
-  changelog_entry = changelog_entry.split('\n').sublist(1).join('\n').trim();
+  changelog_entry =
+      changelog_entry.split('\n').sublist(1).join('\n').trimRight();
   print('-------------------');
   print(changelog_entry);
   print('-------------------');
