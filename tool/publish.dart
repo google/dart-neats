@@ -46,11 +46,12 @@ Future<int> main(List<String> args) async {
 
   // Read changelog
   final changelog_md = await File('$root/$package/CHANGELOG.md').readAsString();
-  final changelog_entry = changelog_md.split('\n## v').first.trim();
+  String changelog_entry = changelog_md.split('\n## v').first.trim();
   if (!changelog_entry.startsWith('## v${pubspec.version}\n')) {
     print('Changelog should start with "## v${pubspec.version}\\n"');
     return 1;
   }
+  changelog_entry = changelog_entry.split('\n').sublist(1).join('\n').trim();
   print('-------------------');
   print(changelog_entry);
   print('-------------------');
