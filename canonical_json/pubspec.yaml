@@ -1,0 +1,18 @@
+name: canonical_json
+version: 1.0.0
+authors:
+  - Jonas Finnemann Jensen <jonasfj@google.com>
+description: |
+  Encoder and decoder for a canonical JSON format, useful when cryptographically
+  hashing or signing JSON objects.
+homepage: https://github.com/google/dart-neats/tree/master/canonical_json
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:canonical_json
+dependencies:
+  typed_data: ^1.1.6
+  unorm_dart: ^0.1.1
+dev_dependencies:
+  test: ^1.5.1
+  pedantic: ^1.4.0
+environment:
+  sdk: '>=2.0.0 <3.0.0'
