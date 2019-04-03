@@ -13,70 +13,71 @@
 // limitations under the License.
 
 import 'package:universal_html/html.dart' as html;
+import 'package:meta/meta.dart' show required;
 
 final _allowedElements = <String>{
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'h7',
-  'h8',
-  'br',
-  'b',
-  'i',
-  'strong',
-  'em',
-  'a',
-  'pre',
-  'code',
-  'img',
-  'tt',
-  'div',
-  'ins',
-  'del',
-  'sup',
-  'sub',
-  'p',
-  'ol',
-  'ul',
-  'table',
-  'thead',
-  'tbody',
-  'tfoot',
-  'blockquote',
-  'dl',
-  'dt',
-  'dd',
-  'kbd',
-  'q',
-  'samp',
-  'var',
-  'hr',
-  'ruby',
-  'rt',
-  'rp',
-  'li',
-  'tr',
-  'td',
-  'th',
-  's',
-  'strike',
-  'summary',
-  'details',
-  'caption',
-  'figure',
-  'figcaption',
-  'abbr',
-  'bdo',
-  'cite',
-  'dfn',
-  'mark',
-  'small',
-  'span',
-  'time',
-  'wbr',
+  'H1',
+  'H2',
+  'H3',
+  'H4',
+  'H5',
+  'H6',
+  'H7',
+  'H8',
+  'BR',
+  'B',
+  'I',
+  'STRONG',
+  'EM',
+  'A',
+  'PRE',
+  'CODE',
+  'IMG',
+  'TT',
+  'DIV',
+  'INS',
+  'DEL',
+  'SUP',
+  'SUB',
+  'P',
+  'OL',
+  'UL',
+  'TABLE',
+  'THEAD',
+  'TBODY',
+  'TFOOT',
+  'BLOCKQUOTE',
+  'DL',
+  'DT',
+  'DD',
+  'KBD',
+  'Q',
+  'SAMP',
+  'VAR',
+  'HR',
+  'RUBY',
+  'RT',
+  'RP',
+  'LI',
+  'TR',
+  'TD',
+  'TH',
+  'S',
+  'STRIKE',
+  'SUMMARY',
+  'DETAILS',
+  'CAPTION',
+  'FIGURE',
+  'FIGCAPTION',
+  'ABBR',
+  'BDO',
+  'CITE',
+  'DFN',
+  'MARK',
+  'SMALL',
+  'SPAN',
+  'TIME',
+  'WBR',
 };
 
 final _alwaysAllowedAttributes = <String>{
@@ -182,21 +183,21 @@ final _citeAttributeValidator = <String, bool Function(String)>{
 
 final _elementAttributeValidators =
     <String, Map<String, bool Function(String)>>{
-  'a': {
+  'A': {
     'href': _validLink,
   },
-  'img': {
+  'IMG': {
     'src': _validUrl,
     'longdesc': _validUrl,
   },
-  'div': {
+  'DIV': {
     'itemscope': _alwaysAllowed,
     'itemtype': _alwaysAllowed,
   },
-  'blockquote': _citeAttributeValidator,
-  'del': _citeAttributeValidator,
-  'ins': _citeAttributeValidator,
-  'q': _citeAttributeValidator,
+  'BLOCKQUOTE': _citeAttributeValidator,
+  'DEL': _citeAttributeValidator,
+  'INS': _citeAttributeValidator,
+  'Q': _citeAttributeValidator,
 };
 
 /// An implementation of [html.NodeValidator] that only allows sane HTML tags
@@ -208,17 +209,31 @@ final _elementAttributeValidators =
 ///
 /// [1]: https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb
 class SaneHtmlValidator implements html.NodeValidator {
+  final bool Function(String) allowElementId;
+  final bool Function(String) allowClassName;
+
+  SaneHtmlValidator({
+    @required this.allowElementId,
+    @required this.allowClassName,
+  });
+
   @override
   bool allowsAttribute(html.Element element, String attribute, String value) {
-    final tagName = element.tagName.toLowerCase();
-    if (!_allowedElements.contains(tagName)) {
+    if (!_allowedElements.contains(element.tagName)) {
       return false;
     }
-    attribute = attribute.toLowerCase();
     if (_alwaysAllowedAttributes.contains(attribute)) {
       return true;
     }
-    final attributeValidators = _elementAttributeValidators[tagName];
+    // Special validators for id and class on all elements
+    if (attribute == 'id') {
+      return allowElementId(element.id);
+    }
+    if (attribute == 'class') {
+      return element.classes.every(allowClassName);
+    }
+    // Special validators for special attributes on special tags (href/src/cite)
+    final attributeValidators = _elementAttributeValidators[element.tagName];
     if (attributeValidators == null) {
       return false;
     }
@@ -231,7 +246,6 @@ class SaneHtmlValidator implements html.NodeValidator {
 
   @override
   bool allowsElement(html.Element element) {
-    final tagName = element.tagName.toLowerCase();
-    return _allowedElements.contains(tagName);
+    return _allowedElements.contains(element.tagName);
   }
 }

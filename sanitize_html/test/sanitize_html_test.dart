@@ -18,13 +18,23 @@ import 'package:sanitize_html/sanitize_html.dart' show sanitizeHtml;
 void main() {
   void testContains(String template, String needle) {
     test('"$template" does contain "$needle"', () {
-      expect(sanitizeHtml(template), contains(needle));
+      final sanitizedHtml = sanitizeHtml(
+        template,
+        allowElementId: (id) => id == 'only-allowed-id',
+        allowClassName: (className) => className == 'only-allowed-class',
+      );
+      expect(sanitizedHtml, contains(needle));
     });
   }
 
   void testNotContains(String template, String needle) {
     test('"$template" does not contain "$needle"', () {
-      expect(sanitizeHtml(template), isNot(contains(needle)));
+      final sanitizedHtml = sanitizeHtml(
+        template,
+        allowElementId: (id) => id == 'only-allowed-id',
+        allowClassName: (className) => className == 'only-allowed-class',
+      );
+      expect(sanitizedHtml, isNot(contains(needle)));
     });
   }
 
@@ -35,6 +45,21 @@ void main() {
   testContains('<p>hello', 'hello');
   testContains('<p>hello', '</p>');
   testContains('<p>hello', '<p>');
+
+  // test id filtering..
+  testContains('<span id="only-allowed-id">hello</span>', 'id');
+  testContains('<span id="only-allowed-id">hello</span>', 'only-allowed-id');
+  testNotContains('<span id="disallowed-id">hello</span>', 'id');
+  testNotContains('<span id="disallowed-id">hello</span>', 'only-allowed-id');
+
+  // test class filtering
+  testContains('<span class="only-allowed-class">hello</span>', 'class');
+  testContains(
+      '<span class="only-allowed-class">hello</span>', 'only-allowed-class');
+  testNotContains('<span class="disallowed-class">hello</span>', 'class');
+  testNotContains(
+      '<span class="disallowed-class">hello</span>', 'only-allowed-class');
+
   testContains('<a href="test.html">hello', 'href');
   testContains('<a href="test.html">hello', 'test.html');
   testContains(
@@ -48,6 +73,10 @@ void main() {
       '<a href="mailto:test@example.com">hello', 'mailto:test@example.com');
 
   testContains('<img src="test.jpg"/>', '<img');
+  testContains('<img src="test.jpg" alt="say hi"/>', 'say hi');
+  testContains('<img src="test.jpg" alt="say hi"/>', 'alt=');
+  testContains('<img src="test.jpg" ALt="say hi"/>', 'say hi');
+  testContains('<img src="test.jpg" ALT="say hi"/>', 'alt=');
   testContains('<img src="test.jpg"/>', 'src=');
   testContains('<img src="test.jpg"/>', 'test.jpg');
   testContains('<img src="//test.jpg"/>', '//test.jpg');

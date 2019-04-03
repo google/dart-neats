@@ -40,6 +40,9 @@ void _printHandler(Zone self, ZoneDelegate parent, Zone zone, String line) {
 /// For example, while it is possible to allow many CSS properties, this
 /// sanitizer does not allow any CSS. This creates a sanitizer that is easy to
 /// validate and is usually fine when sanitizing HTML from rendered markdown.
+/// The `allowElementId` and `allowClassName` options can be used to allow
+/// specific element ids and class names through, otherwise `id` and `class`
+/// attributes will be removed.
 ///
 /// **Example**
 /// ```dart
@@ -53,13 +56,19 @@ void _printHandler(Zone self, ZoneDelegate parent, Zone zone, String line) {
 /// ```
 ///
 /// [1]: https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb
-String sanitizeHtml(String htmlString) {
-  final doc = runZoned(
-    () => html.DocumentFragment.html(
-          htmlString,
-          validator: SaneHtmlValidator(),
-        ),
-    zoneSpecification: ZoneSpecification(print: _printHandler),
-  );
+String sanitizeHtml(
+  String htmlString, {
+  bool Function(String) allowElementId,
+  bool Function(String) allowClassName,
+}) {
+  final doc = runZoned(() {
+    return html.DocumentFragment.html(
+      htmlString,
+      validator: SaneHtmlValidator(
+        allowElementId: allowElementId,
+        allowClassName: allowClassName,
+      ),
+    );
+  }, zoneSpecification: ZoneSpecification(print: _printHandler));
   return doc.innerHtml;
 }
