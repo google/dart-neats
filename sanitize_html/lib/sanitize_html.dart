@@ -15,7 +15,6 @@
 library sanitize_html;
 
 import 'dart:async' show Zone, ZoneDelegate, runZoned, ZoneSpecification;
-import 'package:universal_html/html.dart' as html;
 import 'src/sane_html_validator.dart' show SaneHtmlValidator;
 
 void _printHandler(Zone self, ZoneDelegate parent, Zone zone, String line) {
@@ -61,14 +60,10 @@ String sanitizeHtml(
   bool Function(String) allowElementId,
   bool Function(String) allowClassName,
 }) {
-  final doc = runZoned(() {
-    return html.DocumentFragment.html(
-      htmlString,
-      validator: SaneHtmlValidator(
-        allowElementId: allowElementId,
-        allowClassName: allowClassName,
-      ),
-    );
+  return runZoned(() {
+    return SaneHtmlValidator(
+      allowElementId: allowElementId,
+      allowClassName: allowClassName,
+    ).sanitize(htmlString);
   }, zoneSpecification: ZoneSpecification(print: _printHandler));
-  return doc.innerHtml;
 }

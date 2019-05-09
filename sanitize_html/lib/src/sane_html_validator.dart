@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:universal_html/html.dart' as html;
+import 'package:html/dom.dart';
+import 'package:html/parser.dart' as html_parser;
 import 'package:meta/meta.dart' show required;
+
+import 'html_formatter.dart';
 
 final _allowedElements = <String>{
   'H1',
@@ -208,7 +211,7 @@ final _elementAttributeValidators =
 /// easily interferes with the rest of the page.
 ///
 /// [1]: https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb
-class SaneHtmlValidator implements html.NodeValidator {
+class SaneHtmlValidator {
   final bool Function(String) allowElementId;
   final bool Function(String) allowClassName;
 
@@ -217,35 +220,53 @@ class SaneHtmlValidator implements html.NodeValidator {
     @required this.allowClassName,
   });
 
-  @override
-  bool allowsAttribute(html.Element element, String attribute, String value) {
-    if (!_allowedElements.contains(element.tagName)) {
-      return false;
+  String sanitize(String htmlString) {
+    final root = html_parser.parseFragment(htmlString);
+    _sanitize(root);
+    return formatHtmlNode(root);
+  }
+
+  void _sanitize(Node node) {
+    if (node is Element) {
+      final tagName = node.localName.toUpperCase();
+      if (!_allowedElements.contains(tagName)) {
+        node.remove();
+        return;
+      }
+      node.attributes.removeWhere((k, v) {
+        final attrName = k.toString();
+        if (attrName == 'id') {
+          return allowElementId == null || !allowElementId(v);
+        }
+        if (attrName == 'class') {
+          if (allowClassName == null) return true;
+          node.classes.removeWhere((cn) => !allowClassName(cn));
+          return node.classes.isEmpty;
+        }
+        return !_isAttributeAllowed(tagName, attrName, v);
+      });
     }
-    if (_alwaysAllowedAttributes.contains(attribute)) {
-      return true;
+    if (node.hasChildNodes()) {
+      for (int i = node.nodes.length - 1; i >= 0; i--) {
+        _sanitize(node.nodes[i]);
+      }
     }
-    // Special validators for id and class on all elements
-    if (attribute == 'id') {
-      return allowElementId(element.id);
-    }
-    if (attribute == 'class') {
-      return element.classes.every(allowClassName);
-    }
+  }
+
+  bool _isAttributeAllowed(String tagName, String attrName, String value) {
+    if (_alwaysAllowedAttributes.contains(attrName)) return true;
+
     // Special validators for special attributes on special tags (href/src/cite)
-    final attributeValidators = _elementAttributeValidators[element.tagName];
+    final attributeValidators = _elementAttributeValidators[tagName];
     if (attributeValidators == null) {
       return false;
     }
-    final validator = attributeValidators[attribute];
+
+    final validator = attributeValidators[attrName];
     if (validator == null) {
       return false;
     }
-    return validator(value);
-  }
 
-  @override
-  bool allowsElement(html.Element element) {
-    return _allowedElements.contains(element.tagName);
+    return validator(value);
   }
 }
