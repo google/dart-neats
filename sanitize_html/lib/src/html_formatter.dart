@@ -42,6 +42,10 @@ class _HtmlFormatter {
         _writeNodes([node.documentElement]);
       } else if (node is DocumentFragment) {
         _writeNodes(node.nodes);
+      } else if (node is Comment) {
+        // no output
+      } else if (node is DocumentType) {
+        // no output
       } else {
         throw UnimplementedError('Unknown node: ${node.runtimeType} ($node)');
       }
