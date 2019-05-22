@@ -14,15 +14,7 @@
 
 library sanitize_html;
 
-import 'dart:async' show Zone, ZoneDelegate, runZoned, ZoneSpecification;
 import 'src/sane_html_validator.dart' show SaneHtmlValidator;
-
-void _printHandler(Zone self, ZoneDelegate parent, Zone zone, String line) {
-  // Suppress printed lines about stuff being removed.
-  if (!line.startsWith('Removing disallowed')) {
-    parent.print(zone, line);
-  }
-}
 
 /// Sanitize [htmlString] to prevent XSS exploits and limit interference with
 /// other markup on the page.
@@ -60,10 +52,8 @@ String sanitizeHtml(
   bool Function(String) allowElementId,
   bool Function(String) allowClassName,
 }) {
-  return runZoned(() {
-    return SaneHtmlValidator(
-      allowElementId: allowElementId,
-      allowClassName: allowClassName,
-    ).sanitize(htmlString);
-  }, zoneSpecification: ZoneSpecification(print: _printHandler));
+  return SaneHtmlValidator(
+    allowElementId: allowElementId,
+    allowClassName: allowClassName,
+  ).sanitize(htmlString);
 }
