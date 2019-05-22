@@ -109,4 +109,6 @@ void main() {
   testContains('<br>', '<br />');
   testContains('><', '&gt;&lt;');
   testContains('<div><div id="x">a</div></div>', '<div><div>a</div></div>');
+  testContains('<a href="a.html">a</a><a href="b.html">b</a>',
+      '<a href="a.html">a</a><a href="b.html">b</a>');
 }
