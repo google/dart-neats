@@ -17,7 +17,7 @@ import 'dart:convert';
 import 'package:html/dom.dart';
 
 final _attrEscape = HtmlEscape(HtmlEscapeMode.attribute);
-final _textEscape = HtmlEscape(HtmlEscapeMode.unknown);
+final _textEscape = HtmlEscape(HtmlEscapeMode.element);
 
 String formatHtmlNode(Node node) {
   return _HtmlFormatter()._format(node);
