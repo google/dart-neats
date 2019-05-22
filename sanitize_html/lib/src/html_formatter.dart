@@ -47,7 +47,8 @@ class _HtmlFormatter {
       } else if (node is DocumentType) {
         // no output
       } else {
-        throw UnimplementedError('Unknown node: ${node.runtimeType} ($node)');
+        // no output
+        assert(false);
       }
     }
   }
