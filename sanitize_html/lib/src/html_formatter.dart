@@ -27,28 +27,28 @@ class _HtmlFormatter {
   final _sb = StringBuffer();
 
   String _format(Node node) {
-    _writeNodes([node], 0);
+    _writeNodes([node]);
     return _sb.toString();
   }
 
-  void _writeNodes(List<Node> nodes, int level) {
+  void _writeNodes(List<Node> nodes) {
     if (nodes == null || nodes.isEmpty) return;
     for (Node node in nodes) {
       if (node is Element) {
-        _writeElement(node, level);
+        _writeElement(node);
       } else if (node is Text) {
         _sb.write(_textEscape.convert(node.text));
       } else if (node is Document) {
-        _writeNodes([node.documentElement], level);
+        _writeNodes([node.documentElement]);
       } else if (node is DocumentFragment) {
-        _writeNodes(node.nodes, level);
+        _writeNodes(node.nodes);
       } else {
         throw UnimplementedError('Unknown node: ${node.runtimeType} ($node)');
       }
     }
   }
 
-  void _writeElement(Element elem, int level) {
+  void _writeElement(Element elem) {
     final tagName = elem.localName;
     _sb.write('<$tagName');
     elem.attributes.forEach((k, v) {
@@ -56,7 +56,7 @@ class _HtmlFormatter {
     });
     if (elem.hasChildNodes()) {
       _sb.write('>');
-      _writeNodes(elem.nodes, level + 1);
+      _writeNodes(elem.nodes);
       _sb.write('</$tagName>');
     } else if (tagName.toLowerCase() == 'script') {
       _sb.write('></$tagName>');
