@@ -30,6 +30,7 @@ Future<int> main(List<String> args) async {
     print(' * Publish to pub');
     print(' * Tag with changelog message');
     print(' * Push tag to origin');
+    return 0;
   }
   // Find package
   final package = args.first;
