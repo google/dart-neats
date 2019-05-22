@@ -56,6 +56,8 @@ void main() {
   testContains('<span class="only-allowed-class">hello</span>', 'class');
   testContains(
       '<span class="only-allowed-class">hello</span>', 'only-allowed-class');
+  testContains('<span class="only-allowed-class disallowed-class">hello</span>',
+      'class="only-allowed-class"');
   testNotContains('<span class="disallowed-class">hello</span>', 'class');
   testNotContains(
       '<span class="disallowed-class">hello</span>', 'only-allowed-class');
@@ -103,4 +105,10 @@ void main() {
   testNotContains('<form><input type="submit"/></form> click here', 'submit');
   testNotContains('<form><input type="submit"/></form> click here', 'input');
   testContains('<form><input type="submit"/></form> click here', 'click here');
+
+  testContains('<br>', '<br />');
+  testContains('><', '&gt;&lt;');
+  testContains('<div><div id="x">a</div></div>', '<div><div>a</div></div>');
+  testContains('<a href="a.html">a</a><a href="b.html">b</a>',
+      '<a href="a.html">a</a><a href="b.html">b</a>');
 }

@@ -1,5 +1,5 @@
 name: sanitize_html
-version: 1.1.0
+version: 1.2.0
 authors:
   - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
@@ -9,7 +9,7 @@ homepage: https://github.com/google/dart-neats/tree/master/sanitize_html
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:sanitize_html
 dependencies:
-  universal_html: ^0.1.0
+  html: '>=0.13.0 <0.15.0'
   meta: ^1.1.7
 dev_dependencies:
   test: ^1.5.1
