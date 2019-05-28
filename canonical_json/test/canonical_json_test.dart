@@ -16,7 +16,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:canonical_json/canonical_json.dart';
 import 'package:test/test.dart';
-import 'package:unorm_dart/unorm_dart.dart' show nfc;
 
 void main() {
   void testValue(String name, Object value) => test(name, () {

@@ -49,7 +49,7 @@ void main() async {
     final lengthBytes = await iterator.read(4);
 
     // We have EOF if there is no more bytes
-    if (lengthBytes.length == 0) {
+    if (lengthBytes.isEmpty) {
       break;
     }
 
