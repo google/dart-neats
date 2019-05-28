@@ -20,7 +20,7 @@
 ///  * [readChunkedStream], for reading a chunked stream into a single big list.
 ///  Often useful for converting [Stream<List<int>>] to [List<int>].
 ///  * [limitChunkedStream], for wrapping a chunked stream as a new stream with
-///  length limit, useful when acceting input streams from untrusted network.
+///  length limit, useful when accepting input streams from untrusted network.
 ///  * [bufferChunkedStream], for buffering a chunked stream. This can be useful
 ///  to improve I/O performance if reading the stream chunk by chunk with
 ///  frequent pause/resume calls, as is the case when using

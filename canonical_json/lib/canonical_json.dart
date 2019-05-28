@@ -36,7 +36,7 @@
 /// [OLPC project](http://wiki.laptop.org/go/Canonical_JSON), but rather than
 /// supporting arbitrary byte values as strings, strings are always encoded as
 /// UTF-8 in Unicode Normalization Form C and decoded as UTF-8 causing an
-/// [InvalidCanonicalJsonException] exception in case of strings not satifying
+/// [InvalidCanonicalJsonException] exception in case of strings not satisfying
 /// this property.
 library canonical_json;
 

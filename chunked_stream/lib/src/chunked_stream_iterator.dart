@@ -64,12 +64,12 @@ class ChunkedStreamIterator<T> {
   /// Read a series of chunks from the stream until we have [size] number of
   /// items, then return these items.
   ///
-  /// This returns less than [size], if end of stream occours before [size]
+  /// This returns less than [size], if end of stream occurs before [size]
   /// number of items have been received.
   ///
   /// If an error occurs before receiving [size] items, the error will be thrown
   /// and next call to [read] will with data already buffered from before the
-  /// error occured.
+  /// error occurred.
   ///
   /// This method may not be called concurrently.
   Future<List<T>> read(int size) async {

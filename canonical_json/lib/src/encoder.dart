@@ -43,7 +43,7 @@ void _encode(Uint8Buffer output, Object input, Object original) {
   }
 
   // Handle strings, but always encoding to UTF-8 in Unicode Normalization Form
-  // C with quotes and backslaces escaped.
+  // C with quotes and backspaces escaped.
   if (input is String) {
     final s = fastNfc(input).replaceAll(r'\', r'\\').replaceAll('"', r'\"');
     output.add(char('"'));

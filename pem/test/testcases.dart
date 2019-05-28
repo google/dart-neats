@@ -122,7 +122,7 @@ Nkn3Eos8EiZByi9DVsyfy9eejh+8AXgp
 /// Test cases for non-strict parsing mode.
 ///
 /// These are useful as when passed in textual format, it's easy to introduce
-/// extract whitespace, identation, tabs, CR LF, etc.
+/// extract whitespace, indentation, tabs, CR LF, etc.
 const laxTestCases = """
 -----BEGIN CERTIFICATE-----
 MIICLDCCAdKgAwIBAgIBADAKBggqhkjOPQQDAjB9MQswCQYDVQQGEwJCRTEPMA0G
