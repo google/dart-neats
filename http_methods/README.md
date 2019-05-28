@@ -2,7 +2,7 @@ List of Registered HTTP Methods
 ===============================
 
 This package provides a list of [all registered HTTP methods][1], as well as
-whether a method is considers _safe_, that is, specififed in [HTTP 1.1][2].
+whether a method is considers _safe_, that is, specified in [HTTP 1.1][2].
 
 **Disclaimer:** This is not an officially supported Google product.
 

@@ -2,7 +2,7 @@ Canonical JSON Encoder/Decoder
 ==============================
 This package provides an encoder and decoder for encoding/decoding
 [canonical JSON][1]. The canonical JSON format does not support floating-point
-numbers and the decoder validates that the value is indeed a canoncially encoded
+numbers and the decoder validates that the value is indeed a canonically encoded
 JSON value.
 
 **Disclaimer:** This is not an officially supported Google product.
@@ -44,7 +44,7 @@ This follows the rules outlined in [canoncial JSON][1], with the deviation that
 this package requires strings to be encoded as valid UTF-8 in
 [Unicode Normalization Form C][4] rather than arbitrary
 byte values. This is only recommended by [canoncial JSON][1], but this library
-takes the oppinion that binary values should be encoded.
+takes the opinion that binary values should be encoded.
 
 ## See Also
 
