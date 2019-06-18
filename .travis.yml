@@ -1,4 +1,4 @@
-# Created with package:mono_repo v1.2.1
+# Created with package:mono_repo v2.1.0
 language: dart
 
 # Custom configuration
@@ -8,20 +8,20 @@ branches:
 jobs:
   include:
     - stage: analyze
-      name: "SDK: stable - DIR: retry - TASKS: dartanalyzer ."
+      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `dartanalyzer .`"
+      dart: stable
+      env: PKGS="canonical_json chunked_stream http_methods neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
       script: ./tool/travis.sh dartanalyzer
-      env: PKG="retry"
-      dart: stable
     - stage: analyze
-      name: "SDK: stable - DIR: retry - TASKS: dartfmt -n --set-exit-if-changed ."
+      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `dartfmt -n --set-exit-if-changed .`"
+      dart: stable
+      env: PKGS="canonical_json chunked_stream http_methods neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
       script: ./tool/travis.sh dartfmt
-      env: PKG="retry"
-      dart: stable
     - stage: unit_test
-      name: "SDK: stable - DIR: retry - TASKS: pub run test"
-      script: ./tool/travis.sh test
-      env: PKG="retry"
+      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `pub run test`"
       dart: stable
+      env: PKGS="canonical_json chunked_stream http_methods neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
+      script: ./tool/travis.sh test
 
 stages:
   - analyze
