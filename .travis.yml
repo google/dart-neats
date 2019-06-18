@@ -17,7 +17,7 @@ jobs:
       dart: stable
       env: PKGS="canonical_json chunked_stream http_methods neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
       script: ./tool/travis.sh dartfmt
-    - stage: unit_test
+    - stage: tests
       name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `pub run test`"
       dart: stable
       env: PKGS="canonical_json chunked_stream http_methods neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
@@ -25,7 +25,7 @@ jobs:
 
 stages:
   - analyze
-  - unit_test
+  - tests
 
 cache:
   directories:

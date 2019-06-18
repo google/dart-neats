@@ -59,7 +59,7 @@ void _encode(Uint8Buffer output, Object input, Object original) {
           original,
           'input',
           'canonical_json does not support encoding floats, input '
-          'contained "$input"');
+              'contained "$input"');
     }
     if (input.isNegative && input == 0) {
       throw ArgumentError.value(original, 'input',
@@ -106,5 +106,5 @@ void _encode(Uint8Buffer output, Object input, Object original) {
       original,
       'input',
       'canonical_json can only encode int, string, bool, list and maps, input '
-      'contained type: "${input.runtimeType}"');
+          'contained type: "${input.runtimeType}"');
 }

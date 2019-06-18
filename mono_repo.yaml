@@ -4,4 +4,7 @@ travis:
   branches:
     exclude: []
 
-merge_stages: [analyze, unit_test]
+# Ensure that all analysis and tests tasks runs in the same job.
+merge_stages:
+  - analyze
+  - tests
