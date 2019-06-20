@@ -1,3 +1,7 @@
+## v3.0.0
+ * When `retryIf` is not given, we default to retry any `Exception` thrown.
+   This is breaking, but provides a more useful default behavior.
+
 ## v2.0.0
  * Expect complete API break.
  * Initial release started from scratch, lifted from code in

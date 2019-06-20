@@ -57,7 +57,7 @@ void main() {
       final f = r.retry(() {
         count++;
         throw Exception('Retry will fail');
-      });
+      }, retryIf: (e) => false);
       await expectLater(f, throwsA(isException));
       expect(count, equals(1));
     });
@@ -89,6 +89,23 @@ void main() {
         }
         return true;
       }, retryIf: (e) => e is FormatException);
+      await expectLater(f, completion(isTrue));
+      expect(count, equals(2));
+    });
+
+    test('retry (no retryIf)', () async {
+      int count = 0;
+      final r = RetryOptions(
+        maxAttempts: 5,
+        maxDelay: Duration(),
+      );
+      final f = r.retry(() {
+        count++;
+        if (count == 1) {
+          throw FormatException('Retry will be okay');
+        }
+        return true;
+      });
       await expectLater(f, completion(isTrue));
       expect(count, equals(2));
     });

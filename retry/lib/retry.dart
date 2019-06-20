@@ -113,6 +113,10 @@ class RetryOptions {
   ///
   /// At every retry the [onRetry] function will be called (if given). The
   /// function [fn] will be invoked at-most [this.attempts] times.
+  ///
+  /// If no [retryIf] function is given this will retry any for any [Exception]
+  /// thrown. To retry on an [Error], the error must be caught and _rethrown_
+  /// as an [Exception].
   Future<T> retry<T>(
     FutureOr<T> Function() fn, {
     FutureOr<bool> Function(Exception) retryIf,
@@ -125,7 +129,8 @@ class RetryOptions {
       try {
         return await fn();
       } on Exception catch (e) {
-        if (attempt >= maxAttempts || retryIf == null || !(await retryIf(e))) {
+        if (attempt >= maxAttempts ||
+            (retryIf != null && !(await retryIf(e)))) {
           rethrow;
         }
         if (onRetry != null) {
@@ -161,6 +166,10 @@ class RetryOptions {
 /// );
 /// print(response.body);
 /// ```
+///
+/// If no [retryIf] function is given this will retry any for any [Exception]
+/// thrown. To retry on an [Error], the error must be caught and _rethrown_
+/// as an [Exception].
 Future<T> retry<T>(
   FutureOr<T> Function() fn, {
   Duration delayFactor = const Duration(milliseconds: 200),
