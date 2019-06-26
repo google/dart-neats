@@ -19,6 +19,26 @@ import 'package:html/dom.dart';
 final _attrEscape = HtmlEscape(HtmlEscapeMode.attribute);
 final _textEscape = HtmlEscape(HtmlEscapeMode.element);
 
+// Set of HTML5 VOID-elements.
+//
+// See: https://www.w3.org/TR/html5/syntax.html#void-elements
+final _voidElements = <String>{
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+};
+
 String formatHtmlNode(Node node) {
   return _HtmlFormatter()._format(node);
 }
@@ -63,10 +83,13 @@ class _HtmlFormatter {
       _sb.write('>');
       _writeNodes(elem.nodes);
       _sb.write('</$tagName>');
-    } else if (tagName.toLowerCase() == 'script') {
-      _sb.write('></$tagName>');
-    } else {
+    } else if (_voidElements.contains(tagName.toLowerCase())) {
+      // Only VOID-elements cannot have a closing tag.
+      // https://www.w3.org/TR/html5/syntax.html#writing-html-documents-elements
       _sb.write(' />');
+    } else {
+      // If not a VOID-element, it is always safe to have a closing tag.
+      _sb.write('></$tagName>');
     }
   }
 }

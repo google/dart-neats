@@ -111,4 +111,10 @@ void main() {
   testContains('<div><div id="x">a</div></div>', '<div><div>a</div></div>');
   testContains('<a href="a.html">a</a><a href="b.html">b</a>',
       '<a href="a.html">a</a><a href="b.html">b</a>');
+
+  // test void elements
+  testContains('<strong></strong> hello', '<strong>');
+  testContains('<strong></strong> hello', '</strong>');
+  testNotContains('<strong></strong> hello', '<strong />');
+  testContains('<br>hello</br>', '<br />');
 }
