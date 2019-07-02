@@ -1,0 +1,19 @@
+name: neat_cache
+version: 1.0.0
+authors:
+  - Jonas Finnemann Jensen <jonasfj@google.com>
+description: |
+  A neat cache abstraction for wrapping in-memory or redis caches.
+homepage: https://github.com/google/dart-neats/tree/master/neat_cache
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:neat_cache
+dependencies:
+  convert: ^2.1.1
+  logging: '^0.11.3'
+  retry: ^3.0.0
+  dartis: 0.3.0
+dev_dependencies:
+  test: ^1.5.1
+  pedantic: ^1.4.0
+environment:
+  sdk: '>=2.3.0 <3.0.0'
