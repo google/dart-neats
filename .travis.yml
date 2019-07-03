@@ -4,6 +4,8 @@ language: dart
 # Custom configuration
 branches:
   exclude: []
+services:
+  - "redis-server"
 
 jobs:
   include:
@@ -13,7 +15,7 @@ jobs:
       env: PKGS="canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
       script: ./tool/travis.sh dartanalyzer
     - stage: analyze
-      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_cache neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `dartfmt -n --set-exit-if-changed .`"
+      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `dartfmt -n --set-exit-if-changed .`"
       dart: stable
       env: PKGS="canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
       script: ./tool/travis.sh dartfmt
