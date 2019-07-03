@@ -54,7 +54,7 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
 
   Future<_RedisContext> _createContext() async {
     try {
-      print('### CONNECTING!!!');
+      _logger.info('Connecting to redis');
       final connection = await Connection.connect(_connectionString)
           .timeout(_connectTimeLimit);
       // Create context
@@ -114,7 +114,6 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
     try {
       return await fn(ctx.commands).timeout(_commandTimeLimit);
     } on TimeoutException {
-      print('############ OP TIMED OUT');
       // If we had a timeout, doing the command we forcibly disconnect
       // from the server, such that next retry will use a new connection.
       await ctx.connection.disconnect().catchError((e) {/* ignore */});
