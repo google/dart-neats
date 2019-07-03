@@ -102,7 +102,7 @@ void main() {
         connectionString,
         connectTimeLimit: Duration(milliseconds: 200),
         commandTimeLimit: Duration(milliseconds: 100),
-        reconnectDelay: Duration(microseconds: 500),
+        reconnectDelay: Duration(microseconds: 1000),
       ),
       codec: utf8,
     );
@@ -170,8 +170,8 @@ void main() {
       throwsA(TypeMatcher<IntermittentCacheException>()),
     );
 
-    print(' - sleep 600ms, to get past the reconnect timeout');
-    await Future.delayed(Duration(milliseconds: 600));
+    print(' - sleep 1500ms, to get past the reconnect timeout');
+    await Future.delayed(Duration(milliseconds: 1500));
 
     print(' - set(), should reconnect');
     await cache.set('msg', 'hello-world');
