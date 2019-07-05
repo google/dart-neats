@@ -172,7 +172,12 @@ class _Entry<T, V> implements Entry<T> {
       if (create == null) {
         return null;
       }
-      return await set(await create(), ttl);
+      final created = await create();
+      if (created != null) {
+        // Calling `set(null)` is equivalent to `purge()`, we can skip that here
+        await set(created, ttl);
+      }
+      return created;
     }
     return _owner._codec.decode(value);
   }
