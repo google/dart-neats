@@ -10,7 +10,7 @@ tracker it should be moved to a dedicated repository.
 
 Each folder in this repository contains a _neat_ `pub` package. This project
 aims to use a separate package whenever it makes sense to have an independent
-major verison. This often means splitting functionality into separate packages,
+major version. This often means splitting functionality into separate packages,
 which can be reused independently.
 
 ## Repository Management
