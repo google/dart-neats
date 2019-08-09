@@ -1,3 +1,7 @@
+## v0.7.2
+
+ * `EndPoint` annotation and `ApiResponseException` for API stub generation.
+
 ## v0.7.1
 
  * Use `Function` instead of `dynamic` in `RouterEntry` to improve typing.

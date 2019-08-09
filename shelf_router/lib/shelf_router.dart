@@ -79,7 +79,7 @@
 ///
 library shelf_router;
 
-import 'src/router.dart';
-import 'src/route.dart';
+export 'src/endpoint.dart';
+export 'src/exceptions.dart';
 export 'src/router.dart';
 export 'src/route.dart';

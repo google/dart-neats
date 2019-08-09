@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'router_entry.dart' show RouterEntry;
 import 'package:shelf/shelf.dart';
 import 'package:http_methods/http_methods.dart';
+
+import 'router_entry.dart' show RouterEntry;
 
 /// Get a URL parameter captured by the [Router].
 String params(Request request, String name) {
