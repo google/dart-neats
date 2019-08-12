@@ -1,5 +1,5 @@
 name: neat_periodic_task
-version: 1.0.0
+version: 1.0.0+1
 authors:
   - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
@@ -9,7 +9,7 @@ homepage: https://github.com/google/dart-neats/tree/master/neat_periodic_task
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:neat_periodic_task
 dependencies:
-  retry: ^2.0.0
+  retry: '>=2.0.0 <4.0.0'
   slugid: ^1.0.0
   json_annotation: ^2.0.0
   meta: ^1.1.7
