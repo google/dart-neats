@@ -1,3 +1,6 @@
+## v3.0.0+1
+ * Update the example in `README.md`.
+
 ## v3.0.0
  * When `retryIf` is not given, we default to retry any `Exception` thrown.
    This is breaking, but provides a more useful default behavior.
