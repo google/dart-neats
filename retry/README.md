@@ -38,7 +38,7 @@ This package provides `RetryOptions` which defined how many times to retry
 an function and how long to sleep between retries.
 
 ```dart
-final r = RetryOptions(attempts: 8);
+final r = RetryOptions(maxAttempts: 8);
 final response = await r.retry(
   // Make a GET request
   () => http.get('https://google.com').timeout(Duration(seconds: 5)),
