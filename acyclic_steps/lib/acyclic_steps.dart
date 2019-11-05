@@ -123,7 +123,7 @@ class Runner {
   /// /// value.
   /// final Step<void> printStep = Step.deps1(
   ///     'print-msg',
-  ///     // Dependenices:
+  ///     // Dependencies:
   ///     helloWorldStep, (
   ///   msg, // result of helloWorldStep will be passed in here.
   /// ) {
@@ -358,7 +358,7 @@ class Step<T> {
   /// /// value.
   /// final Step<void> printStep = Step.deps1(
   ///     'print-msg',
-  ///     // Dependenices:
+  ///     // Dependencies:
   ///     helloWorldStep, (
   ///   msg, // result of helloWorldStep will be passed in here.
   /// ) {
@@ -646,7 +646,7 @@ class Step<T> {
   /// when the step is created.
   ///
   /// When evaluated the [runStep] function will be called with the result of
-  /// each of the [dependencies] in the same order as the [dependenices] are
+  /// each of the [dependencies] in the same order as the [dependencies] are
   /// given.
   ///
   /// While all [Step] entries in the dependencies are required to be `Step<S>`,

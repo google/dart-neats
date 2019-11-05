@@ -1,18 +1,20 @@
 Acyclic Steps for Dart
 ======================
 
+**Disclaimer:** This is not an officially supported Google product.
+
 Package `acyclic_steps` enables the definition of steps with acyclic
 dependencies on other steps and the evaluation of such steps. A step is a
 function (optionally async) which produces a result (or side-effect).
-A step may have dependency upon other steps, but cyclic dependencies will
-produce a compile-time error.
+A step may depend on other steps, but cyclic dependencies will produce a
+compile-time error.
 
 When a step is evaluated, the dependencies for the step is evaluated first.
 To the extend permitted by dependency constraints the steps depended upon will
 run concurrently. Steps can also be overriden to inject an initial value, or
-a mock/fake object during testing.
-
-**Disclaimer:** This is not an officially supported Google product.
+a mock/fake object during testing. The result from a `Step` is cached in the
+`Runner` object that evaluated the `Step`, this ensures that steps will not be
+repeated.
 
 `package:acyclic_steps` was written to facilitate complex projects with many
 components that depends on other components to be initialized. This is

@@ -3,7 +3,7 @@ version: 0.9.0
 authors:
   - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
-  An explicit acyclic step dependency graph framework with concurrent evaluation
+  An explicit acyclic step dependency framework with concurrent evaluation
   and dependency injection.
 homepage: https://github.com/google/dart-neats/tree/master/acyclic_steps
 repository: https://github.com/google/dart-neats.git
