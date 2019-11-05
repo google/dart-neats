@@ -1,0 +1,16 @@
+name: acyclic_steps
+version: 0.9.0
+authors:
+  - Jonas Finnemann Jensen <jonasfj@google.com>
+description: |
+  An explicit acyclic step dependency framework with concurrent evaluation
+  and dependency injection.
+homepage: https://github.com/google/dart-neats/tree/master/acyclic_steps
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:acyclic_steps
+dev_dependencies:
+  test: ^1.5.1
+  pedantic: ^1.4.0
+environment:
+  sdk: '>=2.4.0 <3.0.0'
+
