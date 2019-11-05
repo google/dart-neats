@@ -8,6 +8,8 @@ description: |
 homepage: https://github.com/google/dart-neats/tree/master/acyclic_steps
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:acyclic_steps
+dependencies:
+  meta: ^1.1.7
 dev_dependencies:
   test: ^1.5.1
   pedantic: ^1.4.0
