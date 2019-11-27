@@ -65,7 +65,7 @@ Future<bool> safeUrlCheck(
   int maxRedirects = 8,
   String userAgent = _defaultUserAgent,
   HttpClient client,
-  RetryOptions retryOptions = const RetryOptions(),
+  RetryOptions retryOptions = const RetryOptions(maxAttempts: 3),
   Duration timeout = const Duration(seconds: 90),
 }) async {
   ArgumentError.checkNotNull(url, 'url');
@@ -81,31 +81,26 @@ Future<bool> safeUrlCheck(
   }
 
   try {
-    // Always call with a client
-    if (client == null) {
-      final c = HttpClient();
-      try {
-        return await _safeUrlCheck(
-          url,
-          maxRedirects,
-          c,
-          userAgent,
-          retryOptions,
-          timeout,
-        );
-      } finally {
+    // Create client if one wasn't given.
+    HttpClient c = client;
+    if (c == null) {
+      c = HttpClient();
+    }
+    try {
+      return await _safeUrlCheck(
+        url,
+        maxRedirects,
+        c,
+        userAgent,
+        retryOptions,
+        timeout,
+      );
+    } finally {
+      // Close client, if it was created here.
+      if (client == null) {
         c.close(force: true);
       }
     }
-
-    return await _safeUrlCheck(
-      url,
-      maxRedirects,
-      client,
-      userAgent,
-      retryOptions,
-      timeout,
-    );
   } on Exception {
     return false;
   }
@@ -149,7 +144,7 @@ Future<bool> _safeUrlCheck(
   final response = await retryOptions.retry(() async {
     // We can't use the HttpClient from dart:io with a custom socket, so instead
     // of making a connection to one of the IPs resolved above, and specifying
-    // the host header, we reply on the OS caching DNS queries and not returning
+    // the host header, we rely on the OS caching DNS queries and not returning
     // different IPs for a second lookup.
     final request = await client.headUrl(url).timeout(timeout);
     request.followRedirects = false;
@@ -178,5 +173,6 @@ Future<bool> _safeUrlCheck(
     );
   }
 
+  // Response is 4xx, or some other unsupported code.
   return false;
 }
