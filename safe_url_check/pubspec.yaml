@@ -1,0 +1,19 @@
+name: safe_url_check
+version: 1.0.0
+authors:
+  - Jonas Finnemann Jensen <jonasfj@google.com>
+description: |
+  Check if an untrusted URL is broken, without allowing connections to a private
+  IP address.
+homepage: https://github.com/google/dart-neats/tree/master/safe_url_check
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:safe_url_check
+dependencies:
+  retry: ^3.0.0+1
+dev_dependencies:
+  test: ^1.5.1
+  pedantic: ^1.4.0
+  build_runner: ^1.7.2
+  build_version: ^2.0.1
+environment:
+  sdk: '>=2.0.0 <3.0.0'
