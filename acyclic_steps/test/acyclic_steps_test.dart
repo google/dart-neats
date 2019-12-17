@@ -23,21 +23,22 @@ void main() {
     /// doesn't have an implementation instead it throws an error. Hence, to
     /// evaluate a step that depends on [messageStep] it is necessary to
     /// override this step, by injecting a value to replace it.
-    final Step<String> messageStep = Step.deps0(
-      'message',
+    final Step<String> messageStep = Step.define('message').build(
       () => throw UnimplementedError('message must be overriden with input'),
     );
 
     /// A step that provides date and time
-    final dateTimeStep =
-        Step.deps0('date-time', () => DateTime.now().toString());
+    final dateTimeStep = Step.define('date-time').build(
+      () => DateTime.now().toString(),
+    );
 
     /// A step which has side effects.
-    final Step<void> printStep = Step.deps2(
-        'print',
-        // Dependencies:
-        messageStep,
-        dateTimeStep, (
+    final Step<void> printStep = Step.define(
+      'print',
+    ) // Dependencies:
+        .dep(messageStep)
+        .dep(dateTimeStep)
+        .build((
       msg, // result from evaluation of messageStep
       time, // result from evaluation of dateTimeStep
     ) async {
@@ -66,20 +67,21 @@ void main() {
   test('async steps runs concurrently', () async {
     final cA = Completer();
     final cB = Completer();
-    final Step<String> stepA = Step.deps0('step-a', () async {
+    final Step<String> stepA = Step.define('step-a').build(() async {
       await Future.delayed(Duration(milliseconds: 200));
       // Create a deadlock, if stepA and stepB doesn't run concurrently
       cA.complete();
       await cB.future;
       return 'some-text';
     });
-    final Step<int> stepB = Step.deps0('step-b', () async {
+    final Step<int> stepB = Step.define('step-b').build(() async {
       // Create a deadlock, if stepA and stepB doesn't run concurrently
       cB.complete();
       await cA.future;
       return 41;
     });
-    final Step<String> stepC = Step.deps2('step-c', stepA, stepB, (a, b) async {
+    final Step<String> stepC =
+        Step.define('step-c').dep(stepA).dep(stepB).build((a, b) async {
       b++;
       return '$a, value: $b';
     });
@@ -89,15 +91,16 @@ void main() {
   });
 
   test('Runner using wrapRunStep', () async {
-    final Step<String> stepA = Step.deps0('step-a', () async {
+    final Step<String> stepA = Step.define('step-a').build(() async {
       await Future.delayed(Duration(milliseconds: 200));
       return 'some-text';
     });
-    final Step<int> stepB = Step.deps1('step-b', stepA, (a) async {
+    final Step<int> stepB = Step.define('step-b').dep(stepA).build((a) async {
       await Future.delayed(Duration(milliseconds: 200));
       return 41;
     });
-    final Step<String> stepC = Step.deps2('step-c', stepA, stepB, (a, b) async {
+    final Step<String> stepC =
+        Step.define('step-c').dep(stepA).dep(stepB).build((a, b) async {
       b++;
       return '$a, value: $b';
     });
@@ -118,10 +121,10 @@ void main() {
   });
 
   test('Cannot override step twice', () async {
-    final Step<String> stepA = Step.deps0('step-a', () async {
+    final Step<String> stepA = Step.define('step-a').build(() async {
       return 'some-text';
     });
-    final Step<int> stepB = Step.deps1('step-b', stepA, (a) async {
+    final Step<int> stepB = Step.define('step-b').dep(stepA).build((a) async {
       await Future.delayed(Duration(milliseconds: 200));
       return 41;
     });
