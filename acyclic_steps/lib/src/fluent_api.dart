@@ -19,7 +19,7 @@ import 'package:meta/meta.dart' show sealed;
 
 Future<T> _defaultRunStep<T>(Step<T> step, Future<T> Function() fn) => fn();
 
-/// A [RunStepWrapper] is a function that can wrap the [RunStep] function.
+/// A [RunStepWrapper] is a function that can wrap the [runStep] function.
 ///
 /// See the constructor of [Runner] for examples.
 typedef RunStepWrapper = Future<T> Function<T>(

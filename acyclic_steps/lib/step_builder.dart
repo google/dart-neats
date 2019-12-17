@@ -12,4 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/fluent_api.dart';
+export 'src/fluent_api.dart'
+    show
+        StepBuilder,
+        StepBuilderN,
+        StepBuilder1,
+        StepBuilder2,
+        StepBuilder3,
+        StepBuilder4,
+        StepBuilder5,
+        StepBuilder6,
+        StepBuilder7,
+        StepBuilder8,
+        StepBuilder9,
+        StepBuilder9N;
