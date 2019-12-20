@@ -30,26 +30,30 @@ where tasks may depend on the result of previous tasks.
 ## Example
 
 ```dart
+import 'dart:async' show Future;
 import 'package:acyclic_steps/acyclic_steps.dart';
 
 /// A step that provides a message, this is a _virtual step_ because it
 /// doesn't have an implementation instead it throws an error. Hence, to
 /// evaluate a step that depends on [messageStep] it is necessary to
 /// override this step, by injecting a value to replace it.
-final Step<String> messageStep = Step.deps0(
-  'message',
+final Step<String> messageStep = Step.define('message').build(
   () => throw UnimplementedError('message must be overriden with input'),
 );
 
 /// A step that provides date and time
-final dateTimeStep = Step.deps0('date-time', () => DateTime.now().toString());
+final dateTimeStep = Step.define('date-time').build(
+  () => DateTime.now().toString(),
+);
 
 /// A step which has side effects.
-final Step<void> printStep = Step.deps2(
-    'print',
-    // Dependencies:
-    messageStep,
-    dateTimeStep, (
+final Step<void> printStep = Step.define(
+  'print',
+) // Dependencies:
+    .dep(messageStep)
+    .dep(dateTimeStep)
+    // Method to build the step
+    .build((
   msg, // result from evaluation of messageStep
   time, // result from evaluation of dateTimeStep
 ) async {
