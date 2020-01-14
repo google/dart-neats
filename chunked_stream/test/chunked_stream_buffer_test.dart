@@ -16,7 +16,7 @@ import 'package:test/test.dart';
 import 'package:chunked_stream/chunked_stream.dart';
 
 void main() {
-  for (int i = 1; i < 6; i++) {
+  for (var i = 1; i < 6; i++) {
     test('bufferChunkedStream (bufferSize: $i)', () async {
       final s = (() async* {
         yield ['a'];
