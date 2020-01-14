@@ -61,7 +61,7 @@ Stream<List<T>> limitChunkedStream<T>(
     throw ArgumentError.value(maxSize, 'maxSize must be positive, if given');
   }
 
-  int count = 0;
+  var count = 0;
   await for (final chunk in input) {
     if (maxSize != null && maxSize - count < chunk.length) {
       yield chunk.sublist(0, maxSize - count);

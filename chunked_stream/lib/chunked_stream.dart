@@ -25,12 +25,16 @@
 ///  to improve I/O performance if reading the stream chunk by chunk with
 ///  frequent pause/resume calls, as is the case when using
 ///  [ChunkedStreamIterator].
+///  * [asChunkedStream], for wrapping a [Stream<T>] as [Stream<List<T>>],
+///  useful for batch processing elements from a stream.
 library chunked_stream;
 
-import 'src/chunked_stream_iterator.dart';
+import 'src/chunk_stream.dart';
 import 'src/chunked_stream_buffer.dart';
+import 'src/chunked_stream_iterator.dart';
 import 'src/read_chunked_stream.dart';
 
-export 'src/chunked_stream_iterator.dart';
+export 'src/chunk_stream.dart';
 export 'src/chunked_stream_buffer.dart';
+export 'src/chunked_stream_iterator.dart';
 export 'src/read_chunked_stream.dart';

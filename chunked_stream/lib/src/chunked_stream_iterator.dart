@@ -166,7 +166,7 @@ class ChunkedStreamIterator<T> {
       },
     );
     if (_buffered.isNotEmpty) {
-      int n = min(size, _buffered.length);
+      final n = min(size, _buffered.length);
       c.add(_buffered.sublist(0, n));
       _buffered = _buffered.sublist(n);
       size -= n;
