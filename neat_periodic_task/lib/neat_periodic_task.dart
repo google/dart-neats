@@ -304,7 +304,10 @@ class NeatPeriodicTaskScheduler {
     _log.finest(() => 'Attempting to set finished status for "$_name"');
     final st = status.update(state: 'finished').serialize();
     if (!await _statusProvider.set(st)) {
-      _log.info('Failed to set finished status for "$_name"');
+      _log.warning(
+        'Failed to set finished status for "$_name" '
+        '-- not a problem if it only happens occasionally',
+      );
     }
   }
 
