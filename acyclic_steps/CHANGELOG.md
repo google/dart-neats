@@ -1,3 +1,7 @@
+## v0.10.1
+ * Added a workaround for `ArgumentError.checkNotNull` regression in Dart 2.8.1,
+   see [dartlang/sdk#41871](https://github.com/dart-lang/sdk/issues/41871).
+
 ## v0.10.0
  * **breaking** re-defined API for creating `Step`'s. The new fluent API ensures
    that the `runStep` method will infer correct types from generics. Due to low
