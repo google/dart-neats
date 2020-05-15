@@ -95,7 +95,11 @@ class Runner {
   Runner({
     RunStepWrapper wrapRunStep = _defaultRunStep,
   }) : _wrapRunStep = wrapRunStep {
-    ArgumentError.checkNotNull(wrapRunStep, 'runStep');
+    // Workaround Dart 2.8.1 regression reported in:
+    // https://github.com/dart-lang/sdk/issues/41871
+    if (wrapRunStep == null) {
+      throw ArgumentError.notNull('wrapRunStep');
+    }
   }
 
   /// Override [step] with [value], ensuring that [step] evaluates to [value]
