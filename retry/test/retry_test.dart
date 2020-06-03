@@ -38,6 +38,11 @@ void main() {
       }
     });
 
+    test('avoid overflow', () {
+      final r = RetryOptions();
+      expect(r.delay(64), r.maxDelay);
+    });
+
     test('retry (success)', () async {
       int count = 0;
       final r = RetryOptions();

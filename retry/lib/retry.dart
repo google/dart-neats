@@ -104,7 +104,7 @@ class RetryOptions {
       return Duration.zero;
     }
     final rf = (randomizationFactor * (_rand.nextDouble() * 2 - 1) + 1);
-    final delay = (delayFactor * math.pow(2, attempt) * rf);
+    final delay = (delayFactor * math.pow(2.0, attempt) * rf);
     return delay < maxDelay ? delay : maxDelay;
   }
 
