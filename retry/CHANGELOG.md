@@ -1,3 +1,6 @@
+## v3.0.1+1
+ * Fix retry overflow
+
 ## v3.0.0+1
  * Update the example in `README.md`.
 
