@@ -1,4 +1,4 @@
-## v3.0.1+1
+## v3.0.1
  * Fix retry overflow
 
 ## v3.0.0+1

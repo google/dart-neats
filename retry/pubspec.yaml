@@ -1,5 +1,5 @@
 name: retry
-version: 3.0.1+1
+version: 3.0.1
 authors:
   - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
@@ -12,5 +12,4 @@ dev_dependencies:
   test: ^1.5.1
   pedantic: ^1.4.0
 environment:
-  sdk: '>=2.0.0 <3.0.0'
-
+  sdk: ">=2.0.0 <3.0.0"
