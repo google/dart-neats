@@ -59,6 +59,8 @@ library pem;
 
 import 'dart:convert' show base64, Codec, Converter;
 import 'dart:math' as math;
+import 'package:petitparser/petitparser.dart';
+
 import 'src/parser.dart' show stricttextualmsg, laxtextualmsg;
 
 /// Labels for PEM encoded strings.

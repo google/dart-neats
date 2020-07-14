@@ -1,5 +1,5 @@
 name: pem
-version: 1.0.0
+version: 1.0.1
 authors:
   - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
@@ -10,7 +10,7 @@ homepage: https://github.com/google/dart-neats/tree/master/pem
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:pem
 dependencies:
-  petitparser: ^2.1.1
+  petitparser: '>=2.1.1<4.0.0'
 dev_dependencies:
   test: ^1.5.1
   pedantic: ^1.4.0
