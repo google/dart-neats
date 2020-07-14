@@ -34,10 +34,10 @@ void _flattenString(dynamic value, StringBuffer target) {
 }
 
 /// Create a [Parser] that ignores output from [p] and return `null`.
-Parser<String> ignore<T>(Parser<T> p) => ActionParser(p, (_) => null);
+Parser<String> ignore<T>(Parser<T> p) => p.map((_) => null);
 
 /// Create a [Parser] that flattens all strings in the result from [p].
-Parser<String> flatten(Parser<dynamic> p) => ActionParser(p, (value) {
+Parser<String> flatten(Parser<dynamic> p) => p.map((value) {
       final s = StringBuffer();
       _flattenString(value, s);
       return s.toString();
