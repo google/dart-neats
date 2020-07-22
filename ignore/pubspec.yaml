@@ -1,0 +1,17 @@
+name: ignore
+version: 1.0.0
+authors:
+  - Jonas Finnemann Jensen <jonasfj@google.com>
+description: |
+  A .gitignore compatible file-path filter. Check if a file is ignored by the
+  patterns in a .gitignore file.
+homepage: https://github.com/google/dart-neats/tree/master/ignore
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:ignore
+dependencies:
+  meta: ^1.1.7
+dev_dependencies:
+  test: ^1.5.1
+  pedantic: ^1.4.0
+environment:
+  sdk: '>=2.0.0 <3.0.0'
