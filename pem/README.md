@@ -1,6 +1,7 @@
 PEM Encoding/Decoding for Dart
 ==============================
-Encoding/decoding of PEM textual key encoding following [RFC 7468][1].
+Encoding/decoding of PEM (Privacy-Enhanced Mail) textual key encoding
+following [RFC 7468][1].
 
 **Disclaimer:** This is not an officially supported Google product.
 
