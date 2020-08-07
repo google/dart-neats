@@ -2,6 +2,8 @@
 
 A library for [YAML](https://yaml.org) manipulation while preserving comments.
 
+**Disclaimer:** This is not an officially supported Google product.
+
 ## Usage
 
 A simple usage example:
