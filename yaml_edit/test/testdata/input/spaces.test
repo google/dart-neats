@@ -1,0 +1,8 @@
+SPACE IN STRING - update a string that starts and ends with space
+---
+a: ' space around me '
+c: 'hello world'
+---
+- [update, ['b'], ' also spaced ']
+- [update, ['d'], ' ']
+- [update, ["\ne"], with newline]
