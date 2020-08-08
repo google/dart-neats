@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
+
 import 'package:test/test.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
@@ -21,11 +23,15 @@ void main() {
   for (final string in problemStrings) {
     test('expect string $string', () {
       final doc = YamlEditor('');
-
-      expect(() => doc.update([], string), returnsNormally);
-      final value = doc.parseAt([]).value;
-      expect(value, isA<String>());
-      expect(value, equals(string));
+      runZoned(() {
+        expect(() => doc.update([], string), returnsNormally);
+        final value = doc.parseAt([]).value;
+        expect(value, isA<String>());
+        expect(value, equals(string));
+      },
+          zoneSpecification: ZoneSpecification(
+              print: (Zone self, ZoneDelegate parent, Zone zone,
+                  String message) {}));
     });
   }
 }
