@@ -23,6 +23,9 @@ void main() {
   for (final string in problemStrings) {
     test('expect string $string', () {
       final doc = YamlEditor('');
+
+      /// Using [runZoned] to hide `package:yaml`'s warnings.
+      /// Test failures and errors will still be shown.
       runZoned(() {
         expect(() => doc.update([], string), returnsNormally);
         final value = doc.parseAt([]).value;

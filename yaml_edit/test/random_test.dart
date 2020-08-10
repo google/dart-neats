@@ -55,6 +55,8 @@ dev_dependencies:
 ''');
 
       for (var j = 0; j < modificationsPerRound; j++) {
+        /// Using [runZoned] to hide `package:yaml`'s warnings.
+        /// Test failures and errors will still be shown.
         runZoned(() {
           expect(
               () => generator.performNextModification(editor), returnsNormally);
