@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:yaml_edit/yaml_edit.dart';
@@ -35,7 +36,7 @@ void main() {
   const modificationsPerRound = 1000;
 
   for (var i = 0; i < roundsOfTesting; i++) {
-    test('fuzz test $i', () {
+    test('testing with randomly generated modifications: test $i', () {
       final editor = YamlEditor('''
 name: yaml_edit
 description: A library for YAML manipulation with comment and whitespace preservation.
@@ -54,8 +55,15 @@ dev_dependencies:
 ''');
 
       for (var j = 0; j < modificationsPerRound; j++) {
-        expect(
-            () => generator.performNextModification(editor), returnsNormally);
+        /// Using [runZoned] to hide `package:yaml`'s warnings.
+        /// Test failures and errors will still be shown.
+        runZoned(() {
+          expect(
+              () => generator.performNextModification(editor), returnsNormally);
+        },
+            zoneSpecification: ZoneSpecification(
+                print: (Zone self, ZoneDelegate parent, Zone zone,
+                    String message) {}));
       }
     });
   }
