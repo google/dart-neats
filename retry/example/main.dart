@@ -15,7 +15,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import '../lib/retry.dart';
+import 'package:retry/retry.dart';
 
 Future<void> main() async {
   // Create an HttpClient.
