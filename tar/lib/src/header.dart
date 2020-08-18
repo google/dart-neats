@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 import 'package:tar/src/exceptions.dart';
 import 'constants.dart';
 import 'utils.dart';
@@ -301,9 +302,10 @@ class TarFormat {
 
 /// A [TarHeader] represents a single header in a tar archive.
 /// Some fields may not be populated.
+@sealed
 class TarHeader {
   /// Type of header entry.
-  int typeFlag;
+  TypeFlag typeFlag;
 
   /// Name of file entry.
   String name;
@@ -364,7 +366,7 @@ class TarHeader {
       final groupId = parseOctal(rawHeader, 116, 124);
       final size = parseOctal(rawHeader, 124, 136);
       final modified = secondsSinceEpoch(parseOctal(rawHeader, 136, 148));
-      final typeFlag = rawHeader[156];
+      final typeFlag = typeflagFromByte(rawHeader[156]);
       final linkName = parseString(rawHeader, 157, 257);
 
       header = TarHeader.internal(
@@ -465,12 +467,12 @@ class TarHeader {
   /// Checks if this header indicates that the file will have content.
   bool get hasContent {
     switch (typeFlag) {
-      case typeLink:
-      case typeSymlink:
-      case typeBlock:
-      case typeDir:
-      case typeChar:
-      case typeFifo:
+      case TypeFlag.link:
+      case TypeFlag.symlink:
+      case TypeFlag.block:
+      case TypeFlag.dir:
+      case TypeFlag.char:
+      case TypeFlag.fifo:
         return false;
       default:
         return true;
@@ -626,33 +628,6 @@ TarFormat _getFormat(List<int> rawHeader) {
     headerException('Unable to determine format of Header');
   }
   return TarFormat.V7;
-}
-
-/// Represents a [length]-sized fragment at [offset] in a file.
-///
-/// [SparseEntry]s can represent either data or holes, and we can easily
-/// convert between the two if we know the size of the file, all the sparse
-/// data and all the sparse entries combined must give the full size.
-class SparseEntry {
-  final int offset;
-  final int length;
-
-  SparseEntry(this.offset, this.length);
-
-  int get end => offset + length;
-
-  @override
-  String toString() => 'offset: $offset, length $length';
-
-  @override
-  bool operator ==(other) {
-    if (other is! SparseEntry) return false;
-
-    return offset == other.offset && length == other.length;
-  }
-
-  @override
-  int get hashCode => offset ^ length;
 }
 
 /// Populates [header] with USTAR fields.

@@ -14,10 +14,12 @@
 
 import 'package:chunked_stream/chunked_stream.dart';
 import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 
 import 'constants.dart';
 import 'exceptions.dart';
 import 'header.dart';
+import 'sparse_entry.dart';
 import 'stream.dart';
 import 'utils.dart';
 
@@ -25,6 +27,7 @@ import 'utils.dart';
 /// It is designed to read from a stream and to spit out substreams for
 /// individual file contents in order to minimize the amount of memory needed
 /// to read each archive where possible.
+@sealed
 class TarReader {
   /// A chunked stream iterator to enable us to get our data 512 bytes at a time.
   final ChunkedStreamIterator<int> _chunkedStream;
@@ -65,14 +68,14 @@ class TarReader {
       format = format.mayOnlyBe(header.format);
 
       /// Check for PAX/GNU special headers and files.
-      if (header.typeFlag == typeXHeader ||
-          header.typeFlag == typeXGlobalHeader) {
+      if (header.typeFlag == TypeFlag.xHeader ||
+          header.typeFlag == TypeFlag.xGlobalHeader) {
         format = format.mayOnlyBe(TarFormat.PAX);
         final rawPAXHeaders =
             await _chunkedStream.read(numBlocks(header.size) * blockSize);
 
         paxHeaders = parsePAX(rawPAXHeaders);
-        if (header.typeFlag == typeXGlobalHeader) {
+        if (header.typeFlag == TypeFlag.xGlobalHeader) {
           header.mergePAX(paxHeaders);
           header = TarHeader.internal(
             name: header.name,
@@ -86,13 +89,13 @@ class TarReader {
 
         /// This is a meta header affecting the next header.
         continue;
-      } else if (header.typeFlag == typeGNULongLink ||
-          header.typeFlag == typeGNULongName) {
+      } else if (header.typeFlag == TypeFlag.gnuLongLink ||
+          header.typeFlag == TypeFlag.gnuLongName) {
         format = format.mayOnlyBe(TarFormat.GNU);
         final realName =
             await _chunkedStream.read(numBlocks(header.size) * blockSize);
 
-        if (header.typeFlag == typeGNULongName) {
+        if (header.typeFlag == TypeFlag.gnuLongName) {
           gnuLongName = parseString(realName);
         } else {
           gnuLongLink = parseString(realName);
@@ -108,12 +111,12 @@ class TarReader {
         if (gnuLongName.isNotEmpty) header.name = gnuLongName;
         if (gnuLongLink.isNotEmpty) header.linkName = gnuLongLink;
 
-        if (header.typeFlag == typeRegA) {
+        if (header.typeFlag == TypeFlag.regA) {
           /// Legacy archives use trailing slash for directories
           if (header.name.endsWith('/')) {
-            header.typeFlag = typeDir;
+            header.typeFlag = TypeFlag.dir;
           } else {
-            header.typeFlag = typeReg;
+            header.typeFlag = TypeFlag.reg;
           }
         }
 
@@ -168,7 +171,7 @@ class TarReader {
     ArgumentError.checkNotNull(rawHeader, 'rawHeader');
 
     List<SparseEntry> sparseData;
-    if (header.typeFlag == typeGNUSparse) {
+    if (header.typeFlag == TypeFlag.gnuSparse) {
       sparseData = await _readOldGNUSparseMap(header, rawHeader);
     } else {
       sparseData = await _readGNUSparsePAXHeaders(header);

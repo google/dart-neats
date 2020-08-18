@@ -20,6 +20,7 @@ import 'package:tar/src/header.dart';
 
 import 'constants.dart';
 import 'exceptions.dart';
+import 'sparse_entry.dart';
 
 /// Parses the sublist of [bytes] from [start] to [end] as a String. First it
 /// checks if it is utf8-encoded, and if that fails, we revert to reading it
@@ -595,18 +596,18 @@ TarHeader fileInfoHeader(File file, String link) {
       mode: fileStat.mode);
 
   if (isRegular(fileMode)) {
-    header.typeFlag = typeReg;
+    header.typeFlag = TypeFlag.reg;
     header.size = fileStat.size;
   } else if (fileStat.type == FileSystemEntityType.directory) {
-    header.typeFlag = typeDir;
+    header.typeFlag = TypeFlag.dir;
     header.name += '/';
   } else if (isSymbolicLink(fileMode)) {
-    header.typeFlag = typeSymlink;
+    header.typeFlag = TypeFlag.symlink;
     header.linkName = link;
   } else if (isDevice(fileMode)) {
-    header.typeFlag = isCharDevice(fileMode) ? typeChar : typeBlock;
+    header.typeFlag = isCharDevice(fileMode) ? TypeFlag.char : TypeFlag.block;
   } else if (isNamedPipe(fileMode)) {
-    header.typeFlag = typeFifo;
+    header.typeFlag = TypeFlag.fifo;
   } else if (isSocket(fileMode)) {
     headerException('Sockets not supported!');
   } else {

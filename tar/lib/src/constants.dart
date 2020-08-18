@@ -20,57 +20,101 @@ const versionUSTAR = '00';
 const trailerSTAR = 'tar\x00';
 
 /// *********************************
-/// Type flags for TarHeader.linkFlag
+/// Type flags for [TarHeader]
 /// *********************************
 
-/// Type '0' or '\x00' indicates a regular file.
-const typeReg = 48;
-const typeRegA = 0;
+enum TypeFlag {
+  /// [reg] and [regA] indicate regular files.
+  reg,
+  regA,
 
-/// Type '1' to '6' are header-only flags and may not have a data body.
+  /// Hard link - header-only, may not have a data body
+  link,
 
-/// Hard link
-const typeLink = 49;
+  /// Symbolic link - header-only, may not have a data body
+  symlink,
 
-/// Symbolic link
-const typeSymlink = 50;
+  /// Character device node - header-only, may not have a data body
+  char,
 
-/// Character device node
-const typeChar = 51;
+  /// Block device node - header-only, may not have a data body
+  block,
 
-/// Block device node
-const typeBlock = 52;
+  /// Directory - header-only, may not have a data body
+  dir,
 
-/// Directory
-const typeDir = 53;
+  /// FIFO node - header-only, may not have a data body
+  fifo,
 
-/// FIFO node
-const typeFifo = 54;
+  /// Currently does not have any meaning, but is reserved for the future.
+  reserved,
 
-/// Type '7' is reserved.
-const typeCont = 55;
+  /// Used by the PAX format to store key-value records that are only relevant
+  /// to the next file.
+  ///
+  /// This package transparently handles these types.
+  xHeader,
 
-/// Type 'x' is used by the PAX format to store key-value records that
-/// are only relevant to the next file.
-///
-/// This package transparently handles these types.
-const typeXHeader = 120;
+  /// Used by the PAX format to store key-value records that are relevant to all
+  /// subsequent files.
+  ///
+  /// This package only supports parsing and composing such headers,
+  /// but does not currently support persisting the global state across files.
+  xGlobalHeader,
 
-/// Type 'g' is used by the PAX format to store key-value records that
-/// are relevant to all subsequent files.
-///
-/// This package only supports parsing and composing such headers,
-/// but does not currently support persisting the global state across files.
-const typeXGlobalHeader = 103;
+  /// Indiates a sparse file in the GNU format
+  gnuSparse,
 
-/// Type 'S' indicates a sparse file in the GNU format.
-const typeGNUSparse = 83;
+  /// Used by the GNU format for a meta file to store the path or link name for
+  /// the next file.
+  /// This package transparently handles these types.
+  gnuLongName,
+  gnuLongLink,
 
-/// Types 'L' and 'K' are used by the GNU format for a meta file
-/// used to store the path or link name for the next file.
-/// This package transparently handles these types.
-const typeGNULongName = 76;
-const typeGNULongLink = 75;
+  /// Vendor specific typeflag, as defined in POSIX.1-1998. Seen as outdated but
+  /// may still exist on old files.
+  ///
+  /// This library uses a single enum to catch them all.
+  vendor
+}
+
+TypeFlag typeflagFromByte(int byte) {
+  switch (byte) {
+    case 48:
+      return TypeFlag.reg;
+    case 0:
+      return TypeFlag.regA;
+    case 49:
+      return TypeFlag.link;
+    case 50:
+      return TypeFlag.symlink;
+    case 51:
+      return TypeFlag.char;
+    case 52:
+      return TypeFlag.block;
+    case 53:
+      return TypeFlag.dir;
+    case 54:
+      return TypeFlag.fifo;
+    case 55:
+      return TypeFlag.reserved;
+    case 120:
+      return TypeFlag.xHeader;
+    case 103:
+      return TypeFlag.xGlobalHeader;
+    case 83:
+      return TypeFlag.gnuSparse;
+    case 76:
+      return TypeFlag.gnuLongName;
+    case 75:
+      return TypeFlag.gnuLongLink;
+    default:
+      if (64 < byte && byte < 91) {
+        return TypeFlag.vendor;
+      }
+      throw ArgumentError('Invalid typeflag value $byte');
+  }
+}
 
 /// Keywords for PAX extended header records.
 const paxPath = 'path';

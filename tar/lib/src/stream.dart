@@ -13,7 +13,7 @@
 // limitations under the License.import 'constants.dart';
 
 import 'constants.dart';
-import 'header.dart';
+import 'sparse_entry.dart';
 
 /// Generates a stream of the sparse file contents given [sparseHoles] and
 /// the raw content in [source].

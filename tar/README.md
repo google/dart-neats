@@ -1,22 +1,27 @@
-A library for Dart developers.
+# TAR
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+A library for reading [TAR](<https://en.wikipedia.org/wiki/Tar_(computing)>) archives.
+
+**Disclaimer:** This is not an officially supported Google product.
 
 ## Usage
 
 A simple usage example:
 
 ```dart
+import 'dart:io';
+
 import 'package:tar/tar.dart';
 
-main() {
-  var awesome = new Awesome();
+void main() async {
+  final fileName = 'retry.tar';
+
+  final tarStream = File(fileName).openRead();
+  final tarFileStream = TarReader(tarStream);
+
+  while (await tarFileStream.next()) {
+    print(tarFileStream.header.name);
+  }
 }
+
 ```
-
-## Features and bugs
-
-Please file feature requests and bugs at the [issue tracker][tracker].
-
-[tracker]: http://example.com/issues/replaceme

@@ -20,6 +20,7 @@ import 'package:tar/src/constants.dart';
 import 'package:tar/src/exceptions.dart';
 import 'package:tar/src/header.dart';
 import 'package:tar/src/reader.dart';
+import 'package:tar/src/sparse_entry.dart';
 import 'package:tar/src/utils.dart';
 import 'package:test/test.dart';
 
@@ -42,7 +43,7 @@ void main() async {
             groupId: 5000,
             size: 5,
             modified: millisecondsSinceEpoch(1244428340000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             userName: 'dsymonds',
             groupName: 'eng',
             format: TarFormat.GNU,
@@ -54,7 +55,7 @@ void main() async {
             groupId: 5000,
             size: 11,
             modified: millisecondsSinceEpoch(1244436044000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             userName: 'dsymonds',
             groupName: 'eng',
             format: TarFormat.GNU,
@@ -75,7 +76,7 @@ void main() async {
             groupId: 1000,
             size: 200,
             modified: millisecondsSinceEpoch(1392395740000),
-            typeFlag: 83,
+            typeFlag: TypeFlag.gnuSparse,
             linkName: '',
             userName: 'david',
             groupName: 'david',
@@ -90,7 +91,7 @@ void main() async {
             groupId: 1000,
             size: 200,
             modified: millisecondsSinceEpoch(1392342187000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             linkName: '',
             userName: 'david',
             groupName: 'david',
@@ -111,7 +112,7 @@ void main() async {
             groupId: 1000,
             size: 200,
             modified: millisecondsSinceEpoch(1392340456000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             linkName: '',
             userName: 'david',
             groupName: 'david',
@@ -133,7 +134,7 @@ void main() async {
             groupId: 1000,
             size: 200,
             modified: millisecondsSinceEpoch(1392337404000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             linkName: '',
             userName: 'david',
             groupName: 'david',
@@ -154,7 +155,7 @@ void main() async {
             groupId: 1000,
             size: 4,
             modified: millisecondsSinceEpoch(1392398319000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             linkName: '',
             userName: 'david',
             groupName: 'david',
@@ -181,7 +182,7 @@ void main() async {
             groupId: 5000,
             size: 5,
             modified: millisecondsSinceEpoch(1244592783000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             userName: 'dsymonds',
             groupName: 'eng',
             accessed: millisecondsSinceEpoch(1244592783000),
@@ -194,7 +195,7 @@ void main() async {
             groupId: 5000,
             size: 11,
             modified: millisecondsSinceEpoch(1244592783000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             userName: 'dsymonds',
             groupName: 'eng',
             accessed: millisecondsSinceEpoch(1244592783000),
@@ -212,7 +213,7 @@ void main() async {
             groupId: 5000,
             size: 5,
             modified: millisecondsSinceEpoch(1244593104000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
           ),
           TarHeader.internal(
             name: 'small2.txt',
@@ -221,7 +222,7 @@ void main() async {
             groupId: 5000,
             size: 11,
             modified: millisecondsSinceEpoch(1244593104000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
           )
         ],
       },
@@ -240,7 +241,7 @@ void main() async {
             modified: microsecondsSinceEpoch(1350244992023960),
             changed: microsecondsSinceEpoch(1350244992023960),
             accessed: microsecondsSinceEpoch(1350244992023960),
-            typeFlag: typeReg,
+            typeFlag: TypeFlag.reg,
             paxRecords: {
               'path':
                   'a/123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100',
@@ -261,7 +262,7 @@ void main() async {
             modified: microsecondsSinceEpoch(1350266320910238),
             changed: microsecondsSinceEpoch(1350266320910238),
             accessed: microsecondsSinceEpoch(1350266320910238),
-            typeFlag: typeSymlink,
+            typeFlag: TypeFlag.symlink,
             linkName:
                 '123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100',
             paxRecords: {
@@ -293,7 +294,7 @@ void main() async {
               groupId: 5000,
               size: 999,
               modified: millisecondsSinceEpoch(1442282516000),
-              typeFlag: 48,
+              typeFlag: TypeFlag.reg,
               userName: 'joetsai',
               groupName: 'eng',
               paxRecords: {
@@ -309,7 +310,7 @@ void main() async {
         'file': 'pax-records.tar',
         'headers': [
           TarHeader.internal(
-              typeFlag: typeReg,
+              typeFlag: TypeFlag.reg,
               name: 'file',
               userName: 'long' * 10,
               modified: millisecondsSinceEpoch(0),
@@ -325,38 +326,38 @@ void main() async {
         'file': 'pax-global-records.tar',
         'headers': [
           TarHeader.internal(
-            typeFlag: typeXGlobalHeader,
+            typeFlag: TypeFlag.xGlobalHeader,
             name: 'global1',
             paxRecords: {'path': 'global1', 'mtime': '1500000000.0'},
             format: TarFormat.PAX,
           ),
           TarHeader.internal(
-            typeFlag: typeReg,
+            typeFlag: TypeFlag.reg,
             name: 'file1',
             modified: millisecondsSinceEpoch(0),
             format: TarFormat.USTAR,
           ),
           TarHeader.internal(
-            typeFlag: typeReg,
+            typeFlag: TypeFlag.reg,
             name: 'file2',
             paxRecords: {'path': 'file2'},
             modified: millisecondsSinceEpoch(0),
             format: TarFormat.PAX,
           ),
           TarHeader.internal(
-            typeFlag: typeXGlobalHeader,
+            typeFlag: TypeFlag.xGlobalHeader,
             name: 'GlobalHead.0.0',
             paxRecords: {'path': ''},
             format: TarFormat.PAX,
           ),
           TarHeader.internal(
-            typeFlag: typeReg,
+            typeFlag: TypeFlag.reg,
             name: 'file3',
             modified: millisecondsSinceEpoch(0),
             format: TarFormat.USTAR,
           ),
           TarHeader.internal(
-            typeFlag: typeReg,
+            typeFlag: TypeFlag.reg,
             name: 'file4',
             modified: millisecondsSinceEpoch(1400000000000),
             paxRecords: {'mtime': '1400000000'},
@@ -374,7 +375,7 @@ void main() async {
             groupId: 0,
             size: 14,
             modified: millisecondsSinceEpoch(1365454838000),
-            typeFlag: typeReg,
+            typeFlag: TypeFlag.reg,
             linkName: '',
             userName: 'eyefi',
             groupName: 'eyefi',
@@ -394,7 +395,7 @@ void main() async {
               groupId: 10,
               size: 5,
               modified: microsecondsSinceEpoch(1386065770448252),
-              typeFlag: 48,
+              typeFlag: TypeFlag.reg,
               userName: 'alex',
               groupName: 'wheel',
               accessed: microsecondsSinceEpoch(1389782991419875),
@@ -416,7 +417,7 @@ void main() async {
             groupId: 10,
             size: 11,
             modified: microsecondsSinceEpoch(1386065770449252),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             userName: 'alex',
             groupName: 'wheel',
             accessed: microsecondsSinceEpoch(1389782991419875),
@@ -440,7 +441,7 @@ void main() async {
             name: 'GNU2/GNU2/long-path-name',
             linkName: 'GNU4/GNU4/long-linkpath-name',
             modified: millisecondsSinceEpoch(0),
-            typeFlag: 50,
+            typeFlag: TypeFlag.symlink,
             format: TarFormat.GNU,
           )
         ],
@@ -458,7 +459,7 @@ void main() async {
             groupId: 1000,
             size: 14,
             modified: millisecondsSinceEpoch(1441973427000),
-            typeFlag: 68,
+            typeFlag: TypeFlag.vendor,
             userName: 'rawr',
             groupName: 'dsnet',
             accessed: millisecondsSinceEpoch(1441974501000),
@@ -472,7 +473,7 @@ void main() async {
             groupId: 1000,
             size: 64,
             modified: millisecondsSinceEpoch(1441973363000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             userName: 'rawr',
             groupName: 'dsnet',
             accessed: millisecondsSinceEpoch(1441974501000),
@@ -486,7 +487,7 @@ void main() async {
             groupId: 1000,
             size: 536870912,
             modified: millisecondsSinceEpoch(1441973427000),
-            typeFlag: 83,
+            typeFlag: TypeFlag.gnuSparse,
             userName: 'rawr',
             groupName: 'dsnet',
             accessed: millisecondsSinceEpoch(1441991948000),
@@ -503,7 +504,7 @@ void main() async {
             name: 'bar',
             linkName: 'PAX4/PAX4/long-linkpath-name',
             modified: millisecondsSinceEpoch(0),
-            typeFlag: 50,
+            typeFlag: TypeFlag.symlink,
             format: TarFormat.PAX,
             paxRecords: {
               'linkpath': 'PAX4/PAX4/long-linkpath-name',
@@ -523,7 +524,7 @@ void main() async {
             userId: 1000,
             groupId: 1000,
             modified: millisecondsSinceEpoch(1486082191000),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             format: TarFormat.GNU,
             userName: 'rawr',
             groupName: 'dsnet',
@@ -544,7 +545,7 @@ void main() async {
             userId: 1000,
             groupId: 1000,
             modified: millisecondsSinceEpoch(0),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             userName: '☺',
             groupName: '⚹',
             format: TarFormat.GNU,
@@ -562,7 +563,7 @@ void main() async {
             userId: 1000,
             groupId: 1000,
             modified: millisecondsSinceEpoch(0),
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             userName: 'rawr',
             groupName: 'dsnet',
             format: TarFormat.GNU,
@@ -607,7 +608,7 @@ void main() async {
           TarHeader.internal(
             name: 'file',
             mode: 420,
-            typeFlag: 48,
+            typeFlag: TypeFlag.reg,
             modified: millisecondsSinceEpoch(0),
             devMajor: 1,
             devMinor: 1,
@@ -621,7 +622,7 @@ void main() async {
         'headers': [
           TarHeader.internal(
               name: 'sparse.db',
-              typeFlag: typeGNUSparse,
+              typeFlag: TypeFlag.gnuSparse,
               size: 1000,
               modified: millisecondsSinceEpoch(0),
               format: TarFormat.GNU)
@@ -633,7 +634,7 @@ void main() async {
         'headers': [
           TarHeader.internal(
               name: 'sparse.db',
-              typeFlag: typeGNUSparse,
+              typeFlag: TypeFlag.gnuSparse,
               size: 1000,
               modified: millisecondsSinceEpoch(0),
               format: TarFormat.GNU)
@@ -645,7 +646,7 @@ void main() async {
         'headers': [
           TarHeader.internal(
               name: 'sparse.db',
-              typeFlag: typeReg,
+              typeFlag: TypeFlag.reg,
               size: 1000,
               modified: millisecondsSinceEpoch(0),
               paxRecords: {
@@ -664,7 +665,7 @@ void main() async {
         'headers': [
           TarHeader.internal(
               name: 'sparse.db',
-              typeFlag: typeReg,
+              typeFlag: TypeFlag.reg,
               size: 1000,
               modified: millisecondsSinceEpoch(0),
               paxRecords: {
@@ -681,7 +682,7 @@ void main() async {
         'file': 'trailing-slash.tar',
         'headers': [
           TarHeader.internal(
-              typeFlag: typeDir,
+              typeFlag: TypeFlag.dir,
               name: '123456789/' * 30,
               modified: millisecondsSinceEpoch(0),
               paxRecords: {

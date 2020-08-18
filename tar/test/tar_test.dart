@@ -16,7 +16,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:tar/src/constants.dart';
-import 'package:tar/src/header.dart';
+import 'package:tar/src/sparse_entry.dart';
 import 'package:tar/src/utils.dart';
 import 'package:test/test.dart';
 
