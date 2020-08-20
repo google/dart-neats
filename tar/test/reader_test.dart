@@ -1,13 +1,13 @@
 // Copyright 2020
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
+// Licensed under the Apache License, Version 2.0 (the 'License');
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
+// distributed under the License is distributed on an 'AS IS' BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -38,32 +38,32 @@ void main() async {
         'headers': [
           TarHeader.internal(
             name: 'small.txt',
-            mode: 416,
-            userId: 73025,
-            groupId: 5000,
-            size: 5,
-            modified: millisecondsSinceEpoch(1244428340000),
+            mode: 436,
+            userId: 1000,
+            groupId: 1000,
+            size: 3,
+            modified: millisecondsSinceEpoch(1597755680000),
             typeFlag: TypeFlag.reg,
-            userName: 'dsymonds',
-            groupName: 'eng',
+            userName: 'garett',
+            groupName: 'garett',
             format: TarFormat.GNU,
           ),
           TarHeader.internal(
             name: 'small2.txt',
-            mode: 416,
-            userId: 73025,
-            groupId: 5000,
-            size: 11,
-            modified: millisecondsSinceEpoch(1244436044000),
+            mode: 436,
+            userId: 1000,
+            groupId: 1000,
+            size: 8,
+            modified: millisecondsSinceEpoch(1597755958000),
             typeFlag: TypeFlag.reg,
-            userName: 'dsymonds',
-            groupName: 'eng',
+            userName: 'garett',
+            groupName: 'garett',
             format: TarFormat.GNU,
           )
         ],
         'checksums': [
-          'e38b27eaccb4391bdec553a7f3ae6b2f',
-          'c65bd2e50a56a2138bf1716f2fd56fe9',
+          'a29bdd003ef6c0c34279807341f450f2',
+          '7d4f8e1ca1dd8a7ab42dea2fed1a97a1',
         ],
       },
       {
@@ -75,26 +75,26 @@ void main() async {
             userId: 1000,
             groupId: 1000,
             size: 200,
-            modified: millisecondsSinceEpoch(1392395740000),
+            modified: millisecondsSinceEpoch(1597756151000),
             typeFlag: TypeFlag.gnuSparse,
             linkName: '',
-            userName: 'david',
-            groupName: 'david',
+            userName: 'jonas',
+            groupName: 'jonas',
             devMajor: 0,
             devMinor: 0,
             format: TarFormat.GNU,
           ),
           TarHeader.internal(
-            name: 'sparse-posix-0.0',
+            name: 'sparse-posix-v-0-0',
             mode: 420,
             userId: 1000,
             groupId: 1000,
             size: 200,
-            modified: millisecondsSinceEpoch(1392342187000),
+            modified: millisecondsSinceEpoch(1597756151000),
             typeFlag: TypeFlag.reg,
             linkName: '',
-            userName: 'david',
-            groupName: 'david',
+            userName: 'jonas',
+            groupName: 'jonas',
             devMajor: 0,
             devMinor: 0,
             paxRecords: {
@@ -106,16 +106,16 @@ void main() async {
             format: TarFormat.PAX,
           ),
           TarHeader.internal(
-            name: 'sparse-posix-0.1',
+            name: 'sparse-posix-0-1',
             mode: 420,
             userId: 1000,
             groupId: 1000,
             size: 200,
-            modified: millisecondsSinceEpoch(1392340456000),
+            modified: millisecondsSinceEpoch(1597756151000),
             typeFlag: TypeFlag.reg,
             linkName: '',
-            userName: 'david',
-            groupName: 'david',
+            userName: 'jonas',
+            groupName: 'jonas',
             devMajor: 0,
             devMinor: 0,
             paxRecords: {
@@ -123,28 +123,28 @@ void main() async {
               'GNU.sparse.numblocks': '95',
               'GNU.sparse.map':
                   '1,1,3,1,5,1,7,1,9,1,11,1,13,1,15,1,17,1,19,1,21,1,23,1,25,1,27,1,29,1,31,1,33,1,35,1,37,1,39,1,41,1,43,1,45,1,47,1,49,1,51,1,53,1,55,1,57,1,59,1,61,1,63,1,65,1,67,1,69,1,71,1,73,1,75,1,77,1,79,1,81,1,83,1,85,1,87,1,89,1,91,1,93,1,95,1,97,1,99,1,101,1,103,1,105,1,107,1,109,1,111,1,113,1,115,1,117,1,119,1,121,1,123,1,125,1,127,1,129,1,131,1,133,1,135,1,137,1,139,1,141,1,143,1,145,1,147,1,149,1,151,1,153,1,155,1,157,1,159,1,161,1,163,1,165,1,167,1,169,1,171,1,173,1,175,1,177,1,179,1,181,1,183,1,185,1,187,1,189,1',
-              'GNU.sparse.name': 'sparse-posix-0.1',
+              'GNU.sparse.name': 'sparse-posix-0-1',
             },
             format: TarFormat.PAX,
           ),
           TarHeader.internal(
-            name: 'sparse-posix-1.0',
+            name: 'sparse-posix-1-0',
             mode: 420,
             userId: 1000,
             groupId: 1000,
             size: 200,
-            modified: millisecondsSinceEpoch(1392337404000),
+            modified: millisecondsSinceEpoch(1597756151000),
             typeFlag: TypeFlag.reg,
             linkName: '',
-            userName: 'david',
-            groupName: 'david',
+            userName: 'jonas',
+            groupName: 'jonas',
             devMajor: 0,
             devMinor: 0,
             paxRecords: {
               'GNU.sparse.major': '1',
               'GNU.sparse.minor': '0',
               'GNU.sparse.realsize': '200',
-              'GNU.sparse.name': 'sparse-posix-1.0',
+              'GNU.sparse.name': 'sparse-posix-1-0',
             },
             format: TarFormat.PAX,
           ),
@@ -154,21 +154,21 @@ void main() async {
             userId: 1000,
             groupId: 1000,
             size: 4,
-            modified: millisecondsSinceEpoch(1392398319000),
+            modified: millisecondsSinceEpoch(1597756151000),
             typeFlag: TypeFlag.reg,
             linkName: '',
-            userName: 'david',
-            groupName: 'david',
+            userName: 'jonas',
+            groupName: 'jonas',
             devMajor: 0,
             devMinor: 0,
             format: TarFormat.GNU,
           )
         ],
         'checksums': [
-          '6f53234398c2449fe67c1812d993012f',
-          '6f53234398c2449fe67c1812d993012f',
-          '6f53234398c2449fe67c1812d993012f',
-          '6f53234398c2449fe67c1812d993012f',
+          '6641dd43d9f1b3a839162775eccb25a0',
+          '6641dd43d9f1b3a839162775eccb25a0',
+          '6641dd43d9f1b3a839162775eccb25a0',
+          '6641dd43d9f1b3a839162775eccb25a0',
           'b0061974914468de549a2af8ced10316',
         ],
       },
@@ -178,28 +178,28 @@ void main() async {
           TarHeader.internal(
             name: 'small.txt',
             mode: 416,
-            userId: 73025,
-            groupId: 5000,
-            size: 5,
-            modified: millisecondsSinceEpoch(1244592783000),
+            userId: 1000,
+            groupId: 1000,
+            size: 3,
+            modified: millisecondsSinceEpoch(1597755680000),
             typeFlag: TypeFlag.reg,
-            userName: 'dsymonds',
-            groupName: 'eng',
-            accessed: millisecondsSinceEpoch(1244592783000),
-            changed: millisecondsSinceEpoch(1244592783000),
+            userName: 'garett',
+            groupName: 'garett',
+            accessed: millisecondsSinceEpoch(1597755680000),
+            changed: millisecondsSinceEpoch(1597755680000),
           ),
           TarHeader.internal(
             name: 'small2.txt',
             mode: 416,
-            userId: 73025,
-            groupId: 5000,
-            size: 11,
-            modified: millisecondsSinceEpoch(1244592783000),
+            userId: 1000,
+            groupId: 1000,
+            size: 7,
+            modified: millisecondsSinceEpoch(1597755958000),
             typeFlag: TypeFlag.reg,
-            userName: 'dsymonds',
-            groupName: 'eng',
-            accessed: millisecondsSinceEpoch(1244592783000),
-            changed: millisecondsSinceEpoch(1244592783000),
+            userName: 'garett',
+            groupName: 'garett',
+            accessed: millisecondsSinceEpoch(1597755958000),
+            changed: millisecondsSinceEpoch(1597755958000),
           )
         ]
       },
@@ -208,22 +208,49 @@ void main() async {
         'headers': [
           TarHeader.internal(
             name: 'small.txt',
-            mode: 292,
-            userId: 73025,
-            groupId: 5000,
-            size: 5,
-            modified: millisecondsSinceEpoch(1244593104000),
+            mode: 436,
+            userId: 1000,
+            groupId: 1000,
+            size: 3,
+            modified: millisecondsSinceEpoch(1597755680000),
             typeFlag: TypeFlag.reg,
           ),
           TarHeader.internal(
             name: 'small2.txt',
-            mode: 292,
-            userId: 73025,
-            groupId: 5000,
-            size: 11,
-            modified: millisecondsSinceEpoch(1244593104000),
+            mode: 436,
+            userId: 1000,
+            groupId: 1000,
+            size: 8,
+            modified: millisecondsSinceEpoch(1597755958000),
             typeFlag: TypeFlag.reg,
           )
+        ],
+      },
+      {
+        'file': 'ustar.tar',
+        'headers': [
+          TarHeader.internal(
+              name: 'small.txt',
+              mode: 436,
+              userId: 1000,
+              groupId: 1000,
+              size: 3,
+              modified: millisecondsSinceEpoch(1597755680000),
+              typeFlag: TypeFlag.reg,
+              userName: 'garett',
+              groupName: 'garett',
+              format: TarFormat.USTAR),
+          TarHeader.internal(
+              name: 'small2.txt',
+              mode: 436,
+              userId: 1000,
+              groupId: 1000,
+              size: 8,
+              modified: millisecondsSinceEpoch(1597755958000),
+              typeFlag: TypeFlag.reg,
+              userName: 'garett',
+              groupName: 'garett',
+              format: TarFormat.USTAR)
         ],
       },
       {
@@ -235,19 +262,19 @@ void main() async {
             mode: 436,
             userId: 1000,
             groupId: 1000,
-            userName: 'shane',
-            groupName: 'shane',
+            userName: 'jonas',
+            groupName: 'fj',
             size: 7,
-            modified: microsecondsSinceEpoch(1350244992023960),
-            changed: microsecondsSinceEpoch(1350244992023960),
-            accessed: microsecondsSinceEpoch(1350244992023960),
+            modified: microsecondsSinceEpoch(1597823492427388),
+            changed: microsecondsSinceEpoch(1597823492427388),
+            accessed: microsecondsSinceEpoch(1597823492427388),
             typeFlag: TypeFlag.reg,
             paxRecords: {
               'path':
                   'a/123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100',
-              'mtime': '1350244992.023960108',
-              'atime': '1350244992.023960108',
-              'ctime': '1350244992.023960108',
+              'mtime': '1597823492.427388865',
+              'atime': '1597823492.427388865',
+              'ctime': '1597823492.427388865',
             },
             format: TarFormat.PAX,
           ),
@@ -256,54 +283,56 @@ void main() async {
             mode: 511,
             userId: 1000,
             groupId: 1000,
-            userName: 'shane',
-            groupName: 'shane',
+            userName: 'garett',
+            groupName: 'tok',
             size: 0,
-            modified: microsecondsSinceEpoch(1350266320910238),
-            changed: microsecondsSinceEpoch(1350266320910238),
-            accessed: microsecondsSinceEpoch(1350266320910238),
+            modified: microsecondsSinceEpoch(1597823492427388),
+            changed: microsecondsSinceEpoch(1597823492427388),
+            accessed: microsecondsSinceEpoch(1597823492427388),
             typeFlag: TypeFlag.symlink,
             linkName:
                 '123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100',
             paxRecords: {
               'linkpath':
                   '123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100',
-              'mtime': '1350266320.910238425',
-              'atime': '1350266320.910238425',
-              'ctime': '1350266320.910238425',
+              'mtime': '1597823492.427388865',
+              'atime': '1597823492.427388865',
+              'ctime': '1597823492.427388865',
             },
             format: TarFormat.PAX,
           ),
         ]
       },
       {
-        'file': 'pax-bad-hdr-file.tar',
+        /// PAX record with bad record length.
+        'file': 'pax-bad-record-length.tar',
         'error': true,
       },
       {
-        'file': 'pax-bad-mtime-file.tar',
+        /// PAX record with non-numeric mtime
+        'file': 'pax-bad-mtime.tar',
         'error': true,
       },
       {
         'file': 'pax-pos-size-file.tar',
         'headers': [
           TarHeader.internal(
-              name: 'foo',
+              name: 'bar',
               mode: 416,
-              userId: 319973,
-              groupId: 5000,
+              userId: 143077,
+              groupId: 1000,
               size: 999,
-              modified: millisecondsSinceEpoch(1442282516000),
+              modified: millisecondsSinceEpoch(1597755680000),
               typeFlag: TypeFlag.reg,
-              userName: 'joetsai',
-              groupName: 'eng',
+              userName: 'jonasfj',
+              groupName: 'jfj',
               paxRecords: {
                 'size': '000000000000000000000999',
               },
               format: TarFormat.PAX)
         ],
         'checksums': [
-          '0afb597b283fe61b5d4879669a350556',
+          'ae66e6e26ca20bd0ee002cc178af7293',
         ],
       },
       {
@@ -311,13 +340,13 @@ void main() async {
         'headers': [
           TarHeader.internal(
               typeFlag: TypeFlag.reg,
-              name: 'file',
-              userName: 'long' * 10,
+              name: 'pax-records',
+              mode: 416,
+              userName: 'walnut',
               modified: millisecondsSinceEpoch(0),
               paxRecords: {
-                'GOLANG.pkg': 'tar',
+                'pub.dev': 'package:tar',
                 'comment': 'Hello, 世界',
-                'uname': 'long' * 10,
               },
               format: TarFormat.PAX)
         ],
@@ -328,57 +357,72 @@ void main() async {
           TarHeader.internal(
             typeFlag: TypeFlag.xGlobalHeader,
             name: 'global1',
-            paxRecords: {'path': 'global1', 'mtime': '1500000000.0'},
+            paxRecords: {'path': 'global1', 'mtime': '1597756656.2'},
             format: TarFormat.PAX,
           ),
           TarHeader.internal(
             typeFlag: TypeFlag.reg,
-            name: 'file1',
+            name: 'file-1',
             modified: millisecondsSinceEpoch(0),
             format: TarFormat.USTAR,
           ),
           TarHeader.internal(
             typeFlag: TypeFlag.reg,
-            name: 'file2',
-            paxRecords: {'path': 'file2'},
+            name: 'file-2',
+            paxRecords: {'path': 'file-2'},
             modified: millisecondsSinceEpoch(0),
             format: TarFormat.PAX,
           ),
           TarHeader.internal(
             typeFlag: TypeFlag.xGlobalHeader,
-            name: 'GlobalHead.0.0',
+            name: 'global-header',
             paxRecords: {'path': ''},
             format: TarFormat.PAX,
           ),
           TarHeader.internal(
             typeFlag: TypeFlag.reg,
-            name: 'file3',
+            name: 'file-3',
             modified: millisecondsSinceEpoch(0),
             format: TarFormat.USTAR,
           ),
           TarHeader.internal(
             typeFlag: TypeFlag.reg,
-            name: 'file4',
-            modified: millisecondsSinceEpoch(1400000000000),
-            paxRecords: {'mtime': '1400000000'},
+            name: 'file-4',
+            modified: millisecondsSinceEpoch(1597756750000),
+            paxRecords: {'mtime': '1597756750'},
             format: TarFormat.PAX,
           )
         ]
       },
       {
-        'file': 'nil-uid.tar',
+        'file': 'nil-gid-uid.tar',
         'headers': [
           TarHeader.internal(
-            name: 'P1050238.JPG.log',
+            name: 'nil-gid.txt',
             mode: 436,
-            userId: 0,
+            userId: 1000,
             groupId: 0,
-            size: 14,
-            modified: millisecondsSinceEpoch(1365454838000),
+            size: 3,
+            modified: millisecondsSinceEpoch(1597755680000),
             typeFlag: TypeFlag.reg,
             linkName: '',
-            userName: 'eyefi',
-            groupName: 'eyefi',
+            userName: 'garett',
+            groupName: 'garett',
+            devMajor: 0,
+            devMinor: 0,
+            format: TarFormat.GNU,
+          ),
+          TarHeader.internal(
+            name: 'nil-uid.txt',
+            mode: 436,
+            userId: 0,
+            groupId: 1000,
+            size: 7,
+            modified: millisecondsSinceEpoch(1597755958000),
+            typeFlag: TypeFlag.reg,
+            linkName: '',
+            userName: 'garett',
+            groupName: 'garett',
             devMajor: 0,
             devMinor: 0,
             format: TarFormat.GNU,
@@ -394,17 +438,17 @@ void main() async {
               userId: 1000,
               groupId: 10,
               size: 5,
-              modified: microsecondsSinceEpoch(1386065770448252),
+              modified: microsecondsSinceEpoch(1597823492427388),
               typeFlag: TypeFlag.reg,
-              userName: 'alex',
-              groupName: 'wheel',
-              accessed: microsecondsSinceEpoch(1389782991419875),
-              changed: microsecondsSinceEpoch(1389782956794414),
+              userName: 'garett',
+              groupName: 'tok',
+              accessed: microsecondsSinceEpoch(1597823492427388),
+              changed: microsecondsSinceEpoch(1597823492427388),
               format: TarFormat.PAX,
               paxRecords: {
-                'mtime': '1386065770.44825232',
-                'atime': '1389782991.41987522',
-                'ctime': '1389782956.794414986',
+                'mtime': '1597823492.42738865',
+                'atime': '1597823492.42738865',
+                'ctime': '1597823492.427388924',
                 'SCHILY.xattr.user.key': 'value',
                 'SCHILY.xattr.user.key2': 'value2',
                 'SCHILY.xattr.security.selinux':
@@ -416,17 +460,17 @@ void main() async {
             userId: 1000,
             groupId: 10,
             size: 11,
-            modified: microsecondsSinceEpoch(1386065770449252),
+            modified: microsecondsSinceEpoch(1597823492427388),
             typeFlag: TypeFlag.reg,
-            userName: 'alex',
-            groupName: 'wheel',
-            accessed: microsecondsSinceEpoch(1389782991419875),
-            changed: microsecondsSinceEpoch(1386065770449252),
+            userName: 'garett',
+            groupName: 'tok',
+            accessed: microsecondsSinceEpoch(1597823492427388),
+            changed: microsecondsSinceEpoch(1597823492427388),
             format: TarFormat.PAX,
             paxRecords: {
-              'mtime': '1386065770.449252304',
-              'atime': '1389782991.41987522',
-              'ctime': '1386065770.449252304',
+              'mtime': '1597823492.427388865',
+              'atime': '1597823492.42738865',
+              'ctime': '1597823492.427388865',
               'SCHILY.xattr.security.selinux':
                   'unconfined_u:object_r:default_t:s0\x00',
             },
@@ -438,9 +482,11 @@ void main() async {
         'file': 'gnu-multi-hdrs.tar',
         'headers': [
           TarHeader.internal(
-            name: 'GNU2/GNU2/long-path-name',
-            linkName: 'GNU4/GNU4/long-linkpath-name',
-            modified: millisecondsSinceEpoch(0),
+            name: 'long-path-name',
+            linkName: 'long-linkpath-name',
+            userId: 1000,
+            groupId: 1000,
+            modified: millisecondsSinceEpoch(1597756829000),
             typeFlag: TypeFlag.symlink,
             format: TarFormat.GNU,
           )
@@ -448,50 +494,52 @@ void main() async {
       },
       {
         /// GNU tar 'file' with atime and ctime fields set.
+        /// Old GNU incremental backup.
+        ///
         /// Created with the GNU tar v1.27.1.
         ///	tar --incremental -S -cvf gnu-incremental.tar test2
         'file': 'gnu-incremental.tar',
         'headers': [
           TarHeader.internal(
-            name: 'test2/',
+            name: 'incremental/',
             mode: 16877,
             userId: 1000,
             groupId: 1000,
             size: 14,
-            modified: millisecondsSinceEpoch(1441973427000),
+            modified: millisecondsSinceEpoch(1597755680000),
             typeFlag: TypeFlag.vendor,
-            userName: 'rawr',
-            groupName: 'dsnet',
-            accessed: millisecondsSinceEpoch(1441974501000),
-            changed: millisecondsSinceEpoch(1441973436000),
+            userName: 'fizz',
+            groupName: 'foobar',
+            accessed: millisecondsSinceEpoch(1597755680000),
+            changed: millisecondsSinceEpoch(1597755033000),
             format: TarFormat.GNU,
           ),
           TarHeader.internal(
-            name: 'test2/foo',
+            name: 'incremental/foo',
             mode: 33188,
             userId: 1000,
             groupId: 1000,
             size: 64,
-            modified: millisecondsSinceEpoch(1441973363000),
+            modified: millisecondsSinceEpoch(1597755688000),
             typeFlag: TypeFlag.reg,
-            userName: 'rawr',
-            groupName: 'dsnet',
-            accessed: millisecondsSinceEpoch(1441974501000),
-            changed: millisecondsSinceEpoch(1441973436000),
+            userName: 'fizz',
+            groupName: 'foobar',
+            accessed: millisecondsSinceEpoch(1597759641000),
+            changed: millisecondsSinceEpoch(1597755793000),
             format: TarFormat.GNU,
           ),
           TarHeader.internal(
-            name: 'test2/sparse',
+            name: 'incremental/sparse',
             mode: 33188,
             userId: 1000,
             groupId: 1000,
             size: 536870912,
-            modified: millisecondsSinceEpoch(1441973427000),
+            modified: millisecondsSinceEpoch(1597755776000),
             typeFlag: TypeFlag.gnuSparse,
-            userName: 'rawr',
-            groupName: 'dsnet',
-            accessed: millisecondsSinceEpoch(1441991948000),
-            changed: millisecondsSinceEpoch(1441973436000),
+            userName: 'fizz',
+            groupName: 'foobar',
+            accessed: millisecondsSinceEpoch(1597755703000),
+            changed: millisecondsSinceEpoch(1597755602000),
             format: TarFormat.GNU,
           )
         ]
@@ -501,13 +549,13 @@ void main() async {
         'file': 'pax-multi-hdrs.tar',
         'headers': [
           TarHeader.internal(
-            name: 'bar',
-            linkName: 'PAX4/PAX4/long-linkpath-name',
+            name: 'baz',
+            linkName: 'bzzt/bzzt/bzzt/bzzt/bzzt/baz',
             modified: millisecondsSinceEpoch(0),
             typeFlag: TypeFlag.symlink,
             format: TarFormat.PAX,
             paxRecords: {
-              'linkpath': 'PAX4/PAX4/long-linkpath-name',
+              'linkpath': 'bzzt/bzzt/bzzt/bzzt/bzzt/baz',
             },
           )
         ]
@@ -519,15 +567,15 @@ void main() async {
         'file': 'gnu-long-nul.tar',
         'headers': [
           TarHeader.internal(
-            name: '0123456789',
+            name: '9876543210',
             mode: 420,
             userId: 1000,
             groupId: 1000,
-            modified: millisecondsSinceEpoch(1486082191000),
+            modified: millisecondsSinceEpoch(1597755682000),
             typeFlag: TypeFlag.reg,
             format: TarFormat.GNU,
-            userName: 'rawr',
-            groupName: 'dsnet',
+            userName: 'jensen',
+            groupName: 'jensen',
           )
         ]
       },
@@ -540,32 +588,30 @@ void main() async {
         'file': 'gnu-utf8.tar',
         'headers': [
           TarHeader.internal(
-            name: '☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹☺☻☹',
+            name: '🧸',
             mode: 420,
-            userId: 1000,
-            groupId: 1000,
+            userId: 525,
+            groupId: 600,
             modified: millisecondsSinceEpoch(0),
             typeFlag: TypeFlag.reg,
-            userName: '☺',
-            groupName: '⚹',
+            userName: '🐻',
+            groupName: '🥭',
             format: TarFormat.GNU,
           )
         ]
       },
       {
-        /// This archive was generated by Writer but is readable by both
-        /// GNU and BSD tar utilities.
-        'file': 'gnu-not-utf8.tar',
+        'file': 'gnu-non-utf8-name.tar',
         'headers': [
           TarHeader.internal(
-            name: 'hi\x80\x81\x82\x83bye',
-            mode: 420,
-            userId: 1000,
-            groupId: 1000,
+            name: 'pub\x80\x81\x82\x83dev',
+            mode: 422,
+            userId: 1234,
+            groupId: 5678,
             modified: millisecondsSinceEpoch(0),
             typeFlag: TypeFlag.reg,
-            userName: 'rawr',
-            groupName: 'dsnet',
+            userName: 'walnut',
+            groupName: 'dust',
             format: TarFormat.GNU,
           )
         ]
@@ -590,26 +636,31 @@ void main() async {
         'error': true,
       },
       {
-        'file': 'issue10968.tar',
+        /// Malformed sparse file
+        'file': 'malformed-sparse-file.tar',
         'error': true,
       },
       {
-        'file': 'issue11169.tar',
+        /// PAX records that do not have a new line at the end.
+        'file': 'invalid-pax-headers.tar',
         'error': true,
       },
       {
-        'file': 'issue12435.tar',
+        /// Invalid user id
+        'file': 'invalid-uid.tar',
         'error': true,
       },
       {
         /// USTAR archive with a regular entry with non-zero device numbers.
-        'file': 'ustar-file-devs.tar',
+        'file': 'ustar-nonzero-device-numbers.tar',
         'headers': [
           TarHeader.internal(
             name: 'file',
             mode: 420,
             typeFlag: TypeFlag.reg,
             modified: millisecondsSinceEpoch(0),
+            userName: 'Jonas',
+            groupName: 'Google',
             devMajor: 1,
             devMinor: 1,
             format: TarFormat.USTAR,
@@ -621,10 +672,12 @@ void main() async {
         'file': 'gnu-nil-sparse-data.tar',
         'headers': [
           TarHeader.internal(
-              name: 'sparse.db',
+              name: 'nil-sparse-data',
               typeFlag: TypeFlag.gnuSparse,
+              userId: 1000,
+              groupId: 1000,
               size: 1000,
-              modified: millisecondsSinceEpoch(0),
+              modified: millisecondsSinceEpoch(1597756076000),
               format: TarFormat.GNU)
         ],
       },
@@ -633,10 +686,12 @@ void main() async {
         'file': 'gnu-nil-sparse-hole.tar',
         'headers': [
           TarHeader.internal(
-              name: 'sparse.db',
+              name: 'nil-sparse-hole',
               typeFlag: TypeFlag.gnuSparse,
               size: 1000,
-              modified: millisecondsSinceEpoch(0),
+              userId: 1000,
+              groupId: 1000,
+              modified: millisecondsSinceEpoch(1597756079000),
               format: TarFormat.GNU)
         ]
       },
@@ -645,16 +700,18 @@ void main() async {
         'file': 'pax-nil-sparse-data.tar',
         'headers': [
           TarHeader.internal(
-              name: 'sparse.db',
+              name: 'sparse',
               typeFlag: TypeFlag.reg,
               size: 1000,
-              modified: millisecondsSinceEpoch(0),
+              userId: 1000,
+              groupId: 1000,
+              modified: millisecondsSinceEpoch(1597756076000),
               paxRecords: {
                 'size': '1512',
                 'GNU.sparse.major': '1',
                 'GNU.sparse.minor': '0',
                 'GNU.sparse.realsize': '1000',
-                'GNU.sparse.name': 'sparse.db',
+                'GNU.sparse.name': 'sparse',
               },
               format: TarFormat.PAX)
         ]
@@ -664,16 +721,18 @@ void main() async {
         'file': 'pax-nil-sparse-hole.tar',
         'headers': [
           TarHeader.internal(
-              name: 'sparse.db',
+              name: 'sparse.txt',
               typeFlag: TypeFlag.reg,
               size: 1000,
-              modified: millisecondsSinceEpoch(0),
+              userId: 1000,
+              groupId: 1000,
+              modified: millisecondsSinceEpoch(1597756077000),
               paxRecords: {
                 'size': '512',
                 'GNU.sparse.major': '1',
                 'GNU.sparse.minor': '0',
                 'GNU.sparse.realsize': '1000',
-                'GNU.sparse.name': 'sparse.db',
+                'GNU.sparse.name': 'sparse.txt',
               },
               format: TarFormat.PAX)
         ]
@@ -683,10 +742,10 @@ void main() async {
         'headers': [
           TarHeader.internal(
               typeFlag: TypeFlag.dir,
-              name: '123456789/' * 30,
+              name: '987654321/' * 30,
               modified: millisecondsSinceEpoch(0),
               paxRecords: {
-                'path': '123456789/' * 30,
+                'path': '987654321/' * 30,
               },
               format: TarFormat.PAX)
         ]
@@ -694,8 +753,8 @@ void main() async {
     ];
 
     for (var i = 0; i < tests.length; i++) {
-      test('file $i', () async {
-        final testInputs = tests[i];
+      final testInputs = tests[i];
+      test('${testInputs['file']}', () async {
         final expectedHeaders = testInputs['headers'] as List<TarHeader>;
 
         final testFileUri = testDirectoryUri.resolve(testInputs['file']);
@@ -712,7 +771,7 @@ void main() async {
             await tarReader.next();
           }, throwsTarHeaderException);
         } else {
-          final checksums = testInputs['checksum'] as List<String>;
+          final checksums = testInputs['checksums'] as List<String>;
 
           for (var i = 0; i < expectedHeaders.length; i++) {
             expect(await tarReader.next(), true);
@@ -737,45 +796,45 @@ void main() async {
       {
         'file': 'gnu.tar',
         'cases': [
-          'Kilts',
-          'Google.com\n',
+          'Pub',
+          'Pub.dev\n',
         ]
       },
       {
         'file': 'sparse-formats.tar',
         'cases': [
-          '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00!\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-          '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00!\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-          '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00!\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-          '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o'
-              '\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G\x00o\x00G'
-              '\x00o\x00G\x00o\x00!\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+          '\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D'
+              '\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a'
+              '\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r'
+              '\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t'
+              '\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D'
+              '\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a'
+              '\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00F\x00l\x00u'
+              '\x00t\x00t\x00e\x00r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+          '\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D'
+              '\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a'
+              '\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r'
+              '\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t'
+              '\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D'
+              '\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a'
+              '\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00F\x00l\x00u'
+              '\x00t\x00t\x00e\x00r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+          '\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D'
+              '\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a'
+              '\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r'
+              '\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t'
+              '\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D'
+              '\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a'
+              '\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00F\x00l\x00u'
+              '\x00t\x00t\x00e\x00r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+          '\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D'
+              '\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a'
+              '\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r'
+              '\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t'
+              '\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D'
+              '\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a'
+              '\x00r\x00t\x00D\x00a\x00r\x00t\x00D\x00a\x00r\x00t\x00F\x00l\x00u'
+              '\x00t\x00t\x00e\x00r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
           'end\n'
         ]
       }
