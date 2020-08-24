@@ -72,6 +72,64 @@ c: 3
 '''));
     });
 
+    test('empty value', () {
+      final doc = YamlEditor('''
+a: 1
+b: 
+c: 3
+''');
+      doc.remove(['b']);
+      expect(doc.toString(), equals('''
+a: 1
+c: 3
+'''));
+    });
+
+    test('empty value (2)', () {
+      final doc = YamlEditor('''
+- a: 1
+  b: 
+  c: 3
+''');
+      doc.remove([0, 'b']);
+      expect(doc.toString(), equals('''
+- a: 1
+  c: 3
+'''));
+    });
+
+    test('empty value (3)', () {
+      final doc = YamlEditor('''
+- a: 1
+  b: 
+
+  c: 3
+''');
+      doc.remove([0, 'b']);
+      expect(doc.toString(), equals('''
+- a: 1
+
+  c: 3
+'''));
+    });
+
+    test('preserves comments', () {
+      final doc = YamlEditor('''
+a: 1 # preserved 1
+# preserved 2
+b: 2
+# preserved 3
+c: 3 # preserved 4
+''');
+      doc.remove(['b']);
+      expect(doc.toString(), equals('''
+a: 1 # preserved 1
+# preserved 2
+# preserved 3
+c: 3 # preserved 4
+'''));
+    });
+
     test('final element in map', () {
       final doc = YamlEditor('''
 a: 1
@@ -138,46 +196,6 @@ c: 3
     });
   });
 
-  group('block list', () {
-    test('last element should return flow empty list', () {
-      final doc = YamlEditor('''
-- 0
-''');
-      doc.remove([0]);
-      expect(doc.toString(), equals('''
-[]
-'''));
-    });
-
-    test('last element should return flow empty list (2)', () {
-      final doc = YamlEditor('''
-a: [1]
-b: [3]
-''');
-      doc.remove(['a', 0]);
-      expect(doc.toString(), equals('''
-a: []
-b: [3]
-'''));
-    });
-
-    test('last element should return flow empty list (3)', () {
-      final doc = YamlEditor('''
-a: 
-  - 1
-b: 
-  - 3
-''');
-      doc.remove(['a', 0]);
-      expect(doc.toString(), equals('''
-a: 
-  []
-b: 
-  - 3
-'''));
-    });
-  });
-
   group('flow map', () {
     test('(1)', () {
       final doc = YamlEditor('{a: 1, b: 2, c: 3}');
@@ -204,6 +222,12 @@ b:
       expect(doc.toString(), equals('{"{}[],": {"{}[],": 1, "}{[],": 3}}'));
     });
 
+    test('empty value', () {
+      final doc = YamlEditor('{a: 1, b:, c: 3}');
+      doc.remove(['b']);
+      expect(doc.toString(), equals('{a: 1, c: 3}'));
+    });
+
     test('nested flow map ', () {
       final doc = YamlEditor('{a: 1, b: {d: 4, e: 5}, c: 3}');
       doc.remove(['b', 'd']);
@@ -223,6 +247,59 @@ b:
   });
 
   group('block list', () {
+    test('empty value', () {
+      final doc = YamlEditor('''
+- 0
+- 
+- 2
+''');
+      doc.remove([1]);
+      expect(doc.toString(), equals('''
+- 0
+- 2
+'''));
+    });
+
+    test('last element should return flow empty list', () {
+      final doc = YamlEditor('''
+- 0
+''');
+      doc.remove([0]);
+      expect(doc.toString(), equals('''
+[]
+'''));
+    });
+
+    test('last element should return flow empty list (2)', () {
+      final doc = YamlEditor('''
+a: 
+  - 1
+b: [3]
+''');
+      doc.remove(['a', 0]);
+      expect(doc.toString(), equals('''
+a: 
+  []
+b: [3]
+'''));
+    });
+
+    test('last element should return flow empty list (3)', () {
+      final doc = YamlEditor('''
+a: 
+  - 1
+b: 
+  - 3
+''');
+      doc.remove(['a', 0]);
+      expect(doc.toString(), equals('''
+a: 
+  []
+b: 
+  - 3
+'''));
+    });
+
     test('(1) ', () {
       final doc = YamlEditor('''
 - 0
@@ -285,21 +362,25 @@ b:
 
     test('with comments', () {
       final doc = YamlEditor('''
-- 0
-- 1 # comments
-- 2
+- 0 # comment 0
+# comment 1
+- 1 # comment 2
+# comment 3
+- 2 # comment 4
 - 3
 ''');
       doc.remove([1]);
       expect(doc.toString(), equals('''
-- 0
-- 2
+- 0 # comment 0
+# comment 1
+# comment 3
+- 2 # comment 4
 - 3
 '''));
       expectYamlBuilderValue(doc, [0, 2, 3]);
     });
 
-    test('nested', () {
+    test('nested list', () {
       final doc = YamlEditor('''
 - - - 0
     - 1
@@ -315,7 +396,7 @@ b:
       ]);
     });
 
-    test('nested list', () {
+    test('nested list (2)', () {
       final doc = YamlEditor('''
 - - 0
   - 1
@@ -328,7 +409,7 @@ b:
       expectYamlBuilderValue(doc, [2]);
     });
 
-    test('nested list (2)', () {
+    test('nested list (3)', () {
       final doc = YamlEditor('''
 - - 0
   - 1
@@ -345,7 +426,7 @@ b:
       ]);
     });
 
-    test('nested list (3)', () {
+    test('nested list (4)', () {
       final doc = YamlEditor('''
 -
   - - 0
@@ -365,6 +446,41 @@ b:
         ]
       ]);
     });
+
+    test('nested list (5)', () {
+      final doc = YamlEditor('''
+- - 0
+  - 
+    1
+''');
+      doc.remove([0, 0]);
+      expect(doc.toString(), equals('''
+- - 
+    1
+'''));
+      expectYamlBuilderValue(doc, [
+        [1]
+      ]);
+    });
+
+    test('nested list (6)', () {
+      final doc = YamlEditor('''
+- - 0 # -
+  # -
+  - 
+    1
+''');
+      doc.remove([0, 0]);
+      expect(doc.toString(), equals('''
+-   # -
+  - 
+    1
+'''));
+      expectYamlBuilderValue(doc, [
+        [1]
+      ]);
+    });
+
     test('nested map', () {
       final doc = YamlEditor('''
 - - a: b

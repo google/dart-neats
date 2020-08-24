@@ -29,13 +29,13 @@ SourceEdit updateInList(
   RangeError.checkValueInInterval(index, 0, list.length - 1);
 
   final currValue = list.nodes[index];
-  final offset = currValue.span.start.offset;
+  var offset = currValue.span.start.offset;
   final yaml = yamlEdit.toString();
   String valueString;
 
   /// We do not use [_formatNewBlock] since we want to only replace the contents
   /// of this node while preserving comments/whitespace, while [_formatNewBlock]
-  /// produces a string represnetation of a new node.
+  /// produces a string representation of a new node.
   if (list.style == CollectionStyle.BLOCK) {
     final listIndentation = getListIndentation(yaml, list);
     final indentation = listIndentation + getIndentation(yamlEdit);
@@ -55,7 +55,12 @@ SourceEdit updateInList(
       valueString += lineEnding;
     }
 
-    final end = getContentSensitiveEnd(currValue);
+    var end = getContentSensitiveEnd(currValue);
+    if (end <= offset) {
+      offset++;
+      end = offset;
+      valueString = ' ' + valueString;
+    }
 
     return SourceEdit(offset, end - offset, valueString);
   } else {
@@ -243,11 +248,12 @@ SourceEdit _removeFromBlockList(
   ArgumentError.checkNotNull(list, 'list');
   RangeError.checkValueInInterval(index, 0, list.length - 1);
 
+  var end = getContentSensitiveEnd(nodeToRemove);
+
   /// If we are removing the last element in a block list, convert it into a
   /// flow empty list.
   if (list.length == 1) {
     final start = list.span.start.offset;
-    final end = getContentSensitiveEnd(nodeToRemove);
 
     return SourceEdit(start, end - start, '[]');
   }
@@ -255,26 +261,53 @@ SourceEdit _removeFromBlockList(
   final yaml = yamlEdit.toString();
   final span = nodeToRemove.span;
 
-  /// The general removal strategy is to remove everything that starts from
-  /// [nodeToRemove]'s dash to the next node's dash.
+  /// Adjust the end to clear the new line after the end too.
   ///
+  /// We do this because we suspect that our users will want the inline
+  /// comments to disappear too.
+  final nextNewLine = yaml.indexOf('\n', end);
+  if (nextNewLine != -1) {
+    end = nextNewLine + 1;
+  }
+
+  /// If the value is empty
+  if (span.length == 0) {
+    var start = span.start.offset;
+    return SourceEdit(start, end - start, '');
+  }
+
   /// -1 accounts for the fact that the content can start with a dash
   var start = yaml.lastIndexOf('-', span.start.offset - 1);
-  var end = yaml.lastIndexOf('\n', list.span.end.offset) + 1;
 
-  if (index < list.length - 1) {
-    final nextNode = list.nodes[index + 1];
-    end = yaml.lastIndexOf('-', nextNode.span.start.offset - 1);
-  } else {
-    /// If there is a possibility that there is a `-` or `\n` before the node
-    if (start > 0) {
-      final lastHyphen = yaml.lastIndexOf('-', start - 1);
-      final lastNewLine = yaml.lastIndexOf('\n', start - 1);
-      if (lastHyphen > lastNewLine) {
-        start = lastHyphen + 2;
-      } else if (lastNewLine > lastHyphen) {
-        start = lastNewLine + 1;
+  /// Check if there is a `-` before the node
+  if (start > 0) {
+    final lastHyphen = yaml.lastIndexOf('-', start - 1);
+    final lastNewLine = yaml.lastIndexOf('\n', start - 1);
+    if (lastHyphen > lastNewLine) {
+      start = lastHyphen + 2;
+
+      /// If there is a `-` before the node, we need to check if we have
+      /// to update the indentation of the next node.
+      if (index < list.length - 1) {
+        /// Since [end] is currently set to the next new line after the current
+        /// node, check if we see a possible comment first, or a hyphen first.
+        /// Note that no actual content can appear here.
+        ///
+        /// We check this way because the start of a span in a block list is
+        /// the start of its value, and checking from the back leaves us
+        /// easily confused if there are comments that have dashes in them.
+        final nextHash = yaml.indexOf('#', end);
+        final nextHyphen = yaml.indexOf('-', end);
+        final nextNewLine = yaml.indexOf('\n', end);
+
+        /// If [end] is on the same line as the hyphen of the next node
+        if ((nextHash == -1 || nextHyphen < nextHash) &&
+            nextHyphen < nextNewLine) {
+          end = nextHyphen;
+        }
       }
+    } else if (lastNewLine > lastHyphen) {
+      start = lastNewLine + 1;
     }
   }
 
