@@ -1,4 +1,4 @@
-# Created with package:mono_repo v2.1.0
+# Created with package:mono_repo v2.3.0
 language: dart
 
 # Custom configuration
@@ -10,19 +10,196 @@ services:
 jobs:
   include:
     - stage: analyze
-      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `dartanalyzer .`"
-      dart: stable
-      env: PKGS="canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
+      name: "SDK: dev; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid, yaml_edit; TASKS: `dartanalyzer .`"
+      dart: dev
+      os: linux
+      env: PKGS="acyclic_steps canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry safe_url_check sanitize_html shelf_router shelf_router_generator slugid yaml_edit"
       script: ./tool/travis.sh dartanalyzer
     - stage: analyze
-      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `dartfmt -n --set-exit-if-changed .`"
+      name: "SDK: stable; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid, yaml_edit; TASKS: `dartanalyzer .`"
       dart: stable
-      env: PKGS="canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
+      os: linux
+      env: PKGS="acyclic_steps canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry safe_url_check sanitize_html shelf_router shelf_router_generator slugid yaml_edit"
+      script: ./tool/travis.sh dartanalyzer
+    - stage: analyze
+      name: "SDK: dev; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid, yaml_edit; TASKS: `dartfmt -n --set-exit-if-changed .`"
+      dart: dev
+      os: linux
+      env: PKGS="acyclic_steps canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry safe_url_check sanitize_html shelf_router shelf_router_generator slugid yaml_edit"
+      script: ./tool/travis.sh dartfmt
+    - stage: analyze
+      name: "SDK: stable; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid, yaml_edit; TASKS: `dartfmt -n --set-exit-if-changed .`"
+      dart: stable
+      os: linux
+      env: PKGS="acyclic_steps canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry safe_url_check sanitize_html shelf_router shelf_router_generator slugid yaml_edit"
       script: ./tool/travis.sh dartfmt
     - stage: tests
-      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `pub run test`"
+      name: "SDK: dev; PKG: acyclic_steps; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="acyclic_steps"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: acyclic_steps; TASKS: `pub run test`"
       dart: stable
-      env: PKGS="canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
+      os: linux
+      env: PKGS="acyclic_steps"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: canonical_json; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="canonical_json"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: canonical_json; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="canonical_json"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: chunked_stream; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="chunked_stream"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: chunked_stream; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="chunked_stream"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: http_methods; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="http_methods"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: http_methods; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="http_methods"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: neat_cache; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="neat_cache"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: neat_cache; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="neat_cache"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: neat_periodic_task; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="neat_periodic_task"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: neat_periodic_task; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="neat_periodic_task"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: pem; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="pem"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: pem; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="pem"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: retry; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="retry"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: retry; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="retry"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: safe_url_check; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="safe_url_check"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: safe_url_check; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="safe_url_check"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: sanitize_html; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="sanitize_html"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: sanitize_html; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="sanitize_html"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: shelf_router; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="shelf_router"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: shelf_router; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="shelf_router"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: shelf_router_generator; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="shelf_router_generator"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: shelf_router_generator; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="shelf_router_generator"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: slugid; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="slugid"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: slugid; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="slugid"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: dev; PKG: yaml_edit; TASKS: `pub run test`"
+      dart: dev
+      os: linux
+      env: PKGS="yaml_edit"
+      script: ./tool/travis.sh test
+    - stage: tests
+      name: "SDK: stable; PKG: yaml_edit; TASKS: `pub run test`"
+      dart: stable
+      os: linux
+      env: PKGS="yaml_edit"
       script: ./tool/travis.sh test
 
 stages:
