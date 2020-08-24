@@ -7,22 +7,35 @@ branches:
 services:
   - "redis-server"
 
+env:
+  - PKGS=acyclic_steps
+  - PKGS=canonical_json
+  - PKGS=chunked_stream
+  - PKGS=http_methods
+  - PKGS=neat_cache
+  - PKGS=neat_periodic_task
+  - PKGS=pem
+  - PKGS=retry
+  - PKGS=sanitize_html
+  - PKGS=safe_url_check
+  - PKGS=shelf_router
+  - PKGS=shelf_router_generator
+  - PKGS=slugid
+  - PKGS=yaml_edit
+
 jobs:
   include:
     - stage: analyze
-      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `dartanalyzer .`"
+      name: "dartanalyzer ."
       dart: stable
-      env: PKGS="canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
       script: ./tool/travis.sh dartanalyzer
     - stage: analyze
-      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `dartfmt -n --set-exit-if-changed .`"
+      name: "dartfmt -n --set-exit-if-changed ."
       dart: stable
-      env: PKGS="canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
       script: ./tool/travis.sh dartfmt
     - stage: tests
-      name: "SDK: stable; PKGS: canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, sanitize_html, shelf_router, shelf_router_generator, slugid; TASKS: `pub run test`"
+      name: pub run test
       dart: stable
-      env: PKGS="canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry sanitize_html shelf_router shelf_router_generator slugid"
       script: ./tool/travis.sh test
 
 stages:
