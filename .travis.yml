@@ -23,24 +23,10 @@ env:
   - PKGS=slugid
   - PKGS=yaml_edit
 
-jobs:
-  include:
-    - stage: analyze
-      name: "dartanalyzer ."
-      dart: stable
-      script: ./tool/travis.sh dartanalyzer
-    - stage: analyze
-      name: "dartfmt -n --set-exit-if-changed ."
-      dart: stable
-      script: ./tool/travis.sh dartfmt
-    - stage: tests
-      name: pub run test
-      dart: stable
-      script: ./tool/travis.sh test
-
-stages:
-  - analyze
-  - tests
+dart_task:
+  - test
+  - dartanalyzer
+  - dartfmt: -n --set-exit-if-changed
 
 cache:
   directories:
