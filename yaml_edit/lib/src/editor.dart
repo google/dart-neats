@@ -581,7 +581,6 @@ class YamlEditor {
 
     final actualTree = loadYamlNode(_yaml);
     if (!deepEquals(actualTree, expectedTree)) {
-      print(_yaml);
       throw AssertionError('''
 Modification did not result in expected result! 
 
