@@ -196,20 +196,26 @@ class _TestCase {
   }
 }
 
-/// Converts a [YamlList] into a Dart list.
-List _getValueFromYamlList(YamlList node) {
-  return node.value.map((n) {
+/// Converts [yamlList] into a Dart list.
+List _getValueFromYamlList(YamlList yamlList) {
+  return yamlList.value.map((n) {
     if (n is YamlNode) return _getValueFromYamlNode(n);
     return n;
   }).toList();
 }
 
-/// Converts a [YamlMap] into a Dart Map.
-Map _getValueFromYamlMap(YamlMap node) {
-  final keys = node.keys;
+/// Converts [yamlMap] into a Dart Map.
+Map _getValueFromYamlMap(YamlMap yamlMap) {
+  final keys = yamlMap.keys;
   final result = {};
   for (final key in keys) {
-    result[key.value] = result[key].value;
+    final value = yamlMap[key];
+
+    if (value is YamlNode) {
+      result[key] = _getValueFromYamlNode(value);
+    } else {
+      result[key] = value;
+    }
   }
 
   return result;

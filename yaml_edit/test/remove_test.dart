@@ -72,6 +72,36 @@ c: 3
 '''));
     });
 
+    test('empty value', () {
+      final doc = YamlEditor('''
+a: 1
+b: 
+c: 3
+''');
+      doc.remove(['b']);
+      expect(doc.toString(), equals('''
+a: 1
+c: 3
+'''));
+    });
+
+    test('preserves comments', () {
+      final doc = YamlEditor('''
+a: 1 # preserved 1
+# preserved 2
+b: 2
+# preserved 3
+c: 3 # preserved 4
+''');
+      doc.remove(['b']);
+      expect(doc.toString(), equals('''
+a: 1 # preserved 1
+# preserved 2
+# preserved 3
+c: 3 # preserved 4
+'''));
+    });
+
     test('final element in map', () {
       final doc = YamlEditor('''
 a: 1
@@ -138,6 +168,56 @@ c: 3
     });
   });
 
+  group('flow map', () {
+    test('(1)', () {
+      final doc = YamlEditor('{a: 1, b: 2, c: 3}');
+      doc.remove(['b']);
+      expect(doc.toString(), equals('{a: 1, c: 3}'));
+    });
+
+    test('(2) ', () {
+      final doc = YamlEditor('{a: 1}');
+      doc.remove(['a']);
+      expect(doc.toString(), equals('{}'));
+    });
+
+    test('(3) ', () {
+      final doc = YamlEditor('{a: 1, b: 2}');
+      doc.remove(['a']);
+      expect(doc.toString(), equals('{ b: 2}'));
+    });
+
+    test('(4) ', () {
+      final doc =
+          YamlEditor('{"{}[],": {"{}[],": 1, b: "}{[]},", "}{[],": 3}}');
+      doc.remove(['{}[],', 'b']);
+      expect(doc.toString(), equals('{"{}[],": {"{}[],": 1, "}{[],": 3}}'));
+    });
+
+    test('empty value', () {
+      final doc = YamlEditor('{a: 1, b:, c: 3}');
+      doc.remove(['b']);
+      expect(doc.toString(), equals('{a: 1, c: 3}'));
+    });
+
+    test('nested flow map ', () {
+      final doc = YamlEditor('{a: 1, b: {d: 4, e: 5}, c: 3}');
+      doc.remove(['b', 'd']);
+      expect(doc.toString(), equals('{a: 1, b: { e: 5}, c: 3}'));
+    });
+
+    test('nested flow map (2)', () {
+      final doc = YamlEditor('{a: {{[1] : 2}: 3, b: 2}}');
+      doc.remove([
+        'a',
+        {
+          [1]: 2
+        }
+      ]);
+      expect(doc.toString(), equals('{a: { b: 2}}'));
+    });
+  });
+
   group('block list', () {
     test('last element should return flow empty list', () {
       final doc = YamlEditor('''
@@ -146,6 +226,19 @@ c: 3
       doc.remove([0]);
       expect(doc.toString(), equals('''
 []
+'''));
+    });
+
+    test('empty value', () {
+      final doc = YamlEditor('''
+- 0
+- 
+- 2
+''');
+      doc.remove([1]);
+      expect(doc.toString(), equals('''
+- 0
+- 2
 '''));
     });
 
@@ -176,53 +269,7 @@ b:
   - 3
 '''));
     });
-  });
 
-  group('flow map', () {
-    test('(1)', () {
-      final doc = YamlEditor('{a: 1, b: 2, c: 3}');
-      doc.remove(['b']);
-      expect(doc.toString(), equals('{a: 1, c: 3}'));
-    });
-
-    test('(2) ', () {
-      final doc = YamlEditor('{a: 1}');
-      doc.remove(['a']);
-      expect(doc.toString(), equals('{}'));
-    });
-
-    test('(3) ', () {
-      final doc = YamlEditor('{a: 1, b: 2}');
-      doc.remove(['a']);
-      expect(doc.toString(), equals('{ b: 2}'));
-    });
-
-    test('(4) ', () {
-      final doc =
-          YamlEditor('{"{}[],": {"{}[],": 1, b: "}{[]},", "}{[],": 3}}');
-      doc.remove(['{}[],', 'b']);
-      expect(doc.toString(), equals('{"{}[],": {"{}[],": 1, "}{[],": 3}}'));
-    });
-
-    test('nested flow map ', () {
-      final doc = YamlEditor('{a: 1, b: {d: 4, e: 5}, c: 3}');
-      doc.remove(['b', 'd']);
-      expect(doc.toString(), equals('{a: 1, b: { e: 5}, c: 3}'));
-    });
-
-    test('nested flow map (2)', () {
-      final doc = YamlEditor('{a: {{[1] : 2}: 3, b: 2}}');
-      doc.remove([
-        'a',
-        {
-          [1]: 2
-        }
-      ]);
-      expect(doc.toString(), equals('{a: { b: 2}}'));
-    });
-  });
-
-  group('block list', () {
     test('(1) ', () {
       final doc = YamlEditor('''
 - 0
@@ -285,15 +332,19 @@ b:
 
     test('with comments', () {
       final doc = YamlEditor('''
-- 0
-- 1 # comments
-- 2
+- 0 # comment 0
+# comment 1
+- 1 # comment 2
+# comment 3
+- 2 # comment 4
 - 3
 ''');
       doc.remove([1]);
       expect(doc.toString(), equals('''
-- 0
-- 2
+- 0 # comment 0
+# comment 1
+# comment 3
+- 2 # comment 4
 - 3
 '''));
       expectYamlBuilderValue(doc, [0, 2, 3]);

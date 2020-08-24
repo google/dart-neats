@@ -1,5 +1,5 @@
 name: yaml_edit
-version: 1.0.0
+version: 1.0.1
 description: A library for YAML manipulation with comment and whitespace preservation.
 homepage: https://github.com/google/dart-neats/tree/master/yaml_edit
 repository: https://github.com/google/dart-neats.git
@@ -15,5 +15,4 @@ dev_dependencies:
   test: ^1.14.4
   path: ^1.6.2
 environment:
-  sdk: '>=2.4.0 <3.0.0'
-  
+  sdk: ">=2.4.0 <3.0.0"

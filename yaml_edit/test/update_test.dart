@@ -103,6 +103,22 @@ void main() {
         expectYamlBuilderValue(doc, {'test': []});
       });
 
+      test('empty value', () {
+        final doc = YamlEditor('YAML: ');
+        doc.update(['YAML'], 'test');
+
+        expect(doc.toString(), equals('YAML: test'));
+        expectYamlBuilderValue(doc, {'YAML': 'test'});
+      });
+
+      test('empty value (2)', () {
+        final doc = YamlEditor('YAML : ');
+        doc.update(['YAML'], 'test');
+
+        expect(doc.toString(), equals('YAML : test'));
+        expectYamlBuilderValue(doc, {'YAML': 'test'});
+      });
+
       test('with comment', () {
         final doc = YamlEditor("YAML: YAML Ain't Markup Language # comment");
         doc.update(['YAML'], 'test');
@@ -413,6 +429,22 @@ c: 3
         expectYamlBuilderValue(doc, {'YAML': 'd9]zH`FoYC/>]'});
       });
 
+      test('empty value', () {
+        final doc = YamlEditor('{YAML: }');
+        doc.update(['YAML'], 'test');
+
+        expect(doc.toString(), equals('{YAML: test}'));
+        expectYamlBuilderValue(doc, {'YAML': 'test'});
+      });
+
+      test('empty value (2)', () {
+        final doc = YamlEditor('{YAML: , hi: bye}');
+        doc.update(['YAML'], 'test');
+
+        expect(doc.toString(), equals('{YAML: test, hi: bye}'));
+        expectYamlBuilderValue(doc, {'YAML': 'test', 'hi': 'bye'});
+      });
+
       test('with spacing', () {
         final doc = YamlEditor(
             "{ YAML:  YAML Ain't Markup Language , XML: Extensible Markup Language , HTML: Hypertext Markup Language }");
@@ -439,6 +471,22 @@ c: 3
         expectYamlBuilderValue(doc, ['test']);
       });
 
+      test('(2)', () {
+        final doc = YamlEditor('''
+- 1
+- 
+- 3
+''');
+        doc.update([1], 2);
+
+        expect(doc.toString(), equals('''
+- 1
+- 2 
+- 3
+'''));
+        expectYamlBuilderValue(doc, [1, 2, 3]);
+      });
+
       test('nested (1)', () {
         final doc = YamlEditor("- YAML Ain't Markup Language");
         doc.update([0], [1, 2]);
@@ -455,6 +503,22 @@ c: 3
 
         expect(doc.toString(), equals('- test # comment'));
         expectYamlBuilderValue(doc, ['test']);
+      });
+
+      test('with comment (2)', () {
+        final doc = YamlEditor('''
+- 1
+- # comment
+- 3
+''');
+        doc.update([1], 2);
+
+        expect(doc.toString(), equals('''
+- 1
+- 2 # comment
+- 3
+'''));
+        expectYamlBuilderValue(doc, [1, 2, 3]);
       });
 
       test('with comment and spaces', () {
@@ -578,6 +642,8 @@ c: 3
           [1, 2, 3]
         ]);
       });
+
+      /// We cannot have empty values in a flow list.
 
       test('with spacing (1)', () {
         final doc = YamlEditor('[ 0 , 1 , 2 , 3 ]');
