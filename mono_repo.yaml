@@ -6,7 +6,5 @@ travis:
   services:
     - redis-server
 
-# Ensure that all analysis and tests tasks runs in the same job.
 stages:
   - analyze
-  - tests
