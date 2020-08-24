@@ -28,7 +28,7 @@ env:
 jobs:
   include:
     - stage: analyze
-      name: `dartanalyzer .`
+      name: "dartanalyzer ."
       env: PKGS="acyclic_steps canonical_json chunked_stream http_methods neat_cache neat_periodic_task pem retry sanitize_html safe_url_check shelf_router shelf_router_generator slugid yaml_edit"
       script: ./tool/travis.sh dartanalyzer
     - stage: analyze
