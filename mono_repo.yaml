@@ -6,5 +6,6 @@ travis:
   services:
     - redis-server
 
-stages:
+#  Ensure that all analysis and tests tasks runs in the same job.
+merge_stages:
   - analyze
