@@ -6,7 +6,6 @@ repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:yaml_edit
 dependencies:
   meta: ^1.1.8
-  quiver_hashcode: ^2.0.0
   yaml: ^2.2.1
   source_span: ^1.7.0
   collection: ^1.14.11
