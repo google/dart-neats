@@ -165,9 +165,14 @@ SourceEdit _replaceInBlockMap(
     valueAsString = lineEnding + valueAsString;
   }
 
-  /// +2 accounts for the colon
+  /// +1 accounts for the colon
   final start = keyNode.span.end.offset + 1;
-  final end = getContentSensitiveEnd(map.nodes[key]);
+  var end = getContentSensitiveEnd(map.nodes[key]);
+
+  /// `package:yaml` parses empty nodes in a way where the start/end of the
+  /// empty value node is the end of the key node, so we have to adjust for
+  /// this.
+  if (end < start) end = start + 1;
 
   return SourceEdit(start, end - start, ' ' + valueAsString);
 }
@@ -206,24 +211,33 @@ SourceEdit _removeFromBlockMap(
 
   var start = keySpan.start.offset;
 
+  /// Adjust the end to clear the new line after the end too.
+  ///
+  /// We do this because we suspect that our users will want the inline
+  /// comments to disappear too.
+  final nextNewLine = yaml.indexOf('\n', end);
+  if (nextNewLine != -1) {
+    end = nextNewLine + 1;
+  }
+
   final nextNode = getNextKeyNode(map, keyNode);
-  if (nextNode == null) {
-    /// If there is a possibility that there is a `-` or `\n` before the node
-    if (start > 0) {
-      final lastHyphen = yaml.lastIndexOf('-', start - 1);
-      final lastNewLine = yaml.lastIndexOf('\n', start - 1);
-      if (lastHyphen > lastNewLine) {
-        start = lastHyphen + 2;
-      } else if (lastNewLine > lastHyphen) {
-        start = lastNewLine + 1;
+
+  if (start > 0) {
+    final lastHyphen = yaml.lastIndexOf('-', start - 1);
+    final lastNewLine = yaml.lastIndexOf('\n', start - 1);
+    if (lastHyphen > lastNewLine) {
+      start = lastHyphen + 2;
+
+      /// If there is a `-` before the node, and the end is on the same line
+      /// as the next node, we need to add the necessary offset to the end to
+      /// make sure the next node has the correct indentation.
+      if (nextNode != null &&
+          nextNode.span.start.offset - end <= nextNode.span.start.column) {
+        end += nextNode.span.start.column;
       }
+    } else if (lastNewLine > lastHyphen) {
+      start = lastNewLine + 1;
     }
-    final nextNewLine = yaml.indexOf('\n', end);
-    if (nextNewLine != -1) {
-      end = nextNewLine + 1;
-    }
-  } else {
-    end = nextNode.span.start.offset;
   }
 
   return SourceEdit(start, end - start, '');
