@@ -104,7 +104,7 @@ void main() {
       });
 
       test('empty value', () {
-        final doc = YamlEditor('YAML: ');
+        final doc = YamlEditor('YAML:');
         doc.update(['YAML'], 'test');
 
         expect(doc.toString(), equals('YAML: test'));
@@ -112,7 +112,7 @@ void main() {
       });
 
       test('empty value (2)', () {
-        final doc = YamlEditor('YAML : ');
+        final doc = YamlEditor('YAML :');
         doc.update(['YAML'], 'test');
 
         expect(doc.toString(), equals('YAML : test'));
@@ -254,6 +254,36 @@ a:
   - true
 
 b: false
+'''));
+      });
+
+      test('nested (8)', () {
+        final doc = YamlEditor('''
+a:
+b: false
+''');
+        doc.update(['a'], {'retry': '3.0.1'});
+
+        expect(doc.toString(), equals('''
+a: 
+  retry: 3.0.1
+b: false
+'''));
+      });
+
+      test('nested (9)', () {
+        final doc = YamlEditor('''
+# comment
+a: # comment
+# comment
+''');
+        doc.update(['a'], {'retry': '3.0.1'});
+
+        expect(doc.toString(), equals('''
+# comment
+a: 
+  retry: 3.0.1 # comment
+# comment
 '''));
       });
 
