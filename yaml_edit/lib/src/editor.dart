@@ -578,6 +578,7 @@ class YamlEditor {
     final expectedTree = _deepModify(_contents, path, [], expectedNode);
     final initialYaml = _yaml;
     _yaml = edit.apply(_yaml);
+
     try {
       _initialize();
     } on YamlException {

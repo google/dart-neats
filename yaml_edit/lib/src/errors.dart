@@ -96,16 +96,16 @@ class YamlAssertionError extends AssertionError {
 @alwaysThrows
 void createAssertionError(String message, String oldYaml, String newYaml) {
   throw YamlAssertionError('''
-Internal error in package:yaml_edit -- $message.
+$message in package:yaml_edit.
 
-# Initial Yaml:
+# YAML before edit:
 > ${oldYaml.replaceAll('\n', '\n> ')}
 
-# Final Yaml:
+# YAML after edit:
 > ${newYaml.replaceAll('\n', '\n> ')}
 
-Please file an issue at:\n
+Please file an issue at:
 '''
       'https://github.com/google/dart-neats/issues/new?labels=pkg%3Ayaml_edit'
-      '%2C+pending-triage&template=yaml_edit.md');
+      '%2C+pending-triage&template=yaml_edit.md\n');
 }
