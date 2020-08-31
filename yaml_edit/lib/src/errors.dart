@@ -79,8 +79,8 @@ class AliasError extends UnsupportedError {
 
 /// Error thrown when an assertion about the YAML fails. Extends
 /// [AssertionError] to override the [toString] method for pretty printing.
-class YamlAssertionError extends AssertionError {
-  YamlAssertionError(message) : super(message);
+class _YamlAssertionError extends AssertionError {
+  _YamlAssertionError(message) : super(message);
 
   @override
   String toString() {
@@ -94,8 +94,8 @@ class YamlAssertionError extends AssertionError {
 /// Throws an [AssertionError] with the given [message], and format
 /// [oldYaml] and [newYaml] for information.
 @alwaysThrows
-void createAssertionError(String message, String oldYaml, String newYaml) {
-  throw YamlAssertionError('''
+Error createAssertionError(String message, String oldYaml, String newYaml) {
+  return _YamlAssertionError('''
 (package:yaml_edit) $message
 
 # YAML before edit:
