@@ -96,7 +96,7 @@ class YamlAssertionError extends AssertionError {
 @alwaysThrows
 void createAssertionError(String message, String oldYaml, String newYaml) {
   throw YamlAssertionError('''
-$message in package:yaml_edit.
+(package:yaml_edit) $message
 
 # YAML before edit:
 > ${oldYaml.replaceAll('\n', '\n> ')}

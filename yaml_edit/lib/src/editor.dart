@@ -582,14 +582,14 @@ class YamlEditor {
     try {
       _initialize();
     } on YamlException {
-      createAssertionError('Failed to produce valid YAML after modification',
+      createAssertionError('Failed to produce valid YAML after modification.',
           initialYaml, _yaml);
     }
 
     final actualTree = loadYamlNode(_yaml);
     if (!deepEquals(actualTree, expectedTree)) {
-      createAssertionError(
-          'Modification did not result in expected result', initialYaml, _yaml);
+      createAssertionError('Modification did not result in expected result.',
+          initialYaml, _yaml);
     }
 
     _contents = actualTree;
