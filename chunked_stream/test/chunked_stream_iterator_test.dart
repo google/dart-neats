@@ -105,4 +105,16 @@ void main() {
     expect(await s.read(1), equals(['2']));
     expect(await s.read(1), equals([]));
   });
+
+  test(
+      'read() substream() that ends with first chunk + readChunkedStream() '
+      'read()', () async {
+    final s = ChunkedStreamIterator(_chunkedStream([
+      ['a', 'b', 'c'],
+      ['1', '2'],
+    ]));
+    expect(await s.read(1), equals(['a']));
+    expect(await readChunkedStream(s.substream(2)), equals(['b', 'c']));
+    expect(await s.read(3), equals(['1', '2']));
+  });
 }

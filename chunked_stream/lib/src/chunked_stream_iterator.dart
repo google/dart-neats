@@ -201,7 +201,6 @@ class ChunkedStreamIterator<T> {
         return;
       }
     };
-    _wakeup();
 
     return c.stream;
   }
