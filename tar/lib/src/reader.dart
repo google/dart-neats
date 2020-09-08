@@ -18,6 +18,7 @@ import 'package:meta/meta.dart';
 
 import 'constants.dart';
 import 'exceptions.dart';
+import 'format.dart';
 import 'header.dart';
 import 'sparse_entry.dart';
 import 'stream.dart';
@@ -50,7 +51,11 @@ class TarReader {
     var gnuLongName = '';
     var gnuLongLink = '';
 
-    var format = TarFormat.USTAR | TarFormat.PAX | TarFormat.GNU;
+    var format = TarFormat.USTAR |
+        TarFormat.PAX |
+        TarFormat.GNU |
+        TarFormat.V7 |
+        TarFormat.STAR;
 
     /// Externally, [next] iterates through the tar archive as if it is a series
     /// of files. Internally, the tar format often uses fake "files" to add meta
@@ -394,7 +399,7 @@ class TarReader {
     try {
       header.size = parseNumeric(rawHeader, 483, 495);
     } on FormatException {
-      fileException('Invalid real header size');
+      headerException('Invalid real header size');
     }
     final sparseMaps = <List<int>>[];
 

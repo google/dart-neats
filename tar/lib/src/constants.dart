@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:tar/src/format.dart';
+
 /// Magic values to help us identify the TAR header type.
 const magicGNU = 'ustar ';
 const versionGNU = ' \x00';
@@ -19,10 +21,12 @@ const magicUSTAR = 'ustar\x00';
 const versionUSTAR = '00';
 const trailerSTAR = 'tar\x00';
 
-/// *********************************
-/// Type flags for [TarHeader]
-/// *********************************
-
+/// Type flags for [TarHeader].
+///
+/// The type flag of a header indicates the kind of file associated with the
+/// entry. This enum contains the various type flags over the different TAR
+/// formats, and users should be careful that the type flag corresponds to the
+/// TAR format they are working with.
 enum TypeFlag {
   /// [reg] and [regA] indicate regular files.
   reg,
@@ -78,6 +82,9 @@ enum TypeFlag {
   vendor
 }
 
+/// Generates the corresponding [TypeFlag] associated with [byte].
+///
+/// Users should the result check with [validateTypeFlag] once
 TypeFlag typeflagFromByte(int byte) {
   switch (byte) {
     case 48:
@@ -113,6 +120,42 @@ TypeFlag typeflagFromByte(int byte) {
         return TypeFlag.vendor;
       }
       throw ArgumentError('Invalid typeflag value $byte');
+  }
+}
+
+/// Checks if [typeFlag] is allowed in [format].
+bool validateTypeFlag(TypeFlag typeFlag, TarFormat format) {
+  ArgumentError.checkNotNull(typeFlag, 'typeFlag');
+  ArgumentError.checkNotNull(format, 'format');
+
+  switch (typeFlag) {
+    case TypeFlag.symlink:
+    case TypeFlag.char:
+    case TypeFlag.block:
+    case TypeFlag.dir:
+    case TypeFlag.fifo:
+    case TypeFlag.reserved:
+    case TypeFlag.vendor:
+      return format.has(TarFormat.USTAR) ||
+          format.has(TarFormat.PAX) ||
+          format.has(TarFormat.GNU) ||
+          format.has(TarFormat.STAR);
+    case TypeFlag.link:
+    case TypeFlag.regA:
+    case TypeFlag.reg:
+      return true;
+    case TypeFlag.xHeader:
+    case TypeFlag.xGlobalHeader:
+      return format.has(TarFormat.PAX);
+    case TypeFlag.gnuSparse:
+    case TypeFlag.gnuLongName:
+    case TypeFlag.gnuLongLink:
+      return format.has(TarFormat.GNU);
+
+    /// TODO(walnut): remove when https://github.com/dart-lang/sdk/issues/37498
+    /// is resolved.
+    default:
+      return false;
   }
 }
 
@@ -153,11 +196,11 @@ const c_ISGID = 1024;
 /// Sticky bit
 const c_ISVTX = 512;
 
-/// *****************
+/// **********************
 ///  Convenience constants
-/// ******************
+/// **********************
 
-/// Integer max and min values
+/// 64-bit integer max and min values
 const int64MaxValue = 9223372036854775807;
 const int64MinValue = -9223372036854775808;
 

@@ -18,6 +18,7 @@ import 'dart:isolate';
 import 'package:crypto/crypto.dart';
 import 'package:tar/src/constants.dart';
 import 'package:tar/src/exceptions.dart';
+import 'package:tar/src/format.dart';
 import 'package:tar/src/header.dart';
 import 'package:tar/src/reader.dart';
 import 'package:tar/src/sparse_entry.dart';
@@ -176,54 +177,54 @@ void main() async {
         'file': 'star.tar',
         'headers': [
           TarHeader.internal(
-            name: 'small.txt',
-            mode: 416,
-            userId: 1000,
-            groupId: 1000,
-            size: 3,
-            modified: millisecondsSinceEpoch(1597755680000),
-            typeFlag: TypeFlag.reg,
-            userName: 'garett',
-            groupName: 'garett',
-            accessed: millisecondsSinceEpoch(1597755680000),
-            changed: millisecondsSinceEpoch(1597755680000),
-          ),
+              name: 'small.txt',
+              mode: 416,
+              userId: 1000,
+              groupId: 1000,
+              size: 3,
+              modified: millisecondsSinceEpoch(1597755680000),
+              typeFlag: TypeFlag.reg,
+              userName: 'garett',
+              groupName: 'garett',
+              accessed: millisecondsSinceEpoch(1597755680000),
+              changed: millisecondsSinceEpoch(1597755680000),
+              format: TarFormat.STAR),
           TarHeader.internal(
-            name: 'small2.txt',
-            mode: 416,
-            userId: 1000,
-            groupId: 1000,
-            size: 7,
-            modified: millisecondsSinceEpoch(1597755958000),
-            typeFlag: TypeFlag.reg,
-            userName: 'garett',
-            groupName: 'garett',
-            accessed: millisecondsSinceEpoch(1597755958000),
-            changed: millisecondsSinceEpoch(1597755958000),
-          )
+              name: 'small2.txt',
+              mode: 416,
+              userId: 1000,
+              groupId: 1000,
+              size: 7,
+              modified: millisecondsSinceEpoch(1597755958000),
+              typeFlag: TypeFlag.reg,
+              userName: 'garett',
+              groupName: 'garett',
+              accessed: millisecondsSinceEpoch(1597755958000),
+              changed: millisecondsSinceEpoch(1597755958000),
+              format: TarFormat.STAR)
         ]
       },
       {
         'file': 'v7.tar',
         'headers': [
           TarHeader.internal(
-            name: 'small.txt',
-            mode: 436,
-            userId: 1000,
-            groupId: 1000,
-            size: 3,
-            modified: millisecondsSinceEpoch(1597755680000),
-            typeFlag: TypeFlag.reg,
-          ),
+              name: 'small.txt',
+              mode: 436,
+              userId: 1000,
+              groupId: 1000,
+              size: 3,
+              modified: millisecondsSinceEpoch(1597755680000),
+              typeFlag: TypeFlag.reg,
+              format: TarFormat.V7),
           TarHeader.internal(
-            name: 'small2.txt',
-            mode: 436,
-            userId: 1000,
-            groupId: 1000,
-            size: 8,
-            modified: millisecondsSinceEpoch(1597755958000),
-            typeFlag: TypeFlag.reg,
-          )
+              name: 'small2.txt',
+              mode: 436,
+              userId: 1000,
+              groupId: 1000,
+              size: 8,
+              modified: millisecondsSinceEpoch(1597755958000),
+              typeFlag: TypeFlag.reg,
+              format: TarFormat.V7)
         ],
       },
       {
@@ -1128,7 +1129,7 @@ void main() async {
       },
       {
         'input': makeInput(TarFormat.GNU, '80'),
-        'throws': throwsTarFileException,
+        'throws': throwsTarHeaderException,
       },
       {
         'input': makeInput(TarFormat.GNU, '1234',
