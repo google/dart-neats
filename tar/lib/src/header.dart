@@ -21,13 +21,17 @@ import 'format.dart';
 import 'utils.dart';
 
 /// A [TarHeader] represents a single header in a tar archive.
-/// Some fields may not be populated.
+///
+/// This class contains all the possible fields for all the different
+/// [TarFormat]s. Since different TAR formats contain different fields, not all
+/// the fields may be populated.
 @sealed
 class TarHeader {
-  /// Type of header entry.
+  /// Type of header entry. In the V7 TAR format, this field was known as the
+  /// link flag.
   TypeFlag typeFlag;
 
-  /// Name of file entry.
+  /// Name of file or directory entry.
   String name;
 
   /// Target name of link (valid for hard links or symbolic links).
@@ -77,87 +81,82 @@ class TarHeader {
     RangeError.checkValueInInterval(rawHeader.length, blockSize, blockSize);
 
     TarHeader header;
-    try {
-      var format = _getFormat(rawHeader);
+    var format = _getFormat(rawHeader);
 
-      final name = parseString(rawHeader, 0, 100);
-      final mode = parseOctal(rawHeader, 100, 108);
-      final userId = parseOctal(rawHeader, 108, 116);
-      final groupId = parseOctal(rawHeader, 116, 124);
-      final size = parseOctal(rawHeader, 124, 136);
-      final modified = secondsSinceEpoch(parseOctal(rawHeader, 136, 148));
-      final typeFlag = typeflagFromByte(rawHeader[156]);
-      final linkName = parseString(rawHeader, 157, 257);
+    final name = parseString(rawHeader, 0, 100);
+    final mode = tryParseOctal(rawHeader, 'Mode', 100, 108);
+    final userId = tryParseOctal(rawHeader, 'User ID', 108, 116);
+    final groupId = tryParseOctal(rawHeader, 'Group ID', 116, 124);
+    final size = tryParseOctal(rawHeader, 'Size', 124, 136);
+    final modified = secondsSinceEpoch(
+        tryParseOctal(rawHeader, 'Last Modified Time', 136, 148));
+    final typeFlag = typeflagFromByte(rawHeader[156]);
+    final linkName = parseString(rawHeader, 157, 257);
 
-      header = TarHeader.internal(
-          name: name,
-          mode: mode,
-          userId: userId,
-          groupId: groupId,
-          size: size,
-          modified: modified,
-          typeFlag: typeFlag,
-          format: format,
-          linkName: linkName);
+    header = TarHeader.internal(
+        name: name,
+        mode: mode,
+        userId: userId,
+        groupId: groupId,
+        size: size,
+        modified: modified,
+        typeFlag: typeFlag,
+        format: format,
+        linkName: linkName);
 
-      if (header.hasContent && size < 0) {
-        headerException('Header indicates an invalid size of "$size"');
-      }
+    if (header.hasContent && size < 0) {
+      headerException('Header indicates an invalid size of "$size"');
+    }
 
-      if (format.isValid() && format != TarFormat.V7) {
-        /// If it is a valid header that is not of the V7 format, it will have
-        /// the USTAR fields.
-        _populateUstarFields(header, rawHeader);
+    if (format.isValid() && format != TarFormat.V7) {
+      /// If it is a valid header that is not of the V7 format, it will have
+      /// the USTAR fields.
+      _populateUstarFields(header, rawHeader);
 
-        /// Prefix to the file name
-        var prefix = '';
+      /// Prefix to the file name
+      var prefix = '';
 
-        if (format.has(TarFormat.USTAR | TarFormat.PAX)) {
-          header.format = format;
-          prefix = parseString(rawHeader, 345, 500);
+      if (format.has(TarFormat.USTAR | TarFormat.PAX)) {
+        header.format = format;
+        prefix = parseString(rawHeader, 345, 500);
 
-          /// For Format detection, check if block is properly formatted since
-          /// the parser is more liberal than what USTAR actually permits.
-          if (rawHeader.where(isNotAscii).isNotEmpty) {
-            headerException('Non-ASCII characters detected in block');
-          }
+        /// For Format detection, check if block is properly formatted since
+        /// the parser is more liberal than what USTAR actually permits.
+        if (rawHeader.where(isNotAscii).isNotEmpty) {
+          headerException('Non-ASCII characters detected in block');
+        }
 
-          /// Checks size, mode, userId, groupId, lastModifiedTime, devMajor, and
-          /// devMinor to ensure they end in NUL
-          if (!(isNul(rawHeader[135]) && // size
-              isNul(rawHeader[107]) && // mode
-              isNul(rawHeader[115]) && // userId
-              isNul(rawHeader[123]) && // groupId
-              isNul(rawHeader[147]) && // modified
-              isNul(rawHeader[336]) && // devMajor && devMinor
-              isNul(rawHeader[344]))) {
-            headerException('Found a numeric field that does not end in NUL');
-          }
-        } else if (format.has(TarFormat.STAR)) {
-          prefix = parseString(rawHeader, 345, 476);
+        /// Checks size, mode, userId, groupId, lastModifiedTime, devMajor, and
+        /// devMinor to ensure they end in NUL
+        if (!(isNul(rawHeader[135]) && // size
+            isNul(rawHeader[107]) && // mode
+            isNul(rawHeader[115]) && // userId
+            isNul(rawHeader[123]) && // groupId
+            isNul(rawHeader[147]) && // modified
+            isNul(rawHeader[336]) && // devMajor && devMinor
+            isNul(rawHeader[344]))) {
+          headerException('Found a numeric field that does not end in NUL');
+        }
+      } else if (format.has(TarFormat.STAR)) {
+        prefix = parseString(rawHeader, 345, 476);
+        header.accessed = secondsSinceEpoch(parseNumeric(rawHeader, 476, 488));
+        header.changed = secondsSinceEpoch(parseNumeric(rawHeader, 488, 500));
+      } else if (format.has(TarFormat.GNU)) {
+        header.format = format;
+
+        if (!isNul(rawHeader[345])) {
           header.accessed =
-              secondsSinceEpoch(parseNumeric(rawHeader, 476, 488));
-          header.changed = secondsSinceEpoch(parseNumeric(rawHeader, 488, 500));
-        } else if (format.has(TarFormat.GNU)) {
-          header.format = format;
-
-          if (!isNul(rawHeader[345])) {
-            header.accessed =
-                secondsSinceEpoch(parseNumeric(rawHeader, 345, 357));
-          }
-
-          if (!isNul(rawHeader[357])) {
-            header.changed =
-                secondsSinceEpoch(parseNumeric(rawHeader, 357, 369));
-          }
+              secondsSinceEpoch(parseNumeric(rawHeader, 345, 357));
         }
 
-        if (prefix.isNotEmpty) {
-          header.name = '$prefix/${header.name}';
+        if (!isNul(rawHeader[357])) {
+          header.changed = secondsSinceEpoch(parseNumeric(rawHeader, 357, 369));
         }
       }
-    } catch (e) {
-      headerException('Invalid Header');
+
+      if (prefix.isNotEmpty) {
+        header.name = '$prefix/${header.name}';
+      }
     }
 
     if (!validateTypeFlag(header.typeFlag, header.format)) {
@@ -326,33 +325,30 @@ class TarHeader {
 TarFormat _getFormat(List<int> rawHeader) {
   ArgumentError.checkNotNull(rawHeader, 'rawHeader');
 
-  try {
-    final checksum = parseOctal(rawHeader, 148, 156);
+  final checksum = tryParseOctal(rawHeader, 'Checksum', 148, 156);
 
-    /// Modern TAR archives use the unsigned checksum, but we check the signed
-    /// checksum as well for compatibility.
-    if (checksum != computeSignedCheckSum(rawHeader) &&
-        checksum != computeUnsignedCheckSum(rawHeader)) {
-      headerException('Checksum does not match');
-    }
-
-    final magic = String.fromCharCodes(rawHeader, 257, 263);
-    final version = String.fromCharCodes(rawHeader, 263, 265);
-    final trailer = String.fromCharCodes(rawHeader, 508, 512);
-    if (magic == magicUSTAR && trailer == trailerSTAR) {
-      return TarFormat.STAR;
-    }
-
-    if (magic == magicUSTAR) {
-      return TarFormat.USTAR | TarFormat.PAX;
-    }
-
-    if (magic == magicGNU && version == versionGNU) {
-      return TarFormat.GNU;
-    }
-  } catch (e) {
-    headerException('Unable to determine format of Header');
+  /// Modern TAR archives use the unsigned checksum, but we check the signed
+  /// checksum as well for compatibility.
+  if (checksum != computeSignedCheckSum(rawHeader) &&
+      checksum != computeUnsignedCheckSum(rawHeader)) {
+    headerException('Checksum does not match');
   }
+
+  final magic = String.fromCharCodes(rawHeader, 257, 263);
+  final version = String.fromCharCodes(rawHeader, 263, 265);
+  final trailer = String.fromCharCodes(rawHeader, 508, 512);
+  if (magic == magicUSTAR && trailer == trailerSTAR) {
+    return TarFormat.STAR;
+  }
+
+  if (magic == magicUSTAR) {
+    return TarFormat.USTAR | TarFormat.PAX;
+  }
+
+  if (magic == magicGNU && version == versionGNU) {
+    return TarFormat.GNU;
+  }
+
   return TarFormat.V7;
 }
 
@@ -361,6 +357,9 @@ TarFormat _getFormat(List<int> rawHeader) {
 /// These fields are common to all the header formats supported by our library
 /// with the exception of the V7 header.
 void _populateUstarFields(TarHeader header, List<int> rawHeader) {
+  ArgumentError.checkNotNull(header, 'header');
+  ArgumentError.checkNotNull(rawHeader, 'rawHeader');
+
   header.userName = parseString(rawHeader, 265, 297);
   header.groupName = parseString(rawHeader, 297, 329);
   header.devMajor = parseNumeric(rawHeader, 329, 337);

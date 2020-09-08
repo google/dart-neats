@@ -101,16 +101,17 @@ int parseNumeric(List<int> bytes, [int start, int end]) {
 
 /// Parse an octal string encoded in the sublist of [bytes] from index [start]
 /// to index [end].
+///
+/// If [start] is not provided, it defaults to 0.
+/// If [end] is not provided, it defaults to [bytes.length].
 int parseOctal(List<int> bytes, [int start, int end]) {
   ArgumentError.checkNotNull(bytes, 'bytes');
 
   if (bytes.isEmpty) return 0;
 
-  /// Because unused fields are filled with NULs, we need
-  /// to skip leading NULs. Fields may also be padded with
-  /// spaces or NULs.
-  /// So we remove leading and trailing NULs and spaces to
-  /// be sure.
+  /// Because unused fields are filled with NULs, we need to skip leading NULs.
+  /// Fields may also be padded with spaces or NULs.
+  /// So we remove leading and trailing NULs and spaces to be sure.
   var left = start ?? 0;
   var right = end ?? bytes.length;
 
@@ -130,6 +131,35 @@ int parseOctal(List<int> bytes, [int start, int end]) {
 
   final octalString = parseString(bytes, left, right);
   return int.parse(octalString, radix: 8);
+}
+
+/// Tries to parse an octal string representing [field] encoded in the sublist
+/// of [bytes] from index [start] to index [end], throwing a
+/// [TarHeaderException] if the oepration fails.
+///
+/// If [start] is not provided, it defaults to 0.
+/// If [end] is not provided, it defaults to [bytes.length].
+int tryParseOctal(List<int> bytes, String field, [int start, int end]) {
+  /// Because unused fields are filled with NULs, we need to skip leading NULs.
+  /// Fields may also be padded with spaces or NULs.
+  /// So we remove leading and trailing NULs and spaces to be sure.
+  var left = start ?? 0;
+  var right = end ?? bytes.length;
+  var result = 0;
+
+  try {
+    result = parseOctal(bytes, left, right);
+  } on RangeError {
+    headerException('Failed to parse the "$field" field from the raw header. '
+        '[$left, $right] is not in [0, ${bytes.length}]');
+  } on FormatException {
+    headerException(
+        'Failed to parse the "$field" field from the raw header. Bytes '
+        '${bytes.sublist(left, right)} from indices [$left, $right] do not '
+        'produce a parsable radix-8 string.');
+  }
+
+  return result;
 }
 
 /// Takes a [paxTimeString] of the form %d.%d as described in the PAX
@@ -624,6 +654,7 @@ TarHeader fileInfoHeader(File file, String link) {
   return header;
 }
 
+/// Process [sparseMaps], which is known to be a GNU v0.1 sparse map.
 List<SparseEntry> processOldGNUSparseMap(List<List<int>> sparseMaps) {
   final sparseData = <SparseEntry>[];
 
