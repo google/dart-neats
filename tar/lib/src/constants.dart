@@ -221,6 +221,9 @@ const modeDirectory = 2147483648;
 /// Size of each block in a TAR stream.
 const blockSize = 512;
 
+/// Size of each block in [File.openRead]
+const ioBlockSize = 64 * 1024;
+
 /// Max length of the name field in USTAR format.
 const nameSize = 100;
 

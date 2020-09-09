@@ -44,6 +44,9 @@ class TarReader {
     ArgumentError.checkNotNull(tarStream, 'tarStream');
   }
 
+  /// Skip the next [_skipNext] elements when reading in the stream.
+  int _skipNext = 0;
+
   /// Iterates through the TAR archive for the next file, returning `true` if
   /// such a file is found, and `false` otherwise.
   Future<bool> next() async {
@@ -63,6 +66,11 @@ class TarReader {
     /// normally be visible to the outside. As such, this loop iterates through
     /// one or more "header files" until it finds a "normal file".
     while (true) {
+      if (_skipNext > 0) {
+        await _chunkedStream.read(_skipNext);
+        _skipNext = 0;
+      }
+
       /// The discarding of the remainder of the previous file should
       /// already be handled by [ChunkedStreamIterator].
       var rawHeader = await _chunkedStream.read(blockSize);
@@ -207,9 +215,8 @@ class TarReader {
       if (size == 0) {
         contents = Stream<List<int>>.empty();
       } else {
-        contents = ChunkedStreamIterator(
-                _chunkedStream.substream(numBlocks(header.size) * blockSize))
-            .substream(header.size);
+        contents = _chunkedStream.substream(header.size);
+        _skipNext = blockPadding(header.size);
       }
     }
   }
@@ -321,12 +328,15 @@ class TarReader {
     final sparseData = <SparseEntry>[];
 
     for (var i = 0; i < numEntries; i++) {
-      final offset = int.tryParse(nextToken());
-      final length = int.tryParse(nextToken());
+      final offsetToken = nextToken();
+      final lengthToken = nextToken();
+
+      final offset = int.tryParse(offsetToken);
+      final length = int.tryParse(lengthToken);
 
       if (offset == null || length == null) {
         headerException('Failed to read a GNU sparse map entry. Encountered '
-            'offset: $offset, length: $length');
+            'offset: $offsetToken, length: $lengthToken');
       }
 
       sparseData.add(SparseEntry(offset, length));

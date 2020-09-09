@@ -219,6 +219,18 @@ void main() {
       expect(header.modified, fileStat.modified);
     });
 
-    /// TODO(walnut): symlink test
+    test('symbolic link', () async {
+      final packageUri =
+          await Isolate.resolvePackageUri(Uri.parse('package:tar/tar.dart'));
+      final testFileUri = packageUri.resolve('../test/testdata/symlink');
+      final file = File.fromUri(testFileUri);
+      final header = fileInfoHeader(file, '');
+
+      final fileStat = file.statSync();
+      expect(header.name, 'symlink');
+      expect(header.mode, fileStat.mode);
+      expect(header.size, fileStat.size);
+      expect(header.modified, fileStat.modified);
+    });
   });
 }
