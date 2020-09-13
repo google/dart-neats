@@ -71,8 +71,6 @@ class TarReader {
         _skipNext = 0;
       }
 
-      /// The discarding of the remainder of the previous file should
-      /// already be handled by [ChunkedStreamIterator].
       var rawHeader = await _chunkedStream.read(blockSize);
 
       header = await _readHeader(rawHeader);
