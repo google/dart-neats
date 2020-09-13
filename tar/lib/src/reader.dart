@@ -34,10 +34,12 @@ class TarReader {
   final ChunkedStreamIterator<int> _chunkedStream;
 
   /// The [TarHeader] for the current file.
-  TarHeader header;
+  TarHeader get header => _header;
+  TarHeader _header;
 
   /// The current file contents.
-  Stream<List<int>> contents;
+  Stream<List<int>> get contents => _contents;
+  Stream<List<int>> _contents;
 
   TarReader(Stream<List<int>> tarStream)
       : _chunkedStream = ChunkedStreamIterator(tarStream) {
@@ -73,25 +75,25 @@ class TarReader {
 
       var rawHeader = await _chunkedStream.read(blockSize);
 
-      header = await _readHeader(rawHeader);
-      if (header == null) return false;
+      _header = await _readHeader(rawHeader);
+      if (_header == null) return false;
 
-      format = format.mayOnlyBe(header.format);
+      format = format.mayOnlyBe(_header.format);
 
       /// Check for PAX/GNU special headers and files.
-      if (header.typeFlag == TypeFlag.xHeader ||
-          header.typeFlag == TypeFlag.xGlobalHeader) {
+      if (_header.typeFlag == TypeFlag.xHeader ||
+          _header.typeFlag == TypeFlag.xGlobalHeader) {
         format = format.mayOnlyBe(TarFormat.PAX);
         final rawPAXHeaders =
-            await _chunkedStream.read(numBlocks(header.size) * blockSize);
+            await _chunkedStream.read(numBlocks(_header.size) * blockSize);
 
         paxHeaders = parsePAX(rawPAXHeaders);
-        if (header.typeFlag == TypeFlag.xGlobalHeader) {
-          header.mergePAX(paxHeaders);
-          header = TarHeader.internal(
-            name: header.name,
-            typeFlag: header.typeFlag,
-            paxRecords: header.paxRecords,
+        if (_header.typeFlag == TypeFlag.xGlobalHeader) {
+          _header.mergePAX(paxHeaders);
+          _header = TarHeader.internal(
+            name: _header.name,
+            typeFlag: _header.typeFlag,
+            paxRecords: _header.paxRecords,
             format: format,
           );
 
@@ -100,13 +102,13 @@ class TarReader {
 
         /// This is a meta header affecting the next header.
         continue;
-      } else if (header.typeFlag == TypeFlag.gnuLongLink ||
-          header.typeFlag == TypeFlag.gnuLongName) {
+      } else if (_header.typeFlag == TypeFlag.gnuLongLink ||
+          _header.typeFlag == TypeFlag.gnuLongName) {
         format = format.mayOnlyBe(TarFormat.GNU);
         final realName =
-            await _chunkedStream.read(numBlocks(header.size) * blockSize);
+            await _chunkedStream.read(numBlocks(_header.size) * blockSize);
 
-        if (header.typeFlag == TypeFlag.gnuLongName) {
+        if (_header.typeFlag == TypeFlag.gnuLongName) {
           gnuLongName = parseString(realName);
         } else {
           gnuLongLink = parseString(realName);
@@ -117,21 +119,21 @@ class TarReader {
       } else {
         // The old GNU sparse format is handled here since it is technically
         // just a regular file with additional attributes.
-        header.mergePAX(paxHeaders);
+        _header.mergePAX(paxHeaders);
 
-        if (gnuLongName.isNotEmpty) header.name = gnuLongName;
-        if (gnuLongLink.isNotEmpty) header.linkName = gnuLongLink;
+        if (gnuLongName.isNotEmpty) _header.name = gnuLongName;
+        if (gnuLongLink.isNotEmpty) _header.linkName = gnuLongLink;
 
-        if (header.typeFlag == TypeFlag.regA) {
+        if (_header.typeFlag == TypeFlag.regA) {
           /// Legacy archives use trailing slash for directories
-          if (header.name.endsWith('/')) {
-            header.typeFlag = TypeFlag.dir;
+          if (_header.name.endsWith('/')) {
+            _header.typeFlag = TypeFlag.dir;
           } else {
-            header.typeFlag = TypeFlag.reg;
+            _header.typeFlag = TypeFlag.reg;
           }
         }
 
-        await _handleFile(header, rawHeader);
+        await _handleFile(_header, rawHeader);
 
         /// Set the final guess at the format
         if (format != null &&
@@ -139,7 +141,7 @@ class TarReader {
             format.has(TarFormat.PAX)) {
           format = format.mayOnlyBe(TarFormat.USTAR);
         }
-        header.format = format;
+        _header.format = format;
 
         return true;
       }
@@ -199,9 +201,9 @@ class TarReader {
       final sparseDataCount = countData(sparseData);
 
       if (sparseDataCount > 0) {
-        contents =
+        _contents =
             _chunkedStream.substream(numBlocks(sparseDataCount) * blockSize);
-        contents = sparseStream(contents, sparseHoles, header.size);
+        _contents = sparseStream(_contents, sparseHoles, header.size);
       }
     } else {
       var size = header.size;
@@ -212,9 +214,9 @@ class TarReader {
       }
 
       if (size == 0) {
-        contents = Stream<List<int>>.empty();
+        _contents = Stream<List<int>>.empty();
       } else {
-        contents = _chunkedStream.substream(header.size);
+        _contents = _chunkedStream.substream(header.size);
         _skipNext = blockPadding(header.size);
       }
     }
@@ -349,7 +351,7 @@ class TarReader {
   /// Reads the sparse map as stored in GNU's PAX sparse format version 0.1.
   /// The sparse map is stored in the PAX headers.
   List<SparseEntry> _readGNUSparseMap0x1() {
-    final paxRecords = header.paxRecords;
+    final paxRecords = _header.paxRecords;
 
     /// Get number of entries.
     /// Use integer overflow resistant math to check this.
