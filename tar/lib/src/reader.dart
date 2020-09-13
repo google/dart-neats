@@ -170,7 +170,8 @@ class TarReader {
         return null;
       }
 
-      throw TarFileException('Encountered a non-zero block after a zero block');
+      throw createFileException(
+          'Encountered a non-zero block after a zero block');
     }
 
     return TarHeader(rawHeader);
@@ -191,7 +192,7 @@ class TarReader {
     if (sparseData != null) {
       if (header.hasContent &&
           !validateSparseEntries(sparseData, header.size)) {
-        headerException('Invalid sparse file header.');
+        throw createHeaderException('Invalid sparse file header.');
       }
 
       final sparseHoles = invertSparseEntries(sparseData, header.size);
@@ -207,7 +208,7 @@ class TarReader {
       if (!header.hasContent) size = 0;
 
       if (size < 0) {
-        headerException('Invalid size ($size) detected!');
+        throw createHeaderException('Invalid size ($size) detected!');
       }
 
       if (size == 0) {
@@ -255,7 +256,8 @@ class TarReader {
     if (possibleSize.isNotEmpty) {
       final size = int.tryParse(possibleSize, radix: 10);
       if (size == null) {
-        headerException('Invalid PAX size ($possibleSize) detected');
+        throw createHeaderException(
+            'Invalid PAX size ($possibleSize) detected');
       }
 
       header.size = size;
@@ -288,7 +290,8 @@ class TarReader {
       while (newLineCount < n) {
         final newBlock = await _chunkedStream.read(blockSize);
         if (newBlock.isEmpty) {
-          headerException('GNU Sparse Map does not have enough lines!');
+          throw createHeaderException(
+              'GNU Sparse Map does not have enough lines!');
         }
 
         block += newBlock;
@@ -314,7 +317,7 @@ class TarReader {
     final numEntriesString = nextToken();
     final numEntries = int.tryParse(numEntriesString);
     if (numEntries == null || numEntries < 0 || 2 * numEntries < numEntries) {
-      headerException(
+      throw createHeaderException(
           'Invalid sparse map number of entries: $numEntriesString!');
     }
 
@@ -333,7 +336,8 @@ class TarReader {
       final length = int.tryParse(lengthToken);
 
       if (offset == null || length == null) {
-        headerException('Failed to read a GNU sparse map entry. Encountered '
+        throw createHeaderException(
+            'Failed to read a GNU sparse map entry. Encountered '
             'offset: $offsetToken, length: $lengthToken');
       }
 
@@ -353,7 +357,7 @@ class TarReader {
     final numEntries = int.tryParse(numEntriesString);
 
     if (numEntries == null || numEntries < 0 || 2 * numEntries < numEntries) {
-      headerException('Invalid GNU version 0.1 map');
+      throw createHeaderException('Invalid GNU version 0.1 map');
     }
 
     /// There should be two numbers in [sparseMap] for each entry.
@@ -362,7 +366,8 @@ class TarReader {
       sparseMap = [sparseMap[0]];
     }
     if (sparseMap.length != 2 * numEntries) {
-      headerException('Detected sparse map length ${sparseMap.length} '
+      throw createHeaderException(
+          'Detected sparse map length ${sparseMap.length} '
           'that is not twice the number of entries $numEntries');
     }
 
@@ -374,7 +379,8 @@ class TarReader {
       final length = int.tryParse(sparseMap[i + 1]);
 
       if (offset == null || length == null) {
-        headerException('Failed to read a GNU sparse map entry. Encountered '
+        throw createHeaderException(
+            'Failed to read a GNU sparse map entry. Encountered '
             'offset: $offset, length: $length');
       }
 
@@ -401,13 +407,13 @@ class TarReader {
     /// Unfortunately, the STAR format also has a sparse header format that uses
     /// the same type flag but has a completely different layout.
     if (header.format != TarFormat.GNU) {
-      headerException('Tried to read sparse map of non-GNU header');
+      throw createHeaderException('Tried to read sparse map of non-GNU header');
     }
 
     try {
       header.size = parseNumeric(rawHeader, 483, 495);
     } on FormatException {
-      headerException('Invalid real header size');
+      throw createHeaderException('Invalid real header size');
     }
     final sparseMaps = <List<int>>[];
 
@@ -432,7 +438,7 @@ class TarReader {
     try {
       result = processOldGNUSparseMap(sparseMaps);
     } on FormatException {
-      fileException('Invalid old GNU Sparse Map');
+      throw createFileException('Invalid old GNU Sparse Map');
     }
 
     return result;

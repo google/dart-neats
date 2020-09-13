@@ -290,7 +290,7 @@ void main() {
         if (testInput[2]) {
           expect(parsePAXTime(testInput[0]), testInput[1]);
         } else {
-          expect(() => parsePAXTime(testInput[0]), throwsTarHeaderException);
+          expect(() => parsePAXTime(testInput[0]), throwsFormatException);
         }
       });
     }
@@ -367,8 +367,8 @@ void main() {
           expect(
               parsePAX(utf8.encode(inputString)), {testInput[1]: testInput[2]});
         } else {
-          expect(() => parsePAX(utf8.encode(inputString)),
-              throwsTarHeaderException);
+          expect(
+              () => parsePAX(utf8.encode(inputString)), throwsFormatException);
         }
       });
     }
@@ -405,7 +405,7 @@ void main() {
           expect(formatPAXRecord(testInputs[0], testInputs[1]), testInputs[2]);
         } else {
           expect(() => formatPAXRecord(testInputs[0], testInputs[1]),
-              throwsTarHeaderException);
+              throwsFormatException);
         }
       });
     }

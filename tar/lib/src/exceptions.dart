@@ -12,28 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:meta/meta.dart';
-
 /// An exception indicating that there was an issue with parsing a
 /// TAR File. Intended to be seen by the user.
-@sealed
-class TarFileException extends FormatException {
-  TarFileException(String message) : super(message);
+class _TarFileException extends FormatException {
+  _TarFileException(String message) : super(message);
 }
 
 /// An exception indicating that there was an issue with parsing a
 /// TAR Header. Intended to be seen by the user.
-@sealed
-class TarHeaderException extends FormatException {
-  TarHeaderException(String message) : super(message);
+class _TarHeaderException extends FormatException {
+  _TarHeaderException(String message) : super(message);
 }
 
 /// Helper method to throw a [TarHeaderException].
-void headerException([String message = '']) {
-  throw TarHeaderException(message);
+Exception createHeaderException([String message = '']) {
+  return _TarHeaderException(message);
 }
 
 /// Helper method to throw a [TarFileException].
-void fileException([String message = '']) {
-  throw TarFileException(message);
+Exception createFileException([String message = '']) {
+  return _TarFileException(message);
 }

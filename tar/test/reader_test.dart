@@ -770,7 +770,7 @@ void main() async {
         if (testInputs['error'] == true) {
           expect(() async {
             await tarReader.next();
-          }, throwsTarHeaderException);
+          }, throwsFormatException);
         } else {
           final checksums = testInputs['checksums'] as List<String>;
 
@@ -939,8 +939,8 @@ void main() async {
           actual.mergePAX(testInputs['in']);
           expect(actual, testInputs['want']);
         } else {
-          expect(() => actual.mergePAX(testInputs['in']),
-              throwsTarHeaderException);
+          expect(
+              () => actual.mergePAX(testInputs['in']), throwsFormatException);
         }
       });
     }
@@ -1015,8 +1015,7 @@ void main() async {
           final actual = parsePAX(inputString.codeUnits);
           expect(actual, testInputs['want']);
         } else {
-          expect(
-              () => parsePAX(inputString.codeUnits), throwsTarHeaderException);
+          expect(() => parsePAX(inputString.codeUnits), throwsFormatException);
         }
       });
     }
@@ -1035,7 +1034,7 @@ void main() async {
       } else if (format.has(TarFormat.USTAR | TarFormat.PAX)) {
         rawHeader.setRange(257, 265, (magicUSTAR + versionUSTAR).codeUnits);
       } else {
-        throw TarHeaderException('Invalid format');
+        throw createHeaderException('Invalid format');
       }
     }
 
@@ -1121,7 +1120,7 @@ void main() async {
       {
         'input': makeInput(TarFormat.GNU, '1234', ['fewa']),
         'wantSize': 668,
-        'throws': throwsTarFileException,
+        'throws': throwsFormatException,
       },
       {
         'input': makeInput(TarFormat.GNU, '0031'),
@@ -1129,7 +1128,7 @@ void main() async {
       },
       {
         'input': makeInput(TarFormat.GNU, '80'),
-        'throws': throwsTarHeaderException,
+        'throws': throwsFormatException,
       },
       {
         'input': makeInput(TarFormat.GNU, '1234',

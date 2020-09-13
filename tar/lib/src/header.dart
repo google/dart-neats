@@ -105,7 +105,8 @@ class TarHeader {
         linkName: linkName);
 
     if (header.hasContent && size < 0) {
-      headerException('Header indicates an invalid size of "$size"');
+      throw createHeaderException(
+          'Header indicates an invalid size of "$size"');
     }
 
     if (format.isValid() && format != TarFormat.V7) {
@@ -123,7 +124,7 @@ class TarHeader {
         /// For Format detection, check if block is properly formatted since
         /// the parser is more liberal than what USTAR actually permits.
         if (rawHeader.where(isNotAscii).isNotEmpty) {
-          headerException('Non-ASCII characters detected in block');
+          throw createHeaderException('Non-ASCII characters detected in block');
         }
 
         /// Checks size, mode, userId, groupId, lastModifiedTime, devMajor, and
@@ -135,7 +136,8 @@ class TarHeader {
             isNul(rawHeader[147]) && // modified
             isNul(rawHeader[336]) && // devMajor && devMinor
             isNul(rawHeader[344]))) {
-          headerException('Found a numeric field that does not end in NUL');
+          throw createHeaderException(
+              'Found a numeric field that does not end in NUL');
         }
       } else if (format.has(TarFormat.STAR)) {
         prefix = parseString(rawHeader, 345, 476);
@@ -160,7 +162,7 @@ class TarHeader {
     }
 
     if (!validateTypeFlag(header.typeFlag, header.format)) {
-      headerException('Invalid Header');
+      throw createHeaderException('Invalid Header');
     }
 
     return header;
@@ -247,7 +249,7 @@ class TarHeader {
             break;
         }
       } catch (e) {
-        headerException('Invalid PAX header entry "${entry.key}: '
+        throw createHeaderException('Invalid PAX header entry "${entry.key}: '
             '${entry.value}"!');
       }
     }
@@ -331,7 +333,7 @@ TarFormat _getFormat(List<int> rawHeader) {
   /// checksum as well for compatibility.
   if (checksum != computeSignedCheckSum(rawHeader) &&
       checksum != computeUnsignedCheckSum(rawHeader)) {
-    headerException('Checksum does not match');
+    throw createHeaderException('Checksum does not match');
   }
 
   final magic = String.fromCharCodes(rawHeader, 257, 263);

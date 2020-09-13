@@ -12,12 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:tar/src/exceptions.dart';
 import 'package:tar/src/utils.dart';
-import 'package:test/test.dart';
-
-final throwsTarHeaderException = throwsA(TypeMatcher<TarHeaderException>());
-final throwsTarFileException = throwsA(TypeMatcher<TarFileException>());
 
 /// Pads [s] with NUL characters until it is as long as a multiple of
 /// [blockSize].
