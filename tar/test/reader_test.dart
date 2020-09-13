@@ -25,8 +25,6 @@ import 'package:tar/src/sparse_entry.dart';
 import 'package:tar/src/utils.dart';
 import 'package:test/test.dart';
 
-import 'test_utils.dart';
-
 void main() async {
   final packageUri =
       await Isolate.resolvePackageUri(Uri.parse('package:tar/tar.dart'));

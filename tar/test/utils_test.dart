@@ -18,8 +18,6 @@ import 'package:tar/src/constants.dart';
 import 'package:tar/src/utils.dart';
 import 'package:test/test.dart';
 
-import 'test_utils.dart';
-
 void main() {
   group('Fits in base 256', () {
     final tests = [

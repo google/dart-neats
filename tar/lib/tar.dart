@@ -19,7 +19,6 @@
 library tar;
 
 export 'src/constants.dart' show TypeFlag;
-export 'src/exceptions.dart' show TarFileException, TarHeaderException;
 export 'src/format.dart';
 export 'src/header.dart';
 export 'src/reader.dart';
