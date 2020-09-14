@@ -24,7 +24,7 @@ Future<void> main() async {
   final userCache = cache.withPrefix('users').withCodec(utf8);
 
   /// Get data form cache
-  String userinfo = await userCache['peter-pan'].get();
+  final userinfo = await userCache['peter-pan'].get();
   print(userinfo);
 
   /// Put data into cache

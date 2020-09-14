@@ -1,5 +1,5 @@
 name: neat_cache
-version: 1.0.1
+version: 1.0.2-dev
 authors:
   - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
@@ -11,7 +11,7 @@ dependencies:
   convert: ^2.1.1
   logging: '^0.11.3'
   retry: ^3.0.0
-  dartis: ^0.3.0
+  dartis: ^0.5.0
 dev_dependencies:
   test: ^1.5.1
   pedantic: ^1.4.0
