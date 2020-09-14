@@ -27,11 +27,11 @@ class _RedisContext {
   _RedisContext({this.connection, this.client, this.commands});
 }
 
+typedef RedisConnectionFn = FutureOr<Connection> Function();
 typedef _Op<T> = Future<T> Function(Commands<String, List<int>>);
 
 class RedisCacheProvider extends CacheProvider<List<int>> {
-  final String _connectionString;
-  final Duration _connectTimeLimit;
+  final RedisConnectionFn _connectionFn;
   final Duration _commandTimeLimit;
   final Duration _reconnectDelay;
 
@@ -39,15 +39,14 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
   bool _isClosed = false;
 
   RedisCacheProvider(
-    this._connectionString, {
+    /* String | Connection | RedisConnectionFn */ dynamic connection, {
     Duration connectTimeLimit = const Duration(seconds: 30),
     Duration commandTimeLimit = const Duration(milliseconds: 200),
     Duration reconnectDelay = const Duration(seconds: 30),
-  })  : _connectTimeLimit = connectTimeLimit,
+  })  : _connectionFn = _convertToConnectionFn(connection, connectTimeLimit),
         _commandTimeLimit = commandTimeLimit,
         _reconnectDelay = reconnectDelay {
-    assert(_connectionString.isNotEmpty, 'connectionString must be given');
-    assert(!_connectTimeLimit.isNegative, 'connectTimeLimit is negative');
+    assert(!connectTimeLimit.isNegative, 'connectTimeLimit is negative');
     assert(!_commandTimeLimit.isNegative, 'commandTimeLimit is negative');
     assert(!_reconnectDelay.isNegative, 'reconnectDelay is negative');
   }
@@ -55,8 +54,7 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
   Future<_RedisContext> _createContext() async {
     try {
       _logger.info('Connecting to redis');
-      final connection = await Connection.connect(_connectionString)
-          .timeout(_connectTimeLimit);
+      final connection = await _connectionFn();
       // Create context
       final client = Client(connection);
       return _RedisContext(
@@ -150,4 +148,17 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
 
   @override
   Future<void> purge(String key) => _withRedis((redis) => redis.del(key: key));
+}
+
+RedisConnectionFn _convertToConnectionFn(
+    dynamic value, Duration connectTimeLimit) {
+  if (value is Connection) {
+    return () => value;
+  } else if (value is RedisConnectionFn) {
+    return () => Future(value).timeout(connectTimeLimit);
+  } else if (value is String) {
+    return () => Connection.connect(value).timeout(connectTimeLimit);
+  } else {
+    throw ArgumentError('Unknown connection parameter: $value');
+  }
 }
