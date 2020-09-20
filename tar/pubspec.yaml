@@ -5,7 +5,6 @@ homepage: https://github.com/google/dart-neats/tree/master/tar
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:tar
 dependencies:
-  chunked_stream: ^1.1.0
   collection: ^1.14.13
   meta: ^1.2.2
   path: ^1.7.0

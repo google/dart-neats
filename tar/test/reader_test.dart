@@ -778,8 +778,7 @@ void main() async {
 
             if (checksums != null) {
               final contents = await tarReader.contents.toList();
-              final expandedContents = contents.expand((s) => s).toList();
-              final hash = md5.convert(expandedContents).toString();
+              final hash = md5.convert(contents).toString();
 
               expect(hash, checksums[i]);
             }
@@ -856,8 +855,7 @@ void main() async {
         for (var j = 0; j < testCases.length; j++) {
           expect(await tarReader.next(), true);
           final contents = await tarReader.contents.toList();
-          final expandedContents = contents.expand((s) => s);
-          expect(String.fromCharCodes(expandedContents), testCases[j]);
+          expect(String.fromCharCodes(contents), testCases[j]);
         }
         expect(await tarReader.next(), false);
       });

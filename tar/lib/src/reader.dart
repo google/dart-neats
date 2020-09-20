@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:chunked_stream/chunked_stream.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
@@ -38,8 +37,8 @@ class TarReader {
   TarHeader _header;
 
   /// The current file contents.
-  Stream<List<int>> get contents => _contents;
-  Stream<List<int>> _contents;
+  Stream<int> get contents => _contents;
+  Stream<int> _contents;
 
   TarReader(Stream<List<int>> tarStream)
       : _chunkedStream = ChunkedStreamIterator(tarStream) {
@@ -214,7 +213,7 @@ class TarReader {
       }
 
       if (size == 0) {
-        _contents = Stream<List<int>>.empty();
+        _contents = Stream<int>.empty();
       } else {
         _contents = _chunkedStream.substream(header.size);
         _skipNext = blockPadding(header.size);

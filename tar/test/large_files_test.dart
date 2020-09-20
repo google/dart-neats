@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
 
-import 'package:chunked_stream/chunked_stream.dart';
 import 'package:tar/src/constants.dart';
 import 'package:tar/src/reader.dart';
+import 'package:tar/src/stream.dart';
 import 'package:test/test.dart';
 
 /// Find a tar. Prefering system installed tar.
@@ -81,6 +82,16 @@ Future<File> createTestArchive(Map<String, int> files) async {
   return testArchive;
 }
 
+Future<List> read(StreamIterator i, int size) async {
+  final result = [];
+
+  while (size-- > 0 && await i.moveNext()) {
+    result.add(i.current);
+  }
+
+  return result;
+}
+
 Future<void> validateTestArchive(
     File testArchive, Map<String, int> files) async {
   expect(testArchive.existsSync(), isTrue);
@@ -95,11 +106,11 @@ Future<void> validateTestArchive(
     expect(actualFile.existsSync(), isTrue);
 
     final actualFileContents = ChunkedStreamIterator(actualFile.openRead());
-    final readTarContents = ChunkedStreamIterator(reader.contents);
+    final readTarContents = StreamIterator(reader.contents);
 
     while (true) {
       final actualChunk = await actualFileContents.read(ioBlockSize);
-      final readChunk = await readTarContents.read(ioBlockSize);
+      final readChunk = await read(readTarContents, ioBlockSize);
       expect(readChunk, actualChunk);
 
       if (actualChunk.isEmpty) break;
@@ -128,16 +139,8 @@ void main() async {
     await validateTestArchive(testArchive, files);
   });
 
-  /// TODO (walnut): investigate how the file size and archive size makes this
-  /// work.
-  /// The cases below fail:
-  /// 'test.txt': 2 * ioBlockSize - 1535, and every + ioBlockSize above this.
-  /// 'test.txt': 2 * ioBlockSize - 512, and every + ioBlockSize above this.
-  /// header takes 512, and there can be anywhere from 0 to 2 zero blocks, so
-  /// the above cases imply a total size of
-
   test('reads multiple large files successfully', () async {
-    final files = {'test.txt': 2 * ioBlockSize - 511};
+    final files = {'test.txt': 2 * ioBlockSize - 513};
 
     final testArchive = await createTestArchive(files);
 

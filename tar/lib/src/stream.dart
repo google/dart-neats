@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.import 'constants.dart';
 
-import 'constants.dart';
+import 'dart:async';
 import 'sparse_entry.dart';
 
-/// Generates a stream of the sparse file contents given [sparseHoles] and
-/// the raw content in [source].
-Stream<List<int>> sparseStream(
-    Stream<List<int>> source, List<SparseEntry> sparseHoles, int size) async* {
+/// Generates a stream of the sparse file contents of size [size], given
+/// [sparseHoles] and the raw content in [source].
+Stream<int> sparseStream(
+    Stream<int> source, List<SparseEntry> sparseHoles, int size) async* {
   ArgumentError.checkNotNull(source, 'source');
   ArgumentError.checkNotNull(sparseHoles, 'sparseHoles');
   ArgumentError.checkNotNull(size, 'size');
@@ -27,57 +27,109 @@ Stream<List<int>> sparseStream(
   /// [partialChunk].
   var position = 0;
 
-  /// Part of chunk left over after each chunk in source.
-  /// Guaranteed to have a length <= [blockSize].
-  var partialChunk = <int>[];
-
-  /// Index of the next sparse hole to be processed.
+  /// Index of the next sparse hole in [sparseHoles] to be processed.
   var sparseHoleIndex = 0;
 
-  /// Grab a new chunk from [source].
-  await for (final chunk in source) {
-    /// Index of the chunk element we are examining.
-    /// Satisfies `0 <= chunkIndex < blockSize`.
-    var chunkIndex = 0;
+  /// Iterator through [source] to obtain the data bytes.
+  final iterator = StreamIterator(source);
 
-    /// While we haven't processed the full chunk
-    while (chunkIndex < chunk.length) {
-      /// Add all the sparse holes to [partialChunk] if necessary.
-      while (sparseHoleIndex < sparseHoles.length) {
-        final sparseHole = sparseHoles[sparseHoleIndex];
-        if (sparseHole.offset == position) {
-          partialChunk.addAll(List<int>.filled(sparseHole.length, 0));
-          position += sparseHole.length;
-          sparseHoleIndex++;
-        } else {
-          break;
+  while (position < size) {
+    /// Yield all the necessary sparse holes.
+    while (sparseHoleIndex < sparseHoles.length) {
+      final sparseHole = sparseHoles[sparseHoleIndex];
+      if (sparseHole.offset == position) {
+        for (final byte in List<int>.filled(sparseHole.length, 0)) {
+          yield byte;
         }
+        position += sparseHole.length;
+        sparseHoleIndex++;
+      } else {
+        break;
       }
-
-      partialChunk.add(chunk[chunkIndex]);
-      chunkIndex++;
-      position++;
     }
 
-    /// At this point the full chunk is processed. Yield as many sparse
-    /// chunks as required.
-    var partialChunkIndex = 0;
-    while (partialChunkIndex + blockSize <= partialChunk.length &&
-        partialChunkIndex + blockSize < size) {
-      yield partialChunk.sublist(
-          partialChunkIndex, partialChunkIndex + blockSize);
-      partialChunkIndex += blockSize;
+    if (position == size) break;
+
+    /// Grab a new chunk from [source].
+    if (!await iterator.moveNext()) {
+      throw StateError('sparseStream size is larger than what the stream '
+          'supports!');
+    }
+    yield iterator.current;
+    position++;
+  }
+}
+
+/// Implementation of a Stream iterator that reads a chunked stream of [List<T>].
+class ChunkedStreamIterator<T> {
+  /// Underlying iterator that iterates through the original stream.
+  final StreamIterator<T> _iterator;
+
+  /// Keeps track of the number of elements left in the current substream.
+  int _toRead = 0;
+
+  /// Keeps track of the current substream we are supporting.
+  int _substreamId = 0;
+
+  ChunkedStreamIterator(Stream<List<T>> stream)
+      : _iterator = StreamIterator(stream.expand((element) => element));
+
+  /// Returns a block of the next [size] elements.
+  ///
+  /// Returns a list with less than [size] elements if the end of stream is
+  /// encounted before [size] elements are read.
+  ///
+  /// If an error is encountered before reading [size] elements, the error
+  /// will be thrown.
+  Future<List<T>> read(int size) async {
+    /// Clears the remainder of elements if the user forgot to drain it.
+    while (_toRead > 0 && await _iterator.moveNext()) {
+      _toRead--;
     }
 
-    if (partialChunk.length >= size) {
-      yield partialChunk.sublist(partialChunkIndex, size);
-      return;
+    final result = <T>[];
+
+    while (size-- > 0 && await _iterator.moveNext()) {
+      result.add(_iterator.current);
     }
 
-    /// Remove the chunks that have been yielded.
-    partialChunk = partialChunk.sublist(partialChunkIndex);
+    return result;
   }
 
-  /// Add final partial chunk to output stream, if any.
-  if (partialChunk.isNotEmpty) yield partialChunk;
+  /// Cancels the stream iterator (and the underlying stream subscription) early.
+  ///
+  /// The [ChunkedStreamIterator] is automatically cancelled if [read] goes
+  /// reaches the end of the stream or an error.
+  ///
+  /// Users should call [cancel] to ensure that the stream is properly closed
+  /// if they need to stop listening earlier than the end of the stream.
+  ///
+  /// Returns a future if the [cancel] operation is not completed
+  /// asynchronously. Otherwise returns null.
+  Future<dynamic> cancel() => _iterator.cancel();
+
+  /// Creates a sub-[Stream] with the next [size] elements.
+  ///
+  /// The resulting stream may contain less than [size] elements if the
+  /// underlying stream has less than [size] elements before the end of stream.
+  ///
+  /// If [read] is called before the sub-[Stream] is fully read, the remainder
+  /// of the elements in the sub-[Stream] will be automatically drained.
+  Stream<T> substream(int size) {
+    _toRead = size;
+    _substreamId++;
+
+    return _substream(_substreamId);
+  }
+
+  Stream<T> _substream(int substreamId) async* {
+    /// Only yield when we are dealing with the same substream and there are
+    /// elements to be read.
+    while (_substreamId == substreamId &&
+        _toRead > 0 &&
+        await _iterator.moveNext()) {
+      _toRead--;
+      yield _iterator.current;
+    }
+  }
 }
