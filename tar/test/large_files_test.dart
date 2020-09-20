@@ -133,14 +133,17 @@ void main() async {
   });
 
   test('reads a large file successfully', () async {
-    final files = {'test.txt': ioBlockSize * 5};
+    final files = {'test.txt': 2 * ioBlockSize - 513};
     final testArchive = await createTestArchive(files);
 
     await validateTestArchive(testArchive, files);
   });
 
   test('reads multiple large files successfully', () async {
-    final files = {'test.txt': 2 * ioBlockSize - 513};
+    final files = {
+      'test.txt': ioBlockSize + 3,
+      'test2.txt': 2 * ioBlockSize + 4
+    };
 
     final testArchive = await createTestArchive(files);
 
