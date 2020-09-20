@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
@@ -24,14 +25,6 @@ String findTarPath() {
   return 'tar';
 }
 
-/// Writes [size] random bytes into [sink].
-void writeRandomToSink(IOSink sink, int size) {
-  final random = Random();
-  while (size-- > 0) {
-    sink.add([random.nextInt(256)]);
-  }
-}
-
 Uri _testDirectoryUri;
 
 Future<Uri> findTestDirectoryUri() async {
@@ -46,31 +39,60 @@ Future<Uri> findTestDirectoryUri() async {
 
 /// Creates a test file with file name [fileName] and [size] with randomized
 /// byte contents.
-Future<File> createTestFile(String fileName, int size) async {
+Future<void> createTestFile(String fileName, int size) async {
   final uri = (await findTestDirectoryUri()).resolve(fileName);
   final testFile = File.fromUri(uri);
   final sink = testFile.openWrite();
 
-  writeRandomToSink(sink, size);
+  final random = Random();
+  while (size-- > 0) {
+    sink.add([random.nextInt(256)]);
+  }
   await sink.close();
-
-  return testFile;
 }
 
 /// Creates a clean (no data bytes) sparse test file with file name [fileName]
 /// and [size] bytes.
-Future<File> createCleanSparseTestFile(String fileName, int size) async {
+Future<void> createCleanSparseTestFile(String fileName, int size) async {
   final testDirectoryUri = await findTestDirectoryUri();
 
   await Process.run('truncate', ['--size=$size', fileName],
       workingDirectory: testDirectoryUri.path);
 }
 
+/// Creates a sparse test file with file name [fileName] and [size] bytes.
+Future<void> createSparseTestFile(String fileName, int size) async {
+  final uri = (await findTestDirectoryUri()).resolve(fileName);
+  final testFile = File.fromUri(uri);
+  final sink = testFile.openWrite();
+
+  final random = Random();
+
+  // Randomly generates blocks of 512 null bytes.
+  while (size > 0) {
+    var nextBlockSize = min(size, 512);
+
+    if (random.nextBool()) {
+      sink.add(List.filled(nextBlockSize, 0));
+    } else {
+      final block = <int>[];
+      for (var i = 0; i < nextBlockSize; i++) {
+        block.add(random.nextInt(256));
+      }
+
+      sink.add(block);
+    }
+
+    size -= nextBlockSize;
+  }
+  await sink.close();
+}
+
 /// Creates a [format] TAR archive with file name [archiveName], consisting of
 /// [files], which contain a map from file names to sparse files.
 ///
 /// Valid values for [format] are: `gnu`, `oldgnu`, `posix`, `ustar`, `v7`.
-Future<File> createTestArchive(Map<String, Future<File> Function(String)> files,
+Future<File> createTestArchive(Map<String, Future<void> Function(String)> files,
     [String archiveFormat = 'gnu', String sparseVersion]) async {
   final testDirectoryUri = await findTestDirectoryUri();
   final uri = testDirectoryUri.resolve('test.tar');
@@ -116,7 +138,7 @@ Future<List> read(StreamIterator iterator, int size) async {
 
 /// Validates the contents of the test archive at the byte level.
 Future<void> validateTestArchive(
-    File testArchive, Map<String, Future<File> Function(String)> files) async {
+    File testArchive, Map<String, Future<void> Function(String)> files) async {
   expect(testArchive.existsSync(), isTrue);
 
   final reader = TarReader(testArchive.openRead());
@@ -184,87 +206,72 @@ void main() async {
     });
   }
 
-  test('reads a clean large sparse file successfully (PAX v0.0)', () async {
-    final files = {
-      'test.txt': (String name) async =>
-          await createCleanSparseTestFile(name, 2 * ioBlockSize - 513)
-    };
-    final testArchive = await createTestArchive(files, 'pax', '0.0');
+  for (final format in ['gnu', 'posix']) {
+    for (final sparseVersion in ['0.0', '0.1', '1.0']) {
+      test(
+          'reads a clean large sparse file successfully ($format $sparseVersion)',
+          () async {
+        final files = {
+          'test.txt': (String name) async =>
+              await createCleanSparseTestFile(name, 2 * ioBlockSize - 513)
+        };
+        final testArchive =
+            await createTestArchive(files, format, sparseVersion);
 
-    await validateTestArchive(testArchive, files);
-  });
+        await validateTestArchive(testArchive, files);
+      });
 
-  test('reads multiple clean large sparse files successfully (GNU v0.0)',
-      () async {
-    final files = {
-      'test.txt': (String name) async =>
-          await createTestFile(name, ioBlockSize + 3),
-      'test2.txt': (String name) async =>
-          await createCleanSparseTestFile(name, 2 * ioBlockSize + 4),
-      'test3.txt': (String name) async =>
-          await createTestFile(name, ioBlockSize - 2),
-      'test4.txt': (String name) async =>
-          await createCleanSparseTestFile(name, ioBlockSize - 2)
-    };
+      test('reads a large sparse file successfully ($format $sparseVersion)',
+          () async {
+        final files = {
+          'test.txt': (String name) async =>
+              await createSparseTestFile(name, 2 * ioBlockSize - 513)
+        };
+        final testArchive =
+            await createTestArchive(files, format, sparseVersion);
 
-    final testArchive = await createTestArchive(files, 'gnu', '0.0');
+        await validateTestArchive(testArchive, files);
+      });
 
-    await validateTestArchive(testArchive, files);
-  });
+      test(
+          'reads multiple clean large sparse files successfully ($format '
+          '$sparseVersion)', () async {
+        final files = {
+          'test.txt': (String name) async =>
+              await createTestFile(name, ioBlockSize + 3),
+          'test2.txt': (String name) async =>
+              await createCleanSparseTestFile(name, 2 * ioBlockSize + 4),
+          'test3.txt': (String name) async =>
+              await createTestFile(name, ioBlockSize - 2),
+          'test4.txt': (String name) async =>
+              await createCleanSparseTestFile(name, ioBlockSize - 2)
+        };
 
-  test('reads a clean large sparse file successfully (GNU v0.1)', () async {
-    final files = {
-      'test.txt': (String name) async =>
-          await createCleanSparseTestFile(name, 2 * ioBlockSize - 513)
-    };
-    final testArchive = await createTestArchive(files, 'gnu', '0.1');
+        final testArchive =
+            await createTestArchive(files, format, sparseVersion);
 
-    await validateTestArchive(testArchive, files);
-  });
+        await validateTestArchive(testArchive, files);
+      });
 
-  test('reads multiple clean large sparse files successfully (GNU v0.1)',
-      () async {
-    final files = {
-      'test.txt': (String name) async =>
-          await createTestFile(name, ioBlockSize + 3),
-      'test2.txt': (String name) async =>
-          await createCleanSparseTestFile(name, 2 * ioBlockSize + 4),
-      'test3.txt': (String name) async =>
-          await createTestFile(name, ioBlockSize - 2),
-      'test4.txt': (String name) async =>
-          await createCleanSparseTestFile(name, ioBlockSize - 2)
-    };
+      test(
+          'reads multiple  large sparse files successfully ($format '
+          '$sparseVersion)', () async {
+        final files = {
+          'test.txt': (String name) async =>
+              await createTestFile(name, ioBlockSize + 3),
+          'test2.txt': (String name) async =>
+              await createSparseTestFile(name, 2 * ioBlockSize + 4),
+          'test3.txt': (String name) async =>
+              await createCleanSparseTestFile(name, ioBlockSize - 2),
+          'test4.txt': (String name) async =>
+              await createSparseTestFile(name, ioBlockSize - 2)
+        };
 
-    final testArchive = await createTestArchive(files, 'gnu', '0.1');
+        final testArchive =
+            await createTestArchive(files, format, sparseVersion);
 
-    await validateTestArchive(testArchive, files);
-  });
-
-  test('reads a clean large sparse file successfully (GNU v1.0)', () async {
-    final files = {
-      'test.txt': (String name) async =>
-          await createCleanSparseTestFile(name, 2 * ioBlockSize - 513)
-    };
-    final testArchive = await createTestArchive(files, 'gnu', '1.0');
-
-    await validateTestArchive(testArchive, files);
-  });
-
-  test('reads multiple clean large sparse files successfully (GNU v1.0)',
-      () async {
-    final files = {
-      'test.txt': (String name) async =>
-          await createTestFile(name, ioBlockSize + 3),
-      'test2.txt': (String name) async =>
-          await createCleanSparseTestFile(name, 2 * ioBlockSize + 4),
-      'test3.txt': (String name) async =>
-          await createTestFile(name, ioBlockSize - 2),
-      'test4.txt': (String name) async =>
-          await createCleanSparseTestFile(name, ioBlockSize - 2)
-    };
-
-    final testArchive = await createTestArchive(files, 'gnu', '1.0');
-
-    await validateTestArchive(testArchive, files);
-  });
+        await validateTestArchive(testArchive, files);
+      });
+    }
+  }
 }
