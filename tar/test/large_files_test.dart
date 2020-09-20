@@ -8,7 +8,7 @@ import 'package:tar/src/reader.dart';
 import 'package:tar/src/stream.dart';
 import 'package:test/test.dart';
 
-/// Find a tar. Prefering system installed tar.
+/// Find a tar path, preferring system installed tar.
 ///
 /// On linux tar should always be /bin/tar [See FHS 2.3][1]
 /// On MacOS it seems to always be /usr/bin/tar.
@@ -24,13 +24,15 @@ String findTarPath() {
   return 'tar';
 }
 
-/// Writes [size] characters into [sink].
+/// Writes [size] random bytes into [sink].
 void writeRandomToSink(IOSink sink, int size) {
   final random = Random();
   while (size-- > 0) {
     sink.add([random.nextInt(256)]);
   }
 }
+
+Uri _testDirectoryUri;
 
 Future<Uri> findTestDirectoryUri() async {
   if (_testDirectoryUri != null) return _testDirectoryUri;
@@ -42,8 +44,8 @@ Future<Uri> findTestDirectoryUri() async {
   return _testDirectoryUri;
 }
 
-Uri _testDirectoryUri;
-
+/// Creates a test file with file name [fileName] and [size] with randomized
+/// byte contents.
 Future<File> createTestFile(String fileName, int size) async {
   final uri = (await findTestDirectoryUri()).resolve(fileName);
   final testFile = File.fromUri(uri);
@@ -82,16 +84,18 @@ Future<File> createTestArchive(Map<String, int> files) async {
   return testArchive;
 }
 
-Future<List> read(StreamIterator i, int size) async {
+/// Reads the next [size] bytes from [iterator].
+Future<List> read(StreamIterator iterator, int size) async {
   final result = [];
 
-  while (size-- > 0 && await i.moveNext()) {
-    result.add(i.current);
+  while (size-- > 0 && await iterator.moveNext()) {
+    result.add(iterator.current);
   }
 
   return result;
 }
 
+/// Validates the contents of the test archive at the byte level.
 Future<void> validateTestArchive(
     File testArchive, Map<String, int> files) async {
   expect(testArchive.existsSync(), isTrue);
@@ -102,7 +106,7 @@ Future<void> validateTestArchive(
     expect(await reader.next(), isTrue);
 
     final actualFile =
-        File.fromUri(testArchive.uri.resolve('${reader.header.name}'));
+        File.fromUri(testArchive.uri.resolve(reader.header.name));
     expect(actualFile.existsSync(), isTrue);
 
     final actualFileContents = ChunkedStreamIterator(actualFile.openRead());
@@ -142,7 +146,8 @@ void main() async {
   test('reads multiple large files successfully', () async {
     final files = {
       'test.txt': ioBlockSize + 3,
-      'test2.txt': 2 * ioBlockSize + 4
+      'test2.txt': 2 * ioBlockSize + 4,
+      'test3.txt': ioBlockSize - 2
     };
 
     final testArchive = await createTestArchive(files);
