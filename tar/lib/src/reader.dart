@@ -199,11 +199,9 @@ class TarReader {
       final sparseHoles = invertSparseEntries(sparseData, header.size);
       final sparseDataCount = countData(sparseData);
 
-      if (sparseDataCount > 0) {
-        _contents =
-            _chunkedStream.substream(numBlocks(sparseDataCount) * blockSize);
-        _contents = sparseStream(_contents, sparseHoles, header.size);
-      }
+      _contents =
+          _chunkedStream.substream(numBlocks(sparseDataCount) * blockSize);
+      _contents = sparseStream(_contents, sparseHoles, header.size);
     } else {
       var size = header.size;
       if (!header.hasContent) size = 0;
