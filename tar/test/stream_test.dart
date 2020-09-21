@@ -128,6 +128,7 @@ void main() {
     expect(await s.read(1), equals(['a']));
     final i = StreamIterator(s.substream(2));
     expect(await s.read(1), equals(['1']));
+    // ignore: unused_local_variable
     final i2 = StreamIterator(s.substream(2));
     expect(await i.moveNext(), false);
     expect(await s.read(1), equals([]));

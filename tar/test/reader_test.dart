@@ -774,7 +774,7 @@ void main() async {
 
           for (var i = 0; i < expectedHeaders.length; i++) {
             expect(await tarReader.next(), true);
-            expect(tarReader.header, expectedHeaders[i]);
+            expect(await tarReader.header, expectedHeaders[i]);
 
             if (checksums != null) {
               final contents = await tarReader.contents.toList();
@@ -876,9 +876,13 @@ void main() async {
     final tarReader = TarReader(testFile.openRead());
     final headers = <TarHeader>[];
 
+    expect(await tarReader.header, null);
+
     while (await tarReader.next()) {
-      headers.add(tarReader.header);
+      headers.add(await tarReader.header);
     }
+
+    expect(await tarReader.header, null);
 
     /// File is crafted with 16 entries. The later 8 are identical to the first
     /// 8 except that the size is set.
@@ -1271,7 +1275,7 @@ void main() async {
           expect(await reader.next(), true);
 
           if (testInputs['wantSize'] != null) {
-            expect(reader.header.size, testInputs['wantSize']);
+            expect((await reader.header).size, testInputs['wantSize']);
           }
 
           if (testInputs['wantMap'] != null) {

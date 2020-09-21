@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
@@ -147,7 +146,7 @@ Future<void> validateTestArchive(
     expect(await reader.next(), isTrue);
 
     final actualFile =
-        File.fromUri(testArchive.uri.resolve(reader.header.name));
+        File.fromUri(testArchive.uri.resolve((await reader.header).name));
     expect(actualFile.existsSync(), isTrue);
 
     final actualFileContents = ChunkedStreamIterator(actualFile.openRead());

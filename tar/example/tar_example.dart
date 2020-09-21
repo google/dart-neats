@@ -9,6 +9,6 @@ void main() async {
   final tarFileStream = TarReader(tarStream);
 
   while (await tarFileStream.next()) {
-    print(tarFileStream.header.name);
+    print((await tarFileStream.header).name);
   }
 }
