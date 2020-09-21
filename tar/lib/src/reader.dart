@@ -31,18 +31,23 @@ import 'utils.dart';
 /// to read each archive where possible.
 @sealed
 class TarReader {
-  /// A chunked stream iterator to enable us to get our data 512 bytes at a time.
+  /// A chunked stream iterator to enable us to get our data.
   final ChunkedStreamIterator<int> _chunkedStream;
 
-  /// The [TarHeader] for the current file.
+  /// The [TarHeader] for the current file. Completes when a call to `next`
+  /// completes as well.
   ///
   /// Is `null` before the first call to `next` and after a call to `next`
   /// completes with a `false` result.
   Future<TarHeader> get header => _header;
-
   Future<TarHeader> _header;
 
-  /// The current file contents.
+  /// The current file contents. This produces an empty stream if the header
+  /// indicates that the current entry does not have any real size (e.g.
+  /// directories, fifo, etc).
+  ///
+  /// Is `null` before the first call to `next` and after a call to `next`
+  /// completes with a `false` result.
   Stream<int> get contents => _contents;
   Stream<int> _contents;
 
@@ -87,6 +92,7 @@ class TarReader {
       nextHeader = await _readHeader(rawHeader);
       if (nextHeader == null) {
         completer.complete(null);
+        _contents = null;
         return false;
       }
 
@@ -110,6 +116,7 @@ class TarReader {
           );
 
           completer.complete(nextHeader);
+          _contents = null;
           return true;
         }
 

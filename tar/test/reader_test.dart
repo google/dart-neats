@@ -772,6 +772,8 @@ void main() async {
         } else {
           final checksums = testInputs['checksums'] as List<String>;
 
+          expect(await tarReader.header, null);
+          expect(await tarReader.contents, null);
           for (var i = 0; i < expectedHeaders.length; i++) {
             expect(await tarReader.next(), true);
             expect(await tarReader.header, expectedHeaders[i]);
@@ -784,6 +786,8 @@ void main() async {
             }
           }
           expect(await tarReader.next(), false);
+          expect(await tarReader.header, null);
+          expect(await tarReader.contents, null);
         }
       });
     }
@@ -852,18 +856,41 @@ void main() async {
         final tarReader = TarReader(testFile.openRead());
         final testCases = testInputs['cases'] as List<String>;
 
+        expect(await tarReader.header, null);
+        expect(tarReader.contents, null);
+
         for (var j = 0; j < testCases.length; j++) {
           expect(await tarReader.next(), true);
           final contents = await tarReader.contents.toList();
           expect(String.fromCharCodes(contents), testCases[j]);
         }
         expect(await tarReader.next(), false);
+        expect(await tarReader.header, null);
+        expect(tarReader.contents, null);
       });
     }
   });
 
-  /// Skipping TestUninitializedRead and TestRestTruncation from the Go
-  /// implementation because the way we do read is different.
+  test('reader produces an empty stream if the entry has no size', () async {
+    final testFileUri = testDirectoryUri.resolve('trailing-slash.tar');
+    final testFile = File.fromUri(testFileUri);
+
+    if (!testFile.existsSync()) {
+      throw ArgumentError('File not found at ${testFile.path}');
+    }
+
+    final tarReader = TarReader(testFile.openRead());
+
+    expect(await tarReader.header, null);
+    expect(tarReader.contents, null);
+
+    while (await tarReader.next()) {
+      expect(await tarReader.contents.toList(), []);
+    }
+
+    expect(await tarReader.header, null);
+    expect(tarReader.contents, null);
+  });
 
   test('reader does not read header-only files', () async {
     final testFileUri = testDirectoryUri.resolve('hdr-only.tar');
@@ -877,12 +904,14 @@ void main() async {
     final headers = <TarHeader>[];
 
     expect(await tarReader.header, null);
+    expect(tarReader.contents, null);
 
     while (await tarReader.next()) {
       headers.add(await tarReader.header);
     }
 
     expect(await tarReader.header, null);
+    expect(tarReader.contents, null);
 
     /// File is crafted with 16 entries. The later 8 are identical to the first
     /// 8 except that the size is set.
