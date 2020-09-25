@@ -35,17 +35,14 @@ Stream<int> sparseStream(
 
   while (position < size) {
     /// Yield all the necessary sparse holes.
-    while (sparseHoleIndex < sparseHoles.length) {
+    while (sparseHoleIndex < sparseHoles.length &&
+        sparseHoles[sparseHoleIndex].offset == position) {
       final sparseHole = sparseHoles[sparseHoleIndex];
-      if (sparseHole.offset == position) {
-        for (final byte in List<int>.filled(sparseHole.length, 0)) {
-          yield byte;
-        }
-        position += sparseHole.length;
-        sparseHoleIndex++;
-      } else {
-        break;
+      for (final byte in List<int>.filled(sparseHole.length, 0)) {
+        yield byte;
       }
+      position += sparseHole.length;
+      sparseHoleIndex++;
     }
 
     if (position == size) break;
