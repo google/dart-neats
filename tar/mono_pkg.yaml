@@ -4,7 +4,7 @@ dart:
 
 stages:
   - analyze:
-      - dartanalyzer
-      - dartfmt
+      - dartanalyzer: .
+      - dartfmt: -n .
   - tests:
       - test

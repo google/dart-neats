@@ -103,10 +103,7 @@ class ChunkedStreamIterator<T> {
   ///
   /// Users should call [cancel] to ensure that the stream is properly closed
   /// if they need to stop listening earlier than the end of the stream.
-  ///
-  /// Returns a future if the [cancel] operation is not completed
-  /// asynchronously. Otherwise returns null.
-  Future<dynamic> cancel() => _iterator.cancel();
+  Future<void> cancel() async => await _iterator.cancel();
 
   /// Creates a sub-[Stream] with the next [size] elements.
   ///
