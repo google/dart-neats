@@ -780,7 +780,9 @@ void main() async {
 
             if (checksums != null) {
               final contents = await tarReader.contents.toList();
-              final hash = md5.convert(contents).toString();
+              final hash = md5
+                  .convert(contents.expand((element) => element).toList())
+                  .toString();
 
               expect(hash, checksums[i]);
             }
@@ -862,7 +864,8 @@ void main() async {
         for (var j = 0; j < testCases.length; j++) {
           expect(await tarReader.next(), true);
           final contents = await tarReader.contents.toList();
-          expect(String.fromCharCodes(contents), testCases[j]);
+          expect(String.fromCharCodes(contents.expand((element) => element)),
+              testCases[j]);
         }
         expect(await tarReader.next(), false);
         expect(await tarReader.header, null);

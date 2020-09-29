@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /// An exception indicating that there was an issue with parsing a
-/// TAR File. Intended to be seen by the user.
+/// .tar file. Intended to be seen by the user.
 class _TarFileException extends FormatException {
   _TarFileException(String message) : super(message);
 }

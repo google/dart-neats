@@ -150,11 +150,11 @@ Future<void> validateTestArchive(
     expect(actualFile.existsSync(), isTrue);
 
     final actualFileContents = ChunkedStreamIterator(actualFile.openRead());
-    final readTarContents = StreamIterator(reader.contents);
+    final readTarContents = ChunkedStreamIterator(reader.contents);
 
     while (true) {
-      final actualChunk = await actualFileContents.read(ioBlockSize);
-      final readChunk = await read(readTarContents, ioBlockSize);
+      final actualChunk = (await actualFileContents.readAsBlock(ioBlockSize));
+      final readChunk = (await readTarContents.readAsBlock(ioBlockSize));
       expect(readChunk, actualChunk);
 
       if (actualChunk.isEmpty) break;

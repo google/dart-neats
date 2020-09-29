@@ -48,8 +48,8 @@ class TarReader {
   ///
   /// Is `null` before the first call to `next` and after a call to `next`
   /// completes with a `false` result.
-  Stream<int> get contents => _contents;
-  Stream<int> _contents;
+  Stream<List<int>> get contents => _contents;
+  Stream<List<int>> _contents;
 
   TarReader(Stream<List<int>> tarStream)
       : _chunkedStream = ChunkedStreamIterator(tarStream) {
@@ -87,7 +87,7 @@ class TarReader {
         _skipNext = 0;
       }
 
-      var rawHeader = await _chunkedStream.read(blockSize);
+      var rawHeader = (await _chunkedStream.readAsBlock(blockSize));
 
       nextHeader = await _readHeader(rawHeader);
       if (nextHeader == null) {
@@ -102,9 +102,8 @@ class TarReader {
       if (nextHeader.typeFlag == TypeFlag.xHeader ||
           nextHeader.typeFlag == TypeFlag.xGlobalHeader) {
         format = format.mayOnlyBe(TarFormat.PAX);
-        final rawPAXHeaders =
-            await _chunkedStream.read(numBlocks(nextHeader.size) * blockSize);
-
+        final rawPAXHeaders = (await _chunkedStream
+            .readAsBlock(numBlocks(nextHeader.size) * blockSize));
         paxHeaders = parsePAX(rawPAXHeaders);
         if (nextHeader.typeFlag == TypeFlag.xGlobalHeader) {
           nextHeader.mergePAX(paxHeaders);
@@ -125,8 +124,8 @@ class TarReader {
       } else if (nextHeader.typeFlag == TypeFlag.gnuLongLink ||
           nextHeader.typeFlag == TypeFlag.gnuLongName) {
         format = format.mayOnlyBe(TarFormat.GNU);
-        final realName =
-            await _chunkedStream.read(numBlocks(nextHeader.size) * blockSize);
+        final realName = (await _chunkedStream
+            .readAsBlock(numBlocks(nextHeader.size) * blockSize));
 
         if (nextHeader.typeFlag == TypeFlag.gnuLongName) {
           gnuLongName = parseString(realName);
@@ -183,7 +182,8 @@ class TarReader {
     if (rawHeader.isEmpty) return null;
 
     if (ListEquality().equals(rawHeader, zeroBlock)) {
-      rawHeader = await _chunkedStream.read(blockSize);
+      rawHeader = (await _chunkedStream.readAsBlock(blockSize));
+
       // Exactly 1 block of zeroes is read and EOF is hit.
       if (rawHeader.isEmpty) return null;
 
@@ -232,7 +232,7 @@ class TarReader {
       }
 
       if (size == 0) {
-        _contents = Stream<int>.empty();
+        _contents = Stream<List<int>>.empty();
       } else {
         _contents = _chunkedStream.substream(header.size);
         _skipNext = blockPadding(header.size);
@@ -308,7 +308,7 @@ class TarReader {
     /// Ensures that [block] h as at least [n] tokens.
     void feedTokens(int n) async {
       while (newLineCount < n) {
-        final newBlock = await _chunkedStream.read(blockSize);
+        final newBlock = (await _chunkedStream.readAsBlock(blockSize));
         if (newBlock.isEmpty) {
           throw createHeaderException(
               'GNU Sparse Map does not have enough lines!');
@@ -445,7 +445,7 @@ class TarReader {
       if (sparse[24 * maxEntries] > 0) {
         /// If there are more entries, read an extension header and parse its
         /// entries.
-        sparse = await _chunkedStream.read(blockSize);
+        sparse = (await _chunkedStream.readAsBlock(blockSize));
         sparseMaps.add(sparse);
         continue;
       }
