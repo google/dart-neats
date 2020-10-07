@@ -22,6 +22,7 @@ void main() {
         template,
         allowElementId: (id) => id == 'only-allowed-id',
         allowClassName: (className) => className == 'only-allowed-class',
+        addLinkRel: (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : null,
       );
       expect(sanitizedHtml, contains(needle));
     });
@@ -33,6 +34,7 @@ void main() {
         template,
         allowElementId: (id) => id == 'only-allowed-id',
         allowClassName: (className) => className == 'only-allowed-class',
+        addLinkRel: (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : null,
       );
       expect(sanitizedHtml, isNot(contains(needle)));
     });
@@ -117,4 +119,9 @@ void main() {
   testContains('<strong></strong> hello', '</strong>');
   testNotContains('<strong></strong> hello', '<strong />');
   testContains('<br>hello</br>', '<br />');
+
+  // test addLinkRel
+  testContains('<a href="bad-link">hello', 'bad-link');
+  testContains('<a href="bad-link">hello', 'rel="ugc nofollow"');
+  testNotContains('<a href="good-link">hello', 'rel="ugc nofollow"');
 }

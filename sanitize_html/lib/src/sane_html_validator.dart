@@ -214,10 +214,12 @@ final _elementAttributeValidators =
 class SaneHtmlValidator {
   final bool Function(String) allowElementId;
   final bool Function(String) allowClassName;
+  final Iterable<String> Function(String) addLinkRel;
 
   SaneHtmlValidator({
     @required this.allowElementId,
     @required this.allowClassName,
+    @required this.addLinkRel,
   });
 
   String sanitize(String htmlString) {
@@ -245,6 +247,15 @@ class SaneHtmlValidator {
         }
         return !_isAttributeAllowed(tagName, attrName, v);
       });
+      if (tagName == 'A') {
+        final href = node.attributes['href'];
+        if (href != null) {
+          final rels = addLinkRel(href);
+          if (rels != null && rels.isNotEmpty) {
+            node.attributes['rel'] = rels.join(' ');
+          }
+        }
+      }
     }
     if (node.hasChildNodes()) {
       // doing it in reverse order, because we could otherwise skip one, when a
