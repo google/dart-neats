@@ -1,3 +1,6 @@
+## v1.4.1
+ * Make `addLinkRel` optional. [Issue](https://github.com/google/dart-neats/issues/71).
+
 ## v1.4.0
  * Added `addLinkRel` option to `sanitize_html`. This will allow users to
    [qualify outbound links](https://support.google.com/webmasters/answer/96569)
