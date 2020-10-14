@@ -16,25 +16,40 @@ import 'package:test/test.dart';
 import 'package:sanitize_html/sanitize_html.dart' show sanitizeHtml;
 
 void main() {
-  void testContains(String template, String needle) {
-    test('"$template" does contain "$needle"', () {
-      final sanitizedHtml = sanitizeHtml(
+
+  // Calls sanitizeHtml with two different configurations.
+  //  * When `withOptionalParameters` is true, it calls the function with overrides
+  // for `allowElementId`, `allowClassName` and `addLinkRel`, for feature testing.
+  //  * When `withOptionalParameters` is false, it calls the function *only* with
+  // the passed-in template.
+  String doSanitizeHtml(String template, { bool withOptionalParameters = true }) {
+    if (!withOptionalParameters) {
+      return sanitizeHtml(template);
+    }
+
+    return sanitizeHtml(
         template,
         allowElementId: (id) => id == 'only-allowed-id',
         allowClassName: (className) => className == 'only-allowed-class',
         addLinkRel: (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : null,
       );
+  }
+
+  void testContains(String template, String needle, { bool withOptionalParameters = true }) {
+    test('"$template" does contain "$needle"', () {
+      final sanitizedHtml = doSanitizeHtml(
+        template,
+        withOptionalParameters: withOptionalParameters,
+      );
       expect(sanitizedHtml, contains(needle));
     });
   }
 
-  void testNotContains(String template, String needle) {
+  void testNotContains(String template, String needle, { bool withOptionalParameters = true }) {
     test('"$template" does not contain "$needle"', () {
-      final sanitizedHtml = sanitizeHtml(
+      final sanitizedHtml = doSanitizeHtml(
         template,
-        allowElementId: (id) => id == 'only-allowed-id',
-        allowClassName: (className) => className == 'only-allowed-class',
-        addLinkRel: (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : null,
+        withOptionalParameters: withOptionalParameters,
       );
       expect(sanitizedHtml, isNot(contains(needle)));
     });
@@ -124,4 +139,12 @@ void main() {
   testContains('<a href="bad-link">hello', 'bad-link');
   testContains('<a href="bad-link">hello', 'rel="ugc nofollow"');
   testNotContains('<a href="good-link">hello', 'rel="ugc nofollow"');
+
+  group('Optional parameters stay optional:', () {
+    // If any of these fail, it probably means a major version bump is required.
+    testContains('<a href="any-href">hey', 'href=', withOptionalParameters: false);
+    testNotContains('<a href="any-href">hey', 'rel=', withOptionalParameters: false);
+    testNotContains('<span id="any-id">hello</span>', 'id=', withOptionalParameters: false);
+    testNotContains('<span class="any-class">hello</span>', 'class=', withOptionalParameters: false);
+  });
 }
