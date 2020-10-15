@@ -41,7 +41,7 @@ String parseString(List<int> bytes, [int start, int end]) {
 
   try {
     return utf8.decode(charCodes);
-  } catch (e) {
+  } on FormatException {
     return String.fromCharCodes(charCodes).trim();
   }
 }
