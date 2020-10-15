@@ -1,7 +1,5 @@
 name: slugid
 version: 1.0.0+1
-authors:
-  - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
   A URL-safe base64 encoding for UUIDv4 stripped of padding. Useful when
   embedding short random UUIDs in URLs.

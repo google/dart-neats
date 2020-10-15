@@ -1,7 +1,5 @@
 name: http_methods
 version: 1.0.0
-authors:
-  - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
   List of all HTTP methods registered with IANA as list of strings, and metadata
   such as whether a method idempotent.

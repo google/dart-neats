@@ -1,7 +1,5 @@
 name: safe_url_check
 version: 1.0.0
-authors:
-  - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
   Check if an untrusted URL is broken, without allowing connections to a private
   IP address.
