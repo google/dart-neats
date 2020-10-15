@@ -608,6 +608,8 @@ bool isNotAscii(int i) => i > 128;
 
 bool isNul(int byte) => byte == NUL;
 
+bool isNulOrSpace(int byte) => isNul(byte) || byte == SPACE;
+
 /// Creates a partially-populated [TarHeader] from [file].
 /// If [file] describes a symbolic link, [fileInfoHeader] records the link
 /// as the link target. If [fileStat] describes a directory, a slash is appended

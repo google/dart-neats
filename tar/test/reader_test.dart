@@ -748,6 +748,41 @@ void main() async {
               },
               format: TarFormat.PAX)
         ]
+      },
+      {
+        'file': 'pax-non-ascii-name.tar',
+        'headers': [
+          TarHeader.internal(
+              name: 'æøå/',
+              mode: 493,
+              size: 0,
+              userName: 'sigurdm',
+              userId: 224757,
+              groupId: 89939,
+              groupName: 'primarygroup',
+              format: TarFormat.PAX,
+              typeFlag: TypeFlag.dir,
+              modified: DateTime.utc(2020, 10, 13, 13, 04, 32, 608, 662),
+              paxRecords: {
+                'path': 'æøå/',
+                'mtime': '1602594272.608662916',
+              }),
+          TarHeader.internal(
+              name: 'æøå/æøå.dart',
+              mode: 420,
+              size: 1024,
+              userName: 'sigurdm',
+              userId: 224757,
+              groupId: 89939,
+              groupName: 'primarygroup',
+              format: TarFormat.PAX,
+              typeFlag: TypeFlag.reg,
+              modified: DateTime.utc(2020, 10, 13, 13, 05, 12, 105, 884),
+              paxRecords: {
+                'path': 'æøå/æøå.dart',
+                'mtime': '1602594312.105884308',
+              }),
+        ]
       }
     ];
 
@@ -1317,219 +1352,5 @@ void main() async {
         }
       });
     }
-  });
-
-  /// TODO(walnut): figure out how to test this
-  group('read GNU sparse PAX headers', () {
-    // final tests = [
-    //   {
-    //     'inputHeaders': null,
-    //     'ok': true,
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseNumBlocks: '$int64MaxValue',
-    //       paxGNUSparseMap: '0,1,2,3',
-    //     },
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseNumBlocks: '4\x00',
-    //       paxGNUSparseMap: '0,1,2,3',
-    //     },
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseNumBlocks: '4',
-    //       paxGNUSparseMap: '0,1,2,3',
-    //     },
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseNumBlocks: '2',
-    //       paxGNUSparseMap: '0,1,2,3',
-    //     },
-    //     'wantMap': [SparseEntry(0, 1), SparseEntry(2, 3)],
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseNumBlocks: '2',
-    //       paxGNUSparseMap: '0, 1,2,3',
-    //     },
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseNumBlocks: '2',
-    //       paxGNUSparseMap: '0,1,02,3',
-    //       paxGNUSparseRealSize: '4321',
-    //     },
-    //     'wantMap': [SparseEntry(0, 1), SparseEntry(2, 3)],
-    //     'size': 4321,
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseNumBlocks: '2',
-    //       paxGNUSparseMap: '0,one1,2,3',
-    //     },
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseMajor: '0',
-    //       paxGNUSparseMinor: '0',
-    //       paxGNUSparseNumBlocks: '2',
-    //       paxGNUSparseMap: '0,1,2,3',
-    //       paxGNUSparseSize: '1234',
-    //       paxGNUSparseRealSize: '4321',
-    //       paxGNUSparseName: 'realname',
-    //     },
-    //     'wantMap': [SparseEntry(0, 1), SparseEntry(2, 3)],
-    //     'size': 1234,
-    //     'wantName': 'realname',
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseMajor: '0',
-    //       paxGNUSparseMinor: '0',
-    //       paxGNUSparseNumBlocks: '1',
-    //       paxGNUSparseMap: '10737418240,512',
-    //       paxGNUSparseSize: '10737418240',
-    //       paxGNUSparseName: 'realname',
-    //     },
-    //     'wantMap': [SparseEntry(10737418240, 512)],
-    //     'size': 10737418240,
-    //     'wantName': 'realname',
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseMajor: '0',
-    //       paxGNUSparseMinor: '0',
-    //       paxGNUSparseNumBlocks: '0',
-    //       paxGNUSparseMap: '',
-    //     },
-    //     'wantMap': <SparseEntry>[],
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseMajor: '0',
-    //       paxGNUSparseMinor: '1',
-    //       paxGNUSparseNumBlocks: '4',
-    //       paxGNUSparseMap: '0,5,10,5,20,5,30,5',
-    //     },
-    //     'wantMap': [
-    //       SparseEntry(0, 5),
-    //       SparseEntry(10, 5),
-    //       SparseEntry(20, 5),
-    //       SparseEntry(30, 5)
-    //     ],
-    //   },
-    //   {
-    //     'inputHeaders': {
-    //       paxGNUSparseMajor: '1',
-    //       paxGNUSparseMinor: '0',
-    //       paxGNUSparseNumBlocks: '4',
-    //       paxGNUSparseMap: '0,5,10,5,20,5,30,5',
-    //     },
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputData': padInput('0\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'wantMap': <SparseEntry>[],
-    //   },
-    //   {
-    //     'inputData': padInput('0\n').substring(blockSize - 1) + '#',
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'wantMap': <SparseEntry>[],
-    //   },
-    //   {
-    //     'inputData': padInput('0'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputData': padInput('ab\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputData': padInput('1\n2\n3\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'wantMap': [SparseEntry(2, 3)],
-    //   },
-    //   {
-    //     'inputData': padInput('1\n2\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputData': padInput('1\n2\n\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputData': '\x00' * blockSize + padInput('0\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputData': '0' * blockSize + padInput('1\n5\n1\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'wantMap': [SparseEntry(5, 1)],
-    //   },
-    //   {
-    //     'inputData': padInput('$int64MaxValue\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'ok': false,
-    //   },
-    //   {
-    //     'inputData': padInput(
-    //         '0' * 300 + '1\n' + '0' * 1000 + '5\n' + '0' * 800 + '2\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'wantMap': [SparseEntry(5, 2)],
-    //   },
-    //   {
-    //     'inputData': padInput('2\n10737418240\n512\n21474836480\n512\n'),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'wantMap': [
-    //       SparseEntry(10737418240, 512),
-    //       SparseEntry(21474836480, 512)
-    //     ],
-    //   },
-    //   {
-    //     'inputData': padInput('100\n' +
-    //         () {
-    //           final strings = <String>[];
-    //           for (var i = 0; i < 100; i++) {
-    //             strings.add('${i << 30}\n512\n');
-    //           }
-    //           return strings.join();
-    //         }()),
-    //     'inputHeaders': {paxGNUSparseMajor: '1', paxGNUSparseMinor: '0'},
-    //     'wantMap': () {
-    //       final sparseData = <SparseEntry>[];
-    //       for (var i = 0; i < 100; i++) {
-    //         sparseData.add(SparseEntry(i << 30, 512));
-    //       }
-    //       return sparseData;
-    //     }(),
-    //   }
-    // ];
-
-    // for (var i = 0; i < tests.length; i++) {
-    //   final testInputs = tests[i];
-    //   final header = TarHeader.internal();
-    //   header.paxRecords = testInputs['intputHeaders'];
-
-    //   /// Add canary byte.
-    //   final inputString = ((testInputs['inputData'] as String) ?? '') + '#';
-    //   final inputData = inputString.codeUnits;
-
-    //
-    // }
   });
 }

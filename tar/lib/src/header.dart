@@ -121,21 +121,21 @@ class TarHeader {
         header.format = format;
         prefix = parseString(rawHeader, 345, 500);
 
-        /// For Format detection, check if block is properly formatted since
-        /// the parser is more liberal than what USTAR actually permits.
+        /// Check if block is properly formatted since the parser is more
+        /// liberal than what USTAR actually permits.
         if (rawHeader.where(isNotAscii).isNotEmpty) {
-          throw createHeaderException('Non-ASCII characters detected in block');
+          format.mayOnlyBe(TarFormat.PAX);
         }
 
         /// Checks size, mode, userId, groupId, lastModifiedTime, devMajor, and
         /// devMinor to ensure they end in NUL
-        if (!(isNul(rawHeader[135]) && // size
-            isNul(rawHeader[107]) && // mode
-            isNul(rawHeader[115]) && // userId
-            isNul(rawHeader[123]) && // groupId
-            isNul(rawHeader[147]) && // modified
-            isNul(rawHeader[336]) && // devMajor && devMinor
-            isNul(rawHeader[344]))) {
+        if (!(isNulOrSpace(rawHeader[135]) && // size
+            isNulOrSpace(rawHeader[107]) && // mode
+            isNulOrSpace(rawHeader[115]) && // userId
+            isNulOrSpace(rawHeader[123]) && // groupId
+            isNulOrSpace(rawHeader[147]) && // modified
+            isNulOrSpace(rawHeader[336]) && // devMajor && devMinor
+            isNulOrSpace(rawHeader[344]))) {
           throw createHeaderException(
               'Found a numeric field that does not end in NUL');
         }
