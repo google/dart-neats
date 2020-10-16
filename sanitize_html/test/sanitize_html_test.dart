@@ -12,29 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:meta/meta.dart' show required;
 import 'package:test/test.dart';
 import 'package:sanitize_html/sanitize_html.dart' show sanitizeHtml;
 
 void main() {
-  void testContains(String template, String needle) {
+  // Calls sanitizeHtml with two different configurations.
+  //  * When `withOptionalConfiguration` is `true`: `allowElementId`, `allowClassName`
+  // and `addLinkRel` overrides are passed to the sanitizeHtml call of `template`.
+  // (This is the default behavior for the [testContains]/[testNotContains] methods.)
+  //  * When `withOptionalConfiguration` is false: only `template` is passed.
+  String doSanitizeHtml(String template,
+      {@required bool withOptionalConfiguration}) {
+    if (!withOptionalConfiguration) {
+      return sanitizeHtml(template);
+    }
+
+    return sanitizeHtml(
+      template,
+      allowElementId: (id) => id == 'only-allowed-id',
+      allowClassName: (className) => className == 'only-allowed-class',
+      addLinkRel: (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : null,
+    );
+  }
+
+  void testContains(String template, String needle,
+      {bool withOptionalConfiguration = true}) {
     test('"$template" does contain "$needle"', () {
-      final sanitizedHtml = sanitizeHtml(
+      final sanitizedHtml = doSanitizeHtml(
         template,
-        allowElementId: (id) => id == 'only-allowed-id',
-        allowClassName: (className) => className == 'only-allowed-class',
-        addLinkRel: (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : null,
+        withOptionalConfiguration: withOptionalConfiguration,
       );
       expect(sanitizedHtml, contains(needle));
     });
   }
 
-  void testNotContains(String template, String needle) {
+  void testNotContains(String template, String needle,
+      {bool withOptionalConfiguration = true}) {
     test('"$template" does not contain "$needle"', () {
-      final sanitizedHtml = sanitizeHtml(
+      final sanitizedHtml = doSanitizeHtml(
         template,
-        allowElementId: (id) => id == 'only-allowed-id',
-        allowClassName: (className) => className == 'only-allowed-class',
-        addLinkRel: (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : null,
+        withOptionalConfiguration: withOptionalConfiguration,
       );
       expect(sanitizedHtml, isNot(contains(needle)));
     });
@@ -124,4 +142,16 @@ void main() {
   testContains('<a href="bad-link">hello', 'bad-link');
   testContains('<a href="bad-link">hello', 'rel="ugc nofollow"');
   testNotContains('<a href="good-link">hello', 'rel="ugc nofollow"');
+
+  group('Optional parameters stay optional:', () {
+    // If any of these fail, it probably means a major version bump is required.
+    testContains('<a href="any-href">hey', 'href=',
+        withOptionalConfiguration: false);
+    testNotContains('<a href="any-href">hey', 'rel=',
+        withOptionalConfiguration: false);
+    testNotContains('<span id="any-id">hello</span>', 'id=',
+        withOptionalConfiguration: false);
+    testNotContains('<span class="any-class">hello</span>', 'class=',
+        withOptionalConfiguration: false);
+  });
 }
