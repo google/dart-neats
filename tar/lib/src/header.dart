@@ -105,8 +105,7 @@ class TarHeader {
         linkName: linkName);
 
     if (header.hasContent && size < 0) {
-      throw createHeaderException(
-          'Header indicates an invalid size of "$size"');
+      throw TarHeaderException('Header indicates an invalid size of "$size"');
     }
 
     if (format.isValid() && format != TarFormat.V7) {
@@ -136,7 +135,7 @@ class TarHeader {
             isNulOrSpace(rawHeader[147]) && // modified
             isNulOrSpace(rawHeader[336]) && // devMajor && devMinor
             isNulOrSpace(rawHeader[344]))) {
-          throw createHeaderException(
+          throw TarHeaderException(
               'Found a numeric field that does not end in NUL');
         }
       } else if (format.has(TarFormat.STAR)) {
@@ -162,7 +161,7 @@ class TarHeader {
     }
 
     if (!validateTypeFlag(header.typeFlag, header.format)) {
-      throw createHeaderException('Invalid Header');
+      throw TarHeaderException('Invalid Header');
     }
 
     return header;
@@ -249,7 +248,7 @@ class TarHeader {
             break;
         }
       } catch (e) {
-        throw createHeaderException('Invalid PAX header entry "${entry.key}: '
+        throw TarHeaderException('Invalid PAX header entry "${entry.key}: '
             '${entry.value}"!');
       }
     }
@@ -333,7 +332,7 @@ TarFormat _getFormat(List<int> rawHeader) {
   /// checksum as well for compatibility.
   if (checksum != computeSignedCheckSum(rawHeader) &&
       checksum != computeUnsignedCheckSum(rawHeader)) {
-    throw createHeaderException('Checksum does not match');
+    throw TarHeaderException('Checksum does not match');
   }
 
   final magic = String.fromCharCodes(rawHeader, 257, 263);

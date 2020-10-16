@@ -14,22 +14,12 @@
 
 /// An exception indicating that there was an issue with parsing a
 /// .tar file. Intended to be seen by the user.
-class _TarFileException extends FormatException {
-  _TarFileException(String message) : super(message);
+class TarFileException extends FormatException {
+  TarFileException(String message) : super(message);
 }
 
 /// An exception indicating that there was an issue with parsing a
 /// TAR Header. Intended to be seen by the user.
-class _TarHeaderException extends FormatException {
-  _TarHeaderException(String message) : super(message);
-}
-
-/// Helper method to throw a [TarHeaderException].
-Exception createHeaderException([String message = '']) {
-  return _TarHeaderException(message);
-}
-
-/// Helper method to throw a [TarFileException].
-Exception createFileException([String message = '']) {
-  return _TarFileException(message);
+class TarHeaderException extends FormatException {
+  TarHeaderException(String message) : super(message);
 }

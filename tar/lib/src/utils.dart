@@ -150,11 +150,11 @@ int tryParseOctal(List<int> bytes, String field, [int start, int end]) {
   try {
     result = parseOctal(bytes, left, right);
   } on RangeError {
-    throw createHeaderException(
+    throw TarHeaderException(
         'Failed to parse the "$field" field from the raw header. '
         '[$left, $right] is not in [0, ${bytes.length}]');
   } on FormatException {
-    throw createHeaderException(
+    throw TarHeaderException(
         'Failed to parse the "$field" field from the raw header. Bytes '
         '${bytes.sublist(left, right)} from indices [$left, $right] do not '
         'produce a parsable radix-8 string.');
@@ -187,11 +187,11 @@ DateTime parsePAXTime(String paxTimeString) {
   /// Parse the seconds.
   final seconds = int.tryParse(secondsString);
   if (seconds == null) {
-    throw createHeaderException('Invalid PAX time $paxTimeString detected!');
+    throw TarHeaderException('Invalid PAX time $paxTimeString detected!');
   }
 
   if (microSecondsString.replaceAll(RegExp('[0-9]'), '') != '') {
-    throw createHeaderException(
+    throw TarHeaderException(
         'Invalid nanoseconds $microSecondsString detected');
   }
 
@@ -254,7 +254,7 @@ Map<String, String> parsePAX(List<int> paxHeaders) {
     if (recordLength == null ||
         recordLength < 5 ||
         paxHeaders.length - currentIndex < recordLength) {
-      throw createHeaderException('Invalid PAX Record');
+      throw TarHeaderException('Invalid PAX Record');
     }
 
     final record = paxHeaders.sublist(space + 1, currentIndex + recordLength);
@@ -262,12 +262,12 @@ Map<String, String> parsePAX(List<int> paxHeaders) {
     currentIndex += recordLength;
 
     if (newLine != NEWLINE) {
-      throw createHeaderException('PAX Record contains invalid length');
+      throw TarHeaderException('PAX Record contains invalid length');
     }
 
     final equals = record.indexOf(EQUALS);
     if (equals == -1) {
-      throw createHeaderException('Unable to find "=" in PAX Record');
+      throw TarHeaderException('Unable to find "=" in PAX Record');
     }
 
     /// Opting to not use [parseString] here because we want to preserve
@@ -279,15 +279,14 @@ Map<String, String> parsePAX(List<int> paxHeaders) {
     final value = utf8.decode(record.sublist(equals + 1, record.length - 1));
 
     if (!isValidPAXRecord(key, value)) {
-      throw createHeaderException(
-          'Invalid key/value combination in PAX Record');
+      throw TarHeaderException('Invalid key/value combination in PAX Record');
     }
 
     if (key == paxGNUSparseNumBytes || key == paxGNUSparseOffset) {
       if ((sparseMap.length % 2 == 0 && key != paxGNUSparseOffset) ||
           (sparseMap.length % 2 == 1 && key != paxGNUSparseNumBytes) ||
           value.contains(',')) {
-        throw createHeaderException('Invalid PAX Record');
+        throw TarHeaderException('Invalid PAX Record');
       }
 
       sparseMap.add(value);
@@ -332,7 +331,7 @@ String formatPAXRecord(String key, String value) {
   ArgumentError.checkNotNull(value, 'value');
 
   if (!isValidPAXRecord(key, value)) {
-    throw createHeaderException('Invalid PAX Record');
+    throw TarHeaderException('Invalid PAX Record');
   }
 
   const padding = 3; // Extra padding for ' ', '=', and '\n'
@@ -644,9 +643,9 @@ TarHeader fileInfoHeader(File file, String link) {
   } else if (isNamedPipe(fileMode)) {
     header.typeFlag = TypeFlag.fifo;
   } else if (isSocket(fileMode)) {
-    throw createHeaderException('Sockets not supported!');
+    throw TarHeaderException('Sockets not supported!');
   } else {
-    throw createHeaderException('Unknown file mode $fileMode');
+    throw TarHeaderException('Unknown file mode $fileMode');
   }
 
   if (isSetUid(fileMode)) header.mode |= c_ISUID;

@@ -1101,7 +1101,7 @@ void main() async {
       } else if (format.has(TarFormat.USTAR | TarFormat.PAX)) {
         rawHeader.setRange(257, 265, (magicUSTAR + versionUSTAR).codeUnits);
       } else {
-        throw createHeaderException('Invalid format');
+        throw TarHeaderException('Invalid format');
       }
     }
 
