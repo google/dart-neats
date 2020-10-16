@@ -36,7 +36,7 @@ abstract class ChunkedStreamIterator<T> {
   ///
   /// If an error is encountered before reading [size] elements, the error
   /// will be thrown.
-  Future<List<List<T>>> read(int size);
+  Future<List<List<T>>> readPreservingChunks(int size);
 
   /// Returns a list of the next [size] elements.
   ///
@@ -45,11 +45,11 @@ abstract class ChunkedStreamIterator<T> {
   ///
   /// If an error is encountered before reading [size] elements, the error
   /// will be thrown.
-  Future<List<T>> readAsBlock(int size);
+  Future<List<T>> read(int size);
 
   /// Cancels the stream iterator (and the underlying stream subscription) early.
   ///
-  /// The [ChunkedStreamIterator] is automatically cancelled if [read] goes
+  /// The [ChunkedStreamIterator] is automatically cancelled if [readPreservingChunks] goes
   /// reaches the end of the stream or an error.
   ///
   /// Users should call [cancel] to ensure that the stream is properly closed
@@ -61,7 +61,7 @@ abstract class ChunkedStreamIterator<T> {
   /// The resulting stream may contain less than [size] elements if the
   /// underlying stream has less than [size] elements before the end of stream.
   ///
-  /// If [read] is called before the sub-[Stream] is fully read, the remainder
+  /// If [readPreservingChunks] is called before the sub-[Stream] is fully read, the remainder
   /// of the elements in the sub-[Stream] will be automatically drained.
   Stream<List<T>> substream(int size);
 }
@@ -93,7 +93,7 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// If an error is encountered before reading [size] elements, the error
   /// will be thrown.
   @override
-  Future<List<List<T>>> read(int size) async {
+  Future<List<List<T>>> readPreservingChunks(int size) async {
     /// Clears the remainder of elements if the user did not drain it.
     final readToIndex = min(_toRead, _buffered.length);
     _buffered = _buffered.sublist(readToIndex);
@@ -142,13 +142,15 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// If an error is encountered before reading [size] elements, the error
   /// will be thrown.
   @override
-  Future<List<T>> readAsBlock(int size) async {
-    return (await read(size)).expand((element) => element).toList();
+  Future<List<T>> read(int size) async {
+    return (await readPreservingChunks(size))
+        .expand((element) => element)
+        .toList();
   }
 
   /// Cancels the stream iterator (and the underlying stream subscription) early.
   ///
-  /// The [ChunkedStreamIterator] is automatically cancelled if [read] goes
+  /// The [ChunkedStreamIterator] is automatically cancelled if [readPreservingChunks] goes
   /// reaches the end of the stream or an error.
   ///
   /// Users should call [cancel] to ensure that the stream is properly closed
@@ -161,7 +163,7 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// The resulting stream may contain less than [size] elements if the
   /// underlying stream has less than [size] elements before the end of stream.
   ///
-  /// If [read] is called before the sub-[Stream] is fully read, the remainder
+  /// If [readPreservingChunks] is called before the sub-[Stream] is fully read, the remainder
   /// of the elements in the sub-[Stream] will be automatically drained.
   @override
   Stream<List<T>> substream(int size) {
