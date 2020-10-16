@@ -47,10 +47,11 @@ abstract class ChunkedStreamIterator<T> {
   /// will be thrown.
   Future<List<T>> read(int size);
 
-  /// Cancels the stream iterator (and the underlying stream subscription) early.
+  /// Cancels the stream iterator (and the underlying stream subscription)
+  /// early.
   ///
-  /// The [ChunkedStreamIterator] is automatically cancelled if [readPreservingChunks] goes
-  /// reaches the end of the stream or an error.
+  /// The [ChunkedStreamIterator] is automatically cancelled if [read] or
+  /// [readPreservingChunks] reaches the end of the stream or an error.
   ///
   /// Users should call [cancel] to ensure that the stream is properly closed
   /// if they need to stop listening earlier than the end of the stream.
@@ -61,8 +62,9 @@ abstract class ChunkedStreamIterator<T> {
   /// The resulting stream may contain less than [size] elements if the
   /// underlying stream has less than [size] elements before the end of stream.
   ///
-  /// If [readPreservingChunks] is called before the sub-[Stream] is fully read, the remainder
-  /// of the elements in the sub-[Stream] will be automatically drained.
+  /// If [read] or [readPreservingChunks] is called before the sub-[Stream] is
+  /// fully read, the remainder of the elements in the sub-[Stream] will be
+  /// automatically drained.
   Stream<List<T>> substream(int size);
 }
 
@@ -148,10 +150,11 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
         .toList();
   }
 
-  /// Cancels the stream iterator (and the underlying stream subscription) early.
+  /// Cancels the stream iterator (and the underlying stream subscription)
+  /// early.
   ///
-  /// The [ChunkedStreamIterator] is automatically cancelled if [readPreservingChunks] goes
-  /// reaches the end of the stream or an error.
+  /// The [ChunkedStreamIterator] is automatically cancelled if [read] or
+  /// [readPreservingChunks] reaches the end of the stream or an error.
   ///
   /// Users should call [cancel] to ensure that the stream is properly closed
   /// if they need to stop listening earlier than the end of the stream.
@@ -163,8 +166,9 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// The resulting stream may contain less than [size] elements if the
   /// underlying stream has less than [size] elements before the end of stream.
   ///
-  /// If [readPreservingChunks] is called before the sub-[Stream] is fully read, the remainder
-  /// of the elements in the sub-[Stream] will be automatically drained.
+  /// If [read] or [readPreservingChunks] is called before the sub-[Stream] is
+  /// fully read, the remainder of the elements in the sub-[Stream] will be
+  /// automatically drained.
   @override
   Stream<List<T>> substream(int size) {
     _toRead = size;
