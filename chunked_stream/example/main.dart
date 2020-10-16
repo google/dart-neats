@@ -46,7 +46,7 @@ void main() async {
 
   while (true) {
     // Read the first 4 bytes
-    final lengthBytes = await iterator.read(4);
+    final lengthBytes = await iterator.readAsBlock(4);
 
     // We have EOF if there is no more bytes
     if (lengthBytes.isEmpty) {
