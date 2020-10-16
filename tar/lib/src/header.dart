@@ -14,11 +14,9 @@
 
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
-import 'package:tar/src/exceptions.dart';
 
 import 'constants.dart';
 import 'format.dart';
-import 'utils.dart';
 
 /// A [TarHeader] represents a single header in a tar archive.
 ///
@@ -26,169 +24,55 @@ import 'utils.dart';
 /// [TarFormat]s. Since different TAR formats contain different fields, not all
 /// the fields may be populated.
 @sealed
-class TarHeader {
+abstract class TarHeader {
   /// Type of header entry. In the V7 TAR format, this field was known as the
   /// link flag.
-  TypeFlag typeFlag;
+  TypeFlag get typeFlag;
 
   /// Name of file or directory entry.
-  String name;
+  String get name;
 
   /// Target name of link (valid for hard links or symbolic links).
-  String linkName;
+  String get linkName;
 
   /// Permission and mode bits.
-  int mode;
+  int get mode;
 
   /// User ID of owner.
-  int userId;
+  int get userId;
 
   /// Group ID of owner.
-  int groupId;
+  int get groupId;
 
   /// User name of owner.
-  String userName;
+  String get userName;
 
   /// Group name of owner.
-  String groupName;
+  String get groupName;
 
   /// Logical file size in bytes.
-  int size;
+  int get size;
 
   /// The time of the last change to the data of the TAR file.
-  DateTime modified;
+  DateTime get modified;
 
   /// The time of the last access to the data of the TAR file.
-  DateTime accessed;
+  DateTime get accessed;
 
   /// The time of the last change to the data or metadata of the TAR file.
-  DateTime changed;
+  DateTime get changed;
 
   /// Major device number
-  int devMajor;
+  int get devMajor;
 
   /// Minor device number
-  int devMinor;
+  int get devMinor;
 
   /// Map of PAX extended records.
-  Map<String, String> paxRecords = {};
+  Map<String, String> get paxRecords;
 
   /// The TAR format of the header.
-  TarFormat format;
-
-  factory TarHeader(List<int> rawHeader) {
-    ArgumentError.checkNotNull(rawHeader, 'rawHeader');
-    RangeError.checkValueInInterval(rawHeader.length, blockSize, blockSize);
-
-    TarHeader header;
-    var format = _getFormat(rawHeader);
-
-    final name = parseString(rawHeader, 0, 100);
-    final mode = tryParseOctal(rawHeader, 'Mode', 100, 108);
-    final userId = tryParseOctal(rawHeader, 'User ID', 108, 116);
-    final groupId = tryParseOctal(rawHeader, 'Group ID', 116, 124);
-    final size = tryParseOctal(rawHeader, 'Size', 124, 136);
-    final modified = secondsSinceEpoch(
-        tryParseOctal(rawHeader, 'Last Modified Time', 136, 148));
-    final typeFlag = typeflagFromByte(rawHeader[156]);
-    final linkName = parseString(rawHeader, 157, 257);
-
-    header = TarHeader.internal(
-        name: name,
-        mode: mode,
-        userId: userId,
-        groupId: groupId,
-        size: size,
-        modified: modified,
-        typeFlag: typeFlag,
-        format: format,
-        linkName: linkName);
-
-    if (header.hasContent && size < 0) {
-      throw TarHeaderException('Header indicates an invalid size of "$size"');
-    }
-
-    if (format.isValid() && format != TarFormat.V7) {
-      /// If it is a valid header that is not of the V7 format, it will have
-      /// the USTAR fields.
-      _populateUstarFields(header, rawHeader);
-
-      /// Prefix to the file name
-      var prefix = '';
-
-      if (format.has(TarFormat.USTAR | TarFormat.PAX)) {
-        header.format = format;
-        prefix = parseString(rawHeader, 345, 500);
-
-        /// Check if block is properly formatted since the parser is more
-        /// liberal than what USTAR actually permits.
-        if (rawHeader.where(isNotAscii).isNotEmpty) {
-          format.mayOnlyBe(TarFormat.PAX);
-        }
-
-        /// Checks size, mode, userId, groupId, lastModifiedTime, devMajor, and
-        /// devMinor to ensure they end in NUL
-        if (!(isNulOrSpace(rawHeader[135]) && // size
-            isNulOrSpace(rawHeader[107]) && // mode
-            isNulOrSpace(rawHeader[115]) && // userId
-            isNulOrSpace(rawHeader[123]) && // groupId
-            isNulOrSpace(rawHeader[147]) && // modified
-            isNulOrSpace(rawHeader[336]) && // devMajor && devMinor
-            isNulOrSpace(rawHeader[344]))) {
-          throw TarHeaderException(
-              'Found a numeric field that does not end in NUL');
-        }
-      } else if (format.has(TarFormat.STAR)) {
-        prefix = parseString(rawHeader, 345, 476);
-        header.accessed = secondsSinceEpoch(parseNumeric(rawHeader, 476, 488));
-        header.changed = secondsSinceEpoch(parseNumeric(rawHeader, 488, 500));
-      } else if (format.has(TarFormat.GNU)) {
-        header.format = format;
-
-        if (!isNul(rawHeader[345])) {
-          header.accessed =
-              secondsSinceEpoch(parseNumeric(rawHeader, 345, 357));
-        }
-
-        if (!isNul(rawHeader[357])) {
-          header.changed = secondsSinceEpoch(parseNumeric(rawHeader, 357, 369));
-        }
-      }
-
-      if (prefix.isNotEmpty) {
-        header.name = '$prefix/${header.name}';
-      }
-    }
-
-    if (!validateTypeFlag(header.typeFlag, header.format)) {
-      throw TarHeaderException('Invalid Header');
-    }
-
-    return header;
-  }
-
-  /// This constructor is meant to help us deal with header-only headers (i.e.
-  /// meta-headers that only describe the next file instead of being a header
-  /// to files themselves)
-  TarHeader.internal(
-      {this.name,
-      this.modified,
-      this.linkName = '',
-      this.mode = 0,
-      this.size = 0,
-      this.userName = '',
-      this.userId = 0,
-      this.groupId = 0,
-      this.groupName = '',
-      this.accessed,
-      this.changed,
-      this.devMajor = 0,
-      this.devMinor = 0,
-      this.paxRecords,
-      this.format,
-      this.typeFlag}) {
-    paxRecords ??= {};
-  }
+  TarFormat get format;
 
   /// Checks if this header indicates that the file will have content.
   bool get hasContent {
@@ -203,57 +87,6 @@ class TarHeader {
       default:
         return true;
     }
-  }
-
-  /// Merges [paxHeaders] into the relevant fields.
-  void mergePAX(Map<String, String> paxHeaders) {
-    for (final entry in paxHeaders.entries) {
-      if (entry.value == '') {
-        continue; // Keep the original USTAR value
-      }
-
-      try {
-        switch (entry.key) {
-          case paxPath:
-            name = entry.value;
-            break;
-          case paxLinkpath:
-            linkName = entry.value;
-            break;
-          case paxUname:
-            userName = entry.value;
-            break;
-          case paxGname:
-            groupName = entry.value;
-            break;
-          case paxUid:
-            userId = int.parse(entry.value, radix: 10);
-            break;
-          case paxGid:
-            groupId = int.parse(entry.value, radix: 10);
-            break;
-          case paxAtime:
-            accessed = parsePAXTime(entry.value);
-            break;
-          case paxMtime:
-            modified = parsePAXTime(entry.value);
-            break;
-          case paxCtime:
-            changed = parsePAXTime(entry.value);
-            break;
-          case paxSize:
-            size = int.parse(entry.value, radix: 10);
-            break;
-          default:
-            break;
-        }
-      } catch (e) {
-        throw TarHeaderException('Invalid PAX header entry "${entry.key}: '
-            '${entry.value}"!');
-      }
-    }
-
-    paxRecords = paxHeaders;
   }
 
   @override
@@ -318,51 +151,4 @@ class TarHeader {
         'Format: $format\n'
         'LinkFlag: $typeFlag\n';
   }
-}
-
-/// Checks that [rawHeader] represents a valid tar header based on the
-/// checksum, and then attempts to guess the specific format based
-/// on magic values. If the checksum fails, then an error is thrown.
-TarFormat _getFormat(List<int> rawHeader) {
-  ArgumentError.checkNotNull(rawHeader, 'rawHeader');
-
-  final checksum = tryParseOctal(rawHeader, 'Checksum', 148, 156);
-
-  /// Modern TAR archives use the unsigned checksum, but we check the signed
-  /// checksum as well for compatibility.
-  if (checksum != computeSignedCheckSum(rawHeader) &&
-      checksum != computeUnsignedCheckSum(rawHeader)) {
-    throw TarHeaderException('Checksum does not match');
-  }
-
-  final magic = String.fromCharCodes(rawHeader, 257, 263);
-  final version = String.fromCharCodes(rawHeader, 263, 265);
-  final trailer = String.fromCharCodes(rawHeader, 508, 512);
-  if (magic == magicUSTAR && trailer == trailerSTAR) {
-    return TarFormat.STAR;
-  }
-
-  if (magic == magicUSTAR) {
-    return TarFormat.USTAR | TarFormat.PAX;
-  }
-
-  if (magic == magicGNU && version == versionGNU) {
-    return TarFormat.GNU;
-  }
-
-  return TarFormat.V7;
-}
-
-/// Populates [header] with USTAR fields.
-///
-/// These fields are common to all the header formats supported by our library
-/// with the exception of the V7 header.
-void _populateUstarFields(TarHeader header, List<int> rawHeader) {
-  ArgumentError.checkNotNull(header, 'header');
-  ArgumentError.checkNotNull(rawHeader, 'rawHeader');
-
-  header.userName = parseString(rawHeader, 265, 297);
-  header.groupName = parseString(rawHeader, 297, 329);
-  header.devMajor = parseNumeric(rawHeader, 329, 337);
-  header.devMinor = parseNumeric(rawHeader, 337, 345);
 }

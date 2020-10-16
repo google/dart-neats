@@ -16,10 +16,12 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:crypto/crypto.dart';
+import 'package:collection/collection.dart';
 import 'package:tar/src/constants.dart';
 import 'package:tar/src/exceptions.dart';
 import 'package:tar/src/format.dart';
 import 'package:tar/src/header.dart';
+import 'package:tar/src/header_impl.dart';
 import 'package:tar/src/reader.dart';
 import 'package:tar/src/sparse_entry.dart';
 import 'package:tar/src/utils.dart';
@@ -35,7 +37,7 @@ void main() async {
       {
         'file': 'gnu.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'small.txt',
             mode: 436,
             userId: 1000,
@@ -47,7 +49,7 @@ void main() async {
             groupName: 'garett',
             format: TarFormat.GNU,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'small2.txt',
             mode: 436,
             userId: 1000,
@@ -68,7 +70,7 @@ void main() async {
       {
         'file': 'sparse-formats.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'sparse-gnu',
             mode: 420,
             userId: 1000,
@@ -83,7 +85,7 @@ void main() async {
             devMinor: 0,
             format: TarFormat.GNU,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'sparse-posix-v-0-0',
             mode: 420,
             userId: 1000,
@@ -104,7 +106,7 @@ void main() async {
             },
             format: TarFormat.PAX,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'sparse-posix-0-1',
             mode: 420,
             userId: 1000,
@@ -126,7 +128,7 @@ void main() async {
             },
             format: TarFormat.PAX,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'sparse-posix-1-0',
             mode: 420,
             userId: 1000,
@@ -147,7 +149,7 @@ void main() async {
             },
             format: TarFormat.PAX,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'end',
             mode: 420,
             userId: 1000,
@@ -174,7 +176,7 @@ void main() async {
       {
         'file': 'star.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'small.txt',
               mode: 416,
               userId: 1000,
@@ -187,7 +189,7 @@ void main() async {
               accessed: millisecondsSinceEpoch(1597755680000),
               changed: millisecondsSinceEpoch(1597755680000),
               format: TarFormat.STAR),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'small2.txt',
               mode: 416,
               userId: 1000,
@@ -205,7 +207,7 @@ void main() async {
       {
         'file': 'v7.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'small.txt',
               mode: 436,
               userId: 1000,
@@ -214,7 +216,7 @@ void main() async {
               modified: millisecondsSinceEpoch(1597755680000),
               typeFlag: TypeFlag.reg,
               format: TarFormat.V7),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'small2.txt',
               mode: 436,
               userId: 1000,
@@ -228,7 +230,7 @@ void main() async {
       {
         'file': 'ustar.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'small.txt',
               mode: 436,
               userId: 1000,
@@ -239,7 +241,7 @@ void main() async {
               userName: 'garett',
               groupName: 'garett',
               format: TarFormat.USTAR),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'small2.txt',
               mode: 436,
               userId: 1000,
@@ -255,7 +257,7 @@ void main() async {
       {
         'file': 'pax.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name:
                 'a/123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100',
             mode: 436,
@@ -277,7 +279,7 @@ void main() async {
             },
             format: TarFormat.PAX,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'a/b',
             mode: 511,
             userId: 1000,
@@ -315,7 +317,7 @@ void main() async {
       {
         'file': 'pax-pos-size-file.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'bar',
               mode: 416,
               userId: 143077,
@@ -337,7 +339,7 @@ void main() async {
       {
         'file': 'pax-records.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               typeFlag: TypeFlag.reg,
               name: 'pax-records',
               mode: 416,
@@ -353,38 +355,38 @@ void main() async {
       {
         'file': 'pax-global-records.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             typeFlag: TypeFlag.xGlobalHeader,
             name: 'global1',
             paxRecords: {'path': 'global1', 'mtime': '1597756656.2'},
             format: TarFormat.PAX,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             typeFlag: TypeFlag.reg,
             name: 'file-1',
             modified: millisecondsSinceEpoch(0),
             format: TarFormat.USTAR,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             typeFlag: TypeFlag.reg,
             name: 'file-2',
             paxRecords: {'path': 'file-2'},
             modified: millisecondsSinceEpoch(0),
             format: TarFormat.PAX,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             typeFlag: TypeFlag.xGlobalHeader,
             name: 'global-header',
             paxRecords: {'path': ''},
             format: TarFormat.PAX,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             typeFlag: TypeFlag.reg,
             name: 'file-3',
             modified: millisecondsSinceEpoch(0),
             format: TarFormat.USTAR,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             typeFlag: TypeFlag.reg,
             name: 'file-4',
             modified: millisecondsSinceEpoch(1597756750000),
@@ -396,7 +398,7 @@ void main() async {
       {
         'file': 'nil-gid-uid.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'nil-gid.txt',
             mode: 436,
             userId: 1000,
@@ -411,7 +413,7 @@ void main() async {
             devMinor: 0,
             format: TarFormat.GNU,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'nil-uid.txt',
             mode: 436,
             userId: 0,
@@ -431,7 +433,7 @@ void main() async {
       {
         'file': 'xattrs.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'small.txt',
               mode: 420,
               userId: 1000,
@@ -453,7 +455,7 @@ void main() async {
                 'SCHILY.xattr.security.selinux':
                     'unconfined_u:object_r:default_t:s0\x00',
               }),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'small2.txt',
             mode: 420,
             userId: 1000,
@@ -480,7 +482,7 @@ void main() async {
         /// Matches the behavior of GNU, BSD, and STAR tar utilities.
         'file': 'gnu-multi-hdrs.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'long-path-name',
             linkName: 'long-linkpath-name',
             userId: 1000,
@@ -499,7 +501,7 @@ void main() async {
         ///	tar --incremental -S -cvf gnu-incremental.tar test2
         'file': 'gnu-incremental.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'incremental/',
             mode: 16877,
             userId: 1000,
@@ -513,7 +515,7 @@ void main() async {
             changed: millisecondsSinceEpoch(1597755033000),
             format: TarFormat.GNU,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'incremental/foo',
             mode: 33188,
             userId: 1000,
@@ -527,7 +529,7 @@ void main() async {
             changed: millisecondsSinceEpoch(1597755793000),
             format: TarFormat.GNU,
           ),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'incremental/sparse',
             mode: 33188,
             userId: 1000,
@@ -547,7 +549,7 @@ void main() async {
         /// Matches the behavior of GNU and BSD tar utilities.
         'file': 'pax-multi-hdrs.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'baz',
             linkName: 'bzzt/bzzt/bzzt/bzzt/bzzt/baz',
             modified: millisecondsSinceEpoch(0),
@@ -565,7 +567,7 @@ void main() async {
         /// This is reasonable as GNU long names are C-strings.
         'file': 'gnu-long-nul.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: '9876543210',
             mode: 420,
             userId: 1000,
@@ -586,7 +588,7 @@ void main() async {
         /// just to force the GNU format.
         'file': 'gnu-utf8.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: '🧸',
             mode: 420,
             userId: 525,
@@ -602,7 +604,7 @@ void main() async {
       {
         'file': 'gnu-non-utf8-name.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'pub\x80\x81\x82\x83dev',
             mode: 422,
             userId: 1234,
@@ -653,7 +655,7 @@ void main() async {
         /// USTAR archive with a regular entry with non-zero device numbers.
         'file': 'ustar-nonzero-device-numbers.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
             name: 'file',
             mode: 420,
             typeFlag: TypeFlag.reg,
@@ -670,7 +672,7 @@ void main() async {
         // Works on BSD tar v3.1.2 and GNU tar v.1.27.1.
         'file': 'gnu-nil-sparse-data.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'nil-sparse-data',
               typeFlag: TypeFlag.gnuSparse,
               userId: 1000,
@@ -684,7 +686,7 @@ void main() async {
         // Works on BSD tar v3.1.2 and GNU tar v.1.27.1.
         'file': 'gnu-nil-sparse-hole.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'nil-sparse-hole',
               typeFlag: TypeFlag.gnuSparse,
               size: 1000,
@@ -698,7 +700,7 @@ void main() async {
         // Works on BSD tar v3.1.2 and GNU tar v.1.27.1.
         'file': 'pax-nil-sparse-data.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'sparse',
               typeFlag: TypeFlag.reg,
               size: 1000,
@@ -719,7 +721,7 @@ void main() async {
         // Works on BSD tar v3.1.2 and GNU tar v.1.27.1.
         'file': 'pax-nil-sparse-hole.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'sparse.txt',
               typeFlag: TypeFlag.reg,
               size: 1000,
@@ -739,7 +741,7 @@ void main() async {
       {
         'file': 'trailing-slash.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               typeFlag: TypeFlag.dir,
               name: '987654321/' * 30,
               modified: millisecondsSinceEpoch(0),
@@ -752,7 +754,7 @@ void main() async {
       {
         'file': 'pax-non-ascii-name.tar',
         'headers': [
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'æøå/',
               mode: 493,
               size: 0,
@@ -767,7 +769,7 @@ void main() async {
                 'path': 'æøå/',
                 'mtime': '1602594272.608662916',
               }),
-          TarHeader.internal(
+          TarHeaderImpl.internal(
               name: 'æøå/æøå.dart',
               mode: 420,
               size: 1024,
@@ -955,10 +957,26 @@ void main() async {
     /// 8 except that the size is set.
     expect(headers.length, 16);
 
+    bool equalExceptSize(TarHeader a, TarHeader b) {
+      return a.name == b.name &&
+          a.modified == b.modified &&
+          a.linkName == b.linkName &&
+          a.mode == b.mode &&
+          a.userName == b.userName &&
+          a.userId == b.userId &&
+          a.groupId == b.groupId &&
+          a.groupName == b.groupName &&
+          a.accessed == b.accessed &&
+          a.changed == b.changed &&
+          a.devMajor == b.devMajor &&
+          a.devMinor == b.devMinor &&
+          MapEquality().equals(a.paxRecords, b.paxRecords) &&
+          a.format == b.format &&
+          a.typeFlag == b.typeFlag;
+    }
+
     for (var i = 0; i < 8; i++) {
-      headers[i].size = 0;
-      headers[i + 8].size = 0;
-      expect(headers[i], headers[i + 8]);
+      expect(equalExceptSize(headers[i], headers[i + 8]), isTrue);
     }
   });
 
@@ -970,7 +988,7 @@ void main() async {
           'uid': '1000',
           'mtime': '1350244992.023960108',
         },
-        'want': TarHeader.internal(
+        'want': TarHeaderImpl.internal(
             name: 'a/b/c',
             userId: 1000,
             modified: microsecondsSinceEpoch(1350244992023960),
@@ -992,7 +1010,7 @@ void main() async {
           'missing': 'missing',
           'SCHILY.xattr.key': 'value',
         },
-        'want': TarHeader.internal(
+        'want': TarHeaderImpl.internal(
             paxRecords: {'missing': 'missing', 'SCHILY.xattr.key': 'value'}),
         'ok': true
       }
@@ -1001,7 +1019,7 @@ void main() async {
     for (var i = 0; i < tests.length; i++) {
       test('$i', () {
         final testInputs = tests[i];
-        final actual = TarHeader.internal();
+        final actual = TarHeaderImpl.internal();
         if (testInputs['ok']) {
           actual.mergePAX(testInputs['in']);
           expect(actual, testInputs['want']);

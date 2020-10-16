@@ -21,6 +21,7 @@ import 'constants.dart';
 import 'exceptions.dart';
 import 'format.dart';
 import 'header.dart';
+import 'header_impl.dart';
 import 'sparse_entry.dart';
 import 'stream.dart';
 import 'utils.dart';
@@ -72,7 +73,7 @@ class TarReader {
         TarFormat.V7 |
         TarFormat.STAR;
 
-    TarHeader nextHeader;
+    TarHeaderImpl nextHeader;
     final completer = Completer<TarHeader>();
     _header = completer.future;
 
@@ -107,7 +108,7 @@ class TarReader {
         paxHeaders = parsePAX(rawPAXHeaders);
         if (nextHeader.typeFlag == TypeFlag.xGlobalHeader) {
           nextHeader.mergePAX(paxHeaders);
-          nextHeader = TarHeader.internal(
+          nextHeader = TarHeaderImpl.internal(
             name: nextHeader.name,
             typeFlag: nextHeader.typeFlag,
             paxRecords: nextHeader.paxRecords,
@@ -195,7 +196,7 @@ class TarReader {
       throw TarFileException('Encountered a non-zero block after a zero block');
     }
 
-    return TarHeader(rawHeader);
+    return TarHeaderImpl(rawHeader);
   }
 
   /// Generates [_contents] according to the type of file.
@@ -243,7 +244,8 @@ class TarReader {
   /// If they are found, then this function reads the sparse map and returns it.
   /// This assumes that 0.0 headers have already been converted to 0.1 headers
   /// by the PAX header parsing logic.
-  Future<List<SparseEntry>> _readGNUSparsePAXHeaders(TarHeader header) async {
+  Future<List<SparseEntry>> _readGNUSparsePAXHeaders(
+      TarHeaderImpl header) async {
     ArgumentError.checkNotNull(header, 'header');
 
     /// Identify the version of GNU headers.
@@ -416,7 +418,7 @@ class TarReader {
   /// Thus, this function will read from the chunked stream iterator to fetch
   /// extra headers.
   Future<List<SparseEntry>> _readOldGNUSparseMap(
-      TarHeader header, List<int> rawHeader) async {
+      TarHeaderImpl header, List<int> rawHeader) async {
     ArgumentError.checkNotNull(header, 'header');
     ArgumentError.checkNotNull(rawHeader, 'rawHeader');
 

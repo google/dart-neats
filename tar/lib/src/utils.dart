@@ -16,10 +16,11 @@ import 'dart:math';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:tar/src/header.dart';
 
 import 'constants.dart';
 import 'exceptions.dart';
+import 'header.dart';
+import 'header_impl.dart';
 import 'sparse_entry.dart';
 
 /// Parses the sublist of [bytes] from [start] to [end] as a String. First it
@@ -617,14 +618,14 @@ bool isNulOrSpace(int byte) => isNul(byte) || byte == SPACE;
 /// Since [FileStat]'s name method only returns the base name of
 /// the file it describes, it may be necessary to modify [TarHeader.name]
 /// to provide the full path name of the file.
-TarHeader fileInfoHeader(File file, String link) {
+TarHeaderImpl fileInfoHeader(File file, String link) {
   ArgumentError.checkNotNull(link, 'link');
   ArgumentError.checkNotNull(file, 'file');
 
   final fileStat = file.statSync();
   final fileMode = fileStat.mode;
 
-  var header = TarHeader.internal(
+  var header = TarHeaderImpl.internal(
       name: p.basename(file.path),
       modified: fileStat.modified,
       mode: fileStat.mode);
