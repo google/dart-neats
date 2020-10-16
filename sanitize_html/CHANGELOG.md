@@ -1,3 +1,11 @@
+## v1.4.1
+ * Make `addLinkRel` optional. [Issue](https://github.com/google/dart-neats/issues/71).
+
+## v1.4.0
+ * Added `addLinkRel` option to `sanitize_html`. This will allow users to
+   [qualify outbound links](https://support.google.com/webmasters/answer/96569)
+   which may [help prevent comment spam](https://support.google.com/webmasters/answer/81749).
+
 ## v1.3.0
  * Only print self-closing tags for
    [void-elements](https://www.w3.org/TR/html5/syntax.html#void-elements).

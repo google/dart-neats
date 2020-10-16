@@ -46,14 +46,40 @@ import 'src/sane_html_validator.dart' show SaneHtmlValidator;
 /// }
 /// ```
 ///
+/// It is furthermore possible to use the [addLinkRel] to attach a `rel="..."`
+/// property to links (`<a href="..."`). When hosting user-generated content it
+/// can be useful to [qualify outbound links][2] with `rel="ugc"`, as this lets
+/// search engines know that the content is user-generated.
+///
+/// **Example**
+/// ```dart
+/// import 'package:sanitize_html/sanitize_html.dart' show sanitizeHtml;
+///
+/// void main() {
+///   print(sanitizeHtml(
+///     '<a href="https://spam.com/free-stuff">free stuff</a>',
+///     addLinkRel: (href) => ['ugc', 'nofollow'],
+///   ));
+///   // Prints: <a href="https://spam.com/free-stuff" rel="ugc nofollow">free stuff</a>
+///   // Might mitigate negative impact of hosting spam links with search engines.
+/// }
+/// ```
+///
+/// For more information on why to qualify outbound links,
+/// see also [Ways to Prevent Comment Spam][3].
+///
 /// [1]: https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb
+/// [2]: https://support.google.com/webmasters/answer/96569
+/// [3]: https://support.google.com/webmasters/answer/81749
 String sanitizeHtml(
   String htmlString, {
   bool Function(String) allowElementId,
   bool Function(String) allowClassName,
+  Iterable<String> Function(String) addLinkRel,
 }) {
   return SaneHtmlValidator(
     allowElementId: allowElementId,
     allowClassName: allowClassName,
+    addLinkRel: addLinkRel,
   ).sanitize(htmlString);
 }

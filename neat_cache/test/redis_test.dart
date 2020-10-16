@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:test/test.dart';
-import 'package:neat_cache/neat_cache.dart';
+
 import 'package:neat_cache/src/providers/redis.dart';
 import 'package:neat_cache/cache_provider.dart';
+
 import 'utils.dart';
 
 void _doAndForget(Function fn) {
