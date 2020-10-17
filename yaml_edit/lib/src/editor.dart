@@ -32,7 +32,7 @@ import 'wrap.dart';
 /// such a situation should be extremely rare, and should only occur with
 /// degenerate formatting.
 ///
-/// Most modification methods require the user to pass in an [Iterable<Object>]
+/// Most modification methods require the user to pass in an `Iterable<Object>`
 /// path that holds the keys/indices to navigate to the element.
 ///
 /// **Example:**
@@ -76,7 +76,7 @@ class YamlEditor {
   /// `package:analysis_server`.
   ///
   /// The [SourceEdit] objects can be serialized to JSON using the `toJSON`
-  /// function, deserialized using [SourceEdit.fromJSON], and applied to a
+  /// function, deserialized using [SourceEdit.fromJson], and applied to a
   /// string using the `apply` function. Multiple [SourceEdit]s can be applied
   /// to a string using [SourceEdit.applyAll].
   ///
