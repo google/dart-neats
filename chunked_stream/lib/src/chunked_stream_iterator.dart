@@ -28,16 +28,6 @@ abstract class ChunkedStreamIterator<T> {
     return _ChunkedStreamIterator<T>(stream);
   }
 
-  /// Returns a list of the next [size] elements in original chunks. The size of
-  /// the chunks are not guaranteed to be consistent.
-  ///
-  /// Returns a list with a total of less than [size] elements split in chunks
-  /// if the end of stream is encounted before [size] elements are read.
-  ///
-  /// If an error is encountered before reading [size] elements, the error
-  /// will be thrown.
-  Future<List<List<T>>> readPreservingChunks(int size);
-
   /// Returns a list of the next [size] elements.
   ///
   /// Returns a list with less than [size] elements if the end of stream is
@@ -50,8 +40,8 @@ abstract class ChunkedStreamIterator<T> {
   /// Cancels the stream iterator (and the underlying stream subscription)
   /// early.
   ///
-  /// The [ChunkedStreamIterator] is automatically cancelled if [read] or
-  /// [readPreservingChunks] reaches the end of the stream or an error.
+  /// The [ChunkedStreamIterator] is automatically cancelled if [read] reaches
+  /// the end of the stream or an error.
   ///
   /// Users should call [cancel] to ensure that the stream is properly closed
   /// if they need to stop listening earlier than the end of the stream.
@@ -62,9 +52,8 @@ abstract class ChunkedStreamIterator<T> {
   /// The resulting stream may contain less than [size] elements if the
   /// underlying stream has less than [size] elements before the end of stream.
   ///
-  /// If [read] or [readPreservingChunks] is called before the sub-[Stream] is
-  /// fully read, the remainder of the elements in the sub-[Stream] will be
-  /// automatically drained.
+  /// If [read] is called before the sub-[Stream] is fully read, the remainder
+  /// of the elements in the sub-[Stream] will be automatically drained.
   Stream<List<T>> substream(int size);
 }
 
@@ -86,16 +75,15 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   _ChunkedStreamIterator(Stream<List<T>> stream)
       : _iterator = StreamIterator(stream);
 
-  /// Returns a list of the next [size] elements in original chunks. The size of
-  /// the chunks are not guaranteed to be consistent.
+  /// Returns a list of the next [size] elements.
   ///
-  /// Returns a list with a total of less than [size] elements split in chunks
-  /// if the end of stream is encounted before [size] elements are read.
+  /// Returns a list with less than [size] elements if the end of stream is
+  /// encounted before [size] elements are read.
   ///
   /// If an error is encountered before reading [size] elements, the error
   /// will be thrown.
   @override
-  Future<List<List<T>>> readPreservingChunks(int size) async {
+  Future<List<T>> read(int size) async {
     /// Clears the remainder of elements if the user did not drain it.
     final readToIndex = min(_toRead, _buffered.length);
     _buffered = _buffered.sublist(readToIndex);
@@ -111,13 +99,13 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
       }
     }
 
-    final result = <List<T>>[];
+    final chunks = <List<T>>[];
 
     /// Starts by adding from the buffer if there are buffered elements
     /// remaining.
     if (_buffered.isNotEmpty) {
       final addToIndex = min(size, _buffered.length);
-      result.add(_buffered.sublist(0, addToIndex));
+      chunks.add(_buffered.sublist(0, addToIndex));
       _buffered = _buffered.sublist(addToIndex);
       size -= addToIndex;
     }
@@ -128,33 +116,19 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
       _buffered = _iterator.current;
 
       final addToIndex = min(size, _buffered.length);
-      result.add(_buffered.sublist(0, addToIndex));
+      chunks.add(_buffered.sublist(0, addToIndex));
       _buffered = _buffered.sublist(addToIndex);
       size -= addToIndex;
     }
 
-    return result;
-  }
-
-  /// Returns a list of the next [size] elements.
-  ///
-  /// Returns a list with less than [size] elements if the end of stream is
-  /// encounted before [size] elements are read.
-  ///
-  /// If an error is encountered before reading [size] elements, the error
-  /// will be thrown.
-  @override
-  Future<List<T>> read(int size) async {
-    return (await readPreservingChunks(size))
-        .expand((element) => element)
-        .toList();
+    return chunks.expand((element) => element).toList();
   }
 
   /// Cancels the stream iterator (and the underlying stream subscription)
   /// early.
   ///
-  /// The [ChunkedStreamIterator] is automatically cancelled if [read] or
-  /// [readPreservingChunks] reaches the end of the stream or an error.
+  /// The [ChunkedStreamIterator] is automatically cancelled if [read]
+  /// reaches the end of the stream or an error.
   ///
   /// Users should call [cancel] to ensure that the stream is properly closed
   /// if they need to stop listening earlier than the end of the stream.
@@ -166,9 +140,8 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// The resulting stream may contain less than [size] elements if the
   /// underlying stream has less than [size] elements before the end of stream.
   ///
-  /// If [read] or [readPreservingChunks] is called before the sub-[Stream] is
-  /// fully read, the remainder of the elements in the sub-[Stream] will be
-  /// automatically drained.
+  /// If [read] is called before the sub-[Stream] is fully read, the remainder
+  /// of the elements in the sub-[Stream] will be automatically drained.
   @override
   Stream<List<T>> substream(int size) {
     _toRead = size;

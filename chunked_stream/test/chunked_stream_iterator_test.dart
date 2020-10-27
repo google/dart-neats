@@ -106,84 +106,6 @@ void main() {
     expect(await s.read(1), equals([]));
   });
 
-  test('readPreservingChunks() -- chunk in given size', () async {
-    final s = ChunkedStreamIterator(_chunkedStream([
-      ['a', 'b', 'c'],
-      ['1', '2'],
-    ]));
-    expect(
-        await s.readPreservingChunks(3),
-        equals([
-          ['a', 'b', 'c']
-        ]));
-    expect(
-        await s.readPreservingChunks(2),
-        equals([
-          ['1', '2']
-        ]));
-    expect(await s.readPreservingChunks(1), equals([]));
-  });
-
-  test('readPreservingChunks() -- chunks one item at the time', () async {
-    final s = ChunkedStreamIterator(_chunkedStream([
-      ['a', 'b', 'c'],
-      ['1', '2'],
-    ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['b']
-        ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['c']
-        ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['1']
-        ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['2']
-        ]));
-    expect(await s.readPreservingChunks(1), equals([]));
-  });
-
-  test('readPreservingChunks() -- one big chunk', () async {
-    final s = ChunkedStreamIterator(_chunkedStream([
-      ['a', 'b', 'c'],
-      ['1', '2'],
-    ]));
-    expect(
-        await s.readPreservingChunks(6),
-        equals([
-          ['a', 'b', 'c'],
-          ['1', '2']
-        ]));
-  });
-
-  test('substream()', () async {
-    final s = ChunkedStreamIterator(_chunkedStream([
-      ['a', 'b', 'c'],
-      ['1', '2'],
-    ]));
-    expect(
-        await s.substream(5).toList(),
-        equals([
-          ['a', 'b', 'c'],
-          ['1', '2']
-        ]));
-    expect(await s.readPreservingChunks(1), equals([]));
-  });
-
   test('substream() x 2', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
@@ -202,247 +124,122 @@ void main() {
         ]));
   });
 
-  test('substream() + readChunkedStream() -- past end', () async {
-    final s = ChunkedStreamIterator(_chunkedStream([
-      ['a', 'b', 'c'],
-      ['1', '2'],
-    ]));
-    expect(
-        await s.substream(6).toList(),
-        equals([
-          ['a', 'b', 'c'],
-          ['1', '2']
-        ]));
-    expect(await s.readPreservingChunks(1), equals([]));
-  });
-
-  test('readPreservingChunks() substream() + readChunkedStream() read()',
-      () async {
-    final s = ChunkedStreamIterator(_chunkedStream([
-      ['a', 'b', 'c'],
-      ['1', '2'],
-    ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
-    expect(
-        await s.substream(3).toList(),
-        equals([
-          ['b', 'c'],
-          ['1']
-        ]));
-    expect(
-        await s.readPreservingChunks(2),
-        equals([
-          ['2']
-        ]));
-  });
-
   test(
-      'readPreservingChunks() substream().cancel() read() -- one item at a '
-      'time', () async {
-    final s = ChunkedStreamIterator(_chunkedStream([
-      ['a', 'b', 'c'],
-      ['1', '2'],
-    ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
-    final i = StreamIterator(s.substream(3));
-    expect(await i.moveNext(), isTrue);
-    await i.cancel();
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['2']
-        ]));
-    expect(await s.readPreservingChunks(1), equals([]));
-  });
-
-  test(
-      'readPreservingChunks() substream().cancel() readPreservingChunks() -- '
+      'read() substream().cancel() read() -- '
       'cancellation without reading', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
     ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
+    expect(await s.read(1), equals(['a']));
     final i = StreamIterator(s.substream(3));
     await i.cancel();
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['2']
-        ]));
-    expect(await s.readPreservingChunks(1), equals([]));
+    expect(await s.read(1), equals(['2']));
+    expect(await s.read(1), equals([]));
   });
 
   test(
-      'readPreservingChunks() substream().cancel() readPreservingChunks() -- '
+      'read() substream().cancel() read() -- '
       'not cancelling still produces correct behavior', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
     ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
+    expect(await s.read(1), equals(['a']));
     final i = StreamIterator(s.substream(3));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['2']
-        ]));
+    expect(await s.read(1), equals(['2']));
     expect(await i.moveNext(), false);
-    expect(await s.readPreservingChunks(1), equals([]));
+    expect(await s.read(1), equals([]));
   });
 
   test(
-      'readPreservingChunks() substream().cancel() readPreservingChunks() -- '
+      'read() substream().cancel() read() -- '
       'not cancelling still produces correct behavior (2)', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2', '3'],
     ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
+    expect(await s.read(1), equals(['a']));
     final i = StreamIterator(s.substream(2));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['1']
-        ]));
+    expect(await s.read(1), equals(['1']));
     // ignore: unused_local_variable
     final i2 = StreamIterator(s.substream(2));
     expect(await i.moveNext(), false);
-    expect(await s.readPreservingChunks(1), equals([]));
+    expect(await s.read(1), equals([]));
   });
 
   test(
-      'readPreservingChunks() substream() that ends with first chunk + '
-      'readChunkedStream() readPreservingChunks()', () async {
+      'read() substream() that ends with first chunk + '
+      'readChunkedStream() read()', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
     ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
+    expect(await s.read(1), equals(['a']));
     expect(
         await s.substream(2).toList(),
         equals([
           ['b', 'c']
         ]));
-    expect(
-        await s.readPreservingChunks(3),
-        equals([
-          ['1', '2']
-        ]));
+    expect(await s.read(3), equals(['1', '2']));
   });
 
   test(
-      'readPreservingChunks() substream() that ends with first chunk + drain() '
-      'readPreservingChunks()', () async {
+      'read() substream() that ends with first chunk + drain() '
+      'read()', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
     ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
+    expect(await s.read(1), equals(['a']));
     final sub = s.substream(2);
     await sub.drain();
-    expect(
-        await s.readPreservingChunks(3),
-        equals([
-          ['1', '2']
-        ]));
+    expect(await s.read(3), equals(['1', '2']));
   });
 
   test(
-      'readPreservingChunks() substream() that ends with second chunk + '
-      'readChunkedStream() readPreservingChunks()', () async {
+      'read() substream() that ends with second chunk + '
+      'readChunkedStream() read()', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
       ['3', '4']
     ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
+    expect(await s.read(1), equals(['a']));
     expect(
         await s.substream(4).toList(),
         equals([
           ['b', 'c'],
           ['1', '2']
         ]));
-    expect(
-        await s.readPreservingChunks(3),
-        equals([
-          ['3', '4']
-        ]));
+    expect(await s.read(3), equals(['3', '4']));
   });
 
   test(
-      'readPreservingChunks() substream() that ends with second chunk + '
-      'drain() readPreservingChunks()', () async {
+      'read() substream() that ends with second chunk + '
+      'drain() read()', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
       ['3', '4'],
     ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
+    expect(await s.read(1), equals(['a']));
     final substream = s.substream(4);
     await substream.drain();
-    expect(
-        await s.readPreservingChunks(3),
-        equals([
-          ['3', '4']
-        ]));
+    expect(await s.read(3), equals(['3', '4']));
   });
 
   test(
-      'readPreservingChunks() substream() readPreservingChunks() before '
+      'read() substream() read() before '
       'draining substream', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
       ['3', '4'],
     ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
+    expect(await s.read(1), equals(['a']));
     final substream = s.substream(4);
-    expect(
-        await s.readPreservingChunks(3),
-        equals([
-          ['3', '4']
-        ]));
+    expect(await s.read(3), equals(['3', '4']));
     expect(await substream.length, 0);
   });
 
@@ -452,30 +249,12 @@ void main() {
       ['1', '2'],
       ['3', '4'],
     ]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['a']
-        ]));
+    expect(await s.read(1), equals(['a']));
     final substream = s.substream(4);
     final nested = ChunkedStreamIterator(substream);
-    expect(
-        await nested.readPreservingChunks(2),
-        equals([
-          ['b'],
-          ['1']
-        ]));
-    expect(
-        await nested.readPreservingChunks(3),
-        equals([
-          ['2'],
-          ['3']
-        ]));
-    expect(await nested.readPreservingChunks(2), equals([]));
-    expect(
-        await s.readPreservingChunks(1),
-        equals([
-          ['4']
-        ]));
+    expect(await nested.read(2), equals(['b', '1']));
+    expect(await nested.read(3), equals(['2', '3']));
+    expect(await nested.read(2), equals([]));
+    expect(await s.read(1), equals(['4']));
   });
 }
