@@ -68,12 +68,16 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// Keeps track of the current substream we are supporting.
   int _substreamId = 0;
 
+  final List<T> _emptyList = [];
+
   /// Buffered items from a previous chunk. Items in this list should not have
   /// been read by the user.
-  List<T> _buffered = [];
+  List<T> _buffered;
 
   _ChunkedStreamIterator(Stream<List<T>> stream)
-      : _iterator = StreamIterator(stream);
+      : _iterator = StreamIterator(stream) {
+    _buffered = _emptyList;
+  }
 
   /// Returns a list of the next [size] elements.
   ///
@@ -154,6 +158,8 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
     /// Only yield when we are dealing with the same substream and there are
     /// elements to be read.
     while (_substreamId == substreamId && _toRead > 0) {
+      /// If [_buffered] is empty, set it to the next element in the stream if
+      /// possible.
       if (_buffered.isEmpty) {
         if (!(await _iterator.moveNext())) {
           break;
@@ -162,11 +168,20 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
         _buffered = _iterator.current;
       }
 
-      final yieldBlockEnd = min(_toRead, _buffered.length);
-      final toYield = _buffered.sublist(0, yieldBlockEnd);
-      _buffered = _buffered.sublist(yieldBlockEnd);
-
-      _toRead -= yieldBlockEnd;
+      List<T> toYield;
+      if (_toRead < _buffered.length) {
+        /// If there are less than [_buffered.length] elements left to be read
+        /// in the substream, sublist the chunk from [_buffered] accordingly.
+        toYield = _buffered.sublist(0, _toRead);
+        _buffered = _buffered.sublist(_toRead);
+        _toRead = 0;
+      } else {
+        /// Otherwise prepare to yield the full [_buffered] chunk, updating
+        /// the other variables accordingly
+        toYield = _buffered;
+        _toRead -= _buffered.length;
+        _buffered = _emptyList;
+      }
 
       yield toYield;
     }
