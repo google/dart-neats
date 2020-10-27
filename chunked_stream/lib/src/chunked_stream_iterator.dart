@@ -15,6 +15,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:chunked_stream/src/read_chunked_stream.dart';
+
 /// Auxiliary class for iterating over the items in a chunked stream.
 ///
 /// A _chunked stream_ is a stream in which items arrives in chunks with each
@@ -68,6 +70,9 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// Keeps track of the current substream we are supporting.
   int _substreamId = 0;
 
+  /// Instance variable representing an empty list object, used as the empty
+  /// default state for [_buffered]. Take caution not to write code that
+  /// directly modify the [_buffered] list by adding elements to it.
   final List<T> _emptyList = [];
 
   /// Buffered items from a previous chunk. Items in this list should not have
@@ -90,7 +95,9 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   Future<List<T>> read(int size) async {
     /// Clears the remainder of elements if the user did not drain it.
     final readToIndex = min(_toRead, _buffered.length);
-    _buffered = _buffered.sublist(readToIndex);
+    _buffered = (readToIndex == _buffered.length)
+        ? _emptyList
+        : _buffered.sublist(readToIndex);
     _toRead -= readToIndex;
 
     while (_toRead > 0 && await _iterator.moveNext()) {
@@ -99,33 +106,11 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
         _toRead = 0;
       } else {
         _toRead -= _iterator.current.length;
-        _buffered = [];
+        _buffered = _emptyList;
       }
     }
 
-    final chunks = <List<T>>[];
-
-    /// Starts by adding from the buffer if there are buffered elements
-    /// remaining.
-    if (_buffered.isNotEmpty) {
-      final addToIndex = min(size, _buffered.length);
-      chunks.add(_buffered.sublist(0, addToIndex));
-      _buffered = _buffered.sublist(addToIndex);
-      size -= addToIndex;
-    }
-
-    /// Grab as many chunks as needed and add them to [result], updating
-    /// [_buffered] as necessary.
-    while (size > 0 && await _iterator.moveNext()) {
-      _buffered = _iterator.current;
-
-      final addToIndex = min(size, _buffered.length);
-      chunks.add(_buffered.sublist(0, addToIndex));
-      _buffered = _buffered.sublist(addToIndex);
-      size -= addToIndex;
-    }
-
-    return chunks.expand((element) => element).toList();
+    return readChunkedStream(substream(size));
   }
 
   /// Cancels the stream iterator (and the underlying stream subscription)
