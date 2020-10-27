@@ -1,7 +1,5 @@
 name: sanitize_html
 version: 1.4.1
-authors:
-  - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
   Function for sanitizing HTML to prevent XSS by restrict elements and
   attributes to a safe subset of allowed values.
