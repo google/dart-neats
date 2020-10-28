@@ -131,5 +131,19 @@ void main() {
       await expectLater(f, throwsA(isException));
       expect(count, equals(2));
     });
+
+    test('retry (retryIfValue, success after 3)', () async {
+      int count = 0;
+      final r = RetryOptions(
+        maxAttempts: 5,
+        maxDelay: Duration(),
+      );
+      final f = r.retry(() {
+        count++;
+        return count;
+      }, retryIfValue: (v) => v < 3);
+      await expectLater(f, completion(3));
+      expect(count, equals(3));
+    });
   });
 }

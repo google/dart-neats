@@ -14,6 +14,7 @@
 
 import 'dart:async';
 import 'dart:io';
+
 import 'package:retry/retry.dart';
 
 Future<void> main() async {
@@ -34,6 +35,7 @@ Future<void> main() async {
       },
       // Retry on SocketException or TimeoutException
       retryIf: (e) => e is SocketException || e is TimeoutException,
+      retryIfValue: (v) => v == 500,
     );
 
     // Print result from status code

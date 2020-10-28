@@ -44,6 +44,7 @@ final _rand = math.Random();
 ///   () => http.get('https://google.com').timeout(Duration(seconds: 5)),
 ///   // Retry on SocketException or TimeoutException
 ///   retryIf: (e) => e is SocketException || e is TimeoutException,
+///   retryIfValue: (v) => v == 500,
 /// );
 /// print(response.body);
 /// ```
@@ -110,9 +111,9 @@ class RetryOptions {
   }
 
   /// Call [fn] retrying so long as [retryIf] return `true` for the exception
-  /// thrown.
+  /// thrown, or if [retryIfValue] returns `true` for the value returned from [fn].
   ///
-  /// At every retry the [onRetry] function will be called (if given). The
+  /// At every retry the [onRetry] and [onRetryIfValue] functions will be called (if given). The
   /// function [fn] will be invoked at-most [this.attempts] times.
   ///
   /// If no [retryIf] function is given this will retry any for any [Exception]
@@ -122,13 +123,22 @@ class RetryOptions {
     FutureOr<T> Function() fn, {
     FutureOr<bool> Function(Exception) retryIf,
     FutureOr<void> Function(Exception) onRetry,
+    FutureOr<bool> Function(dynamic) retryIfValue,
+    FutureOr<void> Function(dynamic) onRetryIfValue,
   }) async {
     int attempt = 0;
     // ignore: literal_only_boolean_expressions
     while (true) {
       attempt++; // first invocation is the first attempt
       try {
-        return await fn();
+        var value = await fn();
+        if (retryIfValue == null || !(await retryIfValue(value))) {
+          return value;
+        } else {
+          if (onRetryIfValue != null) {
+            await onRetryIfValue(value);
+          }
+        }
       } on Exception catch (e) {
         if (attempt >= maxAttempts ||
             (retryIf != null && !(await retryIf(e)))) {
@@ -179,10 +189,18 @@ Future<T> retry<T>(
   int maxAttempts = 8,
   FutureOr<bool> Function(Exception) retryIf,
   FutureOr<void> Function(Exception) onRetry,
+  FutureOr<bool> Function(dynamic) retryIfValue,
+  FutureOr<void> Function(dynamic) onRetryIfValue,
 }) =>
     RetryOptions(
       delayFactor: delayFactor,
       randomizationFactor: randomizationFactor,
       maxDelay: maxDelay,
       maxAttempts: maxAttempts,
-    ).retry(fn, retryIf: retryIf, onRetry: onRetry);
+    ).retry(
+      fn,
+      retryIf: retryIf,
+      onRetry: onRetry,
+      retryIfValue: retryIfValue,
+      onRetryIfValue: onRetryIfValue,
+    );
