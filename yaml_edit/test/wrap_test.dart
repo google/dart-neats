@@ -329,8 +329,8 @@ void main() {
     });
 
     test(
-        'returns the same result for two YamlMaps with same value but different styles',
-        () {
+        'returns the same result for two YamlMaps with same value but '
+        'different styles', () {
       final hashCode1 = deepHashCode(wrapAsYamlNode({'a': 1, 'b': 2},
           collectionStyle: CollectionStyle.BLOCK));
       final hashCode2 = deepHashCode(wrapAsYamlNode({'a': 1, 'b': 2},

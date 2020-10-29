@@ -279,7 +279,7 @@ String yamlEncodeBlockString(
       final formattedValue =
           yamlEncodeBlockString(entry.value, newIndentation, lineEnding);
 
-      if (isCollection(entry.value)) {
+      if (isCollection(entry.value) && !isEmpty(entry.value)) {
         return formattedKey + ':\n' + formattedValue;
       }
 
