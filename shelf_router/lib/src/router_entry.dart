@@ -104,7 +104,7 @@ class RouterEntry {
         return await _handler(request);
       }
       return await Function.apply(
-          _handler, [request, ..._params.map((n) => params[n])]);
+          _handler, [request]..addAll(_params.map((n) => params[n])));
     })(request);
   }
 }
