@@ -1,3 +1,7 @@
+## v1.0.3
+
+- Fixed bug in adding an empty map as a map value.
+
 ## v1.0.2
 
 - Throws an error if the final YAML after edit is not parsable.
