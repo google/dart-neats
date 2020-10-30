@@ -74,7 +74,9 @@ abstract class NeatStatusProvider {
 class _InMemoryNeatStatusProvider implements NeatStatusProvider {
   List<int> _value;
 
+  @override
   Future<List<int>> get() async => _value;
+  @override
   Future<bool> set(List<int> status) async {
     _value = status;
     return true;
@@ -85,8 +87,10 @@ class _NeatStatusProviderWithRetry extends NeatStatusProvider {
   final NeatStatusProvider _provider;
   final RetryOptions _r;
   _NeatStatusProviderWithRetry(this._provider, this._r);
+  @override
   Future<List<int>> get() =>
       _r.retry(() => _provider.get(), retryIf: (e) => e is Exception);
+  @override
   Future<bool> set(List<int> status) =>
       _r.retry(() => _provider.set(status), retryIf: (e) => e is Exception);
 }
@@ -247,7 +251,7 @@ class NeatPeriodicTaskScheduler {
 
     // If delay isn't past yet, we sleep.
     if (elapsed < delay) {
-      Duration d = delay ~/ 2;
+      var d = delay ~/ 2;
       // Always sleep at least minCycle to ensure the iteration doesn't spin too
       // fast as we approach the next iteration.
       if (d < _minCycle) {

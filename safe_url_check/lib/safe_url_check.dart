@@ -82,10 +82,8 @@ Future<bool> safeUrlCheck(
 
   try {
     // Create client if one wasn't given.
-    HttpClient c = client;
-    if (c == null) {
-      c = HttpClient();
-    }
+    var c = client;
+    c ??= HttpClient();
     try {
       return await _safeUrlCheck(
         url,

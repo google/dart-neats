@@ -25,16 +25,18 @@ class _StatusStore {
 }
 
 class _StatusStoreNeatStatusProvider implements NeatStatusProvider {
-  _StatusStore _store;
+  final _StatusStore _store;
   List<int> _lastRead;
   _StatusStoreNeatStatusProvider(this._store);
 
+  @override
   Future<List<int>> get() async {
     await Future.delayed(Duration(milliseconds: 1));
     _lastRead = _store._value;
     return _lastRead;
   }
 
+  @override
   Future<bool> set(List<int> status) async {
     await Future.delayed(Duration(milliseconds: 1));
     if (_store._value == null ||
@@ -53,7 +55,7 @@ void main() {
   Logger.root.onRecord.listen((r) => print(r));
 
   test('schedule periodic task', () async {
-    int count = 0;
+    var count = 0;
     final scheduler = NeatPeriodicTaskScheduler(
       name: 'test-task',
       interval: Duration(milliseconds: 500),
@@ -79,7 +81,7 @@ void main() {
   test('schedule periodic task with racing', () async {
     final statusStore = _StatusStore();
 
-    int count = 0;
+    var count = 0;
     final schedulerA = NeatPeriodicTaskScheduler(
       name: 'machine-A',
       interval: Duration(milliseconds: 500),

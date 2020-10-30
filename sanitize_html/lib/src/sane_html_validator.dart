@@ -260,7 +260,7 @@ class SaneHtmlValidator {
     if (node.hasChildNodes()) {
       // doing it in reverse order, because we could otherwise skip one, when a
       // node is removed...
-      for (int i = node.nodes.length - 1; i >= 0; i--) {
+      for (var i = node.nodes.length - 1; i >= 0; i--) {
         _sanitize(node.nodes[i]);
       }
     }

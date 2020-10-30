@@ -16,13 +16,13 @@ import 'package:pem/pem.dart';
 
 void main() {
   // Parse private key from PEM string.
-  final privateKeydata = PemCodec(PemLabel.privateKey).decode("""
+  final privateKeydata = PemCodec(PemLabel.privateKey).decode('''
     -----BEGIN PRIVATE KEY-----
     MIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgVcB/UNPxalR9zDYAjQIf
     jojUDiQuGnSJrFEEzZPT/92hRANCAASc7UJtgnF/abqWM60T3XNJEzBv5ez9TdwK
     H0M6xpM2q+53wmsN/eYLdgtjgBd3DBmHtPilCkiFICXyaA8z9LkJ
     -----END PRIVATE KEY-----
-  """);
+  ''');
 
   // Print number of bytes in the key, we could obviously also pass it to
   // another library to use the key.

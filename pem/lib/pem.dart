@@ -253,7 +253,7 @@ String encodePemBlock(PemLabel label, List<int> data) {
   final L = _labels[label].first;
   s.writeln('-----BEGIN $L-----');
   final lines = base64.encode(data);
-  for (int i = 0; i < lines.length; i += 64) {
+  for (var i = 0; i < lines.length; i += 64) {
     s.writeln(lines.substring(i, math.min(lines.length, i + 64)));
   }
   s.writeln('-----END $L-----');
@@ -304,9 +304,9 @@ class PemCodec extends Codec<List<int>, String> {
   /// block.
   @override
   Converter<String, List<int>> get decoder => _PemDecoder(
-        this.label,
-        this._strict,
-        this._unsafeIgnoreLabel,
+        label,
+        _strict,
+        _unsafeIgnoreLabel,
       );
 
   /// Return a [Converter] for decoding a single PEM block.
@@ -316,7 +316,7 @@ class PemCodec extends Codec<List<int>, String> {
   ///
   /// [1]: https://tools.ietf.org/html/rfc7468
   @override
-  Converter<List<int>, String> get encoder => _PemEncoder(this.label);
+  Converter<List<int>, String> get encoder => _PemEncoder(label);
 }
 
 class _PemDecoder extends Converter<String, List<int>> {

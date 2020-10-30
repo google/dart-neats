@@ -22,7 +22,7 @@ import 'package:unorm_dart/unorm_dart.dart' show nfc;
 ///
 /// [1] http://www.macchiato.com/unicode/nfc-faq#TOC-Parsing-tokens-is-very-performance-sensitive-won-t-normalizing-be-too-costly-
 String fastNfc(String s) {
-  for (int i = 0; i < s.length; i++) {
+  for (var i = 0; i < s.length; i++) {
     if (s.codeUnitAt(i) >= 300) {
       return nfc(s);
     }

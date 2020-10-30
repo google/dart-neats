@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:async' show Future;
+
 import 'package:analyzer/dart/element/element.dart'
     show ClassElement, ElementKind, ExecutableElement;
 import 'package:analyzer/dart/element/type.dart' show ParameterizedType;
@@ -20,10 +21,10 @@ import 'package:build/build.dart' show BuildStep, log;
 import 'package:code_builder/code_builder.dart' as code;
 import 'package:http_methods/http_methods.dart' show isHttpMethod;
 import 'package:meta/meta.dart';
-import 'package:source_gen/source_gen.dart' as g;
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
 import 'package:shelf_router/src/router_entry.dart' show RouterEntry;
+import 'package:source_gen/source_gen.dart' as g;
 
 // Type checkers that we need later
 final _routeType = g.TypeChecker.fromRuntime(shelf_router.Route);
@@ -43,10 +44,10 @@ class _Handler {
 /// Find members of a class annotated with [shelf_router.Route].
 List<ExecutableElement> getAnnotatedElementsOrderBySourceOffset(
     ClassElement cls) {
-  return <ExecutableElement>[]
-    ..addAll(cls.methods.where(_routeType.hasAnnotationOfExact))
-    ..addAll(cls.accessors.where(_routeType.hasAnnotationOfExact))
-    ..sort((a, b) => (a.nameOffset ?? -1).compareTo(b.nameOffset ?? -1));
+  return <ExecutableElement>[
+    ...cls.methods.where(_routeType.hasAnnotationOfExact),
+    ...cls.accessors.where(_routeType.hasAnnotationOfExact)
+  ]..sort((a, b) => (a.nameOffset ?? -1).compareTo(b.nameOffset ?? -1));
 }
 
 /// Generate a `_$<className>Router(<className> service)` method that returns a
@@ -225,7 +226,7 @@ void _typeCheckHandler(_Handler h) {
           'shelf.Request parameter and all string parameters in the route',
           element: h.element);
     }
-    for (int i = 0; i < params.length; i++) {
+    for (var i = 0; i < params.length; i++) {
       final p = h.element.parameters[i + 1];
       if (p.name != params[i]) {
         throw g.InvalidGenerationSourceError(

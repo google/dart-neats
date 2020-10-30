@@ -16,7 +16,7 @@ import 'package:http_methods/http_methods.dart';
 
 void main() {
   print('All HTTP verbs are:');
-  for (String method in httpMethods) {
+  for (var method in httpMethods) {
     if (isIdempotentHttpMethod(method)) {
       print('${method.padLeft(20)} is idempotent');
     } else {

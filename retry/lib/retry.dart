@@ -123,7 +123,7 @@ class RetryOptions {
     FutureOr<bool> Function(Exception) retryIf,
     FutureOr<void> Function(Exception) onRetry,
   }) async {
-    int attempt = 0;
+    var attempt = 0;
     // ignore: literal_only_boolean_expressions
     while (true) {
       attempt++; // first invocation is the first attempt

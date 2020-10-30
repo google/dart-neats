@@ -72,7 +72,7 @@ void _encode(Uint8Buffer output, Object input, Object original) {
   // Handle lists by calling recursively.
   if (input is List<Object>) {
     output.add(char('['));
-    for (int i = 0; i < input.length; i++) {
+    for (var i = 0; i < input.length; i++) {
       if (i > 0) {
         output.add(char(','));
       }
@@ -87,7 +87,7 @@ void _encode(Uint8Buffer output, Object input, Object original) {
     final entries = RawMapEntry.fromMap(input).toList();
     entries.sort(RawMapEntry.compare);
     output.add(char('{'));
-    bool first = true;
+    var first = true;
     for (final entry in entries) {
       if (!first) {
         output.add(char(','));

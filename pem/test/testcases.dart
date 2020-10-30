@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /// Strict test cases.
-const strictTestCases = """
+const strictTestCases = '''
 -----BEGIN CERTIFICATE-----
 MIICLDCCAdKgAwIBAgIBADAKBggqhkjOPQQDAjB9MQswCQYDVQQGEwJCRTEPMA0G
 A1UEChMGR251VExTMSUwIwYDVQQLExxHbnVUTFMgY2VydGlmaWNhdGUgYXV0aG9y
@@ -117,13 +117,13 @@ MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEn1LlwLN/KBYQRVH6HfIMTzfEqJOVztLe
 kLchp2hi78cCaMY81FBlYs8J9l7krc+M4aBeCGYFjba+hiXttJWPL7ydlE+5UG4U
 Nkn3Eos8EiZByi9DVsyfy9eejh+8AXgp
 -----END PUBLIC KEY-----
-""";
+''';
 
 /// Test cases for non-strict parsing mode.
 ///
 /// These are useful as when passed in textual format, it's easy to introduce
 /// extract whitespace, indentation, tabs, CR LF, etc.
-const laxTestCases = """
+const laxTestCases = '''
 -----BEGIN CERTIFICATE-----
 MIICLDCCAdKgAwIBAgIBADAKBggqhkjOPQQDAjB9MQswCQYDVQQGEwJCRTEPMA0G
 A1UEChMG  R251VExTMSUwIwYDVQQLExxHbnVUTFMgY2VydGlm  aWNhdGUgYXV0aG9y
@@ -238,4 +238,4 @@ dEQc8B8jAcnuOrfU
 \n\r\tkLchp2hi78cCaMY81FBlYs8J9l7krc+M4aBeCGYFjba+hiXttJWPL7ydlE+5UG4U
 \n\r\tNkn3Eos8EiZByi9DVsyfy9eejh+8AXgp
 \n\r\t-----END PUBLIC KEY-----
-""";
+''';
