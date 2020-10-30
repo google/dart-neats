@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'package:test/test.dart';
-
 import 'package:yaml_edit/src/equality.dart';
 import 'package:yaml_edit/src/errors.dart';
 import 'package:yaml_edit/yaml_edit.dart';

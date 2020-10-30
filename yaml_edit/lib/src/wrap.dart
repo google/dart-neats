@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:collection' as collection;
+
 import 'package:collection/collection.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';

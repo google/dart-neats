@@ -15,7 +15,7 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import './test_case.dart';
+import 'test_case.dart';
 
 /// This script performs snapshot testing of the inputs in the testing directory
 /// against golden files if they exist, and creates the golden files otherwise.

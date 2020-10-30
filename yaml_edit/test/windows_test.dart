@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:yaml_edit/yaml_edit.dart';
-import 'package:yaml_edit/src/utils.dart';
 import 'package:test/test.dart';
+import 'package:yaml_edit/src/utils.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import 'test_utils.dart';
 

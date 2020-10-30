@@ -15,10 +15,10 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:yaml_edit/src/utils.dart';
-import 'package:yaml_edit/yaml_edit.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
+import 'package:yaml_edit/src/utils.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import 'test_utils.dart';
 
