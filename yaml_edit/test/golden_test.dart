@@ -1,4 +1,4 @@
-// Copyright 2020 Garett Tok Ern Liang
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import './test_case.dart';
+import 'test_case.dart';
 
 /// This script performs snapshot testing of the inputs in the testing directory
 /// against golden files if they exist, and creates the golden files otherwise.

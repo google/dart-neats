@@ -1,4 +1,4 @@
-// Copyright 2020 Garett Tok Ern Liang
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:collection' as collection;
+
 import 'package:collection/collection.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';

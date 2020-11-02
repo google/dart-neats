@@ -1,4 +1,4 @@
-// Copyright 2020 Garett Tok Ern Liang
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:yaml_edit/yaml_edit.dart';
-import 'package:yaml_edit/src/wrap.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
+import 'package:yaml_edit/src/wrap.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import 'problem_strings.dart';
 import 'test_utils.dart';
