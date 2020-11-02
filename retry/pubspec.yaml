@@ -1,5 +1,5 @@
 name: retry
-version: 3.0.1-null-safety
+version: 3.0.1-null-safety.0
 description: |
   Utility for wrapping an asynchronous function in automatic retry logic with
   exponential back-off, useful when making requests over network.
@@ -10,4 +10,4 @@ dev_dependencies:
   test: ^1.5.1
   pedantic: ^1.4.0
 environment:
-  sdk: ">=2.12.0-0.0.dev <3.0.0"
+  sdk: ">=2.12.0-0 <2.12.0"
