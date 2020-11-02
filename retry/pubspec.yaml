@@ -1,5 +1,5 @@
 name: retry
-version: 4.0.0-null-safety.0
+version: 3.1.0-null-safety.0
 description: |
   Utility for wrapping an asynchronous function in automatic retry logic with
   exponential back-off, useful when making requests over network.
