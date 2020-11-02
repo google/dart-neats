@@ -126,7 +126,7 @@ class RetryOptions {
     var attempt = 0;
     // ignore: literal_only_boolean_expressions
     while (true) {
-      attempt++; // first invocation is the first attempt†
+      attempt++; // first invocation is the first attempt
       try {
         return await fn();
       } on Exception catch (e) {
