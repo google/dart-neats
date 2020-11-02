@@ -120,13 +120,13 @@ class RetryOptions {
   /// as an [Exception].
   Future<T> retry<T>(
     FutureOr<T> Function() fn, {
-    FutureOr<bool> Function(Exception) retryIf,
-    FutureOr<void> Function(Exception) onRetry,
+    FutureOr<bool> Function(Exception)? retryIf,
+    FutureOr<void> Function(Exception)? onRetry,
   }) async {
-    int attempt = 0;
+    var attempt = 0;
     // ignore: literal_only_boolean_expressions
     while (true) {
-      attempt++; // first invocation is the first attempt
+      attempt++; // first invocation is the first attempt†
       try {
         return await fn();
       } on Exception catch (e) {
@@ -177,8 +177,8 @@ Future<T> retry<T>(
   double randomizationFactor = 0.25,
   Duration maxDelay = const Duration(seconds: 30),
   int maxAttempts = 8,
-  FutureOr<bool> Function(Exception) retryIf,
-  FutureOr<void> Function(Exception) onRetry,
+  FutureOr<bool> Function(Exception)? retryIf,
+  FutureOr<void> Function(Exception)? onRetry,
 }) =>
     RetryOptions(
       delayFactor: delayFactor,
