@@ -322,7 +322,7 @@ class StepBuilder {
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder1<A> dep<A>(Step<A> stepA) {
     ArgumentError.checkNotNull(stepA, 'stepA');
-    return StepBuilder1._(this._name, stepA);
+    return StepBuilder1._(_name, stepA);
   }
 
   /// Add dependency on an arbitrary number of steps [dependencies] and return
@@ -333,7 +333,7 @@ class StepBuilder {
   StepBuilderN<S> deps<S>(Iterable<Step<S>> dependencies) {
     ArgumentError.checkNotNull(dependencies, 'dependencies');
     final dependencies_ = List<Step<S>>.from(dependencies);
-    return StepBuilderN._(this._name, dependencies_);
+    return StepBuilderN._(_name, dependencies_);
   }
 
   /// Build a step without dependencies.

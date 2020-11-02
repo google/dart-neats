@@ -31,7 +31,7 @@ void main() {
           25600,
         ];
         var r = RetryOptions();
-        for (int i = 0; i < ivt.length; i++) {
+        for (var i = 0; i < ivt.length; i++) {
           final d = r.delay(i).inMilliseconds;
           expect(d, inInclusiveRange(ivt[i] * 0.74, ivt[i] * 1.26));
         }
@@ -44,7 +44,7 @@ void main() {
     });
 
     test('retry (success)', () async {
-      int count = 0;
+      var count = 0;
       final r = RetryOptions();
       final f = r.retry(() {
         count++;
@@ -55,7 +55,7 @@ void main() {
     });
 
     test('retry (unhandled exception)', () async {
-      int count = 0;
+      var count = 0;
       final r = RetryOptions(
         maxAttempts: 5,
       );
@@ -68,7 +68,7 @@ void main() {
     });
 
     test('retry (retryIf, exhaust retries)', () async {
-      int count = 0;
+      var count = 0;
       final r = RetryOptions(
         maxAttempts: 5,
         maxDelay: Duration(),
@@ -82,7 +82,7 @@ void main() {
     });
 
     test('retry (success after 2)', () async {
-      int count = 0;
+      var count = 0;
       final r = RetryOptions(
         maxAttempts: 5,
         maxDelay: Duration(),
@@ -99,7 +99,7 @@ void main() {
     });
 
     test('retry (no retryIf)', () async {
-      int count = 0;
+      var count = 0;
       final r = RetryOptions(
         maxAttempts: 5,
         maxDelay: Duration(),
@@ -116,7 +116,7 @@ void main() {
     });
 
     test('retry (unhandled on 2nd try)', () async {
-      int count = 0;
+      var count = 0;
       final r = RetryOptions(
         maxAttempts: 5,
         maxDelay: Duration(),

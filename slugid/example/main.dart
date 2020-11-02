@@ -16,7 +16,7 @@ import 'package:slugid/slugid.dart';
 
 void main() {
   print('Generating 5 random slugids:');
-  for (int i = 0; i < 5; i++) {
+  for (var i = 0; i < 5; i++) {
     // Using the _nice_ variant, which cannot start with dashes, this is always
     // nice if for some reason the ID might be given as commandline argument in
     // some tool some day.

@@ -28,8 +28,11 @@ class CanonicalJsonDecoder extends Converter<List<int>, Object> {
 }
 
 class _InvalidCanonicalJsonException extends InvalidCanonicalJsonException {
+  @override
   final List<int> input;
+  @override
   final int offset;
+  @override
   final String message;
 
   _InvalidCanonicalJsonException(this.input, this.offset, this.message);
@@ -52,7 +55,7 @@ class Decoder {
     if (_data.length < _offset + constant.length) {
       return false;
     }
-    for (int i = 0; i < constant.length; i++) {
+    for (var i = 0; i < constant.length; i++) {
       if (_data[_offset + i] != constant.codeUnitAt(i)) {
         return false;
       }
@@ -113,7 +116,7 @@ class Decoder {
   /// Read an integer, assumes _value is in the range 0-9.
   int _readInt() {
     assert(char('1') <= _value && _value <= char('9'));
-    int result = 0;
+    var result = 0;
     do {
       result = result * 10 + _value.toUnsigned(8) - char('0');
       _offset++;
@@ -198,7 +201,7 @@ class Decoder {
     } while (_try(','));
     _require('}', 'expected "," or "}" in map');
     // Validate that keys are sorted
-    for (int i = 1; i < entries.length; i++) {
+    for (var i = 1; i < entries.length; i++) {
       if (RawMapEntry.compare(entries[i - 1], entries[i]) > 0) {
         throw _fail('keys in map must be sorted', entries[i].offset);
       }

@@ -66,17 +66,17 @@ void main() {
   });
 
   group('v4()', () {
-    for (int i = 0; i < 50; i++) {
+    for (var i = 0; i < 50; i++) {
       testSlugid('v4() ($i)', () => Slugid.v4());
     }
   });
 
   group('nice()', () {
-    for (int i = 0; i < 50; i++) {
+    for (var i = 0; i < 50; i++) {
       testSlugid('nice() ($i)', () => Slugid.nice());
     }
     test('nice() format', () {
-      for (int i = 0; i < 500; i++) {
+      for (var i = 0; i < 500; i++) {
         expect(Slugid.nice().toString()[0], isNot(equals('-')));
       }
     });

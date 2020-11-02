@@ -20,7 +20,7 @@ final _rng = Random.secure();
 /// Fill a buffer of cryptographically random bytes.
 List<int> randomBytes(int length) {
   final b = Uint8List(length);
-  for (int i = 0; i < length; i++) {
+  for (var i = 0; i < length; i++) {
     b[i] = _rng.nextInt(255);
   }
   return b;

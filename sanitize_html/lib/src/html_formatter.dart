@@ -53,7 +53,7 @@ class _HtmlFormatter {
 
   void _writeNodes(List<Node> nodes) {
     if (nodes == null || nodes.isEmpty) return;
-    for (Node node in nodes) {
+    for (var node in nodes) {
       if (node is Element) {
         _writeElement(node);
       } else if (node is Text) {

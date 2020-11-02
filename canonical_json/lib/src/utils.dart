@@ -48,7 +48,7 @@ class RawMapEntry {
   static int compare(RawMapEntry a, RawMapEntry b) {
     assert(a != null && b != null, 'a and b should never be null');
     final N = math.min(a.key.length, b.key.length);
-    for (int i = 0; i < N; i++) {
+    for (var i = 0; i < N; i++) {
       final r = a.key[i].compareTo(b.key[i]);
       if (r != 0) {
         return r;

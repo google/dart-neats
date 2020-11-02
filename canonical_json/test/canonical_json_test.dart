@@ -36,7 +36,7 @@ void main() {
   testValue('int (2)', -42);
 
   final prng = Random(42);
-  for (int i = 0; i < 50; i++) {
+  for (var i = 0; i < 50; i++) {
     final chars = '{}[]abcd \0""""\\\\\\\\\$\$\'\''.split('');
     chars.shuffle(prng);
     testValue('shuffled string ($i)', chars.join(''));
@@ -131,7 +131,7 @@ void main() {
       }));
 
   test('unicode normalization form C', () {
-    final nonFormC = "A\u0308\uFB03n";
+    final nonFormC = 'A\u0308\uFB03n';
     final data = canonicalJson.encode(nonFormC);
     final value = canonicalJson.decode(data);
     expect(value, isNot(equals(nonFormC)));

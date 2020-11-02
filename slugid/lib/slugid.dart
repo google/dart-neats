@@ -128,7 +128,7 @@ class Slugid {
     }
     // If other is a slugid, we compare bytes.
     if (other is Slugid) {
-      for (int i = 0; i < _bytes.length; i++) {
+      for (var i = 0; i < _bytes.length; i++) {
         if (_bytes[i] != other._bytes[i]) {
           return false;
         }
