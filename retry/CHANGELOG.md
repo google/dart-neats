@@ -1,4 +1,4 @@
-## v3.0.1-null-safety.0
+## v3.1.0-null-safety.0
  * Migrate to null-safety.
 
 ## v3.0.1
