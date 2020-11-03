@@ -36,9 +36,9 @@ See reference documentation of `Router` class for more information.
  * Package [`shelf`][shelf] for which this package can create routers.
  * Package [`shelf_router_generator`][shelf_router_generator] which can generate
    a router using source code annotations.
- * Third-party video tutorial by [creativebracket.com]:
-   * [Build RESTful Web APIs with Shelf_router (youtube.com)][1]
-   * [Tutorial sample repository (github.com)][2]
+ * Third-party tutorial by [creativebracket.com]:
+   * Video: [Build RESTful Web APIs with shelf_router][1]
+   * Sample: [repository for tutorial][2]
 
 [shelf]: https://pub.dev/packages/shelf
 [shelf_router_generator]: https://pub.dev/packages/shelf_router_generator
