@@ -121,4 +121,31 @@ void main() {
     expect(await get('/api/user/jonasfj/info'), 'Hello jonasfj');
     expect(get('/api/user/jonasfj/info-wrong'), throwsA(anything));
   });
+
+  test('mount(Handler) with middleware', () async {
+    var api = Router();
+    api.get('/hello', (Request request) {
+      return Response.ok('Hello');
+    });
+
+    final middleware = createMiddleware(
+      requestHandler: (request) {
+        if (request.url.queryParameters.containsKey('ok')) {
+          return Response.ok('middleware');
+        }
+        return null;
+      },
+    );
+
+    var app = Router();
+    app.mount(
+      '/api/',
+      Pipeline().addMiddleware(middleware).addHandler(api),
+    );
+
+    server.mount(app);
+
+    expect(await get('/api/hello'), 'Hello');
+    expect(await get('/api/hello?ok'), 'middleware');
+  });
 }
