@@ -17,7 +17,7 @@ import 'package:slugid/slugid.dart';
 
 void testSlugid(String name, Slugid Function() create) {
   group(name, () {
-    Slugid s;
+    late final Slugid s;
 
     test('create', () {
       s = create();

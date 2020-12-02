@@ -24,6 +24,7 @@ import 'dart:convert';
 import 'src/random.dart';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
+import 'package:meta/meta.dart' show sealed;
 
 final _uuidPattern = RegExp(
     r'[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}');
@@ -59,6 +60,7 @@ final _slugidPattern = RegExp(
 ///
 /// print('New id: ${Slugid.nice()}');
 /// ```
+@sealed
 class Slugid {
   final Uint8List _bytes;
 

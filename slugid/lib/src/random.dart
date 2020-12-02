@@ -18,7 +18,7 @@ import 'dart:typed_data';
 final _rng = Random.secure();
 
 /// Fill a buffer of cryptographically random bytes.
-List<int> randomBytes(int length) {
+Uint8List randomBytes(int length) {
   final b = Uint8List(length);
   for (var i = 0; i < length; i++) {
     b[i] = _rng.nextInt(255);
