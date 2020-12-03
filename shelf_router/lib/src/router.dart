@@ -134,8 +134,12 @@ class Router {
   }
 
   /// Get a [Handler] that will route incoming requests to registered handlers.
+  @Deprecated('The Router class is a Handler on its own')
   Handler get handler => call;
 
+  /// Route incoming requests to registered handlers.
+  ///
+  /// This method allows a Router instance to be a [Handler].
   Future<Response> call(Request request) async {
     // Note: this is a great place to optimize the implementation by building
     //       a trie for faster matching... left as an exercise for the reader :)

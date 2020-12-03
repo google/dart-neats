@@ -60,7 +60,7 @@ void main() {
       return Response.ok('not-found');
     });
 
-    server.mount(app.handler);
+    server.mount(app);
 
     expect(await get('/sync-hello'), 'hello-world');
     expect(await get('/async-hello'), 'hello-world');
@@ -80,7 +80,7 @@ void main() {
       return Response.ok('$user / $group');
     });
 
-    server.mount(app.handler);
+    server.mount(app);
 
     expect(await get('/user/jonasfj/groups/42'), 'jonasfj / 42');
   });
@@ -93,7 +93,7 @@ void main() {
       return Response.ok('$user / $group');
     });
 
-    server.mount(app.handler);
+    server.mount(app);
 
     expect(await get('/user/jonasfj/groups/42'), 'jonasfj / 42');
   });
@@ -115,7 +115,7 @@ void main() {
       return Response.notFound('catch-all-handler');
     });
 
-    server.mount(app.handler);
+    server.mount(app);
 
     expect(await get('/hello'), 'hello-world');
     expect(await get('/api/user/jonasfj/info'), 'Hello jonasfj');
