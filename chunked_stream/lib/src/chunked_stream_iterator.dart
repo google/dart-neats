@@ -41,9 +41,6 @@ abstract class ChunkedStreamIterator<T> {
   /// Cancels the stream iterator (and the underlying stream subscription)
   /// early.
   ///
-  /// The [ChunkedStreamIterator] is automatically cancelled if [read] reaches
-  /// the end of the stream or an error.
-  ///
   /// Users should call [cancel] to ensure that the stream is properly closed
   /// if they need to stop listening earlier than the end of the stream.
   Future<void> cancel();
@@ -102,9 +99,6 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
 
   /// Cancels the stream iterator (and the underlying stream subscription)
   /// early.
-  ///
-  /// The [ChunkedStreamIterator] is automatically cancelled if [read]
-  /// reaches the end of the stream or an error.
   ///
   /// Users should call [cancel] to ensure that the stream is properly closed
   /// if they need to stop listening earlier than the end of the stream.

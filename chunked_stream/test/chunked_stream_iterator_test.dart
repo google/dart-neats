@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:math';
 import 'package:test/test.dart';
 import 'package:chunked_stream/chunked_stream.dart';
 
@@ -21,6 +20,14 @@ Stream<List<T>> _chunkedStream<T>(List<List<T>> chunks) async* {
   for (final chunk in chunks) {
     yield chunk;
   }
+}
+
+Stream<List<T>> _chunkedStreamWithError<T>(List<List<T>> chunks) async* {
+  for (final chunk in chunks) {
+    yield chunk;
+  }
+
+  throw StateError('test generated error');
 }
 
 void main() {
@@ -32,6 +39,15 @@ void main() {
     expect(await s.read(3), equals(['a', 'b', 'c']));
     expect(await s.read(2), equals(['1', '2']));
     expect(await s.read(1), equals([]));
+  });
+
+  test('read() propagates stream error', () async {
+    final s = ChunkedStreamIterator(_chunkedStreamWithError([
+      ['a', 'b', 'c'],
+      ['1', '2'],
+    ]));
+    expect(await s.read(3), equals(['a', 'b', 'c']));
+    expect(() async => await s.read(3), throwsStateError);
   });
 
   test('read() -- chunk in given size', () async {
@@ -63,6 +79,18 @@ void main() {
       ['1', '2'],
     ]));
     expect(await s.read(6), equals(['a', 'b', 'c', '1', '2']));
+  });
+
+  test('substream() propagates stream error', () async {
+    final s = ChunkedStreamIterator(_chunkedStreamWithError([
+      ['a', 'b', 'c'],
+      ['1', '2'],
+    ]));
+    expect(await s.read(3), equals(['a', 'b', 'c']));
+    final substream = s.substream(3);
+    final subChunkedStreamIterator = ChunkedStreamIterator(substream);
+    expect(
+        () async => await subChunkedStreamIterator.read(3), throwsStateError);
   });
 
   test('substream() + readChunkedStream()', () async {
