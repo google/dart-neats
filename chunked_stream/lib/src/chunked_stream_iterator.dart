@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:math';
 
 import 'package:chunked_stream/src/read_chunked_stream.dart';
 
@@ -33,7 +32,7 @@ abstract class ChunkedStreamIterator<T> {
   /// Returns a list of the next [size] elements.
   ///
   /// Returns a list with less than [size] elements if the end of stream is
-  /// encounted before [size] elements are read.
+  /// encountered before [size] elements are read.
   ///
   /// If an error is encountered before reading [size] elements, the error
   /// will be thrown.
@@ -49,13 +48,17 @@ abstract class ChunkedStreamIterator<T> {
   /// if they need to stop listening earlier than the end of the stream.
   Future<void> cancel();
 
-  /// Creates a sub-[Stream] with the next [size] elements.
+  /// Creates a sub-[Stream] with the next [size] elements. At most one
+  /// sub-[Stream] should be present at one time.
   ///
   /// The resulting stream may contain less than [size] elements if the
   /// underlying stream has less than [size] elements before the end of stream.
   ///
-  /// If [read] is called before the sub-[Stream] is fully read, the remainder
-  /// of the elements in the sub-[Stream] will be automatically drained.
+  /// If [read] is called before the sub-[Stream] is fully read, a [StateError]
+  /// will be thrown.
+  ///
+  /// When the substream is cancelled, the remaining elements in the substream
+  /// are drained.
   Stream<List<T>> substream(int size);
 }
 
@@ -67,17 +70,14 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// Keeps track of the number of elements left in the current substream.
   int _toRead = 0;
 
-  /// Keeps track of the current substream we are supporting.
-  int _substreamId = 0;
+  /// Buffered items from a previous chunk. Items in this list should not have
+  /// been read by the user.
+  List<T> _buffered;
 
   /// Instance variable representing an empty list object, used as the empty
   /// default state for [_buffered]. Take caution not to write code that
   /// directly modify the [_buffered] list by adding elements to it.
   final List<T> _emptyList = [];
-
-  /// Buffered items from a previous chunk. Items in this list should not have
-  /// been read by the user.
-  List<T> _buffered;
 
   _ChunkedStreamIterator(Stream<List<T>> stream)
       : _iterator = StreamIterator(stream) {
@@ -93,21 +93,8 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// will be thrown.
   @override
   Future<List<T>> read(int size) async {
-    /// Clears the remainder of elements if the user did not drain it.
-    final readToIndex = min(_toRead, _buffered.length);
-    _buffered = (readToIndex == _buffered.length)
-        ? _emptyList
-        : _buffered.sublist(readToIndex);
-    _toRead -= readToIndex;
-
-    while (_toRead > 0 && await _iterator.moveNext()) {
-      if (_toRead < _iterator.current.length) {
-        _buffered = _iterator.current.sublist(_toRead);
-        _toRead = 0;
-      } else {
-        _toRead -= _iterator.current.length;
-        _buffered = _emptyList;
-      }
+    if (_toRead > 0) {
+      throw StateError('Concurrent invocations are not supported!');
     }
 
     return readChunkedStream(substream(size));
@@ -124,25 +111,52 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   @override
   Future<void> cancel() async => await _iterator.cancel();
 
-  /// Creates a sub-[Stream] with the next [size] elements.
+  /// Creates a sub-[Stream] with the next [size] elements. At most one
+  /// sub-[Stream] should be present at one time.
   ///
   /// The resulting stream may contain less than [size] elements if the
   /// underlying stream has less than [size] elements before the end of stream.
   ///
-  /// If [read] is called before the sub-[Stream] is fully read, the remainder
-  /// of the elements in the sub-[Stream] will be automatically drained.
+  /// If [read] is called before the sub-[Stream] is fully read, a [StateError]
+  /// will be thrown.
+  ///
+  /// When the substream is cancelled, the remaining elements in the substream
+  /// are drained.
   @override
   Stream<List<T>> substream(int size) {
-    _toRead = size;
-    _substreamId++;
+    if (_toRead > 0) {
+      throw StateError('Concurrent invocations are not supported!');
+    }
 
-    return _substream(_substreamId);
+    _toRead = size;
+
+    /// Creates a new [StreamController] made out of the elements from
+    /// [_iterator].
+    final substream = _substream();
+    final newController = StreamController<List<T>>();
+
+    /// When [newController]'s stream is cancelled, drain all the remaining
+    /// elements.
+    newController.onCancel = () async {
+      await _substream().drain();
+    };
+
+    /// Since the controller should only have [size] elements, we close
+    /// [newController]'s stream once all the elements in [substream] have
+    /// been added. This is necessary so that await-for loops on
+    /// [newController.stream] will complete.
+    final future = newController.addStream(substream);
+    future.whenComplete(() {
+      newController.close();
+    });
+
+    return newController.stream;
   }
 
-  Stream<List<T>> _substream(int substreamId) async* {
-    /// Only yield when we are dealing with the same substream and there are
-    /// elements to be read.
-    while (_substreamId == substreamId && _toRead > 0) {
+  /// Asynchronous generator implementation for [substream].
+  Stream<List<T>> _substream() async* {
+    /// Only yield when there are elements to be read.
+    while (_toRead > 0) {
       /// If [_buffered] is empty, set it to the next element in the stream if
       /// possible.
       if (_buffered.isEmpty) {
@@ -170,5 +184,9 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
 
       yield toYield;
     }
+
+    /// Set [_toRead] to be 0. This line is necessary if the size that is passed
+    /// in is greater than the number of elements in [_iterator].
+    _toRead = 0;
   }
 }

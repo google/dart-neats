@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:math';
 import 'package:test/test.dart';
 import 'package:chunked_stream/chunked_stream.dart';
 
@@ -30,6 +31,16 @@ void main() {
     ]));
     expect(await s.read(3), equals(['a', 'b', 'c']));
     expect(await s.read(2), equals(['1', '2']));
+    expect(await s.read(1), equals([]));
+  });
+
+  test('read() -- chunk in given size', () async {
+    final s = ChunkedStreamIterator(_chunkedStream([
+      ['a', 'b', 'c'],
+      ['1', '2'],
+    ]));
+    expect(await s.read(2), equals(['a', 'b']));
+    expect(await s.read(3), equals(['c', '1', '2']));
     expect(await s.read(1), equals([]));
   });
 
@@ -64,7 +75,7 @@ void main() {
     expect(await s.read(1), equals([]));
   });
 
-  test('substream() + readChunkedStream() x 2', () async {
+  test('(substream() + readChunkedStream()) x 2', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
@@ -93,7 +104,9 @@ void main() {
     expect(await s.read(2), equals(['2']));
   });
 
-  test('read() substream().cancel() read() -- one item at the time', () async {
+  test(
+      'read() StreamIterator(substream()).cancel() read() '
+      '-- one item at the time', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
@@ -102,6 +115,23 @@ void main() {
     final i = StreamIterator(s.substream(3));
     expect(await i.moveNext(), isTrue);
     await i.cancel();
+    expect(await s.read(1), equals(['2']));
+    expect(await s.read(1), equals([]));
+  });
+
+  test(
+      'read() StreamIterator(substream()) read() '
+      '-- one item at the time', () async {
+    final s = ChunkedStreamIterator(_chunkedStream([
+      ['a', 'b', 'c'],
+      ['1', '2'],
+    ]));
+    expect(await s.read(1), equals(['a']));
+    final i = StreamIterator(s.substream(3));
+    expect(await i.moveNext(), isTrue);
+    expect(await i.current, equals(['b', 'c']));
+    expect(await i.moveNext(), isTrue);
+    expect(await i.current, equals(['1']));
     expect(await s.read(1), equals(['2']));
     expect(await s.read(1), equals([]));
   });
@@ -125,47 +155,80 @@ void main() {
   });
 
   test(
-      'read() substream().cancel() read() -- '
-      'cancellation without reading', () async {
+      'read() StreamIterator(substream()).cancel() read() -- '
+      'cancellation after reading', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
     ]));
     expect(await s.read(1), equals(['a']));
     final i = StreamIterator(s.substream(3));
+    expect(await i.moveNext(), isTrue);
     await i.cancel();
     expect(await s.read(1), equals(['2']));
     expect(await s.read(1), equals([]));
   });
 
   test(
-      'read() substream().cancel() read() -- '
-      'not cancelling still produces correct behavior', () async {
+      'read() StreamIterator(substream()).cancel() read() -- '
+      'cancellation after reading (2)', () async {
+    final s = ChunkedStreamIterator(_chunkedStream([
+      ['a', 'b', 'c'],
+      ['1', '2', '3'],
+      ['4', '5', '6']
+    ]));
+    expect(await s.read(1), equals(['a']));
+    final i = StreamIterator(s.substream(6));
+    expect(await i.moveNext(), isTrue);
+    await i.cancel();
+    expect(await s.read(1), equals(['5']));
+    expect(await s.read(1), equals(['6']));
+  });
+
+  /// The following test fails because before the first `moveNext` is called,
+  /// the [StreamIterator] is not intialized to the correct
+  /// [StreamSubscription], thus calling `cancel` does not correctly cancel the
+  /// underlying stream, resulting in an error.
+  ///
+  // test(
+  //     'read() substream().cancel() read() -- '
+  //     'cancellation without reading', () async {
+  //   final s = ChunkedStreamIterator(_chunkedStream([
+  //     ['a', 'b', 'c'],
+  //     ['1', '2'],
+  //   ]));
+  //   expect(await s.read(1), equals(['a']));
+  //   final i = StreamIterator(s.substream(3));
+  //   await i.cancel();
+  //   expect(await s.read(1), equals(['1']));
+  //   expect(await s.read(1), equals(['2']));
+  // });
+
+  test(
+      'read() StreamIterator(substream()) read() -- '
+      'not cancelling produces StateError', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
     ]));
     expect(await s.read(1), equals(['a']));
     final i = StreamIterator(s.substream(3));
-    expect(await s.read(1), equals(['2']));
-    expect(await i.moveNext(), false);
-    expect(await s.read(1), equals([]));
+    expect(await i.moveNext(), isTrue);
+    expect(() async => await s.read(1), throwsStateError);
   });
 
   test(
-      'read() substream().cancel() read() -- '
-      'not cancelling still produces correct behavior (2)', () async {
+      'read() StreamIterator(substream()) read() -- '
+      'not cancelling produces StateError (2)', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
-      ['1', '2', '3'],
+      ['1', '2'],
     ]));
     expect(await s.read(1), equals(['a']));
-    final i = StreamIterator(s.substream(2));
-    expect(await s.read(1), equals(['1']));
-    // ignore: unused_local_variable
-    final i2 = StreamIterator(s.substream(2));
-    expect(await i.moveNext(), false);
-    expect(await s.read(1), equals([]));
+
+    /// ignore: unused_local_variable
+    final i = StreamIterator(s.substream(3));
+    expect(() async => await s.read(1), throwsStateError);
   });
 
   test(
@@ -231,16 +294,31 @@ void main() {
 
   test(
       'read() substream() read() before '
-      'draining substream', () async {
+      'draining substream produces StateError', () async {
     final s = ChunkedStreamIterator(_chunkedStream([
       ['a', 'b', 'c'],
       ['1', '2'],
       ['3', '4'],
     ]));
     expect(await s.read(1), equals(['a']));
+    // ignore: unused_local_variable
     final substream = s.substream(4);
-    expect(await s.read(3), equals(['3', '4']));
-    expect(await substream.length, 0);
+    expect(() async => await s.read(3), throwsStateError);
+  });
+
+  test('creating two substreams simultaneously causes a StateError', () async {
+    final s = ChunkedStreamIterator(_chunkedStream([
+      ['a', 'b', 'c'],
+      ['1', '2'],
+      ['3', '4'],
+    ]));
+    expect(await s.read(1), equals(['a']));
+    // ignore: unused_local_variable
+    final substream = s.substream(4);
+    expect(() async {
+      //ignore: unused_local_variable
+      final substream2 = s.substream(3);
+    }, throwsStateError);
   });
 
   test('nested ChunkedStreamIterator', () async {
