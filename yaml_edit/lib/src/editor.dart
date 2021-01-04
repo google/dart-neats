@@ -32,7 +32,7 @@ import 'wrap.dart';
 /// such a situation should be extremely rare, and should only occur with
 /// degenerate formatting.
 ///
-/// Most modification methods require the user to pass in an [Iterable<Object>]
+/// Most modification methods require the user to pass in an `Iterable<Object>`
 /// path that holds the keys/indices to navigate to the element.
 ///
 /// **Example:**
@@ -47,9 +47,10 @@ import 'wrap.dart';
 ///
 /// To get to `7`, our path will be `['c', 2, 'f', 1]`. The path for the base
 /// object is the empty array `[]`. All modification methods will throw a
-/// [Argu,emtError] if the path provided is invalid. Note also that that the order
-/// of elements in the path is important, and it should be arranged in order of
-/// calling, with the first element being the first key or index to be called.
+/// [ArgumentError] if the path provided is invalid. Note also that that the
+/// order of elements in the path is important, and it should be arranged in
+/// order of calling, with the first element being the first key or index to be
+/// called.
 ///
 /// In most modification methods, users are required to pass in a value to be
 /// used for updating the YAML tree. This value is only allowed to either be a
@@ -75,7 +76,7 @@ class YamlEditor {
   /// `package:analysis_server`.
   ///
   /// The [SourceEdit] objects can be serialized to JSON using the `toJSON`
-  /// function, deserialized using [SourceEdit.fromJSON], and applied to a
+  /// function, deserialized using [SourceEdit.fromJson], and applied to a
   /// string using the `apply` function. Multiple [SourceEdit]s can be applied
   /// to a string using [SourceEdit.applyAll].
   ///
@@ -285,8 +286,8 @@ class YamlEditor {
 
   /// Appends [value] to the list at [path].
   ///
-  /// Throws a [ArgumentError] if the element at the given path is not a [YamlList]
-  /// or if the path is invalid.
+  /// Throws a [ArgumentError] if the element at the given path is not a
+  /// [YamlList] or if the path is invalid.
   ///
   /// **Example:**
   /// ```dart
@@ -320,8 +321,8 @@ class YamlEditor {
   ///
   /// [index] must be non-negative and no greater than the list's length.
   ///
-  /// Throws a [ArgumentError] if the element at the given path is not a [YamlList]
-  /// or if the path is invalid.
+  /// Throws a [ArgumentError] if the element at the given path is not a
+  /// [YamlList] or if the path is invalid.
   ///
   /// **Example:**
   /// ```dart
@@ -343,15 +344,15 @@ class YamlEditor {
     _performEdit(edit, path, expected);
   }
 
-  /// Changes the contents of the list at [path] by removing [deleteCount] items
-  /// at [index], and inserting [values] in-place. Returns the elements that
-  /// are deleted.
+  /// Changes the contents of the list at [path] by removing [deleteCount]
+  /// items at [index], and inserting [values] in-place. Returns the elements
+  /// that are deleted.
   ///
   /// [index] and [deleteCount] must be non-negative and [index] + [deleteCount]
   /// must be no greater than the list's length.
   ///
-  /// Throws a [ArgumentError] if the element at the given path is not a [YamlList]
-  /// or if the path is invalid.
+  /// Throws a [ArgumentError] if the element at the given path is not a
+  /// [YamlList] or if the path is invalid.
   ///
   /// **Example:**
   /// ```dart
@@ -547,9 +548,9 @@ class YamlEditor {
   ///
   /// Convenience function to ensure that a [YamlList] is returned.
   ///
-  /// Throws [ArgumentError] if the element at the given path is not a [YamlList]
-  /// or if the path is invalid. If [checkAlias] is `true`, and an aliased node
-  /// is encountered along [path], an [AliasError] will be thrown.
+  /// Throws [ArgumentError] if the element at the given path is not a
+  /// [YamlList] or if the path is invalid. If [checkAlias] is `true`, and an
+  /// aliased node is encountered along [path], an [AliasError] will be thrown.
   YamlList _traverseToList(Iterable<Object> path, {bool checkAlias = false}) {
     ArgumentError.checkNotNull(path, 'path');
     ArgumentError.checkNotNull(checkAlias, 'checkAlias');

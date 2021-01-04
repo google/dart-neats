@@ -1,7 +1,5 @@
 name: retry
 version: 3.0.1
-authors:
-  - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
   Utility for wrapping an asynchronous function in automatic retry logic with
   exponential back-off, useful when making requests over network.

@@ -1,7 +1,5 @@
 name: canonical_json
 version: 1.0.0
-authors:
-  - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
   Encoder and decoder for a canonical JSON format, useful when cryptographically
   hashing or signing JSON objects.

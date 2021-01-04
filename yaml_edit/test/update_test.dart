@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:yaml_edit/yaml_edit.dart';
 import 'package:test/test.dart';
+import 'package:yaml/yaml.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import 'test_utils.dart';
 
@@ -863,6 +864,94 @@ d: 4
 
 '''));
         expectYamlBuilderValue(doc, {'a': 1, 'b': 2, 'c': 3, 'd': 4});
+      });
+
+      test('adds an empty map properly', () {
+        final doc = YamlEditor('a: b');
+        doc.update(['key'], {});
+        expectYamlBuilderValue(doc, {'a': 'b', 'key': {}});
+      });
+
+      test('adds an empty map properly (2)', () {
+        final doc = YamlEditor('a: b');
+        doc.update(['a'], {'key': {}});
+        expectYamlBuilderValue(doc, {
+          'a': {'key': {}}
+        });
+      });
+    });
+
+    group('empty starting document', () {
+      test('empty map', () {
+        final doc = YamlEditor('');
+        doc.update([], {'key': {}});
+        expectYamlBuilderValue(doc, {'key': {}});
+      });
+
+      test('empty map (2)', () {
+        final doc = YamlEditor('');
+        doc.update([], {});
+        expectYamlBuilderValue(doc, {});
+      });
+
+      test('empty map (3)', () {
+        final doc = YamlEditor('');
+        doc.update(
+          [],
+          wrapAsYamlNode(
+            {'key': {}},
+            collectionStyle: CollectionStyle.BLOCK,
+          ),
+        );
+        expectYamlBuilderValue(doc, {'key': {}});
+      });
+
+      test('empty map (4)', () {
+        final doc = YamlEditor('');
+        doc.update(
+          [],
+          wrapAsYamlNode(
+            {},
+            collectionStyle: CollectionStyle.BLOCK,
+          ),
+        );
+        expectYamlBuilderValue(doc, {});
+      });
+
+      test('empty list', () {
+        final doc = YamlEditor('');
+        doc.update([], {'key': []});
+        expectYamlBuilderValue(doc, {'key': []});
+      });
+
+      test('empty list (2)', () {
+        final doc = YamlEditor('');
+        doc.update([], []);
+        expectYamlBuilderValue(doc, []);
+      });
+
+      test('empty list (3)', () {
+        final doc = YamlEditor('');
+        doc.update(
+          [],
+          wrapAsYamlNode(
+            {'key': []},
+            collectionStyle: CollectionStyle.BLOCK,
+          ),
+        );
+        expectYamlBuilderValue(doc, {'key': []});
+      });
+
+      test('empty map (4)', () {
+        final doc = YamlEditor('');
+        doc.update(
+          [],
+          wrapAsYamlNode(
+            [],
+            collectionStyle: CollectionStyle.BLOCK,
+          ),
+        );
+        expectYamlBuilderValue(doc, []);
       });
     });
   });

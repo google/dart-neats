@@ -1,7 +1,5 @@
 name: neat_periodic_task
 version: 1.0.1
-authors:
-  - Jonas Finnemann Jensen <jonasfj@google.com>
 description: |
   Auxiliary classes for reliably running a periodic task in a long-running
   process such as web-server.
