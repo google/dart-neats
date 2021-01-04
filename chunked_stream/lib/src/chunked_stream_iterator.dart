@@ -45,14 +45,36 @@ abstract class ChunkedStreamIterator<T> {
   /// if they need to stop listening earlier than the end of the stream.
   Future<void> cancel();
 
-  /// Creates a sub-[Stream] with the next [size] elements. At most one
-  /// sub-[Stream] should be present at one time.
+  /// Returns a sub-[Stream] with the next [size] elements.
   ///
-  /// The resulting stream may contain less than [size] elements if the
-  /// underlying stream has less than [size] elements before the end of stream.
+  /// A sub-[Stream] is a [Stream] consisting of the next [size] elements
+  /// in the same order they occur in the stream used to create this iterator.
   ///
   /// If [read] is called before the sub-[Stream] is fully read, a [StateError]
   /// will be thrown.
+  ///
+  /// ```dart
+  /// final s = ChunkedStreamIterator(_chunkedStream([
+  ///   ['a', 'b', 'c'],
+  ///   ['1', '2'],
+  /// ]));
+  /// expect(await s.read(1), equals(['a']));
+  ///
+  /// // creates a substream from the chunks holding the
+  /// // next three elements (['b', 'c'], ['1'])
+  /// final i = StreamIterator(s.substream(3));
+  /// expect(await i.moveNext(), isTrue);
+  /// expect(await i.current, equals(['b', 'c']));
+  /// expect(await i.moveNext(), isTrue);
+  /// expect(await i.current, equals(['1']));
+  ///
+  /// // Since the substream has been read till the end, we can continue reading
+  /// // from the initial stream.
+  /// expect(await s.read(1), equals(['2']));
+  /// ```
+  ///
+  /// The resulting stream may contain less than [size] elements if the
+  /// underlying stream has less than [size] elements before the end of stream.
   ///
   /// When the substream is cancelled, the remaining elements in the substream
   /// are drained.
@@ -105,14 +127,36 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   @override
   Future<void> cancel() async => await _iterator.cancel();
 
-  /// Creates a sub-[Stream] with the next [size] elements. At most one
-  /// sub-[Stream] should be present at one time.
+  /// Returns a sub-[Stream] with the next [size] elements.
   ///
-  /// The resulting stream may contain less than [size] elements if the
-  /// underlying stream has less than [size] elements before the end of stream.
+  /// A sub-[Stream] is a [Stream] consisting of the next [size] elements
+  /// in the same order they occur in the stream used to create this iterator.
   ///
   /// If [read] is called before the sub-[Stream] is fully read, a [StateError]
   /// will be thrown.
+  ///
+  /// ```dart
+  /// final s = ChunkedStreamIterator(_chunkedStream([
+  ///   ['a', 'b', 'c'],
+  ///   ['1', '2'],
+  /// ]));
+  /// expect(await s.read(1), equals(['a']));
+  ///
+  /// // creates a substream from the chunks holding the
+  /// // next three elements (['b', 'c'], ['1'])
+  /// final i = StreamIterator(s.substream(3));
+  /// expect(await i.moveNext(), isTrue);
+  /// expect(await i.current, equals(['b', 'c']));
+  /// expect(await i.moveNext(), isTrue);
+  /// expect(await i.current, equals(['1']));
+  ///
+  /// // Since the substream has been read till the end, we can continue reading
+  /// // from the initial stream.
+  /// expect(await s.read(1), equals(['2']));
+  /// ```
+  ///
+  /// The resulting stream may contain less than [size] elements if the
+  /// underlying stream has less than [size] elements before the end of stream.
   ///
   /// When the substream is cancelled, the remaining elements in the substream
   /// are drained.
