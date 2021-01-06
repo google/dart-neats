@@ -214,11 +214,11 @@ void main() {
     expect(await s.read(1), equals(['6']));
   });
 
-  /// The following test fails because before the first `moveNext` is called,
-  /// the [StreamIterator] is not intialized to the correct
-  /// [StreamSubscription], thus calling `cancel` does not correctly cancel the
-  /// underlying stream, resulting in an error.
-  ///
+  // The following test fails because before the first `moveNext` is called,
+  // the [StreamIterator] is not intialized to the correct
+  // [StreamSubscription], thus calling `cancel` does not correctly cancel the
+  // underlying stream, resulting in an error.
+  //
   // test(
   //     'read() substream().cancel() read() -- '
   //     'cancellation without reading', () async {

@@ -168,21 +168,21 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
 
     _toRead = size;
 
-    /// Creates a new [StreamController] made out of the elements from
-    /// [_iterator].
+    // Creates a new [StreamController] made out of the elements from
+    // [_iterator].
     final substream = _substream();
     final newController = StreamController<List<T>>();
 
-    /// When [newController]'s stream is cancelled, drain all the remaining
-    /// elements.
+    // When [newController]'s stream is cancelled, drain all the remaining
+    // elements.
     newController.onCancel = () async {
       await _substream().drain();
     };
 
-    /// Since the controller should only have [size] elements, we close
-    /// [newController]'s stream once all the elements in [substream] have
-    /// been added. This is necessary so that await-for loops on
-    /// [newController.stream] will complete.
+    // Since the controller should only have [size] elements, we close
+    // [newController]'s stream once all the elements in [substream] have
+    // been added. This is necessary so that await-for loops on
+    // [newController.stream] will complete.
     final future = newController.addStream(substream);
     future.whenComplete(() {
       newController.close();
@@ -193,10 +193,10 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
 
   /// Asynchronous generator implementation for [substream].
   Stream<List<T>> _substream() async* {
-    /// Only yield when there are elements to be read.
+    // Only yield when there are elements to be read.
     while (_toRead > 0) {
-      /// If [_buffered] is empty, set it to the next element in the stream if
-      /// possible.
+      // If [_buffered] is empty, set it to the next element in the stream if
+      // possible.
       if (_buffered.isEmpty) {
         if (!(await _iterator.moveNext())) {
           break;
@@ -207,14 +207,14 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
 
       List<T> toYield;
       if (_toRead < _buffered.length) {
-        /// If there are less than [_buffered.length] elements left to be read
-        /// in the substream, sublist the chunk from [_buffered] accordingly.
+        // If there are less than [_buffered.length] elements left to be read
+        // in the substream, sublist the chunk from [_buffered] accordingly.
         toYield = _buffered.sublist(0, _toRead);
         _buffered = _buffered.sublist(_toRead);
         _toRead = 0;
       } else {
-        /// Otherwise prepare to yield the full [_buffered] chunk, updating
-        /// the other variables accordingly
+        // Otherwise prepare to yield the full [_buffered] chunk, updating
+        // the other variables accordingly
         toYield = _buffered;
         _toRead -= _buffered.length;
         _buffered = _emptyList;
@@ -223,8 +223,8 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
       yield toYield;
     }
 
-    /// Set [_toRead] to be 0. This line is necessary if the size that is passed
-    /// in is greater than the number of elements in [_iterator].
+    // Set [_toRead] to be 0. This line is necessary if the size that is passed
+    // in is greater than the number of elements in [_iterator].
     _toRead = 0;
   }
 }
