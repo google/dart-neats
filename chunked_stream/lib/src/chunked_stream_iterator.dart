@@ -91,7 +91,7 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
 
   /// Buffered items from a previous chunk. Items in this list should not have
   /// been read by the user.
-  List<T> _buffered;
+  late List<T> _buffered;
 
   /// Instance variable representing an empty list object, used as the empty
   /// default state for [_buffered]. Take caution not to write code that

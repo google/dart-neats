@@ -1,3 +1,7 @@
+## v1.3.0-nullsafety.0
+
+- Migated to null safety
+
 ## v1.2.0
 
 - Changed `ChunkedStreamIterator` implementation to fix bugs related to

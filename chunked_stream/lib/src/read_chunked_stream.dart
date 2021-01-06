@@ -32,7 +32,7 @@ import 'dart:async' show Stream, Future;
 /// ```
 Future<List<T>> readChunkedStream<T>(
   Stream<List<T>> input, {
-  int maxSize,
+  int? maxSize,
 }) async {
   ArgumentError.checkNotNull(input, 'input');
   if (maxSize != null && maxSize < 0) {
@@ -54,7 +54,7 @@ Future<List<T>> readChunkedStream<T>(
 /// Throws [MaximumSizeExceeded] if [input] contains more than [maxSize] items.
 Stream<List<T>> limitChunkedStream<T>(
   Stream<List<T>> input, {
-  int maxSize,
+  int? maxSize,
 }) async* {
   ArgumentError.checkNotNull(input, 'input');
   if (maxSize != null && maxSize < 0) {
