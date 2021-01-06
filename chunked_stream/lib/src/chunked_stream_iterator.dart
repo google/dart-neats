@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:math';
+
+import 'package:chunked_stream/src/read_chunked_stream.dart';
 
 /// Auxiliary class for iterating over the items in a chunked stream.
 ///
@@ -23,197 +24,207 @@ import 'dart:math';
 /// `List<int>` for each event.
 ///
 /// Note. methods on this class may not be called concurrently.
-class ChunkedStreamIterator<T> {
-  StreamSubscription<List<T>> _subscription;
-  bool _isDone = false;
-  List<T> _lastChunk;
-  Object _error;
-  StackTrace _stackTrace;
-  void Function() _wakeup;
-
-  List<T> _buffered = [];
-
-  ChunkedStreamIterator._(Stream<List<T>> stream) {
-    ArgumentError.checkNotNull(stream, 'stream');
-
-    _subscription = stream.listen((data) {
-      _lastChunk = data;
-      _wakeup();
-    }, onDone: () {
-      _isDone = true;
-      _wakeup();
-    }, onError: (e, st) {
-      _error = e;
-      _stackTrace = st;
-      _wakeup();
-    });
-    _subscription.pause();
+abstract class ChunkedStreamIterator<T> {
+  factory ChunkedStreamIterator(Stream<List<T>> stream) {
+    return _ChunkedStreamIterator<T>(stream);
   }
 
-  /// Create a [ChunkedStreamIterator] over [stream].
-  factory ChunkedStreamIterator(Stream<List<T>> stream) =>
-      ChunkedStreamIterator._(stream);
+  /// Returns a list of the next [size] elements.
+  ///
+  /// Returns a list with less than [size] elements if the end of stream is
+  /// encountered before [size] elements are read.
+  ///
+  /// If an error is encountered before reading [size] elements, the error
+  /// will be thrown.
+  Future<List<T>> read(int size);
 
-  void _reset() {
-    _wakeup = null;
-    if (!_subscription.isPaused) {
-      _subscription.pause();
-    }
+  /// Cancels the stream iterator (and the underlying stream subscription)
+  /// early.
+  ///
+  /// Users should call [cancel] to ensure that the stream is properly closed
+  /// if they need to stop listening earlier than the end of the stream.
+  Future<void> cancel();
+
+  /// Returns a sub-[Stream] with the next [size] elements.
+  ///
+  /// A sub-[Stream] is a [Stream] consisting of the next [size] elements
+  /// in the same order they occur in the stream used to create this iterator.
+  ///
+  /// If [read] is called before the sub-[Stream] is fully read, a [StateError]
+  /// will be thrown.
+  ///
+  /// ```dart
+  /// final s = ChunkedStreamIterator(_chunkedStream([
+  ///   ['a', 'b', 'c'],
+  ///   ['1', '2'],
+  /// ]));
+  /// expect(await s.read(1), equals(['a']));
+  ///
+  /// // creates a substream from the chunks holding the
+  /// // next three elements (['b', 'c'], ['1'])
+  /// final i = StreamIterator(s.substream(3));
+  /// expect(await i.moveNext(), isTrue);
+  /// expect(await i.current, equals(['b', 'c']));
+  /// expect(await i.moveNext(), isTrue);
+  /// expect(await i.current, equals(['1']));
+  ///
+  /// // Since the substream has been read till the end, we can continue reading
+  /// // from the initial stream.
+  /// expect(await s.read(1), equals(['2']));
+  /// ```
+  ///
+  /// The resulting stream may contain less than [size] elements if the
+  /// underlying stream has less than [size] elements before the end of stream.
+  ///
+  /// When the substream is cancelled, the remaining elements in the substream
+  /// are drained.
+  Stream<List<T>> substream(int size);
+}
+
+/// General purpose _chunked stream iterator_.
+class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
+  /// Underlying iterator that iterates through the original stream.
+  final StreamIterator<List<T>> _iterator;
+
+  /// Keeps track of the number of elements left in the current substream.
+  int _toRead = 0;
+
+  /// Buffered items from a previous chunk. Items in this list should not have
+  /// been read by the user.
+  late List<T> _buffered;
+
+  /// Instance variable representing an empty list object, used as the empty
+  /// default state for [_buffered]. Take caution not to write code that
+  /// directly modify the [_buffered] list by adding elements to it.
+  final List<T> _emptyList = [];
+
+  _ChunkedStreamIterator(Stream<List<T>> stream)
+      : _iterator = StreamIterator(stream) {
+    _buffered = _emptyList;
   }
 
-  /// Read a series of chunks from the stream until we have [size] number of
-  /// items, then return these items.
+  /// Returns a list of the next [size] elements.
   ///
-  /// This returns less than [size], if end of stream occurs before [size]
-  /// number of items have been received.
+  /// Returns a list with less than [size] elements if the end of stream is
+  /// encounted before [size] elements are read.
   ///
-  /// If an error occurs before receiving [size] items, the error will be thrown
-  /// and next call to [read] will with data already buffered from before the
-  /// error occurred.
-  ///
-  /// This method may not be called concurrently.
+  /// If an error is encountered before reading [size] elements, the error
+  /// will be thrown.
+  @override
   Future<List<T>> read(int size) async {
-    ArgumentError.checkNotNull(size, 'size');
-    if (size <= 0) {
-      throw ArgumentError.value(size, 'size', 'size must be greater than zero');
-    }
-    if (_wakeup != null) {
-      throw StateError('Concurrent invocations not supported');
+    if (_toRead > 0) {
+      throw StateError('Concurrent invocations are not supported!');
     }
 
-    final c = Completer<List<T>>();
-    _wakeup = () {
-      if (_lastChunk != null) {
-        _buffered.addAll(_lastChunk);
-        _lastChunk = null;
-      }
-      if (_buffered.length >= size) {
-        c.complete(_buffered.sublist(0, size));
-        _buffered = _buffered.sublist(size);
-        _reset();
-        return;
-      }
-      if (_error != null) {
-        c.completeError(_error, _stackTrace);
-        _error = null;
-        _stackTrace = null;
-        _reset();
-        return;
-      }
-      if (_isDone) {
-        c.complete(_buffered);
-        _buffered = [];
-        _reset();
-        return;
-      }
-    };
-    _wakeup();
-    if (!c.isCompleted) {
-      _subscription.resume();
-    }
-
-    return c.future;
+    return readChunkedStream(substream(size));
   }
 
-  /// Create a sub-[Stream] with the next [size] items.
+  /// Cancels the stream iterator (and the underlying stream subscription)
+  /// early.
   ///
-  /// The resulting [Stream] must be consumed or canceled before [read] or
-  /// [substream] is called again.
+  /// Users should call [cancel] to ensure that the stream is properly closed
+  /// if they need to stop listening earlier than the end of the stream.
+  @override
+  Future<void> cancel() async => await _iterator.cancel();
+
+  /// Returns a sub-[Stream] with the next [size] elements.
+  ///
+  /// A sub-[Stream] is a [Stream] consisting of the next [size] elements
+  /// in the same order they occur in the stream used to create this iterator.
+  ///
+  /// If [read] is called before the sub-[Stream] is fully read, a [StateError]
+  /// will be thrown.
+  ///
+  /// ```dart
+  /// final s = ChunkedStreamIterator(_chunkedStream([
+  ///   ['a', 'b', 'c'],
+  ///   ['1', '2'],
+  /// ]));
+  /// expect(await s.read(1), equals(['a']));
+  ///
+  /// // creates a substream from the chunks holding the
+  /// // next three elements (['b', 'c'], ['1'])
+  /// final i = StreamIterator(s.substream(3));
+  /// expect(await i.moveNext(), isTrue);
+  /// expect(await i.current, equals(['b', 'c']));
+  /// expect(await i.moveNext(), isTrue);
+  /// expect(await i.current, equals(['1']));
+  ///
+  /// // Since the substream has been read till the end, we can continue reading
+  /// // from the initial stream.
+  /// expect(await s.read(1), equals(['2']));
+  /// ```
+  ///
+  /// The resulting stream may contain less than [size] elements if the
+  /// underlying stream has less than [size] elements before the end of stream.
+  ///
+  /// When the substream is cancelled, the remaining elements in the substream
+  /// are drained.
+  @override
   Stream<List<T>> substream(int size) {
-    ArgumentError.checkNotNull(size, 'size');
-    if (size <= 0) {
-      throw ArgumentError.value(size, 'size', 'size must be greater than zero');
-    }
-    if (_wakeup != null) {
-      throw StateError('Concurrent invocations not supported');
+    if (_toRead > 0) {
+      throw StateError('Concurrent invocations are not supported!');
     }
 
-    final c = StreamController<List<T>>(
-      onListen: _subscription.resume,
-      onPause: _subscription.pause,
-      onResume: _subscription.resume,
-      onCancel: () async {
-        // Read the rest of size bytes
-        final c = Completer<void>();
-        _wakeup = () {
-          if (_lastChunk != null) {
-            if (_lastChunk.length < size) {
-              size -= _lastChunk.length;
-            } else {
-              _buffered.addAll(_lastChunk.sublist(size));
-              size = 0;
-            }
-            _lastChunk = null;
-          }
-          if (size <= 0) {
-            _reset();
-            c.complete();
-            return;
-          }
-          if (_error != null) {
-            // Ignore errors, as we're skipping in the stream
-            _error = null;
-            _stackTrace = null;
-          }
-          if (_isDone) {
-            _reset();
-            c.complete();
-            return;
-          }
-        };
-        _wakeup();
-        await c.future;
-      },
-    );
-    if (_buffered.isNotEmpty) {
-      final n = min(size, _buffered.length);
-      c.add(_buffered.sublist(0, n));
-      _buffered = _buffered.sublist(n);
-      size -= n;
-    }
-    _wakeup = () {
-      if (_lastChunk != null) {
-        if (_lastChunk.length < size) {
-          c.add(_lastChunk);
-          size -= _lastChunk.length;
-        } else {
-          c.add(_lastChunk.sublist(0, size));
-          _buffered.addAll(_lastChunk.sublist(size));
-          size = 0;
-        }
-        _lastChunk = null;
-      }
-      assert(size >= 0, 'size should always be positive');
-      if (size == 0) {
-        _reset();
-        c.close();
-        return;
-      }
-      if (_error != null) {
-        c.addError(_error, _stackTrace);
-        _error = null;
-        _stackTrace = null;
-        return;
-      }
-      if (_isDone) {
-        _reset();
-        c.close();
-        return;
-      }
+    _toRead = size;
+
+    // Creates a new [StreamController] made out of the elements from
+    // [_iterator].
+    final substream = _substream();
+    final newController = StreamController<List<T>>();
+
+    // When [newController]'s stream is cancelled, drain all the remaining
+    // elements.
+    newController.onCancel = () async {
+      await _substream().drain();
     };
-    _wakeup();
 
-    return c.stream;
+    // Since the controller should only have [size] elements, we close
+    // [newController]'s stream once all the elements in [substream] have
+    // been added. This is necessary so that await-for loops on
+    // [newController.stream] will complete.
+    final future = newController.addStream(substream);
+    future.whenComplete(() {
+      newController.close();
+    });
+
+    return newController.stream;
   }
 
-  /// Cancel reading the stream.
-  ///
-  /// This may not be called concurrently with [read] or [substream].
-  Future<void> cancel() async {
-    if (_wakeup != null) {
-      throw StateError('Concurrent invocations not supported');
+  /// Asynchronous generator implementation for [substream].
+  Stream<List<T>> _substream() async* {
+    // Only yield when there are elements to be read.
+    while (_toRead > 0) {
+      // If [_buffered] is empty, set it to the next element in the stream if
+      // possible.
+      if (_buffered.isEmpty) {
+        if (!(await _iterator.moveNext())) {
+          break;
+        }
+
+        _buffered = _iterator.current;
+      }
+
+      List<T> toYield;
+      if (_toRead < _buffered.length) {
+        // If there are less than [_buffered.length] elements left to be read
+        // in the substream, sublist the chunk from [_buffered] accordingly.
+        toYield = _buffered.sublist(0, _toRead);
+        _buffered = _buffered.sublist(_toRead);
+        _toRead = 0;
+      } else {
+        // Otherwise prepare to yield the full [_buffered] chunk, updating
+        // the other variables accordingly
+        toYield = _buffered;
+        _toRead -= _buffered.length;
+        _buffered = _emptyList;
+      }
+
+      yield toYield;
     }
 
-    await _subscription.cancel();
+    // Set [_toRead] to be 0. This line is necessary if the size that is passed
+    // in is greater than the number of elements in [_iterator].
+    _toRead = 0;
   }
 }

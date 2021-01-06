@@ -34,16 +34,18 @@ Stream<List<T>> bufferChunkedStream<T>(
         bufferSize, 'bufferSize', 'bufferSize must be positive');
   }
 
-  StreamController c;
-  StreamSubscription sub;
+  late final StreamController<List<T>> c;
+  StreamSubscription? sub;
 
-  c = StreamController<List<T>>(
+  c = StreamController(
     onListen: () {
       sub = input.listen((chunk) {
         bufferSize -= chunk.length;
         c.add(chunk);
-        if (bufferSize <= 0 && sub != null && !sub.isPaused) {
-          sub.pause();
+
+        final currentSub = sub;
+        if (bufferSize <= 0 && currentSub != null && !currentSub.isPaused) {
+          currentSub.pause();
         }
       }, onDone: () {
         c.close();
@@ -51,14 +53,16 @@ Stream<List<T>> bufferChunkedStream<T>(
         c.addError(e, st);
       });
     },
-    onCancel: () => sub.cancel(),
+    onCancel: () => sub!.cancel(),
   );
 
   await for (final chunk in c.stream) {
     yield chunk;
     bufferSize += chunk.length;
-    if (bufferSize > 0 && sub != null && sub.isPaused) {
-      sub.resume();
+
+    final currentSub = sub;
+    if (bufferSize > 0 && currentSub != null && currentSub.isPaused) {
+      currentSub.resume();
     }
   }
 }

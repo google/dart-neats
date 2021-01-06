@@ -23,6 +23,7 @@ void testCacheProvider({
   String name,
   Future<CacheProvider<String>> Function() create,
   Future Function() destroy,
+  List<String> tags = const <String>[],
 }) =>
     group(name, () {
       CacheProvider<String> cache;
@@ -71,7 +72,7 @@ void testCacheProvider({
         final r2 = await cache.get('test-key-5');
         expect(r2, isNull);
       }, tags: ['ttl']);
-    });
+    }, tags: tags);
 
 void main() {
   setupLogging();
@@ -92,5 +93,6 @@ void main() {
       return StringCacheProvider(cache: p, codec: utf8);
     },
     destroy: () => p.close(),
+    tags: ['redis'],
   );
 }
