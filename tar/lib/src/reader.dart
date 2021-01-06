@@ -38,8 +38,10 @@ class TarReader {
   /// The [TarHeader] for the current file. Completes when a call to `next`
   /// completes as well.
   ///
-  /// Is `null` before the first call to `next` and after a call to `next`
-  /// completes with a `false` result.
+  /// Is `null`:
+  /// 1) Before the first call to `next`
+  /// 2) After a call to `next` completes with `false` (indicating that there
+  ///    are no files left in the TAR archive).
   Future<TarHeader> get header => _header;
   Future<TarHeader> _header;
 
@@ -47,8 +49,10 @@ class TarReader {
   /// indicates that the current entry does not have any real size (e.g.
   /// directories, fifo, etc).
   ///
-  /// Is `null` before the first call to `next` and after a call to `next`
-  /// completes with a `false` result.
+  /// Is `null`:
+  /// 1) Before the first call to `next`
+  /// 2) After a call to `next` completes with `false` (indicating that there
+  ///    are no files left in the TAR archive).
   Stream<List<int>> get contents => _contents;
   Stream<List<int>> _contents;
 
