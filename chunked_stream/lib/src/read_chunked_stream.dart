@@ -14,7 +14,7 @@
 
 import 'dart:async' show Stream, Future;
 
-/// Read all chunks from [input] and return a list consistent of items from all
+/// Read all chunks from [input] and return a list consisting of items from all
 /// chunks.
 ///
 /// If the maximum number of items exceeded [maxSize] this will stop reading and
