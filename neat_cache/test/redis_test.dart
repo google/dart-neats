@@ -94,91 +94,95 @@ class SocketProxyServer {
 void main() {
   setupLogging();
 
-  SocketProxyServer proxy;
-  CacheProvider<String> cache;
-  setUp(() async {
-    proxy = await SocketProxyServer.create('localhost', 6379);
-    final connectionString = 'redis://${proxy.host}:${proxy.port}';
-    cache = StringCacheProvider(
-      cache: RedisCacheProvider(
-        connectionString,
-        connectTimeLimit: Duration(milliseconds: 200),
-        commandTimeLimit: Duration(milliseconds: 100),
-        reconnectDelay: Duration(microseconds: 1000),
-      ),
-      codec: utf8,
-    );
-  });
-  tearDown(() async {
-    await cache.close();
-    await proxy.close();
-  });
+  group('redis', () {
+    SocketProxyServer proxy;
+    CacheProvider<String> cache;
+    setUp(() async {
+      proxy = await SocketProxyServer.create('localhost', 6379);
+      final connectionString = 'redis://${proxy.host}:${proxy.port}';
+      cache = StringCacheProvider(
+        cache: RedisCacheProvider(
+          connectionString,
+          connectTimeLimit: Duration(milliseconds: 200),
+          commandTimeLimit: Duration(milliseconds: 100),
+          reconnectDelay: Duration(microseconds: 1000),
+        ),
+        codec: utf8,
+      );
+    });
+    tearDown(() async {
+      await cache.close();
+      await proxy.close();
+    });
 
-  test('proxy works', () async {
-    await cache.set('msg', 'hello-world');
-  });
+    test('proxy works', () async {
+      await cache.set('msg', 'hello-world');
+    });
 
-  test('broken connection throws IntermittentCacheException', () async {
-    await cache.set('msg', 'hello-world');
+    test('broken connection throws IntermittentCacheException', () async {
+      await cache.set('msg', 'hello-world');
 
-    await proxy.breakAll();
+      await proxy.breakAll();
 
-    await expectLater(
-      cache.set('msg', 'hello-world'),
-      throwsA(TypeMatcher<IntermittentCacheException>()),
-    );
+      await expectLater(
+        cache.set('msg', 'hello-world'),
+        throwsA(TypeMatcher<IntermittentCacheException>()),
+      );
 
-    await Future.delayed(Duration(milliseconds: 300));
-    await cache.set('msg', 'hello-world');
+      await Future.delayed(Duration(milliseconds: 300));
+      await cache.set('msg', 'hello-world');
 
-    expect(proxy.acceptedConnections, equals(2));
-  });
+      expect(proxy.acceptedConnections, equals(2));
+    });
 
-  test('timeout commands throws IntermittentCacheException', () async {
-    print(' - set(), creating a connection to redis');
-    await cache.set('msg', 'hello-world');
+    test('timeout commands throws IntermittentCacheException', () async {
+      print(' - set(), creating a connection to redis');
+      await cache.set('msg', 'hello-world');
 
-    print(' - set(), with with a proxy so slow command will timeout');
-    proxy.proxyDelay = Duration(milliseconds: 300);
-    await expectLater(
-      cache.set('msg', 'hello-world'),
-      throwsA(TypeMatcher<IntermittentCacheException>()),
-    );
-    proxy.proxyDelay = Duration(milliseconds: 0);
+      print(' - set(), with with a proxy so slow command will timeout');
+      proxy.proxyDelay = Duration(milliseconds: 300);
+      await expectLater(
+        cache.set('msg', 'hello-world'),
+        throwsA(TypeMatcher<IntermittentCacheException>()),
+      );
+      proxy.proxyDelay = Duration(milliseconds: 0);
 
-    print(' - Sleep, to not starve the event queue');
-    await Future.delayed(Duration(milliseconds: 5));
+      print(' - Sleep, to not starve the event queue');
+      await Future.delayed(Duration(milliseconds: 5));
 
-    print(' - set(), with fast proxy again, this reconnect');
-    await cache.set('msg', 'hello-world');
+      print(' - set(), with fast proxy again, this reconnect');
+      await cache.set('msg', 'hello-world');
 
-    expect(proxy.acceptedConnections, equals(2));
-  });
+      expect(proxy.acceptedConnections, equals(2));
+    });
 
-  test('connection failure throws IntermittentCacheException', () async {
-    print(' - stop the proxy from accepting new connections');
-    await proxy.stop();
-    print(' - set(), should fail');
-    await expectLater(
-      cache.set('msg', 'hello-world'),
-      throwsA(TypeMatcher<IntermittentCacheException>()),
-    );
-    print(' - restart the proxy');
-    await proxy.restart();
+    test('connection failure throws IntermittentCacheException', () async {
+      print(' - stop the proxy from accepting new connections');
+      await proxy.stop();
+      print(' - set(), should fail');
+      await expectLater(
+        cache.set('msg', 'hello-world'),
+        throwsA(TypeMatcher<IntermittentCacheException>()),
+      );
+      print(' - restart the proxy');
+      await proxy.restart();
 
-    print(' - set(), should still fail, as the reconnect timeout have passed');
-    await expectLater(
-      cache.set('msg', 'hello-world'),
-      throwsA(TypeMatcher<IntermittentCacheException>()),
-    );
+      print(
+        ' - set(), should still fail, as the reconnect timeout have passed',
+      );
+      await expectLater(
+        cache.set('msg', 'hello-world'),
+        throwsA(TypeMatcher<IntermittentCacheException>()),
+      );
 
-    print(' - sleep 1500ms, to get past the reconnect timeout');
-    await Future.delayed(Duration(milliseconds: 1500));
+      print(' - sleep 1500ms, to get past the reconnect timeout');
+      await Future.delayed(Duration(milliseconds: 1500));
 
-    print(' - set(), should reconnect');
-    await cache.set('msg', 'hello-world');
+      print(' - set(), should reconnect');
+      await cache.set('msg', 'hello-world');
 
-    // Note: we only connected once, we failed to connect initially
-    expect(proxy.acceptedConnections, equals(1));
-  });
+      // Note: we only connected once, we failed to connect initially
+      expect(proxy.acceptedConnections, equals(1));
+    });
+  }, tags: 'redis');
 }

@@ -6,4 +6,4 @@ stages:
       - dartanalyzer
       - dartfmt
   - tests:
-      - test
+      - test: -x redis
