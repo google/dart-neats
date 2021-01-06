@@ -71,8 +71,8 @@ for PKG in ${PKGS}; do
         pub run test || EXIT_CODE=$?
         ;;
       test_1)
-        echo 'pub run test -x ttl'
-        pub run test -x ttl || EXIT_CODE=$?
+        echo 'pub run test -x redis'
+        pub run test -x redis || EXIT_CODE=$?
         ;;
       *)
         echo -e "\033[31mUnknown TASK '${TASK}' - TERMINATING JOB\033[0m"

@@ -1370,7 +1370,7 @@ jobs:
       - job_004
       - job_005
   job_031:
-    name: "tests; Dart dev; PKG: neat_cache; `pub run test -x ttl`"
+    name: "tests; Dart dev; PKG: neat_cache; `pub run test -x redis`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
@@ -1392,10 +1392,10 @@ jobs:
         name: "neat_cache; pub upgrade --no-precompile"
         working-directory: neat_cache
         run: pub upgrade --no-precompile
-      - name: "neat_cache; pub run test -x ttl"
+      - name: "neat_cache; pub run test -x redis"
         if: "always() && steps.neat_cache_pub_upgrade.conclusion == 'success'"
         working-directory: neat_cache
-        run: pub run test -x ttl
+        run: pub run test -x redis
     needs:
       - job_001
       - job_002
@@ -1403,7 +1403,7 @@ jobs:
       - job_004
       - job_005
   job_032:
-    name: "tests; Dart stable; PKG: neat_cache; `pub run test -x ttl`"
+    name: "tests; Dart stable; PKG: neat_cache; `pub run test -x redis`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
@@ -1425,10 +1425,10 @@ jobs:
         name: "neat_cache; pub upgrade --no-precompile"
         working-directory: neat_cache
         run: pub upgrade --no-precompile
-      - name: "neat_cache; pub run test -x ttl"
+      - name: "neat_cache; pub run test -x redis"
         if: "always() && steps.neat_cache_pub_upgrade.conclusion == 'success'"
         working-directory: neat_cache
-        run: pub run test -x ttl
+        run: pub run test -x redis
     needs:
       - job_001
       - job_002
