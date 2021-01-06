@@ -98,6 +98,7 @@ void testCache({
   String name,
   Future<Cache<List<int>>> Function() create,
   Future Function() destroy,
+  List<String> tags = const <String>[],
 }) =>
     group(name, () {
       testCacheT(
@@ -151,7 +152,7 @@ void testCache({
         valueA: () => [4, 4, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 42],
         valueB: () => [4, 4, 1, 5, 5, 5, 5, 5, 42],
       );
-    });
+    }, tags: tags);
 
 void main() {
   setupLogging();
@@ -169,5 +170,6 @@ void main() {
       return Cache(p);
     },
     destroy: () async => p.close(),
+    tags: ['redis'],
   );
 }
