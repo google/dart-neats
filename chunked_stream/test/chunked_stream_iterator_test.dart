@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:chunked_stream/chunked_stream.dart';
