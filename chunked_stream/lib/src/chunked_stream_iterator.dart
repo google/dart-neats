@@ -14,7 +14,8 @@
 
 import 'dart:async';
 
-import 'package:chunked_stream/src/read_chunked_stream.dart';
+import 'buffer_factory.dart';
+import 'read_chunked_stream.dart';
 
 /// Auxiliary class for iterating over the items in a chunked stream.
 ///
@@ -25,8 +26,14 @@ import 'package:chunked_stream/src/read_chunked_stream.dart';
 ///
 /// Note. methods on this class may not be called concurrently.
 abstract class ChunkedStreamIterator<T> {
-  factory ChunkedStreamIterator(Stream<List<T>> stream) {
-    return _ChunkedStreamIterator<T>(stream);
+  /// Creates a new [ChunkedStreamIterator] reading from the provided [stream].
+  ///
+  /// An optional [BufferFactory] can be used to control the buffers created
+  /// internally. This can make some operations, most notably [read], more
+  /// memory efficient.
+  factory ChunkedStreamIterator(Stream<List<T>> stream,
+      {BufferFactory<T>? newBuffer}) {
+    return _ChunkedStreamIterator<T>(stream, newBuffer);
   }
 
   /// Returns a list of the next [size] elements.
@@ -85,6 +92,7 @@ abstract class ChunkedStreamIterator<T> {
 class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// Underlying iterator that iterates through the original stream.
   final StreamIterator<List<T>> _iterator;
+  final BufferFactory<T>? _newBuffer;
 
   /// Keeps track of the number of elements left in the current substream.
   int _toRead = 0;
@@ -96,9 +104,9 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// Instance variable representing an empty list object, used as the empty
   /// default state for [_buffered]. Take caution not to write code that
   /// directly modify the [_buffered] list by adding elements to it.
-  final List<T> _emptyList = [];
+  List<T> get _emptyList => const <Never>[];
 
-  _ChunkedStreamIterator(Stream<List<T>> stream)
+  _ChunkedStreamIterator(Stream<List<T>> stream, this._newBuffer)
       : _iterator = StreamIterator(stream) {
     _buffered = _emptyList;
   }
@@ -116,7 +124,7 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
       throw StateError('Concurrent invocations are not supported!');
     }
 
-    return readChunkedStream(substream(size));
+    return readChunkedStream(substream(size), newBuffer: _newBuffer);
   }
 
   /// Cancels the stream iterator (and the underlying stream subscription)

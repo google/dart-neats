@@ -14,6 +14,8 @@
 
 import 'dart:async' show Stream, Future;
 
+import 'buffer_factory.dart';
+
 /// Read all chunks from [input] and return a list consisting of items from all
 /// chunks.
 ///
@@ -33,13 +35,14 @@ import 'dart:async' show Stream, Future;
 Future<List<T>> readChunkedStream<T>(
   Stream<List<T>> input, {
   int? maxSize,
+  BufferFactory<T>? newBuffer,
 }) async {
   ArgumentError.checkNotNull(input, 'input');
   if (maxSize != null && maxSize < 0) {
     throw ArgumentError.value(maxSize, 'maxSize must be positive, if given');
   }
 
-  final result = <T>[];
+  final result = newBuffer?.call() ?? <T>[];
   await for (final chunk in input) {
     result.addAll(chunk);
     if (maxSize != null && result.length > maxSize) {

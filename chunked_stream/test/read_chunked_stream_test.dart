@@ -14,6 +14,7 @@
 
 import 'package:test/test.dart';
 import 'package:chunked_stream/chunked_stream.dart';
+import 'package:typed_data/typed_buffers.dart';
 
 void main() {
   test('readChunkedStream', () async {
@@ -23,5 +24,16 @@ void main() {
       yield ['c'];
     })();
     expect(await readChunkedStream(s), equals(['a', 'b', 'c']));
+  });
+
+  test('readChunkedStream with custom buffer', () {
+    final s = (() async* {
+      yield [1, 2, 3];
+      yield [4, 5];
+      yield [6];
+    })();
+
+    expect(readChunkedStream(s, newBuffer: () => Uint8Buffer()),
+        completion(isA<Uint8Buffer>().having((b) => b.length, 'length', 6)));
   });
 }

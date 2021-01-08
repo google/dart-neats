@@ -14,6 +14,7 @@
 
 import 'package:test/test.dart';
 import 'package:chunked_stream/chunked_stream.dart';
+import 'package:typed_data/typed_data.dart';
 
 void main() {
   for (var N = 1; N < 6; N++) {
@@ -42,6 +43,19 @@ void main() {
       expect(chunks.removeLast(), hasLength(lessThanOrEqualTo(N)));
       // Last chunk must be N
       expect(chunks, everyElement(hasLength(N)));
+    });
+
+    test('asChunkedStream (N = $N) can use custom buffers', () async {
+      final s = (() async* {
+        for (var j = 0; j < 97; j++) {
+          yield j;
+        }
+      })();
+
+      final chunks =
+          await asChunkedStream(N, s, newBuffer: () => Uint8Buffer()).toList();
+
+      expect(chunks, everyElement(isA<Uint8Buffer>()));
     });
   }
 }

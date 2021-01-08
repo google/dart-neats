@@ -34,6 +34,7 @@ import 'src/chunked_stream_buffer.dart';
 import 'src/chunked_stream_iterator.dart';
 import 'src/read_chunked_stream.dart';
 
+export 'src/buffer_factory.dart';
 export 'src/chunk_stream.dart';
 export 'src/chunked_stream_buffer.dart';
 export 'src/chunked_stream_iterator.dart';

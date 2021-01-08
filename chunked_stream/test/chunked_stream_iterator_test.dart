@@ -15,6 +15,7 @@
 import 'dart:async';
 import 'package:test/test.dart';
 import 'package:chunked_stream/chunked_stream.dart';
+import 'package:typed_data/typed_data.dart';
 
 Stream<List<T>> _chunkedStream<T>(List<List<T>> chunks) async* {
   for (final chunk in chunks) {
@@ -363,5 +364,19 @@ void main() {
     expect(await nested.read(3), equals(['2', '3']));
     expect(await nested.read(2), equals([]));
     expect(await s.read(1), equals(['4']));
+  });
+
+  test('custom buffer', () async {
+    final s = ChunkedStreamIterator(
+      _chunkedStream([
+        [1.2],
+        [3.4],
+        [5.6],
+      ]),
+      newBuffer: () => Float32Buffer(),
+    );
+
+    expect(await s.read(1), isA<Float32Buffer>());
+    expect(await s.read(2), isA<Float32Buffer>());
   });
 }

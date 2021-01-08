@@ -14,6 +14,8 @@
 
 import 'dart:async';
 
+import 'buffer_factory.dart';
+
 /// Wrap [input] as a chunked stream with chunks the size of [N].
 ///
 /// This function returns a [Stream<List<T>>] where each event is a [List<T>]
@@ -21,20 +23,26 @@ import 'dart:async';
 /// than [N] elements.
 ///
 /// This is useful for batch processing elements from a stream.
-Stream<List<T>> asChunkedStream<T>(int N, Stream<T> input) async* {
+///
+/// A custom [BufferFactory] can be provided via [newBuffer]. A specialized
+/// buffer based on `typed_data` can improve memory efficiency.
+Stream<List<T>> asChunkedStream<T>(int N, Stream<T> input,
+    {BufferFactory<T>? newBuffer}) async* {
   ArgumentError.checkNotNull(N, 'N');
   ArgumentError.checkNotNull(input, 'input');
   if (N <= 0) {
     throw ArgumentError.value(N, 'N', 'chunk size must be >= 0');
   }
 
-  var events = <T>[];
+  List<T> createBuffer() => newBuffer?.call() ?? <T>[];
+
+  var events = createBuffer();
   await for (final event in input) {
     events.add(event);
     if (events.length >= N) {
       assert(events.length == N);
       yield events;
-      events = <T>[];
+      events = createBuffer();
     }
   }
   assert(events.length <= N);

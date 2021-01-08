@@ -1,3 +1,7 @@
+## v1.3.0-nullsafety.1
+
+- Support custom buffer implementations via the `newBuffer` parameter
+
 ## v1.3.0-nullsafety.0
 
 - Migrated to null safety
