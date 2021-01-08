@@ -33,15 +33,8 @@ void main() {
       yield Uint8List.fromList([3]);
       yield [4];
     })();
-    expect(await readByteStream(s), equals([1, 2, 3, 4]));
-  });
-
-  test('readByteStream returns Uint8List', () async {
-    final s = (() async* {
-      yield Uint8List.fromList([1, 2]);
-      yield Uint8List.fromList([3]);
-      yield Uint8List.fromList([4]);
-    })();
-    expect(await readByteStream(s), isA<Uint8List>());
+    final result = await readByteStream(s);
+    expect(result, equals([1, 2, 3, 4]));
+    expect(result, isA<Uint8List>());
   });
 }
