@@ -99,17 +99,16 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
 
   /// Buffered items from a previous chunk. Items in this list should not have
   /// been read by the user.
-  late List<T> _buffered;
+  List<T> _buffered;
 
-  /// Instance variable representing an empty list object, used as the empty
-  /// default state for [_buffered]. Take caution not to write code that
-  /// directly modify the [_buffered] list by adding elements to it.
-  List<T> get _emptyList => const <Never>[];
+  /// Empty list. used as the empty default state for [_buffered]. Take caution
+  /// not to write code that directly modify the [_buffered] list by adding
+  /// elements to it.
+  static const _emptyList = <Never>[];
 
   _ChunkedStreamIterator(Stream<List<T>> stream, this._newBuffer)
-      : _iterator = StreamIterator(stream) {
-    _buffered = _emptyList;
-  }
+      : _iterator = StreamIterator(stream),
+        _buffered = _emptyList;
 
   /// Returns a list of the next [size] elements.
   ///
