@@ -17,8 +17,9 @@
 /// This library provides the following utilities:
 ///  * [ChunkedStreamIterator], for reading a chunked stream by iterating over
 ///  chunks and splitting into substreams.
+///  * [readByteStream], for reading a byte stream into a single [Uint8List].
+///  Often useful for converting [Stream<List<int>>] to [Uint8List].
 ///  * [readChunkedStream], for reading a chunked stream into a single big list.
-///  Often useful for converting [Stream<List<int>>] to [List<int>].
 ///  * [limitChunkedStream], for wrapping a chunked stream as a new stream with
 ///  length limit, useful when accepting input streams from untrusted network.
 ///  * [bufferChunkedStream], for buffering a chunked stream. This can be useful
@@ -28,6 +29,8 @@
 ///  * [asChunkedStream], for wrapping a [Stream<T>] as [Stream<List<T>>],
 ///  useful for batch processing elements from a stream.
 library chunked_stream;
+
+import 'dart:typed_data';
 
 import 'src/chunk_stream.dart';
 import 'src/chunked_stream_buffer.dart';

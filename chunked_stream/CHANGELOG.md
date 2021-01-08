@@ -1,3 +1,10 @@
+## v1.4.0-nullsafety.0
+- Added `readByteStream` which uses `BytesBuilder` from `dart:typed_data` under
+  the hood.
+- Added `readBytes` to `ChunkedStreamIterator<int>` for reading byte streams
+  into `Uint8List`.
+- Added `@sealed` annotation to all exported classes.
+
 ## v1.3.0-nullsafety.0
 
 - Migrated to null safety
