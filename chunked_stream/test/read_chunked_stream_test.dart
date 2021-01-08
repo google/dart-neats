@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:typed_data';
+
 import 'package:test/test.dart';
 import 'package:chunked_stream/chunked_stream.dart';
 
@@ -23,5 +25,16 @@ void main() {
       yield ['c'];
     })();
     expect(await readChunkedStream(s), equals(['a', 'b', 'c']));
+  });
+
+  test('readByteStream', () async {
+    final s = (() async* {
+      yield [1, 2];
+      yield Uint8List.fromList([3]);
+      yield [4];
+    })();
+    final result = await readByteStream(s);
+    expect(result, equals([1, 2, 3, 4]));
+    expect(result, isA<Uint8List>());
   });
 }

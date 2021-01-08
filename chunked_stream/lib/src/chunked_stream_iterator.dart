@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:meta/meta.dart' show sealed;
 import 'package:chunked_stream/src/read_chunked_stream.dart';
 
 /// Auxiliary class for iterating over the items in a chunked stream.
@@ -24,6 +26,7 @@ import 'package:chunked_stream/src/read_chunked_stream.dart';
 /// `List<int>` for each event.
 ///
 /// Note. methods on this class may not be called concurrently.
+@sealed
 abstract class ChunkedStreamIterator<T> {
   factory ChunkedStreamIterator(Stream<List<T>> stream) {
     return _ChunkedStreamIterator<T>(stream);
@@ -111,13 +114,8 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// If an error is encountered before reading [size] elements, the error
   /// will be thrown.
   @override
-  Future<List<T>> read(int size) async {
-    if (_toRead > 0) {
-      throw StateError('Concurrent invocations are not supported!');
-    }
-
-    return readChunkedStream(substream(size));
-  }
+  Future<List<T>> read(int size) async =>
+      await readChunkedStream(substream(size));
 
   /// Cancels the stream iterator (and the underlying stream subscription)
   /// early.
@@ -162,6 +160,9 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
   /// are drained.
   @override
   Stream<List<T>> substream(int size) {
+    if (size < 0) {
+      throw ArgumentError.value(size, 'size', 'must be non-negative');
+    }
     if (_toRead > 0) {
       throw StateError('Concurrent invocations are not supported!');
     }
@@ -227,4 +228,15 @@ class _ChunkedStreamIterator<T> implements ChunkedStreamIterator<T> {
     // in is greater than the number of elements in [_iterator].
     _toRead = 0;
   }
+}
+
+/// Extension methods for [ChunkedStreamIterator] when working with byte-streams
+/// [Stream<List<int>>].
+extension ChunkedStreamIteratorByteStreamExt on ChunkedStreamIterator<int> {
+  /// Read bytes as [Uint8List].
+  ///
+  /// This does the same as [read], except it uses [readByteStream] to create
+  /// a [Uint8List], which offers better performance.
+  Future<Uint8List> readBytes(int size) async =>
+      await readByteStream(substream(size));
 }

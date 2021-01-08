@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:chunked_stream/chunked_stream.dart';
 
@@ -363,5 +364,17 @@ void main() {
     expect(await nested.read(3), equals(['2', '3']));
     expect(await nested.read(2), equals([]));
     expect(await s.read(1), equals(['4']));
+  });
+
+  test('ByteStreamIterator', () async {
+    final s = ChunkedStreamIterator(_chunkedStream([
+      [1, 2, 3],
+      [4],
+    ]));
+    expect(await s.readBytes(1), equals([1]));
+    expect(await s.readBytes(1), isA<Uint8List>());
+    expect(await s.readBytes(1), equals([3]));
+    expect(await s.readBytes(1), equals([4]));
+    expect(await s.readBytes(1), equals([]));
   });
 }
