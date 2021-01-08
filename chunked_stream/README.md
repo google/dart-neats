@@ -16,7 +16,7 @@ is `Stream<List<int>>`.
 
 For easily converting a byte stream `Stream<List<int>>` into a single byte
 buffer `Uint8List` (which implements `List<int>`) this package provides
-`readByteStream(stream, maxSize: 1024*1024)`, which conviniently takes an
+`readByteStream(stream, maxSize: 1024*1024)`, which conveniently takes an
 optional `maxSize` parameter to help avoid running out of memory.
 
 **Example**
