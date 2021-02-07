@@ -1,13 +1,13 @@
 name: http_methods
-version: 2.0.0-nullsafety.0
+version: 1.1.0
 description: |
   List of all HTTP methods registered with IANA as list of strings, and metadata
   such as whether a method idempotent.
 homepage: https://github.com/google/dart-neats/tree/master/http_methods
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:http_methods
-dev_dependencies:
-  test: ^1.16.0-nullsafety
-  pedantic: ^1.10.0-nullsafety
 environment:
   sdk: '>=2.12.0-0 <3.0.0'
+dev_dependencies:
+  test: ^1.16.0
+  pedantic: ^1.10.0
