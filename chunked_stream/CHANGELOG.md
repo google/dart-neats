@@ -1,3 +1,7 @@
+## v.1.4.0
+
+- Stable null-safety release
+
 ## v1.4.0-nullsafety.0
 - Added `readByteStream` which uses `BytesBuilder` from `dart:typed_data` under
   the hood.

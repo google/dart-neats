@@ -22,8 +22,6 @@ import 'dart:async';
 ///
 /// This is useful for batch processing elements from a stream.
 Stream<List<T>> asChunkedStream<T>(int N, Stream<T> input) async* {
-  ArgumentError.checkNotNull(N, 'N');
-  ArgumentError.checkNotNull(input, 'input');
   if (N <= 0) {
     throw ArgumentError.value(N, 'N', 'chunk size must be >= 0');
   }
