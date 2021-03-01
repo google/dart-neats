@@ -37,16 +37,16 @@ jobs:
       - name: mono_repo self validate
         run: pub global run mono_repo generate --validate
   job_002:
-    name: "analyze; Dart dev; PKGS: shelf_router_generator, acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, slugid, shelf_router, sanitize_html, yaml_edit; `dartfmt -n --set-exit-if-changed .`"
+    name: "analyze; Dart dev; PKGS: shelf_router_generator, acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, safe_url_check, slugid, shelf_router, sanitize_html, yaml_edit; `dartfmt -n --set-exit-if-changed .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router_generator-acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-slugid-shelf_router-sanitize_html-yaml_edit;commands:dartfmt"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router_generator-acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-slugid-shelf_router-sanitize_html-yaml_edit;commands:dartfmt"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router_generator-acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-slugid-shelf_router-sanitize_html-yaml_edit
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router_generator-acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-slugid-shelf_router-sanitize_html-yaml_edit
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -119,14 +119,6 @@ jobs:
         if: "always() && steps.pem_pub_upgrade.conclusion == 'success'"
         working-directory: pem
         run: dartfmt -n --set-exit-if-changed .
-      - id: retry_pub_upgrade
-        name: "retry; pub upgrade --no-precompile"
-        working-directory: retry
-        run: pub upgrade --no-precompile
-      - name: "retry; dartfmt -n --set-exit-if-changed ."
-        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
-        working-directory: retry
-        run: dartfmt -n --set-exit-if-changed .
       - id: safe_url_check_pub_upgrade
         name: "safe_url_check; pub upgrade --no-precompile"
         working-directory: safe_url_check
@@ -168,16 +160,16 @@ jobs:
         working-directory: yaml_edit
         run: dartfmt -n --set-exit-if-changed .
   job_003:
-    name: "analyze; Dart dev; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, sanitize_html, retry, safe_url_check, slugid, shelf_router, yaml_edit, shelf_router_generator; `dartanalyzer .`"
+    name: "analyze; Dart dev; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, sanitize_html, safe_url_check, slugid, shelf_router, yaml_edit, shelf_router_generator; `dartanalyzer .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-sanitize_html-retry-safe_url_check-slugid-shelf_router-yaml_edit-shelf_router_generator;commands:dartanalyzer"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-sanitize_html-safe_url_check-slugid-shelf_router-yaml_edit-shelf_router_generator;commands:dartanalyzer"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-sanitize_html-retry-safe_url_check-slugid-shelf_router-yaml_edit-shelf_router_generator
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-sanitize_html-safe_url_check-slugid-shelf_router-yaml_edit-shelf_router_generator
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -249,14 +241,6 @@ jobs:
       - name: sanitize_html; dartanalyzer .
         if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
         working-directory: sanitize_html
-        run: dartanalyzer .
-      - id: retry_pub_upgrade
-        name: "retry; pub upgrade --no-precompile"
-        working-directory: retry
-        run: pub upgrade --no-precompile
-      - name: retry; dartanalyzer .
-        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
-        working-directory: retry
         run: dartanalyzer .
       - id: safe_url_check_pub_upgrade
         name: "safe_url_check; pub upgrade --no-precompile"
@@ -513,6 +497,60 @@ jobs:
         working-directory: shelf_router
         run: dartanalyzer .
   job_006:
+    name: "analyze; Dart beta; PKG: retry; `dartanalyzer .`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry;commands:dartanalyzer"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry
+            os:ubuntu-latest;pub-cache-hosted;dart:beta
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: cedx/setup-dart@v2
+        with:
+          release-channel: beta
+      - run: dart --version
+      - uses: actions/checkout@v2
+      - id: retry_pub_upgrade
+        name: "retry; pub upgrade --no-precompile"
+        working-directory: retry
+        run: pub upgrade --no-precompile
+      - name: retry; dartanalyzer .
+        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
+        working-directory: retry
+        run: dartanalyzer .
+  job_007:
+    name: "analyze; Dart beta; PKG: retry; `dartfmt -n --set-exit-if-changed .`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry;commands:dartfmt"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry
+            os:ubuntu-latest;pub-cache-hosted;dart:beta
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: cedx/setup-dart@v2
+        with:
+          release-channel: beta
+      - run: dart --version
+      - uses: actions/checkout@v2
+      - id: retry_pub_upgrade
+        name: "retry; pub upgrade --no-precompile"
+        working-directory: retry
+        run: pub upgrade --no-precompile
+      - name: "retry; dartfmt -n --set-exit-if-changed ."
+        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
+        working-directory: retry
+        run: dartfmt -n --set-exit-if-changed .
+  job_008:
     name: "tests; Dart dev; PKG: safe_url_check; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -545,7 +583,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_007:
+      - job_006
+      - job_007
+  job_009:
     name: "tests; Dart dev; PKG: sanitize_html; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -578,40 +618,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_008:
-    name: "tests; Dart dev; PKG: retry; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:retry;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:retry
-            os:ubuntu-latest;pub-cache-hosted;dart:dev
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: cedx/setup-dart@v2
-        with:
-          release-channel: dev
-      - run: dart --version
-      - uses: actions/checkout@v2
-      - id: retry_pub_upgrade
-        name: "retry; pub upgrade --no-precompile"
-        working-directory: retry
-        run: pub upgrade --no-precompile
-      - name: retry; pub run test
-        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
-        working-directory: retry
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-  job_009:
+      - job_006
+      - job_007
+  job_010:
     name: "tests; Dart dev; PKG: pem; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -644,7 +653,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_010:
+      - job_006
+      - job_007
+  job_011:
     name: "tests; Dart dev; PKG: neat_periodic_task; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -677,7 +688,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_011:
+      - job_006
+      - job_007
+  job_012:
     name: "tests; Dart dev; PKG: shelf_router; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -710,7 +723,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_012:
+      - job_006
+      - job_007
+  job_013:
     name: "tests; Dart dev; PKG: http_methods; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -743,7 +758,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_013:
+      - job_006
+      - job_007
+  job_014:
     name: "tests; Dart dev; PKG: shelf_router_generator; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -776,7 +793,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_014:
+      - job_006
+      - job_007
+  job_015:
     name: "tests; Dart dev; PKG: chunked_stream; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -809,7 +828,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_015:
+      - job_006
+      - job_007
+  job_016:
     name: "tests; Dart dev; PKG: slugid; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -842,7 +863,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_016:
+      - job_006
+      - job_007
+  job_017:
     name: "tests; Dart dev; PKG: canonical_json; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -875,7 +898,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_017:
+      - job_006
+      - job_007
+  job_018:
     name: "tests; Dart dev; PKG: acyclic_steps; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -908,7 +933,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_018:
+      - job_006
+      - job_007
+  job_019:
     name: "tests; Dart dev; PKG: yaml_edit; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -941,7 +968,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_019:
+      - job_006
+      - job_007
+  job_020:
     name: "tests; Dart stable; PKG: sanitize_html; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -974,7 +1003,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_020:
+      - job_006
+      - job_007
+  job_021:
     name: "tests; Dart stable; PKG: safe_url_check; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1007,7 +1038,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_021:
+      - job_006
+      - job_007
+  job_022:
     name: "tests; Dart stable; PKG: shelf_router; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1040,7 +1073,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_022:
+      - job_006
+      - job_007
+  job_023:
     name: "tests; Dart stable; PKG: neat_periodic_task; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1073,7 +1108,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_023:
+      - job_006
+      - job_007
+  job_024:
     name: "tests; Dart stable; PKG: shelf_router_generator; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1106,7 +1143,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_024:
+      - job_006
+      - job_007
+  job_025:
     name: "tests; Dart stable; PKG: http_methods; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1139,7 +1178,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_025:
+      - job_006
+      - job_007
+  job_026:
     name: "tests; Dart stable; PKG: canonical_json; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1172,7 +1213,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_026:
+      - job_006
+      - job_007
+  job_027:
     name: "tests; Dart stable; PKG: acyclic_steps; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1205,7 +1248,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_027:
+      - job_006
+      - job_007
+  job_028:
     name: "tests; Dart stable; PKG: yaml_edit; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1238,7 +1283,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_028:
+      - job_006
+      - job_007
+  job_029:
     name: "tests; Dart stable; PKG: pem; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1271,7 +1318,44 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_029:
+      - job_006
+      - job_007
+  job_030:
+    name: "tests; Dart beta; PKG: retry; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry
+            os:ubuntu-latest;pub-cache-hosted;dart:beta
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: cedx/setup-dart@v2
+        with:
+          release-channel: beta
+      - run: dart --version
+      - uses: actions/checkout@v2
+      - id: retry_pub_upgrade
+        name: "retry; pub upgrade --no-precompile"
+        working-directory: retry
+        run: pub upgrade --no-precompile
+      - name: retry; pub run test
+        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
+        working-directory: retry
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_031:
     name: "tests; Dart dev; PKG: neat_cache; `pub run test -x redis`"
     runs-on: ubuntu-latest
     steps:
@@ -1304,7 +1388,9 @@ jobs:
       - job_003
       - job_004
       - job_005
-  job_030:
+      - job_006
+      - job_007
+  job_032:
     name: "tests; Dart stable; PKG: neat_cache; `pub run test -x redis`"
     runs-on: ubuntu-latest
     steps:
@@ -1337,3 +1423,5 @@ jobs:
       - job_003
       - job_004
       - job_005
+      - job_006
+      - job_007

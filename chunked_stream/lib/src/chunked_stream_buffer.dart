@@ -27,8 +27,6 @@ Stream<List<T>> bufferChunkedStream<T>(
   Stream<List<T>> input, {
   int bufferSize = 16 * 1024,
 }) async* {
-  ArgumentError.checkNotNull(input, 'input');
-  ArgumentError.checkNotNull(bufferSize, 'bufferSize');
   if (bufferSize <= 0) {
     throw ArgumentError.value(
         bufferSize, 'bufferSize', 'bufferSize must be positive');
