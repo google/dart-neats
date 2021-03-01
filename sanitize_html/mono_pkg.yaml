@@ -1,6 +1,5 @@
 dart:
-  - stable
-  - dev
+  - beta
 stages:
   - analyze:
       - dartanalyzer
