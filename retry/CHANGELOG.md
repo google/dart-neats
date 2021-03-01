@@ -1,3 +1,6 @@
+## v3.1.0
+ * Stable null-safety release.
+
 ## v3.1.0-null-safety.0
  * Migrate to null-safety.
 

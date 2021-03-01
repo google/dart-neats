@@ -40,7 +40,6 @@ Future<List<T>> readChunkedStream<T>(
   Stream<List<T>> input, {
   int? maxSize,
 }) async {
-  ArgumentError.checkNotNull(input, 'input');
   if (maxSize != null && maxSize < 0) {
     throw ArgumentError.value(maxSize, 'maxSize must be positive, if given');
   }
@@ -86,7 +85,6 @@ Future<Uint8List> readByteStream(
   Stream<List<int>> input, {
   int? maxSize,
 }) async {
-  ArgumentError.checkNotNull(input, 'input');
   if (maxSize != null && maxSize < 0) {
     throw ArgumentError.value(maxSize, 'maxSize must be positive, if given');
   }
@@ -108,7 +106,6 @@ Stream<List<T>> limitChunkedStream<T>(
   Stream<List<T>> input, {
   int? maxSize,
 }) async* {
-  ArgumentError.checkNotNull(input, 'input');
   if (maxSize != null && maxSize < 0) {
     throw ArgumentError.value(maxSize, 'maxSize must be positive, if given');
   }
