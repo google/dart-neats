@@ -1,3 +1,6 @@
+## v2.0.0
+ * Migrate to null safety.
+
 ## v1.4.1
  * Make `addLinkRel` optional. [Issue](https://github.com/google/dart-neats/issues/71).
 
@@ -19,7 +22,6 @@
 ## v1.1.0
  * Add options `allowElementId` and `allowClassName` to allow specific element
    ids and class names.
- 
+
 ## v1.0.0
  * Initial release.
- 
