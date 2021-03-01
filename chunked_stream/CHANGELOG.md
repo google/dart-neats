@@ -1,4 +1,4 @@
-## v.1.4.0
+## v1.4.0
 
 - Stable null-safety release
 
