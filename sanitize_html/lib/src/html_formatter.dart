@@ -52,14 +52,17 @@ class _HtmlFormatter {
   }
 
   void _writeNodes(List<Node> nodes) {
-    if (nodes == null || nodes.isEmpty) return;
+    if (nodes.isEmpty) return;
     for (var node in nodes) {
       if (node is Element) {
         _writeElement(node);
       } else if (node is Text) {
         _sb.write(_textEscape.convert(node.text));
       } else if (node is Document) {
-        _writeNodes([node.documentElement]);
+        final documentElement = node.documentElement;
+        if (documentElement != null) {
+          _writeNodes([documentElement]);
+        }
       } else if (node is DocumentFragment) {
         _writeNodes(node.nodes);
       } else if (node is Comment) {
@@ -83,7 +86,7 @@ class _HtmlFormatter {
       _sb.write('>');
       _writeNodes(elem.nodes);
       _sb.write('</$tagName>');
-    } else if (_voidElements.contains(tagName.toLowerCase())) {
+    } else if (_voidElements.contains(tagName!.toLowerCase())) {
       // Only VOID-elements cannot have a closing tag.
       // https://www.w3.org/TR/html5/syntax.html#writing-html-documents-elements
       _sb.write(' />');

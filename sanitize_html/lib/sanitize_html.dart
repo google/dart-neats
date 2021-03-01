@@ -73,9 +73,9 @@ import 'src/sane_html_validator.dart' show SaneHtmlValidator;
 /// [3]: https://support.google.com/webmasters/answer/81749
 String sanitizeHtml(
   String htmlString, {
-  bool Function(String) allowElementId,
-  bool Function(String) allowClassName,
-  Iterable<String> Function(String) addLinkRel,
+  bool Function(String)? allowElementId,
+  bool Function(String)? allowClassName,
+  Iterable<String>? Function(String)? addLinkRel,
 }) {
   return SaneHtmlValidator(
     allowElementId: allowElementId,

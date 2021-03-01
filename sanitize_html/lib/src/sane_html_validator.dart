@@ -14,7 +14,6 @@
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
-import 'package:meta/meta.dart' show required;
 
 import 'html_formatter.dart';
 
@@ -212,14 +211,14 @@ final _elementAttributeValidators =
 ///
 /// [1]: https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb
 class SaneHtmlValidator {
-  final bool Function(String) allowElementId;
-  final bool Function(String) allowClassName;
-  final Iterable<String> Function(String) addLinkRel;
+  final bool Function(String)? allowElementId;
+  final bool Function(String)? allowClassName;
+  final Iterable<String>? Function(String)? addLinkRel;
 
   SaneHtmlValidator({
-    @required this.allowElementId,
-    @required this.allowClassName,
-    @required this.addLinkRel,
+    required this.allowElementId,
+    required this.allowClassName,
+    required this.addLinkRel,
   });
 
   String sanitize(String htmlString) {
@@ -230,7 +229,7 @@ class SaneHtmlValidator {
 
   void _sanitize(Node node) {
     if (node is Element) {
-      final tagName = node.localName.toUpperCase();
+      final tagName = node.localName!.toUpperCase();
       if (!_allowedElements.contains(tagName)) {
         node.remove();
         return;
@@ -238,11 +237,11 @@ class SaneHtmlValidator {
       node.attributes.removeWhere((k, v) {
         final attrName = k.toString();
         if (attrName == 'id') {
-          return allowElementId == null || !allowElementId(v);
+          return allowElementId == null || !allowElementId!(v);
         }
         if (attrName == 'class') {
           if (allowClassName == null) return true;
-          node.classes.removeWhere((cn) => !allowClassName(cn));
+          node.classes.removeWhere((cn) => !allowClassName!(cn));
           return node.classes.isEmpty;
         }
         return !_isAttributeAllowed(tagName, attrName, v);
@@ -250,7 +249,7 @@ class SaneHtmlValidator {
       if (tagName == 'A') {
         final href = node.attributes['href'];
         if (href != null && addLinkRel != null) {
-          final rels = addLinkRel(href);
+          final rels = addLinkRel!(href);
           if (rels != null && rels.isNotEmpty) {
             node.attributes['rel'] = rels.join(' ');
           }
