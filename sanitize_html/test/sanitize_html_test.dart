@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:meta/meta.dart' show required;
 import 'package:test/test.dart';
 import 'package:sanitize_html/sanitize_html.dart' show sanitizeHtml;
 
@@ -23,7 +22,7 @@ void main() {
   // (This is the default behavior for the [testContains]/[testNotContains] methods.)
   //  * When `withOptionalConfiguration` is false: only `template` is passed.
   String doSanitizeHtml(String template,
-      {@required bool withOptionalConfiguration}) {
+      {required bool withOptionalConfiguration}) {
     if (!withOptionalConfiguration) {
       return sanitizeHtml(template);
     }
