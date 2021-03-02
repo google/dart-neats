@@ -1,5 +1,5 @@
 name: pem
-version: 1.0.1
+version: 2.0.0
 description: |
   PEM encoding/decoding of textual keys following RFC 7468,
   supporting both lax/strict-mode, and certificates chains of concatenated
@@ -8,10 +8,10 @@ homepage: https://github.com/google/dart-neats/tree/master/pem
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:pem
 dependencies:
-  petitparser: '>=2.1.1<4.0.0'
+  petitparser: ^4.0.2
 dev_dependencies:
-  test: ^1.5.1
-  pedantic: ^1.4.0
+  test: ^1.16.5
+  pedantic: ^1.10.0
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=2.12.0-0 <3.0.0'
 
