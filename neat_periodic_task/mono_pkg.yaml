@@ -1,5 +1,6 @@
 dart:
-  - stable
+  # Enable when 2.12.0 has shipped
+  #- stable
   - dev
 stages:
   - analyze:
