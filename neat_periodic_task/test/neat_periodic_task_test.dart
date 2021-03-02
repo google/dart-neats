@@ -19,18 +19,18 @@ import 'package:logging/logging.dart';
 import 'package:collection/collection.dart' show ListEquality;
 
 class _StatusStore {
-  List<int> _value;
+  List<int>? _value;
 
   NeatStatusProvider provider() => _StatusStoreNeatStatusProvider(this);
 }
 
 class _StatusStoreNeatStatusProvider implements NeatStatusProvider {
   final _StatusStore _store;
-  List<int> _lastRead;
+  List<int>? _lastRead;
   _StatusStoreNeatStatusProvider(this._store);
 
   @override
-  Future<List<int>> get() async {
+  Future<List<int>?> get() async {
     await Future.delayed(Duration(milliseconds: 1));
     _lastRead = _store._value;
     return _lastRead;
