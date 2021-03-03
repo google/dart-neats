@@ -135,7 +135,7 @@ const _labels = <PemLabel, List<String>>{
   PemLabel.certificateRevocationList: ['X509 CRL'],
   PemLabel.certificateRequest: [
     'CERTIFICATE REQUEST',
-    'NEW CERTIFICATE REQUEST'
+    'NEW CERTIFICATE REQUEST',
   ],
   PemLabel.pkcs7: ['PKCS7'],
   PemLabel.cms: ['CMS'],
@@ -192,10 +192,10 @@ List<List<int>> decodePemBlocks(
   bool strict = false,
   bool unsafeIgnoreLabel = false,
 }) {
-  ArgumentError.checkNotNull(label, 'label');
-  ArgumentError.checkNotNull(pemString, 'pemString');
-  ArgumentError.checkNotNull(strict, 'strict');
-  ArgumentError.checkNotNull(unsafeIgnoreLabel, 'unsafeIgnoreLabel');
+  final labels = _labels[label];
+  if (labels == null) {
+    throw AssertionError('Unkown label');
+  }
 
   // Pick a parser
   final p = strict ? stricttextualmsg : laxtextualmsg;
@@ -213,11 +213,11 @@ List<List<int>> decodePemBlocks(
       continue;
     }
     // Label much match an allowed alias, if not ignoring
-    if (!_labels[label].contains(preLabel) && !unsafeIgnoreLabel) {
+    if (!labels.contains(preLabel) && !unsafeIgnoreLabel) {
       continue;
     }
     // Label much match canonical label name, if we're in strict mode
-    if (strict && _labels[label].first != preLabel && !unsafeIgnoreLabel) {
+    if (strict && labels.first != preLabel && !unsafeIgnoreLabel) {
       continue;
     }
 
@@ -246,11 +246,13 @@ List<List<int>> decodePemBlocks(
 ///
 /// [1]: https://tools.ietf.org/html/rfc7468
 String encodePemBlock(PemLabel label, List<int> data) {
-  ArgumentError.checkNotNull(label, 'label');
-  ArgumentError.checkNotNull(data, 'data');
+  final labels = _labels[label];
+  if (labels == null) {
+    throw AssertionError('Unkown label');
+  }
 
   final s = StringBuffer();
-  final L = _labels[label].first;
+  final L = labels.first;
   s.writeln('-----BEGIN $L-----');
   final lines = base64.encode(data);
   for (var i = 0; i < lines.length; i += 64) {
