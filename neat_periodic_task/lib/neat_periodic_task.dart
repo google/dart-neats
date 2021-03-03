@@ -43,7 +43,7 @@ abstract class NeatStatusProvider {
   ///
   /// Returns the current status file, or `null` if no status file has ever
   /// been written.
-  Future<List<int>> get();
+  Future<List<int>?> get();
 
   /// Set the current status file, if status file have not been changed since
   /// last time it was read.
@@ -72,10 +72,11 @@ abstract class NeatStatusProvider {
 }
 
 class _InMemoryNeatStatusProvider implements NeatStatusProvider {
-  List<int> _value;
+  List<int>? _value;
 
   @override
-  Future<List<int>> get() async => _value;
+  Future<List<int>?> get() async => _value;
+
   @override
   Future<bool> set(List<int> status) async {
     _value = status;
@@ -88,7 +89,7 @@ class _NeatStatusProviderWithRetry extends NeatStatusProvider {
   final RetryOptions _r;
   _NeatStatusProviderWithRetry(this._provider, this._r);
   @override
-  Future<List<int>> get() =>
+  Future<List<int>?> get() =>
       _r.retry(() => _provider.get(), retryIf: (e) => e is Exception);
   @override
   Future<bool> set(List<int> status) =>
@@ -146,11 +147,11 @@ class NeatPeriodicTaskScheduler {
   /// this will continue indefinitely. Thus, it is sensible to pick a high
   /// [timeout], if the operation is expensive and this can be tolerated.
   NeatPeriodicTaskScheduler({
-    @required String name,
-    @required Duration interval,
-    @required Duration timeout,
-    @required NeatPeriodicTask task,
-    NeatStatusProvider status,
+    required String name,
+    required Duration interval,
+    required Duration timeout,
+    required NeatPeriodicTask task,
+    NeatStatusProvider? status,
     Duration minCycle = const Duration(minutes: 5),
     Duration maxCycle = const Duration(hours: 3),
   })  : _name = name,
@@ -160,10 +161,6 @@ class NeatPeriodicTaskScheduler {
         _statusProvider = status ?? _InMemoryNeatStatusProvider(),
         _minCycle = minCycle,
         _maxCycle = maxCycle {
-    ArgumentError.checkNotNull(name, 'name');
-    ArgumentError.checkNotNull(interval, 'interval');
-    ArgumentError.checkNotNull(timeout, 'timeout');
-    ArgumentError.checkNotNull(task, 'task');
     if (maxCycle <= minCycle) {
       throw ArgumentError.value(
           maxCycle, 'maxCycle', 'maxCycle must larger than minCycle');
