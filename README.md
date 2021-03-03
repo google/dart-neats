@@ -1,4 +1,4 @@
-Dart Neats [![Build Status](https://travis-ci.org/google/dart-neats.svg?branch=master)](https://travis-ci.org/google/dart-neats)
+Dart Neats [![Github Actions](https://github.com/google/dart-neats/actions/workflows/dart.yml/badge.svg)](https://github.com/google/dart-neats/actions/workflows/dart.yml)
 ==========
 _A collection of a small neat packages for dart._
 
