@@ -53,25 +53,25 @@ class NeatTaskStatus {
   final String owner;
 
   NeatTaskStatus({
-    this.format,
-    this.version,
-    this.state,
-    this.started,
-    this.owner,
+    required this.format,
+    required this.version,
+    required this.state,
+    required this.started,
+    required this.owner,
   });
 
   NeatTaskStatus.create({
-    this.state,
-    this.started,
-    this.owner,
-  })  : format = formatIdentifier,
+    required this.state,
+    required this.started,
+    required this.owner,
+  })   : format = formatIdentifier,
         version = currentVersion;
 
   /// Create a new [NeatTaskStatus] updating the given values.
   NeatTaskStatus update({
-    String state,
-    DateTime started,
-    String owner,
+    String? state,
+    DateTime? started,
+    String? owner,
   }) {
     return NeatTaskStatus(
       format: formatIdentifier,
@@ -90,17 +90,21 @@ class NeatTaskStatus {
         owner: '-',
       );
 
-  factory NeatTaskStatus.deserialize(List<int> bytes) {
+  factory NeatTaskStatus.deserialize(List<int>? bytes) {
     if (bytes == null) {
       return _initial();
     }
 
     NeatTaskStatus val;
     try {
-      val = _$NeatTaskStatusFromJson(json.fuse(utf8).decode(bytes));
-      if (val == null ||
-          val.format != formatIdentifier ||
-          val.version < currentVersion) {
+      final raw = json.fuse(utf8).decode(bytes);
+      if (raw == null) {
+        return _initial();
+      }
+      val = _$NeatTaskStatusFromJson(
+        raw as Map<String, dynamic>,
+      );
+      if (val.format != formatIdentifier || val.version < currentVersion) {
         return _initial();
       }
       return val;

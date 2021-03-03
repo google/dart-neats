@@ -1,3 +1,6 @@
+## v2.0.0
+ * Migrated to null-safety!
+
 ## v1.0.1
  * Changed failure to write finished status into a warning. It's only a problem
    if it consistently occurs. It could happen if something else went wrong,
