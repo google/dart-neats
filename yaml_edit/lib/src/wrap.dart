@@ -43,7 +43,7 @@ YamlMap updatedYamlMap(YamlMap map, Function(Map) update) {
 ///
 /// If a [YamlNode] is passed in, no further wrapping will be done, and the
 /// [collectionStyle]/[scalarStyle] will not be applied.
-YamlNode wrapAsYamlNode(Object value,
+YamlNode wrapAsYamlNode(Object? value,
     {CollectionStyle collectionStyle = CollectionStyle.ANY,
     ScalarStyle scalarStyle = ScalarStyle.ANY}) {
   if (value is YamlScalar) {

@@ -28,7 +28,7 @@ void main() {
       /// Test failures and errors will still be shown.
       runZoned(() {
         expect(() => doc.update([], string), returnsNormally);
-        final value = doc.parseAt([]).value;
+        final value = doc.parseAt([])!.value;
         expect(value, isA<String>());
         expect(value, equals(string));
       },

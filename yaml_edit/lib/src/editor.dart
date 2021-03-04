@@ -197,7 +197,7 @@ class YamlEditor {
   /// print(newNode.value); // "YAML"
   /// print(node.value); // "YAML Ain't Markup Language"
   /// ```
-  YamlNode parseAt(Iterable<Object> path, {YamlNode Function() orElse}) {
+  YamlNode? parseAt(Iterable<Object> path, {YamlNode? Function()? orElse}) {
     ArgumentError.checkNotNull(path, 'path');
 
     return _traverse(path, orElse: orElse);
@@ -244,7 +244,7 @@ class YamlEditor {
   ///   - test
   ///   - 2
   /// ```
-  void update(Iterable<Object> path, Object value) {
+  void update(Iterable<Object?> path, Object? value) {
     ArgumentError.checkNotNull(path, 'path');
 
     final valueNode = wrapAsYamlNode(value);
@@ -481,14 +481,14 @@ class YamlEditor {
       }
 
       if (currentNode is YamlList) {
-        final list = currentNode as YamlList;
+        final list = currentNode;
         if (!isValidIndex(keyOrIndex, list.length)) {
           return _pathErrorOrElse(path, path.take(i + 1), list, orElse);
         }
 
         currentNode = list.nodes[keyOrIndex];
       } else if (currentNode is YamlMap) {
-        final map = currentNode as YamlMap;
+        final map = currentNode;
 
         if (!containsKey(map, keyOrIndex)) {
           return _pathErrorOrElse(path, path.take(i + 1), map, orElse);
@@ -513,7 +513,7 @@ class YamlEditor {
   /// Throws a [PathError] if [orElse] is not provided, returns the result
   /// of invoking the [orElse] function otherwise.
   YamlNode _pathErrorOrElse(Iterable<Object> path, Iterable<Object> subPath,
-      YamlNode parent, YamlNode Function() orElse) {
+      YamlNode parent, YamlNode? Function()? orElse) {
     if (orElse == null) throw PathError(path, subPath, parent);
     return orElse();
   }

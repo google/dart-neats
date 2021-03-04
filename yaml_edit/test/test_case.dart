@@ -81,9 +81,9 @@ class _TestCase {
   final Uri goldenUri;
   final List<String> states = [];
 
-  String info;
-  YamlEditor yamlBuilder;
-  List<_YamlModification> modifications;
+  late String info;
+  late YamlEditor yamlBuilder;
+  late List<_YamlModification> modifications;
 
   String inputLineEndings = '\n';
 
@@ -225,9 +225,9 @@ Map _getValueFromYamlMap(YamlMap yamlMap) {
 dynamic _getValueFromYamlNode(YamlNode node) {
   switch (node.runtimeType) {
     case YamlList:
-      return _getValueFromYamlList(node);
+      return _getValueFromYamlList(node as YamlList);
     case YamlMap:
-      return _getValueFromYamlMap(node);
+      return _getValueFromYamlMap(node as YamlMap);
     default:
       return node.value;
   }
@@ -237,12 +237,12 @@ dynamic _getValueFromYamlNode(YamlNode node) {
 /// objects.
 List<_YamlModification> _parseModifications(List<dynamic> modifications) {
   return modifications.map((mod) {
-    Object value;
-    int index;
-    int deleteCount;
+    Object? value;
+    var index = 0;
+    var deleteCount = 0;
     final method = _getModificationMethod(mod[0] as String);
 
-    final path = mod[1] as List;
+    final path = mod[1] as List<Object>;
 
     if (method == YamlModificationMethod.appendTo ||
         method == YamlModificationMethod.update ||
@@ -292,7 +292,7 @@ YamlModificationMethod _getModificationMethod(String method) {
 /// Class representing an abstract YAML modification to be performed
 class _YamlModification {
   final YamlModificationMethod method;
-  final List<dynamic> path;
+  final List<Object> path;
   final int index;
   final dynamic value;
   final int deleteCount;

@@ -60,7 +60,7 @@ void main() {
     test('simple example with map return', () {
       final doc = YamlEditor('{a: {d: 4}, c: ~}');
       final result =
-          doc.parseAt(['b'], orElse: () => wrapAsYamlNode({'a': 42}));
+          doc.parseAt(['b'], orElse: () => wrapAsYamlNode({'a': 42}))!;
 
       expect(result, isA<YamlMap>());
       expect(result.value, equals({'a': 42}));
@@ -68,7 +68,7 @@ void main() {
 
     test('simple example with scalar return', () {
       final doc = YamlEditor('{a: {d: 4}, c: ~}');
-      final result = doc.parseAt(['b'], orElse: () => wrapAsYamlNode(42));
+      final result = doc.parseAt(['b'], orElse: () => wrapAsYamlNode(42))!;
 
       expect(result, isA<YamlScalar>());
       expect(result.value, equals(42));
@@ -76,7 +76,7 @@ void main() {
 
     test('simple example with list return', () {
       final doc = YamlEditor('{a: {d: 4}, c: ~}');
-      final result = doc.parseAt(['b'], orElse: () => wrapAsYamlNode([42]));
+      final result = doc.parseAt(['b'], orElse: () => wrapAsYamlNode([42]))!;
 
       expect(result, isA<YamlList>());
       expect(result.value, equals([42]));
@@ -94,19 +94,19 @@ void main() {
     test('with the correct value', () {
       final doc = YamlEditor("YAML: YAML Ain't Markup Language");
 
-      expect(doc.parseAt(['YAML']).value, "YAML Ain't Markup Language");
+      expect(doc.parseAt(['YAML'])!.value, "YAML Ain't Markup Language");
     });
 
     test('with the correct value in nested collection', () {
       final doc = YamlEditor('''
 a: 1
-b: 
+b:
   d: 4
   e: [5, 6, 7]
 c: 3
 ''');
 
-      expect(doc.parseAt(['b', 'e', 2]).value, 7);
+      expect(doc.parseAt(['b', 'e', 2])!.value, 7);
     });
 
     test('with the correct type (2)', () {
@@ -141,7 +141,7 @@ c: 3
           {
             [1, 2]: 3
           }
-        ]).value,
+        ])!.value,
         equals(4));
   });
 }

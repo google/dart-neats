@@ -43,7 +43,7 @@ bool isDangerousString(String string) {
 /// Asserts that [value] is a valid scalar according to YAML.
 ///
 /// A valid scalar is a number, String, boolean, or null.
-void assertValidScalar(Object value) {
+void assertValidScalar(Object? value) {
   if (value is num || value is String || value is bool || value == null) {
     return;
   }

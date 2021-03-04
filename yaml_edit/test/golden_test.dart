@@ -29,7 +29,7 @@ Future<void> main() async {
   final packageUri = await Isolate.resolvePackageUri(
       Uri.parse('package:yaml_edit/yaml_edit.dart'));
 
-  final testdataUri = packageUri.resolve('../test/testdata/');
+  final testdataUri = packageUri!.resolve('../test/testdata/');
   final inputDirectory = Directory.fromUri(testdataUri.resolve('input/'));
   final goldDirectoryUri = testdataUri.resolve('output/');
 
