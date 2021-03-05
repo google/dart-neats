@@ -49,6 +49,28 @@ void main() {
       expectYamlBuilderValue(doc, [0, 1, 2, 3, 4]);
     });
 
+    test('null path', () {
+      final doc = YamlEditor('''
+~:
+  - 0
+  - 1
+  - 2
+  - 3
+''');
+      doc.appendToList([null], 4);
+      expect(doc.toString(), equals('''
+~:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+'''));
+      expectYamlBuilderValue(doc, {
+        null: [0, 1, 2, 3, 4]
+      });
+    });
+
     test('element to simple block list ', () {
       final doc = YamlEditor('''
 - 0
@@ -123,7 +145,7 @@ void main() {
     test('nested', () {
       final yamlEditor = YamlEditor('''
 a:
-  1: 
+  1:
     - null
   2: null
 ''');
@@ -131,7 +153,7 @@ a:
 
       expect(yamlEditor.toString(), equals('''
 a:
-  1: 
+  1:
     - null
     - false
   2: null
@@ -145,6 +167,13 @@ a:
       doc.appendToList([], 3);
       expect(doc.toString(), equals('[0, 1, 2, 3]'));
       expectYamlBuilderValue(doc, [0, 1, 2, 3]);
+    });
+
+    test('null value', () {
+      final doc = YamlEditor('[0, 1, 2]');
+      doc.appendToList([], null);
+      expect(doc.toString(), equals('[0, 1, 2, null]'));
+      expectYamlBuilderValue(doc, [0, 1, 2, null]);
     });
 
     test('empty ', () {

@@ -31,7 +31,7 @@ YamlMap updatedYamlMap(YamlMap map, Function(Map) update) {
 
   update(dummyMap);
 
-  return wrapAsYamlNode(dummyMap);
+  return wrapAsYamlNode(dummyMap) as YamlMap;
 }
 
 /// Wraps [value] into a [YamlNode].
@@ -91,7 +91,7 @@ class YamlScalarWrap implements YamlScalar {
   @override
   final dynamic value;
 
-  YamlScalarWrap(this.value, {this.style = ScalarStyle.ANY, Object sourceUrl})
+  YamlScalarWrap(this.value, {this.style = ScalarStyle.ANY, Object? sourceUrl})
       : span = shellSpan(sourceUrl) {
     ArgumentError.checkNotNull(style, 'scalarStyle');
   }
@@ -117,7 +117,7 @@ class YamlMapWrap
 
   factory YamlMapWrap(Map dartMap,
       {CollectionStyle collectionStyle = CollectionStyle.ANY,
-      Object sourceUrl}) {
+      Object? sourceUrl}) {
     ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
 
     final wrappedMap = deepEqualsMap<dynamic, YamlNode>();
@@ -133,12 +133,12 @@ class YamlMapWrap
   }
 
   YamlMapWrap._(this.nodes,
-      {CollectionStyle style = CollectionStyle.ANY, Object sourceUrl})
+      {CollectionStyle style = CollectionStyle.ANY, Object? sourceUrl})
       : span = shellSpan(sourceUrl),
         style = nodes.isEmpty ? CollectionStyle.FLOW : style;
 
   @override
-  dynamic operator [](Object key) => nodes[key]?.value;
+  dynamic operator [](Object? key) => nodes[key]?.value;
 
   @override
   Iterable get keys => nodes.keys.map((node) => node.value);
@@ -170,7 +170,7 @@ class YamlListWrap with collection.ListMixin implements YamlList {
 
   factory YamlListWrap(List dartList,
       {CollectionStyle collectionStyle = CollectionStyle.ANY,
-      Object sourceUrl}) {
+      Object? sourceUrl}) {
     ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
 
     final wrappedList = dartList.map(wrapAsYamlNode).toList();
@@ -179,7 +179,7 @@ class YamlListWrap with collection.ListMixin implements YamlList {
   }
 
   YamlListWrap._(this.nodes,
-      {CollectionStyle style = CollectionStyle.ANY, Object sourceUrl})
+      {CollectionStyle style = CollectionStyle.ANY, Object? sourceUrl})
       : span = shellSpan(sourceUrl),
         style = nodes.isEmpty ? CollectionStyle.FLOW : style;
 

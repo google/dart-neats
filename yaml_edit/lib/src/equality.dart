@@ -82,7 +82,7 @@ bool mapDeepEquals(Map map1, Map map2) {
 
 /// Returns a hashcode for [value] such that structures that are equal by
 /// [deepEquals] will have the same hash code.
-int deepHashCode(Object value) {
+int deepHashCode(Object? value) {
   if (value is Map) {
     const equality = UnorderedIterableEquality();
     return equality.hash(value.keys.map(deepHashCode)) ^
@@ -97,13 +97,13 @@ int deepHashCode(Object value) {
 }
 
 /// Returns the [YamlNode] corresponding to the provided [key].
-YamlNode getKeyNode(YamlMap map, Object key) {
+YamlNode getKeyNode(YamlMap map, Object? key) {
   return map.nodes.keys.firstWhere((node) => deepEquals(node, key)) as YamlNode;
 }
 
 /// Returns the [YamlNode] after the [YamlNode] corresponding to the provided
 /// [key].
-YamlNode getNextKeyNode(YamlMap map, Object key) {
+YamlNode? getNextKeyNode(YamlMap map, Object? key) {
   final keyIterator = map.nodes.keys.iterator;
   while (keyIterator.moveNext()) {
     if (deepEquals(keyIterator.current, key) && keyIterator.moveNext()) {
@@ -116,11 +116,11 @@ YamlNode getNextKeyNode(YamlMap map, Object key) {
 
 /// Returns the key in [map] that is equal to the provided [key] by the notion
 /// of deep equality.
-Object getKey(Map map, Object key) {
+Object? getKey(Map map, Object? key) {
   return map.keys.firstWhere((k) => deepEquals(k, key));
 }
 
 /// Checks if [map] has any keys equal to the provided [key] by deep equality.
-bool containsKey(Map map, Object key) {
+bool containsKey(Map map, Object? key) {
   return map.keys.where((node) => deepEquals(node, key)).isNotEmpty;
 }

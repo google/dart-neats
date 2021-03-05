@@ -87,7 +87,7 @@ class YamlEditor {
   String _yaml;
 
   /// Root node of YAML AST.
-  YamlNode _contents;
+  late YamlNode _contents;
 
   /// Stores the list of nodes in [_contents] that are connected by aliases.
   ///
@@ -197,7 +197,7 @@ class YamlEditor {
   /// print(newNode.value); // "YAML"
   /// print(node.value); // "YAML Ain't Markup Language"
   /// ```
-  YamlNode? parseAt(Iterable<Object> path, {YamlNode? Function()? orElse}) {
+  YamlNode? parseAt(Iterable<Object?> path, {YamlNode? Function()? orElse}) {
     ArgumentError.checkNotNull(path, 'path');
 
     return _traverse(path, orElse: orElse);
@@ -266,7 +266,7 @@ class YamlEditor {
 
     if (parentNode is YamlList) {
       final expected = wrapAsYamlNode(
-        [...parentNode.nodes]..[keyOrIndex] = valueNode,
+        [...parentNode.nodes]..[keyOrIndex as int] = valueNode,
       );
 
       return _performEdit(updateInList(this, parentNode, keyOrIndex, valueNode),
@@ -294,7 +294,7 @@ class YamlEditor {
   /// final doc = YamlEditor('[0, 1]');
   /// doc.appendToList([], 2); // [0, 1, 2]
   /// ```
-  void appendToList(Iterable<Object> path, Object value) {
+  void appendToList(Iterable<Object?> path, Object? value) {
     ArgumentError.checkNotNull(path, 'path');
     final yamlList = _traverseToList(path);
 
@@ -311,7 +311,7 @@ class YamlEditor {
   /// final doc = YamlEditor('[1, 2]');
   /// doc.prependToList([], 0); // [0, 1, 2]
   /// ```
-  void prependToList(Iterable<Object> path, Object value) {
+  void prependToList(Iterable<Object?> path, Object? value) {
     ArgumentError.checkNotNull(path, 'path');
 
     insertIntoList(path, 0, value);
@@ -329,7 +329,7 @@ class YamlEditor {
   /// final doc = YamlEditor('[0, 2]');
   /// doc.insertIntoList([], 1, 1); // [0, 1, 2]
   /// ```
-  void insertIntoList(Iterable<Object> path, int index, Object value) {
+  void insertIntoList(Iterable<Object?> path, int index, Object? value) {
     ArgumentError.checkNotNull(path, 'path');
     final valueNode = wrapAsYamlNode(value);
 
@@ -360,8 +360,8 @@ class YamlEditor {
   /// doc.spliceList([], 1, 0, ['Feb']); // [Jan, Feb, March, April, June]
   /// doc.spliceList([], 4, 1, ['May']); // [Jan, Feb, March, April, May]
   /// ```
-  Iterable<YamlNode> spliceList(Iterable<Object> path, int index,
-      int deleteCount, Iterable<Object> values) {
+  Iterable<YamlNode> spliceList(Iterable<Object?> path, int index,
+      int deleteCount, Iterable<Object?> values) {
     ArgumentError.checkNotNull(path, 'path');
     ArgumentError.checkNotNull(index, 'index');
     ArgumentError.checkNotNull(deleteCount, 'deleteCount');
@@ -417,11 +417,11 @@ class YamlEditor {
   /// - 2 # comment 2
   /// '''
   /// ```
-  YamlNode remove(Iterable<Object> path) {
+  YamlNode? remove(Iterable<Object?> path) {
     ArgumentError.checkNotNull(path, 'path');
 
-    SourceEdit edit;
-    YamlNode expectedNode;
+    SourceEdit? edit;
+    YamlNode? expectedNode;
     final nodeToRemove = _traverse(path, checkAlias: true);
 
     if (path.isEmpty) {
@@ -438,7 +438,7 @@ class YamlEditor {
     final parentNode = _traverse(collectionPath);
 
     if (parentNode is YamlList) {
-      edit = removeInList(this, parentNode, keyOrIndex);
+      edit = removeInList(this, parentNode, keyOrIndex as int);
       expectedNode = wrapAsYamlNode(
         [...parentNode.nodes]..removeAt(keyOrIndex),
       );
@@ -449,7 +449,7 @@ class YamlEditor {
           updatedYamlMap(parentNode, (nodes) => nodes.remove(keyOrIndex));
     }
 
-    _performEdit(edit, collectionPath, expectedNode);
+    _performEdit(edit ?? SourceEdit(0, 0, ''), collectionPath, expectedNode);
 
     return nodeToRemove;
   }
@@ -463,21 +463,21 @@ class YamlEditor {
   ///
   /// If [checkAlias] is `true`, throw [AliasError] if an aliased node is
   /// encountered.
-  YamlNode _traverse(Iterable<Object> path,
-      {bool checkAlias = false, YamlNode Function() orElse}) {
+  YamlNode? _traverse(Iterable<Object?> path,
+      {bool checkAlias = false, YamlNode? Function()? orElse}) {
     ArgumentError.checkNotNull(path, 'path');
     ArgumentError.checkNotNull(checkAlias, 'checkAlias');
 
     if (path.isEmpty) return _contents;
 
-    var currentNode = _contents;
+    YamlNode? currentNode = _contents;
     final pathList = path.toList();
 
     for (var i = 0; i < pathList.length; i++) {
       final keyOrIndex = pathList[i];
 
       if (checkAlias && _aliases.contains(currentNode)) {
-        throw AliasError(path, currentNode);
+        throw AliasError(path, currentNode!);
       }
 
       if (currentNode is YamlList) {
@@ -486,7 +486,7 @@ class YamlEditor {
           return _pathErrorOrElse(path, path.take(i + 1), list, orElse);
         }
 
-        currentNode = list.nodes[keyOrIndex];
+        currentNode = list.nodes[keyOrIndex as int];
       } else if (currentNode is YamlMap) {
         final map = currentNode;
 
@@ -501,25 +501,25 @@ class YamlEditor {
 
         currentNode = map.nodes[keyNode];
       } else {
-        return _pathErrorOrElse(path, path.take(i + 1), currentNode, orElse);
+        return _pathErrorOrElse(path, path.take(i + 1), currentNode!, orElse);
       }
     }
 
-    if (checkAlias) _assertNoChildAlias(path, currentNode);
+    if (checkAlias) _assertNoChildAlias(path, currentNode!);
 
     return currentNode;
   }
 
   /// Throws a [PathError] if [orElse] is not provided, returns the result
   /// of invoking the [orElse] function otherwise.
-  YamlNode _pathErrorOrElse(Iterable<Object> path, Iterable<Object> subPath,
+  YamlNode? _pathErrorOrElse(Iterable<Object?> path, Iterable<Object?> subPath,
       YamlNode parent, YamlNode? Function()? orElse) {
     if (orElse == null) throw PathError(path, subPath, parent);
     return orElse();
   }
 
   /// Asserts that [node] and none its children are aliases
-  void _assertNoChildAlias(Iterable<Object> path, [YamlNode node]) {
+  void _assertNoChildAlias(Iterable<Object?> path, [YamlNode? node]) {
     ArgumentError.checkNotNull(path, 'path');
 
     if (node == null) return _assertNoChildAlias(path, _traverse(path));
@@ -551,7 +551,7 @@ class YamlEditor {
   /// Throws [ArgumentError] if the element at the given path is not a
   /// [YamlList] or if the path is invalid. If [checkAlias] is `true`, and an
   /// aliased node is encountered along [path], an [AliasError] will be thrown.
-  YamlList _traverseToList(Iterable<Object> path, {bool checkAlias = false}) {
+  YamlList _traverseToList(Iterable<Object?> path, {bool checkAlias = false}) {
     ArgumentError.checkNotNull(path, 'path');
     ArgumentError.checkNotNull(checkAlias, 'checkAlias');
 
@@ -572,7 +572,7 @@ class YamlEditor {
   /// tree is equal to our expectations by deep equality of values. Throws an
   /// [AssertionError] if the two trees do not match.
   void _performEdit(
-      SourceEdit edit, Iterable<Object> path, YamlNode expectedNode) {
+      SourceEdit edit, Iterable<Object?> path, YamlNode? expectedNode) {
     ArgumentError.checkNotNull(edit, 'edit');
     ArgumentError.checkNotNull(path, 'path');
 
@@ -613,8 +613,8 @@ class YamlEditor {
   /// the whole tree.
   ///
   /// [SourceSpan]s in this new tree are not guaranteed to be accurate.
-  YamlNode _deepModify(YamlNode tree, Iterable<Object> path,
-      Iterable<Object> subPath, YamlNode expectedNode) {
+  YamlNode? _deepModify(YamlNode tree, Iterable<Object?> path,
+      Iterable<Object?> subPath, YamlNode? expectedNode) {
     ArgumentError.checkNotNull(path, 'path');
     ArgumentError.checkNotNull(tree, 'tree');
     RangeError.checkValueInInterval(subPath.length, 0, path.length);
@@ -628,11 +628,11 @@ class YamlEditor {
         throw PathError(path, subPath, tree);
       }
 
-      return wrapAsYamlNode([...tree.nodes]..[keyOrIndex] = _deepModify(
+      return wrapAsYamlNode([...tree.nodes]..[keyOrIndex as int] = _deepModify(
           tree.nodes[keyOrIndex],
           path,
           path.take(subPath.length + 1),
-          expectedNode));
+          expectedNode)!);
     }
 
     if (tree is YamlMap) {

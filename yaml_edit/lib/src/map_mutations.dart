@@ -24,7 +24,7 @@ import 'wrap.dart';
 /// Performs the string operation on [yaml] to achieve the effect of setting
 /// the element at [key] to [newValue] when re-parsed.
 SourceEdit updateInMap(
-    YamlEditor yamlEdit, YamlMap map, Object key, YamlNode newValue) {
+    YamlEditor yamlEdit, YamlMap map, Object? key, YamlNode newValue) {
   ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
   ArgumentError.checkNotNull(map, 'map');
 
@@ -47,7 +47,7 @@ SourceEdit updateInMap(
 
 /// Performs the string operation on [yaml] to achieve the effect of removing
 /// the element at [key] when re-parsed.
-SourceEdit removeInMap(YamlEditor yamlEdit, YamlMap map, Object key) {
+SourceEdit? removeInMap(YamlEditor yamlEdit, YamlMap map, Object? key) {
   ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
   ArgumentError.checkNotNull(map, 'map');
 
@@ -57,9 +57,9 @@ SourceEdit removeInMap(YamlEditor yamlEdit, YamlMap map, Object key) {
   final valueNode = map.nodes[keyNode];
 
   if (map.style == CollectionStyle.FLOW) {
-    return _removeFromFlowMap(yamlEdit, map, keyNode, valueNode);
+    return _removeFromFlowMap(yamlEdit, map, keyNode, valueNode!);
   } else {
-    return _removeFromBlockMap(yamlEdit, map, keyNode, valueNode);
+    return _removeFromBlockMap(yamlEdit, map, keyNode, valueNode!);
   }
 }
 
@@ -147,7 +147,7 @@ SourceEdit _addToFlowMap(
 /// the value at [key] with [newValue] when reparsed, bearing in mind that this
 /// is a block map.
 SourceEdit _replaceInBlockMap(
-    YamlEditor yamlEdit, YamlMap map, Object key, YamlNode newValue) {
+    YamlEditor yamlEdit, YamlMap map, Object? key, YamlNode newValue) {
   ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
   ArgumentError.checkNotNull(map, 'map');
 
@@ -181,11 +181,11 @@ SourceEdit _replaceInBlockMap(
 /// the value at [key] with [newValue] when reparsed, bearing in mind that this
 /// is a flow map.
 SourceEdit _replaceInFlowMap(
-    YamlEditor yamlEdit, YamlMap map, Object key, YamlNode newValue) {
+    YamlEditor yamlEdit, YamlMap map, Object? key, YamlNode newValue) {
   ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
   ArgumentError.checkNotNull(map, 'map');
 
-  final valueSpan = map.nodes[key].span;
+  final valueSpan = map.nodes[key]!.span;
   final valueString = yamlEncodeFlowString(newValue);
 
   return SourceEdit(valueSpan.start.offset, valueSpan.length, valueString);

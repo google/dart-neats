@@ -22,7 +22,7 @@ import 'utils.dart';
 /// an escape sequence, it can only be detected when in a double-quoted
 /// sequence. Plain strings may also be misinterpreted by the YAML parser (e.g.
 /// ' null').
-String _tryYamlEncodePlain(Object value) {
+String _tryYamlEncodePlain(Object? value) {
   if (value is YamlNode) {
     AssertionError(
         'YamlNodes should not be passed directly into getSafeString!');

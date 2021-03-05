@@ -144,4 +144,14 @@ c: 3
         ])!.value,
         equals(4));
   });
+
+  test('works with null in path', () {
+    final doc = YamlEditor('{a: { ~: 4}}');
+    expect(doc.parseAt(['a', null])!.value, equals(4));
+  });
+
+  test('works with null value', () {
+    final doc = YamlEditor('{a: null}');
+    expect(doc.parseAt(['a'])!.value, equals(null));
+  });
 }

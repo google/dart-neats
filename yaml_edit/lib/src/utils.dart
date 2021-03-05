@@ -78,7 +78,7 @@ bool isBlockNode(YamlNode node) {
 
 /// Returns the content sensitive ending offset of [yamlNode] (i.e. where the last
 /// meaningful content happens)
-int getContentSensitiveEnd(YamlNode yamlNode) {
+int getContentSensitiveEnd(YamlNode? yamlNode) {
   ArgumentError.checkNotNull(yamlNode, 'yamlNode');
 
   if (yamlNode is YamlList) {
@@ -95,14 +95,14 @@ int getContentSensitiveEnd(YamlNode yamlNode) {
     }
   }
 
-  return yamlNode.span.end.offset;
+  return yamlNode!.span.end.offset;
 }
 
 /// Checks if the item is a Map or a List
 bool isCollection(Object item) => item is Map || item is List;
 
 /// Checks if [index] is [int], >=0, < [length]
-bool isValidIndex(Object index, int length) {
+bool isValidIndex(Object? index, int length) {
   return index is int && index >= 0 && index < length;
 }
 
@@ -121,7 +121,7 @@ bool isEmpty(Object item) {
 ///
 /// Mainly used with [wrapAsYamlNode] to allow for a reasonable
 /// implementation of [SourceSpan.message].
-SourceSpan shellSpan(Object sourceUrl) {
+SourceSpan shellSpan(Object? sourceUrl) {
   final shellSourceLocation = SourceLocation(0, sourceUrl: sourceUrl);
   return SourceSpanBase(shellSourceLocation, shellSourceLocation, '');
 }
@@ -150,7 +150,8 @@ int getMapInsertionIndex(YamlMap map, Object newKey) {
     }
   }
 
-  final insertionIndex = keys.indexWhere((key) => key.compareTo(newKey) > 0);
+  final insertionIndex =
+      keys.indexWhere((key) => key.compareTo(newKey as String) > 0);
 
   if (insertionIndex != -1) return insertionIndex;
 
@@ -158,7 +159,7 @@ int getMapInsertionIndex(YamlMap map, Object newKey) {
 }
 
 /// Returns the [style] property of [target], if it is a [YamlNode]. Otherwise return null.
-Object getStyle(Object target) {
+Object? getStyle(Object target) {
   if (target is YamlNode) {
     return (target as dynamic).style;
   }
@@ -175,7 +176,7 @@ Object getStyle(Object target) {
 /// candidates, we choose the candidate closest to the start of [yaml].
 int getIndentation(YamlEditor editor) {
   final node = editor.parseAt([]);
-  Iterable<YamlNode> children;
+  Iterable<YamlNode>? children;
   var indentation = 2;
 
   if (node is YamlMap && node.style == CollectionStyle.BLOCK) {

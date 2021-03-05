@@ -236,14 +236,14 @@ class _Generator {
           final keyList = node.keys.toList();
           path.add(keyList[nextInt(keyList.length)]);
         } else {
-          path.add(nextScalar()!);
+          path.add(nextScalar());
         }
         final value = nextYamlNode();
         args.add(value);
         editor.update(path, value);
         return;
       }
-    } catch (error) {
+    } catch (error, stacktrace) {
       print('''
 Failed to call $method on:
 $initialString
@@ -254,6 +254,8 @@ $path
 
 Error Details:
 ${error}
+
+${stacktrace}
 ''');
       rethrow;
     }
@@ -265,8 +267,8 @@ ${error}
   ///
   /// At every node, we return the path to the node if the node has no children.
   /// Otherwise, we return at a 50% chance, or traverse to one random child.
-  List<Object> findPath(YamlEditor editor) {
-    final path = <Object>[];
+  List<Object?> findPath(YamlEditor editor) {
+    final path = <Object?>[];
 
     // 50% chance of stopping at the collection
     while (nextBool()) {
