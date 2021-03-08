@@ -1,5 +1,5 @@
 name: neat_periodic_task
-version: 1.0.1
+version: 2.0.0
 description: |
   Auxiliary classes for reliably running a periodic task in a long-running
   process such as web-server.
@@ -7,18 +7,18 @@ homepage: https://github.com/google/dart-neats/tree/master/neat_periodic_task
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:neat_periodic_task
 dependencies:
-  retry: '>=2.0.0 <4.0.0'
-  slugid: ^1.0.0
-  json_annotation: '>=2.0.0 <4.0.0'
-  meta: ^1.1.7
-  logging: ^0.11.3+2
-  collection: ^1.14.11
+  retry: ^3.1.0
+  slugid: ^1.1.0
+  json_annotation: ^4.0.0
+  meta: ^1.3.0
+  logging: ^1.0.0
+  collection: ^1.15.0
 dev_dependencies:
-  test: ^1.5.1
-  pedantic: ^1.8.0
-  json_serializable: ^3.2.0
+  test: ^1.16.5
+  pedantic: ^1.10.0
   build_runner: ^1.3.1
   build_verify: ^1.1.1
+  json_serializable: ^4.0.2
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=2.12.0-0 <3.0.0'
 

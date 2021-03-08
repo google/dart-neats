@@ -11,9 +11,7 @@ NeatTaskStatus _$NeatTaskStatusFromJson(Map<String, dynamic> json) {
     format: json['format'] as String,
     version: json['version'] as int,
     state: json['state'] as String,
-    started: json['started'] == null
-        ? null
-        : DateTime.parse(json['started'] as String),
+    started: DateTime.parse(json['started'] as String),
     owner: json['owner'] as String,
   );
 }
@@ -23,6 +21,6 @@ Map<String, dynamic> _$NeatTaskStatusToJson(NeatTaskStatus instance) =>
       'format': instance.format,
       'version': instance.version,
       'state': instance.state,
-      'started': instance.started?.toIso8601String(),
+      'started': instance.started.toIso8601String(),
       'owner': instance.owner,
     };
