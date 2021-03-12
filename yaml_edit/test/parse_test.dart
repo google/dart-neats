@@ -100,13 +100,22 @@ void main() {
     test('with the correct value in nested collection', () {
       final doc = YamlEditor('''
 a: 1
-b: 
+b:
   d: 4
   e: [5, 6, 7]
 c: 3
 ''');
 
       expect(doc.parseAt(['b', 'e', 2]).value, 7);
+    });
+
+    test('with a null value in nested collection', () {
+      final doc = YamlEditor('''
+key1:
+  key2: null
+''');
+
+      expect(doc.parseAt(['key1', 'key2']).value, null);
     });
 
     test('with the correct type (2)', () {
@@ -143,5 +152,15 @@ c: 3
           }
         ]).value,
         equals(4));
+  });
+
+  test('works with null in path', () {
+    final doc = YamlEditor('{a: { ~: 4}}');
+    expect(doc.parseAt(['a', null]).value, equals(4));
+  });
+
+  test('works with null value', () {
+    final doc = YamlEditor('{a: null}');
+    expect(doc.parseAt(['a']).value, equals(null));
   });
 }
