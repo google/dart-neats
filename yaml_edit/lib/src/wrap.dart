@@ -24,8 +24,6 @@ import 'utils.dart';
 /// Returns a new [YamlMap] constructed by applying [update] onto the [nodes]
 /// of this [YamlMap].
 YamlMap updatedYamlMap(YamlMap map, Function(Map) update) {
-  ArgumentError.checkNotNull(map, 'map');
-
   final dummyMap = deepEqualsMap();
   dummyMap.addAll(map.nodes);
 
@@ -65,15 +63,12 @@ YamlNode wrapAsYamlNode(Object? value,
 
     return value;
   } else if (value is Map) {
-    ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
     return YamlMapWrap(value, collectionStyle: collectionStyle);
   } else if (value is List) {
-    ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
     return YamlListWrap(value, collectionStyle: collectionStyle);
   } else {
     assertValidScalar(value);
 
-    ArgumentError.checkNotNull(scalarStyle, 'scalarStyle');
     return YamlScalarWrap(value, style: scalarStyle);
   }
 }
@@ -92,9 +87,7 @@ class YamlScalarWrap implements YamlScalar {
   final dynamic value;
 
   YamlScalarWrap(this.value, {this.style = ScalarStyle.ANY, Object? sourceUrl})
-      : span = shellSpan(sourceUrl) {
-    ArgumentError.checkNotNull(style, 'scalarStyle');
-  }
+      : span = shellSpan(sourceUrl);
 
   @override
   String toString() => value.toString();
@@ -118,8 +111,6 @@ class YamlMapWrap
   factory YamlMapWrap(Map dartMap,
       {CollectionStyle collectionStyle = CollectionStyle.ANY,
       Object? sourceUrl}) {
-    ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
-
     final wrappedMap = deepEqualsMap<dynamic, YamlNode>();
 
     for (final entry in dartMap.entries) {
@@ -171,8 +162,6 @@ class YamlListWrap with collection.ListMixin implements YamlList {
   factory YamlListWrap(List dartList,
       {CollectionStyle collectionStyle = CollectionStyle.ANY,
       Object? sourceUrl}) {
-    ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
-
     final wrappedList = dartList.map(wrapAsYamlNode).toList();
     return YamlListWrap._(wrappedList,
         style: collectionStyle, sourceUrl: sourceUrl);

@@ -121,7 +121,6 @@ class YamlEditor {
   factory YamlEditor(String yaml) => YamlEditor._(yaml);
 
   YamlEditor._(this._yaml) {
-    ArgumentError.checkNotNull(_yaml);
     _initialize();
   }
 
@@ -201,8 +200,6 @@ class YamlEditor {
   /// print(node.value); // "YAML Ain't Markup Language"
   /// ```
   YamlNode parseAt(Iterable<Object?> path, {YamlNode Function()? orElse}) {
-    ArgumentError.checkNotNull(path, 'path');
-
     return _traverse(path, orElse: orElse);
   }
 
@@ -248,8 +245,6 @@ class YamlEditor {
   ///   - 2
   /// ```
   void update(Iterable<Object?> path, Object? value) {
-    ArgumentError.checkNotNull(path, 'path');
-
     final valueNode = wrapAsYamlNode(value);
 
     if (path.isEmpty) {
@@ -298,7 +293,6 @@ class YamlEditor {
   /// doc.appendToList([], 2); // [0, 1, 2]
   /// ```
   void appendToList(Iterable<Object?> path, Object? value) {
-    ArgumentError.checkNotNull(path, 'path');
     final yamlList = _traverseToList(path);
 
     insertIntoList(path, yamlList.length, value);
@@ -315,8 +309,6 @@ class YamlEditor {
   /// doc.prependToList([], 0); // [0, 1, 2]
   /// ```
   void prependToList(Iterable<Object?> path, Object? value) {
-    ArgumentError.checkNotNull(path, 'path');
-
     insertIntoList(path, 0, value);
   }
 
@@ -333,7 +325,6 @@ class YamlEditor {
   /// doc.insertIntoList([], 1, 1); // [0, 1, 2]
   /// ```
   void insertIntoList(Iterable<Object?> path, int index, Object? value) {
-    ArgumentError.checkNotNull(path, 'path');
     final valueNode = wrapAsYamlNode(value);
 
     final list = _traverseToList(path, checkAlias: true);
@@ -365,11 +356,6 @@ class YamlEditor {
   /// ```
   Iterable<YamlNode> spliceList(Iterable<Object?> path, int index,
       int deleteCount, Iterable<Object?> values) {
-    ArgumentError.checkNotNull(path, 'path');
-    ArgumentError.checkNotNull(index, 'index');
-    ArgumentError.checkNotNull(deleteCount, 'deleteCount');
-    ArgumentError.checkNotNull(values, 'values');
-
     final list = _traverseToList(path, checkAlias: true);
 
     RangeError.checkValueInInterval(index, 0, list.length);
@@ -421,8 +407,6 @@ class YamlEditor {
   /// '''
   /// ```
   YamlNode? remove(Iterable<Object?> path) {
-    ArgumentError.checkNotNull(path, 'path');
-
     SourceEdit? edit;
     YamlNode? expectedNode;
     final nodeToRemove = _traverse(path, checkAlias: true);
@@ -468,9 +452,6 @@ class YamlEditor {
   /// encountered.
   YamlNode _traverse(Iterable<Object?> path,
       {bool checkAlias = false, YamlNode Function()? orElse}) {
-    ArgumentError.checkNotNull(path, 'path');
-    ArgumentError.checkNotNull(checkAlias, 'checkAlias');
-
     if (path.isEmpty) return _contents;
 
     var currentNode = _contents;
@@ -523,8 +504,6 @@ class YamlEditor {
 
   /// Asserts that [node] and none its children are aliases
   void _assertNoChildAlias(Iterable<Object?> path, [YamlNode? node]) {
-    ArgumentError.checkNotNull(path, 'path');
-
     if (node == null) return _assertNoChildAlias(path, _traverse(path));
     if (_aliases.contains(node)) throw AliasError(path, node);
 
@@ -555,9 +534,6 @@ class YamlEditor {
   /// [YamlList] or if the path is invalid. If [checkAlias] is `true`, and an
   /// aliased node is encountered along [path], an [AliasError] will be thrown.
   YamlList _traverseToList(Iterable<Object?> path, {bool checkAlias = false}) {
-    ArgumentError.checkNotNull(path, 'path');
-    ArgumentError.checkNotNull(checkAlias, 'checkAlias');
-
     final possibleList = _traverse(path, checkAlias: true);
 
     if (possibleList is YamlList) {
@@ -576,9 +552,6 @@ class YamlEditor {
   /// [AssertionError] if the two trees do not match.
   void _performEdit(
       SourceEdit edit, Iterable<Object?> path, YamlNode? expectedNode) {
-    ArgumentError.checkNotNull(edit, 'edit');
-    ArgumentError.checkNotNull(path, 'path');
-
     final expectedTree = _deepModify(_contents, path, [], expectedNode);
     final initialYaml = _yaml;
     _yaml = edit.apply(_yaml);
@@ -618,8 +591,6 @@ class YamlEditor {
   /// [SourceSpan]s in this new tree are not guaranteed to be accurate.
   YamlNode? _deepModify(YamlNode tree, Iterable<Object?> path,
       Iterable<Object?> subPath, YamlNode? expectedNode) {
-    ArgumentError.checkNotNull(path, 'path');
-    ArgumentError.checkNotNull(tree, 'tree');
     RangeError.checkValueInInterval(subPath.length, 0, path.length);
 
     if (path.length == subPath.length) return expectedNode;

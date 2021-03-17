@@ -43,9 +43,6 @@ class SourceEdit {
       SourceEdit._(offset, length, replacement);
 
   SourceEdit._(this.offset, this.length, this.replacement) {
-    ArgumentError.checkNotNull(offset, 'offset');
-    ArgumentError.checkNotNull(length, 'length');
-    ArgumentError.checkNotNull(replacement, 'replacement');
     RangeError.checkNotNegative(offset);
     RangeError.checkNotNegative(length);
   }
@@ -77,8 +74,6 @@ class SourceEdit {
   /// final sourceEdit = SourceEdit.fromJson(edit);
   /// ```
   factory SourceEdit.fromJson(Map<String, dynamic> json) {
-    ArgumentError.checkNotNull(json, 'json');
-
     if (json is Map) {
       final offset = json['offset'];
       final length = json['length'];
@@ -130,9 +125,6 @@ class SourceEdit {
   /// Language"
   /// ```
   static String applyAll(String original, Iterable<SourceEdit> edits) {
-    ArgumentError.checkNotNull(original, 'original');
-    ArgumentError.checkNotNull(edits, 'edits');
-
     return edits.fold(original, (current, edit) => edit.apply(current));
   }
 
@@ -146,8 +138,6 @@ class SourceEdit {
   /// print(edit.apply(originalString)); // 'foo: barbar'
   /// ```
   String apply(String original) {
-    ArgumentError.checkNotNull(original, 'original');
-
     return original.replaceRange(offset, offset + length, replacement);
   }
 }
