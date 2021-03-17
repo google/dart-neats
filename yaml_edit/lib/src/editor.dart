@@ -158,14 +158,17 @@ class YamlEditor {
   ///
   /// If [orElse] is omitted, it defaults to throwing a [ArgumentError].
   ///
-  /// To get `null` when [path] does not point to a value in the [YamlNode]-tree,
-  /// simply pass `orElse: () => null`.
+  /// To get a default value when [path] does not point to a value in the
+  /// [YamlNode]-tree, simply pass `orElse: () => [YamlNode]`.
   ///
   /// **Example:** (using orElse)
   /// ```dart
   /// final myYamlEditor('{"key": "value"}');
-  /// final value = myYamlEditor.valueAt(['invalid', 'path'], orElse: () => null);
-  /// print(value) // null
+  /// final node = myYamlEditor.valueAt(
+  ///   ['invalid', 'path'],
+  ///   orElse: () => wrapAsYamlNode(null),
+  /// );
+  /// print(node.value); // null
   /// ```
   ///
   /// **Example:** (common usage)
@@ -197,7 +200,7 @@ class YamlEditor {
   /// print(newNode.value); // "YAML"
   /// print(node.value); // "YAML Ain't Markup Language"
   /// ```
-  YamlNode? parseAt(Iterable<Object?> path, {YamlNode? Function()? orElse}) {
+  YamlNode parseAt(Iterable<Object?> path, {YamlNode Function()? orElse}) {
     ArgumentError.checkNotNull(path, 'path');
 
     return _traverse(path, orElse: orElse);
@@ -463,21 +466,21 @@ class YamlEditor {
   ///
   /// If [checkAlias] is `true`, throw [AliasError] if an aliased node is
   /// encountered.
-  YamlNode? _traverse(Iterable<Object?> path,
-      {bool checkAlias = false, YamlNode? Function()? orElse}) {
+  YamlNode _traverse(Iterable<Object?> path,
+      {bool checkAlias = false, YamlNode Function()? orElse}) {
     ArgumentError.checkNotNull(path, 'path');
     ArgumentError.checkNotNull(checkAlias, 'checkAlias');
 
     if (path.isEmpty) return _contents;
 
-    YamlNode? currentNode = _contents;
+    var currentNode = _contents;
     final pathList = path.toList();
 
     for (var i = 0; i < pathList.length; i++) {
       final keyOrIndex = pathList[i];
 
       if (checkAlias && _aliases.contains(currentNode)) {
-        throw AliasError(path, currentNode!);
+        throw AliasError(path, currentNode);
       }
 
       if (currentNode is YamlList) {
@@ -499,21 +502,21 @@ class YamlEditor {
           if (_aliases.contains(keyNode)) throw AliasError(path, keyNode);
         }
 
-        currentNode = map.nodes[keyNode];
+        currentNode = map.nodes[keyNode]!;
       } else {
-        return _pathErrorOrElse(path, path.take(i + 1), currentNode!, orElse);
+        return _pathErrorOrElse(path, path.take(i + 1), currentNode, orElse);
       }
     }
 
-    if (checkAlias) _assertNoChildAlias(path, currentNode!);
+    if (checkAlias) _assertNoChildAlias(path, currentNode);
 
     return currentNode;
   }
 
   /// Throws a [PathError] if [orElse] is not provided, returns the result
   /// of invoking the [orElse] function otherwise.
-  YamlNode? _pathErrorOrElse(Iterable<Object?> path, Iterable<Object?> subPath,
-      YamlNode parent, YamlNode? Function()? orElse) {
+  YamlNode _pathErrorOrElse(Iterable<Object?> path, Iterable<Object?> subPath,
+      YamlNode parent, YamlNode Function()? orElse) {
     if (orElse == null) throw PathError(path, subPath, parent);
     return orElse();
   }
