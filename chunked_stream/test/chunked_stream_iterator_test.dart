@@ -158,9 +158,9 @@ void main() {
     expect(await s.read(1), equals(['a']));
     final i = StreamIterator(s.substream(3));
     expect(await i.moveNext(), isTrue);
-    expect(await i.current, equals(['b', 'c']));
+    expect(i.current, equals(['b', 'c']));
     expect(await i.moveNext(), isTrue);
-    expect(await i.current, equals(['1']));
+    expect(i.current, equals(['1']));
     expect(await i.moveNext(), isFalse);
     expect(await s.read(1), equals(['2']));
     expect(await s.read(1), equals([]));

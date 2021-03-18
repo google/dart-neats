@@ -15,7 +15,6 @@
 library neat_periodic_task;
 
 import 'dart:async' show Future, Completer, scheduleMicrotask, TimeoutException;
-import 'package:meta/meta.dart' show required;
 import 'package:retry/retry.dart' show RetryOptions;
 import 'package:logging/logging.dart' show Logger;
 import 'package:slugid/slugid.dart' show Slugid;
