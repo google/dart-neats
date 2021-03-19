@@ -158,7 +158,7 @@ class YamlEditor {
   /// If [orElse] is omitted, it defaults to throwing a [ArgumentError].
   ///
   /// To get a default value when [path] does not point to a value in the
-  /// [YamlNode]-tree, simply pass `orElse: () => [YamlNode]`.
+  /// [YamlNode]-tree, simply pass `orElse: () => ...`.
   ///
   /// **Example:** (using orElse)
   /// ```dart
