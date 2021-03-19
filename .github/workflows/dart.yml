@@ -37,53 +37,152 @@ jobs:
       - name: mono_repo self validate
         run: pub global run mono_repo generate --validate
   job_002:
-    name: "analyze; Dart beta; PKGS: retry, sanitize_html; `dartanalyzer .`"
+    name: "analyze; Dart dev; PKGS: pem, canonical_json, chunked_stream, gitignore, http_methods, acyclic_steps, neat_cache, neat_periodic_task, safe_url_check, shelf_router_generator, shelf_router, yaml_edit, slugid; `dartanalyzer .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry-sanitize_html;commands:dartanalyzer"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:pem-canonical_json-chunked_stream-gitignore-http_methods-acyclic_steps-neat_cache-neat_periodic_task-safe_url_check-shelf_router_generator-shelf_router-yaml_edit-slugid;commands:dartanalyzer"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry-sanitize_html
-            os:ubuntu-latest;pub-cache-hosted;dart:beta
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:pem-canonical_json-chunked_stream-gitignore-http_methods-acyclic_steps-neat_cache-neat_periodic_task-safe_url_check-shelf_router_generator-shelf_router-yaml_edit-slugid
+            os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
       - uses: dart-lang/setup-dart@v1.0
         with:
-          sdk: beta
+          sdk: dev
       - id: checkout
         uses: actions/checkout@v2
-      - id: retry_pub_upgrade
-        name: "retry; pub upgrade --no-precompile"
+      - id: pem_pub_upgrade
+        name: "pem; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: retry
+        working-directory: pem
         run: pub upgrade --no-precompile
-      - name: retry; dartanalyzer .
-        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
-        working-directory: retry
+      - name: pem; dartanalyzer .
+        if: "always() && steps.pem_pub_upgrade.conclusion == 'success'"
+        working-directory: pem
         run: dartanalyzer .
-      - id: sanitize_html_pub_upgrade
-        name: "sanitize_html; pub upgrade --no-precompile"
+      - id: canonical_json_pub_upgrade
+        name: "canonical_json; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: sanitize_html
+        working-directory: canonical_json
         run: pub upgrade --no-precompile
-      - name: sanitize_html; dartanalyzer .
-        if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
-        working-directory: sanitize_html
+      - name: canonical_json; dartanalyzer .
+        if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
+        working-directory: canonical_json
+        run: dartanalyzer .
+      - id: chunked_stream_pub_upgrade
+        name: "chunked_stream; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: chunked_stream
+        run: pub upgrade --no-precompile
+      - name: chunked_stream; dartanalyzer .
+        if: "always() && steps.chunked_stream_pub_upgrade.conclusion == 'success'"
+        working-directory: chunked_stream
+        run: dartanalyzer .
+      - id: gitignore_pub_upgrade
+        name: "gitignore; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: gitignore
+        run: pub upgrade --no-precompile
+      - name: gitignore; dartanalyzer .
+        if: "always() && steps.gitignore_pub_upgrade.conclusion == 'success'"
+        working-directory: gitignore
+        run: dartanalyzer .
+      - id: http_methods_pub_upgrade
+        name: "http_methods; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: http_methods
+        run: pub upgrade --no-precompile
+      - name: http_methods; dartanalyzer .
+        if: "always() && steps.http_methods_pub_upgrade.conclusion == 'success'"
+        working-directory: http_methods
+        run: dartanalyzer .
+      - id: acyclic_steps_pub_upgrade
+        name: "acyclic_steps; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: acyclic_steps
+        run: pub upgrade --no-precompile
+      - name: acyclic_steps; dartanalyzer .
+        if: "always() && steps.acyclic_steps_pub_upgrade.conclusion == 'success'"
+        working-directory: acyclic_steps
+        run: dartanalyzer .
+      - id: neat_cache_pub_upgrade
+        name: "neat_cache; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: neat_cache
+        run: pub upgrade --no-precompile
+      - name: neat_cache; dartanalyzer .
+        if: "always() && steps.neat_cache_pub_upgrade.conclusion == 'success'"
+        working-directory: neat_cache
+        run: dartanalyzer .
+      - id: neat_periodic_task_pub_upgrade
+        name: "neat_periodic_task; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: neat_periodic_task
+        run: pub upgrade --no-precompile
+      - name: neat_periodic_task; dartanalyzer .
+        if: "always() && steps.neat_periodic_task_pub_upgrade.conclusion == 'success'"
+        working-directory: neat_periodic_task
+        run: dartanalyzer .
+      - id: safe_url_check_pub_upgrade
+        name: "safe_url_check; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: safe_url_check
+        run: pub upgrade --no-precompile
+      - name: safe_url_check; dartanalyzer .
+        if: "always() && steps.safe_url_check_pub_upgrade.conclusion == 'success'"
+        working-directory: safe_url_check
+        run: dartanalyzer .
+      - id: shelf_router_generator_pub_upgrade
+        name: "shelf_router_generator; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: shelf_router_generator
+        run: pub upgrade --no-precompile
+      - name: shelf_router_generator; dartanalyzer .
+        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
+        working-directory: shelf_router_generator
+        run: dartanalyzer .
+      - id: shelf_router_pub_upgrade
+        name: "shelf_router; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: shelf_router
+        run: pub upgrade --no-precompile
+      - name: shelf_router; dartanalyzer .
+        if: "always() && steps.shelf_router_pub_upgrade.conclusion == 'success'"
+        working-directory: shelf_router
+        run: dartanalyzer .
+      - id: yaml_edit_pub_upgrade
+        name: "yaml_edit; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: yaml_edit
+        run: pub upgrade --no-precompile
+      - name: yaml_edit; dartanalyzer .
+        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
+        working-directory: yaml_edit
+        run: dartanalyzer .
+      - id: slugid_pub_upgrade
+        name: "slugid; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: slugid
+        run: pub upgrade --no-precompile
+      - name: slugid; dartanalyzer .
+        if: "always() && steps.slugid_pub_upgrade.conclusion == 'success'"
+        working-directory: slugid
         run: dartanalyzer .
   job_003:
-    name: "analyze; Dart stable; PKGS: acyclic_steps, canonical_json, neat_cache, safe_url_check, shelf_router_generator, yaml_edit; `dartanalyzer .`"
+    name: "analyze; Dart stable; PKGS: acyclic_steps, canonical_json, gitignore, neat_cache, safe_url_check, yaml_edit, shelf_router_generator; `dartanalyzer .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator-yaml_edit;commands:dartanalyzer"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-gitignore-neat_cache-safe_url_check-yaml_edit-shelf_router_generator;commands:dartanalyzer"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator-yaml_edit
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-gitignore-neat_cache-safe_url_check-yaml_edit-shelf_router_generator
             os:ubuntu-latest;pub-cache-hosted;dart:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -110,6 +209,15 @@ jobs:
         if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
         working-directory: canonical_json
         run: dartanalyzer .
+      - id: gitignore_pub_upgrade
+        name: "gitignore; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: gitignore
+        run: pub upgrade --no-precompile
+      - name: gitignore; dartanalyzer .
+        if: "always() && steps.gitignore_pub_upgrade.conclusion == 'success'"
+        working-directory: gitignore
+        run: dartanalyzer .
       - id: neat_cache_pub_upgrade
         name: "neat_cache; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -128,15 +236,6 @@ jobs:
         if: "always() && steps.safe_url_check_pub_upgrade.conclusion == 'success'"
         working-directory: safe_url_check
         run: dartanalyzer .
-      - id: shelf_router_generator_pub_upgrade
-        name: "shelf_router_generator; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: pub upgrade --no-precompile
-      - name: shelf_router_generator; dartanalyzer .
-        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: dartanalyzer .
       - id: yaml_edit_pub_upgrade
         name: "yaml_edit; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -146,17 +245,26 @@ jobs:
         if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
         working-directory: yaml_edit
         run: dartanalyzer .
+      - id: shelf_router_generator_pub_upgrade
+        name: "shelf_router_generator; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: shelf_router_generator
+        run: pub upgrade --no-precompile
+      - name: shelf_router_generator; dartanalyzer .
+        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
+        working-directory: shelf_router_generator
+        run: dartanalyzer .
   job_004:
-    name: "analyze; Dart dev; PKGS: acyclic_steps, canonical_json, neat_cache, chunked_stream, http_methods, neat_periodic_task, pem, safe_url_check, yaml_edit, slugid, shelf_router_generator, shelf_router; `dartfmt -n --set-exit-if-changed .`"
+    name: "analyze; Dart dev; PKGS: acyclic_steps, canonical_json, http_methods, chunked_stream, gitignore, neat_cache, neat_periodic_task, pem, safe_url_check, yaml_edit, shelf_router, slugid, shelf_router_generator; `dartfmt -n --set-exit-if-changed .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-neat_cache-chunked_stream-http_methods-neat_periodic_task-pem-safe_url_check-yaml_edit-slugid-shelf_router_generator-shelf_router;commands:dartfmt"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-http_methods-chunked_stream-gitignore-neat_cache-neat_periodic_task-pem-safe_url_check-yaml_edit-shelf_router-slugid-shelf_router_generator;commands:dartfmt"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-neat_cache-chunked_stream-http_methods-neat_periodic_task-pem-safe_url_check-yaml_edit-slugid-shelf_router_generator-shelf_router
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-http_methods-chunked_stream-gitignore-neat_cache-neat_periodic_task-pem-safe_url_check-yaml_edit-shelf_router-slugid-shelf_router_generator
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -183,14 +291,14 @@ jobs:
         if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
         working-directory: canonical_json
         run: dartfmt -n --set-exit-if-changed .
-      - id: neat_cache_pub_upgrade
-        name: "neat_cache; pub upgrade --no-precompile"
+      - id: http_methods_pub_upgrade
+        name: "http_methods; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: neat_cache
+        working-directory: http_methods
         run: pub upgrade --no-precompile
-      - name: "neat_cache; dartfmt -n --set-exit-if-changed ."
-        if: "always() && steps.neat_cache_pub_upgrade.conclusion == 'success'"
-        working-directory: neat_cache
+      - name: "http_methods; dartfmt -n --set-exit-if-changed ."
+        if: "always() && steps.http_methods_pub_upgrade.conclusion == 'success'"
+        working-directory: http_methods
         run: dartfmt -n --set-exit-if-changed .
       - id: chunked_stream_pub_upgrade
         name: "chunked_stream; pub upgrade --no-precompile"
@@ -201,14 +309,23 @@ jobs:
         if: "always() && steps.chunked_stream_pub_upgrade.conclusion == 'success'"
         working-directory: chunked_stream
         run: dartfmt -n --set-exit-if-changed .
-      - id: http_methods_pub_upgrade
-        name: "http_methods; pub upgrade --no-precompile"
+      - id: gitignore_pub_upgrade
+        name: "gitignore; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: http_methods
+        working-directory: gitignore
         run: pub upgrade --no-precompile
-      - name: "http_methods; dartfmt -n --set-exit-if-changed ."
-        if: "always() && steps.http_methods_pub_upgrade.conclusion == 'success'"
-        working-directory: http_methods
+      - name: "gitignore; dartfmt -n --set-exit-if-changed ."
+        if: "always() && steps.gitignore_pub_upgrade.conclusion == 'success'"
+        working-directory: gitignore
+        run: dartfmt -n --set-exit-if-changed .
+      - id: neat_cache_pub_upgrade
+        name: "neat_cache; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: neat_cache
+        run: pub upgrade --no-precompile
+      - name: "neat_cache; dartfmt -n --set-exit-if-changed ."
+        if: "always() && steps.neat_cache_pub_upgrade.conclusion == 'success'"
+        working-directory: neat_cache
         run: dartfmt -n --set-exit-if-changed .
       - id: neat_periodic_task_pub_upgrade
         name: "neat_periodic_task; pub upgrade --no-precompile"
@@ -246,6 +363,15 @@ jobs:
         if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
         working-directory: yaml_edit
         run: dartfmt -n --set-exit-if-changed .
+      - id: shelf_router_pub_upgrade
+        name: "shelf_router; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: shelf_router
+        run: pub upgrade --no-precompile
+      - name: "shelf_router; dartfmt -n --set-exit-if-changed ."
+        if: "always() && steps.shelf_router_pub_upgrade.conclusion == 'success'"
+        working-directory: shelf_router
+        run: dartfmt -n --set-exit-if-changed .
       - id: slugid_pub_upgrade
         name: "slugid; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -264,26 +390,17 @@ jobs:
         if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
         working-directory: shelf_router_generator
         run: dartfmt -n --set-exit-if-changed .
-      - id: shelf_router_pub_upgrade
-        name: "shelf_router; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router
-        run: pub upgrade --no-precompile
-      - name: "shelf_router; dartfmt -n --set-exit-if-changed ."
-        if: "always() && steps.shelf_router_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router
-        run: dartfmt -n --set-exit-if-changed .
   job_005:
-    name: "analyze; Dart stable; PKGS: acyclic_steps, canonical_json, neat_cache, safe_url_check, shelf_router_generator, yaml_edit; `dartfmt -n --set-exit-if-changed .`"
+    name: "analyze; Dart stable; PKGS: acyclic_steps, canonical_json, gitignore, neat_cache, safe_url_check, shelf_router_generator, yaml_edit; `dartfmt -n --set-exit-if-changed .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator-yaml_edit;commands:dartfmt"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-gitignore-neat_cache-safe_url_check-shelf_router_generator-yaml_edit;commands:dartfmt"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator-yaml_edit
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-gitignore-neat_cache-safe_url_check-shelf_router_generator-yaml_edit
             os:ubuntu-latest;pub-cache-hosted;dart:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -309,6 +426,15 @@ jobs:
       - name: "canonical_json; dartfmt -n --set-exit-if-changed ."
         if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
         working-directory: canonical_json
+        run: dartfmt -n --set-exit-if-changed .
+      - id: gitignore_pub_upgrade
+        name: "gitignore; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: gitignore
+        run: pub upgrade --no-precompile
+      - name: "gitignore; dartfmt -n --set-exit-if-changed ."
+        if: "always() && steps.gitignore_pub_upgrade.conclusion == 'success'"
+        working-directory: gitignore
         run: dartfmt -n --set-exit-if-changed .
       - id: neat_cache_pub_upgrade
         name: "neat_cache; pub upgrade --no-precompile"
@@ -347,143 +473,16 @@ jobs:
         working-directory: yaml_edit
         run: dartfmt -n --set-exit-if-changed .
   job_006:
-    name: "analyze; Dart dev; PKGS: canonical_json, chunked_stream, http_methods, neat_cache, acyclic_steps, neat_periodic_task, pem, safe_url_check, slugid, shelf_router_generator, shelf_router, yaml_edit; `dartanalyzer .`"
+    name: "analyze; Dart beta; PKGS: retry, sanitize_html; `dartanalyzer .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:canonical_json-chunked_stream-http_methods-neat_cache-acyclic_steps-neat_periodic_task-pem-safe_url_check-slugid-shelf_router_generator-shelf_router-yaml_edit;commands:dartanalyzer"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry-sanitize_html;commands:dartanalyzer"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:canonical_json-chunked_stream-http_methods-neat_cache-acyclic_steps-neat_periodic_task-pem-safe_url_check-slugid-shelf_router_generator-shelf_router-yaml_edit
-            os:ubuntu-latest;pub-cache-hosted;dart:dev
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: dev
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: canonical_json_pub_upgrade
-        name: "canonical_json; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: canonical_json
-        run: pub upgrade --no-precompile
-      - name: canonical_json; dartanalyzer .
-        if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
-        working-directory: canonical_json
-        run: dartanalyzer .
-      - id: chunked_stream_pub_upgrade
-        name: "chunked_stream; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: chunked_stream
-        run: pub upgrade --no-precompile
-      - name: chunked_stream; dartanalyzer .
-        if: "always() && steps.chunked_stream_pub_upgrade.conclusion == 'success'"
-        working-directory: chunked_stream
-        run: dartanalyzer .
-      - id: http_methods_pub_upgrade
-        name: "http_methods; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: http_methods
-        run: pub upgrade --no-precompile
-      - name: http_methods; dartanalyzer .
-        if: "always() && steps.http_methods_pub_upgrade.conclusion == 'success'"
-        working-directory: http_methods
-        run: dartanalyzer .
-      - id: neat_cache_pub_upgrade
-        name: "neat_cache; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: neat_cache
-        run: pub upgrade --no-precompile
-      - name: neat_cache; dartanalyzer .
-        if: "always() && steps.neat_cache_pub_upgrade.conclusion == 'success'"
-        working-directory: neat_cache
-        run: dartanalyzer .
-      - id: acyclic_steps_pub_upgrade
-        name: "acyclic_steps; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: acyclic_steps
-        run: pub upgrade --no-precompile
-      - name: acyclic_steps; dartanalyzer .
-        if: "always() && steps.acyclic_steps_pub_upgrade.conclusion == 'success'"
-        working-directory: acyclic_steps
-        run: dartanalyzer .
-      - id: neat_periodic_task_pub_upgrade
-        name: "neat_periodic_task; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: neat_periodic_task
-        run: pub upgrade --no-precompile
-      - name: neat_periodic_task; dartanalyzer .
-        if: "always() && steps.neat_periodic_task_pub_upgrade.conclusion == 'success'"
-        working-directory: neat_periodic_task
-        run: dartanalyzer .
-      - id: pem_pub_upgrade
-        name: "pem; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: pem
-        run: pub upgrade --no-precompile
-      - name: pem; dartanalyzer .
-        if: "always() && steps.pem_pub_upgrade.conclusion == 'success'"
-        working-directory: pem
-        run: dartanalyzer .
-      - id: safe_url_check_pub_upgrade
-        name: "safe_url_check; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: safe_url_check
-        run: pub upgrade --no-precompile
-      - name: safe_url_check; dartanalyzer .
-        if: "always() && steps.safe_url_check_pub_upgrade.conclusion == 'success'"
-        working-directory: safe_url_check
-        run: dartanalyzer .
-      - id: slugid_pub_upgrade
-        name: "slugid; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: slugid
-        run: pub upgrade --no-precompile
-      - name: slugid; dartanalyzer .
-        if: "always() && steps.slugid_pub_upgrade.conclusion == 'success'"
-        working-directory: slugid
-        run: dartanalyzer .
-      - id: shelf_router_generator_pub_upgrade
-        name: "shelf_router_generator; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: pub upgrade --no-precompile
-      - name: shelf_router_generator; dartanalyzer .
-        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: dartanalyzer .
-      - id: shelf_router_pub_upgrade
-        name: "shelf_router; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router
-        run: pub upgrade --no-precompile
-      - name: shelf_router; dartanalyzer .
-        if: "always() && steps.shelf_router_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router
-        run: dartanalyzer .
-      - id: yaml_edit_pub_upgrade
-        name: "yaml_edit; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: pub upgrade --no-precompile
-      - name: yaml_edit; dartanalyzer .
-        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dartanalyzer .
-  job_007:
-    name: "analyze; Dart beta; PKGS: sanitize_html, retry; `dartfmt -n --set-exit-if-changed .`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:sanitize_html-retry;commands:dartfmt"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:sanitize_html-retry
+            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry-sanitize_html
             os:ubuntu-latest;pub-cache-hosted;dart:beta
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -492,15 +491,43 @@ jobs:
           sdk: beta
       - id: checkout
         uses: actions/checkout@v2
+      - id: retry_pub_upgrade
+        name: "retry; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: retry
+        run: pub upgrade --no-precompile
+      - name: retry; dartanalyzer .
+        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
+        working-directory: retry
+        run: dartanalyzer .
       - id: sanitize_html_pub_upgrade
         name: "sanitize_html; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: sanitize_html
         run: pub upgrade --no-precompile
-      - name: "sanitize_html; dartfmt -n --set-exit-if-changed ."
+      - name: sanitize_html; dartanalyzer .
         if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
         working-directory: sanitize_html
-        run: dartfmt -n --set-exit-if-changed .
+        run: dartanalyzer .
+  job_007:
+    name: "analyze; Dart beta; PKGS: retry, sanitize_html; `dartfmt -n --set-exit-if-changed .`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry-sanitize_html;commands:dartfmt"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry-sanitize_html
+            os:ubuntu-latest;pub-cache-hosted;dart:beta
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: beta
+      - id: checkout
+        uses: actions/checkout@v2
       - id: retry_pub_upgrade
         name: "retry; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -510,259 +537,16 @@ jobs:
         if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
         working-directory: retry
         run: dartfmt -n --set-exit-if-changed .
-  job_008:
-    name: "tests; Dart beta; PKG: sanitize_html; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:sanitize_html;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:sanitize_html
-            os:ubuntu-latest;pub-cache-hosted;dart:beta
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: beta
-      - id: checkout
-        uses: actions/checkout@v2
       - id: sanitize_html_pub_upgrade
         name: "sanitize_html; pub upgrade --no-precompile"
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: sanitize_html
         run: pub upgrade --no-precompile
-      - name: sanitize_html; pub run test
+      - name: "sanitize_html; dartfmt -n --set-exit-if-changed ."
         if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
         working-directory: sanitize_html
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_009:
-    name: "tests; Dart beta; PKG: retry; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry
-            os:ubuntu-latest;pub-cache-hosted;dart:beta
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: beta
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: retry_pub_upgrade
-        name: "retry; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: retry
-        run: pub upgrade --no-precompile
-      - name: retry; pub run test
-        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
-        working-directory: retry
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_010:
-    name: "tests; Dart stable; PKG: safe_url_check; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:safe_url_check;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:safe_url_check
-            os:ubuntu-latest;pub-cache-hosted;dart:stable
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: stable
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: safe_url_check_pub_upgrade
-        name: "safe_url_check; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: safe_url_check
-        run: pub upgrade --no-precompile
-      - name: safe_url_check; pub run test
-        if: "always() && steps.safe_url_check_pub_upgrade.conclusion == 'success'"
-        working-directory: safe_url_check
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_011:
-    name: "tests; Dart stable; PKG: shelf_router_generator; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:shelf_router_generator;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:shelf_router_generator
-            os:ubuntu-latest;pub-cache-hosted;dart:stable
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: stable
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: shelf_router_generator_pub_upgrade
-        name: "shelf_router_generator; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: pub upgrade --no-precompile
-      - name: shelf_router_generator; pub run test
-        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_012:
-    name: "tests; Dart stable; PKG: canonical_json; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:canonical_json;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:canonical_json
-            os:ubuntu-latest;pub-cache-hosted;dart:stable
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: stable
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: canonical_json_pub_upgrade
-        name: "canonical_json; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: canonical_json
-        run: pub upgrade --no-precompile
-      - name: canonical_json; pub run test
-        if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
-        working-directory: canonical_json
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_013:
-    name: "tests; Dart stable; PKG: acyclic_steps; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps
-            os:ubuntu-latest;pub-cache-hosted;dart:stable
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: stable
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: acyclic_steps_pub_upgrade
-        name: "acyclic_steps; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: acyclic_steps
-        run: pub upgrade --no-precompile
-      - name: acyclic_steps; pub run test
-        if: "always() && steps.acyclic_steps_pub_upgrade.conclusion == 'success'"
-        working-directory: acyclic_steps
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_014:
-    name: "tests; Dart stable; PKG: yaml_edit; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:yaml_edit;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:yaml_edit
-            os:ubuntu-latest;pub-cache-hosted;dart:stable
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: stable
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: yaml_edit_pub_upgrade
-        name: "yaml_edit; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: pub upgrade --no-precompile
-      - name: yaml_edit; pub run test
-        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_015:
+        run: dartfmt -n --set-exit-if-changed .
+  job_008:
     name: "tests; Dart dev; PKG: safe_url_check; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -798,43 +582,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_016:
-    name: "tests; Dart dev; PKG: shelf_router; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router
-            os:ubuntu-latest;pub-cache-hosted;dart:dev
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: dev
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: shelf_router_pub_upgrade
-        name: "shelf_router; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router
-        run: pub upgrade --no-precompile
-      - name: shelf_router; pub run test
-        if: "always() && steps.shelf_router_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_017:
+  job_009:
     name: "tests; Dart dev; PKG: pem; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -870,7 +618,43 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_018:
+  job_010:
+    name: "tests; Dart dev; PKG: shelf_router; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router
+            os:ubuntu-latest;pub-cache-hosted;dart:dev
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: dev
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: shelf_router_pub_upgrade
+        name: "shelf_router; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: shelf_router
+        run: pub upgrade --no-precompile
+      - name: shelf_router; pub run test
+        if: "always() && steps.shelf_router_pub_upgrade.conclusion == 'success'"
+        working-directory: shelf_router
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_011:
     name: "tests; Dart dev; PKG: neat_periodic_task; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -906,43 +690,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_019:
-    name: "tests; Dart dev; PKG: shelf_router_generator; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router_generator;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router_generator
-            os:ubuntu-latest;pub-cache-hosted;dart:dev
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: dev
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: shelf_router_generator_pub_upgrade
-        name: "shelf_router_generator; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: pub upgrade --no-precompile
-      - name: shelf_router_generator; pub run test
-        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_020:
+  job_012:
     name: "tests; Dart dev; PKG: http_methods; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -978,7 +726,79 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_021:
+  job_013:
+    name: "tests; Dart dev; PKG: shelf_router_generator; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router_generator;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:shelf_router_generator
+            os:ubuntu-latest;pub-cache-hosted;dart:dev
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: dev
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: shelf_router_generator_pub_upgrade
+        name: "shelf_router_generator; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: shelf_router_generator
+        run: pub upgrade --no-precompile
+      - name: shelf_router_generator; pub run test
+        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
+        working-directory: shelf_router_generator
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_014:
+    name: "tests; Dart dev; PKG: gitignore; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:gitignore;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:gitignore
+            os:ubuntu-latest;pub-cache-hosted;dart:dev
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: dev
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: gitignore_pub_upgrade
+        name: "gitignore; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: gitignore
+        run: pub upgrade --no-precompile
+      - name: gitignore; pub run test
+        if: "always() && steps.gitignore_pub_upgrade.conclusion == 'success'"
+        working-directory: gitignore
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_015:
     name: "tests; Dart dev; PKG: slugid; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1014,7 +834,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_022:
+  job_016:
     name: "tests; Dart dev; PKG: chunked_stream; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1050,79 +870,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_023:
-    name: "tests; Dart dev; PKG: acyclic_steps; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps
-            os:ubuntu-latest;pub-cache-hosted;dart:dev
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: dev
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: acyclic_steps_pub_upgrade
-        name: "acyclic_steps; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: acyclic_steps
-        run: pub upgrade --no-precompile
-      - name: acyclic_steps; pub run test
-        if: "always() && steps.acyclic_steps_pub_upgrade.conclusion == 'success'"
-        working-directory: acyclic_steps
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_024:
-    name: "tests; Dart dev; PKG: yaml_edit; `pub run test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:yaml_edit;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:yaml_edit
-            os:ubuntu-latest;pub-cache-hosted;dart:dev
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: dev
-      - id: checkout
-        uses: actions/checkout@v2
-      - id: yaml_edit_pub_upgrade
-        name: "yaml_edit; pub upgrade --no-precompile"
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: pub upgrade --no-precompile
-      - name: yaml_edit; pub run test
-        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: pub run test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_025:
+  job_017:
     name: "tests; Dart dev; PKG: canonical_json; `pub run test`"
     runs-on: ubuntu-latest
     steps:
@@ -1158,7 +906,367 @@ jobs:
       - job_005
       - job_006
       - job_007
+  job_018:
+    name: "tests; Dart dev; PKG: acyclic_steps; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps
+            os:ubuntu-latest;pub-cache-hosted;dart:dev
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: dev
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: acyclic_steps_pub_upgrade
+        name: "acyclic_steps; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: acyclic_steps
+        run: pub upgrade --no-precompile
+      - name: acyclic_steps; pub run test
+        if: "always() && steps.acyclic_steps_pub_upgrade.conclusion == 'success'"
+        working-directory: acyclic_steps
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_019:
+    name: "tests; Dart dev; PKG: yaml_edit; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:yaml_edit;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:yaml_edit
+            os:ubuntu-latest;pub-cache-hosted;dart:dev
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: dev
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: yaml_edit_pub_upgrade
+        name: "yaml_edit; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: yaml_edit
+        run: pub upgrade --no-precompile
+      - name: yaml_edit; pub run test
+        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
+        working-directory: yaml_edit
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_020:
+    name: "tests; Dart beta; PKG: retry; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:retry
+            os:ubuntu-latest;pub-cache-hosted;dart:beta
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: beta
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: retry_pub_upgrade
+        name: "retry; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: retry
+        run: pub upgrade --no-precompile
+      - name: retry; pub run test
+        if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
+        working-directory: retry
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_021:
+    name: "tests; Dart beta; PKG: sanitize_html; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:sanitize_html;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:beta;packages:sanitize_html
+            os:ubuntu-latest;pub-cache-hosted;dart:beta
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: beta
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: sanitize_html_pub_upgrade
+        name: "sanitize_html; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: sanitize_html
+        run: pub upgrade --no-precompile
+      - name: sanitize_html; pub run test
+        if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
+        working-directory: sanitize_html
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_022:
+    name: "tests; Dart stable; PKG: canonical_json; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:canonical_json;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:canonical_json
+            os:ubuntu-latest;pub-cache-hosted;dart:stable
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: stable
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: canonical_json_pub_upgrade
+        name: "canonical_json; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: canonical_json
+        run: pub upgrade --no-precompile
+      - name: canonical_json; pub run test
+        if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
+        working-directory: canonical_json
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_023:
+    name: "tests; Dart stable; PKG: shelf_router_generator; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:shelf_router_generator;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:shelf_router_generator
+            os:ubuntu-latest;pub-cache-hosted;dart:stable
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: stable
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: shelf_router_generator_pub_upgrade
+        name: "shelf_router_generator; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: shelf_router_generator
+        run: pub upgrade --no-precompile
+      - name: shelf_router_generator; pub run test
+        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
+        working-directory: shelf_router_generator
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_024:
+    name: "tests; Dart stable; PKG: gitignore; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:gitignore;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:gitignore
+            os:ubuntu-latest;pub-cache-hosted;dart:stable
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: stable
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: gitignore_pub_upgrade
+        name: "gitignore; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: gitignore
+        run: pub upgrade --no-precompile
+      - name: gitignore; pub run test
+        if: "always() && steps.gitignore_pub_upgrade.conclusion == 'success'"
+        working-directory: gitignore
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_025:
+    name: "tests; Dart stable; PKG: acyclic_steps; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps
+            os:ubuntu-latest;pub-cache-hosted;dart:stable
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: stable
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: acyclic_steps_pub_upgrade
+        name: "acyclic_steps; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: acyclic_steps
+        run: pub upgrade --no-precompile
+      - name: acyclic_steps; pub run test
+        if: "always() && steps.acyclic_steps_pub_upgrade.conclusion == 'success'"
+        working-directory: acyclic_steps
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
   job_026:
+    name: "tests; Dart stable; PKG: yaml_edit; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:yaml_edit;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:yaml_edit
+            os:ubuntu-latest;pub-cache-hosted;dart:stable
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: stable
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: yaml_edit_pub_upgrade
+        name: "yaml_edit; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: yaml_edit
+        run: pub upgrade --no-precompile
+      - name: yaml_edit; pub run test
+        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
+        working-directory: yaml_edit
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_027:
+    name: "tests; Dart stable; PKG: safe_url_check; `pub run test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:safe_url_check;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:safe_url_check
+            os:ubuntu-latest;pub-cache-hosted;dart:stable
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: stable
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: safe_url_check_pub_upgrade
+        name: "safe_url_check; pub upgrade --no-precompile"
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: safe_url_check
+        run: pub upgrade --no-precompile
+      - name: safe_url_check; pub run test
+        if: "always() && steps.safe_url_check_pub_upgrade.conclusion == 'success'"
+        working-directory: safe_url_check
+        run: pub run test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+      - job_004
+      - job_005
+      - job_006
+      - job_007
+  job_028:
     name: "tests; Dart stable; PKG: neat_cache; `pub run test -x redis`"
     runs-on: ubuntu-latest
     steps:
@@ -1194,7 +1302,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_027:
+  job_029:
     name: "tests; Dart dev; PKG: neat_cache; `pub run test -x redis`"
     runs-on: ubuntu-latest
     steps:

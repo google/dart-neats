@@ -1,0 +1,9 @@
+dart:
+  - stable
+  - dev
+stages:
+  - analyze:
+      - dartanalyzer
+      - dartfmt
+  - tests:
+      - test

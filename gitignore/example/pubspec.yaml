@@ -1,0 +1,9 @@
+name: gitignore_exampe
+publish_to: none
+dependencies: 
+  gitignore: 
+    path: ..
+  path: ^1.8.0
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
