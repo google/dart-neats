@@ -406,7 +406,7 @@ class YamlEditor {
   /// - 2 # comment 2
   /// '''
   /// ```
-  YamlNode? remove(Iterable<Object?> path) {
+  YamlNode remove(Iterable<Object?> path) {
     SourceEdit? edit;
     YamlNode? expectedNode;
     final nodeToRemove = _traverse(path, checkAlias: true);
@@ -414,7 +414,7 @@ class YamlEditor {
     if (path.isEmpty) {
       edit = SourceEdit(0, _yaml.length, '');
 
-      /// Parsing an empty YAML document returns `null`.
+      /// Parsing an empty YAML document returns YamlScalar with value `null`.
       _performEdit(edit, path, expectedNode);
       return nodeToRemove;
     }

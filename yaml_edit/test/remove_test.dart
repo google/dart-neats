@@ -48,6 +48,20 @@ c: 3
     });
   });
 
+  group('returns', () {
+    test('returns the removed node when successful', () {
+      final doc = YamlEditor('{ a: { b: foo } }');
+      final node = doc.remove(['a', 'b']);
+      expect(node.value, equals('foo'));
+    });
+
+    test('returns null-value node when doc is empty and path is empty', () {
+      final doc = YamlEditor('');
+      final node = doc.remove([]);
+      expect(node.value, equals(null));
+    });
+  });
+
   test('empty path should clear string', () {
     final doc = YamlEditor('''
 a: 1
@@ -75,7 +89,7 @@ c: 3
     test('empty value', () {
       final doc = YamlEditor('''
 a: 1
-b: 
+b:
 c: 3
 ''');
       doc.remove(['b']);
@@ -88,7 +102,7 @@ c: 3
     test('empty value (2)', () {
       final doc = YamlEditor('''
 - a: 1
-  b: 
+  b:
   c: 3
 ''');
       doc.remove([0, 'b']);
@@ -101,7 +115,7 @@ c: 3
     test('empty value (3)', () {
       final doc = YamlEditor('''
 - a: 1
-  b: 
+  b:
 
   c: 3
 ''');
@@ -143,14 +157,14 @@ a: 1
 
     test('final element in nested map', () {
       final doc = YamlEditor('''
-a: 
+a:
   aa: 11
   bb: 22
 b: 2
 ''');
       doc.remove(['a', 'bb']);
       expect(doc.toString(), equals('''
-a: 
+a:
   aa: 11
 b: 2
 '''));
@@ -181,7 +195,7 @@ a: 1
     test('nested', () {
       final doc = YamlEditor('''
 a: 1
-b: 
+b:
   d: 4
   e: 5
 c: 3
@@ -189,7 +203,7 @@ c: 3
       doc.remove(['b', 'd']);
       expect(doc.toString(), equals('''
 a: 1
-b: 
+b:
   e: 5
 c: 3
 '''));
@@ -250,7 +264,7 @@ c: 3
     test('empty value', () {
       final doc = YamlEditor('''
 - 0
-- 
+-
 - 2
 ''');
       doc.remove([1]);
@@ -272,13 +286,13 @@ c: 3
 
     test('last element should return flow empty list (2)', () {
       final doc = YamlEditor('''
-a: 
+a:
   - 1
 b: [3]
 ''');
       doc.remove(['a', 0]);
       expect(doc.toString(), equals('''
-a: 
+a:
   []
 b: [3]
 '''));
@@ -286,16 +300,16 @@ b: [3]
 
     test('last element should return flow empty list (3)', () {
       final doc = YamlEditor('''
-a: 
+a:
   - 1
-b: 
+b:
   - 3
 ''');
       doc.remove(['a', 0]);
       expect(doc.toString(), equals('''
-a: 
+a:
   []
-b: 
+b:
   - 3
 '''));
     });
@@ -450,12 +464,12 @@ b:
     test('nested list (5)', () {
       final doc = YamlEditor('''
 - - 0
-  - 
+  -
     1
 ''');
       doc.remove([0, 0]);
       expect(doc.toString(), equals('''
-- - 
+- -
     1
 '''));
       expectYamlBuilderValue(doc, [
@@ -467,13 +481,13 @@ b:
       final doc = YamlEditor('''
 - - 0 # -
   # -
-  - 
+  -
     1
 ''');
       doc.remove([0, 0]);
       expect(doc.toString(), equals('''
 -   # -
-  - 
+  -
     1
 '''));
       expectYamlBuilderValue(doc, [
@@ -499,14 +513,14 @@ b:
 
     test('nested map (2)', () {
       final doc = YamlEditor('''
-- a: 
+- a:
     - 0
     - 1
   c: d
 ''');
       doc.remove([0, 'a', 1]);
       expect(doc.toString(), equals('''
-- a: 
+- a:
     - 0
   c: d
 '''));
