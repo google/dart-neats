@@ -30,7 +30,7 @@ class PathError extends ArgumentError {
   PathError(this.path, this.subPath, this.parent, [String? message])
       : super.value(subPath, 'path', message);
 
-  PathError.unexpected(this.path, String? message)
+  PathError.unexpected(this.path, String message)
       : subPath = path,
         super(message);
 

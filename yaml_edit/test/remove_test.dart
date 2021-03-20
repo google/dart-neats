@@ -39,12 +39,31 @@ c: 3
       expect(() => doc.remove(['d']), throwsPathError);
     });
 
+    test('PathError if collectionPath is invalid in nested path', () {
+      final doc = YamlEditor('''
+a:
+  b: 'foo'
+''');
+
+      expect(() => doc.remove(['d']), throwsPathError);
+    });
+
     test('PathError if collectionPath is invalid - list', () {
       final doc = YamlEditor('''
 [1, 2, 3]
 ''');
 
       expect(() => doc.remove([4]), throwsPathError);
+    });
+
+    test('PathError in list if using a non-integer as index', () {
+      final doc = YamlEditor("{ a: ['b', 'c'] }");
+      expect(() => doc.remove(['a', 'b']), throwsPathError);
+    });
+
+    test('PathError if path is invalid', () {
+      final doc = YamlEditor("{ a: ['b', 'c'] }");
+      expect(() => doc.remove(['a', 0, '1']), throwsPathError);
     });
   });
 

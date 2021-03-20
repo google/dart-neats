@@ -87,7 +87,7 @@ class YamlEditor {
   String _yaml;
 
   /// Root node of YAML AST.
-  late YamlNode _contents;
+  YamlNode _contents;
 
   /// Stores the list of nodes in [_contents] that are connected by aliases.
   ///
@@ -120,14 +120,12 @@ class YamlEditor {
 
   factory YamlEditor(String yaml) => YamlEditor._(yaml);
 
-  YamlEditor._(this._yaml) {
+  YamlEditor._(this._yaml) : _contents = loadYamlNode(_yaml) {
     _initialize();
   }
 
-  /// Loads [_contents] from [_yaml], and traverses the YAML tree formed to
-  /// detect alias nodes.
+  /// Traverses the YAML tree formed to detect alias nodes.
   void _initialize() {
-    _contents = loadYamlNode(_yaml);
     _aliases = {};
 
     /// Performs a DFS on [_contents] to detect alias nodes.
@@ -263,8 +261,11 @@ class YamlEditor {
     final parentNode = _traverse(collectionPath, checkAlias: true);
 
     if (parentNode is YamlList) {
+      if (keyOrIndex is! int) {
+        throw PathError(path, path, parentNode);
+      }
       final expected = wrapAsYamlNode(
-        [...parentNode.nodes]..[keyOrIndex as int] = valueNode,
+        [...parentNode.nodes]..[keyOrIndex] = valueNode,
       );
 
       return _performEdit(updateInList(this, parentNode, keyOrIndex, valueNode),
@@ -408,7 +409,7 @@ class YamlEditor {
   /// ```
   YamlNode remove(Iterable<Object?> path) {
     SourceEdit? edit;
-    YamlNode? expectedNode;
+    var expectedNode = wrapAsYamlNode(null);
     final nodeToRemove = _traverse(path, checkAlias: true);
 
     if (path.isEmpty) {
@@ -436,7 +437,7 @@ class YamlEditor {
           updatedYamlMap(parentNode, (nodes) => nodes.remove(keyOrIndex));
     }
 
-    _performEdit(edit ?? SourceEdit(0, 0, ''), collectionPath, expectedNode);
+    _performEdit(edit!, collectionPath, expectedNode);
 
     return nodeToRemove;
   }
@@ -551,7 +552,7 @@ class YamlEditor {
   /// tree is equal to our expectations by deep equality of values. Throws an
   /// [AssertionError] if the two trees do not match.
   void _performEdit(
-      SourceEdit edit, Iterable<Object?> path, YamlNode? expectedNode) {
+      SourceEdit edit, Iterable<Object?> path, YamlNode expectedNode) {
     final expectedTree = _deepModify(_contents, path, [], expectedNode);
     final initialYaml = _yaml;
     _yaml = edit.apply(_yaml);
@@ -589,8 +590,8 @@ class YamlEditor {
   /// the whole tree.
   ///
   /// [SourceSpan]s in this new tree are not guaranteed to be accurate.
-  YamlNode? _deepModify(YamlNode tree, Iterable<Object?> path,
-      Iterable<Object?> subPath, YamlNode? expectedNode) {
+  YamlNode _deepModify(YamlNode tree, Iterable<Object?> path,
+      Iterable<Object?> subPath, YamlNode expectedNode) {
     RangeError.checkValueInInterval(subPath.length, 0, path.length);
 
     if (path.length == subPath.length) return expectedNode;
@@ -606,7 +607,7 @@ class YamlEditor {
           tree.nodes[keyOrIndex],
           path,
           path.take(subPath.length + 1),
-          expectedNode)!);
+          expectedNode));
     }
 
     if (tree is YamlMap) {

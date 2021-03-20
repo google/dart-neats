@@ -74,7 +74,7 @@ bool isBlockNode(YamlNode node) {
 
 /// Returns the content sensitive ending offset of [yamlNode] (i.e. where the last
 /// meaningful content happens)
-int getContentSensitiveEnd(YamlNode? yamlNode) {
+int getContentSensitiveEnd(YamlNode yamlNode) {
   if (yamlNode is YamlList) {
     if (yamlNode.style == CollectionStyle.FLOW) {
       return yamlNode.span.end.offset;
@@ -89,7 +89,7 @@ int getContentSensitiveEnd(YamlNode? yamlNode) {
     }
   }
 
-  return yamlNode!.span.end.offset;
+  return yamlNode.span.end.offset;
 }
 
 /// Checks if the item is a Map or a List

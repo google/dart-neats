@@ -44,16 +44,14 @@ SourceEdit updateInMap(
 
 /// Performs the string operation on [yaml] to achieve the effect of removing
 /// the element at [key] when re-parsed.
-SourceEdit? removeInMap(YamlEditor yamlEdit, YamlMap map, Object? key) {
-  if (!containsKey(map, key)) return null;
-
+SourceEdit removeInMap(YamlEditor yamlEdit, YamlMap map, Object? key) {
   final keyNode = getKeyNode(map, key);
-  final valueNode = map.nodes[keyNode];
+  final valueNode = map.nodes[keyNode]!;
 
   if (map.style == CollectionStyle.FLOW) {
-    return _removeFromFlowMap(yamlEdit, map, keyNode, valueNode!);
+    return _removeFromFlowMap(yamlEdit, map, keyNode, valueNode);
   } else {
-    return _removeFromBlockMap(yamlEdit, map, keyNode, valueNode!);
+    return _removeFromBlockMap(yamlEdit, map, keyNode, valueNode);
   }
 }
 
@@ -152,7 +150,7 @@ SourceEdit _replaceInBlockMap(
 
   /// +1 accounts for the colon
   final start = keyNode.span.end.offset + 1;
-  var end = getContentSensitiveEnd(map.nodes[key]);
+  var end = getContentSensitiveEnd(map.nodes[key]!);
 
   /// `package:yaml` parses empty nodes in a way where the start/end of the
   /// empty value node is the end of the key node, so we have to adjust for

@@ -34,6 +34,11 @@ void main() {
       final doc = YamlEditor("- YAML Ain't Markup Language");
       expect(() => doc.update([0, 'a'], 'a'), throwsPathError);
     });
+
+    test('PathError in list if using a non-integer as index', () {
+      final doc = YamlEditor("{ a: ['b', 'c'] }");
+      expect(() => doc.update(['a', 'b'], 'x'), throwsPathError);
+    });
   });
 
   group('works on top-level', () {
