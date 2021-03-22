@@ -65,7 +65,7 @@ void main(List<String> args) async {
       );
     },
     isDir: (dir) => Directory(resolve(dir)).existsSync(),
-  ).map(resolve).toList()) {
+  ).map((f) => p.relative(resolve(f))).toList()) {
     print(file);
   }
 }
