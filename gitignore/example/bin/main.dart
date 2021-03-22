@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+/// An example of using [Ignore.listFiles] to list all files from cwd and below
+/// not ignored by .gitignore files in the containing git repo.
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -29,6 +32,8 @@ void main(List<String> args) async {
 
   String beneath = p.relative(p.current, from: root);
 
+  /// Ignore.listDir uses posix-paths relative to a root. Convert them to file
+  /// absolute paths for the current system.
   String resolve(String path) {
     if (Platform.isWindows) {
       return p.joinAll([root, ...p.posix.split(path)]);
