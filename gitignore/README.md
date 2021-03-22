@@ -2,6 +2,9 @@ Gitignore rule parser and validator
 ===================================
 
 Implements an [Ignore] filter compatible with `.gitignore`.
+
+**Disclaimer:** This is not an officially supported Google product.
+
 An [Ignore] instance holds a set of [`.gitignore` rules][1], and allows
 testing if a given path is ignored.
 **Example**:
