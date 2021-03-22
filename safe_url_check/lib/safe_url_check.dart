@@ -64,7 +64,7 @@ Future<bool> safeUrlCheck(
   Uri url, {
   int maxRedirects = 8,
   String userAgent = _defaultUserAgent,
-  HttpClient client,
+  HttpClient? client,
   RetryOptions retryOptions = const RetryOptions(maxAttempts: 3),
   Duration timeout = const Duration(seconds: 90),
 }) async {
@@ -113,8 +113,6 @@ Future<bool> _safeUrlCheck(
   Duration timeout,
 ) async {
   assert(maxRedirects >= 0);
-  assert(client != null);
-  assert(url != null);
 
   // If no scheme or not http or https, we fail.
   if (!url.hasScheme || (!url.isScheme('http') && !url.isScheme('https'))) {
@@ -123,7 +121,7 @@ Future<bool> _safeUrlCheck(
 
   final ips = await retryOptions.retry(() async {
     final ips = await InternetAddress.lookup(url.host).timeout(timeout);
-    if (ips == null || ips.isEmpty) {
+    if (ips.isEmpty) {
       throw Exception('DNS resolution failed');
     }
     return ips;
@@ -159,10 +157,10 @@ Future<bool> _safeUrlCheck(
     return true;
   }
   if (response.isRedirect &&
-      response.headers[HttpHeaders.locationHeader].isNotEmpty &&
+      response.headers[HttpHeaders.locationHeader]!.isNotEmpty &&
       maxRedirects > 0) {
     return _safeUrlCheck(
-      Uri.parse(response.headers[HttpHeaders.locationHeader][0]),
+      Uri.parse(response.headers[HttpHeaders.locationHeader]![0]),
       maxRedirects - 1,
       client,
       userAgent,
