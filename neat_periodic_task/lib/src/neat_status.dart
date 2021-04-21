@@ -64,7 +64,7 @@ class NeatTaskStatus {
     required this.state,
     required this.started,
     required this.owner,
-  })   : format = formatIdentifier,
+  })  : format = formatIdentifier,
         version = currentVersion;
 
   /// Create a new [NeatTaskStatus] updating the given values.
