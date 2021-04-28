@@ -1,3 +1,9 @@
+## v2.0.0
+- Migrated to null-safety.
+- API will no-longer return `null` in-place of a `YamlNode`, instead a
+  `YamlNode` with `YamlNode.value == null` should be used. These are easily
+  created with `wrapAsYamlNode(null)`.
+
 ## v1.0.3
 
 - Fixed bug in adding an empty map as a map value.
