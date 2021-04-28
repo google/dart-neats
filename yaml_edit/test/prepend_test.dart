@@ -39,6 +39,13 @@ void main() {
       expectYamlBuilderValue(doc, [0, 1, 2]);
     });
 
+    test('null value', () {
+      final doc = YamlEditor('[1, 2]');
+      doc.prependToList([], null);
+      expect(doc.toString(), equals('[null, 1, 2]'));
+      expectYamlBuilderValue(doc, [null, 1, 2]);
+    });
+
     test('with spaces (1)', () {
       final doc = YamlEditor('[ 1 , 2 ]');
       doc.prependToList([], 0);

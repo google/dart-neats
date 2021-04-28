@@ -50,11 +50,11 @@ void main() {
   });
 
   group('orElse provides a default value', () {
-    test('simple example with null return ', () {
+    test('simple example with null node return ', () {
       final doc = YamlEditor('{a: {d: 4}, c: ~}');
-      final result = doc.parseAt(['b'], orElse: () => null);
+      final result = doc.parseAt(['b'], orElse: () => wrapAsYamlNode(null));
 
-      expect(result, equals(null));
+      expect(result.value, equals(null));
     });
 
     test('simple example with map return', () {

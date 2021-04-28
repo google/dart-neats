@@ -79,7 +79,7 @@ class _Generator {
   /// Maximum depth of random YAML collection generated.
   final int maxDepth;
 
-  _Generator({int seed, this.maxDepth = 5}) : r = Random(seed ?? 42);
+  _Generator({int? seed, this.maxDepth = 5}) : r = Random(seed ?? 42);
 
   int nextInt([int max = maxInt]) => r.nextInt(max);
 
@@ -107,7 +107,7 @@ class _Generator {
   }
 
   /// Generates a new scalar recognizable by YAML.
-  Object nextScalar() {
+  Object? nextScalar() {
     final typeIndex = nextInt(5);
 
     switch (typeIndex) {
@@ -125,7 +125,8 @@ class _Generator {
   }
 
   YamlScalar nextYamlScalar() {
-    return wrapAsYamlNode(nextScalar(), scalarStyle: nextScalarStyle());
+    return wrapAsYamlNode(nextScalar(), scalarStyle: nextScalarStyle())
+        as YamlScalar;
   }
 
   /// Generates the next [YamlList], with the current [depth].
@@ -137,7 +138,8 @@ class _Generator {
       list.add(nextYamlNode(depth + 1));
     }
 
-    return wrapAsYamlNode(list, collectionStyle: nextCollectionStyle());
+    return wrapAsYamlNode(list, collectionStyle: nextCollectionStyle())
+        as YamlList;
   }
 
   /// Generates the next [YamlList], with the current [depth].
@@ -149,7 +151,8 @@ class _Generator {
       nodes[nextYamlNode(depth + 1)] = nextYamlScalar();
     }
 
-    return wrapAsYamlNode(nodes, collectionStyle: nextCollectionStyle());
+    return wrapAsYamlNode(nodes, collectionStyle: nextCollectionStyle())
+        as YamlMap;
   }
 
   /// Returns a [YamlNode], with it being a [YamlScalar] 80% of the time, a
@@ -217,7 +220,7 @@ class _Generator {
             break;
           case YamlModificationMethod.splice:
             args.add(nextInt(node.length + 1));
-            args.add(nextInt(node.length + 1 - args[0]));
+            args.add(nextInt(node.length + 1 - args[0] as int));
             args.add(nextYamlList(0));
             editor.spliceList(path, args[0], args[1], args[2]);
             break;
@@ -240,7 +243,7 @@ class _Generator {
         editor.update(path, value);
         return;
       }
-    } catch (error) {
+    } catch (error, stacktrace) {
       print('''
 Failed to call $method on:
 $initialString
@@ -250,7 +253,9 @@ and path:
 $path
 
 Error Details:
-${error.message}
+${error}
+
+${stacktrace}
 ''');
       rethrow;
     }
@@ -262,8 +267,8 @@ ${error.message}
   ///
   /// At every node, we return the path to the node if the node has no children.
   /// Otherwise, we return at a 50% chance, or traverse to one random child.
-  List<Object> findPath(YamlEditor editor) {
-    final path = [];
+  List<Object?> findPath(YamlEditor editor) {
+    final path = <Object?>[];
 
     // 50% chance of stopping at the collection
     while (nextBool()) {

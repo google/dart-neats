@@ -81,9 +81,9 @@ class _TestCase {
   final Uri goldenUri;
   final List<String> states = [];
 
-  String info;
-  YamlEditor yamlBuilder;
-  List<_YamlModification> modifications;
+  late String info;
+  late YamlEditor yamlBuilder;
+  late List<_YamlModification> modifications;
 
   String inputLineEndings = '\n';
 
@@ -223,37 +223,40 @@ Map _getValueFromYamlMap(YamlMap yamlMap) {
 
 /// Converts a [YamlNode] into a Dart object.
 dynamic _getValueFromYamlNode(YamlNode node) {
-  switch (node.runtimeType) {
-    case YamlList:
-      return _getValueFromYamlList(node);
-    case YamlMap:
-      return _getValueFromYamlMap(node);
-    default:
-      return node.value;
+  if (node is YamlList) {
+    return _getValueFromYamlList(node);
   }
+  if (node is YamlMap) {
+    return _getValueFromYamlMap(node);
+  }
+  return node.value;
+}
+
+List<T> _onlyType<T>(List<dynamic> rawPath) {
+  return rawPath.whereType<T>().toList();
 }
 
 /// Converts the list of modifications from the raw input to [_YamlModification]
 /// objects.
 List<_YamlModification> _parseModifications(List<dynamic> modifications) {
   return modifications.map((mod) {
-    Object value;
-    int index;
-    int deleteCount;
+    Object? value;
+    var index = 0;
+    var deleteCount = 0;
     final method = _getModificationMethod(mod[0] as String);
 
-    final path = mod[1] as List;
+    final path = mod[1];
 
     if (method == YamlModificationMethod.appendTo ||
         method == YamlModificationMethod.update ||
         method == YamlModificationMethod.prependTo) {
       value = mod[2];
     } else if (method == YamlModificationMethod.insert) {
-      index = mod[2];
+      index = mod[2] as int;
       value = mod[3];
     } else if (method == YamlModificationMethod.splice) {
-      index = mod[2];
-      deleteCount = mod[3];
+      index = mod[2] as int;
+      deleteCount = mod[3] as int;
 
       if (mod[4] is! List) {
         throw ArgumentError('Invalid array ${mod[4]} used in splice');
@@ -292,7 +295,7 @@ YamlModificationMethod _getModificationMethod(String method) {
 /// Class representing an abstract YAML modification to be performed
 class _YamlModification {
   final YamlModificationMethod method;
-  final List<dynamic> path;
+  final List<Object?> path;
   final int index;
   final dynamic value;
   final int deleteCount;

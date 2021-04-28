@@ -24,10 +24,7 @@ import 'wrap.dart';
 /// Performs the string operation on [yaml] to achieve the effect of setting
 /// the element at [key] to [newValue] when re-parsed.
 SourceEdit updateInMap(
-    YamlEditor yamlEdit, YamlMap map, Object key, YamlNode newValue) {
-  ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
-  ArgumentError.checkNotNull(map, 'map');
-
+    YamlEditor yamlEdit, YamlMap map, Object? key, YamlNode newValue) {
   if (!containsKey(map, key)) {
     final keyNode = wrapAsYamlNode(key);
 
@@ -47,14 +44,9 @@ SourceEdit updateInMap(
 
 /// Performs the string operation on [yaml] to achieve the effect of removing
 /// the element at [key] when re-parsed.
-SourceEdit removeInMap(YamlEditor yamlEdit, YamlMap map, Object key) {
-  ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
-  ArgumentError.checkNotNull(map, 'map');
-
-  if (!containsKey(map, key)) return null;
-
+SourceEdit removeInMap(YamlEditor yamlEdit, YamlMap map, Object? key) {
   final keyNode = getKeyNode(map, key);
-  final valueNode = map.nodes[keyNode];
+  final valueNode = map.nodes[keyNode]!;
 
   if (map.style == CollectionStyle.FLOW) {
     return _removeFromFlowMap(yamlEdit, map, keyNode, valueNode);
@@ -68,9 +60,6 @@ SourceEdit removeInMap(YamlEditor yamlEdit, YamlMap map, Object key) {
 /// block map.
 SourceEdit _addToBlockMap(
     YamlEditor yamlEdit, YamlMap map, Object key, YamlNode newValue) {
-  ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
-  ArgumentError.checkNotNull(map, 'map');
-
   final yaml = yamlEdit.toString();
   final newIndentation =
       getMapIndentation(yaml, map) + getIndentation(yamlEdit);
@@ -120,9 +109,6 @@ SourceEdit _addToBlockMap(
 /// map.
 SourceEdit _addToFlowMap(
     YamlEditor yamlEdit, YamlMap map, YamlNode keyNode, YamlNode newValue) {
-  ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
-  ArgumentError.checkNotNull(map, 'map');
-
   final keyString = yamlEncodeFlowString(keyNode);
   final valueString = yamlEncodeFlowString(newValue);
 
@@ -147,10 +133,7 @@ SourceEdit _addToFlowMap(
 /// the value at [key] with [newValue] when reparsed, bearing in mind that this
 /// is a block map.
 SourceEdit _replaceInBlockMap(
-    YamlEditor yamlEdit, YamlMap map, Object key, YamlNode newValue) {
-  ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
-  ArgumentError.checkNotNull(map, 'map');
-
+    YamlEditor yamlEdit, YamlMap map, Object? key, YamlNode newValue) {
   final yaml = yamlEdit.toString();
   final lineEnding = getLineEnding(yaml);
   final newIndentation =
@@ -167,7 +150,7 @@ SourceEdit _replaceInBlockMap(
 
   /// +1 accounts for the colon
   final start = keyNode.span.end.offset + 1;
-  var end = getContentSensitiveEnd(map.nodes[key]);
+  var end = getContentSensitiveEnd(map.nodes[key]!);
 
   /// `package:yaml` parses empty nodes in a way where the start/end of the
   /// empty value node is the end of the key node, so we have to adjust for
@@ -181,11 +164,8 @@ SourceEdit _replaceInBlockMap(
 /// the value at [key] with [newValue] when reparsed, bearing in mind that this
 /// is a flow map.
 SourceEdit _replaceInFlowMap(
-    YamlEditor yamlEdit, YamlMap map, Object key, YamlNode newValue) {
-  ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
-  ArgumentError.checkNotNull(map, 'map');
-
-  final valueSpan = map.nodes[key].span;
+    YamlEditor yamlEdit, YamlMap map, Object? key, YamlNode newValue) {
+  final valueSpan = map.nodes[key]!.span;
   final valueString = yamlEncodeFlowString(newValue);
 
   return SourceEdit(valueSpan.start.offset, valueSpan.length, valueString);
@@ -195,11 +175,6 @@ SourceEdit _replaceInFlowMap(
 /// the [key] from the map, bearing in mind that this is a block map.
 SourceEdit _removeFromBlockMap(
     YamlEditor yamlEdit, YamlMap map, YamlNode keyNode, YamlNode valueNode) {
-  ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
-  ArgumentError.checkNotNull(map, 'map');
-  ArgumentError.checkNotNull(keyNode, 'keyNode');
-  ArgumentError.checkNotNull(valueNode, 'valueNode');
-
   final keySpan = keyNode.span;
   var end = getContentSensitiveEnd(valueNode);
   final yaml = yamlEdit.toString();
@@ -247,11 +222,6 @@ SourceEdit _removeFromBlockMap(
 /// the [key] from the map, bearing in mind that this is a flow map.
 SourceEdit _removeFromFlowMap(
     YamlEditor yamlEdit, YamlMap map, YamlNode keyNode, YamlNode valueNode) {
-  ArgumentError.checkNotNull(yamlEdit, 'yamlEdit');
-  ArgumentError.checkNotNull(map, 'map');
-  ArgumentError.checkNotNull(keyNode, 'keyNode');
-  ArgumentError.checkNotNull(valueNode, 'valueNode');
-
   var start = keyNode.span.start.offset;
   var end = valueNode.span.end.offset;
   final yaml = yamlEdit.toString();

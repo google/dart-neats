@@ -24,14 +24,12 @@ import 'utils.dart';
 /// Returns a new [YamlMap] constructed by applying [update] onto the [nodes]
 /// of this [YamlMap].
 YamlMap updatedYamlMap(YamlMap map, Function(Map) update) {
-  ArgumentError.checkNotNull(map, 'map');
-
   final dummyMap = deepEqualsMap();
   dummyMap.addAll(map.nodes);
 
   update(dummyMap);
 
-  return wrapAsYamlNode(dummyMap);
+  return wrapAsYamlNode(dummyMap) as YamlMap;
 }
 
 /// Wraps [value] into a [YamlNode].
@@ -43,7 +41,7 @@ YamlMap updatedYamlMap(YamlMap map, Function(Map) update) {
 ///
 /// If a [YamlNode] is passed in, no further wrapping will be done, and the
 /// [collectionStyle]/[scalarStyle] will not be applied.
-YamlNode wrapAsYamlNode(Object value,
+YamlNode wrapAsYamlNode(Object? value,
     {CollectionStyle collectionStyle = CollectionStyle.ANY,
     ScalarStyle scalarStyle = ScalarStyle.ANY}) {
   if (value is YamlScalar) {
@@ -65,15 +63,12 @@ YamlNode wrapAsYamlNode(Object value,
 
     return value;
   } else if (value is Map) {
-    ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
     return YamlMapWrap(value, collectionStyle: collectionStyle);
   } else if (value is List) {
-    ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
     return YamlListWrap(value, collectionStyle: collectionStyle);
   } else {
     assertValidScalar(value);
 
-    ArgumentError.checkNotNull(scalarStyle, 'scalarStyle');
     return YamlScalarWrap(value, style: scalarStyle);
   }
 }
@@ -91,10 +86,8 @@ class YamlScalarWrap implements YamlScalar {
   @override
   final dynamic value;
 
-  YamlScalarWrap(this.value, {this.style = ScalarStyle.ANY, Object sourceUrl})
-      : span = shellSpan(sourceUrl) {
-    ArgumentError.checkNotNull(style, 'scalarStyle');
-  }
+  YamlScalarWrap(this.value, {this.style = ScalarStyle.ANY, Object? sourceUrl})
+      : span = shellSpan(sourceUrl);
 
   @override
   String toString() => value.toString();
@@ -117,9 +110,7 @@ class YamlMapWrap
 
   factory YamlMapWrap(Map dartMap,
       {CollectionStyle collectionStyle = CollectionStyle.ANY,
-      Object sourceUrl}) {
-    ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
-
+      Object? sourceUrl}) {
     final wrappedMap = deepEqualsMap<dynamic, YamlNode>();
 
     for (final entry in dartMap.entries) {
@@ -133,12 +124,12 @@ class YamlMapWrap
   }
 
   YamlMapWrap._(this.nodes,
-      {CollectionStyle style = CollectionStyle.ANY, Object sourceUrl})
+      {CollectionStyle style = CollectionStyle.ANY, Object? sourceUrl})
       : span = shellSpan(sourceUrl),
         style = nodes.isEmpty ? CollectionStyle.FLOW : style;
 
   @override
-  dynamic operator [](Object key) => nodes[key]?.value;
+  dynamic operator [](Object? key) => nodes[key]?.value;
 
   @override
   Iterable get keys => nodes.keys.map((node) => node.value);
@@ -170,16 +161,14 @@ class YamlListWrap with collection.ListMixin implements YamlList {
 
   factory YamlListWrap(List dartList,
       {CollectionStyle collectionStyle = CollectionStyle.ANY,
-      Object sourceUrl}) {
-    ArgumentError.checkNotNull(collectionStyle, 'collectionStyle');
-
+      Object? sourceUrl}) {
     final wrappedList = dartList.map(wrapAsYamlNode).toList();
     return YamlListWrap._(wrappedList,
         style: collectionStyle, sourceUrl: sourceUrl);
   }
 
   YamlListWrap._(this.nodes,
-      {CollectionStyle style = CollectionStyle.ANY, Object sourceUrl})
+      {CollectionStyle style = CollectionStyle.ANY, Object? sourceUrl})
       : span = shellSpan(sourceUrl),
         style = nodes.isEmpty ? CollectionStyle.FLOW : style;
 

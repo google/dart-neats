@@ -19,15 +19,15 @@ import 'package:yaml/yaml.dart';
 @sealed
 class PathError extends ArgumentError {
   /// The full path that caused the error
-  final Iterable<Object> path;
+  final Iterable<Object?> path;
 
   /// The subpath that caused the error
-  final Iterable<Object> subPath;
+  final Iterable<Object?> subPath;
 
   /// The last element of [path] that could be traversed.
-  YamlNode parent;
+  YamlNode? parent;
 
-  PathError(this.path, this.subPath, this.parent, [String message])
+  PathError(this.path, this.subPath, this.parent, [String? message])
       : super.value(subPath, 'path', message);
 
   PathError.unexpected(this.path, String message)
@@ -62,7 +62,7 @@ class PathError extends ArgumentError {
 @sealed
 class AliasError extends UnsupportedError {
   /// The path that caused the error
-  final Iterable<Object> path;
+  final Iterable<Object?> path;
 
   /// The anchor node of the alias
   final YamlNode anchor;

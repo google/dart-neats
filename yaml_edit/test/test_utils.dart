@@ -31,7 +31,7 @@ void expectYamlBuilderValue(YamlEditor builder, Object expected) {
 }
 
 /// Asserts that [builder] has the same internal value as [expected].
-void expectDeepEquals(Object actual, Object expected) {
+void expectDeepEquals(Object? actual, Object expected) {
   expect(
       actual, predicate((actual) => deepEquals(actual, expected), '$expected'));
 }

@@ -23,8 +23,6 @@ import 'editor.dart';
 /// This function is also capable of detecting if non-printable characters are in
 /// [string].
 bool isDangerousString(String string) {
-  ArgumentError.checkNotNull(string, 'string');
-
   try {
     if (loadYamlNode(string).value != string) {
       return true;
@@ -43,7 +41,7 @@ bool isDangerousString(String string) {
 /// Asserts that [value] is a valid scalar according to YAML.
 ///
 /// A valid scalar is a number, String, boolean, or null.
-void assertValidScalar(Object value) {
+void assertValidScalar(Object? value) {
   if (value is num || value is String || value is bool || value == null) {
     return;
   }
@@ -56,8 +54,6 @@ void assertValidScalar(Object value) {
 /// [ScalarStyle.ANY] and [CollectionStyle.ANY] are considered to be block styling
 /// by default for maximum flexibility.
 bool isBlockNode(YamlNode node) {
-  ArgumentError.checkNotNull(node, 'node');
-
   if (node is YamlScalar) {
     if (node.style == ScalarStyle.LITERAL ||
         node.style == ScalarStyle.FOLDED ||
@@ -79,8 +75,6 @@ bool isBlockNode(YamlNode node) {
 /// Returns the content sensitive ending offset of [yamlNode] (i.e. where the last
 /// meaningful content happens)
 int getContentSensitiveEnd(YamlNode yamlNode) {
-  ArgumentError.checkNotNull(yamlNode, 'yamlNode');
-
   if (yamlNode is YamlList) {
     if (yamlNode.style == CollectionStyle.FLOW) {
       return yamlNode.span.end.offset;
@@ -102,7 +96,7 @@ int getContentSensitiveEnd(YamlNode yamlNode) {
 bool isCollection(Object item) => item is Map || item is List;
 
 /// Checks if [index] is [int], >=0, < [length]
-bool isValidIndex(Object index, int length) {
+bool isValidIndex(Object? index, int length) {
   return index is int && index >= 0 && index < length;
 }
 
@@ -121,7 +115,7 @@ bool isEmpty(Object item) {
 ///
 /// Mainly used with [wrapAsYamlNode] to allow for a reasonable
 /// implementation of [SourceSpan.message].
-SourceSpan shellSpan(Object sourceUrl) {
+SourceSpan shellSpan(Object? sourceUrl) {
   final shellSourceLocation = SourceLocation(0, sourceUrl: sourceUrl);
   return SourceSpanBase(shellSourceLocation, shellSourceLocation, '');
 }
@@ -140,8 +134,6 @@ bool isFlowYamlCollectionNode(Object value) {
 ///
 /// Returns the length of [map] if the keys in [map] are not in alphabetical order.
 int getMapInsertionIndex(YamlMap map, Object newKey) {
-  ArgumentError.checkNotNull(map, 'map');
-
   final keys = map.nodes.keys.map((k) => k.toString()).toList();
 
   for (var i = 1; i < keys.length; i++) {
@@ -150,7 +142,8 @@ int getMapInsertionIndex(YamlMap map, Object newKey) {
     }
   }
 
-  final insertionIndex = keys.indexWhere((key) => key.compareTo(newKey) > 0);
+  final insertionIndex =
+      keys.indexWhere((key) => key.compareTo(newKey as String) > 0);
 
   if (insertionIndex != -1) return insertionIndex;
 
@@ -158,7 +151,7 @@ int getMapInsertionIndex(YamlMap map, Object newKey) {
 }
 
 /// Returns the [style] property of [target], if it is a [YamlNode]. Otherwise return null.
-Object getStyle(Object target) {
+Object? getStyle(Object target) {
   if (target is YamlNode) {
     return (target as dynamic).style;
   }
@@ -175,7 +168,7 @@ Object getStyle(Object target) {
 /// candidates, we choose the candidate closest to the start of [yaml].
 int getIndentation(YamlEditor editor) {
   final node = editor.parseAt([]);
-  Iterable<YamlNode> children;
+  Iterable<YamlNode>? children;
   var indentation = 2;
 
   if (node is YamlMap && node.style == CollectionStyle.BLOCK) {
@@ -205,8 +198,6 @@ int getIndentation(YamlEditor editor) {
 ///
 /// Throws [UnsupportedError] if an empty block map is passed in.
 int getListIndentation(String yaml, YamlList list) {
-  ArgumentError.checkNotNull(list, 'list');
-
   if (list.style == CollectionStyle.FLOW) return 0;
 
   /// An empty block map doesn't really exist.
@@ -226,8 +217,6 @@ int getListIndentation(String yaml, YamlList list) {
 /// Gets the indentation level of [map]. This is 0 if it is a flow map,
 /// but returns the number of spaces before the keys for block maps.
 int getMapIndentation(String yaml, YamlMap map) {
-  ArgumentError.checkNotNull(map, 'map');
-
   if (map.style == CollectionStyle.FLOW) return 0;
 
   /// An empty block map doesn't really exist.

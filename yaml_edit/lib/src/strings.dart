@@ -22,7 +22,7 @@ import 'utils.dart';
 /// an escape sequence, it can only be detected when in a double-quoted
 /// sequence. Plain strings may also be misinterpreted by the YAML parser (e.g.
 /// ' null').
-String _tryYamlEncodePlain(Object value) {
+String _tryYamlEncodePlain(Object? value) {
   if (value is YamlNode) {
     AssertionError(
         'YamlNodes should not be passed directly into getSafeString!');
@@ -50,8 +50,6 @@ String _tryYamlEncodePlain(Object value) {
 /// Checks if [string] has unprintable characters according to
 /// [unprintableCharCodes].
 bool _hasUnprintableCharacters(String string) {
-  ArgumentError.checkNotNull(string, 'string');
-
   final codeUnits = string.codeUnits;
 
   for (final key in unprintableCharCodes.keys) {
@@ -66,8 +64,6 @@ bool _hasUnprintableCharacters(String string) {
 ///
 /// See 5.7 Escaped Characters https://yaml.org/spec/1.2/spec.html#id2776092
 String _yamlEncodeDoubleQuoted(String string) {
-  ArgumentError.checkNotNull(string, 'string');
-
   final buffer = StringBuffer();
   for (final codeUnit in string.codeUnits) {
     if (doubleQuoteEscapeChars[codeUnit] != null) {
@@ -86,8 +82,6 @@ String _yamlEncodeDoubleQuoted(String string) {
 /// It is important that we ensure that [string] is free of unprintable
 /// characters by calling [assertValidScalar] before invoking this function.
 String _tryYamlEncodeSingleQuoted(String string) {
-  ArgumentError.checkNotNull(string, 'string');
-
   final result = string.replaceAll('\'', '\'\'');
   return '\'$result\'';
 }
@@ -97,10 +91,6 @@ String _tryYamlEncodeSingleQuoted(String string) {
 /// It is important that we ensure that [string] is free of unprintable
 /// characters by calling [assertValidScalar] before invoking this function.
 String _tryYamlEncodeFolded(String string, int indentation, String lineEnding) {
-  ArgumentError.checkNotNull(string, 'string');
-  ArgumentError.checkNotNull(indentation, 'indentation');
-  ArgumentError.checkNotNull(lineEnding, 'lineEnding');
-
   String result;
 
   final trimmedString = string.trimRight();
@@ -126,10 +116,6 @@ String _tryYamlEncodeFolded(String string, int indentation, String lineEnding) {
 /// characters by calling [assertValidScalar] before invoking this function.
 String _tryYamlEncodeLiteral(
     String string, int indentation, String lineEnding) {
-  ArgumentError.checkNotNull(string, 'string');
-  ArgumentError.checkNotNull(indentation, 'indentation');
-  ArgumentError.checkNotNull(lineEnding, 'lineEnding');
-
   final result = '|-\n$string';
 
   /// Assumes the user did not try to account for windows documents by using
@@ -175,9 +161,6 @@ String _yamlEncodeFlowScalar(YamlNode value) {
 /// options.
 String yamlEncodeBlockScalar(
     YamlNode value, int indentation, String lineEnding) {
-  ArgumentError.checkNotNull(indentation, 'indentation');
-  ArgumentError.checkNotNull(lineEnding, 'lineEnding');
-
   if (value is YamlScalar) {
     assertValidScalar(value.value);
 
@@ -243,9 +226,6 @@ String yamlEncodeFlowString(YamlNode value) {
 /// If [value] is a [YamlNode], we respect its [style] parameter.
 String yamlEncodeBlockString(
     YamlNode value, int indentation, String lineEnding) {
-  ArgumentError.checkNotNull(indentation, 'indentation');
-  ArgumentError.checkNotNull(lineEnding, 'lineEnding');
-
   const additionalIndentation = 2;
 
   if (!isBlockNode(value)) return yamlEncodeFlowString(value);
