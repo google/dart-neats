@@ -27,6 +27,7 @@ import 'package:chunked_stream/src/read_chunked_stream.dart';
 ///
 /// Note. methods on this class may not be called concurrently.
 @sealed
+@Deprecated('Use ChunkedStreamReader from package:async instead.')
 abstract class ChunkedStreamIterator<T> {
   factory ChunkedStreamIterator(Stream<List<T>> stream) {
     return _ChunkedStreamIterator<T>(stream);

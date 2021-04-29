@@ -1,5 +1,9 @@
-## v1.4.0
+## v1.4.1
+- Deprecating `ChunkedStreamIterator` in favor of
+  [`ChunkedStreamReader`](https://pub.dev/documentation/async/latest/async/ChunkedStreamReader-class.html)
+  from `package:async` version `^2.6.0`.
 
+## v1.4.0
 - Stable null-safety release
 
 ## v1.4.0-nullsafety.0
