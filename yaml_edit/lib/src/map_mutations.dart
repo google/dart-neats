@@ -45,6 +45,7 @@ SourceEdit updateInMap(
 /// Performs the string operation on [yaml] to achieve the effect of removing
 /// the element at [key] when re-parsed.
 SourceEdit removeInMap(YamlEditor yamlEdit, YamlMap map, Object? key) {
+  assert(containsKey(map, key));
   final keyNode = getKeyNode(map, key);
   final valueNode = map.nodes[keyNode]!;
 
