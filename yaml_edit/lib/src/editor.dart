@@ -408,12 +408,13 @@ class YamlEditor {
   /// '''
   /// ```
   YamlNode remove(Iterable<Object?> path) {
-    SourceEdit? edit;
-    var expectedNode = wrapAsYamlNode(null);
+    late SourceEdit edit;
+    late YamlNode expectedNode;
     final nodeToRemove = _traverse(path, checkAlias: true);
 
     if (path.isEmpty) {
       edit = SourceEdit(0, _yaml.length, '');
+      expectedNode = wrapAsYamlNode(null);
 
       /// Parsing an empty YAML document returns YamlScalar with value `null`.
       _performEdit(edit, path, expectedNode);
@@ -437,7 +438,7 @@ class YamlEditor {
           updatedYamlMap(parentNode, (nodes) => nodes.remove(keyOrIndex));
     }
 
-    _performEdit(edit!, collectionPath, expectedNode);
+    _performEdit(edit, collectionPath, expectedNode);
 
     return nodeToRemove;
   }
