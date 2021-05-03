@@ -1,5 +1,5 @@
 name: chunked_stream
-version: 1.4.0
+version: 1.4.1
 description: |
   Utilities for working with chunked streams, such as byte streams which is
   often given as a stream of byte chunks with type `Stream<List<int>>`.
@@ -12,4 +12,4 @@ dev_dependencies:
   test: ^1.16.0
   pedantic: ^1.4.0
 environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
