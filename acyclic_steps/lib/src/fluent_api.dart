@@ -46,7 +46,7 @@ typedef RunStepWrapper = Future<T> Function<T>(
 /// mocks/fakes in a testing setup.
 @sealed
 class Runner {
-  final Map<Step<Object>, dynamic> _cache = {};
+  final Map<Step<Object?>, dynamic> _cache = {};
   final RunStepWrapper _wrapRunStep;
 
   /// Create a [Runner] instance with an empty cache.
@@ -94,13 +94,7 @@ class Runner {
   /// ```
   Runner({
     RunStepWrapper wrapRunStep = _defaultRunStep,
-  }) : _wrapRunStep = wrapRunStep {
-    // Workaround Dart 2.8.1 regression reported in:
-    // https://github.com/dart-lang/sdk/issues/41871
-    if (wrapRunStep == null) {
-      throw ArgumentError.notNull('wrapRunStep');
-    }
-  }
+  }) : _wrapRunStep = wrapRunStep;
 
   /// Override [step] with [value], ensuring that [step] evaluates to [value]
   /// when [run] is called in this [Runner].
@@ -148,8 +142,6 @@ class Runner {
   /// }
   /// ```
   void override<T, S extends Step<T>>(S step, FutureOr<T> value) {
-    ArgumentError.checkNotNull(step, 'step');
-
     if (_cache.containsKey(step)) {
       throw StateError('Value for $step is already cached');
     }
@@ -185,17 +177,13 @@ class Runner {
   ///   assert(myComponent1 == myComponent2);
   /// }
   /// ```
-  Future<T> run<T>(Step<T> step) {
-    ArgumentError.checkNotNull(step, 'step');
-
-    return _cache.putIfAbsent(
-      step,
-      () => step._create(
-        this,
-        (fn) => _wrapRunStep(step, () => Future.value(fn())),
-      ),
-    );
-  }
+  Future<T> run<T>(Step<T> step) => _cache.putIfAbsent(
+        step,
+        () => step._create(
+          this,
+          (fn) => _wrapRunStep(step, () => Future.value(fn())),
+        ),
+      );
 }
 
 /// A [Step] is a function that may depend on the result of other steps.
@@ -238,7 +226,7 @@ class Step<T> {
   /// depend on other steps and so forth. However, as the set of dependencies
   /// must be specified when a [Step] is created, it is not possible for there
   /// to be any dependency cycles.
-  final Iterable<Step<Object>> directDependencies;
+  final Iterable<Step<Object?>> directDependencies;
 
   /// Internal method for creating an [T] given a [Runner] [r] that evaluate
   /// the [directDependencies].
@@ -258,7 +246,7 @@ class Step<T> {
   @override
   String toString() => 'Step[$name]';
 
-  Step._(this.name, this._create, List<Step<Object>> dependencies)
+  Step._(this.name, this._create, List<Step<Object?>> dependencies)
       : directDependencies = UnmodifiableListView(dependencies);
 
   /// Define a [Step] using a [StepBuilder].
@@ -299,10 +287,7 @@ class Step<T> {
   ///   // Setup Server using router and database
   /// });
   /// ```
-  static StepBuilder define(String name) {
-    ArgumentError.checkNotNull(name, 'name');
-    return StepBuilder._(name);
-  }
+  static StepBuilder define(String name) => StepBuilder._(name);
 }
 
 /// Builder for creating a [Step].
@@ -321,7 +306,6 @@ class StepBuilder {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder1<A> dep<A>(Step<A> stepA) {
-    ArgumentError.checkNotNull(stepA, 'stepA');
     return StepBuilder1._(_name, stepA);
   }
 
@@ -331,7 +315,6 @@ class StepBuilder {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilderN<S> deps<S>(Iterable<Step<S>> dependencies) {
-    ArgumentError.checkNotNull(dependencies, 'dependencies');
     final dependencies_ = List<Step<S>>.from(dependencies);
     return StepBuilderN._(_name, dependencies_);
   }
@@ -345,7 +328,6 @@ class StepBuilder {
   /// This method returns the [Step] built by the builder, see [Step.define] for
   /// how to define steps using this API.
   Step<T> build<T>(FutureOr<T> Function() runStep) {
-    ArgumentError.checkNotNull(runStep, 'runStep');
     return Step._(_name, (r, wrap) async {
       return await wrap(() => runStep());
     }, []);
@@ -399,7 +381,6 @@ class StepBuilder1<A> {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder2<A, B> dep<B>(Step<B> stepB) {
-    ArgumentError.checkNotNull(stepB, 'stepB');
     return StepBuilder2._(_name, _a, stepB);
   }
 
@@ -442,7 +423,6 @@ class StepBuilder2<A, B> {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder3<A, B, C> dep<C>(Step<C> stepC) {
-    ArgumentError.checkNotNull(stepC, 'stepC');
     return StepBuilder3._(_name, _a, _b, stepC);
   }
 
@@ -493,7 +473,6 @@ class StepBuilder3<A, B, C> {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder4<A, B, C, D> dep<D>(Step<D> stepD) {
-    ArgumentError.checkNotNull(stepD, 'stepD');
     return StepBuilder4._(_name, _a, _b, _c, stepD);
   }
 
@@ -517,7 +496,6 @@ class StepBuilder3<A, B, C> {
     )
         runStep,
   ) {
-    ArgumentError.checkNotNull(runStep, 'runStep');
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
       final b_ = r.run(_b);
@@ -557,7 +535,6 @@ class StepBuilder4<A, B, C, D> {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder5<A, B, C, D, E> dep<E>(Step<E> stepE) {
-    ArgumentError.checkNotNull(stepE, 'stepE');
     return StepBuilder5._(_name, _a, _b, _c, _d, stepE);
   }
 
@@ -582,7 +559,6 @@ class StepBuilder4<A, B, C, D> {
     )
         runStep,
   ) {
-    ArgumentError.checkNotNull(runStep, 'runStep');
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
       final b_ = r.run(_b);
@@ -626,7 +602,6 @@ class StepBuilder5<A, B, C, D, E> {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder6<A, B, C, D, E, F> dep<F>(Step<F> stepF) {
-    ArgumentError.checkNotNull(stepF, 'stepF');
     return StepBuilder6._(_name, _a, _b, _c, _d, _e, stepF);
   }
 
@@ -652,7 +627,6 @@ class StepBuilder5<A, B, C, D, E> {
     )
         runStep,
   ) {
-    ArgumentError.checkNotNull(runStep, 'runStep');
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
       final b_ = r.run(_b);
@@ -700,7 +674,6 @@ class StepBuilder6<A, B, C, D, E, F> {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder7<A, B, C, D, E, F, G> dep<G>(Step<G> stepG) {
-    ArgumentError.checkNotNull(stepG, 'stepG');
     return StepBuilder7._(_name, _a, _b, _c, _d, _e, _f, stepG);
   }
 
@@ -727,7 +700,6 @@ class StepBuilder6<A, B, C, D, E, F> {
     )
         runStep,
   ) {
-    ArgumentError.checkNotNull(runStep, 'runStep');
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
       final b_ = r.run(_b);
@@ -779,7 +751,6 @@ class StepBuilder7<A, B, C, D, E, F, G> {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder8<A, B, C, D, E, F, G, H> dep<H>(Step<H> stepH) {
-    ArgumentError.checkNotNull(stepH, 'stepH');
     return StepBuilder8._(_name, _a, _b, _c, _d, _e, _f, _g, stepH);
   }
 
@@ -807,7 +778,6 @@ class StepBuilder7<A, B, C, D, E, F, G> {
     )
         runStep,
   ) {
-    ArgumentError.checkNotNull(runStep, 'runStep');
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
       final b_ = r.run(_b);
@@ -863,7 +833,6 @@ class StepBuilder8<A, B, C, D, E, F, G, H> {
   /// This methods returns a new builder to be used as an intermediate result in
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder9<A, B, C, D, E, F, G, H, I> dep<I>(Step<I> stepI) {
-    ArgumentError.checkNotNull(stepI, 'stepI');
     return StepBuilder9._(_name, _a, _b, _c, _d, _e, _f, _g, _h, stepI);
   }
 
@@ -892,7 +861,6 @@ class StepBuilder8<A, B, C, D, E, F, G, H> {
     )
         runStep,
   ) {
-    ArgumentError.checkNotNull(runStep, 'runStep');
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
       final b_ = r.run(_b);
@@ -983,7 +951,6 @@ class StepBuilder9<A, B, C, D, E, F, G, H, I> {
     )
         runStep,
   ) {
-    ArgumentError.checkNotNull(runStep, 'runStep');
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
       final b_ = r.run(_b);
@@ -1068,7 +1035,6 @@ class StepBuilder9N<A, B, C, D, E, F, G, H, I, S> {
     )
         runStep,
   ) {
-    ArgumentError.checkNotNull(runStep, 'runStep');
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
       final b_ = r.run(_b);

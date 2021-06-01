@@ -1,3 +1,6 @@
+## v0.11.0
+ * Migrated to null-safety, shouldn't involve any breaking changes.
+
 ## v0.10.1
  * Added a workaround for `ArgumentError.checkNotNull` regression in Dart 2.8.1,
    see [dartlang/sdk#41871](https://github.com/dart-lang/sdk/issues/41871).
