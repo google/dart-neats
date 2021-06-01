@@ -24,7 +24,7 @@ void main() {
     /// evaluate a step that depends on [messageStep] it is necessary to
     /// override this step, by injecting a value to replace it.
     final messageStep = Step.define('message').build<String>(
-      (() => throw UnimplementedError('message must be overriden with input')) as FutureOr<String> Function(),
+      () => throw UnimplementedError('message must be overriden with input'),
     );
 
     /// A step that provides date and time
