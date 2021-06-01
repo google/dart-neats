@@ -18,16 +18,16 @@ import 'package:typed_data/typed_data.dart' show Uint8Buffer;
 import 'utils.dart' show char, RawMapEntry;
 import 'fast_unorm.dart' show fastNfc;
 
-class CanonicalJsonEncoder extends Converter<Object, Uint8List> {
+class CanonicalJsonEncoder extends Converter<Object?, Uint8List> {
   @override
-  Uint8List convert(Object input) {
+  Uint8List convert(Object? input) {
     final result = Uint8Buffer();
     _encode(result, input, input);
     return Uint8List.view(result.buffer, 0, result.length);
   }
 }
 
-void _encode(Uint8Buffer output, Object input, Object original) {
+void _encode(Uint8Buffer output, Object? input, Object? original) {
   // Handle null, true, false
   if (input == null) {
     output.addAll(ascii.encode('null'));
@@ -70,7 +70,7 @@ void _encode(Uint8Buffer output, Object input, Object original) {
   }
 
   // Handle lists by calling recursively.
-  if (input is List<Object>) {
+  if (input is List<Object?>) {
     output.add(char('['));
     for (var i = 0; i < input.length; i++) {
       if (i > 0) {
@@ -83,7 +83,7 @@ void _encode(Uint8Buffer output, Object input, Object original) {
   }
 
   // Handle maps from string to anything.
-  if (input is Map<String, Object>) {
+  if (input is Map<String, Object?>) {
     final entries = RawMapEntry.fromMap(input).toList();
     entries.sort(RawMapEntry.compare);
     output.add(char('{'));

@@ -83,4 +83,4 @@ export 'src/exceptions.dart' show InvalidCanonicalJsonException;
 ///   }
 /// }
 /// ```
-const Codec<Object, List<int>> canonicalJson = CanonicalJsonCodec();
+const Codec<Object?, List<int>> canonicalJson = CanonicalJsonCodec();

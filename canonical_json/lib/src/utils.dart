@@ -28,12 +28,12 @@ int char(String character) {
 
 class RawMapEntry {
   final Uint8List key;
-  final Object value;
+  final Object? value;
   RawMapEntry(this.key, this.value) {
     assert(key != null);
   }
 
-  static Iterable<RawMapEntry> fromMap(Map<String, Object> map) sync* {
+  static Iterable<RawMapEntry> fromMap(Map<String, Object?> map) sync* {
     for (final e in map.entries) {
       final s = fastNfc(e.key).replaceAll(r'\', r'\\').replaceAll('"', r'\"');
       final b = utf8.encode(s);
@@ -46,7 +46,6 @@ class RawMapEntry {
   }
 
   static int compare(RawMapEntry a, RawMapEntry b) {
-    assert(a != null && b != null, 'a and b should never be null');
     final N = math.min(a.key.length, b.key.length);
     for (var i = 0; i < N; i++) {
       final r = a.key[i].compareTo(b.key[i]);

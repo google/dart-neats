@@ -16,7 +16,7 @@ import 'dart:convert' show Codec;
 import 'decoder.dart' show CanonicalJsonDecoder;
 import 'encoder.dart' show CanonicalJsonEncoder;
 
-class CanonicalJsonCodec extends Codec<Object, List<int>> {
+class CanonicalJsonCodec extends Codec<Object?, List<int>> {
   const CanonicalJsonCodec();
 
   @override

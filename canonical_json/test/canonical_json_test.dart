@@ -75,7 +75,9 @@ void main() {
         expect(decoded, equals(value));
         final encodedAgain = canonicalJson.encode(decoded);
         expect(encodedAgain, encoded);
-        final decodedJson = json.fuse(utf8).decode(encoded);
+        // TODO: Use json.fuse(utf8) when: http://dartbug.com/46205 is fixed!
+        // final decodedJson = json.fuse(utf8).decode(encoded);
+        final decodedJson = json.decode(utf8.decode(encoded));
         expect(decodedJson, equals(value));
       }));
 

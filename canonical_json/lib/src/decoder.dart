@@ -18,9 +18,9 @@ import 'utils.dart' show char, RawMapEntry, ensureUint8List;
 import 'exceptions.dart' show InvalidCanonicalJsonException;
 import 'fast_unorm.dart' show fastNfc;
 
-class CanonicalJsonDecoder extends Converter<List<int>, Object> {
+class CanonicalJsonDecoder extends Converter<List<int>, Object?> {
   @override
-  Object convert(List<int> input) {
+  Object? convert(List<int> input) {
     ArgumentError.checkNotNull(input, 'input');
     final data = ensureUint8List(input);
     return Decoder(data).decode();
@@ -42,7 +42,7 @@ bool _isAscii(String s) => s.split('').every((c) => char(c) < 128);
 
 class _RawMapEntry extends RawMapEntry {
   final int offset;
-  _RawMapEntry(Uint8List key, Object value, this.offset) : super(key, value);
+  _RawMapEntry(Uint8List key, Object? value, this.offset) : super(key, value);
 }
 
 class Decoder {
@@ -70,13 +70,13 @@ class Decoder {
     }
   }
 
-  InvalidCanonicalJsonException _fail(String message, [int offset]) =>
+  InvalidCanonicalJsonException _fail(String message, [int? offset]) =>
       _InvalidCanonicalJsonException(_data, offset ?? _offset, message);
 
   int get _value => _offset < _data.length ? _data[_offset] : -1;
   int get _peak => _offset + 1 < _data.length ? _data[_offset + 1] : -1;
 
-  Object decode() {
+  Object? decode() {
     final result = _readValue();
     if (_data.length != _offset) {
       throw _fail('expected end of input');
@@ -84,7 +84,7 @@ class Decoder {
     return result;
   }
 
-  Object _readValue() {
+  Object? _readValue() {
     // 1-9, leading zeros are not allowed
     if (char('1') <= _value && _value <= char('9')) {
       return _readInt();
@@ -168,8 +168,8 @@ class Decoder {
   }
 
   /// Read a list, assumes _value is `[`.
-  List<Object> _readList() {
-    final result = <Object>[];
+  List<Object?> _readList() {
+    final result = <Object?>[];
     assert(_value == char('['));
     _offset++;
     if (_try(']')) {
@@ -183,7 +183,7 @@ class Decoder {
   }
 
   /// Read a map, assumes value is `{`.
-  Map<String, Object> _readMap() {
+  Map<String, Object?> _readMap() {
     assert(_value == char('{'));
     _offset++;
     if (_try('}')) {
@@ -207,7 +207,7 @@ class Decoder {
       }
     }
     // Create object from entries and validate utf-8 encoding of keys.
-    final result = <String, Object>{};
+    final result = <String, Object?>{};
     for (final entry in entries) {
       result[_decodeString(entry.key, entry.offset)] = entry.value;
     }
