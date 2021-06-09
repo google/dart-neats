@@ -125,7 +125,9 @@ void main() {
   testNotContains('<form><input type="submit"/></form> click here', 'input');
   testContains('<form><input type="submit"/></form> click here', 'click here');
 
-  testContains('<br>', '<br />');
+  testContains('<br>', '<br>');
+  testNotContains('<br>', '</br>');
+  testNotContains('<br>', '</ br>');
   testContains('><', '&gt;&lt;');
   testContains('<div><div id="x">a</div></div>', '<div><div>a</div></div>');
   testContains('<a href="a.html">a</a><a href="b.html">b</a>',
@@ -135,7 +137,9 @@ void main() {
   testContains('<strong></strong> hello', '<strong>');
   testContains('<strong></strong> hello', '</strong>');
   testNotContains('<strong></strong> hello', '<strong />');
-  testContains('<br>hello</br>', '<br />');
+  testContains('<br>hello</br>', '<br>');
+  testNotContains('<br>hello</br>', '</br>');
+  testNotContains('<br>hello</br>', '</ br>');
 
   // test addLinkRel
   testContains('<a href="bad-link">hello', 'bad-link');
