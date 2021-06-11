@@ -1,3 +1,6 @@
+## v2.0.0-dev
+ * Remove custom HTML rendering logic in favor of logic from `package:html`.
+
 ## v2.0.0
  * Migrate to null safety.
 

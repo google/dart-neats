@@ -1,5 +1,5 @@
 name: sanitize_html
-version: 2.0.0
+version: 2.0.0-dev
 description: |
   Function for sanitizing HTML to prevent XSS by restrict elements and
   attributes to a safe subset of allowed values.

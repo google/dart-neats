@@ -15,8 +15,6 @@
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
 
-import 'html_formatter.dart';
-
 final _allowedElements = <String>{
   'H1',
   'H2',
@@ -224,7 +222,7 @@ class SaneHtmlValidator {
   String sanitize(String htmlString) {
     final root = html_parser.parseFragment(htmlString);
     _sanitize(root);
-    return formatHtmlNode(root);
+    return root.outerHtml;
   }
 
   void _sanitize(Node node) {
