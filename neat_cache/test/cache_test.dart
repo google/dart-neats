@@ -20,14 +20,14 @@ import 'package:test/test.dart';
 import 'utils.dart';
 
 void testCacheT<T>({
-  String name,
-  Future<Cache<T>> Function() create,
-  Future Function() destroy,
-  T Function() valueA,
-  T Function() valueB,
+  required String name,
+  required Future<Cache<T>> Function() create,
+  Future Function()? destroy,
+  required T Function() valueA,
+  required T Function() valueB,
 }) =>
     group(name, () {
-      Cache<T> cache;
+      late Cache<T> cache;
       setUpAll(() async => cache = await create());
       tearDownAll(() => destroy != null ? destroy() : null);
 
@@ -95,9 +95,9 @@ void testCacheT<T>({
     });
 
 void testCache({
-  String name,
-  Future<Cache<List<int>>> Function() create,
-  Future Function() destroy,
+  required String name,
+  required Future<Cache<List<int>>> Function() create,
+  Future Function()? destroy,
   List<String> tags = const <String>[],
 }) =>
     group(name, () {
@@ -162,7 +162,7 @@ void main() {
     create: () async => Cache(Cache.inMemoryCacheProvider(4096)),
   );
 
-  CacheProvider<List<int>> p;
+  late CacheProvider<List<int>> p;
   testCache(
     name: 'redis cache',
     create: () async {

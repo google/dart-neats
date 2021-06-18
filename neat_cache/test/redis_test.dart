@@ -95,8 +95,8 @@ void main() {
   setupLogging();
 
   group('redis', () {
-    SocketProxyServer proxy;
-    CacheProvider<String> cache;
+    late SocketProxyServer proxy;
+    late CacheProvider<String> cache;
     setUp(() async {
       proxy = await SocketProxyServer.create('localhost', 6379);
       final connectionString = 'redis://${proxy.host}:${proxy.port}';

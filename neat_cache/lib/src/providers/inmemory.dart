@@ -17,9 +17,9 @@ import '../../cache_provider.dart';
 
 class _InMemoryEntry<T> {
   final T value;
-  final DateTime _expires;
+  final DateTime? _expires;
   _InMemoryEntry(this.value, [this._expires]);
-  bool get isExpired => _expires != null && _expires.isBefore(DateTime.now());
+  bool get isExpired => _expires != null && _expires!.isBefore(DateTime.now());
 }
 
 /// Simple two-generational LRU cache inspired by:
@@ -48,7 +48,7 @@ class InMemoryCacheProvider<T> extends CacheProvider<T> {
   }
 
   @override
-  Future<T> get(String key) async {
+  Future<T?> get(String key) async {
     if (_isClosed) {
       throw StateError('CacheProvider.close() have been called');
     }
@@ -77,7 +77,7 @@ class InMemoryCacheProvider<T> extends CacheProvider<T> {
   }
 
   @override
-  Future<void> set(String key, T value, [Duration ttl]) async {
+  Future<void> set(String key, T value, [Duration? ttl]) async {
     if (_isClosed) {
       throw StateError('CacheProvider.close() have been called');
     }
@@ -104,7 +104,7 @@ class InMemoryCacheProvider<T> extends CacheProvider<T> {
   @override
   Future<void> close() async {
     _isClosed = true;
-    _old = null;
-    _new = null;
+    _old = {};
+    _new = {};
   }
 }

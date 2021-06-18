@@ -102,7 +102,7 @@ abstract class Entry<T> {
   /// The [get] method is a best-effort method. In case of intermittent failures
   /// from the underlying [CacheProvider] the [get] method will ignore failures
   /// and return `null` (or result from [create] if specified).
-  Future<T> get([Future<T> Function() create, Duration ttl]);
+  Future<T?> get([Future<T?> Function() create, Duration ttl]);
 
   /// Set the value stored in this cache entry.
   ///
@@ -116,7 +116,7 @@ abstract class Entry<T> {
   ///
   /// To ensure that cache entries are purged, use the [purge] method with
   /// `retries` not set to zero.
-  Future<T> set(T value, [Duration ttl]);
+  Future<T?> set(T? value, [Duration ttl]);
 
   /// Clear the value stored in this cache entry.
   ///
@@ -131,7 +131,7 @@ class _Cache<T, V> implements Cache<T> {
   final CacheProvider<V> _provider;
   final String _prefix;
   final Codec<T, V> _codec;
-  final Duration _ttl;
+  final Duration? _ttl;
 
   _Cache(this._provider, this._prefix, this._codec, [this._ttl]);
 
@@ -156,8 +156,8 @@ class _Entry<T, V> implements Entry<T> {
   _Entry(this._owner, this._key);
 
   @override
-  Future<T> get([Future<T> Function() create, Duration ttl]) async {
-    V value;
+  Future<T?> get([Future<T?> Function()? create, Duration? ttl]) async {
+    V? value;
     try {
       _logger.finest(() => 'reading cache entry for "$_key"');
       value = await _owner._provider.get(_key);
@@ -175,7 +175,11 @@ class _Entry<T, V> implements Entry<T> {
       final created = await create();
       if (created != null) {
         // Calling `set(null)` is equivalent to `purge()`, we can skip that here
-        await set(created, ttl);
+        if (ttl != null) {
+          await set(created, ttl);
+        } else {
+          await set(created);
+        }
       }
       return created;
     }
@@ -183,7 +187,7 @@ class _Entry<T, V> implements Entry<T> {
   }
 
   @override
-  Future<T> set(T value, [Duration ttl]) async {
+  Future<T?> set(T? value, [Duration? ttl]) async {
     if (value == null) {
       await purge();
       return null;
@@ -191,7 +195,11 @@ class _Entry<T, V> implements Entry<T> {
     ttl ??= _owner._ttl;
     final raw = _owner._codec.encode(value);
     try {
-      await _owner._provider.set(_key, raw, ttl);
+      if (ttl != null) {
+        await _owner._provider.set(_key, raw, ttl);
+      } else {
+        await _owner._provider.set(_key, raw);
+      }
     } on IntermittentCacheException {
       _logger.fine(
         // embedding [intermittent-cache-failure] to allow for easy log metrics
