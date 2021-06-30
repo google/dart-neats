@@ -103,12 +103,18 @@ void main() {
       return Response.ok('Hello $user');
     });
 
+    var api2 = Router();
+    api2.get('/', (Request request) {
+      return Response.ok('api2');
+    });
+
     var app = Router();
     app.get('/hello', (Request request) {
       return Response.ok('hello-world');
     });
 
-    app.mount('/api/', api);
+    app.mount('/api', api);
+    app.mount('/api2', api2);
 
     app.all('/<_|[^]*>', (Request request) {
       return Response.notFound('catch-all-handler');
@@ -118,6 +124,8 @@ void main() {
 
     expect(await get('/hello'), 'hello-world');
     expect(await get('/api/user/jonasfj/info'), 'Hello jonasfj');
+    expect(await get('/api2'), 'api2');
+    expect(get('/api2/'), throwsA(anything));
     expect(get('/api/user/jonasfj/info-wrong'), throwsA(anything));
   });
 
@@ -138,7 +146,7 @@ void main() {
 
     var app = Router();
     app.mount(
-      '/api/',
+      '/api',
       Pipeline().addMiddleware(middleware).addHandler(api),
     );
 
