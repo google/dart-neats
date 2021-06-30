@@ -120,7 +120,7 @@ class Router {
   ///
   /// In this case prefix may not contain any parameters, nor
   void mount(String prefix, Handler handler) {
-    if (!prefix.startsWith('/') || !prefix.endsWith('/')) {
+    if (!prefix.startsWith('/')) {
       throw ArgumentError.value(
           prefix, 'prefix', 'must start and end with a slash');
     }
