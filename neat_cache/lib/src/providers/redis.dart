@@ -85,8 +85,8 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
       throw IntermittentCacheException('connection failed');
     } on TimeoutException {
       throw IntermittentCacheException('connect failed with timeout');
-    } on IOException {
-      throw IntermittentCacheException('connect failed with socket exception');
+    } on IOException catch (e) {
+      throw IntermittentCacheException('connect failed with IOException: $e');
     } on Exception {
       throw IntermittentCacheException('connect failed with exception');
     }

@@ -175,11 +175,7 @@ class _Entry<T, V> implements Entry<T> {
       final created = await create();
       if (created != null) {
         // Calling `set(null)` is equivalent to `purge()`, we can skip that here
-        if (ttl != null) {
-          await set(created, ttl);
-        } else {
-          await set(created);
-        }
+        await set(created, ttl);
       }
       return created;
     }
@@ -195,11 +191,7 @@ class _Entry<T, V> implements Entry<T> {
     ttl ??= _owner._ttl;
     final raw = _owner._codec.encode(value);
     try {
-      if (ttl != null) {
-        await _owner._provider.set(_key, raw, ttl);
-      } else {
-        await _owner._provider.set(_key, raw);
-      }
+      await _owner._provider.set(_key, raw, ttl);
     } on IntermittentCacheException {
       _logger.fine(
         // embedding [intermittent-cache-failure] to allow for easy log metrics
