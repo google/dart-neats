@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:io' show IOException, Socket;
+import 'dart:io' show IOException, Socket, SocketOption;
 import 'dart:typed_data';
 import 'resp.dart';
 import 'package:logging/logging.dart';
@@ -29,7 +29,7 @@ class _RedisContext {
 }
 
 class RedisCacheProvider extends CacheProvider<List<int>> {
-  final String _connectionString;
+  final Uri _connectionString;
   final Duration _connectTimeLimit;
   final Duration _commandTimeLimit;
   final Duration _reconnectDelay;
@@ -38,27 +38,44 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
   bool _isClosed = false;
 
   RedisCacheProvider(
-    this._connectionString, {
+    Uri connectionString, {
     Duration connectTimeLimit = const Duration(seconds: 30),
     Duration commandTimeLimit = const Duration(milliseconds: 200),
     Duration reconnectDelay = const Duration(seconds: 30),
-  })  : _connectTimeLimit = connectTimeLimit,
+  })  : _connectionString = connectionString,
+        _connectTimeLimit = connectTimeLimit,
         _commandTimeLimit = commandTimeLimit,
         _reconnectDelay = reconnectDelay {
-    assert(_connectionString.isNotEmpty, 'connectionString must be given');
-    assert(!_connectTimeLimit.isNegative, 'connectTimeLimit is negative');
-    assert(!_commandTimeLimit.isNegative, 'commandTimeLimit is negative');
-    assert(!_reconnectDelay.isNegative, 'reconnectDelay is negative');
+    if (!connectionString.isScheme('redis')) {
+      throw ArgumentError.value(
+          connectionString, 'connectionString', 'must have scheme redis://');
+    }
+    if (!connectionString.hasEmptyPath) {
+      throw ArgumentError.value(
+          connectionString, 'connectionString', 'cannot have a path');
+    }
+    if (connectTimeLimit.isNegative) {
+      throw ArgumentError.value(
+          connectTimeLimit, 'connectTimeLimit', 'must be positive');
+    }
+    if (commandTimeLimit.isNegative) {
+      throw ArgumentError.value(
+          commandTimeLimit, 'commandTimeLimit', 'must be positive');
+    }
+    if (reconnectDelay.isNegative) {
+      throw ArgumentError.value(
+          reconnectDelay, 'reconnectDelay', 'must be positive');
+    }
   }
 
   Future<_RedisContext> _createContext() async {
     try {
       _log.info('Connecting to redis');
-      final u = Uri.parse(_connectionString);
       final socket = await Socket.connect(
-        u.host,
-        u.port,
+        _connectionString.host,
+        _connectionString.port,
       ).timeout(_connectTimeLimit);
+      socket.setOption(SocketOption.tcpNoDelay, true);
 
       // Create context
       return _RedisContext(
@@ -112,7 +129,7 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
     }
     final ctx = await _getContext();
     try {
-      return fn(ctx.client).timeout(_commandTimeLimit);
+      return await fn(ctx.client).timeout(_commandTimeLimit);
     } on RedisErrorException catch (e) {
       throw AssertionError('error from redis command: $e');
     } on TimeoutException {

@@ -89,7 +89,7 @@ void main() {
   testCacheProvider(
     name: 'redis cache',
     create: () async {
-      p = Cache.redisCacheProvider('redis://localhost:6379');
+      p = Cache.redisCacheProvider(Uri.parse('redis://localhost:6379'));
       return StringCacheProvider(cache: p, codec: utf8);
     },
     destroy: () => p.close(),

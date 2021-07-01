@@ -166,7 +166,7 @@ void main() {
   testCache(
     name: 'redis cache',
     create: () async {
-      p = Cache.redisCacheProvider('redis://localhost:6379');
+      p = Cache.redisCacheProvider(Uri.parse('redis://localhost:6379'));
       return Cache(p);
     },
     destroy: () async => p.close(),

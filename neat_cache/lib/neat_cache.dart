@@ -78,7 +78,7 @@ abstract class Cache<T> {
 
   /// Create a redis [CacheProvider] by connecting using a [connectionString] on
   /// the form `redis://<host>:<port>`.
-  static CacheProvider<List<int>> redisCacheProvider(String connectionString) {
+  static CacheProvider<List<int>> redisCacheProvider(Uri connectionString) {
     return RedisCacheProvider(connectionString);
   }
 }

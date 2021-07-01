@@ -1,3 +1,17 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 /// Minimalistic [RESP[1] protocol implementation in Dart.
 ///
 /// [1]: https://redis.io/topics/protocol
@@ -6,13 +20,13 @@ library resp;
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:logging/logging.dart';
 
 final _log = Logger('neat_cache:redis');
 
+/// Thrown when a command returns
 class RedisErrorException implements Exception {
   final String type;
   final String message;
@@ -23,7 +37,12 @@ class RedisErrorException implements Exception {
   String toString() => 'RedisErrorException: $type $message';
 }
 
-// If this or IOException occurs, then consider the connection closed and retry it
+/// Thrown if the redis connection is broken.
+///
+/// This typically happens if the connection is unexpectedly closed, the
+/// [RESP protocol][1] is violated, or there is an internal error.
+///
+/// [1]: https://redis.io/topics/protocol
 class RedisConnectionException implements Exception {
   final String message;
 
@@ -33,6 +52,9 @@ class RedisConnectionException implements Exception {
   String toString() => 'RedisConnectionException: $message';
 }
 
+/// Client implementing the [RESP protocol][1].
+///
+/// [1]: https://redis.io/topics/protocol
 class RespClient {
   static final _newLine = ascii.encode('\r\n');
 
@@ -49,6 +71,21 @@ class RespClient {
   bool _closing = false;
   final _closed = Completer<void>();
 
+  /// Creates an instance of [RespClient] given an [input]stream and an [output]
+  /// sink.
+  ///
+  /// If connecting over TCP as usual the `Socket` object from `dart:io`
+  /// implements both [Stream<Uint8List>] and [StreamSink<List<int>>]. Thus,
+  /// the following example is a reasonable way to make a client:
+  ///
+  /// ```dart
+  /// // Connect to redis server
+  /// final socket = await Socket.connect(host, port);
+  /// socket.setOption(SocketOption.tcpNoDelay, true);
+  ///
+  /// // Create client
+  /// final client = RespClient(socket, socket);
+  /// ```
   RespClient(
     Stream<Uint8List> input,
     StreamSink<List<int>> output,
@@ -72,11 +109,42 @@ class RespClient {
     });
   }
 
+  /// Returns a [Future] that is resolved when the connection is closed.
   Future<void> get closed => _closed.future;
 
-  Future<Object?> command(List<Object> args) {
+  /// Send command to redis and return the result.
+  ///
+  /// The [args] is a list of:
+  ///  * [String],
+  ///  * [List<int>], and,
+  ///  * [int].
+  /// This is always encoded as an _RESP Array_ of _RESP Bulk Strings_.
+  ///
+  /// Response will decoded as follows:
+  ///  * RESP Simple String: returns [String],
+  ///  * RESP Error: throws [RedisErrorException],
+  ///  * RESP Integer: returns [int],
+  ///  * RESP Bulk String: returns [Uint8List],
+  ///  * RESP nil Bulk String: returns `null`,
+  ///  * RESP Array: returns [List<Object?>], and,
+  ///  * RESP nil Arrray: returns `null`.
+  ///
+  /// Throws [RedisConnectionException] if underlying connection as been broken
+  /// or if the [RESP protocol][1] has been violated. After this, the client
+  /// should not be used further.
+  ///
+  /// Forwards any [Exception] thrown by the underlying connection and aborts
+  /// the [RespClient]. Once aborted [closed] will be resolved, and further
+  /// attempts to call [command] will throw [RedisConnectionException].
+  ///
+  /// Consumers are encouraged to handle [RedisConnectionException] and
+  /// reconnect, creating a new [RespClient], when [RedisConnectionException] is
+  /// encountered.
+  ///
+  /// [1]: https://redis.io/topics/protocol
+  Future<Object?> command(List<Object> args) async {
     if (_closing) {
-      throw StateError('redis connection is closed');
+      throw RedisConnectionException._('redis connection is closed');
     }
 
     final out = BytesBuilder(copy: false);
@@ -106,14 +174,36 @@ class RespClient {
       out.add(_newLine);
     }
 
-    _output.add(out.toBytes());
     final c = Completer<Object?>();
     _pending.addLast(c);
+    try {
+      await _output.addStream(Stream.value(out.toBytes()));
+    } on Exception catch (e, st) {
+      await _abort(e, st);
+    }
+
     return c.future;
   }
 
+  /// Send `QUIT` command to redis and close the connection.
+  ///
+  /// If [force] is `true`, then the connection will be forcibly closed
+  /// immediately. Otherwise, connection will reject new commands, but wait for
+  /// existing commands to complete.
   Future<void> close({bool force = false}) async {
     _closing = true;
+
+    if (!_closing) {
+      // Always send QUIT message to be nice
+      try {
+        final quit = command(['QUIT']);
+        scheduleMicrotask(() async {
+          await quit.catchError((_) {/* ignore */});
+        });
+      } catch (_) {
+        // ignore
+      }
+    }
 
     if (!force) {
       scheduleMicrotask(() async {
@@ -146,9 +236,13 @@ class RespClient {
     // Resolve all outstanding requests
     final pending = _pending.toList(growable: false);
     _pending.clear();
-    pending.forEach((c) => c.completeError(e, st));
+    scheduleMicrotask(() {
+      pending.forEach((c) => c.completeError(e, st));
+    });
 
-    _closed.complete();
+    if (!_closed.isCompleted) {
+      _closed.complete();
+    }
     await _input.cancel();
 
     assert(_pending.isEmpty, 'new pending requests added after aborting');
@@ -160,8 +254,6 @@ class RespClient {
         Object? value;
         try {
           value = await _readValue();
-        } on IOException catch (e, st) {
-          return await _abort(e, st);
         } on RedisConnectionException catch (e, st) {
           return await _abort(e, st);
         }
@@ -194,11 +286,16 @@ class RespClient {
   }
 
   Future<Object?> _readValue() async {
-    final line = await _input.readLine(maxSize: _maxValueSize);
+    Uint8List line;
+    try {
+      line = await _input.readLine(maxSize: _maxValueSize);
+    } on Exception catch (e, st) {
+      await _abort(e, st);
+      throw RedisConnectionException._('exception reading line: $e');
+    }
     if (line.isEmpty) {
       throw RedisConnectionException._('Incoming stream from server closed');
     }
-    print('GOT LINE: ${ascii.decode(line)}');
     if (!_endsWithNewLine(line)) {
       throw RedisConnectionException._(
         'Invalid server message: missing newline',
@@ -270,14 +367,20 @@ class RespClient {
           'Invalid bulk string length from server: $length',
         );
       }
-      final bytes = await _input.readBytes(length + 2);
+      Uint8List bytes;
+      try {
+        bytes = await _input.readBytes(length + 2);
+      } on Exception catch (e, st) {
+        await _abort(e, st);
+        throw RedisConnectionException._('exception reading bytes: $e');
+      }
       if (bytes.length != length + 2) {
         throw RedisConnectionException._('Incoming stream from server closed');
       }
       if (!_endsWithNewLine(bytes)) {
         throw RedisConnectionException._('Invalid bulk string from server');
       }
-      return Uint8List.sublistView(bytes, 0, length - 2);
+      return Uint8List.sublistView(bytes, 0, length);
     }
 
     // Handle arrays
@@ -380,7 +483,6 @@ class _ByteStreamScanner {
     while (true) {
       if (_buffer.isEmpty) {
         if (!(await _input.moveNext())) {
-          print('NO MORE DATA!');
           // Don't attempt to read more data, as there is no more data.
           break;
         }

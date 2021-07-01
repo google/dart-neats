@@ -17,7 +17,8 @@ import 'dart:convert' show utf8;
 import 'package:neat_cache/neat_cache.dart';
 
 Future<void> main() async {
-  final cacheProvider = Cache.redisCacheProvider('redis://localhost:6379');
+  final u = Uri.parse('redis://localhost:6379');
+  final cacheProvider = Cache.redisCacheProvider(u);
   final cache = Cache(cacheProvider);
 
   /// Create a sub-cache using a prefix, and apply a codec to store utf8
