@@ -130,7 +130,7 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
     final ctx = await _getContext();
     try {
       return await fn(ctx.client).timeout(_commandTimeLimit);
-    } on RedisErrorException catch (e) {
+    } on RedisCommandException catch (e) {
       throw AssertionError('error from redis command: $e');
     } on TimeoutException {
       // If we had a timeout, doing the command we forcibly disconnect

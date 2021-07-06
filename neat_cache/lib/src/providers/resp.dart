@@ -26,15 +26,15 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('neat_cache:redis');
 
-/// Thrown when a command returns
-class RedisErrorException implements Exception {
+/// Thrown when the server returns an error in response to a command.
+class RedisCommandException implements Exception {
   final String type;
   final String message;
 
-  RedisErrorException._(this.type, this.message);
+  RedisCommandException._(this.type, this.message);
 
   @override
-  String toString() => 'RedisErrorException: $type $message';
+  String toString() => 'RedisCommandException: $type $message';
 }
 
 /// Thrown if the redis connection is broken.
@@ -122,7 +122,7 @@ class RespClient {
   ///
   /// Response will decoded as follows:
   ///  * RESP Simple String: returns [String],
-  ///  * RESP Error: throws [RedisErrorException],
+  ///  * RESP Error: throws [RedisCommandException],
   ///  * RESP Integer: returns [int],
   ///  * RESP Bulk String: returns [Uint8List],
   ///  * RESP nil Bulk String: returns `null`,
@@ -264,7 +264,7 @@ class RespClient {
           );
         }
         final c = _pending.removeFirst();
-        if (value is RedisErrorException) {
+        if (value is RedisCommandException) {
           // This is an error code returned by the server, it doesn't have a
           // stack-trace!
           c.completeError(value, StackTrace.empty);
@@ -284,6 +284,8 @@ class RespClient {
       );
     }
   }
+
+  static final _whitespacePattern = RegExp(r'\s');
 
   Future<Object?> _readValue() async {
     Uint8List line;
@@ -321,14 +323,14 @@ class RespClient {
         rest,
         allowMalformed: true,
       );
-      final i = message.indexOf(RegExp(r'\s'));
+      final i = message.indexOf(_whitespacePattern);
       if (i != -1 && i + 1 < message.length) {
-        return RedisErrorException._(
+        return RedisCommandException._(
           message.substring(0, i),
           message.substring(i + 1),
         );
       }
-      return RedisErrorException._('ERR', message);
+      return RedisCommandException._('ERR', message);
     }
 
     // Handle integers

@@ -103,10 +103,10 @@ void main() {
       expect(r4, isNull);
     });
 
-    test('Invalid-Command throws RedisErrorException', () {
+    test('Invalid-Command throws RedisCommandException', () {
       expect(
         client.command(['Invalid-Command', 'wrong-arg']),
-        throwsA(isA<RedisErrorException>()),
+        throwsA(isA<RedisCommandException>()),
       );
     });
   }, tags: 'redis');
