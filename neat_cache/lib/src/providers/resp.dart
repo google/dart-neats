@@ -177,7 +177,7 @@ class RespClient {
     final c = Completer<Object?>();
     _pending.addLast(c);
     try {
-      await _output.addStream(Stream.value(out.toBytes()));
+      _output.add(out.toBytes());
     } on Exception catch (e, st) {
       await _abort(e, st);
     }
