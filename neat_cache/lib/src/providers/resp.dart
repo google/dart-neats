@@ -65,6 +65,7 @@ class RespClient {
 
   final _ByteStreamScanner _input;
   final StreamSink<List<int>> _output;
+  Future _pendingStream = Future.value(null);
 
   final _pending = Queue<Completer<Object?>>();
 
@@ -177,7 +178,8 @@ class RespClient {
     final c = Completer<Object?>();
     _pending.addLast(c);
     try {
-      _output.add(out.toBytes());
+      _pendingStream = _pendingStream
+          .then((value) => _output.addStream(Stream.value(out.toBytes())));
     } on Exception catch (e, st) {
       await _abort(e, st);
     }
