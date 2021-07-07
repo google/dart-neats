@@ -20,13 +20,13 @@ import 'package:neat_cache/cache_provider.dart';
 import 'utils.dart';
 
 void testCacheProvider({
-  String name,
-  Future<CacheProvider<String>> Function() create,
-  Future Function() destroy,
+  required String name,
+  required Future<CacheProvider<String>> Function() create,
+  Future Function()? destroy,
   List<String> tags = const <String>[],
 }) =>
     group(name, () {
-      CacheProvider<String> cache;
+      late CacheProvider<String> cache;
       setUpAll(() async => cache = await create());
       tearDownAll(() => destroy != null ? destroy() : null);
 
@@ -85,11 +85,11 @@ void main() {
     ),
   );
 
-  CacheProvider<List<int>> p;
+  late CacheProvider<List<int>> p;
   testCacheProvider(
     name: 'redis cache',
     create: () async {
-      p = Cache.redisCacheProvider('redis://localhost:6379');
+      p = Cache.redisCacheProvider(Uri.parse('redis://localhost:6379'));
       return StringCacheProvider(cache: p, codec: utf8);
     },
     destroy: () => p.close(),

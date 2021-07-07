@@ -36,7 +36,7 @@ class _FailingCacheProvider extends CacheProvider<String> {
   }
 
   @override
-  Future<void> set(String key, String value, [Duration ttl]) async {
+  Future<void> set(String key, String value, [Duration? ttl]) async {
     if (_isClosed) {
       throw StateError('CacheProvider.close() have been called');
     }
