@@ -182,7 +182,15 @@ class RespClient {
       await _abort(e, st);
     }
 
-    return c.future;
+    try {
+      return await c.future;
+    } on RedisCommandException catch (e) {
+      // Don't use rethrow because the stack-trace really should start here.
+      // we always throw RedisCommandException with a StackTrace.empty, because
+      // it's a thing that happens on the server, and that stack-trace of the
+      // code that reads the value from the server is uninteresting.
+      throw e; // ignore: use_rethrow_when_possible
+    }
   }
 
   /// Send `QUIT` command to redis and close the connection.
