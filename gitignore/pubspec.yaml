@@ -1,0 +1,13 @@
+name: gitignore
+version: 0.1.0
+description: |
+  An implementation of gitignore rules.
+homepage: https://github.com/google/dart-neats/tree/master/gitignore
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:gitignore
+dev_dependencies: 
+  test: ^1.16.8
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+dependencies: 
+  meta: ^1.3.0
