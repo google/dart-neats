@@ -38,7 +38,7 @@ abstract class CacheProvider<T> {
   /// Fetch data stored under [key].
   ///
   /// If nothing is cached for [key], this **must** return `null`.
-  Future<T> get(String key);
+  Future<T?> get(String key);
 
   /// Set [value] stored at [key] with optional [ttl].
   ///
@@ -47,7 +47,7 @@ abstract class CacheProvider<T> {
   ///
   /// When given [ttl] is advisory, however, implementers should avoid returning
   /// entries that are far past their [ttl].
-  Future<void> set(String key, T value, [Duration ttl]);
+  Future<void> set(String key, T value, [Duration? ttl]);
 
   /// Clear value stored at [key].
   ///

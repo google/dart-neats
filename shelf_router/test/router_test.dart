@@ -74,8 +74,8 @@ void main() {
     var app = Router();
 
     app.get(r'/user/<user>/groups/<group|\d+>', (Request request) {
-      final user = params(request, 'user');
-      final group = params(request, 'group');
+      final user = request.params['user'];
+      final group = request.params['group'];
       return Response.ok('$user / $group');
     });
 
@@ -117,7 +117,7 @@ void main() {
     app.mount('/api2', api2);
 
     app.all('/<_|[^]*>', (Request request) {
-      return Response.notFound('catch-all-handler');
+      return Response.ok('catch-all-handler');
     });
 
     server.mount(app);
@@ -127,6 +127,7 @@ void main() {
     expect(await get('/api2'), 'api2');
     expect(get('/api2/'), throwsA(anything));
     expect(get('/api/user/jonasfj/info-wrong'), throwsA(anything));
+    expect(await get('/api/user/jonasfj/info-wrong'), 'catch-all-handler');
   });
 
   test('mount(Handler) with middleware', () async {

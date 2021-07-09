@@ -20,13 +20,13 @@ import 'package:neat_cache/cache_provider.dart';
 import 'utils.dart';
 
 void testCacheProvider({
-  String name,
-  Future<CacheProvider<String>> Function() create,
-  Future Function() destroy,
+  required String name,
+  required Future<CacheProvider<String>> Function() create,
+  Future Function()? destroy,
   List<String> tags = const <String>[],
 }) =>
     group(name, () {
-      CacheProvider<String> cache;
+      late CacheProvider<String> cache;
       setUpAll(() async => cache = await create());
       tearDownAll(() => destroy != null ? destroy() : null);
 
@@ -36,10 +36,40 @@ void testCacheProvider({
         expect(r, isNull);
       });
 
+      test('get multiple keys at the same time', () async {
+        await cache.purge('test-key');
+        final list = await Future.wait([
+          cache.get('test-empty-key-1'),
+          cache.get('test-empty-key-2'),
+          cache.get('test-empty-key-3'),
+          cache.get('test-empty-key-4'),
+          cache.get('test-empty-key-1'),
+          cache.get('test-empty-key-2'),
+          cache.get('test-empty-key-3'),
+          cache.get('test-empty-key-4'),
+        ]);
+        expect(list, isNotEmpty);
+        expect(list.where((e) => e != null), isEmpty);
+      });
+
       test('get/set key', () async {
         await cache.set('test-key-2', 'hello-world-42');
         final r = await cache.get('test-key-2');
         expect(r, equals('hello-world-42'));
+      });
+
+      test('get/set multiple keys', () async {
+        await Future.wait([
+          cache.set('test-multi-key-1', 'hello-world-1'),
+          cache.set('test-multi-key-2', 'hello-world-2'),
+          cache.set('test-multi-key-3', 'hello-world-3'),
+        ]);
+        final values = await Future.wait([
+          cache.get('test-multi-key-1'),
+          cache.get('test-multi-key-2'),
+          cache.get('test-multi-key-3'),
+        ]);
+        expect(values, ['hello-world-1', 'hello-world-2', 'hello-world-3']);
       });
 
       test('set key (overwrite)', () async {
@@ -85,11 +115,11 @@ void main() {
     ),
   );
 
-  CacheProvider<List<int>> p;
+  late CacheProvider<List<int>> p;
   testCacheProvider(
     name: 'redis cache',
     create: () async {
-      p = Cache.redisCacheProvider('redis://localhost:6379');
+      p = Cache.redisCacheProvider(Uri.parse('redis://localhost:6379'));
       return StringCacheProvider(cache: p, codec: utf8);
     },
     destroy: () => p.close(),
