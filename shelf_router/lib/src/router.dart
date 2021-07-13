@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:collection' show UnmodifiableMapView;
+import 'dart:convert';
 
 import 'package:http_methods/http_methods.dart';
 import 'package:meta/meta.dart' show sealed;
@@ -163,14 +164,6 @@ class Router {
   ///
   /// This method allows a Router instance to be a [Handler].
   Future<Response> call(Request request) async {
-    bool _isNotDefaultNotFound(Response response) {
-      return response.statusCode != routeNotFound.statusCode ||
-          response.contentLength != routeNotFound.contentLength ||
-          response.context != routeNotFound.context ||
-          response.headers != routeNotFound.headers ||
-          response.mimeType != routeNotFound.mimeType;
-    }
-
     // Note: this is a great place to optimize the implementation by building
     //       a trie for faster matching... left as an exercise for the reader :)
     for (var route in _routes) {
@@ -180,7 +173,7 @@ class Router {
       var params = route.match('/' + request.url.path);
       if (params != null) {
         final response = await route.invoke(request, params);
-        if (_isNotDefaultNotFound(response)) {
+        if (response != routeNotFound) {
           return response;
         }
       }
@@ -275,5 +268,62 @@ class Router {
   ///   return Response.notFound('nothing found');
   /// });
   /// ```
-  static Response get routeNotFound => Response.notFound('Route not found');
+  static final Response routeNotFound = _NotFoundResponse();
+}
+
+class _NotFoundResponse implements Response {
+  static final _inner = Response.notFound('Route not found');
+  List<List<int>>? _buffer;
+
+  @override
+  Response change(
+      {Map<String, Object?>? headers, Map<String, Object?>? context, body}) {
+    return _inner.change(headers: headers, context: context, body: body);
+  }
+
+  @override
+  int? get contentLength => _inner.contentLength;
+
+  @override
+  Map<String, Object> get context => _inner.context;
+
+  @override
+  Encoding? get encoding => _inner.encoding;
+
+  @override
+  DateTime? get expires => _inner.expires;
+
+  @override
+  Map<String, String> get headers => _inner.headers;
+
+  @override
+  Map<String, List<String>> get headersAll => _inner.headersAll;
+
+  @override
+  bool get isEmpty => _inner.isEmpty;
+
+  @override
+  DateTime? get lastModified => _inner.lastModified;
+
+  @override
+  String? get mimeType => _inner.mimeType;
+
+  @override
+  Stream<List<int>> read() async* {
+    if (_buffer == null) {
+      _buffer = [];
+      await for (final e in _inner.read()) {
+        _buffer!.add(e);
+      }
+    }
+    yield* Stream.fromIterable(_buffer!);
+  }
+
+  @override
+  Future<String> readAsString([Encoding? encoding]) {
+    return _inner.readAsString(encoding);
+  }
+
+  @override
+  int get statusCode => _inner.statusCode;
 }
