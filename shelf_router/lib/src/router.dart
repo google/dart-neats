@@ -163,6 +163,14 @@ class Router {
   ///
   /// This method allows a Router instance to be a [Handler].
   Future<Response> call(Request request) async {
+    bool _isNotDefaultNotFound(Response response) {
+      return response.statusCode != routeNotFound.statusCode ||
+          response.contentLength != routeNotFound.contentLength ||
+          response.context != routeNotFound.context ||
+          response.headers != routeNotFound.headers ||
+          response.mimeType != routeNotFound.mimeType;
+    }
+
     // Note: this is a great place to optimize the implementation by building
     //       a trie for faster matching... left as an exercise for the reader :)
     for (var route in _routes) {
@@ -172,7 +180,7 @@ class Router {
       var params = route.match('/' + request.url.path);
       if (params != null) {
         final response = await route.invoke(request, params);
-        if (response != routeNotFound) {
+        if (_isNotDefaultNotFound(response)) {
           return response;
         }
       }
@@ -267,5 +275,5 @@ class Router {
   ///   return Response.notFound('nothing found');
   /// });
   /// ```
-  static final Response routeNotFound = Response.notFound('Route not found');
+  static Response get routeNotFound => Response.notFound('Route not found');
 }
