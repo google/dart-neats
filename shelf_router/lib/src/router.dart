@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import 'dart:collection' show UnmodifiableMapView;
-import 'dart:convert';
+import 'dart:convert' show Encoding;
 
 import 'package:http_methods/http_methods.dart';
 import 'package:meta/meta.dart' show sealed;
