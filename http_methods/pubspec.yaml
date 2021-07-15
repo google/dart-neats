@@ -7,7 +7,7 @@ homepage: https://github.com/google/dart-neats/tree/master/http_methods
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:http_methods
 environment:
-  sdk: '>=2.12.0-0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 dev_dependencies:
   test: ^1.16.0
   pedantic: ^1.10.0
