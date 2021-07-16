@@ -14,4 +14,4 @@ dev_dependencies:
   pedantic: ^1.4.0
   markdown: ^4.0.0
 environment:
-  sdk: '>=2.12.0-0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
