@@ -1,6 +1,6 @@
 ## v1.1.2
 
-  * Fix remove trailing slash requirement when using `mount`.
+  * Remove trailing slash requirement when using `mount`.
 
 ## v1.1.1
 
