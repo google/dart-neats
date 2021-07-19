@@ -154,6 +154,10 @@ void main() {
       return Response.ok('Hello World!');
     });
 
+    api.get('/user/<user>/info', (Request request, String user) {
+      return Response.ok('Hello $user');
+    });
+
     var app = Router();
     app.get('/hello', (Request request) {
       return Response.ok('hello-world');
@@ -169,6 +173,8 @@ void main() {
 
     expect(await get('/hello'), 'hello-world');
     expect(await get('/api'), 'Hello World!');
+    expect(await get('/api/'), 'Hello World!');
+    expect(await get('/api/user/jonasfj/info'), 'Hello jonasfj');
     expect(await get('/api/user/jonasfj/info-wrong'), 'catch-all-handler');
   });
 
