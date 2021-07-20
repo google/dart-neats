@@ -2,7 +2,7 @@ dart:
   - beta
 stages:
   - analyze:
-      - dartanalyzer
-      - dartfmt
+      - analyze
+      - format
   - tests:
       - test
