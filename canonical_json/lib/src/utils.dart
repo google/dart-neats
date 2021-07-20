@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:typed_data' show Uint8List;
 import 'dart:convert' show utf8;
 import 'dart:math' as math;
+import 'dart:typed_data' show Uint8List;
+
 import 'fast_unorm.dart' show fastNfc;
 
 /// Convert ascii [character] to integer.
@@ -29,9 +30,7 @@ int char(String character) {
 class RawMapEntry {
   final Uint8List key;
   final Object? value;
-  RawMapEntry(this.key, this.value) {
-    assert(key != null);
-  }
+  RawMapEntry(this.key, this.value);
 
   static Iterable<RawMapEntry> fromMap(Map<String, Object?> map) sync* {
     for (final e in map.entries) {

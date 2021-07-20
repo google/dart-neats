@@ -101,8 +101,8 @@ void main() {
             'value'
           ]));
       expect((list as YamlList).style, equals(CollectionStyle.ANY));
-      expect((list as YamlList)[0].style, equals(CollectionStyle.ANY));
-      expect((list as YamlList)[1].style, equals(CollectionStyle.ANY));
+      expect(list[0].style, equals(CollectionStyle.ANY));
+      expect(list[1].style, equals(CollectionStyle.ANY));
     });
 
     test('wraps lists with collectionStyle', () {
@@ -116,8 +116,8 @@ void main() {
       ], collectionStyle: CollectionStyle.BLOCK);
 
       expect((list as YamlList).style, equals(CollectionStyle.BLOCK));
-      expect((list as YamlList)[0].style, equals(CollectionStyle.ANY));
-      expect((list as YamlList)[1].style, equals(CollectionStyle.ANY));
+      expect(list[0].style, equals(CollectionStyle.ANY));
+      expect(list[1].style, equals(CollectionStyle.ANY));
     });
 
     test('wraps nested lists while preserving style', () {
@@ -131,8 +131,8 @@ void main() {
       ], collectionStyle: CollectionStyle.BLOCK);
 
       expect((list as YamlList).style, equals(CollectionStyle.BLOCK));
-      expect((list as YamlList)[0].style, equals(CollectionStyle.FLOW));
-      expect((list as YamlList)[1].style, equals(CollectionStyle.FLOW));
+      expect(list[0].style, equals(CollectionStyle.FLOW));
+      expect(list[1].style, equals(CollectionStyle.FLOW));
     });
 
     test('wraps maps', () {
@@ -184,8 +184,8 @@ void main() {
       }, collectionStyle: CollectionStyle.BLOCK);
 
       expect((map as YamlMap).style, equals(CollectionStyle.BLOCK));
-      expect((map as YamlMap)['list'].style, equals(CollectionStyle.FLOW));
-      expect((map as YamlMap)['map'].style, equals(CollectionStyle.BLOCK));
+      expect(map['list'].style, equals(CollectionStyle.FLOW));
+      expect(map['map'].style, equals(CollectionStyle.BLOCK));
     });
 
     test('works with YamlMap.wrap', () {
@@ -199,8 +199,8 @@ void main() {
       }, collectionStyle: CollectionStyle.BLOCK);
 
       expect((map as YamlMap).style, equals(CollectionStyle.BLOCK));
-      expect((map as YamlMap)['list'].style, equals(CollectionStyle.FLOW));
-      expect((map as YamlMap)['map'].style, equals(CollectionStyle.ANY));
+      expect(map['list'].style, equals(CollectionStyle.FLOW));
+      expect(map['map'].style, equals(CollectionStyle.ANY));
     });
   });
 
