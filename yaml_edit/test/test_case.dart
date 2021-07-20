@@ -232,10 +232,6 @@ dynamic _getValueFromYamlNode(YamlNode node) {
   return node.value;
 }
 
-List<T> _onlyType<T>(List<dynamic> rawPath) {
-  return rawPath.whereType<T>().toList();
-}
-
 /// Converts the list of modifications from the raw input to [_YamlModification]
 /// objects.
 List<_YamlModification> _parseModifications(List<dynamic> modifications) {

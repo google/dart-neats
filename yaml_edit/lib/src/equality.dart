@@ -44,8 +44,8 @@ bool deepEquals(dynamic obj1, dynamic obj2) {
 bool listDeepEquals(List list1, List list2) {
   if (list1.length != list2.length) return false;
 
-  if (list1 is YamlList) list1 = (list1 as YamlList).nodes;
-  if (list2 is YamlList) list2 = (list2 as YamlList).nodes;
+  if (list1 is YamlList) list1 = list1.nodes;
+  if (list2 is YamlList) list2 = list2.nodes;
 
   for (var i = 0; i < list1.length; i++) {
     if (!deepEquals(list1[i], list2[i])) {

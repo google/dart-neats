@@ -253,9 +253,9 @@ and path:
 $path
 
 Error Details:
-${error}
+$error
 
-${stacktrace}
+$stacktrace
 ''');
       rethrow;
     }
