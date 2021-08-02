@@ -203,7 +203,7 @@ class RespClient {
   Future<void> close({bool force = false}) async {
     _closing = true;
 
-    if (!_closing) {
+    if (!force) {
       // Always send QUIT message to be nice
       try {
         final quit = command(['QUIT']);
