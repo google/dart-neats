@@ -198,8 +198,8 @@ class RespClient {
   /// Send `QUIT` command to redis and close the connection.
   ///
   /// If [force] is `true`, then the connection will be forcibly closed
-  /// immediately. Otherwise, connection will reject new commands, but wait for
-  /// existing commands to complete.
+  /// immediately. Otherwise, connection will send a `QUIT` command, reject
+  /// new commands, but wait for existing commands to complete.
   Future<void> close({bool force = false}) async {
     _closing = true;
 
