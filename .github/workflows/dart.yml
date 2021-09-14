@@ -1,4 +1,4 @@
-# Created with package:mono_repo v5.0.1
+# Created with package:mono_repo v5.0.2
 name: Dart CI
 on:
   push:
@@ -27,13 +27,13 @@ jobs:
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: stable
       - id: checkout
         uses: actions/checkout@v2.3.4
       - name: mono_repo self validate
-        run: dart pub global activate mono_repo 5.0.1
+        run: dart pub global activate mono_repo 5.0.2
       - name: mono_repo self validate
         run: dart pub global run mono_repo generate --validate
   job_002:
@@ -50,7 +50,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:beta
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: beta
       - id: checkout
@@ -87,7 +87,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:beta
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: beta
       - id: checkout
@@ -111,20 +111,20 @@ jobs:
         working-directory: sanitize_html
         run: "dart format --output=none --set-exit-if-changed ."
   job_004:
-    name: "analyze; Dart dev; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, safe_url_check, shelf_router, shelf_router_generator, slugid, yaml_edit; `dart analyze`"
+    name: "analyze; Dart dev; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, safe_url_check, shelf_router, shelf_router_generator, slugid; `dart analyze`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2.1.6
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-shelf_router-shelf_router_generator-slugid-yaml_edit;commands:analyze"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-shelf_router-shelf_router_generator-slugid;commands:analyze"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-shelf_router-shelf_router_generator-slugid-yaml_edit
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-shelf_router-shelf_router_generator-slugid
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -228,30 +228,21 @@ jobs:
         if: "always() && steps.slugid_pub_upgrade.conclusion == 'success'"
         working-directory: slugid
         run: dart analyze
-      - id: yaml_edit_pub_upgrade
-        name: yaml_edit; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart pub upgrade
-      - name: yaml_edit; dart analyze
-        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart analyze
   job_005:
-    name: "analyze; Dart dev; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, safe_url_check, shelf_router, shelf_router_generator, slugid, yaml_edit; `dart format --output=none --set-exit-if-changed .`"
+    name: "analyze; Dart dev; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, safe_url_check, shelf_router, shelf_router_generator, slugid; `dart format --output=none --set-exit-if-changed .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2.1.6
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-shelf_router-shelf_router_generator-slugid-yaml_edit;commands:format"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-shelf_router-shelf_router_generator-slugid;commands:format"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-shelf_router-shelf_router_generator-slugid-yaml_edit
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-safe_url_check-shelf_router-shelf_router_generator-slugid
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -355,30 +346,21 @@ jobs:
         if: "always() && steps.slugid_pub_upgrade.conclusion == 'success'"
         working-directory: slugid
         run: "dart format --output=none --set-exit-if-changed ."
-      - id: yaml_edit_pub_upgrade
-        name: yaml_edit; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart pub upgrade
-      - name: "yaml_edit; dart format --output=none --set-exit-if-changed ."
-        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: "dart format --output=none --set-exit-if-changed ."
   job_006:
-    name: "analyze; Dart stable; PKGS: acyclic_steps, canonical_json, neat_cache, safe_url_check, shelf_router_generator, yaml_edit; `dart analyze`"
+    name: "analyze; Dart stable; PKGS: acyclic_steps, canonical_json, neat_cache, safe_url_check, shelf_router_generator; `dart analyze`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2.1.6
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator-yaml_edit;commands:analyze"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator;commands:analyze"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator-yaml_edit
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator
             os:ubuntu-latest;pub-cache-hosted;dart:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: stable
       - id: checkout
@@ -428,30 +410,21 @@ jobs:
         if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
         working-directory: shelf_router_generator
         run: dart analyze
-      - id: yaml_edit_pub_upgrade
-        name: yaml_edit; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart pub upgrade
-      - name: yaml_edit; dart analyze
-        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart analyze
   job_007:
-    name: "analyze; Dart stable; PKGS: acyclic_steps, canonical_json, neat_cache, safe_url_check, shelf_router_generator, yaml_edit; `dart format --output=none --set-exit-if-changed .`"
+    name: "analyze; Dart stable; PKGS: acyclic_steps, canonical_json, neat_cache, safe_url_check, shelf_router_generator; `dart format --output=none --set-exit-if-changed .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v2.1.6
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator-yaml_edit;commands:format"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator;commands:format"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator-yaml_edit
+            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:acyclic_steps-canonical_json-neat_cache-safe_url_check-shelf_router_generator
             os:ubuntu-latest;pub-cache-hosted;dart:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: stable
       - id: checkout
@@ -501,15 +474,6 @@ jobs:
         if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
         working-directory: shelf_router_generator
         run: "dart format --output=none --set-exit-if-changed ."
-      - id: yaml_edit_pub_upgrade
-        name: yaml_edit; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart pub upgrade
-      - name: "yaml_edit; dart format --output=none --set-exit-if-changed ."
-        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: "dart format --output=none --set-exit-if-changed ."
   job_008:
     name: "tests; Dart beta; PKG: retry; `dart test`"
     runs-on: ubuntu-latest
@@ -524,7 +488,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:beta
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: beta
       - id: checkout
@@ -560,7 +524,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:beta
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: beta
       - id: checkout
@@ -596,7 +560,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -632,7 +596,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -668,7 +632,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -704,7 +668,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -740,7 +704,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -776,7 +740,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -812,7 +776,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -848,7 +812,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -884,7 +848,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -920,7 +884,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -943,42 +907,6 @@ jobs:
       - job_006
       - job_007
   job_020:
-    name: "tests; Dart dev; PKG: yaml_edit; `dart test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.6
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:yaml_edit;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:yaml_edit
-            os:ubuntu-latest;pub-cache-hosted;dart:dev
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
-        with:
-          sdk: dev
-      - id: checkout
-        uses: actions/checkout@v2.3.4
-      - id: yaml_edit_pub_upgrade
-        name: yaml_edit; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart pub upgrade
-      - name: yaml_edit; dart test
-        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_021:
     name: "tests; Dart dev; PKG: neat_cache; `dart test -x redis`"
     runs-on: ubuntu-latest
     steps:
@@ -992,7 +920,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:dev
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: dev
       - id: checkout
@@ -1014,7 +942,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_022:
+  job_021:
     name: "tests; Dart stable; PKG: acyclic_steps; `dart test`"
     runs-on: ubuntu-latest
     steps:
@@ -1028,7 +956,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: stable
       - id: checkout
@@ -1050,7 +978,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_023:
+  job_022:
     name: "tests; Dart stable; PKG: canonical_json; `dart test`"
     runs-on: ubuntu-latest
     steps:
@@ -1064,7 +992,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: stable
       - id: checkout
@@ -1086,7 +1014,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_024:
+  job_023:
     name: "tests; Dart stable; PKG: safe_url_check; `dart test`"
     runs-on: ubuntu-latest
     steps:
@@ -1100,7 +1028,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: stable
       - id: checkout
@@ -1122,7 +1050,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_025:
+  job_024:
     name: "tests; Dart stable; PKG: shelf_router_generator; `dart test`"
     runs-on: ubuntu-latest
     steps:
@@ -1136,7 +1064,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: stable
       - id: checkout
@@ -1158,43 +1086,7 @@ jobs:
       - job_005
       - job_006
       - job_007
-  job_026:
-    name: "tests; Dart stable; PKG: yaml_edit; `dart test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.6
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:yaml_edit;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;dart:stable;packages:yaml_edit
-            os:ubuntu-latest;pub-cache-hosted;dart:stable
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
-        with:
-          sdk: stable
-      - id: checkout
-        uses: actions/checkout@v2.3.4
-      - id: yaml_edit_pub_upgrade
-        name: yaml_edit; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart pub upgrade
-      - name: yaml_edit; dart test
-        if: "always() && steps.yaml_edit_pub_upgrade.conclusion == 'success'"
-        working-directory: yaml_edit
-        run: dart test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-      - job_004
-      - job_005
-      - job_006
-      - job_007
-  job_027:
+  job_025:
     name: "tests; Dart stable; PKG: neat_cache; `dart test -x redis`"
     runs-on: ubuntu-latest
     steps:
@@ -1208,7 +1100,7 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;dart:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.1
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: stable
       - id: checkout
