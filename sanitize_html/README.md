@@ -2,17 +2,17 @@ HTML Sanitizer for Dart
 =======================
 
 When embedding HTML from untrusted source in a website it is important to
-sanitize the HTML to prevent injection of untrusted Javascript (XSS exploits).
+sanitize the HTML to prevent injection of untrusted JavaScript (XSS exploits).
 This package provides a simple function sanitizing HTML to prevent XSS exploits
 and limit interference with other elements on the page.
 
 **Disclaimer:** This is not an officially supported Google product.
 
 This package uses an HTML5 parser to build-up an in-memory DOM tree and
-filter elements and attributes, in-line with [rules employed by Github][1]
-when sanitizing GFM (Github Flavored Markdown).
+filter elements and attributes, in-line with [rules employed by GitHub][1]
+when sanitizing GFM (GitHub Flavored Markdown).
 
-This removes all inline Javascript, CSS, `<form>`, and other elements that
+This removes all inline JavaScript, CSS, `<form>`, and other elements that
 could be used for XSS. This sanitizer is more strict than necessary to
 guard against XSS as this sanitizer also attempts to prevent the sanitized
 HTML from interfering with the page it is injected into.
