@@ -1,3 +1,6 @@
+## v2.0.2
+ * Send `QUIT` command when closing the connection without `force: true`.
+
 ## v2.0.1
  * Fixed issue when adding multiple commands without waiting for them to complete first.
 
