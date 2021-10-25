@@ -21,10 +21,12 @@
 library slugid;
 
 import 'dart:convert';
-import 'src/random.dart';
 import 'dart:typed_data';
+
 import 'package:convert/convert.dart';
 import 'package:meta/meta.dart' show sealed;
+
+import 'src/random.dart';
 
 final _uuidPattern = RegExp(
     r'[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}');
@@ -119,7 +121,7 @@ class Slugid {
   ///
   /// This method also accepts string representations of slugids and UUIDs.
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     // If other is a string we try to decode it.
     if (other is String) {
       try {
@@ -139,4 +141,7 @@ class Slugid {
     }
     return false;
   }
+
+  @override
+  int get hashCode => Object.hashAll(_bytes);
 }

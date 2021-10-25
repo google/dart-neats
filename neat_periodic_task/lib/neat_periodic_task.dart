@@ -15,9 +15,11 @@
 library neat_periodic_task;
 
 import 'dart:async' show Future, Completer, scheduleMicrotask, TimeoutException;
-import 'package:retry/retry.dart' show RetryOptions;
+
 import 'package:logging/logging.dart' show Logger;
+import 'package:retry/retry.dart' show RetryOptions;
 import 'package:slugid/slugid.dart' show Slugid;
+
 import 'src/neat_status.dart' show NeatTaskStatus;
 
 final _log = Logger('neat_periodic_task');
@@ -88,11 +90,9 @@ class _NeatStatusProviderWithRetry extends NeatStatusProvider {
   final RetryOptions _r;
   _NeatStatusProviderWithRetry(this._provider, this._r);
   @override
-  Future<List<int>?> get() =>
-      _r.retry(() => _provider.get(), retryIf: (e) => e is Exception);
+  Future<List<int>?> get() => _r.retry(() => _provider.get());
   @override
-  Future<bool> set(List<int> status) =>
-      _r.retry(() => _provider.set(status), retryIf: (e) => e is Exception);
+  Future<bool> set(List<int> status) => _r.retry(() => _provider.set(status));
 }
 
 /// Interface for a periodic task.

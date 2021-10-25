@@ -1,3 +1,5 @@
+## v2.0.2-dev
+
 ## v2.0.1
  * Fixed issue when adding multiple commands without waiting for them to complete first.
 
