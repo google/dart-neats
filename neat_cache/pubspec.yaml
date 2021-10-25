@@ -1,5 +1,5 @@
 name: neat_cache
-version: 2.0.1
+version: 2.0.2-dev
 description: |
   A neat cache abstraction for wrapping in-memory or redis caches.
 homepage: https://github.com/google/dart-neats/tree/master/neat_cache
@@ -13,6 +13,6 @@ dependencies:
   meta: ^1.4.0
 dev_dependencies:
   test: ^1.5.1
-  pedantic: ^1.4.0
+  lints: ^1.0.0
 environment:
   sdk: '>=2.12.0 <3.0.0'

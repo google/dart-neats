@@ -194,10 +194,10 @@ class Decoder {
       if (_value != char('"')) {
         throw _fail('expected key in map');
       }
-      final key_start = _offset;
+      final keyStart = _offset;
       final key = _readRawString();
       _require(':', 'expected ":" separate key and value in map');
-      entries.add(_RawMapEntry(key, _readValue(), key_start));
+      entries.add(_RawMapEntry(key, _readValue(), keyStart));
     } while (_try(','));
     _require('}', 'expected "," or "}" in map');
     // Validate that keys are sorted

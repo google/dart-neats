@@ -228,7 +228,9 @@ class RespClient {
       _pending.clear();
       final e = RedisConnectionException._('redis client forcibly closed');
       final st = StackTrace.current;
-      pending.forEach((c) => c.completeError(e, st));
+      for (var c in pending) {
+        c.completeError(e, st);
+      }
     }
     await _input.cancel();
 
@@ -247,7 +249,9 @@ class RespClient {
     final pending = _pending.toList(growable: false);
     _pending.clear();
     scheduleMicrotask(() {
-      pending.forEach((c) => c.completeError(e, st));
+      for (var c in pending) {
+        c.completeError(e, st);
+      }
     });
 
     if (!_closed.isCompleted) {

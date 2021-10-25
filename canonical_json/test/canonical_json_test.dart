@@ -37,13 +37,13 @@ void main() {
 
   final prng = Random(42);
   for (var i = 0; i < 50; i++) {
-    final chars = '{}[]abcd \0""""\\\\\\\\\$\$\'\''.split('');
+    final chars = '{}[]abcd 0""""\\\\\\\\\$\$\'\''.split('');
     chars.shuffle(prng);
     testValue('shuffled string ($i)', chars.join(''));
     testValue('shuffled map key ($i)', {chars.join(''): 42});
   }
 
-  [
+  for (var data in [
     '""',
     '"hello world"',
     r'"test\"test"',
@@ -67,21 +67,23 @@ void main() {
     '-120',
     '"Äffin"',
     // Test valid canonical JSON cases.
-  ].forEach((String data) => test('isValidCanonicalJSON($data)', () {
-        final value = json.decode(data);
-        final encoded = canonicalJson.encode(value);
-        expect(utf8.decode(encoded), equals(data));
-        final decoded = canonicalJson.decode(encoded);
-        expect(decoded, equals(value));
-        final encodedAgain = canonicalJson.encode(decoded);
-        expect(encodedAgain, encoded);
-        // TODO: Use json.fuse(utf8) when: http://dartbug.com/46205 is fixed!
-        // final decodedJson = json.fuse(utf8).decode(encoded);
-        final decodedJson = json.decode(utf8.decode(encoded));
-        expect(decodedJson, equals(value));
-      }));
+  ]) {
+    test('isValidCanonicalJSON($data)', () {
+      final value = json.decode(data);
+      final encoded = canonicalJson.encode(value);
+      expect(utf8.decode(encoded), equals(data));
+      final decoded = canonicalJson.decode(encoded);
+      expect(decoded, equals(value));
+      final encodedAgain = canonicalJson.encode(decoded);
+      expect(encodedAgain, encoded);
+      // TODO: Use json.fuse(utf8) when: http://dartbug.com/46205 is fixed!
+      // final decodedJson = json.fuse(utf8).decode(encoded);
+      final decodedJson = json.decode(utf8.decode(encoded));
+      expect(decodedJson, equals(value));
+    });
+  }
 
-  [
+  for (var data in [
     '42.1',
     't',
     'f',
@@ -118,19 +120,23 @@ void main() {
     '-0',
     '"A\u0308ffin"', // not unicode normalization form C
     // Test invalid canonical JSON cases.
-  ].forEach((String data) => test('isInvalidCanonicalJSON($data)', () {
-        final raw = utf8.encode(data);
-        expect(() => canonicalJson.decode(raw),
-            throwsA(TypeMatcher<InvalidCanonicalJsonException>()));
-      }));
+  ]) {
+    test('isInvalidCanonicalJSON($data)', () {
+      final raw = utf8.encode(data);
+      expect(() => canonicalJson.decode(raw),
+          throwsA(TypeMatcher<InvalidCanonicalJsonException>()));
+    });
+  }
 
-  [
+  for (var data in [
     1.2,
     -0.0,
-  ].forEach((Object data) => test('cannotBeCanonicalized($data)', () {
-        expect(() => canonicalJson.encode(data),
-            throwsA(TypeMatcher<ArgumentError>()));
-      }));
+  ]) {
+    test('cannotBeCanonicalized($data)', () {
+      expect(() => canonicalJson.encode(data),
+          throwsA(TypeMatcher<ArgumentError>()));
+    });
+  }
 
   test('unicode normalization form C', () {
     final nonFormC = 'A\u0308\uFB03n';
