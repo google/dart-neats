@@ -1,3 +1,6 @@
+## v3.2.0
+ * `orElse` callback to calculate a value when the attempts where exhausted.
+
 ## v3.1.0
  * Stable null-safety release.
 
