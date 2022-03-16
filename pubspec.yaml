@@ -3,7 +3,7 @@ name: dart_neats
 # repository management, so they don't have to be installed globally.
 publish_to: none
 dev_dependencies:
-  mono_repo: ^3.0.0
-  pubspec_parse: ^0.1.4
+  mono_repo: ^6.1.0
+  pubspec_parse: ^1.2.0
 environment:
-  sdk: '>=2.7.0 <3.0.0'
+  sdk: '>=2.15.0 <3.0.0'

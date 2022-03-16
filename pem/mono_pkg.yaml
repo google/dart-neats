@@ -1,6 +1,5 @@
-dart:
-  #- stable # enable when 2.12 has shipped
-  - dev
+sdk:
+  - stable
 stages:
   - analyze:
       - analyze

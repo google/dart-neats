@@ -1,5 +1,5 @@
-dart:
-  - beta
+sdk:
+  - stable
 stages:
   - analyze:
       - analyze
