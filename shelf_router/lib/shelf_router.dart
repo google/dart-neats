@@ -83,3 +83,4 @@ import 'package:shelf_router/src/router.dart';
 import 'package:shelf_router/src/route.dart';
 export 'package:shelf_router/src/router.dart';
 export 'package:shelf_router/src/route.dart';
+export 'package:shelf_router/src/router_builder.dart';
