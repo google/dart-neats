@@ -14,7 +14,10 @@
 
 library sanitize_html;
 
-import 'src/sane_html_validator.dart' show SaneHtmlValidator;
+import 'src/sane_html_validator.dart'
+    show SaneHtmlValidator, AllowTagCB, AllowAttributeCB;
+export 'src/sane_html_validator.dart'
+    show AllowTagCB, AllowAttributeCB, AllowAttributeResponse;
 
 /// Sanitize [htmlString] to prevent XSS exploits and limit interference with
 /// other markup on the page.
@@ -76,10 +79,14 @@ String sanitizeHtml(
   bool Function(String)? allowElementId,
   bool Function(String)? allowClassName,
   Iterable<String>? Function(String)? addLinkRel,
+  AllowTagCB? allowTag,
+  AllowAttributeCB? allowAttribute,
 }) {
   return SaneHtmlValidator(
     allowElementId: allowElementId,
     allowClassName: allowClassName,
     addLinkRel: addLinkRel,
+    allowTag: allowTag,
+    allowAttribute: allowAttribute,
   ).sanitize(htmlString);
 }

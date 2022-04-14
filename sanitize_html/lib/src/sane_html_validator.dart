@@ -200,6 +200,45 @@ final _elementAttributeValidators =
   'Q': _citeAttributeValidator,
 };
 
+/// Callback function used to check wich tags are allowed
+/// The function will return true if the tag is allowed of false if not.
+typedef AllowTagCB = bool Function(String tag);
+
+/// Callback function used to check wich attributes are allowed
+/// The function will return an [AllowAttributeResponse] object
+/// with the result of the check.
+typedef AllowAttributeCB = AllowAttributeResponse Function(
+    String tag, String attribute, String value);
+
+/// Possible outcome actions of [AllowAttributeResponse]
+enum ResponseAction {
+  unchanged,
+  edit,
+  remove,
+}
+
+/// Response object returned by [AllowAttributeCB]
+/// The [action] attribute determine the action to take
+/// and can be [unchanged], [edit] or [remove].
+/// In case of [edit], the [value] field can be used to
+/// change the content of the attribute.
+class AllowAttributeResponse {
+  ResponseAction action;
+  String value;
+
+  AllowAttributeResponse(this.action, [this.value = '']);
+
+  /// Factory function for unchaged action
+  factory AllowAttributeResponse.unchanged() =>
+      AllowAttributeResponse(ResponseAction.unchanged);
+  /// Factory function for edit action
+  factory AllowAttributeResponse.edit(String value) =>
+      AllowAttributeResponse(ResponseAction.edit, value);
+  /// Factory function for remove action
+  factory AllowAttributeResponse.remove() =>
+      AllowAttributeResponse(ResponseAction.remove);
+}
+
 /// An implementation of [html.NodeValidator] that only allows sane HTML tags
 /// and attributes protecting against XSS.
 ///
@@ -212,12 +251,24 @@ class SaneHtmlValidator {
   final bool Function(String)? allowElementId;
   final bool Function(String)? allowClassName;
   final Iterable<String>? Function(String)? addLinkRel;
+  /// Callback function to check for allowed tags
+  final AllowTagCB? allowTag;
+  /// Callback function to check for allowed attributes
+  final AllowAttributeCB? allowAttribute;
+
+  late AllowTagCB _allowTagFn;
+  late AllowAttributeCB _allowAttributeFn;
 
   SaneHtmlValidator({
     required this.allowElementId,
     required this.allowClassName,
     required this.addLinkRel,
-  });
+    required this.allowTag,
+    required this.allowAttribute,
+  }) {
+    _allowTagFn = allowTag ?? _defaultAllowedElements;
+    _allowAttributeFn = allowAttribute ?? _defaultAllowedAttributes;
+  }
 
   String sanitize(String htmlString) {
     final root = html_parser.parseFragment(htmlString);
@@ -225,26 +276,54 @@ class SaneHtmlValidator {
     return root.outerHtml;
   }
 
+  bool _defaultAllowedElements(String tagName) =>
+      _allowedElements.contains(tagName);
+
+  AllowAttributeResponse _defaultAllowedAttributes(
+      String tagName, String attrName, String attrValue) {
+    if (attrName == 'id') {
+      if (allowElementId == null) return AllowAttributeResponse.remove();
+      return allowElementId!(attrValue)
+          ? AllowAttributeResponse.unchanged()
+          : AllowAttributeResponse.remove();
+    }
+    if (attrName == 'class') {
+      if (allowClassName == null) return AllowAttributeResponse.remove();
+      final klasses = attrValue.split(' ');
+      klasses.removeWhere((cn) => !allowClassName!(cn));
+      return klasses.isEmpty
+          ? AllowAttributeResponse.remove()
+          : AllowAttributeResponse.edit(klasses.join(' '));
+    }
+    return _isAttributeAllowed(tagName, attrName, attrValue)
+        ? AllowAttributeResponse.unchanged()
+        : AllowAttributeResponse.remove();
+  }
+
   void _sanitize(Node node) {
     if (node is Element) {
       final tagName = node.localName!.toUpperCase();
-      if (!_allowedElements.contains(tagName)) {
+      if (!_allowTagFn(tagName)) {
         node.remove();
         return;
       }
       node.attributes.removeWhere((k, v) {
         final attrName = k.toString();
-        if (attrName == 'id') {
-          return allowElementId == null || !allowElementId!(v);
+        final rc = _allowAttributeFn(tagName, attrName, v);
+        if (rc.action == ResponseAction.remove) return true;
+        if (rc.action == ResponseAction.edit) {
+          if (attrName == 'class') {
+            final klasses = rc.value.split(' ');
+            node.classes.removeWhere((klass) => !klasses.contains(klass));
+          } else {
+            node.attributes[k] = rc.value;
+          }
+          return false;
         }
-        if (attrName == 'class') {
-          if (allowClassName == null) return true;
-          node.classes.removeWhere((cn) => !allowClassName!(cn));
-          return node.classes.isEmpty;
-        }
-        return !_isAttributeAllowed(tagName, attrName, v);
+        return false;
       });
-      if (tagName == 'A') {
+      // When use a custom tag list, the default rule for anchor/rel will not work
+      if ((allowTag == null) && (tagName == 'A')) {
         final href = node.attributes['href'];
         if (href != null && addLinkRel != null) {
           final rels = addLinkRel!(href);
