@@ -231,9 +231,11 @@ class AllowAttributeResponse {
   /// Factory function for unchaged action
   factory AllowAttributeResponse.unchanged() =>
       AllowAttributeResponse(ResponseAction.unchanged);
+
   /// Factory function for edit action
   factory AllowAttributeResponse.edit(String value) =>
       AllowAttributeResponse(ResponseAction.edit, value);
+
   /// Factory function for remove action
   factory AllowAttributeResponse.remove() =>
       AllowAttributeResponse(ResponseAction.remove);
@@ -251,8 +253,10 @@ class SaneHtmlValidator {
   final bool Function(String)? allowElementId;
   final bool Function(String)? allowClassName;
   final Iterable<String>? Function(String)? addLinkRel;
+
   /// Callback function to check for allowed tags
   final AllowTagCB? allowTag;
+
   /// Callback function to check for allowed attributes
   final AllowAttributeCB? allowAttribute;
 

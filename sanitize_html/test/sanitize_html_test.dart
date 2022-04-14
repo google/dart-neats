@@ -50,8 +50,11 @@ void main() {
     AllowAttributeCB? withCustomAttrList,
   }) {
     if (!withOptionalConfiguration) {
-      return sanitizeHtml(template,
-          allowTag: withCustomTagList, allowAttribute: withCustomAttrList,);
+      return sanitizeHtml(
+        template,
+        allowTag: withCustomTagList,
+        allowAttribute: withCustomAttrList,
+      );
     }
 
     return sanitizeHtml(
