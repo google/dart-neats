@@ -1,0 +1,7 @@
+name: example
+dependencies:
+  petitparser: ^4.0.2
+dev_dependencies:
+  lints: ^1.0.1
+environment:
+  sdk: ^2.12.0

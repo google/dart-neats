@@ -2,5 +2,9 @@
 /*/.packages
 /*/pubspec.lock
 /*/doc/api/
+/*/example/.dart_tool/
+/*/example/.packages
+/*/example/pubspec.lock
+/*/example/doc/api/
 /.dart_tool/
 /.packages
