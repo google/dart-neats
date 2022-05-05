@@ -22,6 +22,11 @@ import 'package:vendor/src/context.dart' show Context;
 
 export 'package:vendor/src/context.dart' show Context;
 
+/// An [Action] is a step that can be planned for execution when vendoring.
+///
+/// This allows for steps to first be planned and then executed. Thus, we can
+/// a dry-run that only creates actions and displays them, but doesn't actually
+/// execute the actions.
 @sealed
 abstract class Action {
   /// Short single-line humand readable description of this action.
@@ -32,8 +37,11 @@ abstract class Action {
   /// Usually a single line summary, followed by a few lines of details.
   String get description => summary;
 
+  /// Execute this action in the given [ctx].
   Future<void> apply(Context ctx);
 
+  /// Rewrite import/export statements pointing to [from] in [folder], such that
+  /// they now point to [to].
   static Action rewriteImportPath({
     required Uri folder,
     required Uri from,
@@ -45,6 +53,9 @@ abstract class Action {
         to: to,
       );
 
+  /// Fetch [package] [version] from [hostedUrl] into [folder].
+  ///
+  /// Only includes files that match a `package:glob` pattern from [include].
   static Action fetchPackage(
     Uri folder,
     String package,
@@ -60,11 +71,13 @@ abstract class Action {
         include: include,
       );
 
+  /// Remove [folder].
   static Action removeFolder(
     Uri folder,
   ) =>
       RemoveFolderAction(folder);
 
+  /// Write [contents] to [file].
   static Action writeFile(
     Uri file,
     String contents,

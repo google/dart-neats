@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io' show File, FileSystemException, IOException;
+import 'dart:io' show File, Directory, FileSystemException, IOException;
 import 'package:glob/glob.dart' show Glob;
 import 'package:glob/list_local_fs.dart' show ListLocalFileSystem;
 import 'package:async/async.dart' show StreamGroup;
@@ -152,6 +152,7 @@ class _ImportRewriteVisitor extends RecursiveAstVisitor<void> {
   void _rewriteUri(StringLiteral s) {
     final u = Uri.tryParse(s.stringValue!);
     if (u == null) {
+      // TODO: Print source location here.
       _ctx.warning('  Unable to parse: "${s.stringValue}"');
       return; // ignore URIs we can't parse
     }
@@ -186,18 +187,20 @@ class _ImportRewriteVisitor extends RecursiveAstVisitor<void> {
 const _sourceFoldersInPackage = ['lib/', 'test/', 'bin/', 'benchmark/'];
 
 Stream<String> _findDartFiles(Uri folder, {bool excludeVendorFolder = false}) =>
-    StreamGroup.merge(
-      _sourceFoldersInPackage.map(
-        (path) => Glob('**.dart').list(
-          root: folder.resolve(path).toFilePath(),
-          followLinks: false,
-        ),
+    StreamGroup.merge(_sourceFoldersInPackage.map(
+      (path) => Glob('**.dart')
+          .list(
+        root: folder.resolve(path).toFilePath(),
+        followLinks: false,
+      )
+          .handleError(
+        (e) {/* ignore folder doesn't exist */},
+        test: (e) =>
+            e is FileSystemException &&
+            (e.osError?.errorCode == 2 ||
+                !Directory.fromUri(folder.resolve(path)).existsSync()),
       ),
-    )
-        .handleError(
-          (e) {/* ignore folder doesn't exist */},
-          test: (e) => e is FileSystemException && e.osError?.errorCode == 2,
-        )
+    ))
         .where((entity) => entity is File)
         .map((entity) => p.relative(entity.path, from: folder.toFilePath()))
         .where((path) =>

@@ -19,8 +19,8 @@ import 'package:vendor/src/utils/map_ext.dart' show MapExt;
 /// Plan the actions required to go from [currentState] to [desiredState].
 List<Action> plan({
   required String rootPackageName,
-  required VendorConfig desiredState,
   required VendorConfig currentState,
+  required VendorConfig desiredState,
   required Uri defaultHostedUrl,
 }) {
   bool notSameSameSource(String name) {

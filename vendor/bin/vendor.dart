@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io' show exit, Platform;
+import 'dart:io' show exit, Platform, stderr, stdout;
 import 'package:io/io.dart' show ExitCode;
 import 'package:vendor/src/context.dart' show Context;
 import 'package:vendor/src/exceptions.dart' show VendorFailure;
@@ -86,14 +86,14 @@ class _Context extends Context {
   });
 
   @override
-  void log(String message) => print(
+  void log(String message) => stdout.writeln(
         message.startsWith('#')
             ? ansi.wrapWith(message, [ansi.styleBold])
             : message,
       );
 
   @override
-  void warning(String message) => print(ansi.wrapWith(
+  void warning(String message) => stderr.writeln(ansi.wrapWith(
         message,
         [ansi.red, ansi.styleBold],
       ));
@@ -132,9 +132,27 @@ Future<ExitCode> _main(List<String> arguments) async {
       ctx.client.close();
     }
   } catch (e, st) {
-    print('Internal Error in package:vendor, please report:');
+    print('Internal Error in package:vendor:');
     print(e);
     print(st);
+    print('');
+    print('Consider reporting:');
+    print(Uri.parse('https://github.com/google/dart-neats/issues/new')
+        .replace(queryParameters: {
+      'labels': 'pkg:yaml_edit+pending-triage',
+      'title': '$e',
+      'body': '''Internal error occured:
+```
+$e
+$st
+```
+
+Running on `vendor.yaml` as follows:
+```yaml
+TODO: Include `vendor.yaml`.
+```
+''',
+    }));
     return ExitCode.software;
   }
   return ExitCode.success;

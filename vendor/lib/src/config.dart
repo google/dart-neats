@@ -42,7 +42,10 @@ const _defaultIncludePatterns = {
 /// files.
 @sealed
 abstract class VendorState {
+  /// Version of the `package:vendor` that generated this file.
   Version get version;
+
+  /// Configuration used last time `dart run vendor` completed.
   VendorConfig get config;
 
   static VendorState fromYaml(
@@ -152,6 +155,9 @@ abstract class VendoredSource {
 
   /// Version of [package] to be vendored from `pub.dev`.
   Version get version;
+
+  // TODO: Add support for custom pub servers
+  // String get hostedUrl;
 
   /// A map from _package name_ to _vendored package name_, to be rewritten in
   /// this _vendored package_.

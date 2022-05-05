@@ -44,7 +44,7 @@ Future<void> vendor(
     if (!await desiredConfigFile.exists()) {
       throw VendorFailure(
         ExitCode.config,
-        'Configuration file "vendor.yaml" does not exist!',
+        'Configuration file "vendor.yaml" does not exist! Try creating it.',
       );
     }
 
