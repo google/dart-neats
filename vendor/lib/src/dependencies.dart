@@ -32,7 +32,7 @@ Future<void> checkDependenciesForVendoredPackages(
 }) async {
   config.dependencies.forEach((vendoredPackage, vendoredSource) {
     final pubspecFile = ctx.file(
-      'lib/src/third_party/$vendoredPackage/pubspec.yaml',
+      'lib/src/third_party/$vendoredPackage/vendored-pubspec.yaml',
     );
     try {
       final spec = Pubspec.parse(
@@ -50,7 +50,7 @@ Future<void> checkDependenciesForVendoredPackages(
         }
       }
     } catch (e) {
-      /* ignore */
+      ctx.warning('Failed to check dependencies for $vendoredPackage');
     }
   });
 }
