@@ -10,7 +10,7 @@ version of each package. This has many benefits, such as:
  * Avoids confusing type errors saying that an object of type `Foo` is not
    type `Foo`; which will happen if two versions of the same library providing
    `Foo` are used in the same codebase.
- * Discourages a bloated dependency trees, because these easily causes
+ * Discourages a bloated dependency trees, because these easily cause
    resolution conflicts.
  * Discourages use of outdated package versions, because these won't work in
    conjunction with other packages that require the newest version.
@@ -38,8 +38,10 @@ fork the package, or copy/paste (vendor) the package into your project. This is
 what `package:vendor` can help do: vendor a package into your project.
 
 In short, `package:vendor` helps to manage _vendored packages_, that is
-manage packages that are copied into your source tree. This works creating a
-`vendor.yaml` file that specifies which package should be downloaded into
+manage packages that are copied into your source tree.
+
+To set up vendoring create a
+`vendor.yaml` file in the project root that specifies which package should be downloaded into
 `lib/src/third_party/<name>/` for a given name, and how import/export
 declarations in Dart files should be rewritten.
 
@@ -76,7 +78,7 @@ vendored_dependencies:
 ```
 
 After creating a `vendor.yaml` file you'll need a `dev_dependency` on
-`package:vendor` (`dart pub add --dev vendor`), then running `dart pub vendor`
+`package:vendor` (`dart pub add --dev vendor`), then running `dart run vendor`
 will print changes to be made, prompt for confirmation and apply changes.
 
 A file to track state of vendored packages is created in
