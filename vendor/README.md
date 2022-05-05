@@ -82,8 +82,9 @@ After creating a `vendor.yaml` file you'll need a `dev_dependency` on
 will print changes to be made, prompt for confirmation and apply changes.
 
 A file to track state of vendored packages is created in
-`lib/src/third_party/vendor-state.yaml`. This allows changes to `vendor.yaml` to
-be applied without removing all that has already been vendored, and allows
-import-rewrites to be both added and removed. This means that if necessary
-patching the contents of vendored packages is not unreasonable.
+`lib/src/third_party/vendor-state.yaml`. This file should be checked into
+version control. This allows changes to `vendor.yaml` to be applied without
+removing all that has already been vendored, and allows import-rewrites to be
+both added and removed. This means that if necessary patching the contents of
+vendored packages is not unreasonable.
 
