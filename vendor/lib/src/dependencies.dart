@@ -53,4 +53,5 @@ Future<void> checkDependenciesForVendoredPackages(
       ctx.warning('Failed to check dependencies for $vendoredPackage');
     }
   });
+  // TODO: Provide hints about dependencies that could be added `dart pub add`
 }
