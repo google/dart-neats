@@ -40,13 +40,13 @@ function list_contains {
   return 1
 }
 
-LABELS=`hub api -X GET '/repos/google/dart-neats/labels' | jq -r '.[].name' | grep 'pkg:'`
+LABELS=`gh api -X GET '/repos/google/dart-neats/labels' | jq -r '.[].name' | grep 'pkg:'`
 
 for P in $PACKAGES; do
   if `list_contains "$LABELS" "pkg:$P"`; then 
     echo " - skip pkg:$P"
   else 
     echo " - creating: pkg:$P"
-    hub api -X POST '/repos/google/dart-neats/labels' -F name="pkg:$P" -F color=f29513 | jq
+    gh api -X POST '/repos/google/dart-neats/labels' -F name="pkg:$P" -F color=f29513 | jq
   fi
 done
