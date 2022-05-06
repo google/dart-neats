@@ -1,3 +1,6 @@
+## v1.1.1
+ * Implement `Slugid.hashCode`.
+
 ## v1.1.0
  * Ported to null-safety without breaking changes.
  * Annotated `Slugid` with `@sealed` from `package:meta`.
