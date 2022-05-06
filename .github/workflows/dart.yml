@@ -1,4 +1,4 @@
-# Created with package:mono_repo v6.1.0
+# Created with package:mono_repo v6.2.2
 name: Dart CI
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable"
@@ -31,22 +31,22 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - name: mono_repo self validate
-        run: dart pub global activate mono_repo 6.1.0
+        run: dart pub global activate mono_repo 6.2.2
       - name: mono_repo self validate
         run: dart pub global run mono_repo generate --validate
   job_002:
-    name: "analyze; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid; `dart analyze`"
+    name: "analyze; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid, vendor; `dart analyze`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid;commands:analyze"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid-vendor;commands:analyze"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid-vendor
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: acyclic_steps_pub_upgrade
         name: acyclic_steps; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -172,17 +172,26 @@ jobs:
         if: "always() && steps.slugid_pub_upgrade.conclusion == 'success'"
         working-directory: slugid
         run: dart analyze
+      - id: vendor_pub_upgrade
+        name: vendor; dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: vendor
+        run: dart pub upgrade
+      - name: vendor; dart analyze
+        if: "always() && steps.vendor_pub_upgrade.conclusion == 'success'"
+        working-directory: vendor
+        run: dart analyze
   job_003:
-    name: "analyze; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid; `dart format --output=none --set-exit-if-changed .`"
+    name: "analyze; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid, vendor; `dart format --output=none --set-exit-if-changed .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid;commands:format"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid-vendor;commands:format"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid-vendor
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -190,7 +199,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: acyclic_steps_pub_upgrade
         name: acyclic_steps; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -308,12 +317,21 @@ jobs:
         if: "always() && steps.slugid_pub_upgrade.conclusion == 'success'"
         working-directory: slugid
         run: "dart format --output=none --set-exit-if-changed ."
+      - id: vendor_pub_upgrade
+        name: vendor; dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: vendor
+        run: dart pub upgrade
+      - name: "vendor; dart format --output=none --set-exit-if-changed ."
+        if: "always() && steps.vendor_pub_upgrade.conclusion == 'success'"
+        working-directory: vendor
+        run: "dart format --output=none --set-exit-if-changed ."
   job_004:
     name: "tests; PKG: acyclic_steps; `dart test`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps;commands:test_0"
@@ -326,7 +344,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: acyclic_steps_pub_upgrade
         name: acyclic_steps; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -345,7 +363,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:canonical_json;commands:test_0"
@@ -358,7 +376,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: canonical_json_pub_upgrade
         name: canonical_json; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -377,7 +395,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:chunked_stream;commands:test_0"
@@ -390,7 +408,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: chunked_stream_pub_upgrade
         name: chunked_stream; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -409,7 +427,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:http_methods;commands:test_0"
@@ -422,7 +440,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: http_methods_pub_upgrade
         name: http_methods; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -441,7 +459,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:neat_periodic_task;commands:test_0"
@@ -454,7 +472,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: neat_periodic_task_pub_upgrade
         name: neat_periodic_task; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -473,7 +491,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:pem;commands:test_0"
@@ -486,7 +504,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: pem_pub_upgrade
         name: pem; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -505,7 +523,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:retry;commands:test_0"
@@ -518,7 +536,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: retry_pub_upgrade
         name: retry; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -537,7 +555,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:safe_url_check;commands:test_0"
@@ -550,7 +568,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: safe_url_check_pub_upgrade
         name: safe_url_check; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -569,7 +587,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:sanitize_html;commands:test_0"
@@ -582,7 +600,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: sanitize_html_pub_upgrade
         name: sanitize_html; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -601,7 +619,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:shelf_router;commands:test_0"
@@ -614,7 +632,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: shelf_router_pub_upgrade
         name: shelf_router; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -633,7 +651,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:shelf_router_generator;commands:test_0"
@@ -646,7 +664,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: shelf_router_generator_pub_upgrade
         name: shelf_router_generator; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -665,7 +683,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:slugid;commands:test_0"
@@ -678,7 +696,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: slugid_pub_upgrade
         name: slugid; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -693,11 +711,43 @@ jobs:
       - job_002
       - job_003
   job_016:
+    name: "tests; PKG: vendor; `dart test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v3
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:vendor;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:vendor
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: stable
+      - id: checkout
+        uses: actions/checkout@v3
+      - id: vendor_pub_upgrade
+        name: vendor; dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: vendor
+        run: dart pub upgrade
+      - name: vendor; dart test
+        if: "always() && steps.vendor_pub_upgrade.conclusion == 'success'"
+        working-directory: vendor
+        run: dart test
+    needs:
+      - job_001
+      - job_002
+      - job_003
+  job_017:
     name: "tests; PKG: neat_cache; `dart test -x redis`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:neat_cache;commands:test_1"
@@ -710,7 +760,7 @@ jobs:
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
       - id: neat_cache_pub_upgrade
         name: neat_cache; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"

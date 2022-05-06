@@ -1,0 +1,6 @@
+import_rewrites:
+  pem: pem
+vendored_dependencies:
+  pem:
+    package: pem
+    version: 2.0.0
