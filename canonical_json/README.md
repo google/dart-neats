@@ -52,7 +52,7 @@ takes the opinion that binary values should be encoded.
  * [Discusson of alternative canonicalization formats for JSON][2].
  * Specification of JSON in [RFC 8259][3]
 
-[1]: http://wiki.laptop.org/go/Canonical_JSON
+[1]: https://wiki.laptop.org/go/Canonical_JSON
 [2]: https://gibson042.github.io/canonicaljson-spec/#prior-art
 [3]: https://tools.ietf.org/html/rfc8259
-[4]: http://unicode.org/reports/tr15/
+[4]: https://unicode.org/reports/tr15/
