@@ -14,4 +14,7 @@ dev_dependencies:
   lints: ^1.0.0
 environment:
   sdk: '>=2.12.0 <3.0.0'
-
+false_secrets:
+ - /README.md
+ - /example/main.dart
+ - /test/testcases.dart
