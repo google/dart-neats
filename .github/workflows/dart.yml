@@ -37,16 +37,16 @@ jobs:
       - name: mono_repo self validate
         run: dart pub global run mono_repo generate --validate
   job_002:
-    name: "analyze; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid, vendor; `dart analyze`"
+    name: "analyze; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, slugid, vendor; `dart analyze`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid-vendor;commands:analyze"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-slugid-vendor;commands:analyze"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid-vendor
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-slugid-vendor
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -145,24 +145,6 @@ jobs:
         if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
         working-directory: sanitize_html
         run: dart analyze
-      - id: shelf_router_pub_upgrade
-        name: shelf_router; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router
-        run: dart pub upgrade
-      - name: shelf_router; dart analyze
-        if: "always() && steps.shelf_router_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router
-        run: dart analyze
-      - id: shelf_router_generator_pub_upgrade
-        name: shelf_router_generator; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: dart pub upgrade
-      - name: shelf_router_generator; dart analyze
-        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: dart analyze
       - id: slugid_pub_upgrade
         name: slugid; dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
@@ -182,16 +164,16 @@ jobs:
         working-directory: vendor
         run: dart analyze
   job_003:
-    name: "analyze; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, shelf_router, shelf_router_generator, slugid, vendor; `dart format --output=none --set-exit-if-changed .`"
+    name: "analyze; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, slugid, vendor; `dart format --output=none --set-exit-if-changed .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@v3
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid-vendor;commands:format"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-slugid-vendor;commands:format"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-shelf_router-shelf_router_generator-slugid-vendor
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-slugid-vendor
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -289,24 +271,6 @@ jobs:
       - name: "sanitize_html; dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
         working-directory: sanitize_html
-        run: "dart format --output=none --set-exit-if-changed ."
-      - id: shelf_router_pub_upgrade
-        name: shelf_router; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router
-        run: dart pub upgrade
-      - name: "shelf_router; dart format --output=none --set-exit-if-changed ."
-        if: "always() && steps.shelf_router_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router
-        run: "dart format --output=none --set-exit-if-changed ."
-      - id: shelf_router_generator_pub_upgrade
-        name: shelf_router_generator; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: dart pub upgrade
-      - name: "shelf_router_generator; dart format --output=none --set-exit-if-changed ."
-        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router_generator
         run: "dart format --output=none --set-exit-if-changed ."
       - id: slugid_pub_upgrade
         name: slugid; dart pub upgrade
@@ -615,70 +579,6 @@ jobs:
       - job_002
       - job_003
   job_013:
-    name: "tests; PKG: shelf_router; `dart test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v3
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:shelf_router;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:shelf_router
-            os:ubuntu-latest;pub-cache-hosted;sdk:stable
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.3
-        with:
-          sdk: stable
-      - id: checkout
-        uses: actions/checkout@v3
-      - id: shelf_router_pub_upgrade
-        name: shelf_router; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router
-        run: dart pub upgrade
-      - name: shelf_router; dart test
-        if: "always() && steps.shelf_router_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router
-        run: dart test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-  job_014:
-    name: "tests; PKG: shelf_router_generator; `dart test`"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Pub hosted dependencies
-        uses: actions/cache@v3
-        with:
-          path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:shelf_router_generator;commands:test_0"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:shelf_router_generator
-            os:ubuntu-latest;pub-cache-hosted;sdk:stable
-            os:ubuntu-latest;pub-cache-hosted
-            os:ubuntu-latest
-      - uses: dart-lang/setup-dart@v1.3
-        with:
-          sdk: stable
-      - id: checkout
-        uses: actions/checkout@v3
-      - id: shelf_router_generator_pub_upgrade
-        name: shelf_router_generator; dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: dart pub upgrade
-      - name: shelf_router_generator; dart test
-        if: "always() && steps.shelf_router_generator_pub_upgrade.conclusion == 'success'"
-        working-directory: shelf_router_generator
-        run: dart test
-    needs:
-      - job_001
-      - job_002
-      - job_003
-  job_015:
     name: "tests; PKG: slugid; `dart test`"
     runs-on: ubuntu-latest
     steps:
@@ -710,7 +610,7 @@ jobs:
       - job_001
       - job_002
       - job_003
-  job_016:
+  job_014:
     name: "tests; PKG: vendor; `dart test`"
     runs-on: ubuntu-latest
     steps:
@@ -742,7 +642,7 @@ jobs:
       - job_001
       - job_002
       - job_003
-  job_017:
+  job_015:
     name: "tests; PKG: neat_cache; `dart test -x redis`"
     runs-on: ubuntu-latest
     steps:
