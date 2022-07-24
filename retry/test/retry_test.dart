@@ -77,59 +77,79 @@ void main() {
         count++;
         throw FormatException('Retry will fail');
       }, retryIf: (e) => e is FormatException);
-      await expectLater(f, throwsA(isFormatException));
+      await expectLater(
+          f,
+          throwsA(predicate((e) =>
+              e is RetryExhaustedException &&
+              e.attempt == 5 &&
+              e.exception is FormatException)));
       expect(count, equals(5));
     });
 
-    test('retry (success after 2)', () async {
+    test('retry (orElse, exhaust retries)', () async {
       var count = 0;
-      final r = RetryOptions(
-        maxAttempts: 5,
-        maxDelay: Duration(),
+      final v = await retry(
+        () async {
+          count++;
+          throw Exception();
+        },
+        retryIf: (e) => true,
+        orElse: (_) => 1,
+        maxAttempts: 3,
       );
-      final f = r.retry(() {
-        count++;
-        if (count == 1) {
-          throw FormatException('Retry will be okay');
-        }
-        return true;
-      }, retryIf: (e) => e is FormatException);
-      await expectLater(f, completion(isTrue));
-      expect(count, equals(2));
+      expect(count, 3);
+      expect(v, 1);
     });
+  });
 
-    test('retry (no retryIf)', () async {
-      var count = 0;
-      final r = RetryOptions(
-        maxAttempts: 5,
-        maxDelay: Duration(),
-      );
-      final f = r.retry(() {
-        count++;
-        if (count == 1) {
-          throw FormatException('Retry will be okay');
-        }
-        return true;
-      });
-      await expectLater(f, completion(isTrue));
-      expect(count, equals(2));
-    });
+  test('retry (success after 2)', () async {
+    var count = 0;
+    final r = RetryOptions(
+      maxAttempts: 5,
+      maxDelay: Duration(),
+    );
+    final f = r.retry(() {
+      count++;
+      if (count == 1) {
+        throw FormatException('Retry will be okay');
+      }
+      return true;
+    }, retryIf: (e) => e is FormatException);
+    await expectLater(f, completion(isTrue));
+    expect(count, equals(2));
+  });
 
-    test('retry (unhandled on 2nd try)', () async {
-      var count = 0;
-      final r = RetryOptions(
-        maxAttempts: 5,
-        maxDelay: Duration(),
-      );
-      final f = r.retry(() {
-        count++;
-        if (count == 1) {
-          throw FormatException('Retry will be okay');
-        }
-        throw Exception('unhandled thing');
-      }, retryIf: (e) => e is FormatException);
-      await expectLater(f, throwsA(isException));
-      expect(count, equals(2));
+  test('retry (no retryIf)', () async {
+    var count = 0;
+    final r = RetryOptions(
+      maxAttempts: 5,
+      maxDelay: Duration(),
+    );
+    final f = r.retry(() {
+      count++;
+      if (count == 1) {
+        throw FormatException('Retry will be okay');
+      }
+      return true;
     });
+    await expectLater(f, completion(isTrue));
+    expect(count, equals(2));
+  });
+
+  test('retry (unhandled on 2nd try)', () async {
+    var count = 0;
+    final r = RetryOptions(
+      maxAttempts: 5,
+      maxDelay: Duration(),
+    );
+    final f = r.retry(() {
+      count++;
+      if (count == 1) {
+        throw FormatException('Retry will be okay');
+      }
+      throw Exception('unhandled thing');
+    }, retryIf: (e) => e is FormatException);
+    await expectLater(f, throwsA(isException));
+    expect(count, equals(2));
   });
 }

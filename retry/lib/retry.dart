@@ -118,10 +118,16 @@ class RetryOptions {
   /// If no [retryIf] function is given this will retry any for any [Exception]
   /// thrown. To retry on an [Error], the error must be caught and _rethrown_
   /// as an [Exception].
+  ///
+  /// if retries is exhausted, the result of invoking the [orElse] function is returned.
+  ///
+  /// If [orElse] is omitted, it defaults to throwing a [RetryExhaustedException]
+  /// when retries is exhausted.
   Future<T> retry<T>(
     FutureOr<T> Function() fn, {
     FutureOr<bool> Function(Exception)? retryIf,
     FutureOr<void> Function(Exception)? onRetry,
+    FutureOr<T> Function(Exception)? orElse,
   }) async {
     var attempt = 0;
     // ignore: literal_only_boolean_expressions
@@ -130,8 +136,14 @@ class RetryOptions {
       try {
         return await fn();
       } on Exception catch (e) {
-        if (attempt >= maxAttempts ||
-            (retryIf != null && !(await retryIf(e)))) {
+        if (attempt >= maxAttempts) {
+          if (orElse != null) {
+            return await orElse(e);
+          } else {
+            throw RetryExhaustedException(attempt, e);
+          }
+        }
+        if (retryIf != null && !(await retryIf(e))) {
           rethrow;
         }
         if (onRetry != null) {
@@ -171,6 +183,11 @@ class RetryOptions {
 /// If no [retryIf] function is given this will retry any for any [Exception]
 /// thrown. To retry on an [Error], the error must be caught and _rethrown_
 /// as an [Exception].
+///
+/// if retries is exhausted, the result of invoking the [orElse] function is returned.
+///
+/// If [orElse] is omitted, it defaults to throwing a [RetryExhaustedException]
+/// when retries is exhausted.
 Future<T> retry<T>(
   FutureOr<T> Function() fn, {
   Duration delayFactor = const Duration(milliseconds: 200),
@@ -179,10 +196,27 @@ Future<T> retry<T>(
   int maxAttempts = 8,
   FutureOr<bool> Function(Exception)? retryIf,
   FutureOr<void> Function(Exception)? onRetry,
+  FutureOr<T> Function(Exception)? orElse,
 }) =>
     RetryOptions(
       delayFactor: delayFactor,
       randomizationFactor: randomizationFactor,
       maxDelay: maxDelay,
       maxAttempts: maxAttempts,
-    ).retry(fn, retryIf: retryIf, onRetry: onRetry);
+    ).retry(fn, retryIf: retryIf, onRetry: onRetry, orElse: orElse);
+
+/// throw [RetryExhaustedException] when retries is exhausted.
+class RetryExhaustedException implements Exception {
+  final int attempt;
+  final dynamic exception;
+
+  RetryExhaustedException(
+    this.attempt,
+    this.exception,
+  );
+
+  @override
+  String toString() {
+    return 'RetryExhaustedException{attempt: $attempt, exception: $exception}';
+  }
+}
