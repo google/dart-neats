@@ -99,7 +99,7 @@ Uri _packageUri(String package) => Uri(
 
 Uri _vendoredPackageUri(String rootPackageName, String name) => Uri(
       scheme: 'package',
-      path: '$rootPackageName/lib/src/third_party/$name/lib/',
+      path: '$rootPackageName/src/third_party/$name/lib/',
     );
 
 Iterable<Action> _rewriteChanges(

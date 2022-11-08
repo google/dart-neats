@@ -63,7 +63,7 @@ void main() {
       d.file('pubspec.yaml', 'name: myapp'),
       d.dir('lib', [
         d.file('myapp.dart', '''
-          import 'package:myapp/lib/src/third_party/foo/lib/foo.dart';
+          import 'package:myapp/src/third_party/foo/lib/foo.dart';
 
           void main() => sayHello();
         '''),
