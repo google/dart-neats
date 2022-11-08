@@ -14,4 +14,3 @@ config:
         - LICENSE
         - CHANGELOG.md
         - lib/**
-        - analysis_options.yaml
