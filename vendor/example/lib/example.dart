@@ -1,3 +1,3 @@
-import 'package:example/src/third_party/pem/lib/pem.dart';
+import 'package:example/src/third_party/http_methods/lib/http_methods.dart';
 
-void main() => print('Label: ${PemLabel.pkcs7}');
+void main() => print('isHttpMethod(GET): ${isHttpMethod('get')}');

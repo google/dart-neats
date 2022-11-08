@@ -2,11 +2,11 @@
 version: 0.9.0
 config:
   import_rewrites:
-    pem: pem
+    http_methods: http_methods
   vendored_dependencies:
-    pem:
-      package: pem
-      version: 2.0.0
+    http_methods:
+      package: http_methods
+      version: 1.1.0
       import_rewrites: {}
       include:
         - pubspec.yaml
