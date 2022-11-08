@@ -48,7 +48,7 @@ void main() {
 
     expect(actions.map((a) => a.summary), [
       'fetch foo:1.0.0 -> lib/src/third_party/foo/ (from https://pub.dartlang.org/)',
-      'rewrite import "package:foo/" -> "package:myapp/lib/src/third_party/foo/lib/" in lib/src/third_party/foo/',
+      'rewrite import "package:foo/" -> "package:myapp/src/third_party/foo/lib/" in lib/src/third_party/foo/',
       'write lib/src/third_party/vendor-state.yaml',
     ]);
   });
@@ -107,7 +107,7 @@ void main() {
     expect(actions.map((a) => a.summary), [
       'delete lib/src/third_party/foo/',
       'fetch foo:1.2.3 -> lib/src/third_party/foo/ (from https://pub.dartlang.org/)',
-      'rewrite import "package:foo/" -> "package:myapp/lib/src/third_party/foo/lib/" in lib/src/third_party/foo/',
+      'rewrite import "package:foo/" -> "package:myapp/src/third_party/foo/lib/" in lib/src/third_party/foo/',
       'write lib/src/third_party/vendor-state.yaml',
     ]);
   });
@@ -145,8 +145,8 @@ void main() {
 
     expect(actions.map((a) => a.summary), [
       'fetch mybar:1.2.3 -> lib/src/third_party/mybar/ (from https://pub.dartlang.org/)',
-      'rewrite import "package:mybar/" -> "package:myapp/lib/src/third_party/mybar/lib/" in lib/src/third_party/mybar/',
-      'rewrite import "package:bar/" -> "package:myapp/lib/src/third_party/mybar/lib/" in lib/src/third_party/foo/',
+      'rewrite import "package:mybar/" -> "package:myapp/src/third_party/mybar/lib/" in lib/src/third_party/mybar/',
+      'rewrite import "package:bar/" -> "package:myapp/src/third_party/mybar/lib/" in lib/src/third_party/foo/',
       'write lib/src/third_party/vendor-state.yaml',
     ]);
   });
@@ -184,7 +184,7 @@ void main() {
 
     expect(actions.map((a) => a.summary), [
       'delete lib/src/third_party/mybar/',
-      'rewrite import "package:myapp/lib/src/third_party/mybar/lib/" -> "package:bar/" in lib/src/third_party/foo/',
+      'rewrite import "package:myapp/src/third_party/mybar/lib/" -> "package:bar/" in lib/src/third_party/foo/',
       'write lib/src/third_party/vendor-state.yaml',
     ]);
   });
@@ -217,7 +217,7 @@ void main() {
     );
 
     expect(actions.map((a) => a.summary), [
-      'rewrite import "package:foobar/" -> "package:myapp/lib/src/third_party/foo/lib/" in ./',
+      'rewrite import "package:foobar/" -> "package:myapp/src/third_party/foo/lib/" in ./',
       'write lib/src/third_party/vendor-state.yaml',
     ]);
   });

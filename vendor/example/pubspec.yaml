@@ -3,5 +3,7 @@ dependencies:
   petitparser: ^4.0.2
 dev_dependencies:
   lints: ^1.0.1
+  vendor:
+    path: ../
 environment:
   sdk: ^2.12.0
