@@ -118,6 +118,10 @@ class RetryOptions {
   /// If no [retryIf] function is given this will retry any for any [Exception]
   /// thrown. To retry on an [Error], the error must be caught and _rethrown_
   /// as an [Exception].
+  ///
+  /// If [orElse] is given and the [attemps] are exhausted by retryable
+  /// exceptions (either by default or via [retryIf]), the function will
+  /// return the result of [orElse].
   Future<T> retry<T>(
     FutureOr<T> Function() fn, {
     FutureOr<bool> Function(Exception)? retryIf,
@@ -176,6 +180,10 @@ class RetryOptions {
 /// If no [retryIf] function is given this will retry any for any [Exception]
 /// thrown. To retry on an [Error], the error must be caught and _rethrown_
 /// as an [Exception].
+///
+/// If [orElse] is given and the [attemps] are exhausted by retryable
+/// exceptions (either by default or via [retryIf]), the function will
+/// return the result of [orElse].
 Future<T> retry<T>(
   FutureOr<T> Function() fn, {
   Duration delayFactor = const Duration(milliseconds: 200),
