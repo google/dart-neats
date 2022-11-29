@@ -1,9 +1,12 @@
-name: dart_neats
+name: dart_neats_tool
+
 # This should never be published it just locks the dev_dependencies for
 # repository management, so they don't have to be installed globally.
 publish_to: none
-dev_dependencies:
-  mono_repo: ^6.1.0
-  pubspec_parse: ^1.2.0
+
 environment:
   sdk: '>=2.15.0 <3.0.0'
+
+dev_dependencies:
+  mono_repo: ^6.2.0
+  pubspec_parse: ^1.2.0

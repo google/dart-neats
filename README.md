@@ -14,13 +14,10 @@ major version. This often means splitting functionality into separate packages,
 which can be reused independently.
 
 ## Repository Management
-The root `pubspec.yaml` is only intended to lock the development dependencies
-for repository management. When adding new packages or changing `mono_repo.yaml`
-or `mono_pkg.yaml` in a package, make sure to run the following commands to
-update travis configuration.
+When adding new packages or changing `mono_repo.yaml` or `mono_pkg.yaml` in a
+package, make sure to run the following command to update the CI configuration:
 
- * `pub get`
- * `pub run mono_repo travis`
+     ./tool/mono_repo.sh generate
 
 ## Contributing
 We love patches and contributions, please refer to [CONTRIBUTING.md][1] for
