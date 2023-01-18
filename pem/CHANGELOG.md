@@ -1,3 +1,8 @@
+## v2.0.2
+ * Avoid using deprecated API from
+   [petitparser](https://pub.dev/packages/petitparser).
+ * Bumping lower-bound constraint for `petitparser` to `^5.1.0`.
+
 ## v2.0.1
  * Allow package [petitparser](https://pub.dev/packages/petitparser) version
    `>=4.0.1 <6.0.0`.
