@@ -202,7 +202,7 @@ List<List<int>> decodePemBlocks(
 
   // Create results
   final result = <List<int>>[];
-  for (final r in p.matchesSkipping(pemString)) {
+  for (final r in p.allMatches(pemString, overlapping: false)) {
     final doc = r.cast<String>();
     final preLabel = doc[0];
     final data = doc[1];
