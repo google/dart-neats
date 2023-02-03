@@ -1,4 +1,4 @@
-# Created with package:mono_repo v6.3.0
+# Created with package:mono_repo v6.5.0
 name: Dart CI
 on:
   push:
@@ -21,20 +21,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - name: mono_repo self validate
-        run: dart pub global activate mono_repo 6.3.0
+        run: dart pub global activate mono_repo 6.5.0
       - name: mono_repo self validate
         run: dart pub global run mono_repo generate --validate
   job_002:
@@ -42,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-slugid-vendor;commands:analyze"
@@ -51,125 +53,127 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: acyclic_steps_pub_upgrade
         name: acyclic_steps; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: acyclic_steps
-        run: dart pub upgrade
       - name: acyclic_steps; dart analyze
+        run: dart analyze
         if: "always() && steps.acyclic_steps_pub_upgrade.conclusion == 'success'"
         working-directory: acyclic_steps
-        run: dart analyze
       - id: canonical_json_pub_upgrade
         name: canonical_json; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: canonical_json
-        run: dart pub upgrade
       - name: canonical_json; dart analyze
+        run: dart analyze
         if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
         working-directory: canonical_json
-        run: dart analyze
       - id: chunked_stream_pub_upgrade
         name: chunked_stream; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: chunked_stream
-        run: dart pub upgrade
       - name: chunked_stream; dart analyze
+        run: dart analyze
         if: "always() && steps.chunked_stream_pub_upgrade.conclusion == 'success'"
         working-directory: chunked_stream
-        run: dart analyze
       - id: http_methods_pub_upgrade
         name: http_methods; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: http_methods
-        run: dart pub upgrade
       - name: http_methods; dart analyze
+        run: dart analyze
         if: "always() && steps.http_methods_pub_upgrade.conclusion == 'success'"
         working-directory: http_methods
-        run: dart analyze
       - id: neat_cache_pub_upgrade
         name: neat_cache; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: neat_cache
-        run: dart pub upgrade
       - name: neat_cache; dart analyze
+        run: dart analyze
         if: "always() && steps.neat_cache_pub_upgrade.conclusion == 'success'"
         working-directory: neat_cache
-        run: dart analyze
       - id: neat_periodic_task_pub_upgrade
         name: neat_periodic_task; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: neat_periodic_task
-        run: dart pub upgrade
       - name: neat_periodic_task; dart analyze
+        run: dart analyze
         if: "always() && steps.neat_periodic_task_pub_upgrade.conclusion == 'success'"
         working-directory: neat_periodic_task
-        run: dart analyze
       - id: pem_pub_upgrade
         name: pem; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: pem
-        run: dart pub upgrade
       - name: pem; dart analyze
+        run: dart analyze
         if: "always() && steps.pem_pub_upgrade.conclusion == 'success'"
         working-directory: pem
-        run: dart analyze
       - id: retry_pub_upgrade
         name: retry; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: retry
-        run: dart pub upgrade
       - name: retry; dart analyze
+        run: dart analyze
         if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
         working-directory: retry
-        run: dart analyze
       - id: safe_url_check_pub_upgrade
         name: safe_url_check; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: safe_url_check
-        run: dart pub upgrade
       - name: safe_url_check; dart analyze
+        run: dart analyze
         if: "always() && steps.safe_url_check_pub_upgrade.conclusion == 'success'"
         working-directory: safe_url_check
-        run: dart analyze
       - id: sanitize_html_pub_upgrade
         name: sanitize_html; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: sanitize_html
-        run: dart pub upgrade
       - name: sanitize_html; dart analyze
+        run: dart analyze
         if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
         working-directory: sanitize_html
-        run: dart analyze
       - id: slugid_pub_upgrade
         name: slugid; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: slugid
-        run: dart pub upgrade
       - name: slugid; dart analyze
+        run: dart analyze
         if: "always() && steps.slugid_pub_upgrade.conclusion == 'success'"
         working-directory: slugid
-        run: dart analyze
       - id: vendor_pub_upgrade
         name: vendor; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: vendor
-        run: dart pub upgrade
       - name: vendor; dart analyze
+        run: dart analyze
         if: "always() && steps.vendor_pub_upgrade.conclusion == 'success'"
         working-directory: vendor
-        run: dart analyze
   job_003:
     name: "analyze; PKGS: acyclic_steps, canonical_json, chunked_stream, http_methods, neat_cache, neat_periodic_task, pem, retry, safe_url_check, sanitize_html, slugid, vendor; `dart format --output=none --set-exit-if-changed .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-slugid-vendor;commands:format"
@@ -178,125 +182,127 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: acyclic_steps_pub_upgrade
         name: acyclic_steps; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: acyclic_steps
-        run: dart pub upgrade
       - name: "acyclic_steps; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.acyclic_steps_pub_upgrade.conclusion == 'success'"
         working-directory: acyclic_steps
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: canonical_json_pub_upgrade
         name: canonical_json; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: canonical_json
-        run: dart pub upgrade
       - name: "canonical_json; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
         working-directory: canonical_json
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: chunked_stream_pub_upgrade
         name: chunked_stream; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: chunked_stream
-        run: dart pub upgrade
       - name: "chunked_stream; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.chunked_stream_pub_upgrade.conclusion == 'success'"
         working-directory: chunked_stream
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: http_methods_pub_upgrade
         name: http_methods; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: http_methods
-        run: dart pub upgrade
       - name: "http_methods; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.http_methods_pub_upgrade.conclusion == 'success'"
         working-directory: http_methods
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: neat_cache_pub_upgrade
         name: neat_cache; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: neat_cache
-        run: dart pub upgrade
       - name: "neat_cache; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.neat_cache_pub_upgrade.conclusion == 'success'"
         working-directory: neat_cache
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: neat_periodic_task_pub_upgrade
         name: neat_periodic_task; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: neat_periodic_task
-        run: dart pub upgrade
       - name: "neat_periodic_task; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.neat_periodic_task_pub_upgrade.conclusion == 'success'"
         working-directory: neat_periodic_task
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: pem_pub_upgrade
         name: pem; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: pem
-        run: dart pub upgrade
       - name: "pem; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.pem_pub_upgrade.conclusion == 'success'"
         working-directory: pem
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: retry_pub_upgrade
         name: retry; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: retry
-        run: dart pub upgrade
       - name: "retry; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
         working-directory: retry
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: safe_url_check_pub_upgrade
         name: safe_url_check; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: safe_url_check
-        run: dart pub upgrade
       - name: "safe_url_check; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.safe_url_check_pub_upgrade.conclusion == 'success'"
         working-directory: safe_url_check
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: sanitize_html_pub_upgrade
         name: sanitize_html; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: sanitize_html
-        run: dart pub upgrade
       - name: "sanitize_html; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
         working-directory: sanitize_html
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: slugid_pub_upgrade
         name: slugid; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: slugid
-        run: dart pub upgrade
       - name: "slugid; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.slugid_pub_upgrade.conclusion == 'success'"
         working-directory: slugid
-        run: "dart format --output=none --set-exit-if-changed ."
       - id: vendor_pub_upgrade
         name: vendor; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: vendor
-        run: dart pub upgrade
       - name: "vendor; dart format --output=none --set-exit-if-changed ."
+        run: "dart format --output=none --set-exit-if-changed ."
         if: "always() && steps.vendor_pub_upgrade.conclusion == 'success'"
         working-directory: vendor
-        run: "dart format --output=none --set-exit-if-changed ."
   job_004:
     name: "tests; PKG: acyclic_steps; `dart test`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps;commands:test_0"
@@ -305,20 +311,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: acyclic_steps_pub_upgrade
         name: acyclic_steps; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: acyclic_steps
-        run: dart pub upgrade
       - name: acyclic_steps; dart test
+        run: dart test
         if: "always() && steps.acyclic_steps_pub_upgrade.conclusion == 'success'"
         working-directory: acyclic_steps
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -328,7 +336,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:canonical_json;commands:test_0"
@@ -337,20 +345,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: canonical_json_pub_upgrade
         name: canonical_json; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: canonical_json
-        run: dart pub upgrade
       - name: canonical_json; dart test
+        run: dart test
         if: "always() && steps.canonical_json_pub_upgrade.conclusion == 'success'"
         working-directory: canonical_json
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -360,7 +370,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:chunked_stream;commands:test_0"
@@ -369,20 +379,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: chunked_stream_pub_upgrade
         name: chunked_stream; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: chunked_stream
-        run: dart pub upgrade
       - name: chunked_stream; dart test
+        run: dart test
         if: "always() && steps.chunked_stream_pub_upgrade.conclusion == 'success'"
         working-directory: chunked_stream
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -392,7 +404,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:http_methods;commands:test_0"
@@ -401,20 +413,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: http_methods_pub_upgrade
         name: http_methods; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: http_methods
-        run: dart pub upgrade
       - name: http_methods; dart test
+        run: dart test
         if: "always() && steps.http_methods_pub_upgrade.conclusion == 'success'"
         working-directory: http_methods
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -424,7 +438,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:neat_periodic_task;commands:test_0"
@@ -433,20 +447,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: neat_periodic_task_pub_upgrade
         name: neat_periodic_task; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: neat_periodic_task
-        run: dart pub upgrade
       - name: neat_periodic_task; dart test
+        run: dart test
         if: "always() && steps.neat_periodic_task_pub_upgrade.conclusion == 'success'"
         working-directory: neat_periodic_task
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -456,7 +472,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:pem;commands:test_0"
@@ -465,20 +481,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: pem_pub_upgrade
         name: pem; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: pem
-        run: dart pub upgrade
       - name: pem; dart test
+        run: dart test
         if: "always() && steps.pem_pub_upgrade.conclusion == 'success'"
         working-directory: pem
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -488,7 +506,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:retry;commands:test_0"
@@ -497,20 +515,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: retry_pub_upgrade
         name: retry; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: retry
-        run: dart pub upgrade
       - name: retry; dart test
+        run: dart test
         if: "always() && steps.retry_pub_upgrade.conclusion == 'success'"
         working-directory: retry
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -520,7 +540,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:safe_url_check;commands:test_0"
@@ -529,20 +549,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: safe_url_check_pub_upgrade
         name: safe_url_check; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: safe_url_check
-        run: dart pub upgrade
       - name: safe_url_check; dart test
+        run: dart test
         if: "always() && steps.safe_url_check_pub_upgrade.conclusion == 'success'"
         working-directory: safe_url_check
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -552,7 +574,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:sanitize_html;commands:test_0"
@@ -561,20 +583,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: sanitize_html_pub_upgrade
         name: sanitize_html; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: sanitize_html
-        run: dart pub upgrade
       - name: sanitize_html; dart test
+        run: dart test
         if: "always() && steps.sanitize_html_pub_upgrade.conclusion == 'success'"
         working-directory: sanitize_html
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -584,7 +608,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:slugid;commands:test_0"
@@ -593,20 +617,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: slugid_pub_upgrade
         name: slugid; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: slugid
-        run: dart pub upgrade
       - name: slugid; dart test
+        run: dart test
         if: "always() && steps.slugid_pub_upgrade.conclusion == 'success'"
         working-directory: slugid
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -616,7 +642,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:vendor;commands:test_0"
@@ -625,20 +651,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: vendor_pub_upgrade
         name: vendor; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: vendor
-        run: dart pub upgrade
       - name: vendor; dart test
+        run: dart test
         if: "always() && steps.vendor_pub_upgrade.conclusion == 'success'"
         working-directory: vendor
-        run: dart test
     needs:
       - job_001
       - job_002
@@ -648,7 +676,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@4504faf7e9bcf8f3ed0bc863c4e1d21499ab8ef8
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:neat_cache;commands:test_1"
@@ -657,20 +685,22 @@ jobs:
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
-      - uses: dart-lang/setup-dart@6a218f2413a3e78e9087f638a238f6b40893203d
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: stable
       - id: checkout
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+        name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
       - id: neat_cache_pub_upgrade
         name: neat_cache; dart pub upgrade
+        run: dart pub upgrade
         if: "always() && steps.checkout.conclusion == 'success'"
         working-directory: neat_cache
-        run: dart pub upgrade
       - name: "neat_cache; dart test -x redis"
+        run: dart test -x redis
         if: "always() && steps.neat_cache_pub_upgrade.conclusion == 'success'"
         working-directory: neat_cache
-        run: dart test -x redis
     needs:
       - job_001
       - job_002
