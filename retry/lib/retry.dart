@@ -118,10 +118,15 @@ class RetryOptions {
   /// If no [retryIf] function is given this will retry any for any [Exception]
   /// thrown. To retry on an [Error], the error must be caught and _rethrown_
   /// as an [Exception].
+  ///
+  /// If [orElse] is given and the [attemps] are exhausted by retryable
+  /// exceptions (either by default or via [retryIf]), the function will
+  /// return the result of [orElse].
   Future<T> retry<T>(
     FutureOr<T> Function() fn, {
     FutureOr<bool> Function(Exception)? retryIf,
     FutureOr<void> Function(Exception)? onRetry,
+    FutureOr<T> Function(Exception)? orElse,
   }) async {
     var attempt = 0;
     // ignore: literal_only_boolean_expressions
@@ -132,6 +137,10 @@ class RetryOptions {
       } on Exception catch (e) {
         if (attempt >= maxAttempts ||
             (retryIf != null && !(await retryIf(e)))) {
+          if (orElse != null) {
+            return await orElse(e);
+          }
+
           rethrow;
         }
         if (onRetry != null) {
@@ -171,6 +180,10 @@ class RetryOptions {
 /// If no [retryIf] function is given this will retry any for any [Exception]
 /// thrown. To retry on an [Error], the error must be caught and _rethrown_
 /// as an [Exception].
+///
+/// If [orElse] is given and the [attemps] are exhausted by retryable
+/// exceptions (either by default or via [retryIf]), the function will
+/// return the result of [orElse].
 Future<T> retry<T>(
   FutureOr<T> Function() fn, {
   Duration delayFactor = const Duration(milliseconds: 200),
@@ -179,10 +192,16 @@ Future<T> retry<T>(
   int maxAttempts = 8,
   FutureOr<bool> Function(Exception)? retryIf,
   FutureOr<void> Function(Exception)? onRetry,
+  FutureOr<T> Function(Exception)? orElse,
 }) =>
     RetryOptions(
       delayFactor: delayFactor,
       randomizationFactor: randomizationFactor,
       maxDelay: maxDelay,
       maxAttempts: maxAttempts,
-    ).retry(fn, retryIf: retryIf, onRetry: onRetry);
+    ).retry(
+      fn,
+      retryIf: retryIf,
+      onRetry: onRetry,
+      orElse: orElse,
+    );

@@ -131,5 +131,35 @@ void main() {
       await expectLater(f, throwsA(isException));
       expect(count, equals(2));
     });
+
+    test('retry + orElse', () async {
+      var count = 0;
+      final v = await retry(
+        () async {
+          count++;
+          throw Exception();
+        },
+        orElse: (_) => 1,
+        maxAttempts: 3,
+      );
+      expect(count, 3);
+      expect(v, 1);
+    });
+
+    test('retry + orElse throws', () async {
+      var count = 0;
+      await expectLater(
+        () => retry(
+          () async {
+            count++;
+            throw Exception('fn');
+          },
+          orElse: (_) => throw FormatException('orElse'),
+          maxAttempts: 3,
+        ),
+        throwsA(isA<FormatException>()),
+      );
+      expect(count, 3);
+    });
   });
 }
