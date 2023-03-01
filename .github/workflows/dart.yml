@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable"
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-slugid-vendor;commands:analyze"
@@ -173,7 +173,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps-canonical_json-chunked_stream-http_methods-neat_cache-neat_periodic_task-pem-retry-safe_url_check-sanitize_html-slugid-vendor;commands:format"
@@ -302,7 +302,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:acyclic_steps;commands:test_0"
@@ -336,7 +336,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:canonical_json;commands:test_0"
@@ -370,7 +370,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:chunked_stream;commands:test_0"
@@ -404,7 +404,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:http_methods;commands:test_0"
@@ -438,7 +438,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:neat_periodic_task;commands:test_0"
@@ -472,7 +472,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:pem;commands:test_0"
@@ -506,7 +506,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:retry;commands:test_0"
@@ -540,7 +540,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:safe_url_check;commands:test_0"
@@ -574,7 +574,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:sanitize_html;commands:test_0"
@@ -608,7 +608,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:slugid;commands:test_0"
@@ -642,7 +642,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:vendor;commands:test_0"
@@ -676,7 +676,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:neat_cache;commands:test_1"
