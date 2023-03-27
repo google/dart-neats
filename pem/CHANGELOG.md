@@ -1,5 +1,6 @@
 ## v2.0.3
- * Add 'topics' to pubspec.
+ * Add `topics` to pubspec.
+
 ## v2.0.2
  * Avoid using deprecated API from
    [petitparser](https://pub.dev/packages/petitparser).
