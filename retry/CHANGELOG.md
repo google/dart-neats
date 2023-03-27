@@ -1,3 +1,5 @@
+## v3.1.1
+ * Add `topics` to pubspec.
 ## v3.1.0
  * Stable null-safety release.
 
