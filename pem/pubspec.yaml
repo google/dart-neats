@@ -1,5 +1,5 @@
 name: pem
-version: 2.0.2
+version: 2.0.3
 description: |
   PEM encoding/decoding of textual keys following RFC 7468,
   supporting both lax/strict-mode, and certificates chains of concatenated
@@ -18,3 +18,5 @@ false_secrets:
  - /README.md
  - /example/main.dart
  - /test/testcases.dart
+topics:
+ - crypto
