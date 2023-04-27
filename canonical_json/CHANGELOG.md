@@ -1,3 +1,6 @@
+## v1.1.2
+ * Added `topics` to `pubspec.yaml`.
+
 ## v1.1.1
  * Fixed lints.
  * Fixed HTTP-links in `README.md`.

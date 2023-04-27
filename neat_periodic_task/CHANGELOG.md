@@ -1,3 +1,6 @@
+## v2.0.1
+ * Added `topics` to `pubspec.yaml`.
+
 ## v2.0.0
  * Migrated to null-safety!
 

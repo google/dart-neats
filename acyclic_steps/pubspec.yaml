@@ -1,11 +1,14 @@
 name: acyclic_steps
-version: 0.11.0
+version: 0.11.1
 description: |
   An explicit acyclic step dependency framework with concurrent evaluation
   and dependency injection.
 homepage: https://github.com/google/dart-neats/tree/master/acyclic_steps
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:acyclic_steps
+topics:
+ - concurrency
+ - dependency-injection
 dependencies:
   meta: ^1.1.7
 dev_dependencies:

@@ -1,3 +1,6 @@
+## v0.9.3
+ * Added `topics` to `pubspec.yaml`.
+
 ## v0.9.2
  * Fix import-path rewriting logic.
  * Bump `package:analyzer` to `>= 2.7.0 <6.0.0`.
