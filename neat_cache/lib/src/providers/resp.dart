@@ -208,7 +208,7 @@ class RespClient {
       try {
         final quit = command(['QUIT']);
         scheduleMicrotask(() async {
-          await quit.catchError((_) {/* ignore */});
+          await quit.catchError((_) => null);
         });
       } catch (_) {
         // ignore
