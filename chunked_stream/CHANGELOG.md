@@ -1,3 +1,6 @@
+## v1.4.2
+ * Added `topics` to `pubspec.yaml`.
+
 ## v1.4.1
 - Deprecating `ChunkedStreamIterator` in favor of
   [`ChunkedStreamReader`](https://pub.dev/documentation/async/latest/async/ChunkedStreamReader-class.html)

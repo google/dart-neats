@@ -1,3 +1,6 @@
+## v2.0.3
+ * Added `topics` to `pubspec.yaml`.
+
 ## v2.0.2
  * Fixed lints.
 

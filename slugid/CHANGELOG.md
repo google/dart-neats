@@ -1,3 +1,6 @@
+## v1.1.2
+ * Add `topics` to `pubspec.yaml`.
+
 ## v1.1.1
  * Implement `Slugid.hashCode`.
 

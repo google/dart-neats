@@ -1,5 +1,8 @@
+## v2.0.4
+ * Updated `topics` in `pubspec.yaml`.
+
 ## v2.0.3
- * Add `topics` to pubspec.
+ * Add `topics` to `pubspec.yaml`.
 
 ## v2.0.2
  * Avoid using deprecated API from
