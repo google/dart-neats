@@ -1,4 +1,5 @@
 name: example
+publish_to: none
 dependencies:
   petitparser: ^4.0.2
 dev_dependencies:
