@@ -1,6 +1,6 @@
 name: safe_url_check
 version: 1.1.1
-description: |
+description: >-
   Check if an untrusted URL is broken, without allowing connections to a private
   IP address.
 homepage: https://github.com/google/dart-neats/tree/master/safe_url_check

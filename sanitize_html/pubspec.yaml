@@ -1,6 +1,6 @@
 name: sanitize_html
 version: 2.0.0-dev
-description: |
+description: >-
   Function for sanitizing HTML to prevent XSS by restrict elements and
   attributes to a safe subset of allowed values.
 homepage: https://github.com/google/dart-neats/tree/master/sanitize_html

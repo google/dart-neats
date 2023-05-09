@@ -1,6 +1,6 @@
 name: neat_periodic_task
 version: 2.0.1
-description: |
+description: >-
   Auxiliary classes for reliably running a periodic task in a long-running
   process such as web-server.
 homepage: https://github.com/google/dart-neats/tree/master/neat_periodic_task

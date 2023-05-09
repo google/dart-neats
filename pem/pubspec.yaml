@@ -1,6 +1,6 @@
 name: pem
 version: 2.0.4
-description: |
+description: >-
   PEM encoding/decoding of textual keys following RFC 7468,
   supporting both lax/strict-mode, and certificates chains of concatenated
   PEM blocks.
