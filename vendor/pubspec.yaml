@@ -1,6 +1,6 @@
 name: vendor
 version: 0.9.3
-description: |
+description: >-
   Utility for vendoring packages into a project and rewriting import/export
   statements.
 homepage: https://github.com/google/dart-neats/tree/master/vendor

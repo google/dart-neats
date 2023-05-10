@@ -1,6 +1,6 @@
 name: slugid
 version: 1.1.2
-description: |
+description: >-
   A URL-safe base64 encoding for UUIDv4 stripped of padding. Useful when
   embedding short random UUIDs in URLs.
 homepage: https://github.com/google/dart-neats/tree/master/slugid

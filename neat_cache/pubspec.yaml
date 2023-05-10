@@ -1,6 +1,6 @@
 name: neat_cache
 version: 2.0.3
-description: |
+description: >-
   A neat cache abstraction for wrapping in-memory or redis caches.
 homepage: https://github.com/google/dart-neats/tree/master/neat_cache
 repository: https://github.com/google/dart-neats.git

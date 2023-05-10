@@ -1,6 +1,6 @@
 name: acyclic_steps
 version: 0.11.1
-description: |
+description: >-
   An explicit acyclic step dependency framework with concurrent evaluation
   and dependency injection.
 homepage: https://github.com/google/dart-neats/tree/master/acyclic_steps
@@ -16,4 +16,3 @@ dev_dependencies:
   lints: ^1.0.0
 environment:
   sdk: '>=2.12.0 <3.0.0'
-
