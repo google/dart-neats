@@ -1,3 +1,6 @@
+## v3.1.2
+ * Make the `RetryOptions` class `final`.
+
 ## v3.1.1
  * Add `topics` to pubspec.
 

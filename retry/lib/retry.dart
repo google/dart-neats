@@ -47,7 +47,7 @@ final _rand = math.Random();
 /// );
 /// print(response.body);
 /// ```
-class RetryOptions {
+final class RetryOptions {
   /// Delay factor to double after every attempt.
   ///
   /// Defaults to 200 ms, which results in the following delays:
