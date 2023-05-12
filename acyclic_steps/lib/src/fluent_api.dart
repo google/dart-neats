@@ -493,8 +493,7 @@ class StepBuilder3<A, B, C> {
       A valueA,
       B valueB,
       C valueC,
-    )
-        runStep,
+    ) runStep,
   ) {
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
@@ -556,8 +555,7 @@ class StepBuilder4<A, B, C, D> {
       B valueB,
       C valueC,
       D valueD,
-    )
-        runStep,
+    ) runStep,
   ) {
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
@@ -624,8 +622,7 @@ class StepBuilder5<A, B, C, D, E> {
       C valueC,
       D valueD,
       E valueE,
-    )
-        runStep,
+    ) runStep,
   ) {
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
@@ -697,8 +694,7 @@ class StepBuilder6<A, B, C, D, E, F> {
       D valueD,
       E valueE,
       F valueF,
-    )
-        runStep,
+    ) runStep,
   ) {
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
@@ -775,8 +771,7 @@ class StepBuilder7<A, B, C, D, E, F, G> {
       E valueE,
       F valueF,
       G valueG,
-    )
-        runStep,
+    ) runStep,
   ) {
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
@@ -858,8 +853,7 @@ class StepBuilder8<A, B, C, D, E, F, G, H> {
       F valueF,
       G valueG,
       H valueH,
-    )
-        runStep,
+    ) runStep,
   ) {
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
@@ -948,8 +942,7 @@ class StepBuilder9<A, B, C, D, E, F, G, H, I> {
       G valueG,
       H valueH,
       I valueI,
-    )
-        runStep,
+    ) runStep,
   ) {
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
@@ -1032,8 +1025,7 @@ class StepBuilder9N<A, B, C, D, E, F, G, H, I, S> {
       H valueH,
       I valueI,
       List<S> values,
-    )
-        runStep,
+    ) runStep,
   ) {
     return Step._(_name, (r, wrap) async {
       final a_ = r.run(_a);
