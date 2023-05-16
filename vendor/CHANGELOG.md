@@ -1,3 +1,6 @@
+## v0.9.4
+ * Bump lower-bound SDK constraint to `2.14`.
+
 ## v0.9.3
  * Added `topics` to `pubspec.yaml`.
 
