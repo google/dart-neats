@@ -1,3 +1,6 @@
+## v0.9.5
+ * Bump `package:http` to `^1.0.0`.
+
 ## v0.9.4
  * Bump lower-bound SDK constraint to `2.14`.
 
