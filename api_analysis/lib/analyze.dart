@@ -191,7 +191,7 @@ extension on PackageShape {
 
   void propogateExports(LibraryShape library) {
     for (final lib in libraries) {
-      lib.exports.where((e) => e.uri == library.uri);
+      lib.exports.firstWhere((e) => e.uri == library.uri);
       // TODO: Finish this...
     }
   }
@@ -199,25 +199,32 @@ extension on PackageShape {
 
 extension on LibraryShape {
   void addExport(ExportDirective d) {
-    // TODO: merge all export directives for the same uri!
-    // TODO: Fix the shownNames and hiddenNames, this interpretation is wrong!
-    // TODO: Also fix this for Imports...
-    final e = ExportShape(
-      uri: uri.resolve(d.uri.stringValue!),
-      show: d.shownNames,
-      hide: d.hiddenNames,
-    );
-    final ee = exports.where((e) => e.uri == e.uri).firstOrNull;
-    exports.add(ee == null ? e : ee.merge(e));
+    switch (d.showHide()) {
+      case null:
+        return; // nothing is visible!
+      case (final Set<String> show, final Set<String> hide):
+        final export = ExportShape(
+          uri: uri.resolve(d.uri.stringValue!),
+          show: show,
+          hide: hide,
+        );
+        final existing = exports.where((e) => e.uri == export.uri).firstOrNull;
+        exports.add(existing == null ? export : existing.merge(export));
+    }
   }
 
   void addImport(ImportDirective d) {
-    imports.add(ImportShape(
-      uri: uri.resolve(d.uri.stringValue!),
-      prefix: d.prefix?.name,
-      show: d.shownNames,
-      hide: d.hiddenNames,
-    ));
+    switch (d.showHide()) {
+      case null:
+        return; // nothing is visible!
+      case (final Set<String> show, final Set<String> hide):
+        imports.add(ImportShape(
+          uri: uri.resolve(d.uri.stringValue!),
+          prefix: d.prefix?.name,
+          show: show,
+          hide: hide,
+        ));
+    }
   }
 
   void addFunction(FunctionDeclaration d) {
@@ -296,7 +303,35 @@ extension on LibraryShape {
 extension on ExportShape {
   /// Create a new [ExportShape] by merging [other] with this [ExportShape].
   ExportShape merge(ExportShape other) {
-    throw UnimplementedError('TODO');
+    if (show.isEmpty) {
+      if (other.show.isEmpty) {
+        return ExportShape(
+          uri: uri,
+          show: {},
+          hide: hide.intersection(other.hide),
+        );
+      } else {
+        return ExportShape(
+          uri: uri,
+          show: {},
+          hide: hide.difference(other.show),
+        );
+      }
+    } else {
+      if (other.show.isEmpty) {
+        return ExportShape(
+          uri: uri,
+          show: {},
+          hide: other.hide.difference(show),
+        );
+      } else {
+        return ExportShape(
+          uri: uri,
+          show: show.union(other.show),
+          hide: {},
+        );
+      }
+    }
   }
 }
 
@@ -311,15 +346,38 @@ extension on NamedCompilationUnitMember {
 }
 
 extension on NamespaceDirective {
-  Set<String> get shownNames => combinators
-      .whereType<ShowCombinator>()
-      .expand((c) => c.shownNames.map((i) => i.name))
-      .toSet();
+  /// Returns `null` if nothing is visible.
+  (Set<String>, Set<String>)? showHide() {
+    final show = <String>{};
+    final hide = <String>{};
+    for (final c in combinators) {
+      // Each `show` and `hide` combinator can only further restrict the
+      // previous combinators. So in the end we will only have
+      switch (c) {
+        case ShowCombinator c:
+          if (show.isEmpty) {
+            show.addAll(c.shownNames
+                .map((i) => i.name)
+                .where((name) => !hide.contains(name)));
+            hide.clear();
+            if (show.isEmpty) return null;
+          } else {
+            show.retainAll(c.shownNames.map((i) => i.name));
+            hide.clear();
+            if (show.isEmpty) return null;
+          }
 
-  Set<String> get hiddenNames => combinators
-      .whereType<HideCombinator>()
-      .expand((c) => c.hiddenNames.map((i) => i.name))
-      .toSet();
+        case HideCombinator c:
+          if (show.isEmpty) {
+            hide.addAll(c.hiddenNames.map((i) => i.name));
+          } else {
+            show.removeAll(c.hiddenNames.map((i) => i.name));
+            if (show.isEmpty) return null;
+          }
+      }
+    }
+    return (show, hide);
+  }
 }
 
 extension on Uri {

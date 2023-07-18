@@ -42,14 +42,6 @@ class LibraryShape {
   LibraryShape({required this.uri});
 }
 
-final class NamespaceShape {
-  bool get showAll => show == null;
-  final Set<String>? show;
-  final Set<String> hide;
-
-  NamespaceShape({required this.show, required this.hide});
-}
-
 final class ImportShape {
   final Uri uri;
   final String? prefix;
@@ -69,6 +61,9 @@ final class ImportShape {
 
 final class ExportShape {
   final Uri uri;
+
+  /// If [show] is empty, this implies that everything should be visible, unless
+  /// hidden by [hide].
   final Set<String> show;
   final Set<String> hide;
 
@@ -79,7 +74,9 @@ final class ExportShape {
     required this.uri,
     required this.show,
     required this.hide,
-  });
+  }) {
+    assert(show.isEmpty || hide.isEmpty);
+  }
 }
 
 sealed class LibraryMemberShape {
