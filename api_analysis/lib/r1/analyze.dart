@@ -184,9 +184,21 @@ extension on PackageShape {
       }
     }
 
-    // TODO: Sanity check we don't have two things with the same name, this
-    // shouldn't be possible in valid Dart code. But who knows, maybe it's not
-    // valid code. In either case, we should print a warning.
+    // Sanity check we don't have two things with the same name. This shouldn't
+    // be possible in valid Dart code. But who knows, maybe it's not valid code.
+    final members = shape.members;
+    final memberNames = members.map((m) => m.name);
+    if (members.length != memberNames.toSet().length) {
+      final existingNames = <String>{};
+      for (final name in memberNames) {
+        if (existingNames.contains(name)) {
+          _fail(
+              'Library ${shape.uri.toString()} contains more than one member named $name');
+        } else {
+          existingNames.add(name);
+        }
+      }
+    }
   }
 
   void propogateExports(LibraryShape library) {
