@@ -121,7 +121,9 @@ final class RetryOptions {
   Future<T> retry<T>(
     FutureOr<T> Function() fn, {
     FutureOr<bool> Function(Exception)? retryIf,
+    @Deprecated('Use `onRetryFailure` instead of `onRetry`')
     FutureOr<void> Function(Exception)? onRetry,
+    FutureOr<void> Function(Exception, StackTrace)? onRetryFailure,
   }) async {
     var attempt = 0;
     // ignore: literal_only_boolean_expressions
@@ -129,13 +131,16 @@ final class RetryOptions {
       attempt++; // first invocation is the first attempt
       try {
         return await fn();
-      } on Exception catch (e) {
+      } on Exception catch (e, st) {
         if (attempt >= maxAttempts ||
             (retryIf != null && !(await retryIf(e)))) {
           rethrow;
         }
         if (onRetry != null) {
           await onRetry(e);
+        }
+        if (onRetryFailure != null) {
+          await onRetryFailure(e, st);
         }
       }
 
@@ -178,11 +183,14 @@ Future<T> retry<T>(
   Duration maxDelay = const Duration(seconds: 30),
   int maxAttempts = 8,
   FutureOr<bool> Function(Exception)? retryIf,
+  @Deprecated('Use `onRetryFailure` instead of `onRetry`')
   FutureOr<void> Function(Exception)? onRetry,
+  FutureOr<void> Function(Exception, StackTrace)? onRetryFailure,
 }) =>
     RetryOptions(
       delayFactor: delayFactor,
       randomizationFactor: randomizationFactor,
       maxDelay: maxDelay,
       maxAttempts: maxAttempts,
-    ).retry(fn, retryIf: retryIf, onRetry: onRetry);
+    ).retry(fn,
+        retryIf: retryIf, onRetry: onRetry, onRetryFailure: onRetryFailure);
