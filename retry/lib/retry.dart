@@ -112,7 +112,7 @@ final class RetryOptions {
   /// Call [fn] retrying so long as [retryIf] return `true` for the exception
   /// thrown.
   ///
-  /// At every retry the [onRetry] function will be called (if given). The
+  /// At every retry the [onRetryFailure] function will be called (if given). The
   /// function [fn] will be invoked at-most [this.attempts] times.
   ///
   /// If no [retryIf] function is given this will retry any for any [Exception]
