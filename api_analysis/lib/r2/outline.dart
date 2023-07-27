@@ -21,6 +21,8 @@ library;
 
 import 'package:pub_semver/pub_semver.dart';
 
+// TODO: Don't call these object Outline or Summary these words are already used!
+
 final class PackageOutline {
   String get name => throw UnimplementedError();
   Version get version => throw UnimplementedError();
