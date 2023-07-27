@@ -16,6 +16,8 @@
 /// inorder to eventually produce a `PackageOutline`.
 library;
 
+import 'dart:collection';
+
 import 'package:pub_semver/pub_semver.dart';
 
 class PackageShape {
@@ -59,22 +61,28 @@ class LibraryShape {
 
 /// A filter on an imported namespace in the form of `show ... hide ...`.
 sealed class NamespaceFilter {
-  NamespaceFilter();
+  const NamespaceFilter();
 
   /// A filter that shows everything in a namespace.
   ///
   /// In other words a [NamespaceHideFilter] that doesn't hide anything.
-  factory NamespaceFilter.everything() => NamespaceHideFilter({});
+  factory NamespaceFilter.everything() => NamespaceHideFilter._everything();
 
   /// A filter that shows nothing from a namespace.
   ///
   /// In other words a [NamespaceShowFilter] that doesn't show anything.
-  factory NamespaceFilter.nothing() => NamespaceShowFilter({});
+  factory NamespaceFilter.nothing() => NamespaceShowFilter._nothing();
 
   /// Apply a further filter.
+  ///
+  /// This will only create a new [NamespaceFilter] object, if it's different
+  /// from this and [other].
   NamespaceFilter applyFilter(NamespaceFilter other);
 
   /// Create a filter that represents both filters applied in parallel.
+  ///
+  /// This will only create a new [NamespaceFilter] object, if it's different
+  /// from this and [other].
   NamespaceFilter mergeFilter(NamespaceFilter other);
 
   /// Is [symbol] visible once this filter is applied?
@@ -89,57 +97,130 @@ sealed class NamespaceFilter {
 
 /// Filter on an imported/exported namespace on the form `show foo, bar, ...`
 final class NamespaceShowFilter extends NamespaceFilter {
-  final Set<String> show;
+  Set<String> get show => UnmodifiableSetView(_show);
+  final Set<String> _show;
 
-  NamespaceShowFilter(this.show);
+  factory NamespaceShowFilter._nothing() => const NamespaceShowFilter._({});
 
-  @override
-  NamespaceFilter applyFilter(NamespaceFilter other) => switch (other) {
-        (NamespaceShowFilter other) =>
-          NamespaceShowFilter(show.intersection(other.show)),
-        (NamespaceHideFilter other) =>
-          NamespaceShowFilter(show.difference(other.hide)),
-      };
-
-  @override
-  NamespaceFilter mergeFilter(NamespaceFilter other) => switch (other) {
-        (NamespaceShowFilter other) =>
-          NamespaceShowFilter(show.union(other.show)),
-        (NamespaceHideFilter other) =>
-          NamespaceHideFilter(other.hide.difference(show)),
-      };
+  factory NamespaceShowFilter(Set<String> show) {
+    if (show.isEmpty) {
+      return NamespaceShowFilter._nothing();
+    }
+    return NamespaceShowFilter._(show);
+  }
+  const NamespaceShowFilter._(this._show);
 
   @override
-  bool isVisible(String symbol) => show.contains(symbol);
+  NamespaceFilter applyFilter(NamespaceFilter other) {
+    switch (other) {
+      case NamespaceShowFilter other:
+        final intersection = _show.intersection(other._show);
+        if (intersection.length == _show.length) {
+          // If nothings are the same, then there is no need to create a new
+          // NamespaceShowFilter object, we can just return this one!
+          return this;
+        }
+        if (intersection.length == other._show.length) {
+          return other;
+        }
+        return NamespaceShowFilter(intersection);
+      case NamespaceHideFilter other:
+        final difference = _show.difference(other._hide);
+        if (difference.length == _show.length) {
+          return this;
+        }
+        return NamespaceShowFilter(difference);
+    }
+  }
 
   @override
-  bool get isTriviallyEmpty => show.isEmpty;
+  NamespaceFilter mergeFilter(NamespaceFilter other) {
+    switch (other) {
+      case NamespaceShowFilter other:
+        final union = _show.union(other._show);
+        if (union.length == _show.length) {
+          return this;
+        }
+        if (union.length == other.show.length) {
+          return other;
+        }
+        return NamespaceShowFilter(union);
+      case NamespaceHideFilter other:
+        final difference = other._hide.difference(_show);
+        if (difference.length == other._hide.length) {
+          return other;
+        }
+        return NamespaceHideFilter(difference);
+    }
+  }
+
+  @override
+  bool isVisible(String symbol) => _show.contains(symbol);
+
+  @override
+  bool get isTriviallyEmpty => _show.isEmpty;
 }
 
 /// Filter on an imported/exported namespace on the form `hide foo, bar, ...`
 final class NamespaceHideFilter extends NamespaceFilter {
-  final Set<String> hide;
+  Set<String> get hide => UnmodifiableSetView(_hide);
+  final Set<String> _hide;
 
-  NamespaceHideFilter(this.hide);
+  factory NamespaceHideFilter._everything() => const NamespaceHideFilter._({});
 
-  @override
-  NamespaceFilter applyFilter(NamespaceFilter other) => switch (other) {
-        (NamespaceShowFilter other) =>
-          NamespaceShowFilter(other.show.difference(hide)),
-        (NamespaceHideFilter other) =>
-          NamespaceHideFilter(hide.union(other.hide)),
-      };
+  factory NamespaceHideFilter(Set<String> hide) {
+    if (hide.isEmpty) {
+      return NamespaceHideFilter._everything();
+    }
+    return NamespaceHideFilter._(hide);
+  }
 
-  @override
-  NamespaceFilter mergeFilter(NamespaceFilter other) => switch (other) {
-        (NamespaceShowFilter other) =>
-          NamespaceHideFilter(hide.difference(other.show)),
-        (NamespaceHideFilter other) =>
-          NamespaceHideFilter(hide.intersection(other.hide)),
-      };
+  const NamespaceHideFilter._(this._hide);
 
   @override
-  bool isVisible(String symbol) => !hide.contains(symbol);
+  NamespaceFilter applyFilter(NamespaceFilter other) {
+    switch (other) {
+      case NamespaceShowFilter other:
+        final difference = other._show.difference(_hide);
+        if (difference.length == other._show.length) {
+          return other;
+        }
+        return NamespaceShowFilter(difference);
+      case NamespaceHideFilter other:
+        final union = _hide.union(other._hide);
+        if (union.length == _hide.length) {
+          return this;
+        }
+        if (union.length == other._hide.length) {
+          return other;
+        }
+        return NamespaceHideFilter(union);
+    }
+  }
+
+  @override
+  NamespaceFilter mergeFilter(NamespaceFilter other) {
+    switch (other) {
+      case NamespaceShowFilter other:
+        final difference = _hide.difference(other._show);
+        if (difference.length == _hide.length) {
+          return this;
+        }
+        return NamespaceHideFilter(difference);
+      case NamespaceHideFilter other:
+        final intersection = _hide.intersection(other._hide);
+        if (intersection.length == _hide.length) {
+          return this;
+        }
+        if (intersection.length == other._hide.length) {
+          return other;
+        }
+        return NamespaceHideFilter(intersection);
+    }
+  }
+
+  @override
+  bool isVisible(String symbol) => !_hide.contains(symbol);
 
   @override
   bool get isTriviallyEmpty => false;
