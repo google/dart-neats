@@ -66,8 +66,16 @@ sealed class NamespaceFilter {
   /// In other words a [NamespaceHideFilter] that doesn't hide anything.
   factory NamespaceFilter.everything() => NamespaceHideFilter({});
 
+  /// A filter that shows nothing from a namespace.
+  ///
+  /// In other words a [NamespaceShowFilter] that doesn't show anything.
+  factory NamespaceFilter.nothing() => NamespaceShowFilter({});
+
   /// Apply a further filter.
   NamespaceFilter applyFilter(NamespaceFilter other);
+
+  /// Create a filter that represents both filters applied in parallel.
+  NamespaceFilter mergeFilter(NamespaceFilter other);
 
   /// Is [symbol] visible once this filter is applied?
   bool isVisible(String symbol);
@@ -86,15 +94,20 @@ final class NamespaceShowFilter extends NamespaceFilter {
   NamespaceShowFilter(this.show);
 
   @override
-  NamespaceFilter applyFilter(NamespaceFilter other) {
-    switch (other) {
-      case NamespaceShowFilter other:
-        return NamespaceShowFilter(show.intersection(other.show));
+  NamespaceFilter applyFilter(NamespaceFilter other) => switch (other) {
+        (NamespaceShowFilter other) =>
+          NamespaceShowFilter(show.intersection(other.show)),
+        (NamespaceHideFilter other) =>
+          NamespaceShowFilter(show.difference(other.hide)),
+      };
 
-      case NamespaceHideFilter other:
-        return NamespaceShowFilter(show.difference(other.hide));
-    }
-  }
+  @override
+  NamespaceFilter mergeFilter(NamespaceFilter other) => switch (other) {
+        (NamespaceShowFilter other) =>
+          NamespaceShowFilter(show.union(other.show)),
+        (NamespaceHideFilter other) =>
+          NamespaceHideFilter(other.hide.difference(show)),
+      };
 
   @override
   bool isVisible(String symbol) => show.contains(symbol);
@@ -110,15 +123,20 @@ final class NamespaceHideFilter extends NamespaceFilter {
   NamespaceHideFilter(this.hide);
 
   @override
-  NamespaceFilter applyFilter(NamespaceFilter other) {
-    switch (other) {
-      case NamespaceShowFilter other:
-        return NamespaceShowFilter(other.show.difference(hide));
+  NamespaceFilter applyFilter(NamespaceFilter other) => switch (other) {
+        (NamespaceShowFilter other) =>
+          NamespaceShowFilter(other.show.difference(hide)),
+        (NamespaceHideFilter other) =>
+          NamespaceHideFilter(hide.union(other.hide)),
+      };
 
-      case NamespaceHideFilter other:
-        return NamespaceHideFilter(hide.union(other.hide));
-    }
-  }
+  @override
+  NamespaceFilter mergeFilter(NamespaceFilter other) => switch (other) {
+        (NamespaceShowFilter other) =>
+          NamespaceHideFilter(hide.difference(other.show)),
+        (NamespaceHideFilter other) =>
+          NamespaceHideFilter(hide.intersection(other.hide)),
+      };
 
   @override
   bool isVisible(String symbol) => !hide.contains(symbol);

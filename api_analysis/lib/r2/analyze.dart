@@ -81,31 +81,11 @@ Future<PackageShape> analyzePackage(String packagePath) async {
     package.addLibrary(library);
   }
 
-  // Resolve library on all import/exports
-  for (final lib in package.libraries) {
-    for (final import in lib.imports) {
-      if (import.uri.isInPackage(package.name)) {
-        import.library = package[import.uri];
-        if (import.library == null) {
-          _fail('Unable to resolve import ${import.uri}');
-        }
-      }
-    }
-    for (final export in lib.exports) {
-      if (export.uri.isInPackage(package.name)) {
-        export.library = package[export.uri];
-        if (export.library == null) {
-          _fail('Unable to resolve export ${export.uri}');
-        }
-      }
-    }
-  }
-
   // Propogate all exports
-  for (final lib in package.libraries) {
-    for (final e in lib.exports) {
+  for (final lib in package.libraries.values) {
+    for (final e in lib.exports.values) {
       // TODO: Continue here
-      print(e.uri);
+      print(e);
     }
   }
 
@@ -118,15 +98,16 @@ extension on PackageShape {
     if (libraryUnit == null) {
       _fail('Could not find libraryUnit for $library');
     }
+    // Find the URI for this library
+    final uri = libraryUnit.uri;
 
     // Check if library shape has been added before, this can happen if a
     // library has multiple parts.
-    if (libraries.any((lib) => lib.uri == libraryUnit.uri)) {
+    if (libraries[uri] != null) {
       return;
     }
 
-    final shape = LibraryShape(uri: libraryUnit.uri);
-    libraries.add(shape);
+    final shape = libraries[uri] = LibraryShape(uri: uri);
 
     // Extract import / export statements
     for (final d in library.units.expand((u) => u.unit.directives)) {
@@ -148,92 +129,89 @@ extension on PackageShape {
       switch (d) {
         case FunctionDeclaration d:
           if (d.isGetter || d.isSetter) {
-            if (shape[name] == null) {
+            if (shape.definedShapes[name] == null) {
               return; // we've seen the other getter or setter already
+              // TODO: Check that the other thing we saw was a getter/setter!
             }
             final accessors = library.units
                 .expand((u) => u.unit.declarations)
                 .whereType<FunctionDeclaration>()
                 .where((d) => d.name.value() == name);
-            shape.variables.add(VariableShape(
+            shape.define(VariableShape(
               name: name,
               hasGetter: accessors.any((d) => d.isGetter),
               hasSetter: accessors.any((d) => d.isSetter),
             ));
           } else {
-            shape.addFunction(d);
+            shape.defineFunction(d);
           }
 
         case EnumDeclaration d:
-          shape.addEnum(d);
+          shape.defineEnum(d);
 
         case ClassDeclaration d:
-          shape.addClass(d);
+          shape.defineClass(d);
 
         case MixinDeclaration d:
-          shape.addMixin(d);
+          shape.defineMixin(d);
 
         case ExtensionDeclaration d:
-          shape.addExtension(d);
+          shape.defineExtension(d);
 
         case ClassTypeAlias d:
-          shape.addClassTypeAlias(d);
+          shape.defineClassTypeAlias(d);
 
         case FunctionTypeAlias d:
-          shape.addFunctionTypeAlias(d);
+          shape.defineFunctionTypeAlias(d);
 
         case TopLevelVariableDeclaration d:
-          shape.addTopLevelVariable(d);
+          shape.defineTopLevelVariable(d);
       }
     }
-
-    // TODO: Sanity check we don't have two things with the same name, this
-    // shouldn't be possible in valid Dart code. But who knows, maybe it's not
-    // valid code. In either case, we should print a warning.
   }
 
+  /*
   void propogateExports(LibraryShape library) {
     for (final lib in libraries) {
       lib.exports.firstWhere((e) => e.uri == library.uri);
       // TODO: Finish this...
     }
-  }
+  }*/
 }
 
 extension on LibraryShape {
   void addExport(ExportDirective d) {
-    switch (d.showHide()) {
-      case null:
-        return; // nothing is visible!
-      case (final Set<String> show, final Set<String> hide):
-        final export = ExportShape(
-          uri: uri.resolve(d.uri.stringValue!),
-          show: show,
-          hide: hide,
-        );
-        final existing = exports.where((e) => e.uri == export.uri).firstOrNull;
-        exports.add(existing == null ? export : existing.merge(export));
-    }
+    final u = uri.resolve(d.uri.stringValue!);
+    final filter = d.combinators.fold(
+      NamespaceFilter.everything(),
+      (f, c) => f.applyFilter(switch (c) {
+        (ShowCombinator c) => NamespaceShowFilter(c.shownNames.toStringSet()),
+        (HideCombinator c) => NamespaceHideFilter(c.hiddenNames.toStringSet()),
+      }),
+    );
+
+    exports.update(u, (f) => f.mergeFilter(filter), ifAbsent: () => filter);
   }
 
   void addImport(ImportDirective d) {
-    switch (d.showHide()) {
-      case null:
-        return; // nothing is visible!
-      case (final Set<String> show, final Set<String> hide):
-        imports.add(ImportShape(
-          uri: uri.resolve(d.uri.stringValue!),
-          prefix: d.prefix?.name,
-          show: show,
-          hide: hide,
-        ));
-    }
+    final u = uri.resolve(d.uri.stringValue!);
+    final filter = d.combinators.fold(
+      NamespaceFilter.everything(),
+      (f, c) => f.applyFilter(switch (c) {
+        (ShowCombinator c) => NamespaceShowFilter(c.shownNames.toStringSet()),
+        (HideCombinator c) => NamespaceHideFilter(c.hiddenNames.toStringSet()),
+      }),
+    );
+    final prefix = d.prefix?.name ?? '';
+    imports
+        .putIfAbsent(prefix, () => {})
+        .update(u, (f) => f.mergeFilter(filter), ifAbsent: () => filter);
   }
 
-  void addFunction(FunctionDeclaration d) {
+  void defineFunction(FunctionDeclaration d) {
     assert(!d.isGetter && !d.isSetter);
     final parameters = d.functionExpression.parameters!.parameters;
-    functions.add(FunctionShape(
+    define(FunctionShape(
       name: d.nameAsString,
       namedParameters: parameters
           .where((p) => p.isNamed)
@@ -247,94 +225,66 @@ extension on LibraryShape {
     ));
   }
 
-  void addEnum(EnumDeclaration d) {
-    enums.add(EnumShape(
+  void defineEnum(EnumDeclaration d) {
+    define(EnumShape(
       name: d.nameAsString,
     ));
   }
 
-  void addClass(ClassDeclaration d) {
-    classes.add(ClassShape(
+  void defineClass(ClassDeclaration d) {
+    define(ClassShape(
       name: d.nameAsString,
     ));
   }
 
-  void addMixin(MixinDeclaration d) {
-    mixins.add(MixinShape(
+  void defineMixin(MixinDeclaration d) {
+    define(MixinShape(
       name: d.nameAsString,
     ));
   }
 
-  void addExtension(ExtensionDeclaration d) {
+  void defineExtension(ExtensionDeclaration d) {
     final name = d.name?.stringValue;
     // Ignore unnamed extensions they are not exported, and they cannot
     // influence the existence of other names.
     if (name != null) {
-      extensions.add(ExtensionShape(
+      define(ExtensionShape(
         name: name,
       ));
     }
   }
 
-  void addClassTypeAlias(ClassTypeAlias d) {
-    classTypeAliases.add(ClassTypeAliasShape(
+  void defineClassTypeAlias(ClassTypeAlias d) {
+    define(ClassTypeAliasShape(
       name: d.nameAsString,
     ));
   }
 
-  void addFunctionTypeAlias(FunctionTypeAlias d) {
-    functionTypeAliases.add(FunctionTypeAliasShape(
+  void defineFunctionTypeAlias(FunctionTypeAlias d) {
+    define(FunctionTypeAliasShape(
       name: d.nameAsString,
     ));
   }
 
-  void addTopLevelVariable(TopLevelVariableDeclaration d) {
+  void defineTopLevelVariable(TopLevelVariableDeclaration d) {
     for (final v in d.variables.variables) {
       final name = v.name.value();
       if (name is! String) {
         throw _fail('Unnamed variable $v');
       }
-      variables.add(VariableShape(
+      define(VariableShape(
         name: name,
         hasGetter: true,
         hasSetter: !d.variables.isConst && !d.variables.isFinal,
       ));
     }
   }
-}
 
-extension on ExportShape {
-  /// Create a new [ExportShape] by merging [other] with this [ExportShape].
-  ExportShape merge(ExportShape other) {
-    if (show.isEmpty) {
-      if (other.show.isEmpty) {
-        return ExportShape(
-          uri: uri,
-          show: {},
-          hide: hide.intersection(other.hide),
-        );
-      } else {
-        return ExportShape(
-          uri: uri,
-          show: {},
-          hide: hide.difference(other.show),
-        );
-      }
-    } else {
-      if (other.show.isEmpty) {
-        return ExportShape(
-          uri: uri,
-          show: {},
-          hide: other.hide.difference(show),
-        );
-      } else {
-        return ExportShape(
-          uri: uri,
-          show: show.union(other.show),
-          hide: {},
-        );
-      }
+  void define(LibraryMemberShape shape) {
+    if (definedShapes.containsKey(shape.name)) {
+      _fail('${shape.name} is defined more than once!');
     }
+    definedShapes[shape.name] = shape;
   }
 }
 
@@ -348,39 +298,8 @@ extension on NamedCompilationUnitMember {
   }
 }
 
-extension on NamespaceDirective {
-  /// Returns `null` if nothing is visible.
-  (Set<String>, Set<String>)? showHide() {
-    final show = <String>{};
-    final hide = <String>{};
-    for (final c in combinators) {
-      // Each `show` and `hide` combinator can only further restrict the
-      // previous combinators. So in the end we will only have
-      switch (c) {
-        case ShowCombinator c:
-          if (show.isEmpty) {
-            show.addAll(c.shownNames
-                .map((i) => i.name)
-                .where((name) => !hide.contains(name)));
-            hide.clear();
-            if (show.isEmpty) return null;
-          } else {
-            show.retainAll(c.shownNames.map((i) => i.name));
-            hide.clear();
-            if (show.isEmpty) return null;
-          }
-
-        case HideCombinator c:
-          if (show.isEmpty) {
-            hide.addAll(c.hiddenNames.map((i) => i.name));
-          } else {
-            show.removeAll(c.hiddenNames.map((i) => i.name));
-            if (show.isEmpty) return null;
-          }
-      }
-    }
-    return (show, hide);
-  }
+extension on NodeList<SimpleIdentifier> {
+  Set<String> toStringSet() => map((i) => i.name).toSet();
 }
 
 extension on Uri {
