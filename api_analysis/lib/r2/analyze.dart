@@ -239,8 +239,8 @@ extension on PackageShape {
                 .where((dOther) => d.nameAsString == dOther.nameAsString);
             shape.define(VariableShape(
               name: d.nameAsString,
-              hasGetter: accessors.any((d) => d.isGetter),
-              hasSetter: accessors.any((d) => d.isSetter),
+              hasGetter: accessors.any((a) => a.isGetter),
+              hasSetter: accessors.any((a) => a.isSetter),
             ));
           } else {
             shape.defineFunction(d);
