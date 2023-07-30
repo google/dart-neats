@@ -308,7 +308,7 @@ extension on LibraryShape {
       namedParameters: parameters
           .where((p) => p.isNamed)
           .map((p) => NamedParameterShape(
-              name: p.name!.stringValue!, isRequired: p.isRequired))
+              name: p.name!.value() as String, isRequired: p.isRequired))
           .toList(),
       positionalParameters: parameters
           .where((p) => p.isPositional)

@@ -20,7 +20,7 @@ export 'src/impl.dart'
     hide setterForHello
     show setterForHello;
 
-void sayHello() {
+void sayHello({required String a, String? b}) {
   print(finalHelloMessage);
   _privateMethod();
 }
