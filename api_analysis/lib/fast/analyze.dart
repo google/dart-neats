@@ -17,47 +17,96 @@ library;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Directory, IOException, gzip;
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/file_system/overlay_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:async/async.dart';
+import 'package:api_analysis/pubapi.dart';
+import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
-import 'package:http/http.dart' as http;
-import 'package:retry/retry.dart';
-import 'package:tar/tar.dart';
 import 'shapes.dart';
 
+final _targets = [
+  'retry',
+  'path',
+  'http',
+];
+
+extension on Pubspec {
+  Version get languageVersion {
+    final sdk = (environment ?? {})['sdk'];
+    if (sdk is VersionRange) {
+      final min = sdk.min ?? Version(0, 0, 0);
+      return Version(min.major, min.minor, 0);
+    }
+    // Note: Techincally there are other options
+    return Version(0, 0, 0);
+  }
+
+  bool get dart3Compatible => languageVersion >= Version(2, 12, 0);
+}
+
 Future<void> main(List<String> args) async {
+  await PubApi.withApi((api) async {
+    for (final t in _targets) {
+      final info = await api.listVersions(t);
+      // Sort to lowest version first
+      final versions = info.versions.sortedByCompare(
+        (pv) => pv.version,
+        (a, b) => a.compareTo(b),
+      );
+
+      bool isFirst = true;
+      final since = <String, String>{};
+      for (final pv in versions) {
+        if (!pv.pubspec.dart3Compatible) {
+          continue;
+        }
+
+        final files = await api.fetchPackage(pv.archiveUrl);
+        final shape = await analyzePackage((
+          name: pv.pubspec.name,
+          version: pv.version,
+          pubspec: pv.pubspec,
+          files: files,
+        ));
+        print('package:${info.name}-${pv.version}');
+        //print(shape.topLevelNames);
+
+        // Use empty string for the first version, just to ignore things that
+        // are straight up boring...
+        final v = isFirst ? '' : pv.version.toString();
+        isFirst = false;
+        for (final n in shape.topLevelNames) {
+          since.putIfAbsent(n, () => v);
+        }
+      }
+
+      print('# $t');
+      since.forEach((key, value) {
+        if (value.isNotEmpty) {
+          print(key.padRight(25) + value.toString());
+        }
+      });
+    }
+  });
+
   /*
   if (args.length != 1) {
     print('Usage: analyze.dart <target>');
     return;
   }
-
-  final packagePath = Directory.current.uri.resolve(args.first);
-  await analyzePackage(packagePath.toFilePath());
-  */
-  final t = Stopwatch()..start();
-  await analyzePackage('retry', '3.0.0');
-  print('fetch + analysis: ${t.elapsedMilliseconds} ms\n');
-
-  t.reset();
-  await analyzePackage('retry', '3.1.0');
-  print('fetch + analysis: ${t.elapsedMilliseconds} ms\n');
-
-  t.reset();
-  await analyzePackage('retry', '3.1.1');
-  print('fetch + analysis: ${t.elapsedMilliseconds} ms\n');
-
-  t.reset();
-  await analyzePackage('retry', '3.1.2');
-  print('fetch + analysis: ${t.elapsedMilliseconds} ms\n');
+*/
 }
+
+typedef AnalysisTarget = ({
+  String name,
+  Version version,
+  Pubspec pubspec,
+  List<FileEntry> files,
+});
 
 /// Thrown when shape analysis fails.
 ///
@@ -73,50 +122,35 @@ class ShapeAnalysisException implements Exception {
 
 Never _fail(String message) => throw ShapeAnalysisException._(message);
 
-final _pubHostedUrl = Uri.parse('https://pub.dev/');
-
-Future<PackageShape> analyzePackage(String packageName, String version) async {
-  print('fetch $packageName version $version');
-  final pkgUri = _pubHostedUrl.resolve(
-    'packages/$packageName/versions/$version.tar.gz',
-  );
-  final pkgGzip = await retry(
-    () => http.readBytes(pkgUri).timeout(Duration(seconds: 30)),
-    retryIf: (e) => e is TimeoutException || e is IOException,
-  );
-  final pkgBytes = gzip.decode(pkgGzip);
-
+Future<PackageShape> analyzePackage(AnalysisTarget target) async {
   final fs = OverlayResourceProvider(PhysicalResourceProvider.INSTANCE);
-
-  await TarReader.forEach(Stream.value(pkgBytes), (entry) async {
-    if (entry.type == TypeFlag.reg) {
-      fs.setOverlay(
-        '/pkg/${entry.name}',
-        content: utf8.decode(await collectBytes(entry.contents)),
-        modificationStamp: 0,
-      );
-    }
-  });
+  for (final f in target.files) {
+    fs.setOverlay(
+      '/pkg/${f.path}',
+      content: utf8.decode(f.bytes, allowMalformed: true),
+      modificationStamp: 0,
+    );
+  }
+  final lv = target.pubspec.languageVersion;
   fs.setOverlay(
     '/pkg/.dart_tool/package_config.json',
     content: json.encode({
-      "configVersion": 2,
-      "packages": [
+      'configVersion': 2,
+      'packages': [
         {
-          "name": packageName,
-          "rootUri": "/pkg",
-          "packageUri": "lib/",
-          "languageVersion": "3.0"
+          'name': target.name,
+          'rootUri': '/pkg',
+          'packageUri': 'lib/',
+          'languageVersion': '${lv.major}.${lv.minor}'
         }
       ],
-      "generated": "2023-07-28T09:37:20.214485Z",
-      "generator": "pub",
-      "generatorVersion": "3.0.5"
+      'generated': DateTime.now().toUtc().toIso8601String(),
+      'generator': 'pub',
+      'generatorVersion': '3.0.5'
     }),
     modificationStamp: 0,
   );
 
-  final sw = Stopwatch()..start();
   final packagePath = '/pkg';
   final collection = AnalysisContextCollection(
     includedPaths: [packagePath],
@@ -125,26 +159,16 @@ Future<PackageShape> analyzePackage(String packageName, String version) async {
   final context = collection.contextFor(packagePath);
   final session = context.currentSession;
 
-  final pubspecFile =
-      session.resourceProvider.getFile('$packagePath/pubspec.yaml');
-  final pubspec = Pubspec.parse(
-    pubspecFile.readAsStringSync(),
-    lenient: true,
-    sourceUrl: pubspecFile.toUri(),
-  );
-
-  final package = PackageShape(
-    name: pubspec.name,
-    version: pubspec.version ?? Version(0, 0, 0),
+  final shape = PackageShape(
+    name: target.pubspec.name,
+    version: target.version,
   );
 
   // Add all libraries to the PackageShape
   final consumedLibraries = <Uri>{};
   for (final f in context.contextRoot.analyzedFiles()) {
     final u = session.uriConverter.pathToUri(f);
-    if (u == null ||
-        !u.isInPackage(package.name) ||
-        !u.path.endsWith('.dart')) {
+    if (u == null || !u.isInPackage(shape.name) || !u.path.endsWith('.dart')) {
       continue;
     }
     final library = session.getParsedLibrary(f);
@@ -165,22 +189,20 @@ Future<PackageShape> analyzePackage(String packageName, String version) async {
         case NamedCompilationUnitMember d:
           final name = d.name.lexeme;
           if (!name.startsWith('_')) {
-            package.topLevelNames.add(name);
+            shape.topLevelNames.add(name);
           }
 
         case TopLevelVariableDeclaration d:
           for (final v in d.variables.variables) {
             final name = v.name.value();
             if (name is String && !name.startsWith('_')) {
-              package.topLevelNames.add(name);
+              shape.topLevelNames.add(name);
             }
           }
       }
     }
   }
-  print('analysis took: ${sw.elapsedMilliseconds} ms');
-  print(package.toJson());
-  return package;
+  return shape;
 }
 
 extension on Uri {

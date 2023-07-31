@@ -8,6 +8,7 @@ environment:
 dependencies:
   analyzer: ^6.0.0
   async: ^2.11.0
+  collection: ^1.18.0
   http: ^1.1.0
   pub_semver: ^2.1.4
   pubspec_parse: ^1.2.3
