@@ -17,6 +17,7 @@ library;
 
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -26,6 +27,9 @@ import 'package:api_analysis/pubapi.dart';
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+
+import '../common.dart'
+    show LanguageVersionCompatibilityExt, PackageSchemeExt, fail;
 import 'shapes.dart';
 
 final _targets = [
@@ -33,20 +37,6 @@ final _targets = [
   'path',
   'http',
 ];
-
-extension on Pubspec {
-  Version get languageVersion {
-    final sdk = (environment ?? {})['sdk'];
-    if (sdk is VersionRange) {
-      final min = sdk.min ?? Version(0, 0, 0);
-      return Version(min.major, min.minor, 0);
-    }
-    // Note: Techincally there are other options
-    return Version(0, 0, 0);
-  }
-
-  bool get dart3Compatible => languageVersion >= Version(2, 12, 0);
-}
 
 Future<void> main(List<String> args) async {
   await PubApi.withApi((api) async {
@@ -108,20 +98,6 @@ typedef AnalysisTarget = ({
   List<FileEntry> files,
 });
 
-/// Thrown when shape analysis fails.
-///
-/// This typically happens because the Dart code being analyzed is invalid, or
-/// because the analysis is unable to handle the code in question.
-class ShapeAnalysisException implements Exception {
-  final String message;
-  ShapeAnalysisException._(this.message);
-
-  @override
-  String toString() => message;
-}
-
-Never _fail(String message) => throw ShapeAnalysisException._(message);
-
 Future<PackageShape> analyzePackage(AnalysisTarget target) async {
   final fs = OverlayResourceProvider(PhysicalResourceProvider.INSTANCE);
   for (final f in target.files) {
@@ -173,11 +149,11 @@ Future<PackageShape> analyzePackage(AnalysisTarget target) async {
     }
     final library = session.getParsedLibrary(f);
     if (library is! ParsedLibraryResult) {
-      _fail('Failed to parse "$u"');
+      fail('Failed to parse "$u"');
     }
     final libraryUnit = library.units.where((u) => u.isLibrary).firstOrNull;
     if (libraryUnit == null) {
-      _fail('Could not find libraryUnit for $library');
+      fail('Could not find libraryUnit for $library');
     }
     // Ignore libraries we've seen before
     if (!consumedLibraries.add(libraryUnit.uri)) {
@@ -203,10 +179,4 @@ Future<PackageShape> analyzePackage(AnalysisTarget target) async {
     }
   }
   return shape;
-}
-
-extension on Uri {
-  /// True, if this [Uri] points to a resource in [package].
-  bool isInPackage(String package) =>
-      isScheme('package') && pathSegments.firstOrNull == package;
 }
