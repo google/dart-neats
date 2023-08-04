@@ -229,18 +229,18 @@ extension on PackageShape {
       switch (d) {
         case FunctionDeclaration d:
           if (d.isGetter || d.isSetter) {
-            if (shape.definedShapes[name] == null) {
-              return; // we've seen the other getter or setter already
+            if (shape.definedShapes.containsKey(d.nameAsString)) {
+              continue; // we've seen the other getter or setter already
               // TODO: Check that the other thing we saw was a getter/setter!
             }
             final accessors = library.units
                 .expand((u) => u.unit.declarations)
                 .whereType<FunctionDeclaration>()
-                .where((d) => d.name.value() == name);
+                .where((dOther) => d.nameAsString == dOther.nameAsString);
             shape.define(VariableShape(
-              name: name,
-              hasGetter: accessors.any((d) => d.isGetter),
-              hasSetter: accessors.any((d) => d.isSetter),
+              name: d.nameAsString,
+              hasGetter: accessors.any((a) => a.isGetter),
+              hasSetter: accessors.any((a) => a.isSetter),
             ));
           } else {
             shape.defineFunction(d);
