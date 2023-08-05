@@ -29,7 +29,7 @@ import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-import '../common.dart' show LanguageVersionCompatibilityExt;
+import '../common.dart' show LanguageVersionCompatibilityExt, fail;
 import '../pubapi.dart';
 import 'shapes.dart';
 
@@ -105,20 +105,6 @@ Future<void> main(List<String> args) async {
   }
 }
 
-/// Thrown when shape analysis fails.
-///
-/// This typically happens because the Dart code being analyzed is invalid, or
-/// because the analysis is unable to handle the code in question.
-class ShapeAnalysisException implements Exception {
-  final String message;
-  ShapeAnalysisException._(this.message);
-
-  @override
-  String toString() => message;
-}
-
-Never _fail(String message) => throw ShapeAnalysisException._(message);
-
 Future<PackageShape> analyzePackage(
   String packagePath, {
   ResourceProvider? fs,
@@ -153,7 +139,7 @@ Future<PackageShape> analyzePackage(
     }
     final library = session.getParsedLibrary(f);
     if (library is! ParsedLibraryResult) {
-      _fail('Failed to parse "$u"');
+      fail('Failed to parse "$u"');
     }
 
     package.addLibrary(library);
@@ -181,7 +167,7 @@ extension on PackageShape {
   void addLibrary(ParsedLibraryResult library) {
     final libraryUnit = library.units.where((u) => u.isLibrary).firstOrNull;
     if (libraryUnit == null) {
-      _fail('Could not find libraryUnit for $library');
+      fail('Could not find libraryUnit for $library');
     }
     // Find the URI for this library
     final uri = libraryUnit.uri;
@@ -288,7 +274,7 @@ extension on PackageShape {
         } else if (library.exportedShapes.containsKey(symbol.key) &&
             library.exportedShapes[symbol.key]! != symbol.value) {
           // A symbol sharing the same name, but with a different shape, is exported in this library, which is a compile error.
-          _fail(
+          fail(
               'Two symbols found to be exported with the same name ${symbol.key}, but different shapes.');
         } else if (library.exportedShapes.containsKey(symbol.key)) {
           // A symbol with the same name and shape is already exported.
@@ -393,7 +379,7 @@ extension on LibraryShape {
     for (final v in d.variables.variables) {
       final name = v.name.value();
       if (name is! String) {
-        throw _fail('Unnamed variable $v');
+        throw fail('Unnamed variable $v');
       }
       define(VariableShape(
         name: name,
@@ -405,7 +391,7 @@ extension on LibraryShape {
 
   void define(LibraryMemberShape shape) {
     if (definedShapes.containsKey(shape.name)) {
-      _fail('${shape.name} is defined more than once!');
+      fail('${shape.name} is defined more than once!');
     }
     definedShapes[shape.name] = shape;
   }
@@ -415,7 +401,7 @@ extension on NamedCompilationUnitMember {
   String get nameAsString {
     final n = name.value();
     if (n is! String) {
-      _fail('Top-level member has no name: $this');
+      fail('Top-level member has no name: $this');
     }
     return n;
   }
