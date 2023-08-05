@@ -16,9 +16,12 @@
 /// inorder to eventually produce a `PackageOutline`.
 library;
 
-import 'dart:collection';
-
+import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
+
+bool Function(List<dynamic>?, List<dynamic>?) listEquals =
+    const ListEquality().equals;
 
 class PackageShape {
   final String name;
@@ -232,6 +235,14 @@ sealed class LibraryMemberShape {
   LibraryMemberShape({
     required this.name,
   });
+
+  @override
+  @mustBeOverridden
+  int get hashCode;
+
+  @override
+  @mustBeOverridden
+  bool operator ==(Object other);
 }
 
 final class FunctionShape extends LibraryMemberShape {
@@ -243,30 +254,89 @@ final class FunctionShape extends LibraryMemberShape {
     required this.positionalParameters,
     required this.namedParameters,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FunctionShape &&
+          name == other.name &&
+          listEquals(positionalParameters, other.positionalParameters) &&
+          listEquals(namedParameters, other.namedParameters);
+
+  @override
+  int get hashCode => Object.hash(
+        name,
+        Object.hashAll(positionalParameters),
+        Object.hashAll(namedParameters),
+      );
 }
 
 final class EnumShape extends LibraryMemberShape {
   EnumShape({required super.name});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is EnumShape && name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
 }
 
 final class ClassShape extends LibraryMemberShape {
   ClassShape({required super.name});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is ClassShape && name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
 }
 
 final class MixinShape extends LibraryMemberShape {
   MixinShape({required super.name});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is MixinShape && name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
 }
 
 final class ExtensionShape extends LibraryMemberShape {
   ExtensionShape({required super.name});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is ExtensionShape && name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
 }
 
 final class FunctionTypeAliasShape extends LibraryMemberShape {
   FunctionTypeAliasShape({required super.name});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FunctionTypeAliasShape && name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
 }
 
 final class ClassTypeAliasShape extends LibraryMemberShape {
   ClassTypeAliasShape({required super.name});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ClassTypeAliasShape && name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
 }
 
 final class VariableShape extends LibraryMemberShape {
@@ -278,6 +348,17 @@ final class VariableShape extends LibraryMemberShape {
     required this.hasGetter,
     required this.hasSetter,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is VariableShape &&
+          name == other.name &&
+          hasGetter == other.hasGetter &&
+          hasSetter == other.hasSetter;
+
+  @override
+  int get hashCode => Object.hash(name, hasGetter, hasSetter);
 }
 
 final class PositionalParameterShape {
@@ -286,6 +367,14 @@ final class PositionalParameterShape {
   PositionalParameterShape({
     required this.isOptional,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PositionalParameterShape && isOptional == other.isOptional;
+
+  @override
+  int get hashCode => isOptional.hashCode;
 }
 
 final class NamedParameterShape {
@@ -296,6 +385,16 @@ final class NamedParameterShape {
     required this.name,
     required this.isRequired,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NamedParameterShape &&
+          name == other.name &&
+          isRequired == other.isRequired;
+
+  @override
+  int get hashCode => Object.hash(name, isRequired);
 }
 
 extension LibraryMemberShapeGetters on LibraryMemberShape {
