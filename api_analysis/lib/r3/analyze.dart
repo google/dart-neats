@@ -379,7 +379,7 @@ extension on LibraryShape {
     for (final v in d.variables.variables) {
       final name = v.name.value();
       if (name is! String) {
-        throw fail('Unnamed variable $v');
+        fail('Unnamed variable $v');
       }
       define(VariableShape(
         name: name,
