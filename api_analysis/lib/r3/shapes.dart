@@ -21,6 +21,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 
+import '../common.dart' show PackageSchemeExt;
+
 part 'shapes.g.dart';
 
 bool Function(List<dynamic>?, List<dynamic>?) listEquals =
@@ -38,15 +40,7 @@ class PackageShape {
 
   Map<String, dynamic> toJsonNormalPublicSummary() => Map.fromEntries(
         libraries.entries
-            .where((e) {
-              // Do not include private libraries in the summary.
-              if (e.key.pathSegments.length >= 2 &&
-                  e.key.pathSegments[1] == 'src') {
-                assert(e.key.pathSegments.length >= 3);
-                return false;
-              }
-              return true;
-            })
+            .where((e) => !e.key.isInPrivateLibrary)
             .sortedBy((e) => e.key.toString())
             .map((e) => MapEntry(
                   e.key.toString(),

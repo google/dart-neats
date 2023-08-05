@@ -29,7 +29,8 @@ import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-import '../common.dart' show LanguageVersionCompatibilityExt, fail;
+import '../common.dart'
+    show LanguageVersionCompatibilityExt, fail, PackageSchemeExt;
 import '../pubapi.dart';
 import 'shapes.dart';
 
@@ -409,10 +410,4 @@ extension on NamedCompilationUnitMember {
 
 extension on NodeList<SimpleIdentifier> {
   Set<String> toStringSet() => map((i) => i.name).toSet();
-}
-
-extension on Uri {
-  /// True, if this [Uri] points to a resource in [package].
-  bool isInPackage(String package) =>
-      isScheme('package') && pathSegments.firstOrNull == package;
 }
