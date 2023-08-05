@@ -262,11 +262,11 @@ extension on LibraryShape {
     assert(!d.isGetter && !d.isSetter);
     final parameters = d.functionExpression.parameters!.parameters;
     define(FunctionShape(
-      name: d.nameAsString,
+      name: d.name.lexeme,
       namedParameters: parameters
           .where((p) => p.isNamed)
           .map((p) => NamedParameterShape(
-              name: p.name!.value() as String, isRequired: p.isRequired))
+              name: p.name!.lexeme, isRequired: p.isRequired))
           .toList(),
       positionalParameters: parameters
           .where((p) => p.isPositional)
