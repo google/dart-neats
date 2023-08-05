@@ -36,11 +36,22 @@ class PackageShape {
     required this.version,
   });
 
-  Map<String, dynamic> toJsonNormalSummary() => Map.fromEntries(
-        libraries.entries.sortedBy((e) => e.key.toString()).map((e) => MapEntry(
-              e.key.toString(),
-              e.value.toJsonNormalSummary(),
-            )),
+  Map<String, dynamic> toJsonNormalPublicSummary() => Map.fromEntries(
+        libraries.entries
+            .where((e) {
+              // Do not include private libraries in the summary.
+              if (e.key.pathSegments.length >= 2 &&
+                  e.key.pathSegments[1] == 'src') {
+                assert(e.key.pathSegments.length >= 3);
+                return false;
+              }
+              return true;
+            })
+            .sortedBy((e) => e.key.toString())
+            .map((e) => MapEntry(
+                  e.key.toString(),
+                  e.value.toJsonNormalSummary(),
+                )),
       );
 }
 
