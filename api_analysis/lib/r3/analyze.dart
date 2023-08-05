@@ -82,110 +82,10 @@ Future<PackageShape> analyzePackage(String packagePath) async {
   }
 
   // Propogate all exports
-  var changed = true;
-  // Iterate until there are no changes, this is probably not the fastest way to
-  // do this!
-  while (changed) {
-    changed = false;
-    for (final library in package.libraries.values) {
-      library.exports.forEach((exportUri, exportFilter) {
-        // Find the exportLibrary that is exported from library
-        final exportLibrary = package.libraries[exportUri];
-        if (exportLibrary == null) {
-          return;
-        }
-
-        // Everything exported by exportLibrary is also exported from library,
-        // but obviously only when the exportFilter is applied to futher restrict
-        // what is visible.
-        final propogatedExports = exportLibrary.exports.entries.map(
-          (e) => (e.key, e.value.applyFilter(exportFilter)),
-        );
-
-        for (final (uri, filter) in propogatedExports) {
-          final existingFilter = library.exports[uri];
-          if (existingFilter != null) {
-            library.exports[uri] = existingFilter.mergeFilter(filter);
-            // This works because `applyFilter` and `mergeFilter` will return
-            // the existing filter if there are no changes.
-            // Hence, eventually calling `mergeFilter` will just return
-            // `existingFilter`.
-            // TODO: This might require a proof, or something like that. It's
-            //       not entirely trivially obivous.
-            // TODO: We could also build a tree of filters such that each filter
-            //       object have a map to larger filter objects. Effectively,
-            //       we'd have some sort of interning. That would be extremely
-            //       fast, but we'd be unable to free memory. That's probably
-            //       not an issue as we could release it when we're done with
-            //       the analysis :D
-            //       Imagine that NamespaceShowFilter is a linked list, that
-            //       always starts with the empty list. And is always
-            //       alphabetically sorted. Then the set {A, B} would get the
-            //       same node as {B, A}. Obviously, each node would have to
-            //       know which possible successors exists.
-            //       So NamespaceShowFilter would have properties:
-            //         * final String symbol
-            //         * final NamespaceShowFilter? previous
-            //         * final Map<String, NamespaceShowFilter> next
-            //       Given a NamespaceShowFilter object, you'd read [symbol] and
-            //       walk along [previous] until `previous == null`.
-            //       And if you have an NamespaceShowFilter object and want to
-            //       extend it to also show the symbol "foo", then you'd walk
-            //       up [previous] until you see `symbol < "foo"` at which point
-            //       you'd check `next["foo"]` to see if a node already exists
-            //       and if not, create one under there + all the ones necessary
-            //       to represent the full set.
-            //       Or something like that, the idea being that there is a
-            //       only ever a single [NamespaceShowFilter] representing a
-            //       single set, a system where two distint filter objects
-            //       always imply different show sets.
-            //       Probably not performance critical, but could be fun to
-            //       build :D
-            if (library.exports[uri] != existingFilter) {
-              changed = true;
-            }
-          } else {
-            library.exports[uri] = filter;
-            changed = true;
-          }
-          library.exports.update(
-            uri,
-            (existingFilter) => existingFilter.mergeFilter(filter),
-            ifAbsent: () => filter,
-          );
-        }
-        // TODO: Track if anything changed! :D
-      });
-    }
-
-    for (final MapEntry(key: eu, value: ef) in library.exports.entries) {
-      final exportedLibrary = package.libraries[u];
-      if (exportedLibrary == null) {
-        continue;
-      }
-      // Everything exported from exportedLibrary is also exported from library
-      for (final MapEntry(key: u, value: f) in library.exports.entries) {
-        library.exports.update(
-          u,
-          (existingFilter) => existingFilter.mergeFilter(f.applyFilter(ef)),
-          ifAbsent: () => f.applyFilter(ef),
-        );
-      }
-    }
-
-    for (final MapEntry(key: eu, value: ef) in library.exports.entries) {
-      final exportedLibrary = package.libraries[u];
-      if (exportedLibrary == null) {
-        continue;
-      }
-      // Everything exported from exportedLibrary is also exported from library
-      for (final MapEntry(key: u, value: f) in library.exports.entries) {
-        library.exports.update(
-          u,
-          (existingFilter) => existingFilter.mergeFilter(f.applyFilter(ef)),
-          ifAbsent: () => f.applyFilter(ef),
-        );
-      }
+  for (final lib in package.libraries.values) {
+    for (final e in lib.exports.values) {
+      // TODO: Continue here
+      print(e);
     }
   }
 
@@ -269,6 +169,14 @@ extension on PackageShape {
       }
     }
   }
+
+  /*
+  void propogateExports(LibraryShape library) {
+    for (final lib in libraries) {
+      lib.exports.firstWhere((e) => e.uri == library.uri);
+      // TODO: Finish this...
+    }
+  }*/
 }
 
 extension on LibraryShape {
