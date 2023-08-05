@@ -17,8 +17,11 @@
 library;
 
 import 'package:collection/collection.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
+
+part 'shapes.g.dart';
 
 bool Function(List<dynamic>?, List<dynamic>?) listEquals =
     const ListEquality().equals;
@@ -32,6 +35,13 @@ class PackageShape {
     required this.name,
     required this.version,
   });
+
+  Map<String, dynamic> toJsonNormalSummary() => Map.fromEntries(
+        libraries.entries.sortedBy((e) => e.key.toString()).map((e) => MapEntry(
+              e.key.toString(),
+              e.value.toJsonNormalSummary(),
+            )),
+      );
 }
 
 class LibraryShape {
@@ -60,6 +70,17 @@ class LibraryShape {
   final Map<String, LibraryMemberShape> importedShapes = {};
 
   LibraryShape({required this.uri});
+
+  Map<String, dynamic> toJsonNormalSummary() {
+    final result = <String, dynamic>{'uri': uri.toString()};
+    result.addEntries(
+      exportedShapes.entries.sortedBy((e) => e.key).map((e) => MapEntry(
+            e.key,
+            e.value.toJson(),
+          )),
+    );
+    return result;
+  }
 }
 
 /// A filter on an imported namespace in the form of `show ... hide ...`.
@@ -243,8 +264,11 @@ sealed class LibraryMemberShape {
   @override
   @mustBeOverridden
   bool operator ==(Object other);
+
+  Map<String, dynamic> toJson();
 }
 
+@JsonSerializable()
 final class FunctionShape extends LibraryMemberShape {
   final List<PositionalParameterShape> positionalParameters;
   final List<NamedParameterShape> namedParameters;
@@ -269,8 +293,15 @@ final class FunctionShape extends LibraryMemberShape {
         Object.hashAll(positionalParameters),
         Object.hashAll(namedParameters),
       );
+
+  factory FunctionShape.fromJson(Map<String, dynamic> json) =>
+      _$FunctionShapeFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$FunctionShapeToJson(this);
 }
 
+@JsonSerializable()
 final class EnumShape extends LibraryMemberShape {
   EnumShape({required super.name});
 
@@ -280,8 +311,15 @@ final class EnumShape extends LibraryMemberShape {
 
   @override
   int get hashCode => name.hashCode;
+
+  factory EnumShape.fromJson(Map<String, dynamic> json) =>
+      _$EnumShapeFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$EnumShapeToJson(this);
 }
 
+@JsonSerializable()
 final class ClassShape extends LibraryMemberShape {
   ClassShape({required super.name});
 
@@ -291,8 +329,15 @@ final class ClassShape extends LibraryMemberShape {
 
   @override
   int get hashCode => name.hashCode;
+
+  factory ClassShape.fromJson(Map<String, dynamic> json) =>
+      _$ClassShapeFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$ClassShapeToJson(this);
 }
 
+@JsonSerializable()
 final class MixinShape extends LibraryMemberShape {
   MixinShape({required super.name});
 
@@ -302,8 +347,15 @@ final class MixinShape extends LibraryMemberShape {
 
   @override
   int get hashCode => name.hashCode;
+
+  factory MixinShape.fromJson(Map<String, dynamic> json) =>
+      _$MixinShapeFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$MixinShapeToJson(this);
 }
 
+@JsonSerializable()
 final class ExtensionShape extends LibraryMemberShape {
   ExtensionShape({required super.name});
 
@@ -313,8 +365,15 @@ final class ExtensionShape extends LibraryMemberShape {
 
   @override
   int get hashCode => name.hashCode;
+
+  factory ExtensionShape.fromJson(Map<String, dynamic> json) =>
+      _$ExtensionShapeFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$ExtensionShapeToJson(this);
 }
 
+@JsonSerializable()
 final class FunctionTypeAliasShape extends LibraryMemberShape {
   FunctionTypeAliasShape({required super.name});
 
@@ -325,8 +384,15 @@ final class FunctionTypeAliasShape extends LibraryMemberShape {
 
   @override
   int get hashCode => name.hashCode;
+
+  factory FunctionTypeAliasShape.fromJson(Map<String, dynamic> json) =>
+      _$FunctionTypeAliasShapeFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$FunctionTypeAliasShapeToJson(this);
 }
 
+@JsonSerializable()
 final class ClassTypeAliasShape extends LibraryMemberShape {
   ClassTypeAliasShape({required super.name});
 
@@ -337,8 +403,15 @@ final class ClassTypeAliasShape extends LibraryMemberShape {
 
   @override
   int get hashCode => name.hashCode;
+
+  factory ClassTypeAliasShape.fromJson(Map<String, dynamic> json) =>
+      _$ClassTypeAliasShapeFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$ClassTypeAliasShapeToJson(this);
 }
 
+@JsonSerializable()
 final class VariableShape extends LibraryMemberShape {
   final bool hasGetter;
   final bool hasSetter;
@@ -359,8 +432,15 @@ final class VariableShape extends LibraryMemberShape {
 
   @override
   int get hashCode => Object.hash(name, hasGetter, hasSetter);
+
+  factory VariableShape.fromJson(Map<String, dynamic> json) =>
+      _$VariableShapeFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$VariableShapeToJson(this);
 }
 
+@JsonSerializable()
 final class PositionalParameterShape {
   final bool isOptional;
 
@@ -375,8 +455,12 @@ final class PositionalParameterShape {
 
   @override
   int get hashCode => isOptional.hashCode;
+  factory PositionalParameterShape.fromJson(Map<String, dynamic> json) =>
+      _$PositionalParameterShapeFromJson(json);
+  Map<String, dynamic> toJson() => _$PositionalParameterShapeToJson(this);
 }
 
+@JsonSerializable()
 final class NamedParameterShape {
   final String name;
   final bool isRequired;
@@ -395,6 +479,9 @@ final class NamedParameterShape {
 
   @override
   int get hashCode => Object.hash(name, isRequired);
+  factory NamedParameterShape.fromJson(Map<String, dynamic> json) =>
+      _$NamedParameterShapeFromJson(json);
+  Map<String, dynamic> toJson() => _$NamedParameterShapeToJson(this);
 }
 
 extension LibraryMemberShapeGetters on LibraryMemberShape {
