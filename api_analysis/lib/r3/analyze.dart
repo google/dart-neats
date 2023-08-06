@@ -289,16 +289,16 @@ extension on PackageShape {
       switch (d) {
         case FunctionDeclaration d:
           if (d.isGetter || d.isSetter) {
-            if (shape.definedShapes.containsKey(d.nameAsString)) {
+            if (shape.definedShapes.containsKey(d.name.lexeme)) {
               continue; // we've seen the other getter or setter already
               // TODO: Check that the other thing we saw was a getter/setter!
             }
             final accessors = library.units
                 .expand((u) => u.unit.declarations)
                 .whereType<FunctionDeclaration>()
-                .where((dOther) => d.nameAsString == dOther.nameAsString);
+                .where((dOther) => d.name.lexeme == dOther.name.lexeme);
             shape.define(VariableShape(
-              name: d.nameAsString,
+              name: d.name.lexeme,
               hasGetter: accessors.any((a) => a.isGetter),
               hasSetter: accessors.any((a) => a.isSetter),
             ));
@@ -425,19 +425,19 @@ extension on LibraryShape {
 
   void defineEnum(EnumDeclaration d) {
     define(EnumShape(
-      name: d.nameAsString,
+      name: d.name.lexeme,
     ));
   }
 
   void defineClass(ClassDeclaration d) {
     define(ClassShape(
-      name: d.nameAsString,
+      name: d.name.lexeme,
     ));
   }
 
   void defineMixin(MixinDeclaration d) {
     define(MixinShape(
-      name: d.nameAsString,
+      name: d.name.lexeme,
     ));
   }
 
@@ -454,13 +454,13 @@ extension on LibraryShape {
 
   void defineClassTypeAlias(ClassTypeAlias d) {
     define(ClassTypeAliasShape(
-      name: d.nameAsString,
+      name: d.name.lexeme,
     ));
   }
 
   void defineFunctionTypeAlias(FunctionTypeAlias d) {
     define(FunctionTypeAliasShape(
-      name: d.nameAsString,
+      name: d.name.lexeme,
     ));
   }
 
@@ -483,16 +483,6 @@ extension on LibraryShape {
       fail('${shape.name} is defined more than once!');
     }
     definedShapes[shape.name] = shape;
-  }
-}
-
-extension on NamedCompilationUnitMember {
-  String get nameAsString {
-    final n = name.value();
-    if (n is! String) {
-      fail('Top-level member has no name: $this');
-    }
-    return n;
   }
 }
 
