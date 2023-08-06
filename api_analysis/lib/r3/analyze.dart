@@ -34,6 +34,44 @@ import '../common.dart'
 import '../pubapi.dart';
 import 'shapes.dart';
 
+typedef LibraryMemberShapeModification = ({
+  LibraryMemberShape prev,
+  LibraryMemberShape next,
+});
+
+typedef LibraryShapeChange = ({
+  List<LibraryMemberShape> added,
+  List<LibraryMemberShape> removed,
+  List<LibraryMemberShapeModification> modified,
+});
+
+LibraryShapeChange diffLibraryShapes(LibraryShape prev, LibraryShape next) {
+  final prevMembers = prev.exportedShapes;
+  final nextMembers = next.exportedShapes;
+
+  final prevMemberNames = prevMembers.keys.toSet();
+  final nextMemberNames = nextMembers.keys.toSet();
+
+  return (
+    added: nextMembers.entries
+        .where((m) => !prevMemberNames.contains(m.key))
+        .map((m) => m.value)
+        .toList(),
+    removed: prevMembers.entries
+        .where((m) => !nextMemberNames.contains(m.key))
+        .map((m) => m.value)
+        .toList(),
+    modified: prevMembers.entries
+        .where((m) =>
+            nextMemberNames.contains(m.key) && m.value != nextMembers[m.key]!)
+        .map((m) => (
+              prev: m.value,
+              next: nextMembers[m.key]!,
+            ))
+        .toList(),
+  );
+}
+
 const _usage = '''Usage:
 - analyze.dart local <package-path>
 - analyze.dart hosted <package-name>''';
@@ -60,6 +98,7 @@ Future<void> main(List<String> args) async {
         (a, b) => a.compareTo(b),
       );
 
+      PackageShape? prevShape;
       for (final pv in versions) {
         if (!pv.pubspec.dart3Compatible) {
           continue;
@@ -96,9 +135,58 @@ Future<void> main(List<String> args) async {
         );
 
         final packageShape = await analyzePackage(packagePath, fs: fs);
-        final result = JsonEncoder.withIndent('  ')
-            .convert(packageShape.toJsonNormalPublicSummary());
-        print(result);
+
+        if (prevShape != null) {
+          final libraryChanges = <Uri, LibraryShapeChange>{};
+
+          // TODO: handle libraries that have been added or removed between package versions.
+          final commonPublicLibraries = packageShape.libraries.entries
+              .map((e) => e.key)
+              .where((l) => prevShape!.libraries.containsKey(l))
+              .where((l) => !l.isInPrivateLibrary);
+          for (final libraryKey in commonPublicLibraries) {
+            final change = diffLibraryShapes(
+              prevShape.libraries[libraryKey]!,
+              packageShape.libraries[libraryKey]!,
+            );
+            if (change.added.isNotEmpty ||
+                change.removed.isNotEmpty ||
+                change.modified.isNotEmpty) {
+              assert(!libraryChanges.containsKey(libraryKey));
+              libraryChanges[libraryKey] = change;
+            }
+          }
+
+          if (libraryChanges.isNotEmpty) {
+            print(
+                '====== ${packageShape.name}: ${prevShape.version.toString()} -> ${packageShape.version.toString()} ======');
+            for (final change in libraryChanges.entries) {
+              print('  ${change.key.toString()}');
+              if (change.value.added.isNotEmpty) {
+                print('    ADDED:');
+              }
+              for (final addedLibrary in change.value.added) {
+                print('     - ${jsonEncode(addedLibrary.toJson())}');
+              }
+              if (change.value.removed.isNotEmpty) {
+                print('    REMOVED:');
+              }
+              for (final removedLibrary in change.value.removed) {
+                print('     - ${jsonEncode(removedLibrary.toJson())}');
+              }
+              if (change.value.modified.isNotEmpty) {
+                print('    MODIFIED:');
+              }
+              for (final modifiedLibrary in change.value.modified) {
+                print('     - ${jsonEncode(modifiedLibrary.prev.toJson())}');
+                print('       ->');
+                print('       ${jsonEncode(modifiedLibrary.next.toJson())}');
+              }
+            }
+          }
+        }
+
+        prevShape = packageShape;
       }
     });
   } else {
