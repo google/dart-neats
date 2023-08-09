@@ -95,6 +95,7 @@ Future<PackageShape> analyzePackage(String packagePath) async {
 
   void propogateExports(LibraryShape library) {
     var changed = false;
+    final propogatedExports = [];
     library.exports.forEach((exportUri, exportFilter) {
       // Find the exportLibrary that is exported from library
       final exportLibrary = package.libraries[exportUri];
@@ -105,37 +106,37 @@ Future<PackageShape> analyzePackage(String packagePath) async {
       // Everything exported by exportLibrary is also exported from library,
       // but obviously only when the exportFilter is applied to futher restrict
       // what is visible.
-      final propogatedExports = exportLibrary.exports.entries.map(
+      propogatedExports.addAll(exportLibrary.exports.entries.map(
         (e) => (e.key, e.value.applyFilter(exportFilter)),
-      );
-
-      for (final (uri, filter) in propogatedExports) {
-        library.exports.update(
-          uri,
-          (existingFilter) {
-            // If we have an existing filter, then we're already exporting this
-            // library, but the filter might have changed, so we should merge it
-            final updatedFilter = existingFilter.mergeFilter(filter);
-            // Notice that .mergeFilter will always return the [existingFilter]
-            // if the two filters are equal, so eventually [changed] won't be
-            // true, and recursion should stop.
-            changed = changed || updatedFilter != existingFilter;
-            return updatedFilter;
-          },
-          ifAbsent: () {
-            // If [uri] is not already in our exports, then we've found a new
-            // library that is being transitively exported.
-            changed = true;
-            // Update exportedBy on the library we're now exporting
-            final exportedLibrary = package.libraries[uri];
-            if (exportedLibrary != null) {
-              exportedLibrary.exportedBy.add(library);
-            }
-            return filter;
-          },
-        );
-      }
+      ));
     });
+
+    for (final (uri, filter) in propogatedExports) {
+      library.exports.update(
+        uri,
+        (existingFilter) {
+          // If we have an existing filter, then we're already exporting this
+          // library, but the filter might have changed, so we should merge it
+          final updatedFilter = existingFilter.mergeFilter(filter);
+          // Notice that .mergeFilter will always return the [existingFilter]
+          // if the two filters are equal, so eventually [changed] won't be
+          // true, and recursion should stop.
+          changed = changed || updatedFilter != existingFilter;
+          return updatedFilter;
+        },
+        ifAbsent: () {
+          // If [uri] is not already in our exports, then we've found a new
+          // library that is being transitively exported.
+          changed = true;
+          // Update exportedBy on the library we're now exporting
+          final exportedLibrary = package.libraries[uri];
+          if (exportedLibrary != null) {
+            exportedLibrary.exportedBy.add(library);
+          }
+          return filter;
+        },
+      );
+    }
 
     // If we changed something then we'll update all libraries that this library
     // is exportedBy. This leads to recursion, with a little luck this will
