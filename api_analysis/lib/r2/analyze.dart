@@ -19,6 +19,7 @@ import 'dart:io' show Directory;
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'shapes.dart';
@@ -81,112 +82,128 @@ Future<PackageShape> analyzePackage(String packagePath) async {
     package.addLibrary(library);
   }
 
-  // Propogate all exports
-  var changed = true;
-  // Iterate until there are no changes, this is probably not the fastest way to
-  // do this!
-  while (changed) {
-    changed = false;
-    for (final library in package.libraries.values) {
-      library.exports.forEach((exportUri, exportFilter) {
-        // Find the exportLibrary that is exported from library
-        final exportLibrary = package.libraries[exportUri];
-        if (exportLibrary == null) {
-          return;
-        }
+  // Initiate exportedBy with all directly exported libraries
+  for (final library in package.libraries.values) {
+    for (final exportedLibraryUri in library.exports.keys) {
+      final exportedLibrary = package.libraries[exportedLibraryUri];
+      if (exportedLibrary == null) {
+        continue;
+      }
+      exportedLibrary.exportedBy.add(library);
+    }
+  }
 
-        // Everything exported by exportLibrary is also exported from library,
-        // but obviously only when the exportFilter is applied to futher restrict
-        // what is visible.
-        final propogatedExports = exportLibrary.exports.entries.map(
-          (e) => (e.key, e.value.applyFilter(exportFilter)),
-        );
+  void propogateExports(LibraryShape library) {
+    var changed = false;
+    library.exports.forEach((exportUri, exportFilter) {
+      // Find the exportLibrary that is exported from library
+      final exportLibrary = package.libraries[exportUri];
+      if (exportLibrary == null) {
+        return;
+      }
 
-        for (final (uri, filter) in propogatedExports) {
-          final existingFilter = library.exports[uri];
-          if (existingFilter != null) {
-            library.exports[uri] = existingFilter.mergeFilter(filter);
-            // This works because `applyFilter` and `mergeFilter` will return
-            // the existing filter if there are no changes.
-            // Hence, eventually calling `mergeFilter` will just return
-            // `existingFilter`.
-            // TODO: This might require a proof, or something like that. It's
-            //       not entirely trivially obivous.
-            // TODO: We could also build a tree of filters such that each filter
-            //       object have a map to larger filter objects. Effectively,
-            //       we'd have some sort of interning. That would be extremely
-            //       fast, but we'd be unable to free memory. That's probably
-            //       not an issue as we could release it when we're done with
-            //       the analysis :D
-            //       Imagine that NamespaceShowFilter is a linked list, that
-            //       always starts with the empty list. And is always
-            //       alphabetically sorted. Then the set {A, B} would get the
-            //       same node as {B, A}. Obviously, each node would have to
-            //       know which possible successors exists.
-            //       So NamespaceShowFilter would have properties:
-            //         * final String symbol
-            //         * final NamespaceShowFilter? previous
-            //         * final Map<String, NamespaceShowFilter> next
-            //       Given a NamespaceShowFilter object, you'd read [symbol] and
-            //       walk along [previous] until `previous == null`.
-            //       And if you have an NamespaceShowFilter object and want to
-            //       extend it to also show the symbol "foo", then you'd walk
-            //       up [previous] until you see `symbol < "foo"` at which point
-            //       you'd check `next["foo"]` to see if a node already exists
-            //       and if not, create one under there + all the ones necessary
-            //       to represent the full set.
-            //       Or something like that, the idea being that there is a
-            //       only ever a single [NamespaceShowFilter] representing a
-            //       single set, a system where two distint filter objects
-            //       always imply different show sets.
-            //       Probably not performance critical, but could be fun to
-            //       build :D
-            if (library.exports[uri] != existingFilter) {
-              changed = true;
-            }
-          } else {
-            library.exports[uri] = filter;
+      // Everything exported by exportLibrary is also exported from library,
+      // but obviously only when the exportFilter is applied to futher restrict
+      // what is visible.
+      final propogatedExports = exportLibrary.exports.entries.map(
+        (e) => (e.key, e.value.applyFilter(exportFilter)),
+      );
+
+      for (final (uri, filter) in propogatedExports) {
+        library.exports.update(
+          uri,
+          (existingFilter) {
+            // If we have an existing filter, then we're already exporting this
+            // library, but the filter might have changed, so we should merge it
+            final updatedFilter = existingFilter.mergeFilter(filter);
+            // Notice that .mergeFilter will always return the [existingFilter]
+            // if the two filters are equal, so eventually [changed] won't be
+            // true, and recursion should stop.
+            changed = changed || updatedFilter != existingFilter;
+            return updatedFilter;
+          },
+          ifAbsent: () {
+            // If [uri] is not already in our exports, then we've found a new
+            // library that is being transitively exported.
             changed = true;
-          }
-          library.exports.update(
-            uri,
-            (existingFilter) => existingFilter.mergeFilter(filter),
-            ifAbsent: () => filter,
-          );
+            // Update exportedBy on the library we're now exporting
+            final exportedLibrary = package.libraries[uri];
+            if (exportedLibrary != null) {
+              exportedLibrary.exportedBy.add(library);
+            }
+            return filter;
+          },
+        );
+      }
+    });
+
+    // If we changed something then we'll update all libraries that this library
+    // is exportedBy. This leads to recursion, with a little luck this will
+    // never enter infinite recursion because [changed] will eventually be false
+    if (changed) {
+      for (final exportingLibrary in library.exportedBy) {
+        propogateExports(exportingLibrary);
+      }
+    }
+  }
+
+  // Propogate exports for all libraries
+  package.libraries.values.forEach(propogateExports);
+
+  // Populate exportedShapes for all libraries
+  for (final library in package.libraries.values) {
+    // All defined non-private shapes are exported
+    library.exportedShapes.addEntries(
+      library.definedShapes.entries.where((e) => !e.value.isPrivate),
+    );
+
+    // Transtive exported shapes, using `null` to indicate that we have
+    // conflicting names.
+    final transitivelyExportedShapes = <String, LibraryMemberShape?>{};
+    library.exports.forEach((uri, filter) {
+      final exportedLibrary = package.libraries[uri];
+      if (exportedLibrary == null) {
+        return;
+      }
+      for (final shape in exportedLibrary.definedShapes.values) {
+        // Ignore shapes where:
+        //  - name indicates that it's private,
+        //  - it's not visible through the export filter,
+        //  - the library defines a shape with the same name!
+        if (shape.isPrivate ||
+            !filter.isVisible(shape.name) ||
+            library.definedShapes.containsKey(shape.name)) {
+          continue;
         }
-        // TODO: Track if anything changed! :D
-      });
-    }
-
-    for (final MapEntry(key: eu, value: ef) in library.exports.entries) {
-      final exportedLibrary = package.libraries[u];
-      if (exportedLibrary == null) {
-        continue;
-      }
-      // Everything exported from exportedLibrary is also exported from library
-      for (final MapEntry(key: u, value: f) in library.exports.entries) {
-        library.exports.update(
-          u,
-          (existingFilter) => existingFilter.mergeFilter(f.applyFilter(ef)),
-          ifAbsent: () => f.applyFilter(ef),
+        transitivelyExportedShapes.update(
+          shape.name,
+          (existingShape) {
+            // If the existing shape exported here is the exact same shape, then
+            // that's fine. Otherwise, if we have to export statements that try
+            // to transitively export the same thing, then we have a conflict.
+            // We indicate conflicts by storing `null`.
+            // Note: we intentionally use identity equality, since if the exact
+            //       same member is defined twice, it's still a conflict!
+            if (existingShape == shape) {
+              return existingShape;
+            }
+            return null;
+          },
+          // If there is nothing exported with this name, then clearly there is
+          // no conflict, and we just insert [shape].
+          ifAbsent: () => shape,
         );
       }
-    }
+    });
 
-    for (final MapEntry(key: eu, value: ef) in library.exports.entries) {
-      final exportedLibrary = package.libraries[u];
-      if (exportedLibrary == null) {
-        continue;
-      }
-      // Everything exported from exportedLibrary is also exported from library
-      for (final MapEntry(key: u, value: f) in library.exports.entries) {
-        library.exports.update(
-          u,
-          (existingFilter) => existingFilter.mergeFilter(f.applyFilter(ef)),
-          ifAbsent: () => f.applyFilter(ef),
-        );
-      }
-    }
+    // Add all the transitive exported shapes.
+    // Ignore the values that are null, because these are used to indicated
+    // transitive export conflicts.
+    library.exportedShapes.addEntries(
+      transitivelyExportedShapes.values
+          .whereNotNull()
+          .map((shape) => MapEntry(shape.name, shape)),
+    );
   }
 
   return package;

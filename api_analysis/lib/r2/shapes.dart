@@ -40,6 +40,9 @@ class LibraryShape {
   final Map<String, Map<Uri, NamespaceFilter>> imports = {};
   final Map<Uri, NamespaceFilter> exports = {};
 
+  /// Set of libraries that export this library, both directly and transtively.
+  final Set<LibraryShape> exportedBy = {};
+
   /// Top-level elements defined in this library.
   final Map<String, LibraryMemberShape> definedShapes = {};
 
