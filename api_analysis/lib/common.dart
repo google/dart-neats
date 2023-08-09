@@ -19,6 +19,14 @@ extension PackageSchemeExt on Uri {
   /// True, if this [Uri] points to a resource in [package].
   bool isInPackage(String package) =>
       isScheme('package') && pathSegments.firstOrNull == package;
+
+  bool get isInPrivateLibrary {
+    if (pathSegments.length >= 2 && pathSegments[1] == 'src') {
+      assert(pathSegments.length >= 3);
+      return true;
+    }
+    return false;
+  }
 }
 
 /// Thrown when shape analysis fails.
