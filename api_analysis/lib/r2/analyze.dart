@@ -121,7 +121,7 @@ Future<PackageShape> analyzePackage(String packagePath) async {
       });
     });
 
-    // Apply transitive exports and if any changes are made
+    // Apply transitive exports and detect if any changes are made
     var changed = false;
     transitiveExports.forEach((uri, filter) {
       library.exports.update(
