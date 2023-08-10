@@ -93,25 +93,37 @@ Future<PackageShape> analyzePackage(String packagePath) async {
     }
   }
 
-  void propogateExports(LibraryShape library) {
-    var changed = false;
-    final propogatedExports = [];
+  // Propogate exports for all libraries
+  final librariesToPropogated = {...package.libraries.values};
+  while (librariesToPropogated.isNotEmpty) {
+    final library = librariesToPropogated.first;
+    librariesToPropogated.remove(library);
+
+    // Compute transitive exports
+    final transitiveExports = <Uri, NamespaceFilter>{};
     library.exports.forEach((exportUri, exportFilter) {
-      // Find the exportLibrary that is exported from library
-      final exportLibrary = package.libraries[exportUri];
-      if (exportLibrary == null) {
+      // Find the exportedLibrary that is exported from library
+      final exportedLibrary = package.libraries[exportUri];
+      if (exportedLibrary == null) {
         return;
       }
 
-      // Everything exported by exportLibrary is also exported from library,
+      // Everything exported by exportedLibrary is also exported from library,
       // but obviously only when the exportFilter is applied to futher restrict
       // what is visible.
-      propogatedExports.addAll(exportLibrary.exports.entries.map(
-        (e) => (e.key, e.value.applyFilter(exportFilter)),
-      ));
+      exportedLibrary.exports.forEach((uri, filter) {
+        filter = filter.applyFilter(exportFilter);
+        transitiveExports.update(
+          uri,
+          (existingFilter) => existingFilter.mergeFilter(filter),
+          ifAbsent: () => filter,
+        );
+      });
     });
 
-    for (final (uri, filter) in propogatedExports) {
+    // Apply transitive exports and if any changes are made
+    var changed = false;
+    transitiveExports.forEach((uri, filter) {
       library.exports.update(
         uri,
         (existingFilter) {
@@ -136,20 +148,15 @@ Future<PackageShape> analyzePackage(String packagePath) async {
           return filter;
         },
       );
-    }
+    });
 
     // If we changed something then we'll update all libraries that this library
     // is exportedBy. This leads to recursion, with a little luck this will
     // never enter infinite recursion because [changed] will eventually be false
     if (changed) {
-      for (final exportingLibrary in library.exportedBy) {
-        propogateExports(exportingLibrary);
-      }
+      librariesToPropogated.addAll(library.exportedBy);
     }
   }
-
-  // Propogate exports for all libraries
-  package.libraries.values.forEach(propogateExports);
 
   // Populate exportedShapes for all libraries
   for (final library in package.libraries.values) {
