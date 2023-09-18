@@ -1,0 +1,22 @@
+name: cloud_metrics
+publish_to: none
+version: 0.9.0
+description: |
+  Abstractions for collection and reporting of application metrics aimed at
+  cloud systems, like Stackdriver Metrics.
+homepage: https://github.com/google/dart-neats/tree/master/cloud_metrics
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:cloud_metrics
+dependencies: 
+  clock: ^1.1.0
+  googleapis: '>=2.0.0 <10.0.0'
+  googleapis_auth: ^1.0.0
+  http: ^0.13.4
+  meta: ^1.8.0
+  pool: ^1.5.0
+  retry: ^3.1.0
+dev_dependencies:
+  test: ^1.20.0
+  lints: ^1.0.0
+environment:
+  sdk: '>=2.12.0 <3.0.0'
