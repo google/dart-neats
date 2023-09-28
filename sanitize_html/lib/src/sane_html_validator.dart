@@ -249,7 +249,12 @@ class SaneHtmlValidator {
         if (href != null && addLinkRel != null) {
           final rels = addLinkRel!(href);
           if (rels != null && rels.isNotEmpty) {
-            node.attributes['rel'] = rels.join(' ');
+            final currentRel = node.attributes['rel'] ?? '';
+            final allRels = <String>{
+              ...currentRel.split(' ').where((e) => e.isNotEmpty),
+              ...rels,
+            };
+            node.attributes['rel'] = allRels.join(' ');
           }
         }
       }
