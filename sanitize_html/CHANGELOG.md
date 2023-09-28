@@ -1,6 +1,7 @@
-## v2.0.0-dev
+## v2.1.0
  * Remove custom HTML rendering logic in favor of logic from `package:html`.
  * Added `topics` to `pubspec.yaml`.
+ * `rel` attributes added through `addLinkRel` are appended to existing ones.
 
 ## v2.0.0
  * Migrate to null safety.
