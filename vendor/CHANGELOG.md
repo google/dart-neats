@@ -1,3 +1,6 @@
+## v0.9.6
+ * Bump `package:analyzer` to `>= 2.7.0 <7.0.0`.
+
 ## v0.9.5
  * Bump `package:http` to `^1.0.0`.
 
