@@ -115,7 +115,7 @@ class NeatPeriodicTaskScheduler {
   final Duration _minCycle;
   final Duration _maxCycle;
 
-  bool _running = false;
+  bool _started = false;
   final _stopping = Completer<void>();
   final _stopped = Completer<void>();
 
@@ -171,11 +171,15 @@ class NeatPeriodicTaskScheduler {
   }
 
   /// Start the scheduler.
+  ///
+  /// Once started a [NeatPeriodicTaskScheduler] cannot be restarted.
   void start() {
-    if (_running) {
-      throw StateError('NeatPeriodicTaskScheduler for "$_name" is running');
+    if (_started) {
+      throw StateError(
+        'NeatPeriodicTaskScheduler for "$_name" has been started',
+      );
     }
-    _running = true;
+    _started = true;
 
     _log.fine(() => 'NeatPeriodicTaskScheduler "$_name" STARTING');
     scheduleMicrotask(_loop);
@@ -186,6 +190,8 @@ class NeatPeriodicTaskScheduler {
   /// This returns a [Future] that is completed when the scheduler has finished
   /// any on-going iterations. This will not abort an ongoing task, but it will
   /// stop further iterations of the task.
+  ///
+  /// Once stopped a [NeatPeriodicTaskScheduler] cannot be started again.
   Future<void> stop() async {
     if (!_stopping.isCompleted) {
       _stopping.complete();
