@@ -159,8 +159,10 @@ Future<bool> _safeUrlCheck(
   if (response.isRedirect &&
       response.headers[HttpHeaders.locationHeader]!.isNotEmpty &&
       maxRedirects > 0) {
+    final loc = Uri.parse(response.headers[HttpHeaders.locationHeader]![0]);
+    final nextUri = loc.hasScheme ? loc : url.resolveUri(loc);
     return _safeUrlCheck(
-      Uri.parse(response.headers[HttpHeaders.locationHeader]![0]),
+      nextUri,
       maxRedirects - 1,
       client,
       userAgent,
