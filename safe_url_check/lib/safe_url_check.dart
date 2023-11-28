@@ -39,12 +39,7 @@ import 'dart:async';
 
 import 'package:retry/retry.dart';
 
-import 'src/private_ip.dart';
-import 'src/unique_local_ip.dart';
-import 'src/version.dart';
-
-const _defaultUserAgent = 'package:safe_url_check/$packageVersion '
-    '(+https://github.com/google/dart-neats/tree/master/safe_url_check)';
+import 'src/safe_url_check.dart';
 
 /// Check if [url] is available, without allowing access to private networks.
 ///
@@ -63,114 +58,17 @@ const _defaultUserAgent = 'package:safe_url_check/$packageVersion '
 Future<bool> safeUrlCheck(
   Uri url, {
   int maxRedirects = 8,
-  String userAgent = _defaultUserAgent,
+  String userAgent = defaultUserAgent,
   HttpClient? client,
   RetryOptions retryOptions = const RetryOptions(maxAttempts: 3),
   Duration timeout = const Duration(seconds: 90),
 }) async {
-  ArgumentError.checkNotNull(url, 'url');
-  ArgumentError.checkNotNull(maxRedirects, 'maxRedirects');
-  ArgumentError.checkNotNull(userAgent, 'userAgent');
-  ArgumentError.checkNotNull(retryOptions, 'retryOptions');
-  if (maxRedirects < 0) {
-    throw ArgumentError.value(
-      maxRedirects,
-      'maxRedirects',
-      'must be a positive integer',
-    );
-  }
-
-  try {
-    // Create client if one wasn't given.
-    var c = client;
-    c ??= HttpClient();
-    try {
-      return await _safeUrlCheck(
-        url,
-        maxRedirects,
-        c,
-        userAgent,
-        retryOptions,
-        timeout,
-      );
-    } finally {
-      // Close client, if it was created here.
-      if (client == null) {
-        c.close(force: true);
-      }
-    }
-  } on Exception {
-    return false;
-  }
-}
-
-Future<bool> _safeUrlCheck(
-  Uri url,
-  int maxRedirects,
-  HttpClient client,
-  String userAgent,
-  RetryOptions retryOptions,
-  Duration timeout,
-) async {
-  assert(maxRedirects >= 0);
-
-  // If no scheme or not http or https, we fail.
-  if (!url.hasScheme || (!url.isScheme('http') && !url.isScheme('https'))) {
-    return false;
-  }
-
-  final ips = await retryOptions.retry(() async {
-    final ips = await InternetAddress.lookup(url.host).timeout(timeout);
-    if (ips.isEmpty) {
-      throw Exception('DNS resolution failed');
-    }
-    return ips;
-  });
-  for (final ip in ips) {
-    // If given a loopback, linklocal or multicast IP, return false
-    if (ip.isLoopback ||
-        ip.isLinkLocal ||
-        ip.isMulticast ||
-        isPrivateIpV4(ip) ||
-        isUniqueLocalIpV6(ip)) {
-      return false;
-    }
-  }
-
-  final response = await retryOptions.retry(() async {
-    // We can't use the HttpClient from dart:io with a custom socket, so instead
-    // of making a connection to one of the IPs resolved above, and specifying
-    // the host header, we rely on the OS caching DNS queries and not returning
-    // different IPs for a second lookup.
-    final request = await client.headUrl(url).timeout(timeout);
-    request.followRedirects = false;
-    request.headers.set(HttpHeaders.userAgentHeader, userAgent);
-    final response = await request.close().timeout(timeout);
-    await response.drain().catchError((e) => null).timeout(timeout);
-    if (500 <= response.statusCode && response.statusCode < 600) {
-      // retry again, when we hit a 5xx response
-      throw Exception('internal server error');
-    }
-    return response;
-  });
-  if (200 <= response.statusCode && response.statusCode < 300) {
-    return true;
-  }
-  if (response.isRedirect &&
-      response.headers[HttpHeaders.locationHeader]!.isNotEmpty &&
-      maxRedirects > 0) {
-    final loc = Uri.parse(response.headers[HttpHeaders.locationHeader]![0]);
-    final nextUri = url.resolveUri(loc);
-    return _safeUrlCheck(
-      nextUri,
-      maxRedirects - 1,
-      client,
-      userAgent,
-      retryOptions,
-      timeout,
-    );
-  }
-
-  // Response is 4xx, or some other unsupported code.
-  return false;
+  return doSafeUrlCheck(
+    url,
+    maxRedirects: maxRedirects,
+    userAgent: userAgent,
+    client: client,
+    retryOptions: retryOptions,
+    timeout: timeout,
+  );
 }
