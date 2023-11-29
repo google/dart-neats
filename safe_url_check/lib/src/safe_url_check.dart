@@ -14,6 +14,7 @@
 
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:retry/retry.dart';
 
 import 'private_ip.dart';
@@ -77,7 +78,7 @@ class SafeUrlChecker {
     required this.userAgent,
     required this.retryOptions,
     required this.timeout,
-    this.skipLocalNetworkCheck = false,
+    @visibleForTesting this.skipLocalNetworkCheck = false,
   });
 
   Future<bool> checkUrl(
