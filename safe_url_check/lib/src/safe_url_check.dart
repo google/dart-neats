@@ -31,6 +31,7 @@ Future<bool> doSafeUrlCheck(
   HttpClient? client,
   RetryOptions retryOptions = const RetryOptions(maxAttempts: 3),
   Duration timeout = const Duration(seconds: 90),
+  @visibleForTesting bool skipLocalNetworkCheck = false,
 }) async {
   ArgumentError.checkNotNull(url, 'url');
   ArgumentError.checkNotNull(maxRedirects, 'maxRedirects');
@@ -49,12 +50,15 @@ Future<bool> doSafeUrlCheck(
     var c = client;
     c ??= HttpClient();
     try {
-      return await SafeUrlChecker(
+      return await _safeUrlCheck(
+        url,
+        maxRedirects,
         client: c,
         userAgent: userAgent,
         retryOptions: retryOptions,
         timeout: timeout,
-      ).checkUrl(url, maxRedirects);
+        skipLocalNetworkCheck: skipLocalNetworkCheck,
+      );
     } finally {
       // Close client, if it was created here.
       if (client == null) {
@@ -66,80 +70,77 @@ Future<bool> doSafeUrlCheck(
   }
 }
 
-class SafeUrlChecker {
-  final HttpClient client;
-  final String userAgent;
-  final RetryOptions retryOptions;
-  final Duration timeout;
-  final bool skipLocalNetworkCheck;
+Future<bool> _safeUrlCheck(
+  Uri url,
+  int maxRedirects, {
+  required HttpClient client,
+  required String userAgent,
+  required RetryOptions retryOptions,
+  required Duration timeout,
+  required bool skipLocalNetworkCheck,
+}) async {
+  assert(maxRedirects >= 0);
 
-  SafeUrlChecker({
-    required this.client,
-    required this.userAgent,
-    required this.retryOptions,
-    required this.timeout,
-    @visibleForTesting this.skipLocalNetworkCheck = false,
-  });
-
-  Future<bool> checkUrl(
-    Uri url,
-    int maxRedirects,
-  ) async {
-    assert(maxRedirects >= 0);
-
-    // If no scheme or not http or https, we fail.
-    if (!url.hasScheme || (!url.isScheme('http') && !url.isScheme('https'))) {
-      return false;
-    }
-
-    final ips = await retryOptions.retry(() async {
-      final ips = await InternetAddress.lookup(url.host).timeout(timeout);
-      if (ips.isEmpty) {
-        throw Exception('DNS resolution failed');
-      }
-      return ips;
-    });
-    if (!skipLocalNetworkCheck) {
-      for (final ip in ips) {
-        // If given a loopback, linklocal or multicast IP, return false
-        if (ip.isLoopback ||
-            ip.isLinkLocal ||
-            ip.isMulticast ||
-            isPrivateIpV4(ip) ||
-            isUniqueLocalIpV6(ip)) {
-          return false;
-        }
-      }
-    }
-
-    final response = await retryOptions.retry(() async {
-      // We can't use the HttpClient from dart:io with a custom socket, so instead
-      // of making a connection to one of the IPs resolved above, and specifying
-      // the host header, we rely on the OS caching DNS queries and not returning
-      // different IPs for a second lookup.
-      final request = await client.headUrl(url).timeout(timeout);
-      request.followRedirects = false;
-      request.headers.set(HttpHeaders.userAgentHeader, userAgent);
-      final response = await request.close().timeout(timeout);
-      await response.drain().catchError((e) => null).timeout(timeout);
-      if (500 <= response.statusCode && response.statusCode < 600) {
-        // retry again, when we hit a 5xx response
-        throw Exception('internal server error');
-      }
-      return response;
-    });
-    if (200 <= response.statusCode && response.statusCode < 300) {
-      return true;
-    }
-    if (response.isRedirect &&
-        response.headers[HttpHeaders.locationHeader]!.isNotEmpty &&
-        maxRedirects > 0) {
-      final loc = Uri.parse(response.headers[HttpHeaders.locationHeader]![0]);
-      final nextUri = url.resolveUri(loc);
-      return checkUrl(nextUri, maxRedirects - 1);
-    }
-
-    // Response is 4xx, or some other unsupported code.
+  // If no scheme or not http or https, we fail.
+  if (!url.hasScheme || (!url.isScheme('http') && !url.isScheme('https'))) {
     return false;
   }
+
+  final ips = await retryOptions.retry(() async {
+    final ips = await InternetAddress.lookup(url.host).timeout(timeout);
+    if (ips.isEmpty) {
+      throw Exception('DNS resolution failed');
+    }
+    return ips;
+  });
+  if (!skipLocalNetworkCheck) {
+    for (final ip in ips) {
+      // If given a loopback, linklocal or multicast IP, return false
+      if (ip.isLoopback ||
+          ip.isLinkLocal ||
+          ip.isMulticast ||
+          isPrivateIpV4(ip) ||
+          isUniqueLocalIpV6(ip)) {
+        return false;
+      }
+    }
+  }
+
+  final response = await retryOptions.retry(() async {
+    // We can't use the HttpClient from dart:io with a custom socket, so instead
+    // of making a connection to one of the IPs resolved above, and specifying
+    // the host header, we rely on the OS caching DNS queries and not returning
+    // different IPs for a second lookup.
+    final request = await client.headUrl(url).timeout(timeout);
+    request.followRedirects = false;
+    request.headers.set(HttpHeaders.userAgentHeader, userAgent);
+    final response = await request.close().timeout(timeout);
+    await response.drain().catchError((e) => null).timeout(timeout);
+    if (500 <= response.statusCode && response.statusCode < 600) {
+      // retry again, when we hit a 5xx response
+      throw Exception('internal server error');
+    }
+    return response;
+  });
+  if (200 <= response.statusCode && response.statusCode < 300) {
+    return true;
+  }
+  if (response.isRedirect &&
+      response.headers[HttpHeaders.locationHeader]!.isNotEmpty &&
+      maxRedirects > 0) {
+    final loc = Uri.parse(response.headers[HttpHeaders.locationHeader]![0]);
+    final nextUri = url.resolveUri(loc);
+    return _safeUrlCheck(
+      nextUri,
+      maxRedirects - 1,
+      client: client,
+      retryOptions: retryOptions,
+      userAgent: userAgent,
+      timeout: timeout,
+      skipLocalNetworkCheck: skipLocalNetworkCheck,
+    );
+  }
+
+  // Response is 4xx, or some other unsupported code.
+  return false;
 }

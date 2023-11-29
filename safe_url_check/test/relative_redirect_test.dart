@@ -46,16 +46,16 @@ void main() {
 
   test('relative redirect', () async {
     final client = HttpClient();
-    final checker = SafeUrlChecker(
-      client: client,
-      userAgent: defaultUserAgent,
-      retryOptions: RetryOptions(),
-      timeout: Duration(seconds: 2),
-      skipLocalNetworkCheck: true,
-    );
     expect(
-        await checker.checkUrl(
-            Uri.parse('http://localhost:${server.port}/redirect/local'), 2),
+        await doSafeUrlCheck(
+          Uri.parse('http://localhost:${server.port}/redirect/local'),
+          maxRedirects: 2,
+          client: client,
+          userAgent: defaultUserAgent,
+          retryOptions: RetryOptions(),
+          timeout: Duration(seconds: 2),
+          skipLocalNetworkCheck: true,
+        ),
         isTrue);
   });
 }
