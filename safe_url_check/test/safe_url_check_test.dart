@@ -27,5 +27,6 @@ void main() {
   testValidUrl('https://google.com');
   testValidUrl('https://github.com');
   testValidUrl('https://github.com/google/dart-neats.git');
+  testValidUrl('https://httpbin.org/redirect-to?url=status%2F200');
   testInvalidUrl('https://github.com/google/dart-neats.git/bad-url');
 }
