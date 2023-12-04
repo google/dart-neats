@@ -1,4 +1,4 @@
-## v.1.1.2
+## v1.1.2
  * Allow relative URLs in the redirect `location` header.
 
 ## v1.1.1
