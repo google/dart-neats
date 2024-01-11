@@ -176,7 +176,7 @@ class NeatPeriodicTaskScheduler {
   void start() {
     if (_started) {
       throw StateError(
-        'NeatPeriodicTaskScheduler for "$_name" has been started',
+        'NeatPeriodicTaskScheduler for "$_name" has already been started',
       );
     }
     _started = true;
