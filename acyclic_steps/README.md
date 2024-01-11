@@ -10,7 +10,7 @@ A step may depend on other steps, but cyclic dependencies will produce a
 compile-time error.
 
 When a step is evaluated, the dependencies for the step is evaluated first.
-To the extend permitted by dependency constraints the steps depended upon will
+To the extent permitted by dependency constraints the steps depended upon will
 run concurrently. Steps can also be overriden to inject an initial value, or
 a mock/fake object during testing. The result from a `Step` is cached in the
 `Runner` object that evaluated the `Step`, this ensures that steps will not be
