@@ -1,5 +1,5 @@
 name: pem
-version: 2.0.4
+version: 2.0.5
 description: >-
   PEM encoding/decoding of textual keys following RFC 7468,
   supporting both lax/strict-mode, and certificates chains of concatenated
@@ -13,10 +13,10 @@ topics:
  - parser
  - pem
 dependencies:
-  petitparser: ^5.1.0
+  petitparser: ^6.0.2
 dev_dependencies:
   test: ^1.16.5
-  lints: ^1.0.0
+  lints: ^3.0.0
 environment:
   sdk: '>=2.12.0 <3.0.0'
 false_secrets:
