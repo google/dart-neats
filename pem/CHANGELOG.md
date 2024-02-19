@@ -1,3 +1,6 @@
+## v2.0.5
+ * Allow `petitparser` version `>=5.1.0 <7.0.0`.
+
 ## v2.0.4
  * Updated `topics` in `pubspec.yaml`.
 
