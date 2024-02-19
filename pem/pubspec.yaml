@@ -13,7 +13,7 @@ topics:
  - parser
  - pem
 dependencies:
-  petitparser: ^6.0.2
+  petitparser: '>=5.1.0 <7.0.0'
 dev_dependencies:
   test: ^1.16.5
   lints: ^3.0.0
