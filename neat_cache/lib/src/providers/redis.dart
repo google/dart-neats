@@ -131,7 +131,12 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
     try {
       return await fn(ctx.client).timeout(_commandTimeLimit);
     } on RedisCommandException catch (e) {
-      throw AssertionError('error from redis command: $e');
+      // We don't really know what happened, let's log shout it.
+      // It could be a sign that something really bad is happening to redis.
+      // Best shutdown the connection and try again.
+      _log.shout('Error from redis command: $e');
+      await ctx.client.close(force: true);
+      throw IntermittentCacheException('error from redis command: $e');
     } on TimeoutException {
       // If we had a timeout, doing the command we forcibly disconnect
       // from the server, such that next retry will use a new connection.
