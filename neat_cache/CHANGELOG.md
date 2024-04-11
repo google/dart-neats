@@ -1,3 +1,6 @@
+## v2.0.4
+ * Reconnect when a redis command fails.
+
 ## v2.0.3
  * Added `topics` to `pubspec.yaml`.
 
