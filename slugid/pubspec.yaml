@@ -10,13 +10,14 @@ topics:
  - uuid
 
 environment:
-  sdk: '>=2.14.0 <3.0.0'
+  sdk: '^3.5.0-0'
+resolution: workspace
 
 dependencies:
-  convert: ^3.0.0
-  meta: ^1.3.0
+  convert: ^3.1.1
+  meta: ^1.15.0
 
 dev_dependencies:
-  test: ^1.16.0
-  lints: ^1.0.0
+  test: ^1.25.5
+  lints: ^4.0.0
 

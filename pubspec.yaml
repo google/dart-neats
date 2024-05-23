@@ -3,7 +3,20 @@ name: dart_neats
 # repository management, so they don't have to be installed globally.
 publish_to: none
 dev_dependencies:
-  mono_repo: ^6.1.0
-  pubspec_parse: ^1.2.0
+  mono_repo: ^6.6.1
+  pubspec_parse: ^1.2.3
 environment:
-  sdk: '>=2.15.0 <3.0.0'
+  sdk: '^3.5.0-164.0.dev'
+workspace:
+  - acyclic_steps
+  - canonical_json
+  - chunked_stream
+  - http_methods
+  - neat_cache
+  - neat_periodic_task
+  - pem
+  - retry
+  - safe_url_check
+  - sanitize_html
+  - slugid
+  - vendor
