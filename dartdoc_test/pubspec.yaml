@@ -1,0 +1,18 @@
+name: dartdoc_test
+version: 0.1.0
+publish_to: none
+description: |
+  Utilities for testing code snippets embedded in documentation comments.
+homepage: https://github.com/google/dart-neats/tree/master/dartdoc_test
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:dartdoc_test
+dev_dependencies:
+  test: ^1.24.0
+  lints: ^2.0.0
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+dependencies:
+  analyzer: ^5.10.0
+  markdown: ^7.0.2
+  path: ^1.8.3
+  source_span: ^1.10.0
