@@ -20,29 +20,49 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 import 'package:markdown/markdown.dart';
 
-Future<void> main() async {
+final _parser = ArgParser()
+  ..addFlag(
+    'help',
+    abbr: 'h',
+    help: 'Show help',
+    negatable: false,
+  )
+  ..addMultiOption(
+    'directory',
+    abbr: 'd',
+    help: 'Directories to analyze',
+  );
+
+Future<void> main(List<String> args) async {
   final rootFolder = Directory.current.absolute.path;
-  final exampleFolder = p.join(rootFolder, 'example');
+  final exampleFolder = p.join(rootFolder);
   final contextCollection = AnalysisContextCollection(
-    includedPaths: [exampleFolder],
+    includedPaths: [rootFolder],
     resourceProvider: PhysicalResourceProvider.INSTANCE,
   );
 
-  final ctx = contextCollection.contextFor(exampleFolder);
-
+  final ctx = contextCollection.contextFor(rootFolder);
   final session = ctx.currentSession;
-  //session.analysisContext.contextRoot.analyzedFiles(); // Filter for .dart files
-  final target = p.join(exampleFolder, 'main.dart');
-  final u = session.getParsedUnit(target);
-  if (u is ParsedUnitResult) {
-    final comments = extractDocumentationComments(u);
-    print(comments.length);
-    for (final c in comments) {
-      extractCodeSamples(c);
+
+  // TODO: add `include` and `exclude` options
+  final files = Directory(rootFolder)
+      .listSync(recursive: true)
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.dart'))
+      .toList();
+  for (final file in files) {
+    final result = session.getParsedUnit(file.path);
+    if (result is ParsedUnitResult) {
+      final comments = extractDocumentationComments(result);
+      print(comments.length);
+      for (final c in comments) {
+        final samples = extractCodeSamples(c);
+      }
     }
   }
 }
@@ -63,11 +83,8 @@ List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
   r.unit.accept(_ForEachCommentAstVisitor((comment) {
     if (comment.isDocumentation) {
       final span = file.span(comment.offset, comment.end);
+      print(span.text);
       var lines = LineSplitter.split(span.text);
-      if (!lines.every((line) => line.startsWith('///'))) {
-        // TODO: Consider supporting comments using /**  */
-        return; // ignore comments not using ///
-      }
       lines = lines.map((line) => line.substring(3));
       if (lines.every((line) => line.isEmpty || line.startsWith(' '))) {
         lines = lines.map((line) => line.isEmpty ? '' : line.substring(1));
