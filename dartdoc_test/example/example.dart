@@ -54,39 +54,36 @@ class ComplexClass {
   }
 }
 
-/// Utility class for various static methods.
-class Utility {
-  /// Checks if a string is a palindrome.
-  ///
-  /// This method ignores case and non-alphanumeric characters.
-  ///
-  /// Example:
-  /// ```dart
-  /// final isPalindrome = Utility.isPalindrome('A man, a plan, a canal, Panama');
-  /// print(isPalindrome); // true
-  /// ```
-  static bool isPalindrome(String s) {
-    var sanitized = s.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toLowerCase();
-    return sanitized == sanitized.split('').reversed.join('');
-  }
+/// Checks if a string is a palindrome.
+///
+/// This method ignores case and non-alphanumeric characters.
+///
+/// Example:
+/// ```dart
+/// final isPalindrome = Utility.isPalindrome('A man, a plan, a canal, Panama');
+/// print(isPalindrome); // true
+/// ```
+bool isPalindrome(String s) {
+  var sanitized = s.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toLowerCase();
+  return sanitized == sanitized.split('').reversed.join('');
+}
 
-  /// Calculates the greatest common divisor (GCD) of two numbers.
-  ///
-  /// Uses the Euclidean algorithm to find the GCD of [a] and [b].
-  ///
-  /// Example1:
-  /// ```dart
-  /// final gcd = Utility.gcd(48, 18);
-  /// print(gcd); // 6
-  /// ```
-  static int gcd(int a, int b) {
-    while (b != 0) {
-      var t = b;
-      b = a % b;
-      a = t;
-    }
-    return a;
+/// Calculates the greatest common divisor (GCD) of two numbers.
+///
+/// Uses the Euclidean algorithm to find the GCD of [a] and [b].
+///
+/// Example1:
+/// ```dart
+/// final gcd = Utility.gcd(48, 18);
+/// print(gcd); // 6
+/// ```
+int gcd(int a, int b) {
+  while (b != 0) {
+    var t = b;
+    b = a % b;
+    a = t;
   }
+  return a;
 }
 
 void main() {
@@ -102,8 +99,8 @@ void main() {
   assert(complex.factorial(5) == 120);
 
   // Utility tests
-  assert(Utility.isPalindrome('A man, a plan, a canal, Panama'));
-  assert(Utility.gcd(48, 18) == 6);
+  assert(isPalindrome('A man, a plan, a canal, Panama'));
+  assert(gcd(48, 18) == 6);
 
   print('All tests passed!');
 }
