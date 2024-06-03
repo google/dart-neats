@@ -12,153 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:convert';
-import 'dart:io';
+import 'package:args/args.dart';
+import 'package:dartdoc_test/dartdoc_test.dart';
 
-import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
-import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/ast/visitor.dart';
-import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:path/path.dart' as p;
-import 'package:source_span/source_span.dart';
-import 'package:markdown/markdown.dart';
-
-Future<void> main() async {
-  final rootFolder = Directory.current.absolute.path;
-  final exampleFolder = p.join(rootFolder, 'example');
-  final contextCollection = AnalysisContextCollection(
-    includedPaths: [exampleFolder],
-    resourceProvider: PhysicalResourceProvider.INSTANCE,
+final _parser = ArgParser()
+  ..addFlag(
+    'help',
+    abbr: 'h',
+    help: 'Show help',
+    negatable: false,
+  )
+  ..addMultiOption(
+    'directory',
+    abbr: 'd',
+    help: 'Directories to analyze',
   );
 
-  final ctx = contextCollection.contextFor(exampleFolder);
-
-  final session = ctx.currentSession;
-  //session.analysisContext.contextRoot.analyzedFiles(); // Filter for .dart files
-  final target = p.join(exampleFolder, 'main.dart');
-  final u = session.getParsedUnit(target);
-  if (u is ParsedUnitResult) {
-    final comments = extractDocumentationComments(u);
-    print(comments.length);
-    for (final c in comments) {
-      extractCodeSamples(c);
-    }
-  }
-}
-
-class DocumentationComment {
-  final FileSpan span;
-  final String contents;
-
-  DocumentationComment({
-    required this.contents,
-    required this.span,
-  });
-}
-
-List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
-  final file = SourceFile.fromString(r.content, url: r.uri);
-  final comments = <DocumentationComment>[];
-  r.unit.accept(_ForEachCommentAstVisitor((comment) {
-    if (comment.isDocumentation) {
-      final span = file.span(comment.offset, comment.end);
-      var lines = LineSplitter.split(span.text);
-      if (!lines.every((line) => line.startsWith('///'))) {
-        // TODO: Consider supporting comments using /**  */
-        return; // ignore comments not using ///
-      }
-      lines = lines.map((line) => line.substring(3));
-      if (lines.every((line) => line.isEmpty || line.startsWith(' '))) {
-        lines = lines.map((line) => line.isEmpty ? '' : line.substring(1));
-      }
-      comments.add(DocumentationComment(
-        contents: lines.join('\n'),
-        span: span,
-      ));
-    }
-  }));
-  return comments;
-}
-
-class _ForEachCommentAstVisitor extends RecursiveAstVisitor<void> {
-  final void Function(Comment comment) _forEach;
-
-  _ForEachCommentAstVisitor(this._forEach);
-
-  @override
-  void visitComment(Comment node) => _forEach(node);
-}
-
-class DocumentationCodeSample {
-  final DocumentationComment comment;
-  final String code;
-  // TODO: Find the SourceSpan of [code] within [comment], this is pretty hard
-  //       to do because package:markdown doesn't provide any line-numbers or
-  //       offsets. One option is to parse it manually, instead of using
-  //       package:markdown. Or just search for ```dart and ``` and use that to
-  //       find code samples.
-
-  DocumentationCodeSample({
-    required this.comment,
-    required this.code,
-  });
-}
-
-final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
-
-List<DocumentationCodeSample> extractCodeSamples(DocumentationComment comment) {
-  final samples = <DocumentationCodeSample>[];
-  final nodes = _md.parse(comment.contents);
-  nodes.accept(_ForEachElement((element) {
-    if (element.tag == 'code' &&
-        element.attributes['class'] == 'language-dart') {
-      var code = '';
-      element.children?.accept(_ForEachText((text) {
-        code += text.textContent;
-      }));
-      if (code.isNotEmpty) {
-        samples.add(DocumentationCodeSample(comment: comment, code: code));
-      }
-    }
-  }));
-  return samples;
-}
-
-extension on List<Node> {
-  void accept(NodeVisitor visitor) {
-    for (final node in this) {
-      node.accept(visitor);
-    }
-  }
-}
-
-class _ForEachElement extends NodeVisitor {
-  final void Function(Element element) _forEach;
-
-  _ForEachElement(this._forEach);
-
-  @override
-  bool visitElementBefore(Element element) => true;
-
-  @override
-  void visitElementAfter(Element element) => _forEach(element);
-
-  @override
-  void visitText(Text text) {}
-}
-
-class _ForEachText extends NodeVisitor {
-  final void Function(Text element) _forEach;
-
-  _ForEachText(this._forEach);
-
-  @override
-  bool visitElementBefore(Element element) => true;
-
-  @override
-  void visitElementAfter(Element element) {}
-
-  @override
-  void visitText(Text text) => _forEach(text);
+Future<void> main(List<String> args) async {
+  final dartdocTest = DartDocTest();
+  dartdocTest.run();
 }
