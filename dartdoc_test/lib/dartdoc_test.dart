@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:dartdoc_test/src/resource.dart';
 
 import 'src/extractor.dart';
 
@@ -51,8 +51,29 @@ class DartDocTest {
             print(s.comment.span.start.toolString);
             print(s.code);
           }
+          writeCodeSamples(file.path, samples);
         }
       }
     }
+  }
+
+  Future<void> runAnalyze() async {}
+}
+
+String wrapCode(String path, String code) {
+  return '''
+import "$path";
+
+void main() {
+  $code
+}
+''';
+}
+
+void writeCodeSamples(String filePath, List<DocumentationCodeSample> samples) {
+  for (final (i, s) in samples.indexed) {
+    final path = filePath.replaceAll('.dart', '_sample_$i.dart');
+    final code = wrapCode(filePath, s.code);
+    resourceProvider.setOverlay(path, content: code, modificationStamp: 0);
   }
 }

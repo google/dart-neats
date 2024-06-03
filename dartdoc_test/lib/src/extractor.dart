@@ -44,6 +44,8 @@ class Extractor {
     r.unit.accept(_ForEachCommentAstVisitor((comment) {
       if (comment.isDocumentation) {
         final span = file.span(comment.offset, comment.end);
+
+        // TODO: remove `///` syntax with a better way..
         var lines = LineSplitter.split(span.text);
         lines = lines.map((l) => l.replaceFirst('///', ''));
         comments.add(DocumentationComment(
@@ -56,7 +58,8 @@ class Extractor {
   }
 
   List<DocumentationCodeSample> extractCodeSamples(
-      DocumentationComment comment) {
+    DocumentationComment comment,
+  ) {
     final samples = <DocumentationCodeSample>[];
     final nodes = _md.parse(comment.contents);
     nodes.accept(_ForEachElement((element) {

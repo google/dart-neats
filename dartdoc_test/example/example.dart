@@ -9,7 +9,7 @@ class SimpleClass {
   /// The method takes two integers [a] and [b], and returns their sum.
   ///
   /// Example:
-  /// ```dart
+  /// ```
   /// final result = SimpleClass().add(2, 3);
   /// print(result); // 5
   /// ```
