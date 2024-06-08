@@ -6,6 +6,8 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:markdown/markdown.dart';
 import 'package:source_span/source_span.dart';
 
+import '../dartdoc_test.dart';
+
 final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
 
 class DocumentationComment {
@@ -33,49 +35,93 @@ class DocumentationCodeSample {
   });
 }
 
-class Extractor {
-  const Extractor();
+void extractFile(String filePath, ParsedUnitResult result) {
+  final comments = extractDocumentationComments(result);
+  for (final c in comments) {
+    final samples = extractCodeSamples(c);
+    for (final s in samples) {
+      print(s.comment.span.start.toolString);
+      print(s.code);
+    }
+    writeCodeSamples(filePath, samples);
+  }
+}
 
-  void extractFile() {}
+List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
+  final file = SourceFile.fromString(r.content, url: r.uri);
+  final comments = <DocumentationComment>[];
+  r.unit.accept(_ForEachCommentAstVisitor((comment) {
+    if (comment.isDocumentation) {
+      final span = file.span(comment.offset, comment.end);
 
-  List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
-    final file = SourceFile.fromString(r.content, url: r.uri);
-    final comments = <DocumentationComment>[];
-    r.unit.accept(_ForEachCommentAstVisitor((comment) {
-      if (comment.isDocumentation) {
-        final span = file.span(comment.offset, comment.end);
+      final content = stripComments(span.text);
 
-        // TODO: remove `///` syntax with a better way..
-        var lines = LineSplitter.split(span.text);
-        lines = lines.map((l) => l.replaceFirst('///', ''));
-        comments.add(DocumentationComment(
-          contents: lines.join('\n'),
-          span: span,
-        ));
+      comments.add(DocumentationComment(
+        contents: content,
+        span: span,
+      ));
+    }
+  }));
+  return comments;
+}
+
+Iterable<String> stripCommonWhiteSpace(String comment) {
+  final leading = RegExp(r'^([ \t]*)[^ ]');
+  final lines = LineSplitter.split(comment);
+  // remove all leading white-space
+  return lines.map((line) {
+    final match = leading.firstMatch(line);
+    if (match == null) return line;
+    return line.substring(match.group(1)!.length);
+  });
+}
+
+String stripComments(String comment) {
+  if (comment.isEmpty) return '';
+
+  final buf = StringBuffer();
+  final lines = stripCommonWhiteSpace(comment);
+  if (comment.startsWith('///')) {
+    for (final l in lines) {
+      if (l.startsWith('/// ')) {
+        buf.writeln(l.substring(4));
+      } else if (l.startsWith('///')) {
+        buf.writeln(l.substring(3));
+      } else {
+        buf.writeln(l);
       }
-    }));
-    return comments;
+    }
+  } else if (comment.startsWith('/**') && comment.endsWith('*/')) {
+    for (final l in lines) {
+      if (l.startsWith('* ') || l.startsWith('*/')) {
+        buf.writeln(l.substring(2));
+      } else if (l.startsWith('*')) {
+        buf.writeln(l.substring(1));
+      }
+    }
   }
 
-  List<DocumentationCodeSample> extractCodeSamples(
-    DocumentationComment comment,
-  ) {
-    final samples = <DocumentationCodeSample>[];
-    final nodes = _md.parse(comment.contents);
-    nodes.accept(_ForEachElement((element) {
-      if (element.tag == 'code' &&
-          element.attributes['class'] == 'language-dart') {
-        var code = '';
-        element.children?.accept(_ForEachText((text) {
-          code += text.textContent;
-        }));
-        if (code.isNotEmpty) {
-          samples.add(DocumentationCodeSample(comment: comment, code: code));
-        }
+  return buf.toString().trim();
+}
+
+List<DocumentationCodeSample> extractCodeSamples(
+  DocumentationComment comment,
+) {
+  final samples = <DocumentationCodeSample>[];
+  final nodes = _md.parse(comment.contents);
+  nodes.accept(_ForEachElement((element) {
+    if (element.tag == 'code' &&
+        element.attributes['class'] == 'language-dart') {
+      var code = '';
+      element.children?.accept(_ForEachText((text) {
+        code += text.textContent;
+      }));
+      if (code.isNotEmpty) {
+        samples.add(DocumentationCodeSample(comment: comment, code: code));
       }
-    }));
-    return samples;
-  }
+    }
+  }));
+  return samples;
 }
 
 class _ForEachCommentAstVisitor extends RecursiveAstVisitor<void> {

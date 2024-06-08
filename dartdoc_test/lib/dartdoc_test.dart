@@ -43,10 +43,9 @@ class DartDocTest {
     for (final file in files) {
       final result = session.getParsedUnit(file.path);
       if (result is ParsedUnitResult) {
-        const extractor = Extractor();
-        final comments = extractor.extractDocumentationComments(result);
+        final comments = extractDocumentationComments(result);
         for (final c in comments) {
-          final samples = extractor.extractCodeSamples(c);
+          final samples = extractCodeSamples(c);
           for (final s in samples) {
             print(s.comment.span.start.toolString);
             print(s.code);
