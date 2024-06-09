@@ -66,14 +66,8 @@ List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
 }
 
 Iterable<String> stripCommonWhiteSpace(String comment) {
-  final leading = RegExp(r'^([ \t]*)[^ ]');
   final lines = LineSplitter.split(comment);
-  // remove all leading white-space
-  return lines.map((line) {
-    final match = leading.firstMatch(line);
-    if (match == null) return line;
-    return line.substring(match.group(1)!.length);
-  });
+  return lines.map((l) => l.trimLeft());
 }
 
 String stripComments(String comment) {
@@ -81,7 +75,7 @@ String stripComments(String comment) {
 
   final buf = StringBuffer();
   final lines = stripCommonWhiteSpace(comment);
-  if (comment.startsWith('///')) {
+  if (lines.first.startsWith('///')) {
     for (final l in lines) {
       if (l.startsWith('/// ')) {
         buf.writeln(l.substring(4));
@@ -91,7 +85,7 @@ String stripComments(String comment) {
         buf.writeln(l);
       }
     }
-  } else if (comment.startsWith('/**') && comment.endsWith('*/')) {
+  } else if (lines.first.startsWith('/**') && lines.last.endsWith('*/')) {
     for (final l in lines) {
       if (l.startsWith('* ') || l.startsWith('*/')) {
         buf.writeln(l.substring(2));
@@ -99,6 +93,8 @@ String stripComments(String comment) {
         buf.writeln(l.substring(1));
       }
     }
+  } else {
+    return '';
   }
 
   return buf.toString().trim();

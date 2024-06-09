@@ -36,16 +36,16 @@ final x = 1;
 
     test('can remove leading whitespaces', () {
       final leadingSpacedComment = '''
-/// This is a C# style comment.
-/// ```dart
-/// final x = 1;
-/// ```''';
+  /// This is a leading spaced comment.
+  /// ```dart
+  /// final x = 1;
+  /// ```''';
       final expectText = '''
-This is a JavaDoc style comment.
+This is a leading spaced comment.
 ```dart
 final x = 1;
 ```''';
-      expect(leadingSpacedComment, expectText);
+      expect(stripComments(leadingSpacedComment), expectText);
     });
   });
 }
