@@ -6,66 +6,75 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:markdown/markdown.dart';
 import 'package:source_span/source_span.dart';
 
-import '../dartdoc_test.dart';
-
 final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
 
 class DocumentationComment {
   final FileSpan span;
   final String contents;
+  final List<String> imports;
 
   DocumentationComment({
     required this.contents,
     required this.span,
+    required this.imports,
   });
 }
 
 class DocumentationCodeSample {
   final DocumentationComment comment;
   final String code;
+  final List<String> imports;
+  final bool hasMain;
   // TODO: Find the SourceSpan of [code] within [comment], this is pretty hard
   //       to do because package:markdown doesn't provide any line-numbers or
   //       offsets. One option is to parse it manually, instead of using
   //       package:markdown. Or just search for ```dart and ``` and use that to
   //       find code samples.
+  final FileSpan? span;
 
   DocumentationCodeSample({
     required this.comment,
     required this.code,
+    this.span,
+    this.imports = const [],
+    this.hasMain = false,
   });
 }
 
-void extractFile(String filePath, ParsedUnitResult result) {
+List<DocumentationCodeSample> extractFile(
+  ParsedUnitResult result,
+) {
+  var samples = <DocumentationCodeSample>[];
   final comments = extractDocumentationComments(result);
   for (final c in comments) {
-    final samples = extractCodeSamples(c);
-    for (final s in samples) {
-      print(s.comment.span.start.toolString);
-      print(s.code);
-    }
-    writeCodeSamples(filePath, samples);
+    final extractedSamples = extractCodeSamples(c);
+    samples.addAll(extractedSamples);
   }
+  return samples;
 }
 
 List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
   final file = SourceFile.fromString(r.content, url: r.uri);
+
+  final imports = getImports(file, r);
+
   final comments = <DocumentationComment>[];
   r.unit.accept(_ForEachCommentAstVisitor((comment) {
     if (comment.isDocumentation) {
       final span = file.span(comment.offset, comment.end);
-
       final content = stripComments(span.text);
 
       comments.add(DocumentationComment(
         contents: content,
         span: span,
+        imports: imports,
       ));
     }
   }));
   return comments;
 }
 
-Iterable<String> stripCommonWhiteSpace(String comment) {
+Iterable<String> stripleadingWhiteSpace(String comment) {
   final lines = LineSplitter.split(comment);
   return lines.map((l) => l.trimLeft());
 }
@@ -74,7 +83,7 @@ String stripComments(String comment) {
   if (comment.isEmpty) return '';
 
   final buf = StringBuffer();
-  final lines = stripCommonWhiteSpace(comment);
+  final lines = stripleadingWhiteSpace(comment);
   if (lines.first.startsWith('///')) {
     for (final l in lines) {
       if (l.startsWith('/// ')) {
@@ -120,13 +129,33 @@ List<DocumentationCodeSample> extractCodeSamples(
   return samples;
 }
 
+List<String> getImports(SourceFile f, ParsedUnitResult r) {
+  final imports = <String>[];
+  r.unit.accept(_ForEachImportAstVisitor((node) {
+    final span = f.span(node.offset, node.end);
+    imports.add(span.text);
+  }));
+  return imports;
+}
+
 class _ForEachCommentAstVisitor extends RecursiveAstVisitor<void> {
   final void Function(Comment comment) _forEach;
 
   _ForEachCommentAstVisitor(this._forEach);
 
   @override
-  void visitComment(Comment node) => _forEach(node);
+  void visitComment(Comment node) {
+    _forEach(node);
+  }
+}
+
+class _ForEachImportAstVisitor extends RecursiveAstVisitor<void> {
+  final void Function(ImportDirective node) _forEach;
+
+  _ForEachImportAstVisitor(this._forEach);
+
+  @override
+  void visitImportDirective(ImportDirective node) => _forEach(node);
 }
 
 extension on List<Node> {

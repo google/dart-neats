@@ -43,15 +43,8 @@ class DartDocTest {
     for (final file in files) {
       final result = session.getParsedUnit(file.path);
       if (result is ParsedUnitResult) {
-        final comments = extractDocumentationComments(result);
-        for (final c in comments) {
-          final samples = extractCodeSamples(c);
-          for (final s in samples) {
-            print(s.comment.span.start.toolString);
-            print(s.code);
-          }
-          writeCodeSamples(file.path, samples);
-        }
+        final samples = extractFile(result);
+        writeCodeSamples(file.path, samples);
       }
     }
   }
@@ -69,10 +62,26 @@ void main() {
 ''';
 }
 
+String wrapCodeSample(DocumentationCodeSample sample) {
+  final fileName = sample.comment.span.file.url?.path.split('/').last;
+
+  var result = <String>[];
+  result.addAll(sample.comment.imports);
+  result.add('');
+  result.add('import "./$fileName";');
+  result.add('');
+  result.add('void main() {');
+  result.add('  ${sample.code}');
+  result.add('}');
+
+  return result.join('\n');
+}
+
 void writeCodeSamples(String filePath, List<DocumentationCodeSample> samples) {
   for (final (i, s) in samples.indexed) {
     final path = filePath.replaceAll('.dart', '_sample_$i.dart');
-    final code = wrapCode(filePath, s.code);
+    final code = wrapCodeSample(s);
+    print(code);
     resourceProvider.setOverlay(path, content: code, modificationStamp: 0);
   }
 }

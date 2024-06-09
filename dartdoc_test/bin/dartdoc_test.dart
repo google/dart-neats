@@ -30,5 +30,5 @@ final _parser = ArgParser()
 
 Future<void> main(List<String> args) async {
   final dartdocTest = DartDocTest();
-  dartdocTest.run();
+  await dartdocTest.run();
 }
