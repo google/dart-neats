@@ -68,10 +68,9 @@ String wrapCodeSample(DocumentationCodeSample sample) {
   var result = <String>[];
   result.addAll(sample.comment.imports);
   result.add('');
-  result.add('import "./$fileName";');
-  result.add('');
+  result.add('import "./$fileName";\n');
   result.add('void main() {');
-  result.add('  ${sample.code}');
+  result.add(sample.code.split('\n').map((l) => '  $l').join('\n'));
   result.add('}');
 
   return result.join('\n');
