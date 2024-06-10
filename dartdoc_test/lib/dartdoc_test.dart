@@ -14,9 +14,7 @@
 
 import 'dart:io';
 
-import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc_test/src/resource.dart';
 
 import 'src/extractor.dart';
@@ -26,13 +24,8 @@ class DartDocTest {
 
   Future<void> run() async {
     final rootFolder = Directory.current.absolute.path;
-    final contextCollection = AnalysisContextCollection(
-      includedPaths: [rootFolder],
-      resourceProvider: PhysicalResourceProvider.INSTANCE,
-    );
 
-    final ctx = contextCollection.contextFor(rootFolder);
-    final session = ctx.currentSession;
+    final session = currentContext.currentSession;
 
     // TODO: add `include` and `exclude` options
     final files = Directory(rootFolder)
@@ -62,25 +55,14 @@ void main() {
 ''';
 }
 
-String wrapCodeSample(DocumentationCodeSample sample) {
-  final fileName = sample.comment.span.file.url?.path.split('/').last;
-
-  var result = <String>[];
-  result.addAll(sample.comment.imports);
-  result.add('');
-  result.add('import "./$fileName";\n');
-  result.add('void main() {');
-  result.add(sample.code.split('\n').map((l) => '  $l').join('\n'));
-  result.add('}');
-
-  return result.join('\n');
-}
-
 void writeCodeSamples(String filePath, List<DocumentationCodeSample> samples) {
   for (final (i, s) in samples.indexed) {
     final path = filePath.replaceAll('.dart', '_sample_$i.dart');
-    final code = wrapCodeSample(s);
-    print(code);
-    resourceProvider.setOverlay(path, content: code, modificationStamp: 0);
+    print(s.wrappedCode);
+    resourceProvider.setOverlay(
+      path,
+      content: s.wrappedCode,
+      modificationStamp: 0,
+    );
   }
 }

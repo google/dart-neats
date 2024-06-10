@@ -39,6 +39,20 @@ class DocumentationCodeSample {
     this.imports = const [],
     this.hasMain = false,
   });
+
+  String get wrappedCode {
+    final fileName = comment.span.file.url?.path.split('/').last;
+
+    final buf = StringBuffer();
+    buf.writeAll(comment.imports, '\n');
+    buf.writeln();
+    buf.writeln('import "$fileName";');
+    buf.writeln();
+    buf.writeln('void main() {');
+    buf.writeAll(code.split('\n').map((l) => '  $l'), '\n');
+    buf.writeln('}');
+    return buf.toString();
+  }
 }
 
 List<DocumentationCodeSample> extractFile(
