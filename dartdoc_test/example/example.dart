@@ -1,4 +1,5 @@
 /// Example of documentation comments and code samples in Dart.
+import 'dart:convert';
 
 /// This is a simple class example.
 ///
@@ -60,7 +61,7 @@ class ComplexClass {
 ///
 /// Example:
 /// ```dart
-/// final isPalindrome = Utility.isPalindrome('A man, a plan, a canal, Panama');
+/// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
 /// print(isPalindrome); // true
 /// ```
 bool isPalindrome(String s) {
@@ -74,7 +75,7 @@ bool isPalindrome(String s) {
 ///
 /// Example1:
 /// ```dart
-/// final gcd = Utility.gcd(48, 18);
+/// final gcd = gcd(48, 18);
 /// print(gcd); // 6
 /// ```
 int gcd(int a, int b) {
@@ -84,6 +85,19 @@ int gcd(int a, int b) {
     a = t;
   }
   return a;
+}
+
+/// Convert a string to a list of lines.
+///
+/// This method splits a string into lines using the newline character.
+///
+/// Example:
+/// ```dart
+/// final lines = splitLines('Hello\nWorld');
+/// print(lines); // ['Hello', 'World']
+/// ```
+List<String> splitLines(String s) {
+  return LineSplitter.split(s).toList();
 }
 
 void main() {
@@ -98,9 +112,9 @@ void main() {
   assert(complex.multiply(4, 5) == 20);
   assert(complex.factorial(5) == 120);
 
-  // Utility tests
   assert(isPalindrome('A man, a plan, a canal, Panama'));
   assert(gcd(48, 18) == 6);
+  assert(splitLines('Hello\nWorld') == ['Hello', 'World']);
 
   print('All tests passed!');
 }

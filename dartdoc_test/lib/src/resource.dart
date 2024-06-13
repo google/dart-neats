@@ -9,7 +9,7 @@ final resourceProvider =
 
 final _current = Directory.current;
 
-void currentContext = AnalysisContextCollection(
+final currentContext = AnalysisContextCollection(
   resourceProvider: resourceProvider,
   includedPaths: [_current.absolute.path],
 ).contextFor(_current.absolute.path);
