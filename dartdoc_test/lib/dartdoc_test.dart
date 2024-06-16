@@ -12,28 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io';
-
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:dartdoc_test/src/resource.dart';
 
+import 'src/analyzer.dart';
 import 'src/extractor.dart';
+import 'src/resource.dart';
 
 class DartDocTest {
   const DartDocTest();
 
   Future<void> run() async {
-    final rootFolder = Directory.current.absolute.path;
-
     final session = currentContext.currentSession;
-
-    // TODO: add `include` and `exclude` options
-    final files = Directory(rootFolder)
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((file) => file.path.endsWith('.dart'))
-        .toList();
-    for (final file in files) {
+    for (final file in getFiles()) {
       final result = session.getParsedUnit(file.path);
       if (result is ParsedUnitResult) {
         final samples = extractFile(result);
@@ -42,27 +32,10 @@ class DartDocTest {
     }
   }
 
-  Future<void> runAnalyze() async {}
-}
+  Future<void> runAnalyze() async {
+    await run();
 
-String wrapCode(String path, String code) {
-  return '''
-import "$path";
-
-void main() {
-  $code
-}
-''';
-}
-
-void writeCodeSamples(String filePath, List<DocumentationCodeSample> samples) {
-  for (final (i, s) in samples.indexed) {
-    final path = filePath.replaceAll('.dart', '_sample_$i.dart');
-    print(s.wrappedCode);
-    resourceProvider.setOverlay(
-      path,
-      content: s.wrappedCode,
-      modificationStamp: 0,
-    );
+    final result = await getAnalysisResult(testDirectory.path);
+    print(result.errors);
   }
 }

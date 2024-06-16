@@ -4,6 +4,7 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:markdown/markdown.dart';
+import 'package:path/path.dart' as path;
 import 'package:source_span/source_span.dart';
 
 final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
@@ -41,7 +42,7 @@ class DocumentationCodeSample {
   });
 
   String get wrappedCode {
-    final fileName = comment.span.file.url?.path.split('/').last;
+    final fileName = path.basename(comment.span.file.url!.path);
 
     final buf = StringBuffer();
     buf.writeAll(comment.imports, '\n');
