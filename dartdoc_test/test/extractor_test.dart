@@ -47,5 +47,31 @@ final x = 1;
 ```''';
       expect(stripComments(leadingSpacedComment), expectText);
     });
+
+    group('line breaks', () {
+      test('can strip CRLF (windows) line breaks', () {
+        final actualText =
+            '/// This is a windows line break comment.\r\n/// ```dart\r\n/// final x = 1;\r\n/// ```';
+        final expectText = '''
+This is a windows line break comment.
+```dart
+final x = 1;
+```''';
+
+        expect(stripComments(actualText), expectText);
+      });
+
+      test('can strip LF (linux) line breaks', () {
+        final actualText =
+            '/// This is a linux line break comment.\n/// ```dart\n/// final x = 1;\n/// ```';
+        final expectText = '''
+This is a linux line break comment.
+```dart
+final x = 1;
+```''';
+
+        expect(stripComments(actualText), expectText);
+      });
+    });
   });
 }
