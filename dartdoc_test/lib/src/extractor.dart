@@ -64,7 +64,8 @@ class DocumentationCodeSample {
     buf.writeln('import "$fileName";');
     buf.writeln();
     buf.writeln('void main() {');
-    buf.writeAll(code.split('\n').map((l) => '  $l'), '\n');
+    buf.writeAll(LineSplitter.split(code).map((l) => '  $l'), '\n');
+    buf.writeln();
     buf.writeln('}');
     return buf.toString();
   }
@@ -108,6 +109,20 @@ Iterable<String> stripleadingWhiteSpace(String comment) {
   return lines.map((l) => l.trimLeft());
 }
 
+/// Strips documentation comments syntax and leading whitespaces from a string.
+///
+/// This function supports both `///` and `/** */` style comments.
+/// ```dart
+/// final comment1 = '/// some comment';
+/// print(stripComments(comment1)); // 'some comment'
+/// ```
+/// ```dart
+/// final comment2 = '''
+/// /**
+/// * some comment
+/// */''';
+/// stripComments(comment2); // 'some comment'
+/// ```
 String stripComments(String comment) {
   if (comment.isEmpty) return '';
 
