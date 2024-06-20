@@ -22,7 +22,7 @@ class DartDocTest {
   const DartDocTest();
 
   Future<void> run() async {
-    final session = currentContext.currentSession;
+    final session = TestContext().context.currentSession;
     for (final file in getFiles()) {
       final result = session.getParsedUnit(file.path);
       if (result is ParsedUnitResult) {
@@ -35,7 +35,7 @@ class DartDocTest {
   Future<void> runAnalyze() async {
     await run();
 
-    final result = await getAnalysisResult(testDirectory.path);
+    final result = await getAnalysisResult(testDir.path);
     print(result.errors);
   }
 }

@@ -14,6 +14,7 @@
 
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/file_system/overlay_file_system.dart';
@@ -21,38 +22,56 @@ import 'package:path/path.dart' as p;
 
 import 'extractor.dart';
 
-final resourceProvider =
-    OverlayResourceProvider(PhysicalResourceProvider.INSTANCE);
+const _testPath = '.dartdoc_test';
 
-final _current = Directory.current;
+final currentDir = Directory.current;
 
-// Directory to store generated code samples
-final testDirectory = Directory('${_current.path}/.dartdoc_test');
+/// Directory to store generated code samples
+final testDir = Directory(p.join(currentDir.path, _testPath));
 
-final _contextCollection = AnalysisContextCollection(
-  resourceProvider: resourceProvider,
-  includedPaths: [_current.absolute.path],
-);
+/// Context for running tests.
+/// manage [resourceProvider].
+class TestContext {
+  factory TestContext() => _instance;
 
-final currentContext = _contextCollection.contextFor(_current.absolute.path);
+  static final _instance = TestContext._internal();
+
+  TestContext._internal() {
+    _resourceProvider = OverlayResourceProvider(
+      PhysicalResourceProvider.INSTANCE,
+    );
+    _contextCollection = AnalysisContextCollection(
+      includedPaths: [currentDir.absolute.path],
+      resourceProvider: _resourceProvider,
+    );
+    _context = _contextCollection.contextFor(currentDir.absolute.path);
+  }
+
+  late final OverlayResourceProvider _resourceProvider;
+  late final AnalysisContextCollection _contextCollection;
+  late final AnalysisContext _context;
+
+  OverlayResourceProvider get resourceProvider => _resourceProvider;
+  AnalysisContext get context => _context;
+}
 
 void writeCodeSamples(String filePath, List<DocumentationCodeSample> samples) {
   for (final (i, s) in samples.indexed) {
     final fileName =
         p.basename(filePath).replaceFirst('.dart', '_sample_$i.dart');
-    final path = p.join(testDirectory.path, fileName);
+    final path = p.join(testDir.path, fileName);
     print(s.wrappedCode);
-    resourceProvider.setOverlay(
-      path,
-      content: s.wrappedCode,
-      modificationStamp: 0,
-    );
+    TestContext().resourceProvider.setOverlay(
+          path,
+          content: s.wrappedCode,
+          modificationStamp: 0,
+        );
   }
 }
 
 List<File> getFiles() {
   // TODO: add `include` and `exclude` options
-  final files = _current
+  final files = currentDir
       .listSync(recursive: true)
       .whereType<File>()
       .where((file) => file.path.endsWith('.dart'))

@@ -18,47 +18,27 @@ import 'package:test/test.dart';
 void main() {
   group('strip comments', () {
     test('can strip javaDocStyle', () {
-      final javaDocStyle = '''
-/**
- * This is a JavaDoc style comment.
- * ```dart
- * final x = 1;
- * ```
- */''';
-      final expectText = '''
-This is a JavaDoc style comment.
-```dart
-final x = 1;
-```''';
-
+      // replace to inline.
+      final javaDocStyle =
+          '/**\n * This is a JavaDoc style comment.\n * ```dart\n * final x = 1;\n * ```\n */';
+      final expectText =
+          'This is a JavaDoc style comment.\n```dart\nfinal x = 1;\n```';
       expect(stripComments(javaDocStyle), expectText);
     });
 
     test('can strip cSharpStyle', () {
-      final cSharpStyle = '''
-/// This is a C# style comment.
-/// ```dart
-/// final x = 1;
-/// ```''';
-      final expectText = '''
-This is a C# style comment.
-```dart
-final x = 1;
-```''';
+      final cSharpStyle =
+          '/// This is a C# style comment.\n/// ```dart\n/// final x = 1;\n/// ```';
+      final expectText =
+          'This is a C# style comment.\n```dart\nfinal x = 1;\n```';
       expect(stripComments(cSharpStyle), expectText);
     });
 
     test('can remove leading whitespaces', () {
-      final leadingSpacedComment = '''
-  /// This is a leading spaced comment.
-  /// ```dart
-  /// final x = 1;
-  /// ```''';
-      final expectText = '''
-This is a leading spaced comment.
-```dart
-final x = 1;
-```''';
+      final leadingSpacedComment =
+          '  /// This is a leading spaced comment.\n  /// ```dart\n  /// final x = 1;\n  /// ```';
+      final expectText =
+          'This is a leading spaced comment.\n```dart\nfinal x = 1;\n```';
       expect(stripComments(leadingSpacedComment), expectText);
     });
 
@@ -66,24 +46,16 @@ final x = 1;
       test('can strip CRLF (windows) line breaks', () {
         final actualText =
             '/// This is a windows line break comment.\r\n/// ```dart\r\n/// final x = 1;\r\n/// ```';
-        final expectText = '''
-This is a windows line break comment.
-```dart
-final x = 1;
-```''';
-
+        final expectText =
+            'This is a windows line break comment.\n```dart\nfinal x = 1;\n```';
         expect(stripComments(actualText), expectText);
       });
 
       test('can strip LF (linux) line breaks', () {
         final actualText =
             '/// This is a linux line break comment.\n/// ```dart\n/// final x = 1;\n/// ```';
-        final expectText = '''
-This is a linux line break comment.
-```dart
-final x = 1;
-```''';
-
+        final expectText =
+            'This is a linux line break comment.\n```dart\nfinal x = 1;\n```';
         expect(stripComments(actualText), expectText);
       });
     });
