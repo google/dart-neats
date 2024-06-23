@@ -16,7 +16,6 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:dartdoc_test/src/resource.dart';
 
 Future<ErrorsResult> getAnalysisResult(String filePath) async {
-  print("Anlayzing $filePath ...");
   final result = await TestContext().context.currentSession.getErrors(filePath);
   return result as ErrorsResult;
 }

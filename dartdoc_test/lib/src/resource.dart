@@ -51,27 +51,42 @@ class TestContext {
   late final AnalysisContextCollection _contextCollection;
   late final AnalysisContext _context;
 
-  OverlayResourceProvider get resourceProvider => _resourceProvider;
   AnalysisContext get context => _context;
+
+  void writeFile(String path, {required String content}) {
+    // write for new file
+    // final file = _resourceProvider.getFile(path);
+    // file.writeAsStringSync(content);
+
+    _resourceProvider.setOverlay(
+      path,
+      content: content,
+      modificationStamp: 0,
+    );
+  }
+
+  List<String> getSamplesFilePath() {
+    final files = _resourceProvider
+        .getFolder(testDir.path)
+        .getChildren()
+        .map((e) => e.path)
+        .toList();
+    return files;
+  }
 }
 
 void writeCodeSamples(String filePath, List<DocumentationCodeSample> samples) {
   for (final (i, s) in samples.indexed) {
     final fileName =
         p.basename(filePath).replaceFirst('.dart', '_sample_$i.dart');
-    final path = p.join(testDir.path, fileName);
-    print(s.wrappedCode);
-    TestContext().resourceProvider.setOverlay(
-          path,
-          content: s.wrappedCode,
-          modificationStamp: 0,
-        );
+    final path = p.join(testDir.absolute.path, fileName);
+    TestContext().writeFile(path, content: s.wrappedCode);
   }
 }
 
-List<File> getFiles() {
+List<File> getFilesFrom(Directory dir) {
   // TODO: add `include` and `exclude` options
-  final files = currentDir
+  final files = dir
       .listSync(recursive: true)
       .whereType<File>()
       .where((file) => file.path.endsWith('.dart'))

@@ -22,9 +22,12 @@ class DartDocTest {
   const DartDocTest();
 
   Future<void> run() async {
+    print("Extracting code samples ...");
+
     final session = TestContext().context.currentSession;
-    for (final file in getFiles()) {
+    for (final file in getFilesFrom(currentDir)) {
       final result = session.getParsedUnit(file.path);
+
       if (result is ParsedUnitResult) {
         final samples = extractFile(result);
         writeCodeSamples(file.path, samples);
@@ -35,7 +38,15 @@ class DartDocTest {
   Future<void> runAnalyze() async {
     await run();
 
-    final result = await getAnalysisResult(testDir.path);
-    print(result.errors);
+    final samples = TestContext().getSamplesFilePath();
+
+    print("Analyzing code samples ...");
+
+    for (final s in samples) {
+      final result = await getAnalysisResult(s);
+      for (final e in result.errors) {
+        print(e);
+      }
+    }
   }
 }
