@@ -111,6 +111,12 @@ enum PemLabel {
   /// See [section 10 RFC 7468](https://tools.ietf.org/html/rfc7468#section-10).
   privateKey,
 
+  /// Unencrypted PKCS #8 Private Key Information Syntax structure
+  /// (`'OPENSSH PRIVATE KEY'`).
+  ///
+  /// See [section 10 RFC 7468](https://tools.ietf.org/html/rfc7468#section-10).
+  openSshPrivateKey,
+
   /// Encrypted PKCS #8 Private Key Information Syntax structure
   /// (`'ENCRYPTED PRIVATE KEY'`).
   ///
