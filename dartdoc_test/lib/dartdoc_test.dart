@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/error/error.dart';
+import 'package:source_span/source_span.dart';
 
 import 'src/analyzer.dart';
 import 'src/extractor.dart';
@@ -38,15 +40,34 @@ class DartDocTest {
   Future<void> runAnalyze() async {
     await run();
 
-    final samples = TestContext().getSamplesFilePath();
+    final files = TestContext().codeSampleFiles;
 
     print("Analyzing code samples ...");
 
-    for (final s in samples) {
-      final result = await getAnalysisResult(s);
+    for (final f in files) {
+      final result = await getAnalysisResult(f.path);
       for (final e in result.errors) {
-        print(e);
+        final span = toOriginalFileSpanFromSampleError(f, e);
+        if (span != null) print(span.toString());
+        print(e.message);
       }
     }
   }
+}
+
+FileSpan? toOriginalFileSpanFromSampleError(
+  CodeSampleFile file,
+  AnalysisError error,
+) {
+  final (start, end) = (error.offset, error.offset + error.length - 1);
+  final codeSampleSpan = file.sourceFile.span(start, end);
+  final originOffset =
+      file.sample.comment.span.text.indexOf(codeSampleSpan.text);
+  if (originOffset == -1) {
+    return null;
+  }
+  final originSpan = file.sample.comment.span
+      .subspan(originOffset, originOffset + codeSampleSpan.length - 1);
+
+  return originSpan;
 }

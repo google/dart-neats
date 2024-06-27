@@ -14,8 +14,21 @@
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:dartdoc_test/src/resource.dart';
+import 'package:source_span/source_span.dart';
 
 Future<ErrorsResult> getAnalysisResult(String filePath) async {
   final result = await TestContext().context.currentSession.getErrors(filePath);
   return result as ErrorsResult;
+}
+
+class AnalyzeResult {
+  final String filePath;
+  final FileSpan span;
+  final List<String> errors;
+
+  AnalyzeResult({
+    required this.filePath,
+    required this.span,
+    required this.errors,
+  });
 }

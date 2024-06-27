@@ -19,6 +19,7 @@ import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/file_system/overlay_file_system.dart';
 import 'package:path/path.dart' as p;
+import 'package:source_span/source_span.dart';
 
 import 'extractor.dart';
 
@@ -50,19 +51,27 @@ class TestContext {
   late final OverlayResourceProvider _resourceProvider;
   late final AnalysisContextCollection _contextCollection;
   late final AnalysisContext _context;
+  final _files = <CodeSampleFile>{};
 
+  Set<CodeSampleFile> get codeSampleFiles => _files;
   AnalysisContext get context => _context;
 
-  void writeFile(String path, {required String content}) {
+  void writeFile(String path, DocumentationCodeSample sample) {
     // write for new file
     // final file = _resourceProvider.getFile(path);
     // file.writeAsStringSync(content);
-
+    final content = sample.wrappedCode;
     _resourceProvider.setOverlay(
       path,
-      content: content,
+      content: sample.wrappedCode,
       modificationStamp: 0,
     );
+    final sourceFile = SourceFile.fromString(content, url: Uri.parse(path));
+    _files.add(CodeSampleFile(
+      path: path,
+      sourceFile: sourceFile,
+      sample: sample,
+    ));
   }
 
   List<String> getSamplesFilePath() {
@@ -80,7 +89,7 @@ void writeCodeSamples(String filePath, List<DocumentationCodeSample> samples) {
     final fileName =
         p.basename(filePath).replaceFirst('.dart', '_sample_$i.dart');
     final path = p.join(testDir.absolute.path, fileName);
-    TestContext().writeFile(path, content: s.wrappedCode);
+    TestContext().writeFile(path, s);
   }
 }
 
@@ -92,4 +101,16 @@ List<File> getFilesFrom(Directory dir) {
       .where((file) => file.path.endsWith('.dart'))
       .toList();
   return files;
+}
+
+class CodeSampleFile {
+  final String path;
+  final SourceFile sourceFile;
+  final DocumentationCodeSample sample;
+
+  CodeSampleFile({
+    required this.path,
+    required this.sourceFile,
+    required this.sample,
+  });
 }
