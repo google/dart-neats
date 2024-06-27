@@ -32,12 +32,8 @@ final testDir = Directory(p.join(currentDir.path, _testPath));
 
 /// Context for running tests.
 /// manage [resourceProvider].
-class TestContext {
-  factory TestContext() => _instance;
-
-  static final _instance = TestContext._internal();
-
-  TestContext._internal() {
+class DartDocTestContext {
+  DartDocTestContext() {
     _resourceProvider = OverlayResourceProvider(
       PhysicalResourceProvider.INSTANCE,
     );
@@ -56,7 +52,7 @@ class TestContext {
   Set<CodeSampleFile> get codeSampleFiles => _files;
   AnalysisContext get context => _context;
 
-  void writeFile(String path, DocumentationCodeSample sample) {
+  void _writeFile(String path, DocumentationCodeSample sample) {
     // write for new file
     // final file = _resourceProvider.getFile(path);
     // file.writeAsStringSync(content);
@@ -82,14 +78,17 @@ class TestContext {
         .toList();
     return files;
   }
-}
 
-void writeCodeSamples(String filePath, List<DocumentationCodeSample> samples) {
-  for (final (i, s) in samples.indexed) {
-    final fileName =
-        p.basename(filePath).replaceFirst('.dart', '_sample_$i.dart');
-    final path = p.join(testDir.absolute.path, fileName);
-    TestContext().writeFile(path, s);
+  void writeCodeSamples(
+    String filePath,
+    List<DocumentationCodeSample> samples,
+  ) {
+    for (final (i, s) in samples.indexed) {
+      final fileName =
+          p.basename(filePath).replaceFirst('.dart', '_sample_$i.dart');
+      final path = p.join(testDir.absolute.path, fileName);
+      _writeFile(path, s);
+    }
   }
 }
 

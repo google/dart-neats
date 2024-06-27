@@ -21,18 +21,20 @@ import 'src/extractor.dart';
 import 'src/resource.dart';
 
 class DartDocTest {
-  const DartDocTest();
+  DartDocTest() : _testContext = DartDocTestContext();
+
+  final DartDocTestContext _testContext;
 
   Future<void> run() async {
     print("Extracting code samples ...");
 
-    final session = TestContext().context.currentSession;
+    final session = _testContext.context.currentSession;
     for (final file in getFilesFrom(currentDir)) {
       final result = session.getParsedUnit(file.path);
 
       if (result is ParsedUnitResult) {
         final samples = extractFile(result);
-        writeCodeSamples(file.path, samples);
+        _testContext.writeCodeSamples(file.path, samples);
       }
     }
   }
@@ -40,12 +42,12 @@ class DartDocTest {
   Future<void> runAnalyze() async {
     await run();
 
-    final files = TestContext().codeSampleFiles;
+    final files = _testContext.codeSampleFiles;
 
     print("Analyzing code samples ...");
 
     for (final f in files) {
-      final result = await getAnalysisResult(f.path);
+      final result = await getAnalysisResult(_testContext.context, f.path);
       for (final e in result.errors) {
         final span = toOriginalFileSpanFromSampleError(f, e);
         if (span != null) print(span.toString());

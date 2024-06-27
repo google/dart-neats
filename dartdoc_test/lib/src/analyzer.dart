@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:dartdoc_test/src/resource.dart';
 import 'package:source_span/source_span.dart';
 
-Future<ErrorsResult> getAnalysisResult(String filePath) async {
-  final result = await TestContext().context.currentSession.getErrors(filePath);
+Future<ErrorsResult> getAnalysisResult(
+  AnalysisContext context,
+  String filePath,
+) async {
+  final result = context.currentSession.getErrors(filePath);
   return result as ErrorsResult;
 }
 
