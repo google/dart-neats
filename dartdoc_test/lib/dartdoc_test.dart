@@ -39,7 +39,7 @@ class DartDocTest {
     }
   }
 
-  Future<void> runAnalyze() async {
+  Future<void> analyze() async {
     await run();
 
     final files = _testContext.codeSampleFiles;
@@ -47,12 +47,7 @@ class DartDocTest {
     print("Analyzing code samples ...");
 
     for (final f in files) {
-      final result = await getAnalysisResult(_testContext.context, f.path);
-      for (final e in result.errors) {
-        final span = toOriginalFileSpanFromSampleError(f, e);
-        if (span != null) print(span.toString());
-        print(e.message);
-      }
+      getAnalysisResult(_testContext.context, f);
     }
   }
 }

@@ -14,14 +14,22 @@
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:dartdoc_test/dartdoc_test.dart';
+import 'package:dartdoc_test/src/resource.dart';
 import 'package:source_span/source_span.dart';
 
-Future<ErrorsResult> getAnalysisResult(
+void getAnalysisResult(
   AnalysisContext context,
-  String filePath,
+  CodeSampleFile file,
 ) async {
-  final result = context.currentSession.getErrors(filePath);
-  return result as ErrorsResult;
+  final result = await context.currentSession.getErrors(file.path);
+  if (result is ErrorsResult) {
+    for (final e in result.errors) {
+      final span = toOriginalFileSpanFromSampleError(file, e);
+      if (span != null) print(span.toString());
+      print(e.message);
+    }
+  }
 }
 
 class AnalyzeResult {
