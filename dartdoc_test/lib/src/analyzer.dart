@@ -14,7 +14,7 @@
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:dartdoc_test/dartdoc_test.dart';
+import 'package:analyzer/error/error.dart';
 import 'package:dartdoc_test/src/resource.dart';
 import 'package:source_span/source_span.dart';
 
@@ -30,6 +30,23 @@ void getAnalysisResult(
       print(e.message);
     }
   }
+}
+
+FileSpan? toOriginalFileSpanFromSampleError(
+  CodeSampleFile file,
+  AnalysisError error,
+) {
+  final (start, end) = (error.offset, error.offset + error.length - 1);
+  final codeSampleSpan = file.sourceFile.span(start, end);
+  final originOffset =
+      file.sample.comment.span.text.indexOf(codeSampleSpan.text);
+  if (originOffset == -1) {
+    return null;
+  }
+  final originSpan = file.sample.comment.span
+      .subspan(originOffset, originOffset + codeSampleSpan.length - 1);
+
+  return originSpan;
 }
 
 class AnalyzeResult {

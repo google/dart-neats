@@ -18,6 +18,7 @@ import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/file_system/overlay_file_system.dart';
+import 'package:dartdoc_test/dartdoc_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 
@@ -33,7 +34,7 @@ final testDir = Directory(p.join(currentDir.path, _testPath));
 /// Context for running tests.
 /// manage [resourceProvider].
 class DartDocTestContext {
-  DartDocTestContext() {
+  DartDocTestContext(this.options) {
     _resourceProvider = OverlayResourceProvider(
       PhysicalResourceProvider.INSTANCE,
     );
@@ -41,27 +42,41 @@ class DartDocTestContext {
       includedPaths: [currentDir.absolute.path],
       resourceProvider: _resourceProvider,
     );
+
+    if (options.write) {
+      if (testDir.existsSync()) {
+        testDir.deleteSync(recursive: true);
+      }
+      testDir.createSync();
+    }
+
     _context = _contextCollection.contextFor(currentDir.absolute.path);
   }
+
+  final DartDocTestOptions options;
 
   late final OverlayResourceProvider _resourceProvider;
   late final AnalysisContextCollection _contextCollection;
   late final AnalysisContext _context;
+
   final _files = <CodeSampleFile>{};
 
   Set<CodeSampleFile> get codeSampleFiles => _files;
   AnalysisContext get context => _context;
 
   void _writeFile(String path, DocumentationCodeSample sample) {
-    // write for new file
-    // final file = _resourceProvider.getFile(path);
-    // file.writeAsStringSync(content);
     final content = sample.wrappedCode;
-    _resourceProvider.setOverlay(
-      path,
-      content: sample.wrappedCode,
-      modificationStamp: 0,
-    );
+    if (options.write) {
+      // write for new file
+      final file = _resourceProvider.getFile(path);
+      file.writeAsStringSync(content);
+    } else {
+      _resourceProvider.setOverlay(
+        path,
+        content: content,
+        modificationStamp: 0,
+      );
+    }
     final sourceFile = SourceFile.fromString(content, url: Uri.parse(path));
     _files.add(CodeSampleFile(
       path: path,

@@ -12,23 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:args/args.dart';
 import 'package:dartdoc_test/dartdoc_test.dart';
 
-final _parser = ArgParser()
-  ..addFlag(
-    'help',
-    abbr: 'h',
-    help: 'Show help',
-    negatable: false,
-  )
-  ..addMultiOption(
-    'directory',
-    abbr: 'd',
-    help: 'Directories to analyze',
-  );
-
 Future<void> main(List<String> args) async {
-  final dartdocTest = DartDocTest();
+  final options = DartDocTestOptions.parse(args);
+  final dartdocTest = DartDocTest(options);
   await dartdocTest.run();
 }

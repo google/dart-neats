@@ -13,16 +13,16 @@
 // limitations under the License.
 
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/error/error.dart';
-import 'package:source_span/source_span.dart';
+import 'package:args/args.dart';
 
 import 'src/analyzer.dart';
 import 'src/extractor.dart';
 import 'src/resource.dart';
 
 class DartDocTest {
-  DartDocTest() : _testContext = DartDocTestContext();
+  DartDocTest(this.options) : _testContext = DartDocTestContext(options);
 
+  final DartDocTestOptions options;
   final DartDocTestContext _testContext;
 
   Future<void> run() async {
@@ -52,19 +52,21 @@ class DartDocTest {
   }
 }
 
-FileSpan? toOriginalFileSpanFromSampleError(
-  CodeSampleFile file,
-  AnalysisError error,
-) {
-  final (start, end) = (error.offset, error.offset + error.length - 1);
-  final codeSampleSpan = file.sourceFile.span(start, end);
-  final originOffset =
-      file.sample.comment.span.text.indexOf(codeSampleSpan.text);
-  if (originOffset == -1) {
-    return null;
-  }
-  final originSpan = file.sample.comment.span
-      .subspan(originOffset, originOffset + codeSampleSpan.length - 1);
+class DartDocTestOptions {
+  final bool write;
 
-  return originSpan;
+  const DartDocTestOptions({required this.write});
+
+  factory DartDocTestOptions.parse(List<String> args) {
+    final parser = ArgParser()
+      ..addFlag(
+        'write',
+        abbr: 'w',
+        help: 'Write sample code to file',
+        defaultsTo: false,
+      );
+    final argResults = parser.parse(args);
+
+    return DartDocTestOptions(write: argResults['write'] as bool);
+  }
 }
