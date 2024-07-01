@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io';
+
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:args/args.dart';
+import 'package:path/path.dart' as p;
 
 import 'src/analyzer.dart';
 import 'src/extractor.dart';
@@ -49,6 +52,32 @@ class DartDocTest {
     for (final f in files) {
       getAnalysisResult(_testContext.context, f);
     }
+  }
+
+  Future<void> generate() async {
+    print("Generating code samples ...");
+
+    final content = '''
+import 'package:dartdoc_test/dartdoc_test.dart';
+import 'package:test/test.dart';
+
+void main() {
+  test('analyze documentation code samples', () {
+    DartDocTest(DartDocTestOptions(write: false)).analyze();
+  });
+}
+''';
+
+    // if not exists, create test directory
+    final testDir = Directory(p.join(currentDir.path, 'test'));
+    if (!testDir.existsSync()) {
+      testDir.createSync();
+    }
+
+    final file = File(p.join(testDir.path, 'dartdoc_test.dart'));
+    await file.writeAsString(content);
+
+    print("Done! Run 'dart test' to analyze code samples.");
   }
 }
 

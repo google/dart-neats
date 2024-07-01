@@ -7,23 +7,20 @@ documentation comments.
 
 # Using in cli
 
-## install
-
 ```bash
-dart pub global active dartdoc_test
-```
+# Add dartdoc_test as dev dependency
+dart pub add dev:dartdoc_test
 
-## Usage
-
-```bash
-# analyze dart code samples in documentation comments
-dartdoc_test analyze
+# Run dartdoc_test directly
+dart run dartdoc_test analyze
 ```
 
 # Using in test
 
+You can test documentation code samples by creating `test/dartdoc_test.dart`.
+
 ```dart
-import 'package:dartdoc_test:dartdoc_test.dart';
+import 'package:dartdoc_test/dartdoc_test.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -31,4 +28,10 @@ void main() {
     DartDocTest().analyze();
   });
 }
+```
+
+and then
+
+```bash
+dart test
 ```
