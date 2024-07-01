@@ -23,8 +23,13 @@ import 'package:source_span/source_span.dart';
 final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
 
 class DocumentationComment {
+  /// The span of the comment in the source file.
   final FileSpan span;
+
+  /// The contents of the comment. (includes code blocks and text)
   final String contents;
+
+  /// The imports used in the source file.
   final List<String> imports;
 
   DocumentationComment({

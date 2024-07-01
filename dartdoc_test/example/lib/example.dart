@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Example of documentation comments and code samples in Dart.
 import 'dart:convert';
+
+/// Example of documentation comments and code samples in Dart.
 
 /// This is a simple class example.
 ///
