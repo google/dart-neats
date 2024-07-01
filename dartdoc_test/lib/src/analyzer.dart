@@ -25,9 +25,10 @@ void getAnalysisResult(
   final result = await context.currentSession.getErrors(file.path);
   if (result is ErrorsResult) {
     for (final e in result.errors) {
+      print(e.toString());
       final span = toOriginalFileSpanFromSampleError(file, e);
       if (span != null) print(span.toString());
-      print(e.message);
+      // print(e.message);
     }
   }
 }
@@ -49,14 +50,14 @@ FileSpan? toOriginalFileSpanFromSampleError(
   return originSpan;
 }
 
-class AnalyzeResult {
-  final String filePath;
-  final FileSpan span;
-  final List<String> errors;
-
-  AnalyzeResult({
-    required this.filePath,
-    required this.span,
-    required this.errors,
-  });
+// get original file span from sample file span
+SourceSpan? getOriginalSubSpan({
+  required SourceSpan sample,
+  required SourceSpan original,
+}) {
+  final offset = original.text.indexOf(sample.text);
+  if (offset == -1) {
+    return null;
+  }
+  return original.subspan(offset, offset + sample.length - 1);
 }
