@@ -1,2 +1,3 @@
-A sample command-line application with an entrypoint in `bin/`, library code
-in `lib/`, and example unit test in `test/`.
+# dartdoc_test example
+
+This application shows how to use `package:dartdoc_test` in a dart project and how it works.
