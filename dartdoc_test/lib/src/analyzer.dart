@@ -37,6 +37,7 @@ FileSpan? toOriginalFileSpanFromSampleError(
   CodeSampleFile file,
   AnalysisError error,
 ) {
+  print(file.sample.comment.span.toString());
   final (start, end) = (error.offset, error.offset + error.length - 1);
   final codeSampleSpan = file.sourceFile.span(start, end);
   final originOffset =

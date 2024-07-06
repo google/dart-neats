@@ -28,6 +28,7 @@ class DartDocTest {
   final DartDocTestOptions options;
   final DartDocTestContext _testContext;
 
+  /// Extract code samples from the currrent directory.
   Future<void> run() async {
     print("Extracting code samples ...");
 
@@ -42,6 +43,7 @@ class DartDocTest {
     }
   }
 
+  /// Analyze code samples.
   Future<void> analyze() async {
     await run();
 
@@ -83,8 +85,14 @@ void main() {
 
 class DartDocTestOptions {
   final bool write;
+  final List<String> include;
+  final List<String> exclude;
 
-  const DartDocTestOptions({required this.write});
+  const DartDocTestOptions({
+    this.write = false,
+    this.include = const [],
+    this.exclude = const [],
+  });
 
   factory DartDocTestOptions.parse(List<String> args) {
     final parser = ArgParser()
@@ -98,4 +106,9 @@ class DartDocTestOptions {
 
     return DartDocTestOptions(write: argResults['write'] as bool);
   }
+}
+
+void runDartDocTest() {
+  final dartdocTest = DartDocTest(DartDocTestOptions());
+  dartdocTest.analyze();
 }
