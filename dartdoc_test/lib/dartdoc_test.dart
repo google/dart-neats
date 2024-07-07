@@ -22,11 +22,11 @@ import 'src/analyzer.dart';
 import 'src/extractor.dart';
 import 'src/resource.dart';
 
-class DartDocTest {
-  DartDocTest(this.options) : _testContext = DartDocTestContext(options);
+class DartdocTest {
+  DartdocTest(this.options) : _testContext = DartdocTestContext(options);
 
-  final DartDocTestOptions options;
-  final DartDocTestContext _testContext;
+  final DartdocTestOptions options;
+  final DartdocTestContext _testContext;
 
   /// Extract code samples from the currrent directory.
   Future<void> run() async {
@@ -65,7 +65,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('analyze documentation code samples', () {
-    DartDocTest(DartDocTestOptions(write: false)).analyze();
+    DartdocTest(DartdocTestOptions(write: false)).analyze();
   });
 }
 ''';
@@ -83,18 +83,18 @@ void main() {
   }
 }
 
-class DartDocTestOptions {
+class DartdocTestOptions {
   final bool write;
   final List<String> include;
   final List<String> exclude;
 
-  const DartDocTestOptions({
+  const DartdocTestOptions({
     this.write = false,
     this.include = const [],
     this.exclude = const [],
   });
 
-  factory DartDocTestOptions.parse(List<String> args) {
+  factory DartdocTestOptions.parse(List<String> args) {
     final parser = ArgParser()
       ..addFlag(
         'write',
@@ -104,11 +104,11 @@ class DartDocTestOptions {
       );
     final argResults = parser.parse(args);
 
-    return DartDocTestOptions(write: argResults['write'] as bool);
+    return DartdocTestOptions(write: argResults['write'] as bool);
   }
 }
 
-void runDartDocTest() {
-  final dartdocTest = DartDocTest(DartDocTestOptions());
+void runDartdocTest() {
+  final dartdocTest = DartdocTest(DartdocTestOptions());
   dartdocTest.analyze();
 }

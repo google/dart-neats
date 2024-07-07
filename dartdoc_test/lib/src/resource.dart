@@ -33,8 +33,8 @@ final testDir = Directory(p.join(currentDir.path, _testPath));
 
 /// Context for running tests.
 /// manage [resourceProvider].
-class DartDocTestContext {
-  DartDocTestContext(this.options) {
+class DartdocTestContext {
+  DartdocTestContext(this.options) {
     _resourceProvider = OverlayResourceProvider(
       PhysicalResourceProvider.INSTANCE,
     );
@@ -53,7 +53,7 @@ class DartDocTestContext {
     _context = _contextCollection.contextFor(currentDir.absolute.path);
   }
 
-  final DartDocTestOptions options;
+  final DartdocTestOptions options;
 
   late final OverlayResourceProvider _resourceProvider;
   late final AnalysisContextCollection _contextCollection;
