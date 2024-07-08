@@ -105,8 +105,19 @@ class DartdocTestOptions {
   }
 }
 
-void runDartdocTest() {
-  final dartdocTest = DartdocTest(DartdocTestOptions());
+/// Test code samples in documentation comments.
+///
+/// In default, this function will test all code samples in your project. if you
+/// want to test only specific files, you can use [include] and [exclude] options.
+void runDartdocTest({
+  List<String> include = const [],
+  List<String> exclude = const [],
+}) {
+  final options = DartdocTestOptions(
+    include: include,
+    exclude: exclude,
+  );
+  final dartdocTest = DartdocTest(options);
   dartdocTest.analyze();
 }
 

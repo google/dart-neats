@@ -1,0 +1,17 @@
+Extracting code samples ...
+Analyzing code samples ...
+No issues found!
+No issues found!
+line 79, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
+   ╷
+79 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
+   │           ^^^^^^^^^^^
+   ╵
+
+
+line 93, column 11 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
+   ╷
+93 │ /// final gcd = gcd(48, 18);
+   │           ^^
+   ╵
+
