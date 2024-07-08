@@ -15,54 +15,168 @@
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:dartdoc_test/src/resource.dart';
+import 'package:args/args.dart';
+import 'package:args/command_runner.dart';
+import 'package:path/path.dart' as p;
 
+import 'src/analyzer.dart';
 import 'src/extractor.dart';
+import 'src/resource.dart';
 
-class DartDocTest {
-  const DartDocTest();
+class DartdocTest {
+  DartdocTest(this.options) : _testContext = DartdocTestContext(options);
 
+  final DartdocTestOptions options;
+  final DartdocTestContext _testContext;
+
+  /// Extract code samples from the currrent directory.
   Future<void> run() async {
-    final rootFolder = Directory.current.absolute.path;
+    print("Extracting code samples ...");
 
-    final session = currentContext.currentSession;
-
-    // TODO: add `include` and `exclude` options
-    final files = Directory(rootFolder)
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((file) => file.path.endsWith('.dart'))
-        .toList();
-    for (final file in files) {
+    final session = _testContext.context.currentSession;
+    for (final file in getFilesFrom(currentDir)) {
       final result = session.getParsedUnit(file.path);
+
       if (result is ParsedUnitResult) {
         final samples = extractFile(result);
-        writeCodeSamples(file.path, samples);
+        _testContext.writeCodeSamples(file.path, samples);
       }
     }
   }
 
-  Future<void> runAnalyze() async {}
-}
+  /// Analyze code samples.
+  Future<void> analyze() async {
+    await run();
 
-String wrapCode(String path, String code) {
-  return '''
-import "$path";
+    final files = _testContext.codeSampleFiles;
+
+    print("Analyzing code samples ...");
+
+    for (final f in files) {
+      getAnalysisResult(_testContext.context, f);
+    }
+  }
+
+  Future<void> generate() async {
+    print("Generating code samples ...");
+
+    final content = '''
+import 'package:dartdoc_test/dartdoc_test.dart';
+import 'package:test/test.dart';
 
 void main() {
-  $code
+  test('analyze documentation code samples', () {
+    DartdocTest(DartdocTestOptions(write: false)).analyze();
+  });
 }
 ''';
+
+    // if not exists, create test directory
+    final testDir = Directory(p.join(currentDir.path, 'test'));
+    if (!testDir.existsSync()) {
+      testDir.createSync();
+    }
+
+    final file = File(p.join(testDir.path, 'dartdoc_test.dart'));
+    await file.writeAsString(content);
+
+    print("Done! Run 'dart test' to analyze code samples.");
+  }
 }
 
-void writeCodeSamples(String filePath, List<DocumentationCodeSample> samples) {
-  for (final (i, s) in samples.indexed) {
-    final path = filePath.replaceAll('.dart', '_sample_$i.dart');
-    print(s.wrappedCode);
-    resourceProvider.setOverlay(
-      path,
-      content: s.wrappedCode,
-      modificationStamp: 0,
+class DartdocTestOptions {
+  final bool write;
+  final List<String> include;
+  final List<String> exclude;
+
+  const DartdocTestOptions({
+    this.write = false,
+    this.include = const [],
+    this.exclude = const [],
+  });
+
+  factory DartdocTestOptions.fromArg([ArgResults? args]) {
+    if (args == null || args.arguments.isEmpty) {
+      return DartdocTestOptions();
+    }
+    return DartdocTestOptions(
+      write: args.flag('write'),
     );
+  }
+}
+
+/// Test code samples in documentation comments.
+///
+/// In default, this function will test all code samples in your project. if you
+/// want to test only specific files, you can use [include] and [exclude] options.
+void runDartdocTest({
+  List<String> include = const [],
+  List<String> exclude = const [],
+}) {
+  final options = DartdocTestOptions(
+    include: include,
+    exclude: exclude,
+  );
+  final dartdocTest = DartdocTest(options);
+  dartdocTest.analyze();
+}
+
+class DartdocTestCommandRunner extends CommandRunner<void> {
+  DartdocTestCommandRunner()
+      : super(
+          'dartdoc_test',
+          'A tool to extract and analyze code samples in Dart projects.',
+        ) {
+    argParser.addFlag(
+      'write',
+      abbr: 'w',
+      help: 'Write sample code to file',
+    );
+
+    addCommand(ExtractCommand());
+    addCommand(AnalyzeCommand());
+    addCommand(AddCommand());
+  }
+}
+
+class ExtractCommand extends Command<void> {
+  @override
+  String get name => 'extract';
+
+  @override
+  String get description => 'Extract code samples from the current directory.';
+
+  @override
+  Future<void> run() async {
+    final dartdocTest = DartdocTest(DartdocTestOptions.fromArg(globalResults));
+    await dartdocTest.run();
+  }
+}
+
+class AnalyzeCommand extends Command<void> {
+  @override
+  String get name => 'analyze';
+
+  @override
+  String get description => 'Analyze code samples in the current directory.';
+
+  @override
+  Future<void> run() async {
+    final dartdocTest = DartdocTest(DartdocTestOptions.fromArg(globalResults));
+    await dartdocTest.analyze();
+  }
+}
+
+class AddCommand extends Command<void> {
+  @override
+  String get name => 'add';
+
+  @override
+  String get description => 'Generate dartdoc_test test file.';
+
+  @override
+  Future<void> run() async {
+    final dartdocTest = DartdocTest(DartdocTestOptions());
+    await dartdocTest.generate();
   }
 }

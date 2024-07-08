@@ -14,6 +14,5 @@
 
 import 'package:dartdoc_test/dartdoc_test.dart';
 
-Future<void> main(List<String> args) async {
-  await DartdocTestCommandRunner().run(args);
-}
+/// [runDartdocTest] is a test function that tests code samples.
+void main() => runDartdocTest();

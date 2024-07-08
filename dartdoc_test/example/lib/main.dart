@@ -12,8 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:dartdoc_test/dartdoc_test.dart';
+/// Simple function that prints `"Hello world!"`.
+///
+/// **Example**
+/// ```dart
+/// sayHello(); // prints: Hello world!
+/// ```
+void sayHello() {
+  // My comment
+  print('Hello world!');
+}
 
-Future<void> main(List<String> args) async {
-  await DartdocTestCommandRunner().run(args);
+/// Simple function that prints `"Hello world!"`.
+///
+/// **Example**
+/// ```dart
+/// foo(); // prints: Hello world!
+/// ```
+void foo() {
+  // My comment
+  print('foo!');
 }

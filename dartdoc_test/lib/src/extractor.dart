@@ -1,3 +1,17 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import 'dart:convert';
 
 import 'package:analyzer/dart/analysis/results.dart';
@@ -9,8 +23,13 @@ import 'package:source_span/source_span.dart';
 final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
 
 class DocumentationComment {
+  /// The span of the comment in the source file.
   final FileSpan span;
+
+  /// The contents of the comment. (includes code blocks and text)
   final String contents;
+
+  /// The imports used in the source file.
   final List<String> imports;
 
   DocumentationComment({
@@ -24,32 +43,31 @@ class DocumentationCodeSample {
   final DocumentationComment comment;
   final String code;
   final List<String> imports;
-  final bool hasMain;
   // TODO: Find the SourceSpan of [code] within [comment], this is pretty hard
   //       to do because package:markdown doesn't provide any line-numbers or
   //       offsets. One option is to parse it manually, instead of using
   //       package:markdown. Or just search for ```dart and ``` and use that to
   //       find code samples.
-  final FileSpan? span;
 
   DocumentationCodeSample({
     required this.comment,
     required this.code,
-    this.span,
     this.imports = const [],
-    this.hasMain = false,
   });
 
   String get wrappedCode {
-    final fileName = comment.span.file.url?.path.split('/').last;
+    final fileName = comment.span.sourceUrl;
 
     final buf = StringBuffer();
     buf.writeAll(comment.imports, '\n');
     buf.writeln();
-    buf.writeln('import "$fileName";');
+    if (fileName != null) {
+      buf.writeln('import \'$fileName\';');
+    }
     buf.writeln();
     buf.writeln('void main() {');
-    buf.writeAll(code.split('\n').map((l) => '  $l'), '\n');
+    buf.writeAll(LineSplitter.split(code).map((l) => '  $l'), '\n');
+    buf.writeln();
     buf.writeln('}');
     return buf.toString();
   }
@@ -93,6 +111,20 @@ Iterable<String> stripleadingWhiteSpace(String comment) {
   return lines.map((l) => l.trimLeft());
 }
 
+/// Strips documentation comments syntax and leading whitespaces from a string.
+///
+/// This function supports both `///` and `/** */` style comments.
+/// ```dart
+/// final comment1 = '/// some comment';
+/// print(stripComments(comment1)); // 'some comment'
+/// ```
+/// ```dart
+/// final comment2 = '''
+/// /**
+/// * some comment
+/// */''';
+/// stripComments(comment2); // 'some comment'
+/// ```
 String stripComments(String comment) {
   if (comment.isEmpty) return '';
 
@@ -127,7 +159,20 @@ List<DocumentationCodeSample> extractCodeSamples(
   DocumentationComment comment,
 ) {
   final samples = <DocumentationCodeSample>[];
-  final nodes = _md.parse(comment.contents);
+
+  final codes = getCodeSamples(comment.contents);
+  for (final code in codes) {
+    samples.add(DocumentationCodeSample(comment: comment, code: code));
+  }
+  return samples;
+}
+
+/// Extracts code samples from a documentation comment.
+/// one comment can have multiple code samples.
+/// so this function returns a list of code samples.
+List<String> getCodeSamples(String comment) {
+  final nodes = _md.parse(comment);
+  var codes = <String>[];
   nodes.accept(_ForEachElement((element) {
     if (element.tag == 'code' &&
         element.attributes['class'] == 'language-dart') {
@@ -136,11 +181,11 @@ List<DocumentationCodeSample> extractCodeSamples(
         code += text.textContent;
       }));
       if (code.isNotEmpty) {
-        samples.add(DocumentationCodeSample(comment: comment, code: code));
+        codes.add(code);
       }
     }
   }));
-  return samples;
+  return codes;
 }
 
 List<String> getImports(SourceFile f, ParsedUnitResult r) {
