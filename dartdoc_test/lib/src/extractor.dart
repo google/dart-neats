@@ -96,9 +96,6 @@ List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
       final span = file.span(comment.offset, comment.end);
       final content = stripComments(span.text);
 
-      print('${span.start.toolString} - ${span.end.toolString}');
-      print(span.text);
-
       comments.add(DocumentationComment(
         contents: content,
         span: span,

@@ -15,7 +15,5 @@
 import 'package:dartdoc_test/dartdoc_test.dart';
 
 Future<void> main(List<String> args) async {
-  final options = DartdocTestOptions.parse(args);
-  final dartdocTest = DartdocTest(options);
-  await dartdocTest.run();
+  await DartdocTestCommandRunner().run(args);
 }

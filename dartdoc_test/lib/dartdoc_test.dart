@@ -16,6 +16,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:args/args.dart';
+import 'package:args/command_runner.dart';
 import 'package:path/path.dart' as p;
 
 import 'src/analyzer.dart';
@@ -94,21 +95,85 @@ class DartdocTestOptions {
     this.exclude = const [],
   });
 
-  factory DartdocTestOptions.parse(List<String> args) {
-    final parser = ArgParser()
-      ..addFlag(
-        'write',
-        abbr: 'w',
-        help: 'Write sample code to file',
-        defaultsTo: false,
-      );
-    final argResults = parser.parse(args);
-
-    return DartdocTestOptions(write: argResults['write'] as bool);
+  factory DartdocTestOptions.fromArg([ArgResults? args]) {
+    if (args == null || args.arguments.isEmpty) {
+      return DartdocTestOptions();
+    }
+    return DartdocTestOptions(
+      write: args['write'] as bool,
+    );
   }
 }
 
 void runDartdocTest() {
   final dartdocTest = DartdocTest(DartdocTestOptions());
   dartdocTest.analyze();
+}
+
+class DartdocTestCommandRunner extends CommandRunner<void> {
+  DartdocTestCommandRunner()
+      : super(
+          'dartdoc_test',
+          'A tool to extract and analyze code samples in Dart projects.',
+        ) {
+    argParser.addFlag(
+      'write',
+      abbr: 'w',
+      help: 'Write sample code to file',
+    );
+
+    addCommand(ExtractCommand());
+    addCommand(AnalyzeCommand());
+    addCommand(AddCommand());
+  }
+
+  // @override
+  // Future<void> run(Iterable<String> args) async {
+  //   final options = DartdocTestOptions.fromArg(args);
+  //   final dartdocTest = DartdocTest(options);
+
+  //   dartdocTest.run();
+  // }
+}
+
+class ExtractCommand extends Command<void> {
+  @override
+  String get name => 'extract';
+
+  @override
+  String get description => 'Extract code samples from the current directory.';
+
+  @override
+  Future<void> run() async {
+    final dartdocTest = DartdocTest(DartdocTestOptions());
+    await dartdocTest.run();
+  }
+}
+
+class AnalyzeCommand extends Command<void> {
+  @override
+  String get name => 'analyze';
+
+  @override
+  String get description => 'Analyze code samples in the current directory.';
+
+  @override
+  Future<void> run() async {
+    final dartdocTest = DartdocTest(DartdocTestOptions.fromArg(argResults));
+    await dartdocTest.analyze();
+  }
+}
+
+class AddCommand extends Command<void> {
+  @override
+  String get name => 'add';
+
+  @override
+  String get description => 'Generate dartdoc_test test file.';
+
+  @override
+  Future<void> run() async {
+    final dartdocTest = DartdocTest(DartdocTestOptions());
+    await dartdocTest.generate();
+  }
 }

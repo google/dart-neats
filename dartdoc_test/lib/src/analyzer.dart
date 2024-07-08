@@ -25,10 +25,16 @@ void getAnalysisResult(
   final result = await context.currentSession.getErrors(file.path);
   if (result is ErrorsResult) {
     for (final e in result.errors) {
-      print(e.toString());
       final span = toOriginalFileSpanFromSampleError(file, e);
-      if (span != null) print(span.toString());
-      // print(e.message);
+      if (span != null) {
+        print(span.start.toolString);
+        print(e.message);
+        print('\n');
+      } else {
+        print('this error is caused by generated code.');
+        print(e.message);
+        print('\n');
+      }
     }
   }
 }
