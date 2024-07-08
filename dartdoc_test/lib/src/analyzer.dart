@@ -31,14 +31,17 @@ void getAnalysisResult(
       }
       final span = toOriginalFileSpanFromSampleError(file, e);
       if (span != null) {
-        print(span.start.toolString);
-        print(e.message);
+        print(span.message((e.message)));
         print('\n');
       } else {
         print('this error is caused by generated code.');
         print(e.message);
         print('\n');
       }
+    }
+
+    if (result.errors.isEmpty) {
+      print('No issues found!');
     }
   }
 }
@@ -47,7 +50,6 @@ FileSpan? toOriginalFileSpanFromSampleError(
   CodeSampleFile file,
   AnalysisError error,
 ) {
-  print(error.toString());
   final (start, end) = (error.offset, error.offset + error.length - 1);
   final codeSampleSpan = file.sourceFile.span(start, end);
   final span = getOriginalSubSpan(

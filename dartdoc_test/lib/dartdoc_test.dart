@@ -137,7 +137,7 @@ class ExtractCommand extends Command<void> {
 
   @override
   Future<void> run() async {
-    final dartdocTest = DartdocTest(DartdocTestOptions());
+    final dartdocTest = DartdocTest(DartdocTestOptions.fromArg(globalResults));
     await dartdocTest.run();
   }
 }

@@ -99,8 +99,7 @@ class DartdocTestContext {
     List<DocumentationCodeSample> samples,
   ) {
     for (final (i, s) in samples.indexed) {
-      final fileName =
-          p.basename(filePath).replaceFirst('.dart', '_sample_$i.dart');
+      final fileName = p.basename(filePath).replaceFirst('.dart', '_$i.dart');
       final path = p.join(testDir.absolute.path, fileName);
       _writeFile(path, s);
     }
