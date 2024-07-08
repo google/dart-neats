@@ -39,25 +39,21 @@ FileSpan? toOriginalFileSpanFromSampleError(
 ) {
   final (start, end) = (error.offset, error.offset + error.length - 1);
   final codeSampleSpan = file.sourceFile.span(start, end);
-  final originOffset =
-      file.sample.comment.span.text.indexOf(codeSampleSpan.text);
-  if (originOffset == -1) {
-    return null;
-  }
-  final originSpan = file.sample.comment.span
-      .subspan(originOffset, originOffset + codeSampleSpan.length - 1);
-
-  return originSpan;
+  final span = getOriginalSubSpan(
+    sample: codeSampleSpan,
+    original: file.sample.comment.span,
+  );
+  return span;
 }
 
 // get original file span from sample file span
-SourceSpan? getOriginalSubSpan({
-  required SourceSpan sample,
-  required SourceSpan original,
+FileSpan? getOriginalSubSpan({
+  required FileSpan sample,
+  required FileSpan original,
 }) {
   final offset = original.text.indexOf(sample.text);
   if (offset == -1) {
     return null;
   }
-  return original.subspan(offset, offset + sample.length - 1);
+  return original.subspan(offset, offset + sample.length);
 }

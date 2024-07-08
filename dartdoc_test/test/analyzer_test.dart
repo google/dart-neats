@@ -18,35 +18,36 @@ import 'package:test/test.dart';
 
 void main() {
   group('getOriginalSubSpan', () {
-    test('should return SourceSpan if sample is found in original', () {
-      final sample = SourceSpan(
-        SourceLocation(5),
-        SourceLocation(11),
-        'main()',
-      );
-      final original = SourceSpan(
-        SourceLocation(20),
-        SourceLocation(38),
-        '/// void main() {}',
-      );
+    test('should return SourceSpan if span is found in original', () {
+      final originalText =
+          '/// Example:```dart\n/// final x = sample();\n/// ```\nint sample() {\n  return 1;\n}\n';
+
+      final sampleText = 'void main() {\n  final x = sample();\n}\n';
+
+      final original = SourceFile.fromString(originalText)
+          .span(0, 48); // span of comment section.
+      final sample =
+          SourceFile.fromString(sampleText).span(26, 34); // span of 'sample()'.
       final result = getOriginalSubSpan(sample: sample, original: original);
-      print(result);
+
       expect(result, isNotNull);
+      expect(result?.start.offset, 34);
+      expect(result?.text, 'sample()');
     });
 
-    test('should return null if sample is not found in original', () {
-      final sample = SourceSpan(
-        SourceLocation(0),
-        SourceLocation(17),
-        'import "dart:io";',
-      );
-      final original = SourceSpan(
-        SourceLocation(20),
-        SourceLocation(38),
-        '/// void main() {}',
-      );
-      final result = getOriginalSubSpan(sample: original, original: sample);
-      expect(result, isNull);
+    test('should return null if span is not found in original', () {
+      final originalText =
+          '/// Example:```dart\n/// final x = sample();\n/// ```\nint sample() {\n  return 1;\n}\n';
+      final sampleText =
+          "import 'dart:convert';  void main() {\n  final x = sample();\n}\n";
+
+      final original = SourceFile.fromString(originalText)
+          .span(0, 48); // span of comment section.
+      final sample =
+          SourceFile.fromString(sampleText).span(0, 6); // span of 'import'.
+      final result = getOriginalSubSpan(sample: sample, original: original);
+
+      expect(result, isNull); // not found.
     });
   });
 
