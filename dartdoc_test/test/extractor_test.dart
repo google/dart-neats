@@ -16,6 +16,17 @@ import 'package:dartdoc_test/src/extractor.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('leading whitespace', () {
+    test(
+      'remove leading whitespace',
+      () {
+        final text = '  /// This is a comment.\n  /// second line.';
+        final result = stripleadingWhiteSpace(text);
+        expect(result, ['/// This is a comment.', '/// second line.']);
+      },
+    );
+  });
+
   group('strip comments', () {
     test('can strip javaDocStyle', () {
       // replace to inline.
@@ -58,6 +69,27 @@ void main() {
             'This is a linux line break comment.\n```dart\nfinal x = 1;\n```';
         expect(stripComments(actualText), expectText);
       });
+    });
+  });
+
+  group('getCodeSamples', () {
+    test('can extract code samples', () {
+      final comment = 'example:\n```dart\nfinal x = 1;\n```';
+      final result = getCodeSamples(comment);
+      expect(
+        result,
+        ['final x = 1;\n'],
+      );
+    });
+
+    test('can extract multiple code samples', () {
+      final comment =
+          'example:\n```dart\nfinal x = 1;\n```\n```dart\nfinal y = 2;\n```';
+      final result = getCodeSamples(comment);
+      expect(
+        result,
+        ['final x = 1;\n', 'final y = 2;\n'],
+      );
     });
   });
 }

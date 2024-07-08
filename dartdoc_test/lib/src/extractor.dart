@@ -96,6 +96,9 @@ List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
       final span = file.span(comment.offset, comment.end);
       final content = stripComments(span.text);
 
+      print('${span.start.toolString} - ${span.end.toolString}');
+      print(span.text);
+
       comments.add(DocumentationComment(
         contents: content,
         span: span,
@@ -159,7 +162,20 @@ List<DocumentationCodeSample> extractCodeSamples(
   DocumentationComment comment,
 ) {
   final samples = <DocumentationCodeSample>[];
-  final nodes = _md.parse(comment.contents);
+
+  final codes = getCodeSamples(comment.contents);
+  for (final code in codes) {
+    samples.add(DocumentationCodeSample(comment: comment, code: code));
+  }
+  return samples;
+}
+
+/// Extracts code samples from a documentation comment.
+/// one comment can have multiple code samples.
+/// so this function returns a list of code samples.
+List<String> getCodeSamples(String comment) {
+  final nodes = _md.parse(comment);
+  var codes = <String>[];
   nodes.accept(_ForEachElement((element) {
     if (element.tag == 'code' &&
         element.attributes['class'] == 'language-dart') {
@@ -168,11 +184,11 @@ List<DocumentationCodeSample> extractCodeSamples(
         code += text.textContent;
       }));
       if (code.isNotEmpty) {
-        samples.add(DocumentationCodeSample(comment: comment, code: code));
+        codes.add(code);
       }
     }
   }));
-  return samples;
+  return codes;
 }
 
 List<String> getImports(SourceFile f, ParsedUnitResult r) {
