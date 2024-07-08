@@ -100,7 +100,7 @@ class DartdocTestOptions {
       return DartdocTestOptions();
     }
     return DartdocTestOptions(
-      write: args['write'] as bool,
+      write: args.flag('write'),
     );
   }
 }
@@ -126,14 +126,6 @@ class DartdocTestCommandRunner extends CommandRunner<void> {
     addCommand(AnalyzeCommand());
     addCommand(AddCommand());
   }
-
-  // @override
-  // Future<void> run(Iterable<String> args) async {
-  //   final options = DartdocTestOptions.fromArg(args);
-  //   final dartdocTest = DartdocTest(options);
-
-  //   dartdocTest.run();
-  // }
 }
 
 class ExtractCommand extends Command<void> {
@@ -159,7 +151,7 @@ class AnalyzeCommand extends Command<void> {
 
   @override
   Future<void> run() async {
-    final dartdocTest = DartdocTest(DartdocTestOptions.fromArg(argResults));
+    final dartdocTest = DartdocTest(DartdocTestOptions.fromArg(globalResults));
     await dartdocTest.analyze();
   }
 }

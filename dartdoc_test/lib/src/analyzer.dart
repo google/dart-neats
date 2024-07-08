@@ -25,6 +25,10 @@ void getAnalysisResult(
   final result = await context.currentSession.getErrors(file.path);
   if (result is ErrorsResult) {
     for (final e in result.errors) {
+      if (e.errorCode.type != ErrorType.SYNTACTIC_ERROR &&
+          e.errorCode.type != ErrorType.COMPILE_TIME_ERROR) {
+        continue;
+      }
       final span = toOriginalFileSpanFromSampleError(file, e);
       if (span != null) {
         print(span.start.toolString);
@@ -43,6 +47,7 @@ FileSpan? toOriginalFileSpanFromSampleError(
   CodeSampleFile file,
   AnalysisError error,
 ) {
+  print(error.toString());
   final (start, end) = (error.offset, error.offset + error.length - 1);
   final codeSampleSpan = file.sourceFile.span(start, end);
   final span = getOriginalSubSpan(
