@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:test_process/test_process.dart';
 
@@ -10,7 +9,7 @@ void main() {
 }
 
 void testWithGolden(String name) {
-  const separator = '======== separator ========\n';
+  // const separator = '======== separator ========\n';
   final golden = File('test/testdata/$name.txt');
   test(name, () async {
     // run name in command line
@@ -24,9 +23,6 @@ void testWithGolden(String name) {
       ..writeAsStringSync(buf.toString());
   });
 }
-
-final _dartdoctestPath =
-    path.canonicalize(path.join('bin', 'dartdoc_test.dart'));
 
 Future<TestProcess> runDartdocTest(List<String> args) {
   return TestProcess.start(

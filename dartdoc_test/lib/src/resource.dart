@@ -18,10 +18,10 @@ import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/file_system/overlay_file_system.dart';
-import 'package:dartdoc_test/dartdoc_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 
+import 'dartdoc_test.dart';
 import 'extractor.dart';
 
 const _testPath = '.dartdoc_test';

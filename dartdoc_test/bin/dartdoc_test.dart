@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:dartdoc_test/dartdoc_test.dart';
+import 'package:dartdoc_test/src/command.dart';
 
-Future<void> main(List<String> args) async {
-  await DartdocTestCommandRunner().run(args);
+Future<void> main(List<String> arguments) async {
+  await DartdocTestCommandRunner().run(arguments);
 }
