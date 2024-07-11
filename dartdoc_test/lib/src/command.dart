@@ -21,15 +21,35 @@ class DartdocTestCommandRunner extends CommandRunner<void> {
           'dartdoc_test',
           'A tool to extract and analyze code samples in Dart projects.',
         ) {
-    argParser.addFlag(
-      'write',
-      abbr: 'w',
-      help: 'Write sample code to file',
-    );
+    argParser
+      ..addFlag(
+        'write',
+        abbr: 'w',
+        help: 'Write sample code to file',
+      )
+      ..addFlag(
+        'verbose',
+        abbr: 'v',
+        help: 'Print verbose output',
+      );
 
     addCommand(ExtractCommand());
     addCommand(AnalyzeCommand());
     addCommand(AddCommand());
+  }
+
+  @override
+  Future<void> run(Iterable<String> args) async {
+    // run AnalyzeCommand when no command is specified.
+    if (parse(args).command == null) {
+      // only print help message when -h flag is set.
+      if (parse(args).flag('help')) {
+        printUsage();
+        return;
+      }
+      args = [AnalyzeCommand().name, ...args];
+    }
+    return super.run(args);
   }
 }
 
