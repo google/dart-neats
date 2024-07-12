@@ -18,6 +18,8 @@ import 'package:analyzer/error/error.dart';
 import 'package:dartdoc_test/src/resource.dart';
 import 'package:source_span/source_span.dart';
 
+import 'logger.dart';
+
 void getAnalysisResult(
   AnalysisContext context,
   CodeSampleFile file,
@@ -25,23 +27,21 @@ void getAnalysisResult(
   final result = await context.currentSession.getErrors(file.path);
   if (result is ErrorsResult) {
     for (final e in result.errors) {
-      if (e.errorCode.type != ErrorType.SYNTACTIC_ERROR &&
-          e.errorCode.type != ErrorType.COMPILE_TIME_ERROR) {
-        continue;
-      }
       final span = toOriginalFileSpanFromSampleError(file, e);
       if (span != null) {
-        print(span.message((e.message)));
-        print('\n');
+        log(span.message((e.message)));
+        log('\n');
       } else {
-        print('this error is caused by generated code.');
-        print(e.message);
-        print('\n');
+        log(
+          'this error is caused by generated code.\n'
+          '${e.message}\n',
+          LogLevel.debug,
+        );
       }
     }
 
     if (result.errors.isEmpty) {
-      print('No issues found!');
+      log('No issues found!');
     }
   }
 }

@@ -21,6 +21,7 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'analyzer.dart';
 import 'extractor.dart';
 import 'resource.dart';
+import 'logger.dart';
 
 class DartdocTest {
   DartdocTest(this.options) : _testContext = DartdocTestContext(options);
@@ -30,7 +31,7 @@ class DartdocTest {
 
   /// Extract code samples from the currrent directory.
   Future<void> run() async {
-    print("Extracting code samples ...");
+    log('Extracting code samples ...');
 
     final session = _testContext.context.currentSession;
     for (final file in getFilesFrom(currentDir)) {
@@ -49,25 +50,31 @@ class DartdocTest {
 
     final files = _testContext.codeSampleFiles;
 
-    print("Analyzing code samples ...");
+    log('Analyzing code samples ...');
 
     for (final f in files) {
       getAnalysisResult(_testContext.context, f);
     }
   }
 
-  Future<void> generate() async {
-    print("Generating code samples ...");
+  Future<void> generate({
+    required bool force,
+  }) async {
+    final path = p.join(currentDir.path, 'test', 'dartdoc_test.dart');
+    if (!force && File(path).existsSync()) {
+      log('test/dartdoc_test.dart is already exists.');
+      log('if you want create forcely, use --force option.');
+      return;
+    }
+
+    log('Generating code samples ...');
 
     final content = '''
 import 'package:dartdoc_test/dartdoc_test.dart';
-import 'package:test/test.dart';
 
-void main() {
-  test('analyze documentation code samples', () {
-    DartdocTest(DartdocTestOptions(write: false)).analyze();
-  });
-}
+/// [runDartdocTest] is a test function that tests code samples.
+void main() => runDartdocTest();
+
 ''';
 
     // if not exists, create test directory
@@ -79,7 +86,7 @@ void main() {
     final file = File(p.join(testDir.path, 'dartdoc_test.dart'));
     await file.writeAsString(content);
 
-    print("Done! Run 'dart test' to analyze code samples.");
+    log('Done! Run \'dart test\' to analyze code samples.');
   }
 }
 

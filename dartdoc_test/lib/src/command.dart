@@ -78,11 +78,17 @@ class AddCommand extends Command<void> {
   @override
   String get description => 'Generate dartdoc_test test file.';
 
-  AddCommand();
+  AddCommand() {
+    argParser.addFlag(
+      'force',
+      abbr: 'f',
+      help: 'overwrite to "test/dartdoc_test.dart"',
+    );
+  }
 
   @override
   Future<void> run() async {
     final dartdocTest = DartdocTest(DartdocTestOptions());
-    await dartdocTest.generate();
+    await dartdocTest.generate(force: argResults?.flag('force') ?? false);
   }
 }
