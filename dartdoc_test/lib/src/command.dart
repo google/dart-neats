@@ -21,19 +21,12 @@ class DartdocTestCommandRunner extends CommandRunner<void> {
           'dartdoc_test',
           'A tool to extract and analyze code samples in Dart projects.',
         ) {
-    argParser
-      ..addFlag(
-        'write',
-        abbr: 'w',
-        help: 'Write sample code to file',
-      )
-      ..addFlag(
-        'verbose',
-        abbr: 'v',
-        help: 'Print verbose output',
-      );
+    argParser.addFlag(
+      'verbose',
+      abbr: 'v',
+      help: 'Print verbose output',
+    );
 
-    addCommand(ExtractCommand());
     addCommand(AnalyzeCommand());
     addCommand(AddCommand());
   }
@@ -53,20 +46,6 @@ class DartdocTestCommandRunner extends CommandRunner<void> {
   }
 }
 
-class ExtractCommand extends Command<void> {
-  @override
-  String get name => 'extract';
-
-  @override
-  String get description => 'Extract code samples from the current directory.';
-
-  @override
-  Future<void> run() async {
-    final dartdocTest = DartdocTest(DartdocTestOptions.fromArg(globalResults));
-    await dartdocTest.run();
-  }
-}
-
 class AnalyzeCommand extends Command<void> {
   @override
   String get name => 'analyze';
@@ -74,9 +53,20 @@ class AnalyzeCommand extends Command<void> {
   @override
   String get description => 'Analyze code samples in the current directory.';
 
+  AnalyzeCommand() {
+    argParser.addFlag(
+      'write',
+      abbr: 'w',
+      help: 'Write code samples to file.',
+    );
+  }
+
   @override
   Future<void> run() async {
-    final dartdocTest = DartdocTest(DartdocTestOptions.fromArg(globalResults));
+    final dartdocTest = DartdocTest(DartdocTestOptions(
+      write: argResults?.flag('write') ?? false,
+      verbose: globalResults?.flag('verbose') ?? false,
+    ));
     await dartdocTest.analyze();
   }
 }
@@ -87,6 +77,8 @@ class AddCommand extends Command<void> {
 
   @override
   String get description => 'Generate dartdoc_test test file.';
+
+  AddCommand();
 
   @override
   Future<void> run() async {

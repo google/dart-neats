@@ -85,11 +85,13 @@ void main() {
 
 class DartdocTestOptions {
   final bool write;
+  final bool verbose;
   final List<String> include;
   final List<String> exclude;
 
   const DartdocTestOptions({
     this.write = false,
+    this.verbose = false,
     this.include = const [],
     this.exclude = const [],
   });
@@ -100,6 +102,7 @@ class DartdocTestOptions {
     }
     return DartdocTestOptions(
       write: args.flag('write'),
+      verbose: args.flag('verbose'),
     );
   }
 }

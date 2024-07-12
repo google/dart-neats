@@ -4,17 +4,17 @@ import 'package:test/test.dart';
 import 'package:test_process/test_process.dart';
 
 void main() {
-  testWithGolden('extract');
-  testWithGolden('analyze');
+  testWithGolden('run analyze command', ['analyze']);
+  testWithGolden('run analyze command by default', ['']);
 }
 
-void testWithGolden(String name) {
+void testWithGolden(String name, List<String> args) {
   // const separator = '======== separator ========\n';
   final golden = File('test/testdata/$name.txt');
-  test(name, () async {
+  test('integration_test: $name', () async {
     // run name in command line
     final buf = StringBuffer();
-    final process = await runDartdocTest([name]);
+    final process = await execute([name]);
     final output = await process.stdoutStream().toList();
     buf.writeAll(output, '\n');
 
@@ -24,7 +24,7 @@ void testWithGolden(String name) {
   });
 }
 
-Future<TestProcess> runDartdocTest(List<String> args) {
+Future<TestProcess> execute(List<String> args) {
   return TestProcess.start(
     Platform.resolvedExecutable,
     ['bin/dartdoc_test.dart', ...args],
