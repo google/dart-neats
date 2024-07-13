@@ -60,14 +60,14 @@ class DartdocTest {
   Future<void> generate({
     required bool force,
   }) async {
+    log('Creating \'test/dartdoc_test.dart\' ...');
+
     final path = p.join(currentDir.path, 'test', 'dartdoc_test.dart');
     if (!force && File(path).existsSync()) {
-      log('test/dartdoc_test.dart is already exists.');
-      log('if you want create forcely, use --force option.');
+      log('\'test/dartdoc_test.dart\' is already exists.');
+      log('if you want to create forcely, use --force option.');
       return;
     }
-
-    log('Generating code samples ...');
 
     final content = '''
 import 'package:dartdoc_test/dartdoc_test.dart';
