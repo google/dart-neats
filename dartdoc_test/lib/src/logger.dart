@@ -14,12 +14,12 @@
 
 import 'dart:io';
 
-var varbose = false;
+var verbose = false;
 
 enum LogLevel { debug, info, warning, error }
 
 void log(String message, [LogLevel level = LogLevel.info]) {
-  if (level == LogLevel.debug && !varbose) {
+  if (level == LogLevel.debug && !verbose) {
     return;
   }
   stdout.writeln(message);

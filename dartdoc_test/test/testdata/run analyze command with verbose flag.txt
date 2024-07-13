@@ -1,0 +1,74 @@
+Extracting code samples ...
+Analyzing code samples ...
+No issues found!
+No issues found!
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_0.dart(7..20): Unused import: 'dart:convert'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_1.dart(7..20): Unused import: 'dart:convert'.
+
+line 79, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
+   ╷
+79 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
+   │           ^^^^^^^^^^^
+   ╵
+
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_2.dart(7..20): Unused import: 'dart:convert'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_2.dart(30..111): Unused import: 'file:///Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart'.
+
+line 93, column 11 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
+   ╷
+93 │ /// final gcd = gcd(48, 18);
+   │           ^^
+   ╵
+
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_3.dart(7..20): Unused import: 'dart:convert'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_3.dart(30..111): Unused import: 'file:///Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_4.dart(7..20): Unused import: 'dart:convert'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(7..20): Unused import: 'dart:convert'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(30..74): Unused import: 'package:analyzer/dart/analysis/results.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(84..119): Unused import: 'package:analyzer/dart/ast/ast.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(129..168): Unused import: 'package:analyzer/dart/ast/visitor.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(178..209): Unused import: 'package:markdown/markdown.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(219..256): Unused import: 'package:source_span/source_span.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(7..20): Unused import: 'dart:convert'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(30..74): Unused import: 'package:analyzer/dart/analysis/results.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(84..119): Unused import: 'package:analyzer/dart/ast/ast.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(129..168): Unused import: 'package:analyzer/dart/ast/visitor.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(178..209): Unused import: 'package:markdown/markdown.dart'.
+
+this error is caused by generated code.
+/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(219..256): Unused import: 'package:source_span/source_span.dart'.

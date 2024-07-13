@@ -26,6 +26,10 @@ void getAnalysisResult(
 ) async {
   final result = await context.currentSession.getErrors(file.path);
   if (result is ErrorsResult) {
+    if (result.errors.isEmpty) {
+      log('No issues found!');
+      return;
+    }
     for (final e in result.errors) {
       final span = toOriginalFileSpanFromSampleError(file, e);
       if (span != null) {
@@ -34,14 +38,10 @@ void getAnalysisResult(
       } else {
         log(
           'this error is caused by generated code.\n'
-          '${e.message}\n',
+          '$e\n',
           LogLevel.debug,
         );
       }
-    }
-
-    if (result.errors.isEmpty) {
-      log('No issues found!');
     }
   }
 }

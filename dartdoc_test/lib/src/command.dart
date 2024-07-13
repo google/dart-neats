@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import 'package:args/command_runner.dart';
-import 'package:dartdoc_test/src/dartdoc_test.dart';
+
+import 'dartdoc_test.dart';
+import 'logger.dart' as log;
 
 class DartdocTestCommandRunner extends CommandRunner<void> {
   DartdocTestCommandRunner()
@@ -34,7 +36,8 @@ class DartdocTestCommandRunner extends CommandRunner<void> {
   @override
   Future<void> run(Iterable<String> args) async {
     // run AnalyzeCommand when no command is specified.
-    if (parse(args).command == null) {
+    final result = parse(args);
+    if (result.command == null) {
       // only print help message when -h flag is set.
       if (parse(args).flag('help')) {
         printUsage();
@@ -42,6 +45,8 @@ class DartdocTestCommandRunner extends CommandRunner<void> {
       }
       args = [AnalyzeCommand().name, ...args];
     }
+
+    log.verbose = result.flag('verbose');
     return super.run(args);
   }
 }
