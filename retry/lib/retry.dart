@@ -143,6 +143,38 @@ final class RetryOptions {
       await Future.delayed(delay(attempt));
     }
   }
+
+
+
+Stream<T> stream <T>(
+  Stream<T> Function() stream,
+  {
+    FutureOr<bool> Function(Exception)? retryIf,
+    FutureOr<void> Function(Exception)? onRetry,
+  }) async * {
+  var attempt = 0;
+  while(true){
+    attempt++; // first invocation is the first attempt
+    try{
+      await for (var event in stream()){
+        yield event;
+      }
+      break;
+    } on Exception catch (e) {
+      if (attempt >= maxAttempts ||
+          (retryIf != null && !(await retryIf(e)))) {
+        rethrow;
+      }
+      if (onRetry != null) {
+        await onRetry(e);
+      }
+    }
+    await Future.delayed(delay(attempt));
+  }
+}
+
+
+
 }
 
 /// Call [fn] retrying so long as [retryIf] return `true` for the exception

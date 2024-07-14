@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:ffi';
+
 import 'package:test/test.dart';
 import 'package:retry/retry.dart';
 
@@ -37,7 +39,7 @@ void main() {
         }
       }
     });
-
+    
     test('avoid overflow', () {
       final r = RetryOptions();
       expect(r.delay(64), r.maxDelay);
@@ -54,6 +56,19 @@ void main() {
       expect(count, equals(1));
     });
 
+    test ('stream (success)', () async {
+      s() async *{
+        yield 1;
+        yield 2;
+        yield 3;
+      }
+      final r = RetryOptions();
+      final rStream = r.stream(s);
+      final results = await rStream.toList();
+      expect(results, equals([1, 2, 3]));
+    });
+
+
     test('retry (unhandled exception)', () async {
       var count = 0;
       final r = RetryOptions(
@@ -64,6 +79,24 @@ void main() {
         throw Exception('Retry will fail');
       }, retryIf: (e) => false);
       await expectLater(f, throwsA(isException));
+      expect(count, equals(1));
+    });
+
+
+    test ('stream (unhandled exception)', () async {
+      var count = 0;
+      s() async *{
+        yield 1;
+        count++;
+        throw Exception('Stream will fail');
+      }
+      final r = RetryOptions(
+        maxAttempts: 5,
+      );
+      final rStream = r.stream(s,
+        retryIf: (e) => false
+      );
+      await expectLater(rStream.toList(), throwsA(isException));
       expect(count, equals(1));
     });
 
@@ -80,7 +113,23 @@ void main() {
       await expectLater(f, throwsA(isFormatException));
       expect(count, equals(5));
     });
-
+    test ('stream (retryIf, exhaust retries)', () async {
+      var count = 0;
+      s() async *{
+        yield 1;
+        count++;
+        throw FormatException('Retry will fail');
+      }
+      final r = RetryOptions(
+        maxAttempts: 5,
+        maxDelay: Duration(),
+      );
+      final rStream = r.stream(s,
+        retryIf: (e) => e is FormatException
+      );
+      await expectLater(rStream.toList, throwsA(isFormatException));
+      expect(count, equals(5));
+    });
     test('retry (success after 2)', () async {
       var count = 0;
       final r = RetryOptions(
@@ -97,7 +146,22 @@ void main() {
       await expectLater(f, completion(isTrue));
       expect(count, equals(2));
     });
-
+    test ('stream (success after 2)', () async {
+      var count = 0;
+      final r = RetryOptions(
+        maxAttempts: 5,
+        maxDelay: Duration(),
+      );
+      final rStream = r.stream(() async *{
+        count++;
+        if (count == 1) {
+          throw FormatException('Retry will be okay');
+        }
+        yield true;
+      }, retryIf: (e) => e is FormatException);
+      expect(await rStream.toList(), equals([true]));
+      expect(count, equals(2));
+    });
     test('retry (no retryIf)', () async {
       var count = 0;
       final r = RetryOptions(
@@ -114,7 +178,23 @@ void main() {
       await expectLater(f, completion(isTrue));
       expect(count, equals(2));
     });
-
+    test('stream (no retryIf)', () async {
+      var count = 0;
+      final r = RetryOptions(
+        maxAttempts: 5,
+        maxDelay: Duration(),
+      );
+      final rStream = r.stream(() async *{
+        count++;
+        if (count == 1) {
+          throw FormatException('Retry will be okay');
+        }
+        yield true;
+      });
+      final results = await rStream.toList();
+      expect(count, equals(2));
+      expect(results, equals([true]));
+    });
     test('retry (unhandled on 2nd try)', () async {
       var count = 0;
       final r = RetryOptions(
@@ -131,5 +211,22 @@ void main() {
       await expectLater(f, throwsA(isException));
       expect(count, equals(2));
     });
+    test('stream (unhandled on 2nd try)', () async {
+      var count = 0;
+      final r = RetryOptions(
+        maxAttempts: 5,
+        maxDelay: Duration(),
+      );
+      final f = r.stream(() async *{
+        count++;
+        if (count == 1) {
+          throw FormatException('Retry will be okay');
+        }
+        throw RangeError('unhandled thing');
+      }, retryIf: (e) => e is FormatException);
+      await expectLater(f.toList, throwsA(isRangeError));
+      expect(count, equals(2));
+    });
+
   });
 }
