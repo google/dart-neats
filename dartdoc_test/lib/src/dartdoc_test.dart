@@ -21,7 +21,6 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'analyzer.dart';
 import 'extractor.dart';
 import 'resource.dart';
-import 'logger.dart';
 
 class DartdocTest {
   DartdocTest(this.options) : _testContext = DartdocTestContext(options);
@@ -30,9 +29,7 @@ class DartdocTest {
   final DartdocTestContext _testContext;
 
   /// Extract code samples from the currrent directory.
-  Future<void> run() async {
-    log('Extracting code samples ...');
-
+  Future<void> extract() async {
     final session = _testContext.context.currentSession;
     for (final file in getFilesFrom(currentDir)) {
       final result = session.getParsedUnit(file.path);
@@ -45,30 +42,21 @@ class DartdocTest {
   }
 
   /// Analyze code samples.
-  Future<void> analyze() async {
-    await run();
-
+  Future<List<DartdocAnalysisResult>> analyze() async {
     final files = _testContext.codeSampleFiles;
 
-    log('Analyzing code samples ...');
-
+    final results = <DartdocAnalysisResult>[];
     for (final f in files) {
-      getAnalysisResult(_testContext.context, f);
+      final result = await getAnalysisResult(_testContext.context, f);
+      results.add(result);
     }
+
+    return results;
   }
 
   Future<void> generate({
     required bool force,
   }) async {
-    log('Creating \'test/dartdoc_test.dart\' ...');
-
-    final path = p.join(currentDir.path, 'test', 'dartdoc_test.dart');
-    if (!force && File(path).existsSync()) {
-      log('\'test/dartdoc_test.dart\' is already exists.');
-      log('if you want to create forcely, use --force option.');
-      return;
-    }
-
     final content = '''
 import 'package:dartdoc_test/dartdoc_test.dart';
 
@@ -85,8 +73,6 @@ void main() => runDartdocTest();
 
     final file = File(p.join(testDir.path, 'dartdoc_test.dart'));
     await file.writeAsString(content);
-
-    log('Done! Run \'dart test\' to analyze code samples.');
   }
 }
 

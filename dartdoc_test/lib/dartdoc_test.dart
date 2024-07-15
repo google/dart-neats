@@ -15,6 +15,8 @@
 import 'package:dartdoc_test/src/dartdoc_test.dart'
     show DartdocTest, DartdocTestOptions;
 
+import 'src/logger.dart';
+
 /// Test code samples in documentation comments.
 ///
 /// In default, this function will test all code samples in your project. if you
@@ -28,5 +30,10 @@ void runDartdocTest({
     exclude: exclude,
   );
   final dartdocTest = DartdocTest(options);
+
+  log('Extracting code samples ...');
+  dartdocTest.extract();
+
+  log('Analyzing code samples ...');
   dartdocTest.analyze();
 }

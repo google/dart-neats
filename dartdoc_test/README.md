@@ -22,10 +22,7 @@ You can test documentation code samples by creating `test/dartdoc_test.dart`.
 ```dart
 import 'package:dartdoc_test/dartdoc_test.dart';
 
-void main() {
-  runDartdocTest();
-}
-
+void main() => runDartdocTest();
 ```
 
 and then

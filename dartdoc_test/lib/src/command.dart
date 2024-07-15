@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
+import 'package:path/path.dart' as p;
 
 import 'dartdoc_test.dart';
-import 'logger.dart' as log;
+import 'logger.dart';
+import 'resource.dart';
 
 class DartdocTestCommandRunner extends CommandRunner<void> {
   DartdocTestCommandRunner()
@@ -46,7 +50,7 @@ class DartdocTestCommandRunner extends CommandRunner<void> {
       args = [AnalyzeCommand().name, ...args];
     }
 
-    log.verbose = result.flag('verbose');
+    verbose = result.flag('verbose');
     return super.run(args);
   }
 }
@@ -72,7 +76,30 @@ class AnalyzeCommand extends Command<void> {
       write: argResults?.flag('write') ?? false,
       verbose: globalResults?.flag('verbose') ?? false,
     ));
-    await dartdocTest.analyze();
+    log('Extracting code samples ...');
+    await dartdocTest.extract();
+
+    log('Analyzing code samples ...');
+    final result = await dartdocTest.analyze();
+
+    for (final r in result) {
+      if (r.errors.isEmpty) {
+        log('No issues found!');
+      }
+
+      for (final e in r.errors) {
+        if (e.span == null) {
+          log(
+            'Error found in generated code.\n'
+            '$e\n',
+            LogLevel.debug,
+          );
+        } else {
+          log(e.span!.message((e.error.message)));
+          log('\n');
+        }
+      }
+    }
   }
 }
 
@@ -94,6 +121,18 @@ class AddCommand extends Command<void> {
   @override
   Future<void> run() async {
     final dartdocTest = DartdocTest(DartdocTestOptions());
+
+    log('Creating \'test/dartdoc_test.dart\' ...');
+
+    final path = p.join(currentDir.path, 'test', 'dartdoc_test.dart');
+    final force = argResults?.flag('force') ?? false;
+    if (!force && File(path).existsSync()) {
+      log('\'test/dartdoc_test.dart\' is already exists.');
+      log('if you want to create forcely, use --force option.');
+      return;
+    }
+
     await dartdocTest.generate(force: argResults?.flag('force') ?? false);
+    log('Done! Run \'dart test\' to analyze code samples.');
   }
 }
