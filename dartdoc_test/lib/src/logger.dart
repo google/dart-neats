@@ -12,15 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io';
+enum LogLevel {
+  debug(0),
+  info(1),
+  warning(2),
+  error(3);
 
-var verbose = false;
+  const LogLevel(this.value);
 
-enum LogLevel { debug, info, warning, error }
+  final int value;
 
-void log(String message, [LogLevel level = LogLevel.info]) {
-  if (level == LogLevel.debug && !verbose) {
-    return;
-  }
-  stdout.writeln(message);
+  bool operator >(LogLevel other) => index > other.index;
+}
+
+typedef LogFunction = void Function(String message, LogLevel level);
+
+final class Logger {
+  final LogFunction _log;
+  Logger(this._log);
+
+  void info(String message) => _log(message, LogLevel.info);
+  void debug(String message) => _log(message, LogLevel.debug);
+  void warning(String message) => _log(message, LogLevel.warning);
+  void error(String message) => _log(message, LogLevel.error);
+  void log(String message, LogLevel level) => _log(message, level);
 }

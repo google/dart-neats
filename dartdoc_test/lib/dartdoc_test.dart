@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io';
+
 import 'package:dartdoc_test/src/dartdoc_test.dart'
     show DartdocTest, DartdocTestOptions;
 
@@ -24,6 +26,7 @@ import 'src/logger.dart';
 void runDartdocTest({
   List<String> include = const [],
   List<String> exclude = const [],
+  bool verbose = false,
 }) {
   final options = DartdocTestOptions(
     include: include,
@@ -31,9 +34,15 @@ void runDartdocTest({
   );
   final dartdocTest = DartdocTest(options);
 
-  log('Extracting code samples ...');
+  final logger = Logger((level, message) {
+    if (verbose || LogLevel.debug != level) {
+      stdout.writeln(message);
+    }
+  });
+
+  logger.info('Extracting code samples ...');
   dartdocTest.extract();
 
-  log('Analyzing code samples ...');
+  logger.info('Analyzing code samples ...');
   dartdocTest.analyze();
 }

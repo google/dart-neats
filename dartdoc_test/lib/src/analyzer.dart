@@ -18,8 +18,6 @@ import 'package:analyzer/error/error.dart';
 import 'package:dartdoc_test/src/resource.dart';
 import 'package:source_span/source_span.dart';
 
-import 'logger.dart';
-
 Future<DartdocAnalysisResult> getAnalysisResult(
   AnalysisContext context,
   CodeSampleFile file,
@@ -30,20 +28,6 @@ Future<DartdocAnalysisResult> getAnalysisResult(
       final span = toOriginalFileSpanFromSampleError(file, e);
       return DartdocErrorResult(e, span);
     }).toList();
-
-    for (final e in result.errors) {
-      final span = toOriginalFileSpanFromSampleError(file, e);
-      if (span != null) {
-        log(span.message((e.message)));
-        log('\n');
-      } else {
-        log(
-          'Error found in generated code.\n'
-          '$e\n',
-          LogLevel.debug,
-        );
-      }
-    }
 
     return DartdocAnalysisResult(file, errors);
   }
