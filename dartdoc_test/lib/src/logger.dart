@@ -12,8 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:dartdoc_test/src/command.dart';
+import 'dart:io';
 
-Future<void> main(List<String> arguments) async {
-  await DartdocTestCommandRunner().run(arguments);
+var verbose = false;
+
+enum LogLevel { debug, info, warning, error }
+
+void log(String message, [LogLevel level = LogLevel.info]) {
+  if (level == LogLevel.debug && !verbose) {
+    return;
+  }
+  stdout.writeln(message);
 }

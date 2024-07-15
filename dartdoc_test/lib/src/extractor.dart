@@ -43,11 +43,6 @@ class DocumentationCodeSample {
   final DocumentationComment comment;
   final String code;
   final List<String> imports;
-  // TODO: Find the SourceSpan of [code] within [comment], this is pretty hard
-  //       to do because package:markdown doesn't provide any line-numbers or
-  //       offsets. One option is to parse it manually, instead of using
-  //       package:markdown. Or just search for ```dart and ``` and use that to
-  //       find code samples.
 
   DocumentationCodeSample({
     required this.comment,

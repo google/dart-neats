@@ -39,7 +39,7 @@ void main() {
       final originalText =
           '/// Example:```dart\n/// final x = sample();\n/// ```\nint sample() {\n  return 1;\n}\n';
       final sampleText =
-          "import 'dart:convert';  void main() {\n  final x = sample();\n}\n";
+          'import \'dart:convert\';  void main() {\n  final x = sample();\n}\n';
 
       final original = SourceFile.fromString(originalText)
           .span(0, 48); // span of comment section.

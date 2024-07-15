@@ -18,32 +18,37 @@ import 'package:analyzer/error/error.dart';
 import 'package:dartdoc_test/src/resource.dart';
 import 'package:source_span/source_span.dart';
 
-void getAnalysisResult(
+import 'logger.dart';
+
+Future<DartdocAnalysisResult> getAnalysisResult(
   AnalysisContext context,
   CodeSampleFile file,
 ) async {
   final result = await context.currentSession.getErrors(file.path);
   if (result is ErrorsResult) {
+    final errors = result.errors.map((e) {
+      final span = toOriginalFileSpanFromSampleError(file, e);
+      return DartdocErrorResult(e, span);
+    }).toList();
+
     for (final e in result.errors) {
-      if (e.errorCode.type != ErrorType.SYNTACTIC_ERROR &&
-          e.errorCode.type != ErrorType.COMPILE_TIME_ERROR) {
-        continue;
-      }
       final span = toOriginalFileSpanFromSampleError(file, e);
       if (span != null) {
-        print(span.message((e.message)));
-        print('\n');
+        log(span.message((e.message)));
+        log('\n');
       } else {
-        print('this error is caused by generated code.');
-        print(e.message);
-        print('\n');
+        log(
+          'Error found in generated code.\n'
+          '$e\n',
+          LogLevel.debug,
+        );
       }
     }
 
-    if (result.errors.isEmpty) {
-      print('No issues found!');
-    }
+    return DartdocAnalysisResult(file, errors);
   }
+
+  return DartdocAnalysisResult(file, []);
 }
 
 FileSpan? toOriginalFileSpanFromSampleError(
@@ -69,4 +74,18 @@ FileSpan? getOriginalSubSpan({
     return null;
   }
   return original.subspan(offset, offset + sample.length);
+}
+
+class DartdocErrorResult {
+  final AnalysisError error;
+  final FileSpan? span;
+
+  DartdocErrorResult(this.error, this.span);
+}
+
+class DartdocAnalysisResult {
+  final CodeSampleFile file;
+  final List<DartdocErrorResult> errors;
+
+  DartdocAnalysisResult(this.file, this.errors);
 }
