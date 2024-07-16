@@ -52,13 +52,15 @@ void printSummary(Logger logger, List<DartdocAnalysisResult> results) {
 
   if (isFailed) {
     buf.write(
-      'FAILED: ${errors.length} issues found (Found ${samples.length} code samples in ${files.length} files)',
+      'FAILED: ${errors.length} issues found',
     );
   } else {
     buf.write(
-      'PASSED: No issues found (Found ${samples.length} code samples in ${files.length} files)',
+      'PASSED: No issues found',
     );
   }
+
+  buf.write(' (Found ${samples.length} code samples in ${files.length} files)');
 
   logger.info(buf.toString());
 }
