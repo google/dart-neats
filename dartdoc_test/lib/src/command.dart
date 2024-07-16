@@ -103,7 +103,7 @@ class AnalyzeCommand extends DartdocTestCommand {
         if (e.span == null) {
           logger.debug(
             'Error found in generated code.\n'
-            '$e\n',
+            '${e.error}\n',
           );
         } else {
           logger.info(e.span!.message((e.error.message)));
@@ -111,6 +111,8 @@ class AnalyzeCommand extends DartdocTestCommand {
         }
       }
     }
+
+    printSummary(logger, result);
   }
 }
 

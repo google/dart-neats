@@ -39,7 +39,7 @@ class DartdocTestContext {
       PhysicalResourceProvider.INSTANCE,
     );
     _contextCollection = AnalysisContextCollection(
-      includedPaths: [currentDir.absolute.path],
+      includedPaths: [currentDir.path],
       resourceProvider: _resourceProvider,
     );
 
@@ -50,7 +50,7 @@ class DartdocTestContext {
       testDir.createSync();
     }
 
-    _context = _contextCollection.contextFor(currentDir.absolute.path);
+    _context = _contextCollection.contextFor(currentDir.path);
   }
 
   final DartdocTestOptions options;
@@ -100,7 +100,7 @@ class DartdocTestContext {
   ) {
     for (final (i, s) in samples.indexed) {
       final fileName = p.basename(filePath).replaceFirst('.dart', '_$i.dart');
-      final path = p.join(testDir.absolute.path, fileName);
+      final path = p.join(testDir.path, fileName);
       _writeFile(path, s);
     }
   }

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'analyzer.dart';
+
 enum LogLevel {
   debug(0),
   info(1),
@@ -36,4 +38,27 @@ final class Logger {
   void warning(String message) => _log(message, LogLevel.warning);
   void error(String message) => _log(message, LogLevel.error);
   void log(String message, LogLevel level) => _log(message, level);
+}
+
+void printSummary(Logger logger, List<DartdocAnalysisResult> results) {
+  final buf = StringBuffer();
+  final isFailed = results.indexWhere((r) => r.errors.isNotEmpty) != -1;
+
+  final errors =
+      results.expand((r) => r.errors).where((e) => e.span != null).toList();
+  final samples = results.map((r) => r.file).toList();
+  final files =
+      samples.map((s) => s.sample.comment.span.sourceUrl?.path).toSet();
+
+  if (isFailed) {
+    buf.write(
+      'FAILED: ${errors.length} issues found (Found ${samples.length} code samples in ${files.length} files)',
+    );
+  } else {
+    buf.write(
+      'PASSED: No issues found (Found ${samples.length} code samples in ${files.length} files)',
+    );
+  }
+
+  logger.info(buf.toString());
 }
