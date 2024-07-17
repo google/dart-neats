@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dartdoc_test/src/dartdoc_test.dart';
 import 'package:test/test.dart';
 import 'package:test_process/test_process.dart';
 
@@ -7,6 +8,13 @@ void main() {
   testWithGolden('run analyze command', ['analyze']);
   testWithGolden('run analyze command by default', ['']);
   testWithGolden('run analyze command with verbose flag', ['analyze', '-v']);
+
+  group('extractor', () {
+    final dartdocTest = DartdocTest(DartdocTestOptions());
+    test('extract code samples', () async {
+      await dartdocTest.extract();
+    });
+  });
 }
 
 void testWithGolden(String name, List<String> args) {

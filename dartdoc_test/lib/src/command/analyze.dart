@@ -61,6 +61,6 @@ class AnalyzeCommand extends DartdocTestCommand {
       }
     }
 
-    printSummary(logger, result);
+    logger.info(Summary.from(result).toString());
   }
 }

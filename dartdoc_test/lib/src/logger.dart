@@ -40,27 +40,38 @@ final class Logger {
   void log(String message, LogLevel level) => _log(message, level);
 }
 
-void printSummary(Logger logger, List<DartdocAnalysisResult> results) {
-  final buf = StringBuffer();
-  final isFailed = results.indexWhere((r) => r.errors.isNotEmpty) != -1;
+class Summary {
+  final bool isFailed;
+  final int errors;
+  final int samples;
+  final int files;
 
-  final errors =
-      results.expand((r) => r.errors).where((e) => e.span != null).toList();
-  final samples = results.map((r) => r.file).toList();
-  final files =
-      samples.map((s) => s.sample.comment.span.sourceUrl?.path).toSet();
+  const Summary(this.isFailed, this.errors, this.samples, this.files);
 
-  if (isFailed) {
-    buf.write(
-      'FAILED: ${errors.length} issues found',
-    );
-  } else {
-    buf.write(
-      'PASSED: No issues found',
-    );
+  factory Summary.from(List<DartdocAnalysisResult> results) {
+    final isFailed = results.indexWhere((r) => r.errors.isNotEmpty) != -1;
+    final errors = results.expand((r) => r.errors).where((e) => e.span != null);
+    final samples = results.map((r) => r.file);
+    final files =
+        samples.map((s) => s.sample.comment.span.sourceUrl?.path).toSet();
+    return Summary(isFailed, errors.length, samples.length, files.length);
   }
 
-  buf.write(' (Found ${samples.length} code samples in ${files.length} files)');
+  @override
+  String toString() {
+    var buf = StringBuffer();
+    if (isFailed) {
+      buf.write(
+        'FAILED: $errors issues found',
+      );
+    } else {
+      buf.write(
+        'PASSED: No issues found',
+      );
+    }
 
-  logger.info(buf.toString());
+    buf.write(' (Found $samples code samples in $files files)');
+
+    return buf.toString();
+  }
 }
