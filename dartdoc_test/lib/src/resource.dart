@@ -40,7 +40,7 @@ class DartdocTestContext {
       resourceProvider: _resourceProvider,
     );
 
-    _testDir = Directory(p.join(currentDir.path, options.outDir ?? _testPath));
+    _testDir = Directory(p.join(currentDir.path, options.out ?? _testPath));
 
     if (options.write) {
       if (_testDir.existsSync()) {

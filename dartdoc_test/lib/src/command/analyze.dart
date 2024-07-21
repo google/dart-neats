@@ -29,13 +29,19 @@ class AnalyzeCommand extends DartdocTestCommand {
       abbr: 'w',
       help: 'Write code samples to file.',
     );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Output code samples to file',
+    );
   }
 
   @override
   Future<void> run() async {
     final dartdocTest = DartdocTest(DartdocTestOptions(
-      write: argResults?.flag('write') ?? false,
-      verbose: globalResults?.flag('verbose') ?? false,
+      write: argResults.flag('write'),
+      verbose: globalResults.flag('verbose'),
+      out: argResults.option('output'),
     ));
     logger.info('Extracting code samples ...');
     await dartdocTest.extract();
@@ -55,6 +61,7 @@ class AnalyzeCommand extends DartdocTestCommand {
             '${e.error}\n',
           );
         } else {
+          logger.debug('original error: ${e.error}');
           logger.info(e.span!.message((e.error.message)));
           logger.info('\n');
         }

@@ -191,16 +191,6 @@ List<String> getCodeSamples(String comment) {
         }
       }
     }
-    // if (element.tag == 'code' &&
-    //     element.attributes['class'] == 'language-dart') {
-    //   var code = '';
-    //   element.children?.accept(_ForEachText((text) {
-    //     code += text.textContent;
-    //   }));
-    //   if (code.isNotEmpty) {
-    //     codes.add(code);
-    //   }
-    // }
   }));
   return codes;
 }

@@ -14,6 +14,7 @@
 
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 
 import '../logger.dart';
@@ -64,4 +65,22 @@ final class DartdocTestCommandRunner extends CommandRunner<void> {
 
 abstract class DartdocTestCommand extends Command<void> {
   Logger get logger => (runner as DartdocTestCommandRunner).logger;
+
+  @override
+  ArgResults get argResults {
+    final arg = super.argResults;
+    if (arg == null) {
+      throw Exception('argResults is null');
+    }
+    return arg;
+  }
+
+  @override
+  ArgResults get globalResults {
+    final arg = super.globalResults;
+    if (arg == null) {
+      throw Exception('globalResults is null');
+    }
+    return arg;
+  }
 }

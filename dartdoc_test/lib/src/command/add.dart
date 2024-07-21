@@ -39,7 +39,7 @@ class AddCommand extends DartdocTestCommand {
     logger.info('Creating \'test/dartdoc_test.dart\' ...');
 
     final path = p.join(currentDir.path, 'test', 'dartdoc_test.dart');
-    final force = argResults?.flag('force') ?? false;
+    final force = argResults.flag('force');
     if (!force && File(path).existsSync()) {
       logger.info('\'test/dartdoc_test.dart\' is already exists.');
       logger.info('if you want to create forcely, use --force option.');
