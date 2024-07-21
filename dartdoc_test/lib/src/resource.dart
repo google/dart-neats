@@ -67,7 +67,7 @@ class DartdocTestContext {
   AnalysisContext get context => _context;
 
   void _writeFile(String path, DocumentationCodeSample sample) {
-    final content = sample.wrappedCode;
+    final content = sample.wrappedCode(_testDir);
     if (options.write) {
       // write for new file
       final file = _resourceProvider.getFile(path);

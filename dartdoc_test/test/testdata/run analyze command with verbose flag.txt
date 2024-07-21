@@ -2,7 +2,7 @@ Extracting code samples ...
 Analyzing code samples ...
 No issues found!
 No issues found!
-original error: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_0.dart(168..168): Expected to find ';'.
+original error: .dartdoc_test/example_0.dart:115:115: Expected to find ';'.
 line 29, column 34 of example/lib/example.dart: Expected to find ';'.
    ╷
 29 │   /// final result = SimpleClass().add(2, 3)  //
@@ -10,16 +10,10 @@ line 29, column 34 of example/lib/example.dart: Expected to find ';'.
    ╵
 
 
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_0.dart(7..20): Unused import: 'dart:convert'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_1.dart(7..20): Unused import: 'dart:convert'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_2.dart(7..20): Unused import: 'dart:convert'.
-
-original error: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_3.dart(152..163): Local variable 'isPalindrome' can't be referenced before it is declared.
+.dartdoc_test/example_0.dart:7:20: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/example_1.dart:7:20: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/example_2.dart:7:20: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+original error: .dartdoc_test/example_3.dart:99:110: Local variable 'isPalindrome' can't be referenced before it is declared.
 line 79, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
 79 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
@@ -27,13 +21,9 @@ line 79, column 11 of example/lib/example.dart: Local variable 'isPalindrome' ca
    ╵
 
 
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_3.dart(7..20): Unused import: 'dart:convert'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_3.dart(30..111): Unused import: 'file:///Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart'.
-
-original error: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_4.dart(143..145): Local variable 'gcd' can't be referenced before it is declared.
+.dartdoc_test/example_3.dart:7:20: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/example_3.dart:30:58: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
+original error: .dartdoc_test/example_4.dart:90:92: Local variable 'gcd' can't be referenced before it is declared.
 line 93, column 11 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
    ╷
 93 │ /// final gcd = gcd(48, 18);
@@ -41,49 +31,23 @@ line 93, column 11 of example/lib/example.dart: Local variable 'gcd' can't be re
    ╵
 
 
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_4.dart(7..20): Unused import: 'dart:convert'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_4.dart(30..111): Unused import: 'file:///Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_5.dart(7..20): Unused import: 'dart:convert'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(7..20): Unused import: 'dart:convert'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(30..74): Unused import: 'package:analyzer/dart/analysis/results.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(84..119): Unused import: 'package:analyzer/dart/ast/ast.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(129..168): Unused import: 'package:analyzer/dart/ast/visitor.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(178..209): Unused import: 'package:markdown/markdown.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_0.dart(219..256): Unused import: 'package:source_span/source_span.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(7..20): Unused import: 'dart:convert'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(30..74): Unused import: 'package:analyzer/dart/analysis/results.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(84..119): Unused import: 'package:analyzer/dart/ast/ast.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(129..168): Unused import: 'package:analyzer/dart/ast/visitor.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(178..209): Unused import: 'package:markdown/markdown.dart'.
-
-Error found in generated code.
-/Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/extractor_1.dart(219..256): Unused import: 'package:source_span/source_span.dart'.
-
+.dartdoc_test/example_4.dart:7:20: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/example_4.dart:30:58: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/example_5.dart:7:20: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_0.dart:7:20: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_0.dart:30:38: Unused import: 'dart:io'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_0.dart:48:71: Unused import: 'package:path/path.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_0.dart:86:130: Unused import: 'package:analyzer/dart/analysis/results.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_0.dart:140:175: Unused import: 'package:analyzer/dart/ast/ast.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_0.dart:185:224: Unused import: 'package:analyzer/dart/ast/visitor.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_0.dart:234:265: Unused import: 'package:markdown/markdown.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_0.dart:275:312: Unused import: 'package:source_span/source_span.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_1.dart:7:20: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_1.dart:30:38: Unused import: 'dart:io'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_1.dart:48:71: Unused import: 'package:path/path.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_1.dart:86:130: Unused import: 'package:analyzer/dart/analysis/results.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_1.dart:140:175: Unused import: 'package:analyzer/dart/ast/ast.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_1.dart:185:224: Unused import: 'package:analyzer/dart/ast/visitor.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_1.dart:234:265: Unused import: 'package:markdown/markdown.dart'. (ignored because issue occurs in the generated code)
+.dartdoc_test/extractor_1.dart:275:312: Unused import: 'package:source_span/source_span.dart'. (ignored because issue occurs in the generated code)
 FAILED: 3 issues found (Found 10 code samples in 3 files)

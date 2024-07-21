@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:path/path.dart' as p;
+
+import 'package:analyzer/error/error.dart';
+
 import '../dartdoc_test.dart';
 import '../logger.dart';
 import 'command_runner.dart';
@@ -57,16 +61,27 @@ class AnalyzeCommand extends DartdocTestCommand {
       for (final e in r.errors) {
         if (e.span == null) {
           logger.debug(
-            'Error found in generated code.\n'
-            '${e.error}\n',
+            '${e.error.format()} '
+            '(ignored because issue occurs in the generated code)',
           );
         } else {
-          logger.debug('original error: ${e.error}');
+          logger.debug('original error: ${e.error.format()}');
           logger.info(e.span!.message((e.error.message)));
           logger.info('\n');
         }
       }
     }
     logger.info(Summary.from(result).toString());
+  }
+}
+
+extension on AnalysisError {
+  String format() {
+    StringBuffer buffer = StringBuffer();
+
+    buffer.write(p.relative(source.fullName));
+    buffer.write(':$offset:${(offset + length - 1)}: ');
+    buffer.write(message);
+    return buffer.toString();
   }
 }

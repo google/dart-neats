@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import 'dart:convert';
+import 'dart:io';
+import 'package:path/path.dart' as p;
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -50,14 +52,19 @@ class DocumentationCodeSample {
     this.imports = const [],
   });
 
-  String get wrappedCode {
-    final fileName = comment.span.sourceUrl;
+  String wrappedCode(Directory testDir) {
+    var fileName = comment.span.sourceUrl;
 
     final buf = StringBuffer();
     buf.writeAll(comment.imports, '\n');
     buf.writeln();
     if (fileName != null) {
-      buf.writeln('import \'$fileName\';');
+      if (fileName.hasAbsolutePath) {
+        final path = p.relative(fileName.path, from: testDir.absolute.path);
+        buf.writeln('import \'$path\';');
+      } else {
+        buf.writeln('import \'$fileName\';');
+      }
     }
     buf.writeln();
     buf.writeln('void main() {');
