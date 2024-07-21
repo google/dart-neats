@@ -26,7 +26,7 @@ class SimpleClass {
   ///
   /// Example:
   /// ```
-  /// final result = SimpleClass().add(2, 3);
+  /// final result = SimpleClass().add(2, 3)  //
   /// print(result); // 5
   /// ```
   int add(int a, int b) {

@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io' as io;
+
 import 'analyzer.dart';
+
+final supportsAnsi = io.stdout.hasTerminal && io.stdout.supportsAnsiEscapes;
+
+// ANSI color codes
+final _reset = supportsAnsi ? '\u001b[0m' : '';
+final _red = supportsAnsi ? '\u001b[31m' : '';
+final _green = supportsAnsi ? '\u001b[32m' : '';
+final _yellow = supportsAnsi ? '\u001b[33m' : '';
+final _bold = supportsAnsi ? '\u001b[1m' : '';
 
 enum LogLevel {
   debug(0),
@@ -61,13 +72,11 @@ class Summary {
   String toString() {
     var buf = StringBuffer();
     if (isFailed) {
-      buf.write(
-        'FAILED: $errors issues found',
-      );
+      buf.write('${_red}FAILED$_reset: ');
+      buf.write('$errors issues found');
     } else {
-      buf.write(
-        'PASSED: No issues found',
-      );
+      buf.write('${_green}PASSED$_reset: ');
+      buf.write('No issues found!');
     }
 
     buf.write(' (Found $samples code samples in $files files)');

@@ -18,7 +18,7 @@ void main() {
 }
 
 void testWithGolden(String name, List<String> args) {
-  // const separator = '======== separator ========\n';
+  const separator = '======== separator ========\n';
   final golden = File('test/testdata/$name.txt');
   test('integration_test: $name', () async {
     // run name in command line

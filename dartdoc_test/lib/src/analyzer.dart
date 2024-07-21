@@ -39,7 +39,7 @@ FileSpan? toOriginalFileSpanFromSampleError(
   CodeSampleFile file,
   AnalysisError error,
 ) {
-  final (start, end) = (error.offset, error.offset + error.length - 1);
+  final (start, end) = (error.offset, error.offset + error.length);
   final codeSampleSpan = file.sourceFile.span(start, end);
   final span = getOriginalSubSpan(
     sample: codeSampleSpan,
