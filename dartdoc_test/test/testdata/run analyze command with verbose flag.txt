@@ -2,6 +2,7 @@ Extracting code samples ...
 Analyzing code samples ...
 No issues found!
 No issues found!
+original error: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_0.dart(168..168): Expected to find ';'.
 line 29, column 34 of example/lib/example.dart: Expected to find ';'.
    ╷
 29 │   /// final result = SimpleClass().add(2, 3)  //
@@ -18,6 +19,7 @@ Error found in generated code.
 Error found in generated code.
 /Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_2.dart(7..20): Unused import: 'dart:convert'.
 
+original error: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_3.dart(152..163): Local variable 'isPalindrome' can't be referenced before it is declared.
 line 79, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
 79 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
@@ -31,6 +33,7 @@ Error found in generated code.
 Error found in generated code.
 /Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_3.dart(30..111): Unused import: 'file:///Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart'.
 
+original error: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/.dartdoc_test/example_4.dart(143..145): Local variable 'gcd' can't be referenced before it is declared.
 line 93, column 11 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
    ╷
 93 │ /// final gcd = gcd(48, 18);
