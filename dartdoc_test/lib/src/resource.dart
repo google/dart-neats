@@ -28,9 +28,6 @@ const _testPath = '.dartdoc_test';
 
 final currentDir = Directory.current;
 
-/// Directory to store generated code samples
-final testDir = Directory(p.join(currentDir.path, _testPath));
-
 /// Context for running tests.
 /// manage [resourceProvider].
 class DartdocTestContext {
@@ -43,11 +40,13 @@ class DartdocTestContext {
       resourceProvider: _resourceProvider,
     );
 
+    _testDir = Directory(p.join(currentDir.path, options.outDir ?? _testPath));
+
     if (options.write) {
-      if (testDir.existsSync()) {
-        testDir.deleteSync(recursive: true);
+      if (_testDir.existsSync()) {
+        _testDir.deleteSync(recursive: true);
       }
-      testDir.createSync();
+      _testDir.createSync();
     }
 
     _context = _contextCollection.contextFor(currentDir.path);
@@ -58,6 +57,9 @@ class DartdocTestContext {
   late final OverlayResourceProvider _resourceProvider;
   late final AnalysisContextCollection _contextCollection;
   late final AnalysisContext _context;
+
+  /// Directory to store generated code samples
+  late final Directory _testDir;
 
   final _files = <CodeSampleFile>{};
 
@@ -85,22 +87,13 @@ class DartdocTestContext {
     ));
   }
 
-  List<String> getSamplesFilePath() {
-    final files = _resourceProvider
-        .getFolder(testDir.path)
-        .getChildren()
-        .map((e) => e.path)
-        .toList();
-    return files;
-  }
-
   void writeCodeSamples(
     String filePath,
     List<DocumentationCodeSample> samples,
   ) {
     for (final (i, s) in samples.indexed) {
       final fileName = p.basename(filePath).replaceFirst('.dart', '_$i.dart');
-      final path = p.join(testDir.path, fileName);
+      final path = p.join(_testDir.path, fileName);
       _writeFile(path, s);
     }
   }

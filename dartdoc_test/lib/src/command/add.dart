@@ -55,12 +55,12 @@ void main() => runDartdocTest();
 ''';
 
     // if not exists, create test directory
-    final testDir = Directory(p.join(currentDir.path, 'test'));
-    if (!testDir.existsSync()) {
-      testDir.createSync();
+    final directory = Directory(p.join(currentDir.path, 'test'));
+    if (!directory.existsSync()) {
+      directory.createSync();
     }
 
-    final file = File(p.join(testDir.path, 'dartdoc_test.dart'));
+    final file = File(p.join(directory.path, 'dartdoc_test.dart'));
     await file.writeAsString(content);
     logger.info('Done! Run \'dart test\' to analyze code samples.');
   }

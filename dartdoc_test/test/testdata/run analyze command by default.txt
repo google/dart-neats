@@ -15,3 +15,5 @@ line 93, column 11 of example/lib/example.dart: Local variable 'gcd' can't be re
    │           ^^
    ╵
 
+
+FAILED: 2 issues found (Found 9 code samples in 3 files)

@@ -58,12 +58,14 @@ class DartdocTestOptions {
   final bool verbose;
   final List<String> include;
   final List<String> exclude;
+  final String? outDir;
 
   const DartdocTestOptions({
     this.write = false,
     this.verbose = false,
     this.include = const [],
     this.exclude = const [],
+    this.outDir,
   });
 
   factory DartdocTestOptions.fromArg([ArgResults? args]) {
@@ -73,6 +75,7 @@ class DartdocTestOptions {
     return DartdocTestOptions(
       write: args.flag('write'),
       verbose: args.flag('verbose'),
+      outDir: args.option('out'),
     );
   }
 }
