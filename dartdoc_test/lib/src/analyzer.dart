@@ -25,27 +25,23 @@ Future<DartdocAnalysisResult> getAnalysisResult(
   final result = await context.currentSession.getErrors(file.path);
   if (result is ErrorsResult) {
     final errors = result.errors.map((e) {
-      final span = toOriginalFileSpanFromSampleError(file, e);
-      return DartdocErrorResult(e, span);
+      final (start, end) = (e.offset, e.offset + e.length);
+      final generatedSpan = file.sourceFile.span(start, end);
+      final commentSpan = getOriginalSubSpan(
+        sample: generatedSpan,
+        original: file.sample.comment.span,
+      );
+      return DartdocErrorResult(
+        error: e,
+        commentSpan: commentSpan,
+        generatedSpan: generatedSpan,
+      );
     }).toList();
 
     return DartdocAnalysisResult(file, errors);
   }
 
   return DartdocAnalysisResult(file, []);
-}
-
-FileSpan? toOriginalFileSpanFromSampleError(
-  CodeSampleFile file,
-  AnalysisError error,
-) {
-  final (start, end) = (error.offset, error.offset + error.length);
-  final codeSampleSpan = file.sourceFile.span(start, end);
-  final span = getOriginalSubSpan(
-    sample: codeSampleSpan,
-    original: file.sample.comment.span,
-  );
-  return span;
 }
 
 // get original file span from sample file span
@@ -62,9 +58,14 @@ FileSpan? getOriginalSubSpan({
 
 class DartdocErrorResult {
   final AnalysisError error;
-  final FileSpan? span;
+  final FileSpan? commentSpan;
+  final FileSpan? generatedSpan;
 
-  DartdocErrorResult(this.error, this.span);
+  DartdocErrorResult({
+    required this.error,
+    required this.commentSpan,
+    required this.generatedSpan,
+  });
 }
 
 class DartdocAnalysisResult {

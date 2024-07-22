@@ -2,25 +2,39 @@ Extracting code samples ...
 Analyzing code samples ...
 No issues found!
 No issues found!
-line 29, column 34 of example/lib/example.dart: Expected to find ';'.
+line 17, column 19 of example/lib/example.dart: Expected to find ';'.
    ╷
-29 │   /// final result = SimpleClass().add(2, 3)  //
-   │                                  ^
+17 │ /// Example of documentation comments and code samples in Dart.
+   │                   ^
    ╵
 
 
-line 79, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
+line 21, column 20 of example/lib/example.dart: The function 'SimpleClass' isn't defined.
    ╷
-79 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
-   │           ^^^^^^^^^^^^
+21 │ /// final result = add(2, 3);
+   │                    ^^^^^^^^^^
    ╵
 
 
-line 93, column 11 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
+line 30, column 21 of example/lib/example.dart: The function 'ComplexClass' isn't defined.
    ╷
-93 │ /// final gcd = gcd(48, 18);
-   │           ^^^
+30 │ /// final result = multiply(4, 5);
+   │                     ^^^^^^^^^^^^
    ╵
 
 
-FAILED: 3 issues found (Found 10 code samples in 3 files)
+line 35, column 18 of example/lib/example.dart: The function 'ComplexClass' isn't defined.
+   ╷
+35 │ /// final result = multiply(6, 7);
+   │                  ^^^^^^^^^^^^
+   ╵
+
+
+line 64, column 33 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
+   ╷
+64 │ /// Checks if a string is a palindrome.
+   │                                 ^^^
+   ╵
+
+
+FAILED: 34 issues found (Found 11 code samples in 3 files)

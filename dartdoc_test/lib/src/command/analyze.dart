@@ -14,7 +14,7 @@
 
 import 'package:path/path.dart' as p;
 
-import 'package:analyzer/error/error.dart';
+import 'package:source_span/source_span.dart';
 
 import '../dartdoc_test.dart';
 import '../logger.dart';
@@ -59,14 +59,15 @@ class AnalyzeCommand extends DartdocTestCommand {
       }
 
       for (final e in r.errors) {
-        if (e.span == null) {
+        if (e.commentSpan == null) {
           logger.debug(
-            '${e.error.format()} '
+            '${e.generatedSpan?.format(e.error.message)} '
             '(ignored because issue occurs in the generated code)',
           );
         } else {
-          logger.debug('original error: ${e.error.format()}');
-          logger.info(e.span!.message((e.error.message)));
+          logger.debug(
+              'original error: ${e.generatedSpan?.format(e.error.message)}');
+          logger.info(e.commentSpan!.message((e.error.message)));
           logger.info('\n');
         }
       }
@@ -75,12 +76,11 @@ class AnalyzeCommand extends DartdocTestCommand {
   }
 }
 
-extension on AnalysisError {
-  String format() {
+extension on FileSpan {
+  String format(String message) {
     StringBuffer buffer = StringBuffer();
-
-    buffer.write(p.relative(source.fullName));
-    buffer.write(':$offset:${(offset + length - 1)}: ');
+    buffer.write(p.prettyUri(sourceUrl));
+    buffer.write(':${start.line + 1}:${(start.column + 1)}: ');
     buffer.write(message);
     return buffer.toString();
   }

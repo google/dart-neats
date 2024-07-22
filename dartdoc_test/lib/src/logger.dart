@@ -61,7 +61,8 @@ class Summary {
 
   factory Summary.from(List<DartdocAnalysisResult> results) {
     final isFailed = results.indexWhere((r) => r.errors.isNotEmpty) != -1;
-    final errors = results.expand((r) => r.errors).where((e) => e.span != null);
+    final errors =
+        results.expand((r) => r.errors).where((e) => e.generatedSpan != null);
     final samples = results.map((r) => r.file);
     final files =
         samples.map((s) => s.sample.comment.span.sourceUrl?.path).toSet();
