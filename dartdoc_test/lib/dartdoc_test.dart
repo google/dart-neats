@@ -14,10 +14,9 @@
 
 import 'dart:io';
 
-import 'package:test/test.dart';
-
 import 'src/dartdoc_test.dart' show DartdocTest, DartdocTestOptions;
 import 'src/logger.dart';
+import 'src/reporter.dart';
 
 /// Test code samples in documentation comments.
 ///
@@ -28,32 +27,32 @@ void runDartdocTest({
   List<String> exclude = const [],
   bool verbose = false,
 }) async {
-  test('dartdoc_test', () async {
-    final options = DartdocTestOptions(
-      include: include,
-      exclude: exclude,
-    );
-    final dartdocTest = DartdocTest(options);
+  final options = DartdocTestOptions(
+    include: include,
+    exclude: exclude,
+  );
+  final dartdocTest = DartdocTest(options);
 
-    final logger = Logger((message, level) {
-      if (verbose || LogLevel.debug != level) {
-        stdout.writeln(message);
-      }
-    });
-
-    logger.info('Extracting code samples ...');
-    dartdocTest.extract();
-
-    logger.info('Analyzing code samples ...');
-    final result = await dartdocTest.analyze();
-
-    if (result.isEmpty) {
-      logger.info('No issues found.');
-    } else {
-      logger.error('Found ${result.length} issues:');
-      for (final issue in result) {
-        logger.error(issue.toString());
-      }
+  final logger = Logger((message, level) {
+    if (verbose || LogLevel.debug != level) {
+      stdout.writeln(message);
     }
   });
+
+  logger.info('Extracting code samples ...');
+  dartdocTest.extract();
+
+  logger.info('Analyzing code samples ...');
+  final result = await dartdocTest.analyze();
+
+  if (result.isEmpty) {
+    logger.info('No issues found.');
+  } else {
+    logger.error('Found ${result.length} issues:');
+    for (final issue in result) {
+      logger.error(issue.toString());
+    }
+  }
+
+  final reporter = Reporter.test();
 }

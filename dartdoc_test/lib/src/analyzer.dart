@@ -72,5 +72,7 @@ class DartdocAnalysisResult {
   final CodeSampleFile file;
   final List<DartdocErrorResult> errors;
 
+  bool get hasError => errors.any((e) => e.commentSpan != null);
+
   DartdocAnalysisResult(this.file, this.errors);
 }

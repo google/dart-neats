@@ -53,11 +53,12 @@ class AnalyzeCommand extends DartdocTestCommand {
     logger.info('Analyzing code samples ...');
     final result = await dartdocTest.analyze();
 
-    for (final r in result) {
-      if (r.errors.isEmpty) {
-        logger.info('No issues found!');
-      }
+    final hasIssues = result.any((r) => r.hasError);
+    if (!hasIssues) {
+      logger.info('No issues found.');
+    }
 
+    for (final r in result) {
       for (final e in r.errors) {
         if (e.commentSpan == null) {
           logger.debug(

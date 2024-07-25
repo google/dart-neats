@@ -15,8 +15,13 @@
 import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
-abstract class Reporter {
+abstract base class Reporter {
+  Reporter({required bool verbose});
+
   void reportSourceFile(String filename, void Function(SourceFileReporter) fn);
+
+  static Reporter stdout() => _ReporterForStdout();
+  static Reporter test() => _RepoterForTest();
 }
 
 abstract class SourceFileReporter {
@@ -28,9 +33,14 @@ abstract class CodeSampleReporter {
   void issues(SourceSpan span, String message);
 }
 
-final class ReporterForStdout
+final class _ReporterForStdout
     implements Reporter, SourceFileReporter, CodeSampleReporter {
-  ReporterForStdout();
+  final _issues = <(SourceSpan, String)>[];
+
+  List<(SourceSpan, String)> get reportedIssues => _issues;
+
+  _ReporterForStdout();
+
   @override
   void reportSourceFile(String filename, void Function(SourceFileReporter) fn) {
     fn(this);
@@ -38,15 +48,22 @@ final class ReporterForStdout
 
   @override
   void reportCodeSample(
-      String identifier, int number, void Function(CodeSampleReporter p1) fn) {}
+      String identifier, int number, void Function(CodeSampleReporter) fn) {
+    fn(this);
+  }
+
+  void reportIssue() {}
 
   @override
-  void issues(span, String message) {}
+  void issues(SourceSpan span, String message) =>
+      reportedIssues.add((span, message));
 }
 
-final class RepoterForTest
+final class _RepoterForTest
     implements Reporter, SourceFileReporter, CodeSampleReporter {
   final _issues = <(SourceSpan, String)>[];
+
+  _RepoterForTest();
 
   @override
   void reportSourceFile(String filename, void Function(SourceFileReporter) fn) {
@@ -58,7 +75,7 @@ final class RepoterForTest
   @override
   void reportCodeSample(
       String identifier, int number, void Function(CodeSampleReporter) fn) {
-    test('$identifier-($number)', () {
+    test('$identifier ($number)', () {
       fn(this);
       if (_issues.isNotEmpty) {
         for (final issue in _issues) {

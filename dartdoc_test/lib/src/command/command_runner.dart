@@ -18,6 +18,7 @@ import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 
 import '../logger.dart';
+import '../reporter.dart';
 import 'add.dart';
 import 'analyze.dart';
 
@@ -38,6 +39,8 @@ final class DartdocTestCommandRunner extends CommandRunner<void> {
   }
 
   late final Logger logger;
+
+  final Reporter reporter = Reporter.stdout();
 
   @override
   Future<void> run(Iterable<String> args) async {

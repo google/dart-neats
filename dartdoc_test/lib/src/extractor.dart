@@ -53,7 +53,7 @@ class DocumentationCodeSample {
   });
 
   String wrappedCode(Directory testDir) {
-    var fileName = comment.span.sourceUrl;
+    final fileName = comment.span.sourceUrl;
 
     final buf = StringBuffer();
     buf.writeAll(comment.imports, '\n');
