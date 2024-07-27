@@ -26,7 +26,8 @@ abstract base class Reporter {
 
   get reportedIssues => _issues;
 
-  void reportSourceFile(String filename, void Function(SourceFileReporter) fn);
+  void reportSourceFile(String filename,
+      [void Function(SourceFileReporter)? fn]);
 
   void addIssue(Issue issue) => _issues.add(issue);
 
@@ -37,8 +38,8 @@ abstract base class Reporter {
 }
 
 abstract class SourceFileReporter {
-  void reportCodeSample(
-      String identifier, int number, void Function(CodeSampleReporter) fn);
+  void reportCodeSample(Uri generatedUrl,
+      [void Function(CodeSampleReporter)? fn]);
 }
 
 abstract class CodeSampleReporter {
@@ -59,20 +60,25 @@ final class _ReporterForStdout extends Reporter
         );
 
   @override
-  void reportSourceFile(String filename, void Function(SourceFileReporter) fn) {
-    fn(this);
+  void reportSourceFile(String filename,
+      [void Function(SourceFileReporter)? fn]) {
+    fn?.call(this);
     final issues = _issues
         .where((issue) => issue.commentSpan?.sourceUrl?.path == filename);
+    reportIssues(issues);
   }
 
   @override
-  void reportCodeSample(
-      String identifier, int number, void Function(CodeSampleReporter) fn) {
-    fn(this);
+  void reportCodeSample(Uri generatedUrl,
+      [void Function(CodeSampleReporter)? fn]) {
+    fn?.call(this);
+    final issues = _issues
+        .where((issue) => issue.generatedSpan?.sourceUrl == generatedUrl);
+    reportIssues(issues);
   }
 
   @override
-  void reportIssues(List<Issue> issues) {
+  void reportIssues(Iterable<Issue> issues) {
     for (final issue in issues) {
       _reportIssue(issue);
     }
@@ -98,18 +104,18 @@ final class _RepoterForTest extends Reporter
   _RepoterForTest({required super.verbose});
 
   @override
-  void reportSourceFile(String filename, void Function(SourceFileReporter) fn) {
+  void reportSourceFile(String filename,
+      [void Function(SourceFileReporter)? fn]) {
     group(filename, () {
-      fn(this);
-      reportCodeSample('1', 1, (reporter) {});
+      fn?.call(this);
     });
   }
 
   @override
-  void reportCodeSample(
-      String identifier, int number, void Function(CodeSampleReporter) fn) {
-    test('$identifier ($number)', () {
-      fn(this);
+  void reportCodeSample(Uri generatedUrl,
+      [void Function(CodeSampleReporter)? fn]) {
+    test('', () {
+      fn?.call(this);
     });
   }
 

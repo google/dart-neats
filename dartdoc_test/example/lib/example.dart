@@ -50,6 +50,7 @@ int multiply(int x, int y) {
 /// dev-dependencies:
 ///   dartdoc_test: any
 /// ```
+void ignore() {}
 
 /// Should return: Expected to find ';'.
 /// ```dart

@@ -1,52 +1,27 @@
 Extracting code samples ...
 Analyzing code samples ...
-.dartdoc_test/example_0.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_1.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_2.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
 original error: .dartdoc_test/example_3.dart:5:27: Expected to find ';'.
-line 45, column 17 of example/lib/example.dart: Expected to find ';'.
+line 57, column 29 of example/lib/example.dart: Expected to find ';'.
    ╷
-45 │ /// def add(a, b):
-   │                 ^
+57 │ /// final fact = factorial(5)
+   │                             ^
    ╵
 
 
-.dartdoc_test/example_3.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
 original error: .dartdoc_test/example_4.dart:5:24: Local variable 'isPalindrome' can't be referenced before it is declared.
-line 70, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
+line 71, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
-70 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
+71 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
    │           ^^^^^^^^^^^^
    ╵
 
 
-.dartdoc_test/example_4.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_4.dart:2:8: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
 original error: .dartdoc_test/example_5.dart:5:15: Local variable 'gcd' can't be referenced before it is declared.
-line 78, column 36 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
+line 79, column 36 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
    ╷
-78 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
+79 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
    │                                    ^^^
    ╵
 
 
-.dartdoc_test/example_5.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_5.dart:2:8: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_6.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_0.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_0.dart:2:8: Unused import: 'dart:io'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_0.dart:3:8: Unused import: 'package:path/path.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_0.dart:4:8: Unused import: 'package:analyzer/dart/analysis/results.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_0.dart:5:8: Unused import: 'package:analyzer/dart/ast/ast.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_0.dart:6:8: Unused import: 'package:analyzer/dart/ast/visitor.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_0.dart:7:8: Unused import: 'package:markdown/markdown.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_0.dart:8:8: Unused import: 'package:source_span/source_span.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_1.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_1.dart:2:8: Unused import: 'dart:io'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_1.dart:3:8: Unused import: 'package:path/path.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_1.dart:4:8: Unused import: 'package:analyzer/dart/analysis/results.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_1.dart:5:8: Unused import: 'package:analyzer/dart/ast/ast.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_1.dart:6:8: Unused import: 'package:analyzer/dart/ast/visitor.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_1.dart:7:8: Unused import: 'package:markdown/markdown.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/extractor_1.dart:8:8: Unused import: 'package:source_span/source_span.dart'. (ignored because issue occurs in the generated code)
 FAILED: 28 issues found (Found 11 code samples in 3 files)

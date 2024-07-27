@@ -1,22 +1,22 @@
 Extracting code samples ...
 Analyzing code samples ...
-line 45, column 17 of example/lib/example.dart: Expected to find ';'.
+line 57, column 29 of example/lib/example.dart: Expected to find ';'.
    ╷
-45 │ /// def add(a, b):
-   │                 ^
+57 │ /// final fact = factorial(5)
+   │                             ^
    ╵
 
 
-line 70, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
+line 71, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
-70 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
+71 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
    │           ^^^^^^^^^^^^
    ╵
 
 
-line 78, column 36 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
+line 79, column 36 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
    ╷
-78 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
+79 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
    │                                    ^^^
    ╵
 

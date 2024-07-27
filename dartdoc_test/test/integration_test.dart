@@ -29,6 +29,8 @@ void main() {
       await process.shouldExit(0);
     });
   });
+
+  // TODO: add integration test for `runDartdocTest()` (test output).
 }
 
 void testWithGolden(String name, List<String> args) {

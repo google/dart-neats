@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'package:dartdoc_test/src/reporter.dart';
+import 'package:dartdoc_test/src/resource.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:source_span/source_span.dart';
@@ -70,20 +71,9 @@ class AnalyzeCommand extends DartdocTestCommand {
       logger.info('No issues found.');
     }
 
-    for (final r in result) {
-      for (final e in r.errors) {
-        if (e.commentSpan == null) {
-          logger.debug(
-            '${e.generatedSpan?.format(e.error.message)} '
-            '(ignored because issue occurs in the generated code)',
-          );
-        } else {
-          logger.debug(
-              'original error: ${e.generatedSpan?.format(e.error.message)}');
-          logger.info(e.commentSpan!.message((e.error.message)));
-          logger.info('\n');
-        }
-      }
+    final files = getFilesFrom(currentDir);
+    for (final file in files) {
+      reporter.reportSourceFile(file.path);
     }
     logger.info(Summary.from(result).toString());
   }
