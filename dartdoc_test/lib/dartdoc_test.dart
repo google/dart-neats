@@ -27,10 +27,8 @@ void runDartdocTest({
   List<String> exclude = const [],
   bool verbose = false,
 }) async {
-  final options = DartdocTestOptions(
-    include: include,
-    exclude: exclude,
-  );
+  final options =
+      DartdocTestOptions(include: include, exclude: exclude, verbose: verbose);
   final dartdocTest = DartdocTest(options);
 
   final logger = Logger((message, level) {
@@ -54,5 +52,5 @@ void runDartdocTest({
     }
   }
 
-  final reporter = Reporter.test();
+  final reporter = Reporter.test(verbose: verbose);
 }

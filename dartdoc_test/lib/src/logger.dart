@@ -35,7 +35,7 @@ enum LogLevel {
 
   final int value;
 
-  bool operator >(LogLevel other) => index > other.index;
+  bool operator >=(LogLevel other) => index >= other.index;
 }
 
 typedef LogFunction = void Function(String message, LogLevel level);

@@ -40,7 +40,7 @@ final class DartdocTestCommandRunner extends CommandRunner<void> {
 
   late final Logger logger;
 
-  final Reporter reporter = Reporter.stdout();
+  late final Reporter reporter;
 
   @override
   Future<void> run(Iterable<String> args) async {
@@ -62,12 +62,15 @@ final class DartdocTestCommandRunner extends CommandRunner<void> {
       }
     });
 
+    reporter = Reporter.stdout(verbose: verbose);
+
     return super.run(args);
   }
 }
 
 abstract class DartdocTestCommand extends Command<void> {
   Logger get logger => (runner as DartdocTestCommandRunner).logger;
+  Reporter get reporter => (runner as DartdocTestCommandRunner).reporter;
 
   @override
   ArgResults get argResults {

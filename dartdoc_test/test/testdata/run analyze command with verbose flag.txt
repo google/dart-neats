@@ -1,59 +1,37 @@
 Extracting code samples ...
 Analyzing code samples ...
-No issues found!
-No issues found!
-original error: .dartdoc_test/example_0.dart:6:12: Expected to find ';'.
-line 17, column 19 of example/lib/example.dart: Expected to find ';'.
-   ╷
-17 │ /// Example of documentation comments and code samples in Dart.
-   │                   ^
-   ╵
-
-
-original error: .dartdoc_test/example_0.dart:5:18: The function 'SimpleClass' isn't defined.
-line 21, column 20 of example/lib/example.dart: The function 'SimpleClass' isn't defined.
-   ╷
-21 │ /// final result = add(2, 3);
-   │                    ^^^^^^^^^^
-   ╵
-
-
 .dartdoc_test/example_0.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_0.dart:2:8: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
-original error: .dartdoc_test/example_1.dart:5:19: The function 'ComplexClass' isn't defined.
-line 30, column 21 of example/lib/example.dart: The function 'ComplexClass' isn't defined.
-   ╷
-30 │ /// final result = multiply(4, 5);
-   │                     ^^^^^^^^^^^^
-   ╵
-
-
 .dartdoc_test/example_1.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_1.dart:2:8: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
-original error: .dartdoc_test/example_2.dart:5:16: The function 'ComplexClass' isn't defined.
-line 35, column 18 of example/lib/example.dart: The function 'ComplexClass' isn't defined.
+.dartdoc_test/example_2.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+original error: .dartdoc_test/example_3.dart:5:27: Expected to find ';'.
+line 45, column 17 of example/lib/example.dart: Expected to find ';'.
    ╷
-35 │ /// final result = multiply(6, 7);
-   │                  ^^^^^^^^^^^^
+45 │ /// def add(a, b):
+   │                 ^
    ╵
 
 
-.dartdoc_test/example_2.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_2.dart:2:8: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_3.dart:5:24: Local variable 'isPalindrome' can't be referenced before it is declared. (ignored because issue occurs in the generated code)
 .dartdoc_test/example_3.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_3.dart:2:8: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
-original error: .dartdoc_test/example_4.dart:5:15: Local variable 'gcd' can't be referenced before it is declared.
-line 64, column 33 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
+original error: .dartdoc_test/example_4.dart:5:24: Local variable 'isPalindrome' can't be referenced before it is declared.
+line 70, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
-64 │ /// Checks if a string is a palindrome.
-   │                                 ^^^
+70 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
+   │           ^^^^^^^^^^^^
    ╵
 
 
 .dartdoc_test/example_4.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
 .dartdoc_test/example_4.dart:2:8: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
+original error: .dartdoc_test/example_5.dart:5:15: Local variable 'gcd' can't be referenced before it is declared.
+line 78, column 36 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
+   ╷
+78 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
+   │                                    ^^^
+   ╵
+
+
 .dartdoc_test/example_5.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/example_5.dart:2:8: Unused import: '../example/lib/example.dart'. (ignored because issue occurs in the generated code)
 .dartdoc_test/example_6.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
 .dartdoc_test/extractor_0.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
 .dartdoc_test/extractor_0.dart:2:8: Unused import: 'dart:io'. (ignored because issue occurs in the generated code)
@@ -71,4 +49,4 @@ line 64, column 33 of example/lib/example.dart: Local variable 'gcd' can't be re
 .dartdoc_test/extractor_1.dart:6:8: Unused import: 'package:analyzer/dart/ast/visitor.dart'. (ignored because issue occurs in the generated code)
 .dartdoc_test/extractor_1.dart:7:8: Unused import: 'package:markdown/markdown.dart'. (ignored because issue occurs in the generated code)
 .dartdoc_test/extractor_1.dart:8:8: Unused import: 'package:source_span/source_span.dart'. (ignored because issue occurs in the generated code)
-FAILED: 34 issues found (Found 11 code samples in 3 files)
+FAILED: 28 issues found (Found 11 code samples in 3 files)

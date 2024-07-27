@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:dartdoc_test/src/reporter.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:source_span/source_span.dart';
@@ -28,16 +29,17 @@ class AnalyzeCommand extends DartdocTestCommand {
   String get description => 'Analyze code samples in the current directory.';
 
   AnalyzeCommand() {
-    argParser.addFlag(
-      'write',
-      abbr: 'w',
-      help: 'Write code samples to file.',
-    );
-    argParser.addOption(
-      'output',
-      abbr: 'o',
-      help: 'Output code samples to file',
-    );
+    argParser
+      ..addFlag(
+        'write',
+        abbr: 'w',
+        help: 'Write code samples to file.',
+      )
+      ..addOption(
+        'output',
+        abbr: 'o',
+        help: 'Output code samples to file',
+      );
   }
 
   @override
@@ -52,6 +54,16 @@ class AnalyzeCommand extends DartdocTestCommand {
 
     logger.info('Analyzing code samples ...');
     final result = await dartdocTest.analyze();
+
+    for (final r in result) {
+      for (final e in r.errors) {
+        reporter.addIssue(Issue(
+          message: e.error.message,
+          commentSpan: e.commentSpan,
+          generatedSpan: e.generatedSpan,
+        ));
+      }
+    }
 
     final hasIssues = result.any((r) => r.hasError);
     if (!hasIssues) {

@@ -1,40 +1,24 @@
 Extracting code samples ...
 Analyzing code samples ...
-No issues found!
-No issues found!
-line 17, column 19 of example/lib/example.dart: Expected to find ';'.
+line 45, column 17 of example/lib/example.dart: Expected to find ';'.
    ╷
-17 │ /// Example of documentation comments and code samples in Dart.
-   │                   ^
+45 │ /// def add(a, b):
+   │                 ^
    ╵
 
 
-line 21, column 20 of example/lib/example.dart: The function 'SimpleClass' isn't defined.
+line 70, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
-21 │ /// final result = add(2, 3);
-   │                    ^^^^^^^^^^
+70 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
+   │           ^^^^^^^^^^^^
    ╵
 
 
-line 30, column 21 of example/lib/example.dart: The function 'ComplexClass' isn't defined.
+line 78, column 36 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
    ╷
-30 │ /// final result = multiply(4, 5);
-   │                     ^^^^^^^^^^^^
+78 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
+   │                                    ^^^
    ╵
 
 
-line 35, column 18 of example/lib/example.dart: The function 'ComplexClass' isn't defined.
-   ╷
-35 │ /// final result = multiply(6, 7);
-   │                  ^^^^^^^^^^^^
-   ╵
-
-
-line 64, column 33 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
-   ╷
-64 │ /// Checks if a string is a palindrome.
-   │                                 ^^^
-   ╵
-
-
-FAILED: 34 issues found (Found 11 code samples in 3 files)
+FAILED: 28 issues found (Found 11 code samples in 3 files)

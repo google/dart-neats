@@ -12,16 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io' as io;
+
+import 'package:path/path.dart' as p;
+import 'package:dartdoc_test/src/logger.dart';
 import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
 abstract base class Reporter {
-  Reporter({required bool verbose});
+  Reporter({required bool verbose}) : _verbose = verbose;
+  final _issues = <Issue>[];
+  final bool _verbose;
+
+  get reportedIssues => _issues;
 
   void reportSourceFile(String filename, void Function(SourceFileReporter) fn);
 
-  static Reporter stdout() => _ReporterForStdout();
-  static Reporter test() => _RepoterForTest();
+  void addIssue(Issue issue) => _issues.add(issue);
+
+  static Reporter stdout({required bool verbose}) =>
+      _ReporterForStdout(verbose: verbose);
+  static Reporter test({required bool verbose}) =>
+      _RepoterForTest(verbose: verbose);
 }
 
 abstract class SourceFileReporter {
@@ -30,20 +42,27 @@ abstract class SourceFileReporter {
 }
 
 abstract class CodeSampleReporter {
-  void issues(SourceSpan span, String message);
+  void reportIssues(List<Issue> issues);
 }
 
-final class _ReporterForStdout
-    implements Reporter, SourceFileReporter, CodeSampleReporter {
-  final _issues = <(SourceSpan, String)>[];
+final class _ReporterForStdout extends Reporter
+    implements SourceFileReporter, CodeSampleReporter {
+  final Logger logger;
 
-  List<(SourceSpan, String)> get reportedIssues => _issues;
-
-  _ReporterForStdout();
+  _ReporterForStdout({required super.verbose})
+      : logger = Logger(
+          (message, level) {
+            if (verbose || LogLevel.debug != level) {
+              io.stdout.writeln(message);
+            }
+          },
+        );
 
   @override
   void reportSourceFile(String filename, void Function(SourceFileReporter) fn) {
     fn(this);
+    final issues = _issues
+        .where((issue) => issue.commentSpan?.sourceUrl?.path == filename);
   }
 
   @override
@@ -52,23 +71,37 @@ final class _ReporterForStdout
     fn(this);
   }
 
-  void reportIssue() {}
-
   @override
-  void issues(SourceSpan span, String message) =>
-      reportedIssues.add((span, message));
+  void reportIssues(List<Issue> issues) {
+    for (final issue in issues) {
+      _reportIssue(issue);
+    }
+  }
+
+  void _reportIssue(Issue issue) {
+    if (issue.commentSpan == null) {
+      logger.debug(
+        '${issue.generatedSpan?.format(issue.message)} '
+        '(ignored because issue occurs in the generated code)',
+      );
+    } else {
+      logger.debug(
+          'original error: ${issue.generatedSpan?.format(issue.message)}');
+      logger.info(issue.commentSpan!.message(issue.message));
+      logger.info('\n');
+    }
+  }
 }
 
-final class _RepoterForTest
-    implements Reporter, SourceFileReporter, CodeSampleReporter {
-  final _issues = <(SourceSpan, String)>[];
-
-  _RepoterForTest();
+final class _RepoterForTest extends Reporter
+    implements SourceFileReporter, CodeSampleReporter {
+  _RepoterForTest({required super.verbose});
 
   @override
   void reportSourceFile(String filename, void Function(SourceFileReporter) fn) {
     group(filename, () {
       fn(this);
+      reportCodeSample('1', 1, (reporter) {});
     });
   }
 
@@ -77,17 +110,41 @@ final class _RepoterForTest
       String identifier, int number, void Function(CodeSampleReporter) fn) {
     test('$identifier ($number)', () {
       fn(this);
-      if (_issues.isNotEmpty) {
-        for (final issue in _issues) {
-          final (span, message) = issue;
-          printOnFailure(span.message(message));
-        }
-        // print issues and make sure test fails.
-        fail('code sample has ${_issues.length} issues');
-      }
     });
   }
 
   @override
-  void issues(SourceSpan span, String message) => _issues.add((span, message));
+  void reportIssues(List<Issue> issues) {
+    for (final issue in issues) {
+      _reportIssue(issue);
+    }
+  }
+
+  void _reportIssue(Issue issue) {
+    if (issue.commentSpan != null) {
+      fail(issue.commentSpan!.format(issue.message));
+    }
+  }
+}
+
+class Issue {
+  final FileSpan? commentSpan;
+  final FileSpan? generatedSpan;
+  final String message;
+
+  Issue({
+    this.commentSpan,
+    this.generatedSpan,
+    required this.message,
+  });
+}
+
+extension on FileSpan {
+  String format(String message) {
+    StringBuffer buffer = StringBuffer();
+    buffer.write(p.prettyUri(sourceUrl));
+    buffer.write(':${start.line + 1}:${(start.column + 1)}: ');
+    buffer.write(message);
+    return buffer.toString();
+  }
 }
