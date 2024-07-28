@@ -43,7 +43,7 @@ abstract class SourceFileReporter {
 }
 
 abstract class CodeSampleReporter {
-  void reportIssues(List<Issue> issues);
+  void reportIssues(Iterable<Issue> issues);
 }
 
 final class _ReporterForStdout extends Reporter
@@ -108,19 +108,25 @@ final class _RepoterForTest extends Reporter
       [void Function(SourceFileReporter)? fn]) {
     group(filename, () {
       fn?.call(this);
+      final issues = _issues
+          .where((issue) => issue.commentSpan?.sourceUrl?.path == filename);
+      reportIssues(issues);
     });
   }
 
   @override
   void reportCodeSample(Uri generatedUrl,
       [void Function(CodeSampleReporter)? fn]) {
-    test('', () {
+    group('$generatedUrl', () {
       fn?.call(this);
+      final issues = _issues
+          .where((issue) => issue.generatedSpan?.sourceUrl == generatedUrl);
+      reportIssues(issues);
     });
   }
 
   @override
-  void reportIssues(List<Issue> issues) {
+  void reportIssues(Iterable<Issue> issues) {
     for (final issue in issues) {
       _reportIssue(issue);
     }

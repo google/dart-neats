@@ -18,8 +18,10 @@ import 'package:test/test.dart';
 import 'package:test_process/test_process.dart';
 
 void main() {
+  testWithGolden('show help', ['-h']);
   testWithGolden('run analyze command', ['analyze']);
   testWithGolden('run analyze command by default', ['']);
+  testWithGolden('run analyze command by default with verbose flag', ['-v']);
   testWithGolden('run analyze command with verbose flag', ['analyze', '-v']);
 
   group('extractor', () {

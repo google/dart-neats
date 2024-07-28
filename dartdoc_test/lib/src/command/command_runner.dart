@@ -45,15 +45,14 @@ final class DartdocTestCommandRunner extends CommandRunner<void> {
   @override
   Future<void> run(Iterable<String> args) async {
     // run AnalyzeCommand when no command is specified.
-    final result = parse(args);
-    if (result.command == null) {
-      // only print help message when -h flag is set.
-      if (parse(args).flag('help')) {
+    if (args.isEmpty || !commands.keys.contains(args.first)) {
+      if (args.contains('-h') || args.contains('--help')) {
         printUsage();
         return;
       }
       args = [AnalyzeCommand().name, ...args];
     }
+    final result = parse(args);
 
     final verbose = result.flag('verbose');
     logger = Logger((message, level) {
