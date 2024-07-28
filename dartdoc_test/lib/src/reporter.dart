@@ -133,9 +133,15 @@ final class _RepoterForTest extends Reporter
   }
 
   void _reportIssue(Issue issue) {
-    if (issue.commentSpan != null) {
-      fail(issue.commentSpan!.format(issue.message));
-    }
+    test(
+      'test for ${issue.commentSpan?.text}',
+      () {
+        if (issue.commentSpan != null) {
+          fail(issue.commentSpan!.format(issue.message));
+        }
+      },
+      // skip: !_verbose && issue.generatedSpan == null,
+    );
   }
 }
 

@@ -17,6 +17,7 @@ import 'dart:io';
 import 'src/dartdoc_test.dart' show DartdocTest, DartdocTestOptions;
 import 'src/logger.dart';
 import 'src/reporter.dart';
+import 'src/resource.dart';
 
 /// Test code samples in documentation comments.
 ///
@@ -43,14 +44,18 @@ void runDartdocTest({
   logger.info('Analyzing code samples ...');
   final result = await dartdocTest.analyze();
 
-  if (result.isEmpty) {
-    logger.info('No issues found.');
-  } else {
-    logger.error('Found ${result.length} issues:');
-    for (final issue in result) {
-      logger.error(issue.toString());
+  final reporter = Reporter.test(verbose: verbose);
+  for (final r in result) {
+    for (final e in r.errors) {
+      reporter.addIssue(Issue(
+        message: e.error.message,
+        commentSpan: e.commentSpan,
+        generatedSpan: e.generatedSpan,
+      ));
     }
   }
-
-  final reporter = Reporter.test(verbose: verbose);
+  final files = getFilesFrom(currentDir);
+  for (final file in files) {
+    reporter.reportSourceFile(file.path);
+  }
 }
