@@ -2,27 +2,24 @@ $ dart run bin/dartdoc_test.dart analyze -v
 Extracting code samples ...
 Analyzing code samples ...
 original error: .dartdoc_test/example_3.dart:5:27: Expected to find ';'.
-line 57, column 29 of example/lib/example.dart: Expected to find ';'.
+example/lib/example.dart:57:29: : Expected to find ';'.
    ╷
 57 │ /// final fact = factorial(5)
    │                             ^
    ╵
 
-
 original error: .dartdoc_test/example_4.dart:5:24: Local variable 'isPalindrome' can't be referenced before it is declared.
-line 71, column 11 of example/lib/example.dart: Local variable 'isPalindrome' can't be referenced before it is declared.
+example/lib/example.dart:71:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
 71 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
    │           ^^^^^^^^^^^^
    ╵
 
-
 original error: .dartdoc_test/example_5.dart:5:15: Local variable 'gcd' can't be referenced before it is declared.
-line 79, column 36 of example/lib/example.dart: Local variable 'gcd' can't be referenced before it is declared.
+example/lib/example.dart:79:36: : Local variable 'gcd' can't be referenced before it is declared.
    ╷
 79 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
    │                                    ^^^
    ╵
-
 
 FAILED: 28 issues found (Found 11 code samples in 3 files)

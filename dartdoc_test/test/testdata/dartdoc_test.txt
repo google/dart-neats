@@ -1,23 +1,35 @@
 00:00 +0: loading example/test/dartdoc_test.dart
 Extracting code samples ...
 Analyzing code samples ...
-00:00 +0: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart test for )
-00:00 +0 -1: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart test for ) [E]
-  example/lib/example.dart:57:29: Expected to find ';'.
+00:00 +0: [dartdoc_test] example/lib/example.dart test for )
+00:00 +0 -1: [dartdoc_test] example/lib/example.dart test for ) [E]
+  example/lib/example.dart:57:29: : Expected to find ';'.
+     ╷
+  57 │ /// final fact = factorial(5)
+     │                             ^
+     ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 140:11  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 142:11  _RepoterForTest._reportIssue.<fn>
   
-00:00 +0 -1: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart test for isPalindrome
-00:00 +0 -2: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart test for isPalindrome [E]
-  example/lib/example.dart:71:11: Local variable 'isPalindrome' can't be referenced before it is declared.
+00:00 +0 -1: [dartdoc_test] example/lib/example.dart test for isPalindrome
+00:00 +0 -2: [dartdoc_test] example/lib/example.dart test for isPalindrome [E]
+  example/lib/example.dart:71:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
+     ╷
+  71 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
+     │           ^^^^^^^^^^^^
+     ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 140:11  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 142:11  _RepoterForTest._reportIssue.<fn>
   
-00:00 +0 -2: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart test for gcd
-00:00 +0 -3: /Users/takumma/work/gsoc/dart-neats/dartdoc_test/example/lib/example.dart test for gcd [E]
-  example/lib/example.dart:79:36: Local variable 'gcd' can't be referenced before it is declared.
+00:00 +0 -2: [dartdoc_test] example/lib/example.dart test for gcd
+00:00 +0 -3: [dartdoc_test] example/lib/example.dart test for gcd [E]
+  example/lib/example.dart:79:36: : Local variable 'gcd' can't be referenced before it is declared.
+     ╷
+  79 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
+     │                                    ^^^
+     ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 140:11  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 142:11  _RepoterForTest._reportIssue.<fn>
   
 00:00 +0 -3: Some tests failed.
 

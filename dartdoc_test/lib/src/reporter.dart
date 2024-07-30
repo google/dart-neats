@@ -14,6 +14,7 @@
 
 import 'dart:io' as io;
 
+import 'package:dartdoc_test/src/resource.dart';
 import 'package:path/path.dart' as p;
 import 'package:dartdoc_test/src/logger.dart';
 import 'package:source_span/source_span.dart';
@@ -93,8 +94,7 @@ final class _ReporterForStdout extends Reporter
     } else {
       logger.debug(
           'original error: ${issue.generatedSpan?.format(issue.message)}');
-      logger.info(issue.commentSpan!.message(issue.message));
-      logger.info('\n');
+      logger.info('${issue.commentSpan!.info(issue.message)}\n');
     }
   }
 }
@@ -106,7 +106,8 @@ final class _RepoterForTest extends Reporter
   @override
   void reportSourceFile(String filename,
       [void Function(SourceFileReporter)? fn]) {
-    group(filename, () {
+    final path = p.relative(filename, from: currentDir.path);
+    group('[dartdoc_test] $path', () {
       fn?.call(this);
       final issues = _issues
           .where((issue) => issue.commentSpan?.sourceUrl?.path == filename);
@@ -117,7 +118,8 @@ final class _RepoterForTest extends Reporter
   @override
   void reportCodeSample(Uri generatedUrl,
       [void Function(CodeSampleReporter)? fn]) {
-    group('$generatedUrl', () {
+    final path = p.relative(generatedUrl.path, from: currentDir.path);
+    group('[dartdoc_test] $path', () {
       fn?.call(this);
       final issues = _issues
           .where((issue) => issue.generatedSpan?.sourceUrl == generatedUrl);
@@ -137,7 +139,7 @@ final class _RepoterForTest extends Reporter
       'test for ${issue.commentSpan?.text}',
       () {
         if (issue.commentSpan != null) {
-          fail(issue.commentSpan!.format(issue.message));
+          fail(issue.commentSpan!.info(issue.message));
         }
       },
       // skip: !_verbose && issue.generatedSpan == null,
@@ -163,6 +165,22 @@ extension on FileSpan {
     buffer.write(p.prettyUri(sourceUrl));
     buffer.write(':${start.line + 1}:${(start.column + 1)}: ');
     buffer.write(message);
+    return buffer.toString();
+  }
+
+  String info(String message) {
+    final buffer = StringBuffer()
+      ..write(p.prettyUri(sourceUrl))
+      ..write(':${start.line + 1}:${(start.column + 1)}: ')
+      ..write(': $message');
+
+    final highlight = this.highlight();
+    if (highlight.isNotEmpty) {
+      buffer
+        ..writeln()
+        ..write(highlight);
+    }
+
     return buffer.toString();
   }
 }
