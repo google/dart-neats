@@ -64,8 +64,7 @@ final class _ReporterForStdout extends Reporter
   void reportSourceFile(String filename,
       [void Function(SourceFileReporter)? fn]) {
     fn?.call(this);
-    final issues = _issues
-        .where((issue) => issue.commentSpan?.sourceUrl?.path == filename);
+    final issues = _issues.where((issue) => issue.path == filename);
     reportIssues(issues);
   }
 
