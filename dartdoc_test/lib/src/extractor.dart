@@ -56,6 +56,11 @@ class DocumentationCodeSample {
     this.imports = const [],
   });
 
+  bool get ignore => code.contains('// dartdoc_test:ignore_error');
+
+  bool get hasMain => code.contains('void main()');
+  bool get hasImport => code.contains('import ');
+
   String wrappedCode(Directory testDir) {
     final fileName = comment.span.sourceUrl;
 

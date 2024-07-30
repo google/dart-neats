@@ -52,6 +52,15 @@ int multiply(int x, int y) {
 /// ```
 void ignore() {}
 
+/// you can ignore code sample by using `no-test` tag.
+///
+/// ```dart
+/// // dartdoc_test:ignore_error
+/// final a = 0;
+/// taG_ignore(); // it is not reported.
+/// ```
+void tag_ignore() {}
+
 /// Should return: Expected to find ';'.
 /// ```dart
 /// final fact = factorial(5)

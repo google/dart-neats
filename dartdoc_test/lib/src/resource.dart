@@ -63,7 +63,8 @@ class DartdocTestContext {
 
   final _files = <CodeSampleFile>{};
 
-  Set<CodeSampleFile> get codeSampleFiles => _files;
+  Set<CodeSampleFile> get codeSampleFiles =>
+      _files.where((f) => !f.sample.ignore).toSet();
   AnalysisContext get context => _context;
 
   void _writeFile(String path, DocumentationCodeSample sample) {
