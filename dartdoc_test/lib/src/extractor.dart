@@ -25,6 +25,9 @@ import 'package:source_span/source_span.dart';
 final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
 
 class DocumentationComment {
+  /// The path of the original file
+  final String path;
+
   /// The span of the comment in the source file.
   final FileSpan span;
 
@@ -35,6 +38,7 @@ class DocumentationComment {
   final List<String> imports;
 
   DocumentationComment({
+    required this.path,
     required this.contents,
     required this.span,
     required this.imports,
@@ -99,6 +103,7 @@ List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
       final content = stripComments(span.text);
 
       comments.add(DocumentationComment(
+        path: r.path,
         contents: content,
         span: span,
         imports: imports,

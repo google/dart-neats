@@ -109,8 +109,7 @@ final class _RepoterForTest extends Reporter
     final path = p.relative(filename, from: currentDir.path);
     group('[dartdoc_test] $path', () {
       fn?.call(this);
-      final issues = _issues
-          .where((issue) => issue.commentSpan?.sourceUrl?.path == filename);
+      final issues = _issues.where((issue) => issue.path == filename);
       reportIssues(issues);
     });
   }
@@ -148,11 +147,13 @@ final class _RepoterForTest extends Reporter
 }
 
 class Issue {
+  final String path;
   final FileSpan? commentSpan;
   final FileSpan? generatedSpan;
   final String message;
 
   Issue({
+    required this.path,
     this.commentSpan,
     this.generatedSpan,
     required this.message,

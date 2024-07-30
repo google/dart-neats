@@ -79,7 +79,7 @@ class DartdocTestContext {
         modificationStamp: 0,
       );
     }
-    final sourceFile = SourceFile.fromString(content, url: Uri.parse(path));
+    final sourceFile = SourceFile.fromString(content, url: Uri.file(path));
     _files.add(CodeSampleFile(
       path: path,
       sourceFile: sourceFile,

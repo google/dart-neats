@@ -1,37 +1,62 @@
 00:00 +0: loading example/test/dartdoc_test.dart
 Extracting code samples ...
 Analyzing code samples ...
-00:00 +0: [dartdoc_test] example/lib/example.dart test for )
-00:00 +0 -1: [dartdoc_test] example/lib/example.dart test for ) [E]
+00:00 +0: [dartdoc_test] example/lib/example.dart test for null
+00:00 +1: [dartdoc_test] example/lib/example.dart test for null
+00:00 +2: [dartdoc_test] example/lib/example.dart test for null
+00:00 +3: [dartdoc_test] example/lib/example.dart test for )
+00:00 +3 -1: [dartdoc_test] example/lib/example.dart test for ) [E]
   example/lib/example.dart:57:29: : Expected to find ';'.
      ╷
   57 │ /// final fact = factorial(5)
      │                             ^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 142:11  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 141:11  _RepoterForTest._reportIssue.<fn>
   
-00:00 +0 -1: [dartdoc_test] example/lib/example.dart test for isPalindrome
-00:00 +0 -2: [dartdoc_test] example/lib/example.dart test for isPalindrome [E]
+00:00 +3 -1: [dartdoc_test] example/lib/example.dart test for null
+00:00 +4 -1: [dartdoc_test] example/lib/example.dart test for isPalindrome
+00:00 +4 -2: [dartdoc_test] example/lib/example.dart test for isPalindrome [E]
   example/lib/example.dart:71:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
      ╷
   71 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
      │           ^^^^^^^^^^^^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 142:11  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 141:11  _RepoterForTest._reportIssue.<fn>
   
-00:00 +0 -2: [dartdoc_test] example/lib/example.dart test for gcd
-00:00 +0 -3: [dartdoc_test] example/lib/example.dart test for gcd [E]
+00:00 +4 -2: [dartdoc_test] example/lib/example.dart test for null
+00:00 +5 -2: [dartdoc_test] example/lib/example.dart test for null
+00:00 +6 -2: [dartdoc_test] example/lib/example.dart test for gcd
+00:00 +6 -3: [dartdoc_test] example/lib/example.dart test for gcd [E]
   example/lib/example.dart:79:36: : Local variable 'gcd' can't be referenced before it is declared.
      ╷
   79 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
      │                                    ^^^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 142:11  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 141:11  _RepoterForTest._reportIssue.<fn>
   
-00:00 +0 -3: Some tests failed.
+00:00 +6 -3: [dartdoc_test] example/lib/example.dart test for null
+00:00 +7 -3: [dartdoc_test] example/lib/example.dart test for null
+00:00 +8 -3: [dartdoc_test] example/lib/example.dart test for null
+00:00 +9 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +10 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +11 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +12 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +13 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +14 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +15 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +16 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +17 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +18 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +19 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +20 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +21 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +22 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +23 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +24 -3: [dartdoc_test] lib/src/extractor.dart test for null
+00:00 +25 -3: Some tests failed.
 
 Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
 For example, 'dart test --chain-stack-traces'.

@@ -59,6 +59,7 @@ class AnalyzeCommand extends DartdocTestCommand {
     for (final r in result) {
       for (final e in r.errors) {
         reporter.addIssue(Issue(
+          path: r.file.sample.comment.path,
           message: e.error.message,
           commentSpan: e.commentSpan,
           generatedSpan: e.generatedSpan,
