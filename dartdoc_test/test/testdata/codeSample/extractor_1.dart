@@ -9,9 +9,6 @@ import 'package:source_span/source_span.dart';
 import 'package:dartdoc_test/src/extractor.dart';
 
 void main() {
-  final comment2 = '''
-  /**
-  * some comment
-  */''';
-  stripComments(comment2); // 'some comment'
+  final comment1 = '/// some comment';
+  print(stripComments(comment1)); // 'some comment'
 }

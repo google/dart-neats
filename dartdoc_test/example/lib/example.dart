@@ -56,10 +56,10 @@ void ignore() {}
 ///
 /// ```dart
 /// // dartdoc_test:ignore_error
-/// final a = 0;
-/// taG_ignore(); // it is not reported.
+///
+/// tagIgnore() // it is not reported.
 /// ```
-void tag_ignore() {}
+void tagIgnore() {}
 
 /// Should return: Expected to find ';'.
 /// ```dart

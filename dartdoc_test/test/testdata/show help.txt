@@ -8,7 +8,7 @@ Global options:
 -v, --[no-]verbose    Print verbose output
 
 Available commands:
-  add       Generate dartdoc_test test file.
+  add       Add dartdoc_test test file "test/dartdoc_test.dart"
   analyze   Analyze code samples in the current directory.
 
 Run "dartdoc_test help <command>" for more information about a command.

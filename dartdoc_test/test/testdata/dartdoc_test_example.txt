@@ -1,72 +1,46 @@
 00:00 +0: loading test/dartdoc_test.dart
 Extracting code samples ...
 Analyzing code samples ...
-00:00 +0: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for u
-00:00 +0 -1: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for u [E]
-  package:example/example.dart:17:19: : Expected to find ';'.
+00:00 +0: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
+00:00 +1: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
+00:00 +2: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
+00:00 +3: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for )
+00:00 +3 -1: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for ) [E]
+  package:example/example.dart:66:29: : Expected to find ';'.
      ╷
-  17 │ /// Example of documentation comments and code samples in Dart.
-     │                   ^
+  66 │ /// final fact = factorial(5)
+     │                             ^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 141:11  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 140:11  _RepoterForTest._reportIssue.<fn>
   
-00:00 +0 -1: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for add(2, 3);
-
-00:00 +0 -2: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for add(2, 3);
- [E]
-  package:example/example.dart:21:20: : The function 'SimpleClass' isn't defined.
+00:00 +3 -1: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
+00:00 +4 -1: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for isPalindrome
+00:00 +4 -2: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for isPalindrome [E]
+  package:example/example.dart:80:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
      ╷
-  21 │ /// final result = add(2, 3);
-     │                    ^^^^^^^^^^
+  80 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
+     │           ^^^^^^^^^^^^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 141:11  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 140:11  _RepoterForTest._reportIssue.<fn>
   
-00:00 +0 -2: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +1 -2: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +2 -2: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for ultiply(4, 5
-00:00 +2 -3: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for ultiply(4, 5 [E]
-  package:example/example.dart:30:21: : The function 'ComplexClass' isn't defined.
+00:00 +4 -2: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
+00:00 +5 -2: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
+00:00 +6 -2: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for gcd
+00:00 +6 -3: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for gcd [E]
+  package:example/example.dart:88:36: : Local variable 'gcd' can't be referenced before it is declared.
      ╷
-  30 │ /// final result = multiply(4, 5);
-     │                     ^^^^^^^^^^^^
+  88 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
+     │                                    ^^^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 141:11  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 140:11  _RepoterForTest._reportIssue.<fn>
   
-00:00 +2 -3: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +3 -3: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +4 -3: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for = multiply(6
-00:00 +4 -4: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for = multiply(6 [E]
-  package:example/example.dart:35:18: : The function 'ComplexClass' isn't defined.
-     ╷
-  35 │ /// final result = multiply(6, 7);
-     │                  ^^^^^^^^^^^^
-     ╵
-  package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 141:11  _RepoterForTest._reportIssue.<fn>
-  
-00:00 +4 -4: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +5 -4: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +6 -4: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +7 -4: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +8 -4: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +9 -4: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for ndr
-00:00 +9 -5: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for ndr [E]
-  package:example/example.dart:65:33: : Local variable 'gcd' can't be referenced before it is declared.
-     ╷
-  65 │ /// Checks if a string is a palindrome.
-     │                                 ^^^
-     ╵
-  package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 141:11  _RepoterForTest._reportIssue.<fn>
-  
-00:00 +9 -5: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +10 -5: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +11 -5: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +12 -5: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
-00:00 +13 -5: Some tests failed.
+00:00 +6 -3: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
+00:00 +7 -3: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
+00:00 +8 -3: test/dartdoc_test.dart: [dartdoc_test] lib/example.dart test for null
+00:00 +9 -3: Some tests failed.
 
 Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
 For example, 'dart test --chain-stack-traces'.
