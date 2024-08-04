@@ -25,7 +25,7 @@ class AddCommand extends DartdocTestCommand {
 
   @override
   String get description =>
-      'Add dartdoc_test test file "test/dartdoc_test.dart"';
+      'Add dartdoc_test test file to "test/dartdoc_test.dart"';
 
   AddCommand() {
     argParser.addFlag(
@@ -42,7 +42,7 @@ class AddCommand extends DartdocTestCommand {
     final path = p.join(currentDir.path, 'test', 'dartdoc_test.dart');
     final force = argResults.flag('force');
     if (!force && File(path).existsSync()) {
-      logger.info('\'test/dartdoc_test.dart\' is already exists.');
+      logger.info('"test/dartdoc_test.dart" is already exists.');
       logger.info('if you want to create file forcely, use --force option.');
       return;
     }
@@ -69,6 +69,6 @@ void main() => runDartdocTest();
 
     final file = File(p.join(directory.path, 'dartdoc_test.dart'));
     await file.writeAsString(content);
-    logger.info('Done! You can run \'dart test\' to analyze code samples.');
+    logger.info('Done! You can run "dart test" to analyze code samples.');
   }
 }

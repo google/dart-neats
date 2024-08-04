@@ -24,7 +24,7 @@ import 'src/resource.dart';
 /// this function creates test cases that analyze code samples in documentation
 /// and you can call this function in your test file and run it with `dart test`.
 /// The easiest way to create a test file for code samples is to use the
-/// command `dart run dartdoc_test:add`.
+/// command `dart run dartdoc_test add`.
 ///
 /// In default, this function will test all code samples in your project. if you
 /// want to test only specific files, you can use [include] and [exclude] options.
@@ -34,8 +34,11 @@ void runDartdocTest({
   List<String> exclude = const [],
   bool verbose = false,
 }) async {
-  final options =
-      DartdocTestOptions(include: include, exclude: exclude, verbose: verbose);
+  final options = DartdocTestOptions(
+    include: include,
+    exclude: exclude,
+    verbose: verbose,
+  );
   final dartdocTest = DartdocTest(options);
 
   final logger = Logger((message, level) {

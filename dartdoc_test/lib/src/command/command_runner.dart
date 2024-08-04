@@ -31,7 +31,7 @@ final class DartdocTestCommandRunner extends CommandRunner<void> {
     argParser.addFlag(
       'verbose',
       abbr: 'v',
-      help: 'Print verbose output',
+      help: 'Print detailed logging.',
     );
 
     addCommand(AnalyzeCommand());

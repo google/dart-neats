@@ -27,19 +27,28 @@ class AnalyzeCommand extends DartdocTestCommand {
   String get name => 'analyze';
 
   @override
-  String get description => 'Analyze code samples in the current directory.';
+  String get description =>
+      'Analyze code samples in documentation comments in this project.';
 
   AnalyzeCommand() {
     argParser
       ..addFlag(
         'write',
         abbr: 'w',
-        help: 'Write code samples to file.',
+        help: 'Write code samples to physical files.',
       )
       ..addOption(
         'output',
         abbr: 'o',
-        help: 'Output code samples to file',
+        help: 'Directory to write code samples.',
+      )
+      ..addMultiOption(
+        'include',
+        help: 'Directories or files to analysis.',
+      )
+      ..addMultiOption(
+        'exclude',
+        help: 'Directories or files to exclude from analysis.',
       );
   }
 
@@ -49,6 +58,8 @@ class AnalyzeCommand extends DartdocTestCommand {
       write: argResults.flag('write'),
       verbose: globalResults.flag('verbose'),
       out: argResults.option('output'),
+      include: argResults.multiOption('include'),
+      exclude: argResults.multiOption('exclude'),
     ));
     logger.info('Extracting code samples ...');
     await dartdocTest.extract();
