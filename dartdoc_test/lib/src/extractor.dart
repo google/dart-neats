@@ -24,6 +24,7 @@ import 'package:source_span/source_span.dart';
 
 final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
 
+/// A documentation comment extracted from a source file.
 class DocumentationComment {
   /// The path of the original file
   final String path;
@@ -45,22 +46,24 @@ class DocumentationComment {
   });
 }
 
+/// A code sample extracted from a documentation comment.
 class DocumentationCodeSample {
+  /// The documentation comment that contains the code sample.
   final DocumentationComment comment;
+
+  /// content of the code sample.
   final String code;
-  final List<String> imports;
 
   DocumentationCodeSample({
     required this.comment,
     required this.code,
-    this.imports = const [],
   });
 
   bool get ignore => code.contains('// dartdoc_test:ignore_error');
-
   bool get hasMain => code.contains('void main()');
   bool get hasImport => code.contains('import ');
 
+  /// Create a sample by wrapping the code with a main function and imports.
   String wrappedCode(Directory testDir) {
     final fileName = comment.span.sourceUrl;
 
@@ -118,6 +121,12 @@ List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
   return comments;
 }
 
+/// Strips leading whitespaces from a string.
+///
+/// ```dart
+/// final comment = '  /// some comment\n';
+/// print(stripleadingWhiteSpace(comment)); // ['/// some comment']
+/// ```
 Iterable<String> stripleadingWhiteSpace(String comment) {
   final lines = LineSplitter.split(comment);
   return lines.map((l) => l.trimLeft());
