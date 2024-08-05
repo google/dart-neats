@@ -1,5 +1,5 @@
-import 'dart:convert';
-import '../../../example/lib/example.dart';
+
+import '../../../example/lib/error_example.dart';
 
 void main() {
   final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');

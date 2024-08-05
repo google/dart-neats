@@ -2,6 +2,6 @@ import 'dart:convert';
 import '../../../example/lib/example.dart';
 
 void main() {
-  final result = multiply(4, 5);
-  print(result); // 20
+  final result = subtract(5, 3);
+  print(result); // 2
 }

@@ -46,8 +46,37 @@ import 'package:dartdoc_test/dartdoc_test.dart';
 /// analyzes them. If there are any errors in the code samples, the test will fail
 /// and you can see the problems details.
 ///
-/// If you want to test only specific files, you can use [include] and [exclude]
-/// options.
+/// If you want to test only specific files, you can use [exclude] options.
 void main() => runDartdocTest();
 
+```
+
+# Ignore analysis
+
+If you don't want to analyze a particular code sample, you can exclude it by adding an `// dartdoc_test:ignore_error` comment within the code sample.
+
+````
+/// This code sample will not be analyzed.
+///
+/// ```dart
+/// // dartdoc_test:ignore_error
+///
+/// tagIgnore() // it is not reported.
+/// ```
+````
+
+Alternatively, if you want to exclude a particular directory or file, you can use the `exclude` option.
+
+```
+dart run dartdoc_test --exclude "example/**,*_test.dart"
+```
+
+Or
+
+```dart
+void main() {
+  runDartdocTest(
+    exclude: ['*_test.dart', 'example/**'],
+  );
+}
 ```

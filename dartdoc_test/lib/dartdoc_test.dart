@@ -26,7 +26,7 @@ import 'src/reporter.dart';
 /// command `dart run dartdoc_test add`.
 ///
 /// In default, this function will test all code samples in your project. if you
-/// want to test only specific files, you can use [include] and [exclude] options.
+/// want to test only specific files, you can use [exclude] option.
 /// and if you need more logs, you can set [verbose] to true.
 void runDartdocTest({
   List<String> exclude = const [],

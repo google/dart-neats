@@ -19,6 +19,5 @@ import 'package:dartdoc_test/dartdoc_test.dart';
 /// analyzes them. If there are any errors in the code samples, the test will fail
 /// and you can see the problems details.
 ///
-/// If you want to test only specific files, you can use [include] and [exclude]
-/// options.
+/// If you want to test only specific files, you can use [exclude] option.
 void main() => runDartdocTest();
