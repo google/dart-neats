@@ -24,6 +24,8 @@ void main() {
   testWithGolden('run analyze command by default', ['']);
   testWithGolden('run analyze command by default with verbose flag', ['-v']);
   testWithGolden('run analyze command with verbose flag', ['analyze', '-v']);
+  testWithGolden(
+      'run analyze command with exclude option', ['analyze', '-x', 'lib/**']);
 
   group('extractor', () {
     test('extract code samples in example directory', () async {

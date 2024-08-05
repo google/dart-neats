@@ -102,16 +102,21 @@ class DartdocTestContext {
       _writeFile(path, s);
     }
   }
-}
 
-List<File> getFilesFrom(Directory dir) {
-  // TODO: add `include` and `exclude` options
-  final files = dir
-      .listSync(recursive: true)
-      .whereType<File>()
-      .where((file) => file.path.endsWith('.dart'))
-      .toList();
-  return files;
+  bool _exclude(File file) {
+    final path = p.relative(file.path);
+    return !options.exclude.any((glob) => glob.matches(path));
+  }
+
+  List<File> getFiles() {
+    final files = currentDir
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.dart'))
+        .where(_exclude)
+        .toList();
+    return files;
+  }
 }
 
 class CodeSampleFile {

@@ -5,10 +5,10 @@ Usage: dartdoc_test <command> [arguments]
 
 Global options:
 -h, --help            Print this usage information.
--v, --[no-]verbose    Print verbose output
+-v, --[no-]verbose    Print detailed logging.
 
 Available commands:
-  add       Add dartdoc_test test file "test/dartdoc_test.dart"
-  analyze   Analyze code samples in the current directory.
+  add       Add dartdoc_test test file to "test/dartdoc_test.dart"
+  analyze   Analyze code samples in documentation comments in this project.
 
 Run "dartdoc_test help <command>" for more information about a command.

@@ -17,7 +17,6 @@ import 'dart:io';
 import 'src/dartdoc_test.dart' show DartdocTest, DartdocTestOptions;
 import 'src/logger.dart';
 import 'src/reporter.dart';
-import 'src/resource.dart';
 
 /// Test code samples in documentation comments in this package.
 ///
@@ -30,12 +29,10 @@ import 'src/resource.dart';
 /// want to test only specific files, you can use [include] and [exclude] options.
 /// and if you need more logs, you can set [verbose] to true.
 void runDartdocTest({
-  List<String> include = const [],
   List<String> exclude = const [],
   bool verbose = false,
 }) async {
   final options = DartdocTestOptions(
-    include: include,
     exclude: exclude,
     verbose: verbose,
   );
@@ -64,7 +61,7 @@ void runDartdocTest({
       ));
     }
   }
-  final files = getFilesFrom(currentDir);
+  final files = dartdocTest.getFiles();
   for (final file in files) {
     reporter.reportSourceFile(file.path);
   }

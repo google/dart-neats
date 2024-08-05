@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io';
+
 import 'package:args/args.dart';
 
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:glob/glob.dart';
 
 import 'analyzer.dart';
 import 'extractor.dart';
@@ -29,7 +32,7 @@ class DartdocTest {
   /// Extract code samples from the currrent directory.
   Future<void> extract() async {
     final session = _testContext.context.currentSession;
-    for (final file in getFilesFrom(currentDir)) {
+    for (final file in getFiles()) {
       final result = session.getParsedUnit(file.path);
 
       if (result is ParsedUnitResult) {
@@ -51,22 +54,22 @@ class DartdocTest {
 
     return results;
   }
+
+  List<File> getFiles() => _testContext.getFiles();
 }
 
 class DartdocTestOptions {
   final bool write;
   final bool verbose;
-  final List<String> include;
-  final List<String> exclude;
+  final List<Glob> exclude;
   final String? out;
 
-  const DartdocTestOptions({
+  DartdocTestOptions({
     this.write = false,
     this.verbose = false,
-    this.include = const [],
-    this.exclude = const [],
+    List<String> exclude = const [],
     this.out,
-  });
+  }) : exclude = exclude.map((e) => Glob(e)).toList();
 
   factory DartdocTestOptions.fromArg([ArgResults? args]) {
     if (args == null || args.arguments.isEmpty) {
