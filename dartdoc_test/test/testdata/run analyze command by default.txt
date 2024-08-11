@@ -1,28 +1,28 @@
-$ dart run bin/dartdoc_test.dart 
+$ dart run dartdoc_test 
 Extracting code samples ...
 Analyzing code samples ...
-example/lib/error_example.dart:17:29: : Expected to find ';'.
+package:example/error_example.dart:17:29: : Expected to find ';'.
    ╷
 17 │ /// final fact = factorial(5)
    │                             ^
    ╵
 
-example/lib/error_example.dart:31:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
+package:example/error_example.dart:31:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
 31 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
    │           ^^^^^^^^^^^^
    ╵
 
-example/lib/error_example.dart:39:36: : Local variable 'gcd' can't be referenced before it is declared.
+package:example/error_example.dart:39:36: : Local variable 'gcd' can't be referenced before it is declared.
    ╷
 39 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
    │                                    ^^^
    ╵
 
-example/lib/error_example.dart:53:32: : The getter 'length' isn't defined for the type 'int'.
+package:example/error_example.dart:53:32: : The getter 'length' isn't defined for the type 'int'.
    ╷
 53 │ /// Should return: The getter 'length' isn't defined for the class 'int'.
    │                                ^^^^^^
    ╵
 
-FAILED: 4 issues found (Found 11 code samples in 3 files)
+FAILED: 4 issues found (Found 8 code samples in 2 files)

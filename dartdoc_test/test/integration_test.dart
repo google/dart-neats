@@ -30,33 +30,13 @@ void main() {
   group('extractor', () {
     test('extract code samples in example directory', () async {
       final process =
-          await execute(['analyze', '-w', '-o', 'test/testdata/codeSample']);
+          await execute(['analyze', '-w', '-o', '../test/testdata/codeSample']);
       await process.shouldExit(0);
     });
   });
 
   group('dart test', () {
     test('run dartdoc_test', () async {
-      final args = [
-        'test',
-        '--no-color',
-        '-r',
-        'expanded',
-        'example/test/dartdoc_test.dart'
-      ];
-      final process = await Process.run(
-        'dart',
-        args,
-        workingDirectory: Directory.current.path,
-      );
-
-      final golden = File('test/testdata/dartdoc_test.txt');
-      golden
-        ..createSync(recursive: true)
-        ..writeAsStringSync(process.stdout.toString());
-    });
-
-    test('run dartdoc_test in example directory', () async {
       final directory = p.join(Directory.current.path, 'example');
       final process = await Process.run(
         'dart',
@@ -64,7 +44,7 @@ void main() {
         workingDirectory: directory,
       );
 
-      final golden = File('test/testdata/dartdoc_test_example.txt');
+      final golden = File('test/testdata/dartdoc_test.txt');
       golden
         ..createSync(recursive: true)
         ..writeAsString(process.stdout.toString());
@@ -92,10 +72,11 @@ void testWithGolden(String name, List<String> args) {
 Future<TestProcess> execute(List<String> args) {
   return TestProcess.start(
     Platform.resolvedExecutable,
-    ['bin/dartdoc_test.dart', ...args],
+    ['run', 'dartdoc_test', ...args],
+    workingDirectory: 'example',
   );
 }
 
 String _formatCommand(List<String> args) {
-  return '\$ dart run bin/dartdoc_test.dart ${args.join(' ')}';
+  return '\$ dart run dartdoc_test ${args.join(' ')}';
 }

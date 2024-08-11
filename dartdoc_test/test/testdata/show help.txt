@@ -1,4 +1,4 @@
-$ dart run bin/dartdoc_test.dart -h
+$ dart run dartdoc_test -h
 A tool to extract and analyze code samples in Dart projects.
 
 Usage: dartdoc_test <command> [arguments]

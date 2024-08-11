@@ -19,35 +19,44 @@ import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 
 class DartdocTestFile {
-  const DartdocTestFile(this._comments, this._sourceFile);
+  DartdocTestFile(this._sourceFile, this._imports, this._comments);
 
+  final SourceFile _sourceFile;
+  final List<String> _imports;
   final List<DocumentationComment> _comments;
-  final FileSpan _sourceFile;
 
+  SourceFile get sourceFile => _sourceFile;
+  List<String> get imports => _imports;
   List<DocumentationComment> get comments => _comments;
-  FileSpan get sourceFile => _sourceFile;
 }
 
 /// A documentation comment extracted from a source file.
 class DocumentationComment {
-  /// The path of the original file
-  final String path;
+  final String _path;
 
   /// The span of the comment in the source file.
-  final FileSpan span;
+  final FileSpan _span;
 
   /// The contents of the comment. (includes code blocks and text)
-  final String contents;
+  final String _contents;
 
   /// The imports used in the source file.
-  final List<String> imports;
+  final List<String> _imports;
+
+  String get path => _path;
+  FileSpan get span => _span;
+  String get contents => _contents;
+  List<String> get imports => _imports;
 
   DocumentationComment({
-    required this.path,
-    required this.contents,
-    required this.span,
-    required this.imports,
-  });
+    required String path,
+    required String contents,
+    required FileSpan span,
+    required List<String> imports,
+  })  : _path = path,
+        _contents = contents,
+        _span = span,
+        _imports = imports;
 }
 
 /// A code sample extracted from a documentation comment.
