@@ -22,14 +22,13 @@ import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 
 import 'dartdoc_test.dart';
-import 'extractor.dart';
+import 'model.dart';
 
 const _testPath = '.dartdoc_test';
 
 final currentDir = Directory.current;
 
-/// Context for running tests.
-/// manage [resourceProvider].
+/// Context for running tests. manage [resourceProvider].
 class DartdocTestContext {
   DartdocTestContext(this.options) {
     _resourceProvider = OverlayResourceProvider(
@@ -117,16 +116,4 @@ class DartdocTestContext {
         .toList();
     return files;
   }
-}
-
-class CodeSampleFile {
-  final String path;
-  final SourceFile sourceFile;
-  final DocumentationCodeSample sample;
-
-  CodeSampleFile({
-    required this.path,
-    required this.sourceFile,
-    required this.sample,
-  });
 }

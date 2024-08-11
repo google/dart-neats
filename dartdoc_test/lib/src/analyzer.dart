@@ -15,8 +15,9 @@
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/error/error.dart';
-import 'package:dartdoc_test/src/resource.dart';
 import 'package:source_span/source_span.dart';
+
+import 'model.dart';
 
 Future<DartdocAnalysisResult> getAnalysisResult(
   AnalysisContext context,

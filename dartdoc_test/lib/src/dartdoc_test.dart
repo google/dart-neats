@@ -79,6 +79,7 @@ class DartdocTestOptions {
       write: args.flag('write'),
       verbose: args.flag('verbose'),
       out: args.option('output'),
+      exclude: args.multiOption('exclude'),
     );
   }
 }
