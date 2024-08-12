@@ -23,11 +23,9 @@ void sayHello() {
   print('Hello world!');
 }
 
-/// Simple function that prints `"Hello world!"`.
-///
 /// **Example**
 /// ```dart
-/// foo(); // prints: Hello world!
+/// foo(); // prints: foo!
 /// ```
 void foo() {
   // My comment

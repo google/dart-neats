@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io';
 import 'package:args/args.dart';
-import 'package:path/path.dart' as p;
 
 import 'package:analyzer/dart/analysis/results.dart';
 
@@ -53,27 +51,6 @@ class DartdocTest {
 
     return results;
   }
-
-  Future<void> generate({
-    required bool force,
-  }) async {
-    final content = '''
-import 'package:dartdoc_test/dartdoc_test.dart';
-
-/// [runDartdocTest] is a test function that tests code samples.
-void main() => runDartdocTest();
-
-''';
-
-    // if not exists, create test directory
-    final testDir = Directory(p.join(currentDir.path, 'test'));
-    if (!testDir.existsSync()) {
-      testDir.createSync();
-    }
-
-    final file = File(p.join(testDir.path, 'dartdoc_test.dart'));
-    await file.writeAsString(content);
-  }
 }
 
 class DartdocTestOptions {
@@ -81,12 +58,14 @@ class DartdocTestOptions {
   final bool verbose;
   final List<String> include;
   final List<String> exclude;
+  final String? out;
 
   const DartdocTestOptions({
     this.write = false,
     this.verbose = false,
     this.include = const [],
     this.exclude = const [],
+    this.out,
   });
 
   factory DartdocTestOptions.fromArg([ArgResults? args]) {
@@ -96,6 +75,7 @@ class DartdocTestOptions {
     return DartdocTestOptions(
       write: args.flag('write'),
       verbose: args.flag('verbose'),
+      out: args.option('output'),
     );
   }
 }

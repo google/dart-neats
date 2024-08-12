@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import 'dart:convert';
+import 'dart:io';
+import 'package:path/path.dart' as p;
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -23,6 +25,9 @@ import 'package:source_span/source_span.dart';
 final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
 
 class DocumentationComment {
+  /// The path of the original file
+  final String path;
+
   /// The span of the comment in the source file.
   final FileSpan span;
 
@@ -33,6 +38,7 @@ class DocumentationComment {
   final List<String> imports;
 
   DocumentationComment({
+    required this.path,
     required this.contents,
     required this.span,
     required this.imports,
@@ -50,14 +56,19 @@ class DocumentationCodeSample {
     this.imports = const [],
   });
 
-  String get wrappedCode {
+  String wrappedCode(Directory testDir) {
     final fileName = comment.span.sourceUrl;
 
     final buf = StringBuffer();
     buf.writeAll(comment.imports, '\n');
     buf.writeln();
     if (fileName != null) {
-      buf.writeln('import \'$fileName\';');
+      if (fileName.hasAbsolutePath) {
+        final path = p.relative(fileName.path, from: testDir.absolute.path);
+        buf.writeln('import \'$path\';');
+      } else {
+        buf.writeln('import \'$fileName\';');
+      }
     }
     buf.writeln();
     buf.writeln('void main() {');
@@ -92,6 +103,7 @@ List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
       final content = stripComments(span.text);
 
       comments.add(DocumentationComment(
+        path: r.path,
         contents: content,
         span: span,
         imports: imports,
@@ -169,14 +181,26 @@ List<String> getCodeSamples(String comment) {
   final nodes = _md.parse(comment);
   var codes = <String>[];
   nodes.accept(_ForEachElement((element) {
-    if (element.tag == 'code' &&
-        element.attributes['class'] == 'language-dart') {
-      var code = '';
-      element.children?.accept(_ForEachText((text) {
-        code += text.textContent;
-      }));
-      if (code.isNotEmpty) {
-        codes.add(code);
+    if (element.tag == 'pre') {
+      if (element.children == null ||
+          element.children!.isEmpty ||
+          element.children!.first is! Element) {
+        return;
+      }
+
+      final child = element.children!.first as Element;
+      // get code block only if it's a dart code block.
+      // when no class is specified, it's considered as dart code block.
+      if (child.tag == 'code' &&
+          (child.attributes['class'] == 'language-dart' ||
+              child.attributes['class'] == null)) {
+        var code = '';
+        element.children?.accept(_ForEachText((text) {
+          code += text.textContent;
+        }));
+        if (code.isNotEmpty) {
+          codes.add(code);
+        }
       }
     }
   }));

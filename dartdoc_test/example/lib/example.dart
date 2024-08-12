@@ -16,58 +16,50 @@ import 'dart:convert';
 
 /// Example of documentation comments and code samples in Dart.
 
-/// This is a simple class example.
-///
-/// This class demonstrates a simple Dart class with a single method.
-class SimpleClass {
-  /// Adds two numbers together.
-  ///
-  /// The method takes two integers [a] and [b], and returns their sum.
-  ///
-  /// Example:
-  /// ```
-  /// final result = SimpleClass().add(2, 3);
-  /// print(result); // 5
-  /// ```
-  int add(int a, int b) {
-    return a + b;
-  }
+/// code block without specified language
+/// ```
+/// final result = add(2, 3);
+/// print(result); // 5
+/// ```
+int add(int a, int b) {
+  return a + b;
 }
 
-/// This class demonstrates more complex documentation comments,
-/// including parameter descriptions and a detailed method explanation.
-class ComplexClass {
-  /// Multiplies two numbers together.
-  ///
-  /// Takes two integers [x] and [y], multiplies them and returns the result.
-  /// This method handles large integers and ensures no overflow occurs.
-  ///
-  /// Example:
-  /// ```dart
-  /// final product = ComplexClass().multiply(4, 5);
-  /// print(product); // 20
-  /// ```
-  int multiply(int x, int y) {
-    return x * y;
-  }
+/// multiple code blocks
+/// ```dart
+/// final result = multiply(4, 5);
+/// print(result); // 20
+/// ```
+///
+/// ```dart
+/// final result = multiply(6, 7);
+/// print(result); // 42
+/// ```
+int multiply(int x, int y) {
+  return x * y;
+}
 
-  /// Calculates the factorial of a number.
-  ///
-  /// This method uses a recursive approach to calculate the factorial of [n].
-  /// It throws an [ArgumentError] if [n] is negative.
-  ///
-  /// Example:
-  /// ```dart
-  /// final fact = ComplexClass().factorial(5);
-  /// print(fact); // 120
-  /// ```
-  ///
-  /// Throws:
-  /// - [ArgumentError] if [n] is negative.
-  int factorial(int n) {
-    if (n < 0) throw ArgumentError('Negative numbers are not allowed.');
-    return n == 0 ? 1 : n * factorial(n - 1);
-  }
+/// non-dart code block will be ignored.
+///
+/// ```python
+/// def add(a, b):
+///    return a + b
+/// ```
+///
+/// ```yaml
+/// dev-dependencies:
+///   dartdoc_test: any
+/// ```
+void ignore() {}
+
+/// Should return: Expected to find ';'.
+/// ```dart
+/// final fact = factorial(5)
+/// print(fact); // 120
+/// ```
+int factorial(int n) {
+  if (n < 0) throw ArgumentError('Negative numbers are not allowed.');
+  return n == 0 ? 1 : n * factorial(n - 1);
 }
 
 /// Checks if a string is a palindrome.
@@ -84,11 +76,7 @@ bool isPalindrome(String s) {
   return sanitized == sanitized.split('').reversed.join('');
 }
 
-/// Calculates the greatest common divisor (GCD) of two numbers.
-///
-/// Uses the Euclidean algorithm to find the GCD of [a] and [b].
-///
-/// Example1:
+/// Should return: Local variable 'gcd' can't be referenced before it is declared.
 /// ```dart
 /// final gcd = gcd(48, 18);
 /// print(gcd); // 6
@@ -113,23 +101,4 @@ int gcd(int a, int b) {
 /// ```
 List<String> splitLines(String s) {
   return LineSplitter.split(s).toList();
-}
-
-void main() {
-  // Test cases to validate the functionality and documentation of the methods.
-
-  // SimpleClass tests
-  final simple = SimpleClass();
-  assert(simple.add(2, 3) == 5);
-
-  // ComplexClass tests
-  final complex = ComplexClass();
-  assert(complex.multiply(4, 5) == 20);
-  assert(complex.factorial(5) == 120);
-
-  assert(isPalindrome('A man, a plan, a canal, Panama'));
-  assert(gcd(48, 18) == 6);
-  assert(splitLines('Hello\nWorld') == ['Hello', 'World']);
-
-  print('All tests passed!');
 }

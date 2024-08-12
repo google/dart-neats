@@ -18,8 +18,6 @@ import 'package:analyzer/error/error.dart';
 import 'package:dartdoc_test/src/resource.dart';
 import 'package:source_span/source_span.dart';
 
-import 'logger.dart';
-
 Future<DartdocAnalysisResult> getAnalysisResult(
   AnalysisContext context,
   CodeSampleFile file,
@@ -27,41 +25,23 @@ Future<DartdocAnalysisResult> getAnalysisResult(
   final result = await context.currentSession.getErrors(file.path);
   if (result is ErrorsResult) {
     final errors = result.errors.map((e) {
-      final span = toOriginalFileSpanFromSampleError(file, e);
-      return DartdocErrorResult(e, span);
+      final (start, end) = (e.offset, e.offset + e.length);
+      final generatedSpan = file.sourceFile.span(start, end);
+      final commentSpan = getOriginalSubSpan(
+        sample: generatedSpan,
+        original: file.sample.comment.span,
+      );
+      return DartdocErrorResult(
+        error: e,
+        commentSpan: commentSpan,
+        generatedSpan: generatedSpan,
+      );
     }).toList();
-
-    for (final e in result.errors) {
-      final span = toOriginalFileSpanFromSampleError(file, e);
-      if (span != null) {
-        log(span.message((e.message)));
-        log('\n');
-      } else {
-        log(
-          'Error found in generated code.\n'
-          '$e\n',
-          LogLevel.debug,
-        );
-      }
-    }
 
     return DartdocAnalysisResult(file, errors);
   }
 
   return DartdocAnalysisResult(file, []);
-}
-
-FileSpan? toOriginalFileSpanFromSampleError(
-  CodeSampleFile file,
-  AnalysisError error,
-) {
-  final (start, end) = (error.offset, error.offset + error.length - 1);
-  final codeSampleSpan = file.sourceFile.span(start, end);
-  final span = getOriginalSubSpan(
-    sample: codeSampleSpan,
-    original: file.sample.comment.span,
-  );
-  return span;
 }
 
 // get original file span from sample file span
@@ -78,14 +58,21 @@ FileSpan? getOriginalSubSpan({
 
 class DartdocErrorResult {
   final AnalysisError error;
-  final FileSpan? span;
+  final FileSpan? commentSpan;
+  final FileSpan? generatedSpan;
 
-  DartdocErrorResult(this.error, this.span);
+  DartdocErrorResult({
+    required this.error,
+    required this.commentSpan,
+    required this.generatedSpan,
+  });
 }
 
 class DartdocAnalysisResult {
   final CodeSampleFile file;
   final List<DartdocErrorResult> errors;
+
+  bool get hasError => errors.any((e) => e.commentSpan != null);
 
   DartdocAnalysisResult(this.file, this.errors);
 }

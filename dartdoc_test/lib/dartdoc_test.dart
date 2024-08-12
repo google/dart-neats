@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:dartdoc_test/src/dartdoc_test.dart'
-    show DartdocTest, DartdocTestOptions;
+import 'dart:io';
 
+import 'src/dartdoc_test.dart' show DartdocTest, DartdocTestOptions;
 import 'src/logger.dart';
+import 'src/reporter.dart';
+import 'src/resource.dart';
 
 /// Test code samples in documentation comments.
 ///
@@ -24,16 +26,37 @@ import 'src/logger.dart';
 void runDartdocTest({
   List<String> include = const [],
   List<String> exclude = const [],
-}) {
-  final options = DartdocTestOptions(
-    include: include,
-    exclude: exclude,
-  );
+  bool verbose = false,
+}) async {
+  final options =
+      DartdocTestOptions(include: include, exclude: exclude, verbose: verbose);
   final dartdocTest = DartdocTest(options);
 
-  log('Extracting code samples ...');
+  final logger = Logger((message, level) {
+    if (verbose || LogLevel.debug != level) {
+      stdout.writeln(message);
+    }
+  });
+
+  logger.info('Extracting code samples ...');
   dartdocTest.extract();
 
-  log('Analyzing code samples ...');
-  dartdocTest.analyze();
+  logger.info('Analyzing code samples ...');
+  final result = await dartdocTest.analyze();
+
+  final reporter = Reporter.test(verbose: verbose);
+  for (final r in result) {
+    for (final e in r.errors) {
+      reporter.addIssue(Issue(
+        path: r.file.sample.comment.path,
+        message: e.error.message,
+        commentSpan: e.commentSpan,
+        generatedSpan: e.generatedSpan,
+      ));
+    }
+  }
+  final files = getFilesFrom(currentDir);
+  for (final file in files) {
+    reporter.reportSourceFile(file.path);
+  }
 }

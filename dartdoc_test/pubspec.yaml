@@ -7,12 +7,12 @@ homepage: https://github.com/google/dart-neats/tree/master/dartdoc_test
 repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:dartdoc_test
 dev_dependencies:
-  test: ^1.24.0
   lints: ^2.0.0
   test_process: ^2.1.0
 environment:
   sdk: ^3.0.0
 dependencies:
+  test: ^1.24.0
   analyzer: ^5.10.0
   args: ^2.5.0
   markdown: ^7.0.2
