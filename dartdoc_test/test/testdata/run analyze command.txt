@@ -25,4 +25,4 @@ package:example/error_example.dart:53:32: : The getter 'length' isn't defined fo
    │                                ^^^^^^
    ╵
 
-FAILED: 4 issues found (Found 8 code samples in 2 files)
+FAILED: 4 issues found (Found 10 code samples in 2 files)

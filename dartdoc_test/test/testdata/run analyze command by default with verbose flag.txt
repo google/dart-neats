@@ -32,8 +32,8 @@ package:example/error_example.dart:53:32: : The getter 'length' isn't defined fo
    ╵
 
 .dartdoc_test/error_example_3.dart:2:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_0.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_1.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_2.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_3.dart:1:8: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-FAILED: 4 issues found (Found 8 code samples in 2 files)
+.dartdoc_test/example_0.dart:2:7: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/example_1.dart:2:7: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/example_2.dart:2:7: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dartdoc_test/example_3.dart:2:7: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+FAILED: 4 issues found (Found 10 code samples in 2 files)

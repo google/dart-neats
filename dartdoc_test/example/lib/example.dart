@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:convert';
-
-/// Example of documentation comments and code samples in Dart.
-
+/// Examples of documentation comments and code samples in Dart.
+///
 /// Dart code block will be analyzed by dartdoc_test.
 ///
 /// ```dart
@@ -72,3 +70,34 @@ void ignore() {}
 /// tagIgnore() // it is not reported.
 /// ```
 void tagIgnore() {}
+
+/// by default, code samples will be wrapped by `main()` function and analyzed.
+/// However, If code sample has `main()` function, it will be not wrapped by `main()`
+/// function and analyzed as it is.
+///
+/// ```dart
+/// void main() {
+///   final result = divide(10, 2);
+///   print(result); // 5
+/// }
+/// ```
+int divide(int x, int y) {
+  return x ~/ y;
+}
+
+/// When dartdoc_test analyze the code sample, it uses the imports of the file
+/// where the code sample is located by default.
+/// Also, you can import some libraries and use them in code samples.
+/// but you need to add main() function to run the code when you add imports customly.
+///
+/// ```dart
+/// import 'dart:convert';
+///
+/// void main() {
+///   final x = LineSplitter().convert('2\n3').map(int.parse).toList();
+///   print(pow(x[0], x[1])); // 8
+/// }
+/// ```
+int pow(int x, int y) {
+  return x ^ y;
+}

@@ -74,7 +74,6 @@ class DocumentationCodeSample {
 
   bool get ignore => code.contains('// dartdoc_test:ignore_error');
   bool get hasMain => code.contains('void main()');
-  bool get hasImport => code.contains('import ');
 
   /// Create a sample by wrapping the code with a main function and imports.
   String wrappedCode(Directory testDir) {
@@ -92,10 +91,10 @@ class DocumentationCodeSample {
       }
     }
     buf.writeln();
-    buf.writeln('void main() {');
+    if (!hasMain) buf.writeln('void main() {');
     buf.writeAll(LineSplitter.split(code).map((l) => '  $l'), '\n');
     buf.writeln();
-    buf.writeln('}');
+    if (!hasMain) buf.writeln('}');
     return buf.toString();
   }
 }
