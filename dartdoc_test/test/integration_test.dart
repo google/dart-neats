@@ -29,8 +29,8 @@ void main() {
 
   group('extractor', () {
     test('extract code samples in example directory', () async {
-      final process =
-          await execute(['analyze', '-w', '-o', '../test/testdata/codeSample']);
+      final process = await execute(
+          ['analyze', '-w', '-o', '../test/testdata/code_sample']);
       await process.shouldExit(0);
     });
   });
@@ -53,10 +53,8 @@ void main() {
 }
 
 void testWithGolden(String name, List<String> args) {
-  const separator = '======== separator ========\n'; // TODO: use separator
   final golden = File('test/testdata/$name.txt');
   test('integration_test: $name', () async {
-    // run name in command line
     final buf = StringBuffer();
     buf.writeln(_formatCommand(args));
     final process = await execute(args);

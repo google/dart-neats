@@ -20,7 +20,7 @@ Therefore, `dartdoc_test` provides a way to analyze code samples in documentatio
 dart pub add dev:dartdoc_test
 
 # Run dartdoc_test directly
-dart run dartdoc_test analyze
+dart run dartdoc_test
 ```
 
 # Using in test
