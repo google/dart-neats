@@ -24,6 +24,7 @@ import 'model.dart';
 
 final _md = Document(extensionSet: ExtensionSet.gitHubWeb);
 
+/// Eztract code samples from [ParsedUnitResult].
 List<DocumentationCodeSample> extractFile(
   ParsedUnitResult result,
 ) {
@@ -36,6 +37,7 @@ List<DocumentationCodeSample> extractFile(
   return samples;
 }
 
+/// Extract code samples from a file (analysis result)
 List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
   final file = SourceFile.fromString(r.content, url: r.uri);
 
@@ -113,6 +115,7 @@ String stripComments(String comment) {
   return buf.toString().trim();
 }
 
+/// Extracts code samples from a documentation comment.
 List<DocumentationCodeSample> extractCodeSamples(
   DocumentationComment comment,
 ) {
@@ -158,6 +161,7 @@ List<String> getCodeSamples(String comment) {
   return codes;
 }
 
+/// Get imports used on a file.
 List<String> getImports(SourceFile f, ParsedUnitResult r) {
   final imports = <String>[];
   r.unit.accept(_ForEachImportAstVisitor((node) {
@@ -226,6 +230,7 @@ class _ForEachText extends NodeVisitor {
 }
 
 extension on DartdocTestFile {
+  /// get file infomations from [ParsedUnitResult].s
   static DartdocTestFile from(ParsedUnitResult result) {
     final sourceFile = SourceFile.fromString(result.content, url: result.uri);
     final comments = extractDocumentationComments(result);

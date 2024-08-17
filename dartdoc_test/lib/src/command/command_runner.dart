@@ -67,6 +67,7 @@ final class DartdocTestCommandRunner extends CommandRunner<void> {
   }
 }
 
+/// The base class for dartdoc_test commands.
 abstract class DartdocTestCommand extends Command<void> {
   Logger get logger => (runner as DartdocTestCommandRunner).logger;
   Reporter get reporter => (runner as DartdocTestCommandRunner).reporter;

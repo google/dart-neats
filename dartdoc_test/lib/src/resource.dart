@@ -26,20 +26,24 @@ import 'model.dart';
 
 const _testPath = '.dartdoc_test';
 
-final currentDir = Directory.current;
+final _currentDir = Directory.current;
 
-/// Context for running tests. manage [resourceProvider].
+/// Context for running dartdoc_test
+///
+/// It manages [OverlayResourceProvider] and [context] to provide a way to
+/// generate code samples and analyze the code. and also have [codeSampleFiles]
+/// that contains all generated code samples file.
 class DartdocTestContext {
   DartdocTestContext(this.options) {
     _resourceProvider = OverlayResourceProvider(
       PhysicalResourceProvider.INSTANCE,
     );
     _contextCollection = AnalysisContextCollection(
-      includedPaths: [currentDir.path],
+      includedPaths: [_currentDir.path],
       resourceProvider: _resourceProvider,
     );
 
-    _testDir = Directory(p.join(currentDir.path, options.out ?? _testPath));
+    _testDir = Directory(p.join(_currentDir.path, options.out ?? _testPath));
 
     if (options.write) {
       if (_testDir.existsSync()) {
@@ -48,7 +52,7 @@ class DartdocTestContext {
       _testDir.createSync();
     }
 
-    _context = _contextCollection.contextFor(currentDir.path);
+    _context = _contextCollection.contextFor(_currentDir.path);
   }
 
   final DartdocTestOptions options;
@@ -62,9 +66,10 @@ class DartdocTestContext {
 
   final _files = <CodeSampleFile>{};
 
+  AnalysisContext get context => _context;
+
   Set<CodeSampleFile> get codeSampleFiles =>
       _files.where((f) => !f.sample.ignore).toSet();
-  AnalysisContext get context => _context;
 
   void _writeFile(String path, DocumentationCodeSample sample) {
     final content = sample.wrappedCode(_testDir);
@@ -108,7 +113,7 @@ class DartdocTestContext {
   }
 
   List<File> getFiles() {
-    final files = currentDir
+    final files = _currentDir
         .listSync(recursive: true)
         .whereType<File>()
         .where((f) => f.path.endsWith('.dart'))

@@ -16,9 +16,12 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import '../resource.dart';
 import 'command_runner.dart';
 
+/// Handles the `add` command.
+///
+/// This command creates a test file for dartdoc_test in `test/dartdoc_test.dart`
+/// with a default template.
 class AddCommand extends DartdocTestCommand {
   @override
   String get name => 'add';
@@ -39,7 +42,9 @@ class AddCommand extends DartdocTestCommand {
   Future<void> run() async {
     logger.info('Creating "test/dartdoc_test.dart" ...');
 
-    final path = p.join(currentDir.path, 'test', 'dartdoc_test.dart');
+    final testDirectory = Directory(p.join(Directory.current.path, 'test'));
+
+    final path = p.join(testDirectory.path, 'dartdoc_test.dart');
     final force = argResults.flag('force');
     if (!force && File(path).existsSync()) {
       logger.info('"test/dartdoc_test.dart" is already exists.');
@@ -61,12 +66,11 @@ void main() => runDartdocTest();
 ''';
 
     // if not exists, create test directory
-    final directory = Directory(p.join(currentDir.path, 'test'));
-    if (!directory.existsSync()) {
-      directory.createSync();
+    if (!testDirectory.existsSync()) {
+      testDirectory.createSync();
     }
 
-    final file = File(p.join(directory.path, 'dartdoc_test.dart'));
+    final file = File(p.join(testDirectory.path, 'dartdoc_test.dart'));
     await file.writeAsString(content);
     logger.info('Done! You can run "dart test" to analyze code samples.');
   }

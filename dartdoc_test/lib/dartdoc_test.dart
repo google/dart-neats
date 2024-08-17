@@ -18,6 +18,8 @@ import 'src/dartdoc_test.dart' show DartdocTest, DartdocTestOptions;
 import 'src/logger.dart';
 import 'src/reporter.dart';
 
+export 'src/reporter.dart' show Reporter;
+
 /// Test code samples in documentation comments in this package.
 ///
 /// this function creates test cases that analyze code samples in documentation

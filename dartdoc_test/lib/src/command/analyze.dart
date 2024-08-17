@@ -18,13 +18,17 @@ import '../dartdoc_test.dart';
 import '../logger.dart';
 import 'command_runner.dart';
 
+/// Handles the `analyze` command.
+///
+/// This command extracts code samples from documentation comments and analyzes
+/// them for errors.
 class AnalyzeCommand extends DartdocTestCommand {
   @override
   String get name => 'analyze';
 
   @override
   String get description =>
-      'Analyze code samples in documentation comments in this project.';
+      'Analyze code samples in documentation comments in this package.';
 
   AnalyzeCommand() {
     argParser
