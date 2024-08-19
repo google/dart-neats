@@ -23,8 +23,6 @@ final supportsAnsi = io.stdout.hasTerminal && io.stdout.supportsAnsiEscapes;
 final _reset = supportsAnsi ? '\u001b[0m' : '';
 final _red = supportsAnsi ? '\u001b[31m' : '';
 final _green = supportsAnsi ? '\u001b[32m' : '';
-final _yellow = supportsAnsi ? '\u001b[33m' : '';
-final _bold = supportsAnsi ? '\u001b[1m' : '';
 
 /// A enum type for defining logging levels.
 enum LogLevel {
@@ -40,6 +38,7 @@ enum LogLevel {
   /// error.
   error;
 
+  /// operator to compare [LogLevel]s.
   bool operator >=(LogLevel other) => index >= other.index;
 }
 

@@ -223,6 +223,7 @@ class _ForEachText extends NodeVisitor {
 
 extension on DartdocTestFile {
   /// get file infomations from [ParsedUnitResult].
+  // ignore: unused_element
   static DartdocTestFile from(ParsedUnitResult result) {
     final sourceFile = SourceFile.fromString(result.content, url: result.uri);
     final comments = extractDocumentationComments(result);
