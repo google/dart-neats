@@ -34,6 +34,7 @@ final _currentDir = Directory.current;
 /// generate code samples and analyze the code. and also have [codeSampleFiles]
 /// that contains all generated code samples file.
 class DartdocTestContext {
+  /// Create a [DartdocTestContext] with [options].
   DartdocTestContext(this.options) {
     _resourceProvider = OverlayResourceProvider(
       PhysicalResourceProvider.INSTANCE,
@@ -55,6 +56,7 @@ class DartdocTestContext {
     _context = _contextCollection.contextFor(_currentDir.path);
   }
 
+  /// Options for running dartdoc_test
   final DartdocTestOptions options;
 
   late final OverlayResourceProvider _resourceProvider;
@@ -66,8 +68,10 @@ class DartdocTestContext {
 
   final _files = <CodeSampleFile>{};
 
+  /// Analysis context for the current directory
   AnalysisContext get context => _context;
 
+  /// The generated code samples files that are not excluded with `no-test` tag.
   Set<CodeSampleFile> get codeSampleFiles =>
       _files.where((f) => !f.sample.noTest).toSet();
 
@@ -92,6 +96,10 @@ class DartdocTestContext {
     ));
   }
 
+  /// Write code samples to the file.
+  ///
+  /// In default, it will write to the overlay (in-memory) file system. But,
+  /// if [options.write] is true, it will write to the pyscial file system.
   void writeCodeSamples(
     String filePath,
     List<DocumentationCodeSample> samples,
@@ -112,6 +120,10 @@ class DartdocTestContext {
     return !options.exclude.any((glob) => glob.matches(path));
   }
 
+  /// Get all dart files in the current directory.
+  ///
+  /// If [options.exclude] is provided, it will exclude files that match the
+  /// patterns.
   List<File> getFiles() {
     final files = _currentDir
         .listSync(recursive: true)

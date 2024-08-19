@@ -22,7 +22,9 @@ import '../reporter.dart';
 import 'add.dart';
 import 'analyze.dart';
 
+/// The command runner for dartdoc_test.
 final class DartdocTestCommandRunner extends CommandRunner<void> {
+  /// Create a new command runner.
   DartdocTestCommandRunner()
       : super(
           'dartdoc_test',
@@ -38,8 +40,10 @@ final class DartdocTestCommandRunner extends CommandRunner<void> {
     addCommand(AddCommand());
   }
 
+  /// The logger for the command runner.
   late final Logger logger;
 
+  /// The reporter for the command runner.
   late final Reporter reporter;
 
   @override
@@ -69,7 +73,10 @@ final class DartdocTestCommandRunner extends CommandRunner<void> {
 
 /// The base class for dartdoc_test commands.
 abstract class DartdocTestCommand extends Command<void> {
+  /// The logger to log messages.
   Logger get logger => (runner as DartdocTestCommandRunner).logger;
+
+  /// The reporter to report issues.
   Reporter get reporter => (runner as DartdocTestCommandRunner).reporter;
 
   @override

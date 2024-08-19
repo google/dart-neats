@@ -186,6 +186,7 @@ class Issue {
   /// Message of the issue.
   final String message;
 
+  /// Create a new issue.
   Issue({
     required this.path,
     this.commentSpan,

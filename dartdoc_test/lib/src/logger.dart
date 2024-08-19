@@ -26,21 +26,30 @@ final _green = supportsAnsi ? '\u001b[32m' : '';
 final _yellow = supportsAnsi ? '\u001b[33m' : '';
 final _bold = supportsAnsi ? '\u001b[1m' : '';
 
-///
+/// A enum type for defining logging levels.
 enum LogLevel {
+  /// debug information.
   debug,
+
+  /// standard information.
   info,
+
+  /// warning.
   warning,
+
+  /// error.
   error;
 
-  ///
   bool operator >=(LogLevel other) => index >= other.index;
 }
 
 /// type of logger callback.
 typedef LogFunction = void Function(String message, LogLevel level);
 
+/// A simple logger class that logs messages with different levels.
 ///
+/// you can set a custom log function by passing a [LogFunction] to the
+/// constructor and use the [LogLevel] to log messages with different levels.
 final class Logger {
   final LogFunction _log;
 

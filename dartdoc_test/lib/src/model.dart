@@ -18,36 +18,45 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 
+/// A dart file that contains documentation comments and code samples.
 class DartdocTestFile {
+  /// Create a new [DartdocTestFile].
   DartdocTestFile(this._sourceFile, this._imports, this._comments);
 
   final SourceFile _sourceFile;
   final List<String> _imports;
   final List<DocumentationComment> _comments;
 
+  /// The source file.
   SourceFile get sourceFile => _sourceFile;
+
+  /// The imports used in the source file.
   List<String> get imports => _imports;
+
+  /// The documentation comments in the source file.
   List<DocumentationComment> get comments => _comments;
 }
 
 /// A documentation comment extracted from a source file.
 class DocumentationComment {
   final String _path;
-
-  /// The span of the comment in the source file.
   final FileSpan _span;
-
-  /// The contents of the comment. (includes code blocks and text)
   final String _contents;
-
-  /// The imports used in the source file.
   final List<String> _imports;
 
+  /// The path of the source file that contains the comment.
   String get path => _path;
+
+  /// The span of the comment in the source file.
   FileSpan get span => _span;
+
+  /// The contents of the comment. (includes code blocks and text)
   String get contents => _contents;
+
+  /// The imports used in the source file.
   List<String> get imports => _imports;
 
+  /// Create a new [DocumentationComment].
   DocumentationComment({
     required String path,
     required String contents,
@@ -70,6 +79,7 @@ class DocumentationCodeSample {
   /// Whether the code sample has a `no-test` tag.
   final bool noTest;
 
+  /// Create a new [DocumentationCodeSample].
   DocumentationCodeSample({
     required this.comment,
     required this.code,
@@ -103,11 +113,18 @@ class DocumentationCodeSample {
   }
 }
 
+/// A generated code sample file.
 class CodeSampleFile {
+  /// The path of the generated file.
   final String path;
+
+  /// The generated source file.
   final SourceFile sourceFile;
+
+  /// The code sample that generated the file.
   final DocumentationCodeSample sample;
 
+  /// Create a new [CodeSampleFile].
   CodeSampleFile({
     required this.path,
     required this.sourceFile,

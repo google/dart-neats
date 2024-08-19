@@ -30,6 +30,7 @@ class AddCommand extends DartdocTestCommand {
   String get description =>
       'Add dartdoc_test test file to "test/dartdoc_test.dart"';
 
+  /// Create a new [AddCommand].
   AddCommand() {
     argParser.addFlag(
       'force',

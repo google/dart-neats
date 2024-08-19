@@ -30,6 +30,7 @@ class AnalyzeCommand extends DartdocTestCommand {
   String get description =>
       'Analyze code samples in documentation comments in this package.';
 
+  /// Create a new [AnalyzeCommand].
   AnalyzeCommand() {
     argParser
       ..addFlag(
