@@ -70,16 +70,4 @@ class DartdocTestOptions {
     List<String> exclude = const [],
     this.out,
   }) : exclude = exclude.map((e) => Glob(e)).toList();
-
-  factory DartdocTestOptions.fromArg([ArgResults? args]) {
-    if (args == null || args.arguments.isEmpty) {
-      return DartdocTestOptions();
-    }
-    return DartdocTestOptions(
-      write: args.flag('write'),
-      verbose: args.flag('verbose'),
-      out: args.option('output'),
-      exclude: args.multiOption('exclude'),
-    );
-  }
 }

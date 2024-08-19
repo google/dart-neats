@@ -69,7 +69,7 @@ class DartdocTestContext {
   AnalysisContext get context => _context;
 
   Set<CodeSampleFile> get codeSampleFiles =>
-      _files.where((f) => !f.sample.ignore).toSet();
+      _files.where((f) => !f.sample.noTest).toSet();
 
   void _writeFile(String path, DocumentationCodeSample sample) {
     final content = sample.wrappedCode(_testDir);
@@ -97,7 +97,7 @@ class DartdocTestContext {
     List<DocumentationCodeSample> samples,
   ) {
     for (final (i, s) in samples.indexed) {
-      if (s.ignore) {
+      if (s.noTest) {
         continue;
       }
 

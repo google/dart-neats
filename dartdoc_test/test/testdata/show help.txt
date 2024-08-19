@@ -9,6 +9,6 @@ Global options:
 
 Available commands:
   add       Add dartdoc_test test file to "test/dartdoc_test.dart"
-  analyze   Analyze code samples in documentation comments in this project.
+  analyze   Analyze code samples in documentation comments in this package.
 
 Run "dartdoc_test help <command>" for more information about a command.

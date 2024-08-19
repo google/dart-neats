@@ -116,24 +116,11 @@ String stripComments(String comment) {
 }
 
 /// Extracts code samples from a documentation comment.
-List<DocumentationCodeSample> extractCodeSamples(
-  DocumentationComment comment,
-) {
-  final samples = <DocumentationCodeSample>[];
-
-  final codes = getCodeSamples(comment.contents);
-  for (final code in codes) {
-    samples.add(DocumentationCodeSample(comment: comment, code: code));
-  }
-  return samples;
-}
-
-/// Extracts code samples from a documentation comment.
 /// one comment can have multiple code samples.
 /// so this function returns a list of code samples.
-List<String> getCodeSamples(String comment) {
-  final nodes = _md.parse(comment);
-  var codes = <String>[];
+List<DocumentationCodeSample> extractCodeSamples(DocumentationComment comment) {
+  final nodes = _md.parse(comment.contents);
+  var samples = <DocumentationCodeSample>[];
   nodes.accept(_ForEachElement((element) {
     if (element.tag == 'pre') {
       if (element.children == null ||
@@ -147,18 +134,23 @@ List<String> getCodeSamples(String comment) {
       // when no class is specified, it's considered as dart code block.
       if (child.tag == 'code' &&
           (child.attributes['class'] == 'language-dart' ||
+              child.attributes['class'] == 'language-dart#no-test' ||
               child.attributes['class'] == null)) {
         var code = '';
         element.children?.accept(_ForEachText((text) {
           code += text.textContent;
         }));
         if (code.isNotEmpty) {
-          codes.add(code);
+          samples.add(DocumentationCodeSample(
+            comment: comment,
+            code: code,
+            noTest: child.attributes['class'] == 'language-dart#no-test',
+          ));
         }
       }
     }
   }));
-  return codes;
+  return samples;
 }
 
 /// Get imports used on a file.

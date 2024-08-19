@@ -67,12 +67,16 @@ class DocumentationCodeSample {
   /// content of the code sample.
   final String code;
 
+  /// Whether the code sample has a `no-test` tag.
+  final bool noTest;
+
   DocumentationCodeSample({
     required this.comment,
     required this.code,
+    required this.noTest,
   });
 
-  bool get ignore => code.contains('// dartdoc_test:ignore_error');
+  /// Whether the code sample has a `main` function.
   bool get hasMain => code.contains('void main()');
 
   /// Create a sample by wrapping the code with a main function and imports.

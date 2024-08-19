@@ -62,11 +62,9 @@ int multiply(int x, int y) {
 /// ```
 void ignore() {}
 
-/// You can ignore code sample by using `dartdoc_test:ignore_error` tag.
+/// You can ignore a code sample by using `no-test` tag.
 ///
-/// ```dart
-/// // dartdoc_test:ignore_error
-///
+/// ```dart#no-test
 /// tagIgnore() // it is not reported.
 /// ```
 void tagIgnore() {}
