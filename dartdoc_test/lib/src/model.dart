@@ -77,6 +77,12 @@ final class DocumentationCodeSample {
   final String code;
 
   /// Whether the code sample has a `no-test` tag.
+  ///
+  /// ```text
+  /// /// ```dart no-test
+  /// /// // This code will not be tested.
+  /// /// ```
+  /// ```
   final bool noTest;
 
   /// Create a new [DocumentationCodeSample].
@@ -86,8 +92,10 @@ final class DocumentationCodeSample {
     required this.noTest,
   });
 
+  bool get hasMain => code.contains('void main()');
+
   /// Create a sample by wrapping the code with a main function and imports.
-  String wrappedCode(Directory testDir, {bool wrapWithMain = false}) {
+  String wrappedCode(Directory testDir) {
     final fileName = comment.span.sourceUrl;
 
     final buf = StringBuffer();
@@ -102,10 +110,10 @@ final class DocumentationCodeSample {
       }
     }
     buf.writeln();
-    if (wrapWithMain) buf.writeln('void main() {');
+    if (!hasMain) buf.writeln('void main() {');
     buf.writeAll(LineSplitter.split(code).map((l) => '  $l'), '\n');
     buf.writeln();
-    if (wrapWithMain) buf.writeln('}');
+    if (!hasMain) buf.writeln('}');
     return buf.toString();
   }
 }

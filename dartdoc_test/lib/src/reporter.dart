@@ -29,12 +29,7 @@ import 'package:test/test.dart';
 /// If you want to create a custom reporter, you can extend this class and
 /// override the [reportSourceFile] method or create custom methods.
 abstract base class Reporter {
-  /// Create a new reporter.
-  Reporter({required bool verbose}) : _verbose = verbose;
-
   final _issues = <Issue>[];
-
-  final bool _verbose;
 
   /// Report issues in a source file.
   void reportSourceFile(String filename,
@@ -73,7 +68,7 @@ final class _ReporterForStdout extends Reporter
     implements SourceFileReporter, CodeSampleReporter {
   final Logger logger;
 
-  _ReporterForStdout({required super.verbose})
+  _ReporterForStdout({required bool verbose})
       : logger = Logger(
           (message, level) {
             if (verbose || LogLevel.debug != level) {
@@ -126,7 +121,8 @@ final class _ReporterForStdout extends Reporter
 /// `package:test`.
 final class _RepoterForTest extends Reporter
     implements SourceFileReporter, CodeSampleReporter {
-  _RepoterForTest({required super.verbose});
+  final bool _verbose;
+  _RepoterForTest({required bool verbose}) : _verbose = verbose;
 
   @override
   void reportSourceFile(String filename,

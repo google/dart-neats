@@ -9,7 +9,7 @@ Analyzing code samples ...
      │                             ^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 167:13  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 163:13  _RepoterForTest._reportIssue.<fn>
   
 00:00 +0 -1: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for isPalindrome
 00:00 +0 -2: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for isPalindrome [E]
@@ -19,7 +19,7 @@ Analyzing code samples ...
      │           ^^^^^^^^^^^^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 167:13  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 163:13  _RepoterForTest._reportIssue.<fn>
   
 00:00 +0 -2: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for gcd
 00:00 +0 -3: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for gcd [E]
@@ -29,7 +29,7 @@ Analyzing code samples ...
      │                                    ^^^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 167:13  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 163:13  _RepoterForTest._reportIssue.<fn>
   
 00:00 +0 -3: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for length
 00:00 +0 -4: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for length [E]
@@ -39,7 +39,7 @@ Analyzing code samples ...
      │                                ^^^^^^
      ╵
   package:matcher                                fail
-  package:dartdoc_test/src/reporter.dart 167:13  _RepoterForTest._reportIssue.<fn>
+  package:dartdoc_test/src/reporter.dart 163:13  _RepoterForTest._reportIssue.<fn>
   
 00:00 +0 -4: Some tests failed.
 
