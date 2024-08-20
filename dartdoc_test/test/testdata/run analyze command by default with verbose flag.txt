@@ -1,39 +1,35 @@
 $ dart run dartdoc_test -v
 Extracting code samples ...
 Analyzing code samples ...
-original error: .dartdoc_test/error_example_0.dart:5:27: Expected to find ';'.
+original error: .dart_tool/dartdoc_test/error_example_0.dart:5:27: Expected to find ';'.
 package:example/error_example.dart:17:29: : Expected to find ';'.
    ╷
 17 │ /// final fact = factorial(5)
    │                             ^
    ╵
 
-original error: .dartdoc_test/error_example_1.dart:5:24: Local variable 'isPalindrome' can't be referenced before it is declared.
+original error: .dart_tool/dartdoc_test/error_example_1.dart:5:24: Local variable 'isPalindrome' can't be referenced before it is declared.
 package:example/error_example.dart:31:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
 31 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
    │           ^^^^^^^^^^^^
    ╵
 
-.dartdoc_test/error_example_1.dart:2:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
-original error: .dartdoc_test/error_example_2.dart:5:15: Local variable 'gcd' can't be referenced before it is declared.
+.dart_tool/dartdoc_test/error_example_1.dart:2:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
+original error: .dart_tool/dartdoc_test/error_example_2.dart:5:15: Local variable 'gcd' can't be referenced before it is declared.
 package:example/error_example.dart:39:36: : Local variable 'gcd' can't be referenced before it is declared.
    ╷
 39 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
    │                                    ^^^
    ╵
 
-.dartdoc_test/error_example_2.dart:2:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
-original error: .dartdoc_test/error_example_3.dart:5:20: The getter 'length' isn't defined for the type 'int'.
+.dart_tool/dartdoc_test/error_example_2.dart:2:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
+original error: .dart_tool/dartdoc_test/error_example_3.dart:5:20: The getter 'length' isn't defined for the type 'int'.
 package:example/error_example.dart:53:32: : The getter 'length' isn't defined for the type 'int'.
    ╷
 53 │ /// Should return: The getter 'length' isn't defined for the class 'int'.
    │                                ^^^^^^
    ╵
 
-.dartdoc_test/error_example_3.dart:2:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_0.dart:2:7: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_1.dart:2:7: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_2.dart:2:7: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
-.dartdoc_test/example_3.dart:2:7: Unused import: 'dart:convert'. (ignored because issue occurs in the generated code)
+.dart_tool/dartdoc_test/error_example_3.dart:2:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
 FAILED: 4 issues found (Found 10 code samples in 2 files)

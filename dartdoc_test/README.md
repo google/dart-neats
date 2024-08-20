@@ -53,15 +53,13 @@ void main() => runDartdocTest();
 
 # Ignore analysis
 
-If you don't want to analyze a particular code sample, you can exclude it by adding an `// dartdoc_test:ignore_error` comment within the code sample.
+If you don't want to analyze a particular code sample, you can exclude it by adding tag `#no-test` within the code block.
 
-````
+````txt
 /// This code sample will not be analyzed.
 ///
-/// ```dart
-/// // dartdoc_test:ignore_error
-///
-/// tagIgnore() // it is not reported.
+/// ```dart#no-test
+/// final a = 1 // it is not reported.
 /// ```
 ````
 

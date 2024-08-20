@@ -72,7 +72,7 @@ class DartdocTestOptions {
   final List<Glob> exclude;
 
   /// The output directory for generated code samples (optional).
-  /// if it is `null`, the default output directory is `./.dartdoc_test`.
+  /// if it is `null`, the default output directory is `.dart_tool/dartdoc_test`.
   final String? out;
 
   /// Create a new [DartdocTestOptions].

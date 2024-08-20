@@ -24,7 +24,7 @@ import 'package:source_span/source_span.dart';
 import 'dartdoc_test.dart';
 import 'model.dart';
 
-const _testPath = '.dartdoc_test';
+const _testPath = '.dart_tool/dartdoc_test';
 
 final _currentDir = Directory.current;
 
