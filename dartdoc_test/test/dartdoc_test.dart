@@ -7,4 +7,6 @@ import 'package:dartdoc_test/dartdoc_test.dart';
 /// and you can see the problems details.
 ///
 /// If you want to test only specific files, you can use [exclude] option.
-void main() => runDartdocTest();
+void main() => runDartdocTest(
+      exclude: ['example/**'],
+    );

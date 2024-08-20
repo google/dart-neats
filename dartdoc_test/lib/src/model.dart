@@ -19,7 +19,7 @@ import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 
 /// A dart file that contains documentation comments and code samples.
-class DartdocTestFile {
+final class DartdocTestFile {
   /// Create a new [DartdocTestFile].
   DartdocTestFile(this._sourceFile, this._imports, this._comments);
 
@@ -38,7 +38,7 @@ class DartdocTestFile {
 }
 
 /// A documentation comment extracted from a source file.
-class DocumentationComment {
+final class DocumentationComment {
   final String _path;
   final FileSpan _span;
   final String _contents;
@@ -69,7 +69,7 @@ class DocumentationComment {
 }
 
 /// A code sample extracted from a documentation comment.
-class DocumentationCodeSample {
+final class DocumentationCodeSample {
   /// The documentation comment that contains the code sample.
   final DocumentationComment comment;
 
@@ -114,7 +114,7 @@ class DocumentationCodeSample {
 }
 
 /// A generated code sample file.
-class CodeSampleFile {
+final class CodeSampleFile {
   /// The path of the generated file.
   final String path;
 

@@ -220,14 +220,3 @@ class _ForEachText extends NodeVisitor {
   @override
   void visitText(Text text) => _forEach(text);
 }
-
-extension on DartdocTestFile {
-  /// get file infomations from [ParsedUnitResult].
-  // ignore: unused_element
-  static DartdocTestFile from(ParsedUnitResult result) {
-    final sourceFile = SourceFile.fromString(result.content, url: result.uri);
-    final comments = extractDocumentationComments(result);
-    final imports = getImports(sourceFile, result);
-    return DartdocTestFile(sourceFile, imports, comments);
-  }
-}

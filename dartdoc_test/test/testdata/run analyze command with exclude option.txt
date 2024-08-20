@@ -1,5 +1,5 @@
-$ dart run dartdoc_test analyze -x lib/**
+$ dart run dartdoc_test analyze -x lib/error_example.dart
 Extracting code samples ...
 Analyzing code samples ...
 No issues found.
-PASSED: No issues found! (Found 0 code samples in 0 files)
+PASSED: No issues found! (Found 6 code samples in 1 files)

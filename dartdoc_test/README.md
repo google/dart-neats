@@ -48,7 +48,6 @@ import 'package:dartdoc_test/dartdoc_test.dart';
 ///
 /// If you want to test only specific files, you can use [exclude] options.
 void main() => runDartdocTest();
-
 ```
 
 # Ignore analysis
