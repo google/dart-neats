@@ -92,6 +92,7 @@ final class DocumentationCodeSample {
     required this.noTest,
   });
 
+  /// Whether the code sample has a `main` function.
   bool get hasMain => code.contains('void main()');
 
   /// Create a sample by wrapping the code with a main function and imports.
