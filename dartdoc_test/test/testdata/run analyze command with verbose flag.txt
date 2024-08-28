@@ -1,0 +1,35 @@
+$ dart run dartdoc_test analyze -v
+Extracting code samples ...
+Analyzing code samples ...
+original error: .dart_tool/dartdoc_test/error_example_0.dart:4:26: 1 positional argument expected by 'factorial', but 0 found.
+package:example/error_example.dart:17:28: : 1 positional argument expected by 'factorial', but 0 found.
+   ╷
+17 │ /// final fact = factorial();
+   │                            ^
+   ╵
+
+original error: .dart_tool/dartdoc_test/error_example_1.dart:4:24: Local variable 'isPalindrome' can't be referenced before it is declared.
+package:example/error_example.dart:31:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
+   ╷
+31 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
+   │           ^^^^^^^^^^^^
+   ╵
+
+.dart_tool/dartdoc_test/error_example_1.dart:1:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
+original error: .dart_tool/dartdoc_test/error_example_2.dart:4:15: Local variable 'gcd' can't be referenced before it is declared.
+package:example/error_example.dart:39:36: : Local variable 'gcd' can't be referenced before it is declared.
+   ╷
+39 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
+   │                                    ^^^
+   ╵
+
+.dart_tool/dartdoc_test/error_example_2.dart:1:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
+original error: .dart_tool/dartdoc_test/error_example_3.dart:4:20: The getter 'length' isn't defined for the type 'int'.
+package:example/error_example.dart:53:32: : The getter 'length' isn't defined for the type 'int'.
+   ╷
+53 │ /// Should return: The getter 'length' isn't defined for the class 'int'.
+   │                                ^^^^^^
+   ╵
+
+.dart_tool/dartdoc_test/error_example_3.dart:1:8: Unused import: 'package:example/error_example.dart'. (ignored because issue occurs in the generated code)
+FAILED: 4 issues found (Found 10 code samples in 2 files)
