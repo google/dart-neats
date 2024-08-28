@@ -12,24 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:args/args.dart';
+import 'dart:io';
 
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:glob/glob.dart';
 
 import 'analyzer.dart';
 import 'extractor.dart';
 import 'resource.dart';
 
+/// Dartdoc test
 class DartdocTest {
+  /// Create a new [DartdocTest] with [options].
   DartdocTest(this.options) : _testContext = DartdocTestContext(options);
 
+  /// The options for running dartdoc_test.
   final DartdocTestOptions options;
   final DartdocTestContext _testContext;
 
   /// Extract code samples from the currrent directory.
   Future<void> extract() async {
     final session = _testContext.context.currentSession;
-    for (final file in getFilesFrom(currentDir)) {
+    for (final file in getFiles()) {
       final result = session.getParsedUnit(file.path);
 
       if (result is ParsedUnitResult) {
@@ -51,31 +55,31 @@ class DartdocTest {
 
     return results;
   }
+
+  /// Get all dart files in the current directory.
+  List<File> getFiles() => _testContext.getFiles();
 }
 
+/// Options for running dartdoc_test
 class DartdocTestOptions {
+  /// Whether to write generated code samples to physical files.
   final bool write;
+
+  /// Whether to output verbose information.
   final bool verbose;
-  final List<String> include;
-  final List<String> exclude;
+
+  /// The glob patterns to exclude files from analysis.
+  final List<Glob> exclude;
+
+  /// The output directory for generated code samples (optional).
+  /// if it is `null`, the default output directory is `.dart_tool/dartdoc_test`.
   final String? out;
 
-  const DartdocTestOptions({
+  /// Create a new [DartdocTestOptions].
+  DartdocTestOptions({
     this.write = false,
     this.verbose = false,
-    this.include = const [],
-    this.exclude = const [],
+    List<String> exclude = const [],
     this.out,
-  });
-
-  factory DartdocTestOptions.fromArg([ArgResults? args]) {
-    if (args == null || args.arguments.isEmpty) {
-      return DartdocTestOptions();
-    }
-    return DartdocTestOptions(
-      write: args.flag('write'),
-      verbose: args.flag('verbose'),
-      out: args.option('output'),
-    );
-  }
+  }) : exclude = exclude.map((e) => Glob(e)).toList();
 }

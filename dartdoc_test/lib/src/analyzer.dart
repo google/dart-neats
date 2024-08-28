@@ -15,9 +15,11 @@
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/error/error.dart';
-import 'package:dartdoc_test/src/resource.dart';
 import 'package:source_span/source_span.dart';
 
+import 'model.dart';
+
+/// Get analysis result for a code sample file.
 Future<DartdocAnalysisResult> getAnalysisResult(
   AnalysisContext context,
   CodeSampleFile file,
@@ -44,7 +46,7 @@ Future<DartdocAnalysisResult> getAnalysisResult(
   return DartdocAnalysisResult(file, []);
 }
 
-// get original file span from sample file span
+/// get original file span from sample file span.
 FileSpan? getOriginalSubSpan({
   required FileSpan sample,
   required FileSpan original,
@@ -56,11 +58,18 @@ FileSpan? getOriginalSubSpan({
   return original.subspan(offset, offset + sample.length);
 }
 
+/// Dartdoc error result
 class DartdocErrorResult {
+  /// Error description
   final AnalysisError error;
+
+  /// Source span of the comment containing code sample from the original file.
   final FileSpan? commentSpan;
+
+  /// Source span of the generated code sample file.
   final FileSpan? generatedSpan;
 
+  /// Create a new instance of [DartdocErrorResult]
   DartdocErrorResult({
     required this.error,
     required this.commentSpan,
@@ -68,11 +77,17 @@ class DartdocErrorResult {
   });
 }
 
+/// Dartdoc analysis result
 class DartdocAnalysisResult {
+  /// generated code sample file
   final CodeSampleFile file;
+
+  /// list of analysis errors
   final List<DartdocErrorResult> errors;
 
+  /// Wheather the analysis result has error
   bool get hasError => errors.any((e) => e.commentSpan != null);
 
+  /// Create a new instance of [DartdocAnalysisResult]
   DartdocAnalysisResult(this.file, this.errors);
 }

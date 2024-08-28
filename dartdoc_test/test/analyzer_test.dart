@@ -50,6 +50,4 @@ void main() {
       expect(result, isNull); // not found.
     });
   });
-
-  // TODO: add emoji offset test
 }

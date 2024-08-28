@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import 'package:dartdoc_test/src/extractor.dart';
+import 'package:dartdoc_test/src/model.dart';
+import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -72,24 +74,36 @@ void main() {
     });
   });
 
-  group('getCodeSamples', () {
+  group('extractCodeSamples', () {
     test('can extract code samples', () {
-      final comment = 'example:\n```dart\nfinal x = 1;\n```';
-      final result = getCodeSamples(comment);
+      final contents = 'example:\n```dart\nfinal x = 1;\n```';
+      final comment = DocumentationComment(
+        path: 'test.dart',
+        contents: contents,
+        span: SourceFile.fromString(contents, url: Uri.parse('test.dart'))
+            .span(0, contents.length),
+        imports: [],
+      );
+      final result = extractCodeSamples(comment);
       expect(
-        result,
-        ['final x = 1;\n'],
+        result.first.code,
+        'final x = 1;\n',
       );
     });
 
     test('can extract multiple code samples', () {
-      final comment =
+      final contents =
           'example:\n```dart\nfinal x = 1;\n```\n```dart\nfinal y = 2;\n```';
-      final result = getCodeSamples(comment);
-      expect(
-        result,
-        ['final x = 1;\n', 'final y = 2;\n'],
+      final comment = DocumentationComment(
+        path: 'test.dart',
+        contents: contents,
+        span: SourceFile.fromString(contents, url: Uri.parse('test.dart'))
+            .span(0, contents.length),
+        imports: [],
       );
+      final result = extractCodeSamples(comment);
+      expect(result[0].code, 'final x = 1;\n');
+      expect(result[1].code, 'final y = 2;\n');
     });
   });
 }

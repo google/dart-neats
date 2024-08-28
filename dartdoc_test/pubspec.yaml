@@ -18,3 +18,4 @@ dependencies:
   markdown: ^7.0.2
   path: ^1.8.3
   source_span: ^1.10.0
+  glob: ^2.1.2

@@ -13,33 +13,40 @@
 // limitations under the License.
 
 import 'package:dartdoc_test/src/reporter.dart';
-import 'package:dartdoc_test/src/resource.dart';
-import 'package:path/path.dart' as p;
-
-import 'package:source_span/source_span.dart';
 
 import '../dartdoc_test.dart';
 import '../logger.dart';
 import 'command_runner.dart';
 
+/// Handles the `analyze` command.
+///
+/// This command extracts code samples from documentation comments and analyzes
+/// them for errors.
 class AnalyzeCommand extends DartdocTestCommand {
   @override
   String get name => 'analyze';
 
   @override
-  String get description => 'Analyze code samples in the current directory.';
+  String get description =>
+      'Analyze code samples in documentation comments in this package.';
 
+  /// Create a new [AnalyzeCommand].
   AnalyzeCommand() {
     argParser
       ..addFlag(
         'write',
         abbr: 'w',
-        help: 'Write code samples to file.',
+        help: 'Write code samples to physical files.',
       )
       ..addOption(
         'output',
         abbr: 'o',
-        help: 'Output code samples to file',
+        help: 'Directory to write code samples.',
+      )
+      ..addMultiOption(
+        'exclude',
+        abbr: 'x',
+        help: 'Directories or files to exclude from analysis.',
       );
   }
 
@@ -49,6 +56,7 @@ class AnalyzeCommand extends DartdocTestCommand {
       write: argResults.flag('write'),
       verbose: globalResults.flag('verbose'),
       out: argResults.option('output'),
+      exclude: argResults.multiOption('exclude'),
     ));
     logger.info('Extracting code samples ...');
     await dartdocTest.extract();
@@ -72,20 +80,10 @@ class AnalyzeCommand extends DartdocTestCommand {
       logger.info('No issues found.');
     }
 
-    final files = getFilesFrom(currentDir);
+    final files = dartdocTest.getFiles();
     for (final file in files) {
       reporter.reportSourceFile(file.path);
     }
     logger.info(Summary.from(result).toString());
-  }
-}
-
-extension on FileSpan {
-  String format(String message) {
-    StringBuffer buffer = StringBuffer();
-    buffer.write(p.prettyUri(sourceUrl));
-    buffer.write(':${start.line + 1}:${(start.column + 1)}: ');
-    buffer.write(message);
-    return buffer.toString();
   }
 }

@@ -16,16 +16,21 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import '../resource.dart';
 import 'command_runner.dart';
 
+/// Handles the `add` command.
+///
+/// This command creates a test file for dartdoc_test in `test/dartdoc_test.dart`
+/// with a default template.
 class AddCommand extends DartdocTestCommand {
   @override
   String get name => 'add';
 
   @override
-  String get description => 'Generate dartdoc_test test file.';
+  String get description =>
+      'Add dartdoc_test test file to "test/dartdoc_test.dart"';
 
+  /// Create a new [AddCommand].
   AddCommand() {
     argParser.addFlag(
       'force',
@@ -36,31 +41,38 @@ class AddCommand extends DartdocTestCommand {
 
   @override
   Future<void> run() async {
-    logger.info('Creating \'test/dartdoc_test.dart\' ...');
+    logger.info('Creating "test/dartdoc_test.dart" ...');
 
-    final path = p.join(currentDir.path, 'test', 'dartdoc_test.dart');
+    final testDirectory = Directory(p.join(Directory.current.path, 'test'));
+
+    final path = p.join(testDirectory.path, 'dartdoc_test.dart');
     final force = argResults.flag('force');
     if (!force && File(path).existsSync()) {
-      logger.info('\'test/dartdoc_test.dart\' is already exists.');
-      logger.info('if you want to create forcely, use --force option.');
+      logger.info('"test/dartdoc_test.dart" is already exists.');
+      logger.info('if you want to create file forcely, use --force option.');
       return;
     }
 
     final content = '''
 import 'package:dartdoc_test/dartdoc_test.dart';
 
-/// [runDartdocTest] is a test function that tests code samples.
+/// Test code samples in documentation comments in this package.
+/// 
+/// It extracts code samples from documentation comments in this package and 
+/// analyzes them. If there are any errors in the code samples, the test will fail
+/// and you can see the problems details.
+/// 
+/// If you want to test only specific files, you can use [exclude] option.
 void main() => runDartdocTest();
 ''';
 
     // if not exists, create test directory
-    final directory = Directory(p.join(currentDir.path, 'test'));
-    if (!directory.existsSync()) {
-      directory.createSync();
+    if (!testDirectory.existsSync()) {
+      testDirectory.createSync();
     }
 
-    final file = File(p.join(directory.path, 'dartdoc_test.dart'));
+    final file = File(p.join(testDirectory.path, 'dartdoc_test.dart'));
     await file.writeAsString(content);
-    logger.info('Done! Run \'dart test\' to analyze code samples.');
+    logger.info('Done! You can run "dart test" to analyze code samples.');
   }
 }

@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:convert';
-
-/// Example of documentation comments and code samples in Dart.
-
-/// code block without specified language
-/// ```
+/// Examples of documentation comments and code samples in Dart.
+///
+/// Dart code block will be analyzed by dartdoc_test.
+///
+/// ```dart
 /// final result = add(2, 3);
 /// print(result); // 5
 /// ```
@@ -25,7 +24,18 @@ int add(int a, int b) {
   return a + b;
 }
 
-/// multiple code blocks
+/// If you don't specify the language for code blocks, it still be analyzed.
+///
+/// ```
+/// final result = subtract(5, 3);
+/// print(result); // 2
+/// ```
+int subtract(int x, int y) {
+  return x - y;
+}
+
+/// Multiple code blocks are also analyzed.
+///
 /// ```dart
 /// final result = multiply(4, 5);
 /// print(result); // 20
@@ -39,7 +49,7 @@ int multiply(int x, int y) {
   return x * y;
 }
 
-/// non-dart code block will be ignored.
+/// Non-Dart code blocks are ignored.
 ///
 /// ```python
 /// def add(a, b):
@@ -52,53 +62,40 @@ int multiply(int x, int y) {
 /// ```
 void ignore() {}
 
-/// Should return: Expected to find ';'.
-/// ```dart
-/// final fact = factorial(5)
-/// print(fact); // 120
+/// You can ignore a code sample by using `no-test` tag.
+///
+/// ```dart#no-test
+/// tagIgnore() // it is not reported.
 /// ```
-int factorial(int n) {
-  if (n < 0) throw ArgumentError('Negative numbers are not allowed.');
-  return n == 0 ? 1 : n * factorial(n - 1);
+void tagIgnore() {}
+
+/// by default, code samples will be wrapped by `main()` function and analyzed.
+/// However, If code sample has `main()` function, it will be not wrapped by `main()`
+/// function and analyzed as it is.
+///
+/// ```dart
+/// void main() {
+///   final result = divide(10, 2);
+///   print(result); // 5
+/// }
+/// ```
+int divide(int x, int y) {
+  return x ~/ y;
 }
 
-/// Checks if a string is a palindrome.
+/// When dartdoc_test analyze the code sample, it uses the imports of the file
+/// where the code sample is located by default.
+/// Also, you can import some libraries and use them in code samples.
+/// but you need to add main() function to run the code when you add imports customly.
 ///
-/// This method ignores case and non-alphanumeric characters.
-///
-/// Example:
 /// ```dart
-/// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
-/// print(isPalindrome); // true
-/// ```
-bool isPalindrome(String s) {
-  var sanitized = s.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toLowerCase();
-  return sanitized == sanitized.split('').reversed.join('');
-}
-
-/// Should return: Local variable 'gcd' can't be referenced before it is declared.
-/// ```dart
-/// final gcd = gcd(48, 18);
-/// print(gcd); // 6
-/// ```
-int gcd(int a, int b) {
-  while (b != 0) {
-    var t = b;
-    b = a % b;
-    a = t;
-  }
-  return a;
-}
-
-/// Convert a string to a list of lines.
+/// import 'dart:convert';
 ///
-/// This method splits a string into lines using the newline character.
-///
-/// Example:
-/// ```dart
-/// final lines = splitLines('Hello\nWorld');
-/// print(lines); // ['Hello', 'World']
+/// void main() {
+///   final x = LineSplitter().convert('2\n3').map(int.parse).toList();
+///   print(pow(x[0], x[1])); // 8
+/// }
 /// ```
-List<String> splitLines(String s) {
-  return LineSplitter.split(s).toList();
+int pow(int x, int y) {
+  return x ^ y;
 }
