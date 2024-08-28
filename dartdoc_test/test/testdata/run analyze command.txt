@@ -1,10 +1,10 @@
 $ dart run dartdoc_test analyze
 Extracting code samples ...
 Analyzing code samples ...
-package:example/error_example.dart:17:29: : Expected to find ';'.
+package:example/error_example.dart:17:28: : 1 positional argument expected by 'factorial', but 0 found.
    ╷
-17 │ /// final fact = factorial(5)
-   │                             ^
+17 │ /// final fact = factorial();
+   │                            ^
    ╵
 
 package:example/error_example.dart:31:11: : Local variable 'isPalindrome' can't be referenced before it is declared.

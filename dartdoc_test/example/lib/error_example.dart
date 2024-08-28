@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Should return: Expected to find ';'.
+/// 1 positional argument expected by 'factorial', but 0 found.
 /// ```dart
-/// final fact = factorial(5)
+/// final fact = factorial();
 /// print(fact); // 120
 /// ```
 int factorial(int n) {

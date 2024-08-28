@@ -1,6 +1,6 @@
 import 'package:example/error_example.dart';
 
 void main() {
-  final fact = factorial(5)
+  final fact = factorial();
   print(fact); // 120
 }

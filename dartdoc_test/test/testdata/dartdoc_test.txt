@@ -3,10 +3,10 @@ Extracting code samples ...
 Analyzing code samples ...
 00:00 +0: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for )
 00:00 +0 -1: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for ) [E]
-  package:example/error_example.dart:17:29: : Expected to find ';'.
+  package:example/error_example.dart:17:28: : 1 positional argument expected by 'factorial', but 0 found.
      ╷
-  17 │ /// final fact = factorial(5)
-     │                             ^
+  17 │ /// final fact = factorial();
+     │                            ^
      ╵
   package:matcher                                fail
   package:dartdoc_test/src/reporter.dart 163:13  _RepoterForTest._reportIssue.<fn>
