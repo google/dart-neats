@@ -28,6 +28,9 @@ dart run dartdoc_test
 By creating `test/dartdoc_test.dart`, you can test code samples with using the `dart test` command.
 
 ```bash
+# Add dartdoc_test as dev dependency
+dart pub add dev:dartdoc_test
+
 # Create test file for code samples to "test/dartdoc_test.dart"
 dart run dartdoc_test add
 
