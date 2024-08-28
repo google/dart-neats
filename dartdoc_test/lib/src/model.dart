@@ -100,8 +100,8 @@ final class DocumentationCodeSample {
     final fileName = comment.span.sourceUrl;
 
     final buf = StringBuffer();
-    buf.writeAll(comment.imports, '\n');
-    buf.writeln();
+    buf.writeAll(comment.imports);
+    if (comment.imports.isNotEmpty) buf.writeln();
     if (fileName != null) {
       if (fileName.hasAbsolutePath) {
         final path = p.relative(fileName.path, from: testDir.absolute.path);
@@ -111,10 +111,14 @@ final class DocumentationCodeSample {
       }
     }
     buf.writeln();
-    if (!hasMain) buf.writeln('void main() {');
-    buf.writeAll(LineSplitter.split(code).map((l) => '  $l'), '\n');
-    buf.writeln();
-    if (!hasMain) buf.writeln('}');
+    if (!hasMain) {
+      buf.writeln('void main() {');
+      buf.writeAll(LineSplitter.split(code).map((l) => '  $l'), '\n');
+      buf.writeln('');
+      buf.writeln('}');
+    } else {
+      buf.write(code);
+    }
     return buf.toString();
   }
 }
