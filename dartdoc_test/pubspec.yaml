@@ -1,6 +1,5 @@
 name: dartdoc_test
 version: 0.1.0
-publish_to: none
 description: |
   Utilities for testing code snippets embedded in documentation comments.
 homepage: https://github.com/google/dart-neats/tree/master/dartdoc_test
