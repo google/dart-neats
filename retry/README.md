@@ -34,8 +34,8 @@ Defaults to 8 attempts, sleeping as following after 1st, 2nd, 3rd, ...,
  7. 25600 ms +/- 25%
 
 ## Using `RetryOptions`
-This package provides `RetryOptions` which defined how many times to retry
-an function and how long to sleep between retries.
+This package provides `RetryOptions` which defines how many times to retry
+the function and how long to sleep between retries.
 
 ```dart
 final r = RetryOptions(maxAttempts: 8);
