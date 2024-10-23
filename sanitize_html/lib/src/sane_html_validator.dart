@@ -177,6 +177,15 @@ bool _validUrl(String url) {
   }
 }
 
+bool validateBase64Image(String base64String) {
+  try {
+    final regex = RegExp(r'^data:image\/(png|jpeg|jpg|gif|bmp|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$');
+    return regex.hasMatch(base64String);
+  } catch (e) {
+    return false;
+  }
+}
+
 final _citeAttributeValidator = <String, bool Function(String)>{
   'cite': _validUrl,
 };
@@ -187,8 +196,8 @@ final _elementAttributeValidators =
     'href': _validLink,
   },
   'IMG': {
-    'src': _validUrl,
-    'longdesc': _validUrl,
+    'src': (url) => _validUrl(url) || validateBase64Image(url),
+    'longdesc': (url) => _validUrl(url) || validateBase64Image(url),
   },
   'DIV': {
     'itemscope': _alwaysAllowed,

@@ -76,8 +76,8 @@ String sanitizeHtml(
   bool Function(String)? allowElementId,
   bool Function(String)? allowClassName,
   Iterable<String>? Function(String)? addLinkRel,
-  final List<String>? allowAttributes,
-  final List<String>? allowTags,
+  List<String>? allowAttributes,
+  List<String>? allowTags,
 }) {
   return SaneHtmlValidator(
     allowElementId: allowElementId,
