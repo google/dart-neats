@@ -212,11 +212,15 @@ class SaneHtmlValidator {
   final bool Function(String)? allowElementId;
   final bool Function(String)? allowClassName;
   final Iterable<String>? Function(String)? addLinkRel;
+  final List<String>? allowAttributes;
+  final List<String>? allowTags;
 
   SaneHtmlValidator({
     required this.allowElementId,
     required this.allowClassName,
     required this.addLinkRel,
+    required this.allowAttributes,
+    required this.allowTags,
   });
 
   String sanitize(String htmlString) {
@@ -228,7 +232,8 @@ class SaneHtmlValidator {
   void _sanitize(Node node) {
     if (node is Element) {
       final tagName = node.localName!.toUpperCase();
-      if (!_allowedElements.contains(tagName)) {
+      if (!_allowedElements.contains(tagName)
+          && !(allowTags?.contains(tagName.toLowerCase()) ?? false)) {
         node.remove();
         return;
       }
@@ -269,6 +274,8 @@ class SaneHtmlValidator {
   }
 
   bool _isAttributeAllowed(String tagName, String attrName, String value) {
+    if (allowAttributes?.contains(attrName.toLowerCase()) == true) return true;
+
     if (_alwaysAllowedAttributes.contains(attrName)) return true;
 
     // Special validators for special attributes on special tags (href/src/cite)
