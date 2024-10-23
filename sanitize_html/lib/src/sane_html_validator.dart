@@ -14,6 +14,7 @@
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:meta/meta.dart';
 
 final _allowedElements = <String>{
   'H1',
@@ -177,13 +178,31 @@ bool _validUrl(String url) {
   }
 }
 
-bool validateBase64Image(String base64String) {
+bool _validBase64Image(String base64String) {
   try {
     final regex = RegExp(r'^data:image\/(png|jpeg|jpg|gif|bmp|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$');
     return regex.hasMatch(base64String);
   } catch (e) {
     return false;
   }
+}
+
+bool _validCIDImage(String cidString) {
+  try {
+    return cidString.startsWith('cid:');
+  } catch (e) {
+    return false;
+  }
+}
+
+@visibleForTesting
+bool validateBase64Image(String base64String) => _validBase64Image(base64String);
+
+@visibleForTesting
+bool validateCIDImage(String cidString) => _validCIDImage(cidString);
+
+bool _validImageSource(String url) {
+  return _validUrl(url) || _validBase64Image(url) || validateCIDImage(url);
 }
 
 final _citeAttributeValidator = <String, bool Function(String)>{
@@ -196,8 +215,8 @@ final _elementAttributeValidators =
     'href': _validLink,
   },
   'IMG': {
-    'src': (url) => _validUrl(url) || validateBase64Image(url),
-    'longdesc': (url) => _validUrl(url) || validateBase64Image(url),
+    'src': _validImageSource,
+    'longdesc': _validImageSource,
   },
   'DIV': {
     'itemscope': _alwaysAllowed,
