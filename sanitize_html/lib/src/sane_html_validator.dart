@@ -268,9 +268,11 @@ class SaneHtmlValidator {
       node.attributes.removeWhere((k, v) {
         final attrName = k.toString();
         if (attrName == 'id') {
-          return allowElementId == null || !allowElementId!(v);
+          return allowAttributes?.contains('id') != true &&
+            (allowElementId == null || !allowElementId!(v));
         }
         if (attrName == 'class') {
+          if (allowAttributes?.contains('class') == true) return false;
           if (allowClassName == null) return true;
           node.classes.removeWhere((cn) => !allowClassName!(cn));
           return node.classes.isEmpty;
