@@ -131,13 +131,14 @@ Stream<TarEntry> _descriptorToTarEntries(
     if (descriptor is d.FileDescriptor) {
       final data = await collectBytes(descriptor.readAsBytes());
       yield TarEntry.data(
-        TarHeader(name: path, size: data.length),
+        TarHeader(name: path, mode: 0, size: data.length),
         data,
       );
     } else if (descriptor is d.DirectoryDescriptor) {
       yield TarEntry.data(
         TarHeader(
           name: path,
+          mode: 0,
           typeFlag: TypeFlag.dir,
         ),
         [],
