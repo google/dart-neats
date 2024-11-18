@@ -83,3 +83,28 @@ String sanitizeHtml(
     addLinkRel: addLinkRel,
   ).sanitize(htmlString);
 }
+
+/// Checks if [htmlString] contains any disallowed elements or attributes.
+///
+/// This function uses the same rules as [sanitizeHtml] but only verifies 
+/// compliance without modifying the HTML content. It returns `true` if any 
+/// disallowed elements or attributes are detected, otherwise `false`.
+///
+/// Example usage:
+/// ```dart
+/// bool hasDisallowedContent = containsDisallowedContent('<a href="javascript:alert()">link</a>');
+/// // Returns true due to disallowed "javascript:" in href
+/// ```
+bool containsDisallowedContent(
+  String htmlString, {
+  bool Function(String)? allowElementId,
+  bool Function(String)? allowClassName,
+  Iterable<String>? Function(String)? addLinkRel,
+}) {
+  return SaneHtmlValidator(
+    allowElementId: allowElementId,
+    allowClassName: allowClassName,
+    addLinkRel: addLinkRel,
+  ).containsDisallowedContent(htmlString);
+}
+
