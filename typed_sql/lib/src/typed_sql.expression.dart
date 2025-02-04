@@ -14,23 +14,23 @@
 
 part of 'typed_sql.dart';
 
-sealed class Expression<T> {
-  const Expression();
+sealed class Expr<T> {
+  const Expr();
 }
 
-final class RowExpression<T extends Model> extends Expression<T> {
+final class RowExpression<T extends Model> extends Expr<T> {
   final String alias;
   RowExpression(this.alias);
 }
 
-final class FieldExpression<T> extends Expression<T> {
+final class FieldExpression<T> extends Expr<T> {
   // TODO: Consider using field index numbers, that would be much cooler!
   final String alias;
   final String name;
   FieldExpression(this.alias, this.name);
 }
 
-final class Literal<T> extends Expression<T> {
+final class Literal<T> extends Expr<T> {
   final T value;
   // TODO: Consider supporting a Constant expression subclass, currently we
   //       always encode literals as ? and attach them as parameters.
@@ -67,18 +67,18 @@ final class Literal<T> extends Expression<T> {
   }
 }
 
-extension DotLiteral<R, T> on R Function(Expression<T>) {
+extension DotLiteral<R, T> on R Function(Expr<T>) {
   R literal(T value) => this(Literal(value));
 }
 
-sealed class BinaryOperationExpression<T, R> extends Expression<R> {
-  final Expression<T> left;
-  final Expression<T> right;
+sealed class BinaryOperationExpression<T, R> extends Expr<R> {
+  final Expr<T> left;
+  final Expr<T> right;
   BinaryOperationExpression(this.left, this.right);
 }
 
-final class ExpressionBoolNot extends Expression<bool> {
-  final Expression<bool> value;
+final class ExpressionBoolNot extends Expr<bool> {
+  final Expr<bool> value;
   ExpressionBoolNot(this.value);
 }
 
@@ -115,47 +115,47 @@ final class ExpressionStringGreaterThanOrEqual
   ExpressionStringGreaterThanOrEqual(super.left, super.right);
 }
 
-final class ExpressionStringIsEmpty extends Expression<bool> {
-  final Expression<String> value;
+final class ExpressionStringIsEmpty extends Expr<bool> {
+  final Expr<String> value;
   ExpressionStringIsEmpty(this.value);
 }
 
-final class ExpressionStringLength extends Expression<int> {
-  final Expression<String> value;
+final class ExpressionStringLength extends Expr<int> {
+  final Expr<String> value;
   ExpressionStringLength(this.value);
 }
 
-final class ExpressionStringStartsWith extends Expression<bool> {
-  final Expression<String> value;
-  final Expression<String> prefix;
+final class ExpressionStringStartsWith extends Expr<bool> {
+  final Expr<String> value;
+  final Expr<String> prefix;
   ExpressionStringStartsWith(this.value, this.prefix);
 }
 
-final class ExpressionStringEndsWith extends Expression<bool> {
-  final Expression<String> value;
-  final Expression<String> suffix;
+final class ExpressionStringEndsWith extends Expr<bool> {
+  final Expr<String> value;
+  final Expr<String> suffix;
   ExpressionStringEndsWith(this.value, this.suffix);
 }
 
-final class ExpressionStringLike extends Expression<bool> {
-  final Expression<String> value;
+final class ExpressionStringLike extends Expr<bool> {
+  final Expr<String> value;
   final String pattern;
   ExpressionStringLike(this.value, this.pattern);
 }
 
-final class ExpressionStringContains extends Expression<bool> {
-  final Expression<String> value;
-  final Expression<String> needle;
+final class ExpressionStringContains extends Expr<bool> {
+  final Expr<String> value;
+  final Expr<String> needle;
   ExpressionStringContains(this.value, this.needle);
 }
 
-final class ExpressionStringToUpperCase extends Expression<String> {
-  final Expression<String> value;
+final class ExpressionStringToUpperCase extends Expr<String> {
+  final Expr<String> value;
   ExpressionStringToUpperCase(this.value);
 }
 
-final class ExpressionStringToLowerCase extends Expression<String> {
-  final Expression<String> value;
+final class ExpressionStringToLowerCase extends Expr<String> {
+  final Expr<String> value;
   ExpressionStringToLowerCase(this.value);
 }
 
@@ -229,11 +229,11 @@ final class ExpressionDateTimeGreaterThanOrEqual
   ExpressionDateTimeGreaterThanOrEqual(super.left, super.right);
 }
 
-extension ExpressionBool on Expression<bool> {
-  Expression<bool> not() => ExpressionBoolNot(this);
-  Expression<bool> operator ~() => ExpressionBoolNot(this);
+extension ExpressionBool on Expr<bool> {
+  Expr<bool> not() => ExpressionBoolNot(this);
+  Expr<bool> operator ~() => ExpressionBoolNot(this);
 
-  Expression<bool> and(Expression<bool> other) {
+  Expr<bool> and(Expr<bool> other) {
     if (other == Literal.literalTrue) {
       return this;
     }
@@ -246,99 +246,91 @@ extension ExpressionBool on Expression<bool> {
     return ExpressionBoolAnd(this, other);
   }
 
-  Expression<bool> operator &(Expression<bool> other) => and(other);
+  Expr<bool> operator &(Expr<bool> other) => and(other);
 
-  Expression<bool> or(Expression<bool> other) => ExpressionBoolOr(this, other);
-  Expression<bool> operator |(Expression<bool> other) =>
-      ExpressionBoolOr(this, other);
+  Expr<bool> or(Expr<bool> other) => ExpressionBoolOr(this, other);
+  Expr<bool> operator |(Expr<bool> other) => ExpressionBoolOr(this, other);
 }
 
-extension ExpressionString on Expression<String> {
-  Expression<bool> equals(Expression<String> value) =>
-      ExpressionStringEquals(this, value);
+extension ExpressionString on Expr<String> {
+  Expr<bool> equals(Expr<String> value) => ExpressionStringEquals(this, value);
 
-  Expression<bool> notEquals(Expression<String> value) => equals(value).not();
+  Expr<bool> notEquals(Expr<String> value) => equals(value).not();
 
-  Expression<bool> get isEmpty => ExpressionStringIsEmpty(this);
-  Expression<bool> get isNotEmpty => isEmpty.not();
+  Expr<bool> get isEmpty => ExpressionStringIsEmpty(this);
+  Expr<bool> get isNotEmpty => isEmpty.not();
 
-  Expression<int> get length => ExpressionStringLength(this);
+  Expr<int> get length => ExpressionStringLength(this);
 
-  Expression<bool> startsWith(Expression<String> value) =>
+  Expr<bool> startsWith(Expr<String> value) =>
       ExpressionStringStartsWith(this, value);
 
-  Expression<bool> endsWith(Expression<String> value) =>
+  Expr<bool> endsWith(Expr<String> value) =>
       ExpressionStringEndsWith(this, value);
 
   /// Matches pattern where `%` is one or more characters, and
   /// `_` is one character.
-  Expression<bool> like(String pattern) => ExpressionStringLike(this, pattern);
+  Expr<bool> like(String pattern) => ExpressionStringLike(this, pattern);
 
-  Expression<bool> contains(Expression<String> substring) =>
+  Expr<bool> contains(Expr<String> substring) =>
       ExpressionStringContains(this, substring);
 
-  Expression<String> toLowerCase() => ExpressionStringToUpperCase(this);
+  Expr<String> toLowerCase() => ExpressionStringToUpperCase(this);
 
-  Expression<String> toUpperCase() => ExpressionStringToLowerCase(this);
+  Expr<String> toUpperCase() => ExpressionStringToLowerCase(this);
 
-  Expression<bool> operator >=(Expression<String> other) =>
+  Expr<bool> operator >=(Expr<String> other) =>
       ExpressionStringGreaterThanOrEqual(this, other);
-  Expression<bool> operator <=(Expression<String> other) =>
+  Expr<bool> operator <=(Expr<String> other) =>
       ExpressionStringLessThanOrEqual(this, other);
-  Expression<bool> operator >(Expression<String> other) =>
+  Expr<bool> operator >(Expr<String> other) =>
       ExpressionStringGreaterThan(this, other);
-  Expression<bool> operator <(Expression<String> other) =>
+  Expr<bool> operator <(Expr<String> other) =>
       ExpressionStringLessThan(this, other);
 }
 
-extension ExpressionNum on Expression<num> {
-  Expression<bool> equals(Expression<num> value) =>
-      ExpressionNumEquals(this, value);
+extension ExpressionNum on Expr<num> {
+  Expr<bool> equals(Expr<num> value) => ExpressionNumEquals(this, value);
 
-  Expression<bool> notEquals(Expression<num> value) => equals(value).not();
+  Expr<bool> notEquals(Expr<num> value) => equals(value).not();
 
-  Expression<num> operator +(Expression<num> other) =>
-      ExpressionNumAdd(this, other);
-  Expression<num> operator -(Expression<num> other) =>
-      ExpressionNumSubtract(this, other);
-  Expression<num> operator *(Expression<num> other) =>
-      ExpressionNumMultiply(this, other);
-  Expression<num> operator /(Expression<num> other) =>
-      ExpressionNumDivide(this, other);
+  Expr<num> operator +(Expr<num> other) => ExpressionNumAdd(this, other);
+  Expr<num> operator -(Expr<num> other) => ExpressionNumSubtract(this, other);
+  Expr<num> operator *(Expr<num> other) => ExpressionNumMultiply(this, other);
+  Expr<num> operator /(Expr<num> other) => ExpressionNumDivide(this, other);
 
-  Expression<bool> operator >=(Expression<num> other) =>
+  Expr<bool> operator >=(Expr<num> other) =>
       ExpressionNumGreaterThanOrEqual(this, other);
-  Expression<bool> operator <=(Expression<num> other) =>
+  Expr<bool> operator <=(Expr<num> other) =>
       ExpressionNumLessThanOrEqual(this, other);
-  Expression<bool> operator >(Expression<num> other) =>
+  Expr<bool> operator >(Expr<num> other) =>
       ExpressionNumGreaterThan(this, other);
-  Expression<bool> operator <(Expression<num> other) =>
-      ExpressionNumLessThan(this, other);
+  Expr<bool> operator <(Expr<num> other) => ExpressionNumLessThan(this, other);
 
   //... do other operators...
 }
 
-extension ExpressionDateTime on Expression<DateTime> {
-  Expression<bool> equals(Expression<DateTime> value) =>
+extension ExpressionDateTime on Expr<DateTime> {
+  Expr<bool> equals(Expr<DateTime> value) =>
       ExpressionDateTimeEquals(this, value);
 
-  Expression<bool> notEquals(Expression<DateTime> value) => equals(value).not();
+  Expr<bool> notEquals(Expr<DateTime> value) => equals(value).not();
 
   // TODO: Decide if we want to support storing a Duration
   // Expression<bool> difference(Expression<DateTime> value) =>
 
-  Expression<bool> operator >=(Expression<DateTime> other) =>
+  Expr<bool> operator >=(Expr<DateTime> other) =>
       ExpressionDateTimeGreaterThanOrEqual(this, other);
-  Expression<bool> operator <=(Expression<DateTime> other) =>
+  Expr<bool> operator <=(Expr<DateTime> other) =>
       ExpressionDateTimeLessThanOrEqual(this, other);
-  Expression<bool> operator >(Expression<DateTime> other) =>
+  Expr<bool> operator >(Expr<DateTime> other) =>
       ExpressionDateTimeGreaterThan(this, other);
-  Expression<bool> operator <(Expression<DateTime> other) =>
+  Expr<bool> operator <(Expr<DateTime> other) =>
       ExpressionDateTimeLessThan(this, other);
 
-  Expression<bool> isBefore(Expression<DateTime> value) => this < value;
+  Expr<bool> isBefore(Expr<DateTime> value) => this < value;
 
-  Expression<bool> isAfter(Expression<DateTime> value) => this > value;
+  Expr<bool> isAfter(Expr<DateTime> value) => this > value;
 
   // TODO: More features... maybe there is a duration in SQL?
 }

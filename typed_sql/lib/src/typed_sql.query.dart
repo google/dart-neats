@@ -16,6 +16,17 @@ part of 'typed_sql.dart';
 
 sealed class Query<T> {}
 
+// TODO: QuerySingle should be renamed QueryExpr and subclass Expr
+//       This means we need to support subqueries in ALL expressions!
+//       This isn't actually too hard in sqlite and postgres it's entirely
+//       possible to do:
+//         WHERE userId = (SELECT userId FROM ... WHERE ... LIMIT 1)
+//       So long as there is a LIMIT 1 clause (required for postgres), while
+//       sqlite will just compare to the first row in the subquery.
+//       Probably this should use CTEs, in case a QueryExpr is referenced more
+//       than once.
+//       If the subquery returns no rows, both sqlite and postgres will take
+//       that to mean NULL.
 sealed class QuerySingle<T> {}
 
 final class _Query<T> extends Query<T> {
@@ -23,16 +34,16 @@ final class _Query<T> extends Query<T> {
   final List<bool> _select;
   final int _limit; // -1, if there is no limit
   final int _offset;
-  final Expression<bool> _where; // default to True
-  final ({bool descending, Expression term})? _orderBy; // default to null
+  final Expr<bool> _where; // default to True
+  final ({bool descending, Expr term})? _orderBy; // default to null
 
   _Query(
     this._table, {
     List<bool>? select,
     int? limit,
     int? offset,
-    Expression<bool>? where,
-    ({bool descending, Expression term})? orderBy,
+    Expr<bool>? where,
+    ({bool descending, Expr term})? orderBy,
   })  : _select = select ?? List.filled(_table._columns.length, true),
         _limit = limit ?? -1,
         _offset = offset ?? 0,
@@ -44,8 +55,8 @@ final class _Query<T> extends Query<T> {
     List<bool>? select,
     int? limit,
     int? offset,
-    Expression<bool>? where,
-    ({bool descending, Expression term})? orderBy,
+    Expr<bool>? where,
+    ({bool descending, Expr term})? orderBy,
   }) =>
       _Query(
         _table,

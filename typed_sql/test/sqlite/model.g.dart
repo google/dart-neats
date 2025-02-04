@@ -127,12 +127,12 @@ extension QueryUsers on Query<User> {
       ExposedForCodeGen.update(this, [userId, name, email]);
 
   Query<User> where(
-    Expression<bool> Function(Expression<User> user) conditionBuilder,
+    Expr<bool> Function(Expr<User> user) conditionBuilder,
   ) =>
       ExposedForCodeGen.where(this, conditionBuilder);
 
   Query<User> orderBy(
-    Expression Function(Expression<User> user) fieldBuilder, {
+    Expr Function(Expr<User> user) fieldBuilder, {
     bool descending = false,
   }) =>
       ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
@@ -167,13 +167,13 @@ extension QuerySingleUsers on QuerySingle<User> {
       ExposedForCodeGen.update(asQuery, [userId, name, email]);
 
   QuerySingle<User> where(
-    Expression<bool> Function(Expression<User> user) conditionBuilder,
+    Expr<bool> Function(Expr<User> user) conditionBuilder,
   ) =>
       ExposedForCodeGen.where(asQuery, conditionBuilder).first;
 }
 
-extension ExpressionUsers on Expression<User> {
-  Expression<int> get userId => ExposedForCodeGen.field(this, 'userId');
-  Expression<String> get name => ExposedForCodeGen.field(this, 'name');
-  Expression<String> get email => ExposedForCodeGen.field(this, 'email');
+extension ExpressionUsers on Expr<User> {
+  Expr<int> get userId => ExposedForCodeGen.field(this, 'userId');
+  Expr<String> get name => ExposedForCodeGen.field(this, 'name');
+  Expr<String> get email => ExposedForCodeGen.field(this, 'email');
 }

@@ -148,7 +148,7 @@ final class ExposedForCodeGen {
 
   static Query<T> where<T extends Model>(
     Query<T> query,
-    Expression<bool> Function(Expression<T> row) conditionBuilder,
+    Expr<bool> Function(Expr<T> row) conditionBuilder,
   ) =>
       query
           ._query()
@@ -156,7 +156,7 @@ final class ExposedForCodeGen {
 
   static Query<T> orderBy<T extends Model>(
     Query<T> query,
-    Expression Function(Expression<T> row) fieldBuilder, {
+    Expr Function(Expr<T> row) fieldBuilder, {
     bool descending = false,
   }) =>
       query._query()._update(orderBy: (
@@ -164,8 +164,8 @@ final class ExposedForCodeGen {
         term: fieldBuilder(RowExpression(_tableAliasName)),
       ));
 
-  static Expression<T> field<T, M extends Model>(
-    Expression<M> row,
+  static Expr<T> field<T, M extends Model>(
+    Expr<M> row,
     String name,
   ) =>
       FieldExpression(

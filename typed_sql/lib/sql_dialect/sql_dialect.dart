@@ -43,8 +43,8 @@ abstract base class SqlDialect {
     List<String> columns,
     int limit, // -1, if there is no limit
     int offset,
-    Expression<bool> where,
-    ({bool descending, Expression term})? orderBy, // default to null
+    Expr<bool> where,
+    ({bool descending, Expr term})? orderBy, // default to null
   );
 
   /// Update [columns] from [table] aliased as [alias] with [values].
@@ -58,11 +58,11 @@ abstract base class SqlDialect {
     String table,
     String alias,
     List<String> columns,
-    List<Expression> values,
+    List<Expr> values,
     int limit, // -1, if there is no limit
     int offset,
-    Expression<bool> where,
-    ({bool descending, Expression term})? orderBy, // default to null
+    Expr<bool> where,
+    ({bool descending, Expr term})? orderBy, // default to null
   );
 
   /// Delete from [table] aliased as [alias].
@@ -79,8 +79,8 @@ abstract base class SqlDialect {
     String alias,
     int limit, // -1, if there is no limit
     int offset,
-    Expression<bool> where,
-    ({bool descending, Expression term})? orderBy, // default to null
+    Expr<bool> where,
+    ({bool descending, Expr term})? orderBy, // default to null
   );
 }
 

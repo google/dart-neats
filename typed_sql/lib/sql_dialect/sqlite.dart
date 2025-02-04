@@ -65,8 +65,8 @@ final class _Sqlite extends SqlDialect {
     List<String> columns,
     int limit,
     int offset,
-    Expression<bool> where,
-    ({bool descending, Expression term})? orderBy,
+    Expr<bool> where,
+    ({bool descending, Expr term})? orderBy,
   ) {
     _checkOffsetAndLimit(offset, limit);
 
@@ -95,11 +95,11 @@ final class _Sqlite extends SqlDialect {
     String table,
     String alias,
     List<String> columns,
-    List<Expression> values,
+    List<Expr> values,
     int limit,
     int offset,
-    Expression<bool> where,
-    ({bool descending, Expression term})? orderBy,
+    Expr<bool> where,
+    ({bool descending, Expr term})? orderBy,
   ) {
     _checkOffsetAndLimit(offset, limit);
 
@@ -139,8 +139,8 @@ final class _Sqlite extends SqlDialect {
     String alias,
     int limit,
     int offset,
-    Expression<bool> where,
-    ({bool descending, Expression term})? orderBy,
+    Expr<bool> where,
+    ({bool descending, Expr term})? orderBy,
   ) {
     _checkOffsetAndLimit(offset, limit);
 
@@ -208,7 +208,7 @@ final class _Sqlite extends SqlDialect {
   }
 
   String _expr<T>(
-    Expression<T> expr,
+    Expr<T> expr,
     _ParamFn param,
   ) =>
       switch (expr) {

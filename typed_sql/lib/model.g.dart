@@ -122,12 +122,12 @@ extension QueryUsers on Query<User> {
       ExposedForCodeGen.update(this, [userId, email]);
 
   Query<User> where(
-    Expression<bool> Function(Expression<User> user) conditionBuilder,
+    Expr<bool> Function(Expr<User> user) conditionBuilder,
   ) =>
       ExposedForCodeGen.where(this, conditionBuilder);
 
   Query<User> orderBy(
-    Expression Function(Expression<User> user) fieldBuilder, {
+    Expr Function(Expr<User> user) fieldBuilder, {
     bool descending = false,
   }) =>
       ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
@@ -160,15 +160,15 @@ extension QuerySingleUsers on QuerySingle<User> {
       ExposedForCodeGen.update(asQuery, [userId, email]);
 
   QuerySingle<User> where(
-    Expression<bool> Function(Expression<User> user) conditionBuilder,
+    Expr<bool> Function(Expr<User> user) conditionBuilder,
   ) =>
       ExposedForCodeGen.where(asQuery, conditionBuilder).first;
 }
 
-extension ExpressionUsers on Expression<User> {
-  Expression<int> get userId => ExposedForCodeGen.field(this, 'userId');
+extension ExpressionUsers on Expr<User> {
+  Expr<int> get userId => ExposedForCodeGen.field(this, 'userId');
 
-  Expression<String> get email => ExposedForCodeGen.field(this, 'email');
+  Expr<String> get email => ExposedForCodeGen.field(this, 'email');
 }
 
 /*----------------------- Stuff for Package -----------------------*/
@@ -197,12 +197,12 @@ extension QueryPackages on Query<Package> {
       throw UnimplementedError();
 
   Query<Package> where(
-    Expression<bool> Function(Expression<Package> package) conditionBuilder,
+    Expr<bool> Function(Expr<Package> package) conditionBuilder,
   ) =>
       throw UnimplementedError();
 
   Query<Package> orderBy(
-    List<Expression> Function(Expression<Package> package) fieldBuilder, {
+    List<Expr> Function(Expr<Package> package) fieldBuilder, {
     bool descending = false,
   }) =>
       throw UnimplementedError();
@@ -220,13 +220,13 @@ extension QuerySinglePackages on QuerySingle<Package> {
       throw UnimplementedError();
 
   QuerySingle<Package> where(
-    Expression<bool> Function(Expression<Package> package) conditionBuilder,
+    Expr<bool> Function(Expr<Package> package) conditionBuilder,
   ) =>
       throw UnimplementedError();
 }
 
-extension ExpressionPackages on Expression<Package> {
-  Expression<String> get name => ExposedForCodeGen.field(this, 'name');
+extension ExpressionPackages on Expr<Package> {
+  Expr<String> get name => ExposedForCodeGen.field(this, 'name');
 }
 
 /*----------------------- Stuff for Likes -----------------------*/
@@ -259,12 +259,12 @@ extension QueryLikes on Query<Like> {
       throw UnimplementedError();
 
   Query<Like> where(
-    Expression<bool> Function(Expression<Like> like) conditionBuilder,
+    Expr<bool> Function(Expr<Like> like) conditionBuilder,
   ) =>
       throw UnimplementedError();
 
   Query<Like> orderBy(
-    List<Expression> Function(Expression<Like> like) fieldBuilder, {
+    List<Expr> Function(Expr<Like> like) fieldBuilder, {
     bool descending = false,
   }) =>
       throw UnimplementedError();
@@ -284,13 +284,12 @@ extension QuerySingleLikes on QuerySingle<Like> {
       throw UnimplementedError();
 
   QuerySingle<Like> where(
-    Expression<bool> Function(Expression<Like> like) conditionBuilder,
+    Expr<bool> Function(Expr<Like> like) conditionBuilder,
   ) =>
       throw UnimplementedError();
 }
 
-extension ExpressionLikes on Expression<Like> {
-  Expression<int> get userId => ExposedForCodeGen.field(this, 'userId');
-  Expression<String> get packageName =>
-      ExposedForCodeGen.field(this, 'packageName');
+extension ExpressionLikes on Expr<Like> {
+  Expr<int> get userId => ExposedForCodeGen.field(this, 'userId');
+  Expr<String> get packageName => ExposedForCodeGen.field(this, 'packageName');
 }

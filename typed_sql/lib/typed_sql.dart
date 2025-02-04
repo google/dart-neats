@@ -18,7 +18,7 @@ export 'src/typed_sql.dart'
         PrimaryKey,
         DotLiteral,
         ExposedForCodeGen,
-        Expression,
+        Expr,
         ExpressionBool,
         ExpressionDateTime,
         ExpressionNum,
