@@ -1,5 +1,5 @@
 name: acyclic_steps
-version: 0.11.1
+version: 0.11.2
 description: >-
   An explicit acyclic step dependency framework with concurrent evaluation
   and dependency injection.
@@ -15,4 +15,4 @@ dev_dependencies:
   test: ^1.5.1
   lints: ^1.0.0
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '^3.0.0'

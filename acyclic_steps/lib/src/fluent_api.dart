@@ -15,7 +15,6 @@
 import 'dart:async' show FutureOr;
 
 import 'dart:collection' show UnmodifiableListView;
-import 'package:meta/meta.dart' show sealed;
 
 Future<T> _defaultRunStep<T>(Step<T> step, Future<T> Function() fn) => fn();
 
@@ -44,8 +43,7 @@ typedef RunStepWrapper = Future<T> Function<T>(
 /// value to be used instead. This is useful when injecting initial options
 /// into an acyclic graph of steps, or when overriding specific components with
 /// mocks/fakes in a testing setup.
-@sealed
-class Runner {
+final class Runner {
   final Map<Step<Object?>, dynamic> _cache = {};
   final RunStepWrapper _wrapRunStep;
 
@@ -212,8 +210,7 @@ class Runner {
 /// to create a [StepBuilderN] which takes `N` dependencies. This allows an
 /// arbitrary number of dependencies, but consuming the result may require type
 /// casting.
-@sealed
-class Step<T> {
+final class Step<T> {
   /// Name of the step.
   ///
   /// This is used to identify the step, typically for debugging, logging or
@@ -294,8 +291,7 @@ class Step<T> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder {
+final class StepBuilder {
   final String _name;
 
   StepBuilder._(this._name);
@@ -338,8 +334,7 @@ class StepBuilder {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilderN<S> {
+final class StepBuilderN<S> {
   final String _name;
   final List<Step<S>> _dependencies;
 
@@ -368,8 +363,7 @@ class StepBuilderN<S> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder1<A> {
+final class StepBuilder1<A> {
   final String _name;
   final Step<A> _a;
 
@@ -409,8 +403,7 @@ class StepBuilder1<A> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder2<A, B> {
+final class StepBuilder2<A, B> {
   final String _name;
   final Step<A> _a;
   final Step<B> _b;
@@ -453,8 +446,7 @@ class StepBuilder2<A, B> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder3<A, B, C> {
+final class StepBuilder3<A, B, C> {
   final String _name;
   final Step<A> _a;
   final Step<B> _b;
@@ -512,8 +504,7 @@ class StepBuilder3<A, B, C> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder4<A, B, C, D> {
+final class StepBuilder4<A, B, C, D> {
   final String _name;
   final Step<A> _a;
   final Step<B> _b;
@@ -576,8 +567,7 @@ class StepBuilder4<A, B, C, D> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder5<A, B, C, D, E> {
+final class StepBuilder5<A, B, C, D, E> {
   final String _name;
   final Step<A> _a;
   final Step<B> _b;
@@ -645,8 +635,7 @@ class StepBuilder5<A, B, C, D, E> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder6<A, B, C, D, E, F> {
+final class StepBuilder6<A, B, C, D, E, F> {
   final String _name;
   final Step<A> _a;
   final Step<B> _b;
@@ -719,8 +708,7 @@ class StepBuilder6<A, B, C, D, E, F> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder7<A, B, C, D, E, F, G> {
+final class StepBuilder7<A, B, C, D, E, F, G> {
   final String _name;
   final Step<A> _a;
   final Step<B> _b;
@@ -798,8 +786,7 @@ class StepBuilder7<A, B, C, D, E, F, G> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder8<A, B, C, D, E, F, G, H> {
+final class StepBuilder8<A, B, C, D, E, F, G, H> {
   final String _name;
   final Step<A> _a;
   final Step<B> _b;
@@ -882,8 +869,7 @@ class StepBuilder8<A, B, C, D, E, F, G, H> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder9<A, B, C, D, E, F, G, H, I> {
+final class StepBuilder9<A, B, C, D, E, F, G, H, I> {
   final String _name;
   final Step<A> _a;
   final Step<B> _b;
@@ -973,8 +959,7 @@ class StepBuilder9<A, B, C, D, E, F, G, H, I> {
 ///
 /// This type is only intended to be used an intermediate result in an
 /// expression defining a step. See [Step.define] for how to define steps.
-@sealed
-class StepBuilder9N<A, B, C, D, E, F, G, H, I, S> {
+final class StepBuilder9N<A, B, C, D, E, F, G, H, I, S> {
   final String _name;
   final Step<A> _a;
   final Step<B> _b;
