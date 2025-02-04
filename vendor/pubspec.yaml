@@ -1,5 +1,5 @@
 name: vendor
-version: 0.9.6
+version: 0.9.7
 description: >-
   Utility for vendoring packages into a project and rewriting import/export
   statements.
