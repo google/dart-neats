@@ -1,3 +1,7 @@
+## v0.11.2
+ * Remove `@sealed` annotation in favor of `final class` modifier from Dart 3.
+ * Bump SDK lower-bound constraint to Dart `3.0.0`.
+
 ## v0.11.1
  * Added `topics` to `pubspec.yaml`.
 
