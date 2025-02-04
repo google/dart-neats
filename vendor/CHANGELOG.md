@@ -1,3 +1,6 @@
+## v0.9.7
+ * Bump constraint on `package:tar` to `^2.0.0`.
+
 ## v0.9.6
  * Bump `package:analyzer` to `>= 2.7.0 <7.0.0`.
 
