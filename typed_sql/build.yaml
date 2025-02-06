@@ -1,0 +1,16 @@
+targets:
+  $default:
+    builders:
+      typed_sql|typed_sql:
+        enabled: true
+        generate_for:
+         - 'test/**/model.dart'
+         - 'example/model.dart'
+builders:
+  typed_sql:
+    import: "package:typed_sql/builder.dart"
+    builder_factories: ["typedSqlBuilder"]
+    build_extensions: {".dart": [".typed_sql.g.part"]}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]

@@ -1,94 +1,80 @@
-// Copyright 2025 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'model.dart';
 
-// EXAMPLE OF FILE THAT SHOULD BE GENERATED!
-
-extension PrimaryDatabaseMigration on Database<PrimaryDatabase> {
-  Future<void> migrate() async {
-    ExposedForCodeGen.applyMigration(this, '''
-CREATE TABLE users (
-  userId INT,
-  name TEXT,
-  email TEXT UNIQUE
-);
-''');
-  }
-}
+// **************************************************************************
+// Generator: _TypedSqlBuilder
+// **************************************************************************
 
 extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
+  /// TODO: Propagate documentation for tables!
   Table<User> get users => ExposedForCodeGen.declareTable(
         context: this,
         tableName: 'users',
-        columns: ['userId', 'name', 'email'],
-        deserialize: (List<Object?> fields) {
-          return _$User(
-            fields[0] as int?,
-            fields[1] as String?,
-            fields[2] as String?,
-          );
-        },
-        // TODO: Include some information about relations, and constraints like unique
+        columns: _$User._$fields,
+        deserialize: _$User._$deserialize,
       );
 }
 
-/*----------------------- Stuff for User -----------------------*/
-
 final class _$User extends User {
   _$User(
-    this._userId,
-    this._name,
-    this._email,
+    this._$userId,
+    this._$name,
+    this._$email,
   );
 
-  // TODO: We can't support nullable fields, because we don't know what they
-  final int? _userId;
+  final int? _$userId;
+
+  final String? _$name;
+
+  final String? _$email;
+
+  static const _$fields = [
+    'userId',
+    'name',
+    'email',
+  ];
+
+  static User _$deserialize(List<Object?> fields) => _$User(
+        (fields[0] as int?),
+        (fields[1] as String?),
+        (fields[2] as String?),
+      );
+
   @override
   int get userId {
-    final userId = _userId;
-    if (userId == null) {
-      throw StateError('Query was made with .select(userId: false)');
+    final value = _$userId;
+    if (value == null) {
+      throw StateError('Query did not fetch "userId"');
     }
-    return userId;
+    return value;
   }
 
-  final String? _name;
   @override
   String get name {
-    final name = _name;
-    if (name == null) {
-      throw StateError('Query was made with .select(name: false)');
+    final value = _$name;
+    if (value == null) {
+      throw StateError('Query did not fetch "name"');
     }
-    return name;
+    return value;
   }
 
-  final String? _email;
   @override
   String get email {
-    final email = _email;
-    if (email == null) {
-      throw StateError('Query was made with .select(email: false)');
+    final value = _$email;
+    if (value == null) {
+      throw StateError('Query did not fetch "email"');
     }
-    return email;
+    return value;
   }
 
   @override
-  String toString() => 'User(userId: $userId, name: "$name", email: "$email")';
+  String toString() =>
+      'User(userId: "${_$userId}", name: "${_$name}", email: "${_$email}")';
 }
 
-extension TableUsers on Table<User> {
+extension TableUserExt on Table<User> {
+  /// TODO: document create
   Future<User> create({
     required int userId,
     required String name,
@@ -96,22 +82,34 @@ extension TableUsers on Table<User> {
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
-        values: [userId, name, email],
+        values: [
+          userId,
+          name,
+          email,
+        ],
       );
 
-  Future<void> delete({
-    required int userId, // always require the primary key
-  }) async =>
-      where((user) => user.userId.equals.literal(userId)).first.delete();
+  /// TODO: document delete
+  Future<void> delete({required int userId}) => byKey(userId: userId).delete();
 }
 
-extension QueryUsers on Query<User> {
-  /// Select which fields to return.
-  ///
-  /// Calling `.select()` without any arguments is no-op and will return all
-  /// fields (but not relations).
-  ///
-  /// Accessing a property that wasn't selected will throw [StateError].
+extension QueryUserExt on Query<User> {
+  /// TODO: document lookup by PrimaryKey
+  QuerySingle<User> byKey({required int userId}) =>
+      where((user) => user.userId.equals.literal(userId)).first;
+
+  /// TODO: document where()
+  Query<User> where(Expr<bool> Function(Expr<User> user) conditionBuilder) =>
+      ExposedForCodeGen.where(this, conditionBuilder);
+
+  /// TODO: document orderBy()
+  Query<User> orderBy(
+    Expr Function(Expr<User> user) fieldBuilder, {
+    bool descending = false,
+  }) =>
+      ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
+
+  /// TODO: document select()
   Query<User> select({
     bool userId = false,
     bool name = false,
@@ -119,6 +117,7 @@ extension QueryUsers on Query<User> {
   }) =>
       ExposedForCodeGen.select(this, [userId, name, email]);
 
+  /// TODO: document updateAll()
   Future<void> updateAll({
     int? userId,
     String? name,
@@ -126,32 +125,13 @@ extension QueryUsers on Query<User> {
   }) =>
       ExposedForCodeGen.update(this, [userId, name, email]);
 
-  Query<User> where(
-    Expr<bool> Function(Expr<User> user) conditionBuilder,
-  ) =>
-      ExposedForCodeGen.where(this, conditionBuilder);
-
-  Query<User> orderBy(
-    Expr Function(Expr<User> user) fieldBuilder, {
-    bool descending = false,
-  }) =>
-      ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
-
-  /// Utility method to lookup a single row using primary key.
-  ///
-  /// Notice that [QuerySingle.fetch] returns [Future<User>] so it's very
-  /// ergonomic for point-queries.
-  QuerySingle<User> byKey({
-    required int userId,
-  }) =>
-      where((user) => user.userId.equals.literal(userId)).first;
-
-  /// For each `@unique()` property there is utility method quickly lookup one.
+  /// TODO: document byXXX()}
   QuerySingle<User> byEmail(String email) =>
       where((user) => user.email.equals.literal(email)).first;
 }
 
-extension QuerySingleUsers on QuerySingle<User> {
+extension QuerySingleUserExt on QuerySingle<User> {
+  /// TODO document select()
   QuerySingle<User> select({
     bool userId = false,
     bool name = false,
@@ -159,6 +139,7 @@ extension QuerySingleUsers on QuerySingle<User> {
   }) =>
       ExposedForCodeGen.select(asQuery, [userId, name, email]).first;
 
+  /// TODO document update()
   Future<void> update({
     int? userId,
     String? name,
@@ -166,14 +147,19 @@ extension QuerySingleUsers on QuerySingle<User> {
   }) =>
       ExposedForCodeGen.update(asQuery, [userId, name, email]);
 
+  /// TODO document where()
   QuerySingle<User> where(
-    Expr<bool> Function(Expr<User> user) conditionBuilder,
-  ) =>
+          Expr<bool> Function(Expr<User> user) conditionBuilder) =>
       ExposedForCodeGen.where(asQuery, conditionBuilder).first;
 }
 
-extension ExpressionUsers on Expr<User> {
+extension ExpressionUserExt on Expr<User> {
+  /// TODO: document userId
   Expr<int> get userId => ExposedForCodeGen.field(this, 'userId');
+
+  /// TODO: document name
   Expr<String> get name => ExposedForCodeGen.field(this, 'name');
+
+  /// TODO: document email
   Expr<String> get email => ExposedForCodeGen.field(this, 'email');
 }

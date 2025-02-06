@@ -27,7 +27,7 @@ void main() {
     );
     final db = Database<PrimaryDatabase>(adaptor, SqlDialect.sqlite());
 
-    await db.migrate();
+    //await db.migrate();
 
     await db.users.create(
       userId: 22,

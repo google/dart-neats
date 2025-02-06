@@ -12,23 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of 'typed_sql.dart';
+/// Convert [camelCase] to lowerCamelCase, where the first letter is lower case.
+String lowerCamelCase(String camelCase) =>
+    camelCase[0].toLowerCase() + camelCase.substring(1);
 
-/// Annotation for a table specifying it's primary key.
-final class PrimaryKey {
-  final List<String> fields;
-
-  const PrimaryKey(this.fields);
-}
-
-/// Annotation for references within a table.
-final class References {
-  const References(Type table, String field);
-}
-
-/// Annotation for a property that are unique.
-final class Unique {
-  // TODO: Consider allowing a `given: ['foo', 'bar']` argument for fields
-  //       that are unique given fields 'foo' and 'bar'.
-  const Unique();
-}
+/// Convert [camelCase] to UpperCamelCase, where the first letter is upper case.
+String upperCamelCase(String camelCase) =>
+    camelCase[0].toUpperCase() + camelCase.substring(1);

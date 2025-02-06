@@ -20,7 +20,7 @@ Future<void> main() async {
   final dynamic dialect = null; // TODO: Get hold of an SqlDialect object
   final db = Database<PrimaryDatabase>(conn, dialect);
 
-  await db.migrate();
+  //await db.migrate();
 
   // Create 3 users
   await db.users.create(userId: 12, email: 'alice@wonderland.com');

@@ -12,23 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of 'typed_sql.dart';
+import 'package:build_verify/build_verify.dart';
+import 'package:test/test.dart';
 
-/// Annotation for a table specifying it's primary key.
-final class PrimaryKey {
-  final List<String> fields;
-
-  const PrimaryKey(this.fields);
-}
-
-/// Annotation for references within a table.
-final class References {
-  const References(Type table, String field);
-}
-
-/// Annotation for a property that are unique.
-final class Unique {
-  // TODO: Consider allowing a `given: ['foo', 'bar']` argument for fields
-  //       that are unique given fields 'foo' and 'bar'.
-  const Unique();
+void main() {
+  test('ensure_build', () async {
+    await expectBuildClean(
+      packageRelativeDirectory: 'pkgs/typed_sql',
+    );
+  });
 }
