@@ -17,8 +17,53 @@ library;
 
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
-import 'package:typed_sql/src/codegen/parsed_schema.dart';
+import 'package:typed_sql/src/codegen/parsed_library.dart';
 import 'package:typed_sql/src/utils/camelcase.dart';
+
+Iterable<Spec> buildCode(ParsedLibrary library) sync* {
+  yield* library.schemas.map(buildSchema).flattened;
+  yield* library.models.map(buildModel).flattened;
+}
+
+/// Generate code for [Schema] subclass, parsed into [schema].
+Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
+  // Create the extension for the `Schema` subclass, example:
+  // extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {...}
+  yield Extension(
+    (b) => b
+      ..name = '${schema.name}Schema'
+      ..on = TypeReference(
+        (b) => b
+          ..symbol = 'DatabaseContext'
+          ..types.add(refer(schema.name)),
+      )
+      ..methods.addAll(
+        schema.tables.map(
+          (table) => Method(
+            (b) => b
+              ..name = table.name
+              ..docs.add('/// TODO: Propagate documentation for tables!')
+              ..type = MethodType.getter
+              ..returns = TypeReference(
+                (b) => b
+                  ..symbol = 'Table'
+                  ..types.add(refer(table.model.name)),
+              )
+              ..lambda = true
+              ..body =
+                  refer('ExposedForCodeGen').property('declareTable').call([], {
+                'context': refer('this'),
+                'tableName': literal(table.name),
+                'columns':
+                    refer('_\$${table.model.name}').property(r'_$fields'),
+                'deserialize':
+                    refer('_\$${table.model.name}').property(r'_$deserialize'),
+              }).code,
+          ),
+        ),
+      ),
+  );
+}
 
 /// Generate code for [Model] subclass, parsed into [model].
 Iterable<Spec> buildModel(ParsedModel model) sync* {

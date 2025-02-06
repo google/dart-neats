@@ -6,6 +6,11 @@ targets:
         generate_for:
          - 'test/**/model.dart'
          - 'example/model.dart'
+      typed_sql|sql_schema:
+        enabled: true
+        generate_for:
+         - 'test/**/model.dart'
+         - 'example/model.dart'
 builders:
   typed_sql:
     import: "package:typed_sql/builder.dart"
@@ -14,3 +19,9 @@ builders:
     auto_apply: dependents
     build_to: cache
     applies_builders: ["source_gen|combining_builder"]
+  sql_schema:
+    import: "package:typed_sql/builder.dart"
+    builder_factories: ["sqlSchemaBuilder"]
+    build_extensions: {".dart": [".sql"]}
+    auto_apply: dependents
+    build_to: source

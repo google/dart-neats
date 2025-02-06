@@ -12,6 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+final class ParsedLibrary {
+  final List<ParsedSchema> schemas;
+  final List<ParsedModel> models;
+
+  ParsedLibrary({
+    required this.schemas,
+    required this.models,
+  });
+
+  bool get isEmpty => schemas.isEmpty && models.isEmpty;
+}
+
 final class ParsedSchema {
   final String name;
   final List<ParsedTable> tables;
