@@ -31,7 +31,6 @@ sealed class QuerySingle<T> {}
 
 final class _Query<T> extends Query<T> {
   final Table<T> _table;
-  final List<bool> _select;
   final int _limit; // -1, if there is no limit
   final int _offset;
   final Expr<bool> _where; // default to True
@@ -39,20 +38,17 @@ final class _Query<T> extends Query<T> {
 
   _Query(
     this._table, {
-    List<bool>? select,
     int? limit,
     int? offset,
     Expr<bool>? where,
     ({bool descending, Expr term})? orderBy,
-  })  : _select = select ?? List.filled(_table._columns.length, true),
-        _limit = limit ?? -1,
+  })  : _limit = limit ?? -1,
         _offset = offset ?? 0,
         _where = where ?? Literal(true),
         _orderBy = orderBy;
 
   /// Create a [_Query] with updated properties
   _Query<T> _update({
-    List<bool>? select,
     int? limit,
     int? offset,
     Expr<bool>? where,
@@ -60,10 +56,6 @@ final class _Query<T> extends Query<T> {
   }) =>
       _Query(
         _table,
-        select: switch (select) {
-          null => _select,
-          _ => List.generate(_select.length, (i) => _select[i] && select[i]),
-        },
         limit: switch (limit) {
           null => _limit,
           -1 => _limit,
@@ -113,10 +105,7 @@ extension QueryClauses<T> on Query<T> {
     final (sql, params) = q._table._context._dialect.selectFrom(
       q._table._tableName,
       _tableAliasName,
-      q._table._columns.indexed
-          .where((i) => q._select[i.$1])
-          .map((i) => i.$2)
-          .toList(),
+      q._table._columns,
       q._limit,
       q._offset,
       q._where,
@@ -124,10 +113,7 @@ extension QueryClauses<T> on Query<T> {
     );
 
     await for (final row in q._table._context._query(sql, params)) {
-      var i = 0;
-      yield q._table._deserialize(
-        q._select.map((b) => b ? row[i++] : null).toList(),
-      );
+      yield q._table._deserialize((i) => row[i]);
     }
   }
 }

@@ -14,6 +14,7 @@
 
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:collection/collection.dart';
 import 'package:typed_sql/adaptor/adaptor.dart';
 
 import '../sql_dialect/sql_dialect.dart';
@@ -36,7 +37,7 @@ final class Table<T> extends Query<T> {
 
   final String _tableName;
   final List<String> _columns;
-  final T Function(List<Object?>) _deserialize;
+  final T Function(Object? Function(int index) get) _deserialize;
 
   Table._(
     this._context,
@@ -80,7 +81,7 @@ final class ExposedForCodeGen {
     required DatabaseContext context,
     required String tableName,
     required List<String> columns,
-    required T Function(List<Object?>) deserialize,
+    required T Function(Object? Function(int index) get) deserialize,
   }) =>
       Table._(
         context,
@@ -110,18 +111,7 @@ final class ExposedForCodeGen {
       table._columns,
     );
     final returned = await table._context._query(sql, params).first;
-    return table._deserialize(returned);
-  }
-
-  static Query<T> select<T extends Model>(
-    Query<T> query,
-    List<bool> select,
-  ) {
-    final q = query._query();
-    if (!select.contains(true)) {
-      select = List.filled(q._table._columns.length, true);
-    }
-    return q._update(select: select);
+    return table._deserialize((i) => returned[i]);
   }
 
   // TODO: we can't set anything to null
@@ -175,10 +165,4 @@ final class ExposedForCodeGen {
         },
         name,
       );
-}
-
-extension<T> on Iterable<T> {
-  Iterable<T> whereIndexed(bool Function(int index, T value) test) {
-    return indexed.where((i) => test(i.$1, i.$2)).map((i) => i.$2);
-  }
 }

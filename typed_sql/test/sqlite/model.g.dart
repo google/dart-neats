@@ -12,22 +12,23 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'users',
         columns: _$User._$fields,
-        deserialize: _$User._$deserialize,
+        deserialize: _$User.new,
       );
 }
 
 final class _$User extends User {
-  _$User(
-    this._$userId,
-    this._$name,
-    this._$email,
-  );
+  _$User(this._$get);
 
-  final int? _$userId;
+  final Object? Function(int index) _$get;
 
-  final String? _$name;
+  @override
+  late final userId = _$get(0) as int;
 
-  final String? _$email;
+  @override
+  late final name = _$get(1) as String;
+
+  @override
+  late final email = _$get(2) as String;
 
   static const _$fields = [
     'userId',
@@ -35,42 +36,9 @@ final class _$User extends User {
     'email',
   ];
 
-  static User _$deserialize(List<Object?> fields) => _$User(
-        (fields[0] as int?),
-        (fields[1] as String?),
-        (fields[2] as String?),
-      );
-
-  @override
-  int get userId {
-    final value = _$userId;
-    if (value == null) {
-      throw StateError('Query did not fetch "userId"');
-    }
-    return value;
-  }
-
-  @override
-  String get name {
-    final value = _$name;
-    if (value == null) {
-      throw StateError('Query did not fetch "name"');
-    }
-    return value;
-  }
-
-  @override
-  String get email {
-    final value = _$email;
-    if (value == null) {
-      throw StateError('Query did not fetch "email"');
-    }
-    return value;
-  }
-
   @override
   String toString() =>
-      'User(userId: "${_$userId}", name: "${_$name}", email: "${_$email}")';
+      'User(userId: "$userId", name: "$name", email: "$email")';
 }
 
 extension TableUserExt on Table<User> {
@@ -109,14 +77,6 @@ extension QueryUserExt on Query<User> {
   }) =>
       ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
 
-  /// TODO: document select()
-  Query<User> select({
-    bool userId = false,
-    bool name = false,
-    bool email = false,
-  }) =>
-      ExposedForCodeGen.select(this, [userId, name, email]);
-
   /// TODO: document updateAll()
   Future<void> updateAll({
     int? userId,
@@ -131,14 +91,6 @@ extension QueryUserExt on Query<User> {
 }
 
 extension QuerySingleUserExt on QuerySingle<User> {
-  /// TODO document select()
-  QuerySingle<User> select({
-    bool userId = false,
-    bool name = false,
-    bool email = false,
-  }) =>
-      ExposedForCodeGen.select(asQuery, [userId, name, email]).first;
-
   /// TODO document update()
   Future<void> update({
     int? userId,

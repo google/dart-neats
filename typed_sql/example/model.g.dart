@@ -12,7 +12,7 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'users',
         columns: _$User._$fields,
-        deserialize: _$User._$deserialize,
+        deserialize: _$User.new,
       );
 
   /// TODO: Propagate documentation for tables!
@@ -20,7 +20,7 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'likes',
         columns: _$Like._$fields,
-        deserialize: _$Like._$deserialize,
+        deserialize: _$Like.new,
       );
 
   /// TODO: Propagate documentation for tables!
@@ -28,50 +28,28 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'packages',
         columns: _$Package._$fields,
-        deserialize: _$Package._$deserialize,
+        deserialize: _$Package.new,
       );
 }
 
 final class _$User extends User {
-  _$User(
-    this._$userId,
-    this._$email,
-  );
+  _$User(this._$get);
 
-  final int? _$userId;
+  final Object? Function(int index) _$get;
 
-  final String? _$email;
+  @override
+  late final userId = _$get(0) as int;
+
+  @override
+  late final email = _$get(1) as String;
 
   static const _$fields = [
     'userId',
     'email',
   ];
 
-  static User _$deserialize(List<Object?> fields) => _$User(
-        (fields[0] as int?),
-        (fields[1] as String?),
-      );
-
   @override
-  int get userId {
-    final value = _$userId;
-    if (value == null) {
-      throw StateError('Query did not fetch "userId"');
-    }
-    return value;
-  }
-
-  @override
-  String get email {
-    final value = _$email;
-    if (value == null) {
-      throw StateError('Query did not fetch "email"');
-    }
-    return value;
-  }
-
-  @override
-  String toString() => 'User(userId: "${_$userId}", email: "${_$email}")';
+  String toString() => 'User(userId: "$userId", email: "$email")';
 }
 
 extension TableUserExt on Table<User> {
@@ -108,13 +86,6 @@ extension QueryUserExt on Query<User> {
   }) =>
       ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
 
-  /// TODO: document select()
-  Query<User> select({
-    bool userId = false,
-    bool email = false,
-  }) =>
-      ExposedForCodeGen.select(this, [userId, email]);
-
   /// TODO: document updateAll()
   Future<void> updateAll({
     int? userId,
@@ -128,13 +99,6 @@ extension QueryUserExt on Query<User> {
 }
 
 extension QuerySingleUserExt on QuerySingle<User> {
-  /// TODO document select()
-  QuerySingle<User> select({
-    bool userId = false,
-    bool email = false,
-  }) =>
-      ExposedForCodeGen.select(asQuery, [userId, email]).first;
-
   /// TODO document update()
   Future<void> update({
     int? userId,
@@ -157,26 +121,17 @@ extension ExpressionUserExt on Expr<User> {
 }
 
 final class _$Package extends Package {
-  _$Package(this._$name);
+  _$Package(this._$get);
 
-  final String? _$name;
+  final Object? Function(int index) _$get;
+
+  @override
+  late final name = _$get(0) as String;
 
   static const _$fields = ['name'];
 
-  static Package _$deserialize(List<Object?> fields) =>
-      _$Package((fields[0] as String?));
-
   @override
-  String get name {
-    final value = _$name;
-    if (value == null) {
-      throw StateError('Query did not fetch "name"');
-    }
-    return value;
-  }
-
-  @override
-  String toString() => 'Package(name: "${_$name}")';
+  String toString() => 'Package(name: "$name")';
 }
 
 extension TablePackageExt on Table<Package> {
@@ -208,20 +163,12 @@ extension QueryPackageExt on Query<Package> {
   }) =>
       ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
 
-  /// TODO: document select()
-  Query<Package> select({bool name = false}) =>
-      ExposedForCodeGen.select(this, [name]);
-
   /// TODO: document updateAll()
   Future<void> updateAll({String? name}) =>
       ExposedForCodeGen.update(this, [name]);
 }
 
 extension QuerySinglePackageExt on QuerySingle<Package> {
-  /// TODO document select()
-  QuerySingle<Package> select({bool name = false}) =>
-      ExposedForCodeGen.select(asQuery, [name]).first;
-
   /// TODO document update()
   Future<void> update({String? name}) =>
       ExposedForCodeGen.update(asQuery, [name]);
@@ -238,46 +185,23 @@ extension ExpressionPackageExt on Expr<Package> {
 }
 
 final class _$Like extends Like {
-  _$Like(
-    this._$userId,
-    this._$packageName,
-  );
+  _$Like(this._$get);
 
-  final int? _$userId;
+  final Object? Function(int index) _$get;
 
-  final String? _$packageName;
+  @override
+  late final userId = _$get(0) as int;
+
+  @override
+  late final packageName = _$get(1) as String;
 
   static const _$fields = [
     'userId',
     'packageName',
   ];
 
-  static Like _$deserialize(List<Object?> fields) => _$Like(
-        (fields[0] as int?),
-        (fields[1] as String?),
-      );
-
   @override
-  int get userId {
-    final value = _$userId;
-    if (value == null) {
-      throw StateError('Query did not fetch "userId"');
-    }
-    return value;
-  }
-
-  @override
-  String get packageName {
-    final value = _$packageName;
-    if (value == null) {
-      throw StateError('Query did not fetch "packageName"');
-    }
-    return value;
-  }
-
-  @override
-  String toString() =>
-      'Like(userId: "${_$userId}", packageName: "${_$packageName}")';
+  String toString() => 'Like(userId: "$userId", packageName: "$packageName")';
 }
 
 extension TableLikeExt on Table<Like> {
@@ -326,13 +250,6 @@ extension QueryLikeExt on Query<Like> {
   }) =>
       ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
 
-  /// TODO: document select()
-  Query<Like> select({
-    bool userId = false,
-    bool packageName = false,
-  }) =>
-      ExposedForCodeGen.select(this, [userId, packageName]);
-
   /// TODO: document updateAll()
   Future<void> updateAll({
     int? userId,
@@ -342,13 +259,6 @@ extension QueryLikeExt on Query<Like> {
 }
 
 extension QuerySingleLikeExt on QuerySingle<Like> {
-  /// TODO document select()
-  QuerySingle<Like> select({
-    bool userId = false,
-    bool packageName = false,
-  }) =>
-      ExposedForCodeGen.select(asQuery, [userId, packageName]).first;
-
   /// TODO document update()
   Future<void> update({
     int? userId,

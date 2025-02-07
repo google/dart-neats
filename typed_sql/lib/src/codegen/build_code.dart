@@ -50,14 +50,11 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
                   ..types.add(refer(table.model.name)),
               )
               ..lambda = true
-              ..body =
-                  refer('ExposedForCodeGen').property('declareTable').call([], {
+              ..body = refer('ExposedForCodeGen.declareTable').call([], {
                 'context': refer('this'),
                 'tableName': literal(table.name),
-                'columns':
-                    refer('_\$${table.model.name}').property(r'_$fields'),
-                'deserialize':
-                    refer('_\$${table.model.name}').property(r'_$deserialize'),
+                'columns': refer('_\$${table.model.name}._\$fields'),
+                'deserialize': refer('_\$${table.model.name}.new'),
               }).code,
           ),
         ),
@@ -76,15 +73,29 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
       ..name = '_\$$modelName'
       ..modifier = ClassModifier.final$
       ..extend = refer(model.name)
-      ..fields.addAll(model.fields.map((field) => Field(
+      ..fields.add(Field(
+        (b) => b
+          ..name = r'_$get'
+          ..modifier = FieldModifier.final$
+          ..type = refer('Object? Function(int index)'),
+      ))
+      ..constructors.add(Constructor(
+        (b) => b
+          ..requiredParameters.add(
+            Parameter(
+              (b) => b
+                ..name = r'_$get'
+                ..toThis = true,
+            ),
+          ),
+      ))
+      ..fields.addAll(model.fields.mapIndexed((i, field) => Field(
             (b) => b
-              ..name = '_\$${field.name}'
-              ..type = TypeReference(
-                (b) => b
-                  ..symbol = field.type
-                  ..isNullable = true,
-              )
-              ..modifier = FieldModifier.final$,
+              ..name = field.name
+              ..annotations.add(refer('override'))
+              ..modifier = FieldModifier.final$
+              ..late = true
+              ..assignment = Code('_\$get($i) as ${field.type}'),
           )))
       ..fields.add(Field(
         (b) => b
@@ -93,51 +104,6 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
           ..modifier = FieldModifier.constant
           ..assignment = literal(model.fields.map((f) => f.name).toList()).code,
       ))
-      ..constructors.add(Constructor(
-        (b) => b
-          ..requiredParameters.addAll(
-            model.fields.map((field) => Parameter(
-                  (b) => b
-                    ..name = '_\$${field.name}'
-                    ..toThis = true,
-                )),
-          ),
-      ))
-      ..methods.add(Method(
-        (b) => b
-          ..name = r'_$deserialize'
-          ..static = true
-          ..requiredParameters.add(
-            Parameter(
-              (b) => b
-                ..name = 'fields'
-                ..type = refer('List<Object?>'),
-            ),
-          )
-          ..returns = refer(model.name)
-          ..body = refer('_\$$modelName')
-              .call(model.fields.mapIndexed((i, field) =>
-                  refer('fields').index(literal(i)).asA(TypeReference(
-                        (b) => b
-                          ..symbol = field.type
-                          ..isNullable = true,
-                      ))))
-              .code,
-      ))
-      ..methods.addAll(model.fields.map((field) => Method(
-            (b) => b
-              ..name = field.name
-              ..annotations.add(refer('override'))
-              ..type = MethodType.getter
-              ..returns = refer(field.type)
-              ..body = Code('''
-                final value = _\$${field.name};
-                if (value == null) {
-                  throw StateError('Query did not fetch "${field.name}"');
-                }
-                return value;
-              '''),
-          )))
       ..methods.add(Method(
         (b) => b
           ..name = 'toString'
@@ -147,7 +113,7 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
           ..body = Code(
             // TODO: Avoid "" around types that don't need it when rendered to
             //       string, like int, double, bool, etc.
-            '\'$modelName(${model.fields.map((field) => '${field.name}: "\${_\$${field.name}}"').join(', ')})\'',
+            '\'$modelName(${model.fields.map((field) => '${field.name}: "\$${field.name}"').join(', ')})\'',
           ),
       )),
   );
@@ -253,18 +219,6 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
       ))
       ..methods.add(Method(
         (b) => b
-          ..name = 'select'
-          ..docs.add('/// TODO: document select()')
-          ..returns = refer('Query<$modelName>')
-          ..optionalParameters
-              .addAll(model.fields.asBoolNamedParametersDefaultFalse)
-          ..lambda = true
-          ..body = Code('''
-            ExposedForCodeGen.select(this, [${model.fields.map((field) => field.name).join(', ')}])
-          '''),
-      ))
-      ..methods.add(Method(
-        (b) => b
           ..name = 'updateAll'
           ..docs.add('/// TODO: document updateAll()')
           ..returns = refer('Future<void>')
@@ -300,18 +254,6 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
   yield Extension((b) => b
     ..name = 'QuerySingle${modelName}Ext'
     ..on = refer('QuerySingle<$modelName>')
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'select'
-        ..docs.add('/// TODO document select()')
-        ..returns = refer('QuerySingle<$modelName>')
-        ..optionalParameters
-            .addAll(model.fields.asBoolNamedParametersDefaultFalse)
-        ..lambda = true
-        ..body = Code('''
-            ExposedForCodeGen.select(asQuery, [${model.fields.map((field) => field.name).join(', ')}]).first
-          '''),
-    ))
     ..methods.add(Method(
       (b) => b
         ..name = 'update'
@@ -376,13 +318,4 @@ extension on List<ParsedField> {
           )
           ..named = true,
       ));
-
-  Iterable<Parameter> get asBoolNamedParametersDefaultFalse =>
-      map((field) => Parameter(
-            (b) => b
-              ..name = field.name
-              ..type = refer('bool')
-              ..named = true
-              ..defaultTo = literal(false).code,
-          ));
 }
