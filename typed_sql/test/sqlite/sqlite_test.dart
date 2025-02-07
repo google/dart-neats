@@ -40,6 +40,29 @@ void main() {
       email: 'alice@example.com',
     );
 
+    // Change all users to a have lower case email
+    await db.users.updateAll((u, set) => set(
+          email: u.email.toLowerCase(),
+        ));
+
+    // Update user 42 to have new name!
+    await db.users
+        .where((u) => u.userId.equals(literal(42)))
+        .first
+        .update((u, set) => set(
+              name: literal('jonasfj'),
+            ));
+
+    // Update user 42 to have new name, using short-cuts
+    await db.users.byKey(userId: 42).update((u, set) => set(
+          name: literal('jonasfj'),
+        ));
+
+    // Update user 42 to have new name, using updateLiteral
+    await db.users.byKey(userId: 42).updateLiteral(
+          name: 'jonasfj',
+        );
+
     final users = await db.users.fetch().toList();
     print(users);
 

@@ -14,20 +14,29 @@
 
 part of 'typed_sql.dart';
 
-sealed class Expr<T> {
-  const Expr();
+sealed class Expr<T extends Object?> {
+  factory Expr(T value) => literal(value);
+
+  const Expr._();
+
+  static const true$ = Literal.true$;
+  static const false$ = Literal.false$;
+
+  static Literal<T> literal<T extends Object?>(T value) => Literal(value);
 }
+
+Literal<T> literal<T extends Object?>(T value) => Literal(value);
 
 final class RowExpression<T extends Model> extends Expr<T> {
   final String alias;
-  RowExpression(this.alias);
+  RowExpression(this.alias) : super._();
 }
 
 final class FieldExpression<T> extends Expr<T> {
   // TODO: Consider using field index numbers, that would be much cooler!
   final String alias;
   final String name;
-  FieldExpression(this.alias, this.name);
+  FieldExpression(this.alias, this.name) : super._();
 }
 
 final class Literal<T> extends Expr<T> {
@@ -39,17 +48,17 @@ final class Literal<T> extends Expr<T> {
   //       whether a literal is encoded as value or constant
   //       If we do this, we might have rename Literal to Value!
 
-  static const literalTrue = Literal._(true);
-  static const literalFalse = Literal._(false);
+  static const true$ = Literal._(true);
+  static const false$ = Literal._(false);
 
-  const Literal._(this.value);
+  const Literal._(this.value) : super._();
 
   factory Literal(T value) {
     if (value is bool) {
       if (value) {
-        return literalTrue as Literal<T>;
+        return true$ as Literal<T>;
       } else {
-        return literalFalse as Literal<T>;
+        return false$ as Literal<T>;
       }
     }
     if (value is! String &&
@@ -74,12 +83,12 @@ extension DotLiteral<R, T> on R Function(Expr<T>) {
 sealed class BinaryOperationExpression<T, R> extends Expr<R> {
   final Expr<T> left;
   final Expr<T> right;
-  BinaryOperationExpression(this.left, this.right);
+  BinaryOperationExpression(this.left, this.right) : super._();
 }
 
 final class ExpressionBoolNot extends Expr<bool> {
   final Expr<bool> value;
-  ExpressionBoolNot(this.value);
+  ExpressionBoolNot(this.value) : super._();
 }
 
 final class ExpressionBoolAnd extends BinaryOperationExpression<bool, bool> {
@@ -117,46 +126,46 @@ final class ExpressionStringGreaterThanOrEqual
 
 final class ExpressionStringIsEmpty extends Expr<bool> {
   final Expr<String> value;
-  ExpressionStringIsEmpty(this.value);
+  ExpressionStringIsEmpty(this.value) : super._();
 }
 
 final class ExpressionStringLength extends Expr<int> {
   final Expr<String> value;
-  ExpressionStringLength(this.value);
+  ExpressionStringLength(this.value) : super._();
 }
 
 final class ExpressionStringStartsWith extends Expr<bool> {
   final Expr<String> value;
   final Expr<String> prefix;
-  ExpressionStringStartsWith(this.value, this.prefix);
+  ExpressionStringStartsWith(this.value, this.prefix) : super._();
 }
 
 final class ExpressionStringEndsWith extends Expr<bool> {
   final Expr<String> value;
   final Expr<String> suffix;
-  ExpressionStringEndsWith(this.value, this.suffix);
+  ExpressionStringEndsWith(this.value, this.suffix) : super._();
 }
 
 final class ExpressionStringLike extends Expr<bool> {
   final Expr<String> value;
   final String pattern;
-  ExpressionStringLike(this.value, this.pattern);
+  ExpressionStringLike(this.value, this.pattern) : super._();
 }
 
 final class ExpressionStringContains extends Expr<bool> {
   final Expr<String> value;
   final Expr<String> needle;
-  ExpressionStringContains(this.value, this.needle);
+  ExpressionStringContains(this.value, this.needle) : super._();
 }
 
 final class ExpressionStringToUpperCase extends Expr<String> {
   final Expr<String> value;
-  ExpressionStringToUpperCase(this.value);
+  ExpressionStringToUpperCase(this.value) : super._();
 }
 
 final class ExpressionStringToLowerCase extends Expr<String> {
   final Expr<String> value;
-  ExpressionStringToLowerCase(this.value);
+  ExpressionStringToLowerCase(this.value) : super._();
 }
 
 final class ExpressionNumEquals<T extends num>
@@ -234,13 +243,13 @@ extension ExpressionBool on Expr<bool> {
   Expr<bool> operator ~() => ExpressionBoolNot(this);
 
   Expr<bool> and(Expr<bool> other) {
-    if (other == Literal.literalTrue) {
+    if (other == Literal.true$) {
       return this;
     }
-    if (other == Literal.literalFalse) {
-      return Literal.literalFalse;
+    if (other == Literal.false$) {
+      return Literal.false$;
     }
-    if (this == Literal.literalTrue) {
+    if (this == Literal.true$) {
       return other;
     }
     return ExpressionBoolAnd(this, other);

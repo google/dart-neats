@@ -78,12 +78,47 @@ extension QueryUserExt on Query<User> {
       ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
 
   /// TODO: document updateAll()
-  Future<void> updateAll({
+  Future<void> updateAll(
+          Update<User> Function(
+            Expr<User> user,
+            Update<User> Function({
+              Expr<int> userId,
+              Expr<String> name,
+              Expr<String> email,
+            }) set,
+          ) updateBuilder) =>
+      ExposedForCodeGen.update(
+        this,
+        (user) => updateBuilder(
+          user,
+          ({
+            Expr<int>? userId,
+            Expr<String>? name,
+            Expr<String>? email,
+          }) =>
+              ExposedForCodeGen.buildUpdate<User>([
+            userId,
+            name,
+            email,
+          ]),
+        ),
+      );
+
+  /// TODO: document updateAllLiteral()
+  /// WARNING: This cannot set properties to `null`!
+  Future<void> updateAllLiteral({
     int? userId,
     String? name,
     String? email,
   }) =>
-      ExposedForCodeGen.update(this, [userId, name, email]);
+      ExposedForCodeGen.update(
+        this,
+        (user) => ExposedForCodeGen.buildUpdate<User>([
+          literal(userId),
+          literal(name),
+          literal(email),
+        ]),
+      );
 
   /// TODO: document byXXX()}
   QuerySingle<User> byEmail(String email) =>
@@ -91,13 +126,48 @@ extension QueryUserExt on Query<User> {
 }
 
 extension QuerySingleUserExt on QuerySingle<User> {
-  /// TODO document update()
-  Future<void> update({
+  /// TODO: document update()
+  Future<void> update(
+          Update<User> Function(
+            Expr<User> user,
+            Update<User> Function({
+              Expr<int> userId,
+              Expr<String> name,
+              Expr<String> email,
+            }) set,
+          ) updateBuilder) =>
+      ExposedForCodeGen.update(
+        asQuery,
+        (user) => updateBuilder(
+          user,
+          ({
+            Expr<int>? userId,
+            Expr<String>? name,
+            Expr<String>? email,
+          }) =>
+              ExposedForCodeGen.buildUpdate<User>([
+            userId,
+            name,
+            email,
+          ]),
+        ),
+      );
+
+  /// TODO: document updateLiteral()
+  /// WARNING: This cannot set properties to `null`!
+  Future<void> updateLiteral({
     int? userId,
     String? name,
     String? email,
   }) =>
-      ExposedForCodeGen.update(asQuery, [userId, name, email]);
+      ExposedForCodeGen.update(
+        asQuery,
+        (user) => ExposedForCodeGen.buildUpdate<User>([
+          literal(userId),
+          literal(name),
+          literal(email),
+        ]),
+      );
 
   /// TODO document where()
   QuerySingle<User> where(

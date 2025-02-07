@@ -70,6 +70,12 @@ abstract base class Schema {
 /// Class from which all model classes must implement.
 abstract base class Model {}
 
+final class Update<T extends Model> {
+  final List<Expr?> _values;
+
+  Update._(this._values);
+}
+
 /// Methods exclusively exposed for use by generated code.
 ///
 /// @nodoc
@@ -114,20 +120,25 @@ final class ExposedForCodeGen {
     return table._deserialize((i) => returned[i]);
   }
 
+  static Update<T> buildUpdate<T extends Model>(List<Expr?> values) =>
+      Update._(values);
+
   // TODO: we can't set anything to null
   static Future<void> update<T extends Model>(
     Query<T> query,
-    List<Object?> values,
+    Update<T> Function(Expr<T> row) updateBuilder,
   ) async {
     final q = query._query();
+
+    final update = updateBuilder(RowExpression(_tableAliasName));
 
     final (sql, params) = q._table._context._dialect.update(
       q._table._tableName,
       _tableAliasName,
       q._table._columns
-          .whereIndexed((index, value) => values[index] != null)
+          .whereIndexed((index, value) => update._values[index] != null)
           .toList(),
-      values.nonNulls.map((v) => Literal(v)).toList(),
+      update._values.nonNulls.toList(),
       q._limit,
       q._offset,
       q._where,

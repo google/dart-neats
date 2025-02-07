@@ -222,10 +222,47 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
           ..name = 'updateAll'
           ..docs.add('/// TODO: document updateAll()')
           ..returns = refer('Future<void>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..type = refer('''
+                  Update<$modelName> Function(
+                    Expr<$modelName> $modelInstanceName,
+                    Update<$modelName> Function({
+                      ${model.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
+                    }) set,
+                  )
+                ''')
+              ..name = 'updateBuilder',
+          ))
+          ..lambda = true
+          ..body = Code('''
+            ExposedForCodeGen.update(
+              this,
+              ($modelInstanceName) => updateBuilder($modelInstanceName, ({
+                  ${model.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
+                }) =>
+                  ExposedForCodeGen.buildUpdate<$modelName>([
+                   ${model.fields.map((field) => field.name).join(', ')},
+                  ]),
+              ),
+            )
+          '''),
+      ))
+      ..methods.add(Method(
+        (b) => b
+          ..name = 'updateAllLiteral'
+          ..docs.add('/// TODO: document updateAllLiteral()')
+          ..docs.add('/// WARNING: This cannot set properties to `null`!')
+          ..returns = refer('Future<void>')
           ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
           ..lambda = true
           ..body = Code('''
-            ExposedForCodeGen.update(this, [${model.fields.map((field) => field.name).join(', ')}])
+            ExposedForCodeGen.update(
+              this,
+              ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
+                ${model.fields.map((field) => 'literal(${field.name})').join(', ')},
+              ]),
+            )
           '''),
       ))
       ..methods.addAll(model.fields.where((field) => field.unique).map(
@@ -257,12 +294,49 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
     ..methods.add(Method(
       (b) => b
         ..name = 'update'
-        ..docs.add('/// TODO document update()')
+        ..docs.add('/// TODO: document update()')
+        ..returns = refer('Future<void>')
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..type = refer('''
+                Update<$modelName> Function(
+                  Expr<$modelName> $modelInstanceName,
+                  Update<$modelName> Function({
+                    ${model.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
+                  }) set,
+                )
+              ''')
+            ..name = 'updateBuilder',
+        ))
+        ..lambda = true
+        ..body = Code('''
+            ExposedForCodeGen.update(
+              asQuery,
+              ($modelInstanceName) => updateBuilder($modelInstanceName, ({
+                  ${model.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
+                }) =>
+                  ExposedForCodeGen.buildUpdate<$modelName>([
+                   ${model.fields.map((field) => field.name).join(', ')},
+                  ]),
+              ),
+            )
+          '''),
+    ))
+    ..methods.add(Method(
+      (b) => b
+        ..name = 'updateLiteral'
+        ..docs.add('/// TODO: document updateLiteral()')
+        ..docs.add('/// WARNING: This cannot set properties to `null`!')
         ..returns = refer('Future<void>')
         ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
         ..lambda = true
         ..body = Code('''
-            ExposedForCodeGen.update(asQuery, [${model.fields.map((field) => field.name).join(', ')}])
+            ExposedForCodeGen.update(
+              asQuery,
+              ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
+                ${model.fields.map((field) => 'literal(${field.name})').join(', ')},
+              ]),
+            )
           '''),
     ))
     ..methods.add(Method(

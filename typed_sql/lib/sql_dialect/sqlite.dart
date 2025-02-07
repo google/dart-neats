@@ -80,7 +80,7 @@ final class _Sqlite extends SqlDialect {
       [
         'SELECT ${columns.map((name) => '${escape(alias)}.${escape(name)}').join(', ')}',
         'FROM ${escape(table)} AS ${escape(alias)}',
-        if (where != Literal.literalTrue) 'WHERE ${_expr(where, param)}',
+        if (where != literal(true)) 'WHERE ${_expr(where, param)}',
         if (orderBy != null)
           'ORDER BY ${_expr(orderBy.term, param)} ${orderBy.descending ? 'DESC' : 'ASC'}',
         if (offset > 0) 'OFFSET ${param(offset)}',
@@ -123,7 +123,7 @@ final class _Sqlite extends SqlDialect {
         'SET',
         for (var i = 0; i < columns.length; i++)
           '${escape(columns[i])} = ${_expr(values[i], param)}',
-        if (where != Literal.literalTrue) 'WHERE ${_expr(where, param)}',
+        if (where != literal(true)) 'WHERE ${_expr(where, param)}',
         if (orderBy != null)
           'ORDER BY ${_expr(orderBy.term, param)} ${orderBy.descending ? 'DESC' : 'ASC'}',
         if (offset > 0) 'OFFSET ${param(offset)}',
@@ -168,7 +168,7 @@ final class _Sqlite extends SqlDialect {
           [
             'SELECT ${escape(alias)}.rowid',
             'FROM ${escape(table)} AS ${escape(alias)}',
-            if (where != Literal.literalTrue) 'WHERE ${_expr(where, param)}',
+            if (where != literal(true)) 'WHERE ${_expr(where, param)}',
             if (orderBy != null)
               'ORDER BY ${_expr(orderBy.term, param)} ${orderBy.descending ? 'DESC' : 'ASC'}',
             if (offset > 0) 'OFFSET ${param(offset)}',
@@ -184,7 +184,7 @@ final class _Sqlite extends SqlDialect {
     return (
       [
         'DELETE FROM ${escape(table)} AS ${escape(alias)}',
-        if (where != Literal.literalTrue) 'WHERE ${_expr(where, param)}',
+        if (where != literal(true)) 'WHERE ${_expr(where, param)}',
       ].join(' '),
       params,
     );
