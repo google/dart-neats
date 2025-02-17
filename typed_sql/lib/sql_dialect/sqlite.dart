@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:collection/collection.dart';
 import 'package:typed_sql/sql_dialect/sql_dialect.dart';
 import 'package:typed_sql/src/typed_sql.dart';
-
-typedef _ParamFn = String Function(Object? param);
 
 SqlDialect sqliteDialect() => _Sqlite();
 
@@ -24,170 +23,51 @@ final class _Sqlite extends SqlDialect {
   (String, List<Object?>) insertInto(
     String table,
     List<String> columns,
-    List<Object?> values,
+    List<Expr> values,
     List<String> returning,
   ) {
+    final (params, ctx) = QueryContext.create();
+    // TODO: Is it possible to insert a ModelExpression
+    //       It probably is, if copying a row from one table to another!
     return (
       [
         'INSERT INTO ${escape(table)}',
         '(${columns.map(escape).join(', ')})',
-        'VALUES (${columns.map((_) => '?').join(', ')})',
+        'VALUES (${values.map((e) => expr(e, ctx)).join(', ')})',
         'RETURNING ${returning.map(escape).join(', ')}',
       ].join(' '),
-      values
-    );
-  }
-
-  void _checkOffsetAndLimit(int offset, int limit) {
-    // This shouldn't be necessary, because an SqlDialect shall never be called
-    // with invalid values! But we should be defensive when writing an
-    // SqlDialect. That said, it could be argued that this should be assertions!
-    if (offset < 0) {
-      throw ArgumentError.value(
-        offset,
-        'offset',
-        'must be non-negative',
-      );
-    }
-    if (limit <= 0 && limit != -1) {
-      throw ArgumentError.value(
-        limit,
-        'limit',
-        'must be positive (or -1 for no limit)',
-      );
-    }
-  }
-
-  @override
-  (String, List<Object?>) selectFrom(
-    String table,
-    String alias,
-    List<String> columns,
-    int limit,
-    int offset,
-    Expr<bool> where,
-    ({bool descending, Expr term})? orderBy,
-  ) {
-    _checkOffsetAndLimit(offset, limit);
-
-    final params = <Object?>[];
-    String param(Object? param) {
-      params.add(param);
-      return '?';
-    }
-
-    return (
-      [
-        'SELECT ${columns.map((name) => '${escape(alias)}.${escape(name)}').join(', ')}',
-        'FROM ${escape(table)} AS ${escape(alias)}',
-        if (where != literal(true)) 'WHERE ${_expr(where, param)}',
-        if (orderBy != null)
-          'ORDER BY ${_expr(orderBy.term, param)} ${orderBy.descending ? 'DESC' : 'ASC'}',
-        if (offset > 0) 'OFFSET ${param(offset)}',
-        if (limit != -1) 'LIMIT ${param(limit)}',
-      ].join(' '),
       params,
     );
   }
 
   @override
-  (String, List<Object?>) update(
-    String table,
-    String alias,
-    List<String> columns,
-    List<Expr> values,
-    int limit,
-    int offset,
-    Expr<bool> where,
-    ({bool descending, Expr term})? orderBy,
-  ) {
-    _checkOffsetAndLimit(offset, limit);
-
-    if (columns.length != values.length) {
-      throw ArgumentError.value(
-        values,
-        'values',
-        'number of columns and values must match',
-      );
-    }
-
-    final params = <Object?>[];
-    String param(Object? param) {
-      params.add(param);
-      return '?';
-    }
+  (String, List<Object?>) update(UpdateStatement statement) {
+    // TODO: We probably need to find the primary key and put it in the statement!
+    throw UnimplementedError('TODO: Finish update statement!');
+    /*
+    final (params, ctx) = QueryContext.create();
+    final (alias, c) = ctx.alias(statement, statement.columns);
 
     return (
       [
-        'UPDATE ${escape(table)} AS ${escape(alias)}',
+        'UPDATE ${escape(statement.table)} AS $alias',
         'SET',
-        for (var i = 0; i < columns.length; i++)
-          '${escape(columns[i])} = ${_expr(values[i], param)}',
-        if (where != literal(true)) 'WHERE ${_expr(where, param)}',
-        if (orderBy != null)
-          'ORDER BY ${_expr(orderBy.term, param)} ${orderBy.descending ? 'DESC' : 'ASC'}',
-        if (offset > 0) 'OFFSET ${param(offset)}',
-        if (limit != -1) 'LIMIT ${param(limit)}',
+        statement.columns
+            .mapIndexed(
+              (i, column) =>
+                  '${escape(column)} = (${expr(statement.values[i], c)})',
+            )
+            .join(', '),
+        'WHERE ', // TODO: We need to match primary keys against QueryClause
       ].join(' '),
       params,
-    );
+    );*/
   }
 
   @override
-  (String, List<Object?>) deleteFrom(
-    String table,
-    String alias,
-    int limit,
-    int offset,
-    Expr<bool> where,
-    ({bool descending, Expr term})? orderBy,
-  ) {
-    _checkOffsetAndLimit(offset, limit);
-
-    final params = <Object?>[];
-    String param(Object? param) {
-      params.add(param);
-      return '?';
-    }
-
-    // By default sqlite doesn't include support for ORDER BY/OFFSET/LIMIT in
-    // DELETE FROM, it can be activated with a compile-time option.
-    // But said option is not available in the amalgamation and other
-    // pre-packaged C files, so it's best to assume it's not available.
-    //
-    // We work around this limitation by emulating ORDER BY/OFFSET/LIMIT using
-    // a subquery. But we only do this if limit, offset or order by is given.
-    //
-    // For details see:
-    // https://www.sqlite.org/compile.html#enable_update_delete_limit
-    if (limit != -1 || offset != 0 || orderBy == null) {
-      return (
-        [
-          'DELETE FROM ${escape(table)}',
-          'WHERE rowid IN (',
-          [
-            'SELECT ${escape(alias)}.rowid',
-            'FROM ${escape(table)} AS ${escape(alias)}',
-            if (where != literal(true)) 'WHERE ${_expr(where, param)}',
-            if (orderBy != null)
-              'ORDER BY ${_expr(orderBy.term, param)} ${orderBy.descending ? 'DESC' : 'ASC'}',
-            if (offset > 0) 'OFFSET ${param(offset)}',
-            if (limit != -1) 'LIMIT ${param(limit)}',
-          ].join(' '),
-          ')',
-        ].join(' '),
-        params,
-      );
-    }
-
-    // Handle the simple sane and common case!
-    return (
-      [
-        'DELETE FROM ${escape(table)} AS ${escape(alias)}',
-        if (where != literal(true)) 'WHERE ${_expr(where, param)}',
-      ].join(' '),
-      params,
-    );
+  (String, List<Object?>) delete(DeleteStatement statement) {
+    // TODO: We probably need to find the primary key and put it in the statement!
+    throw UnimplementedError();
   }
 
   /// Escape [name] for use as identifier in SQL.
@@ -207,38 +87,132 @@ final class _Sqlite extends SqlDialect {
     return '"$name"';
   }
 
-  String _expr<T>(
-    Expr<T> expr,
-    _ParamFn param,
+  @override
+  (String sql, List<String> columns, List<Object?> params) select(
+    SelectStatement statement,
+  ) {
+    final (params, ctx) = QueryContext.create();
+    final (sql, columns) = clause(statement.query, ctx);
+    return (sql, columns, params);
+  }
+
+  (String sql, List<String> columns) clause(QueryClause q, QueryContext ctx) {
+    switch (q) {
+      case TableClause(:var name, :var columns):
+        return (
+          'SELECT ${columns.map(escape).join(', ')} '
+              'FROM ${escape(name)}',
+          columns,
+        );
+
+      case LimitClause(:final from, :final limit):
+        final (sql, columns) = clause(from, ctx);
+        return (
+          'SELECT ${columns.map(escape).join(', ')} '
+              'FROM ($sql) '
+              'LIMIT $limit',
+          columns,
+        );
+
+      case OffsetClause(:final from, :final offset):
+        final (sql, columns) = clause(from, ctx);
+        return (
+          'SELECT ${columns.map(escape).join(', ')} '
+              'FROM ($sql) '
+              'LIMIT $offset',
+          columns,
+        );
+
+      case SelectClause(:final from, :final projection):
+        final (sql, columns) = clause(from, ctx);
+        final (a, c) = ctx.alias(q, columns);
+        final explodedProjection = <String>[];
+        final aliases = <String>[];
+        for (final (i, e) in projection.indexed) {
+          if (e is ModelExpression) {
+            for (final (j, field) in c.model(e).indexed) {
+              explodedProjection.add(field);
+              aliases.add('c_${i}_$j');
+            }
+          } else {
+            explodedProjection.add('(${expr(e, c)})');
+            aliases.add('c_$i');
+          }
+        }
+        return (
+          'SELECT ${explodedProjection.mapIndexed(
+                    (i, e) => '$e AS ${aliases[i]}',
+                  ).join(', ')} '
+              'FROM ($sql) AS $a',
+          aliases,
+        );
+
+      case WhereClause(:final from, :final where):
+        final (sql, columns) = clause(from, ctx);
+        final (a, c) = ctx.alias(q, columns);
+        return (
+          'SELECT ${columns.map(escape).join(', ')} '
+              'FROM ($sql) AS $a '
+              'WHERE ${expr(where, c)}',
+          columns,
+        );
+
+      case OrderByClause(:final from, :final orderBy, :final descending):
+        final (sql, columns) = clause(from, ctx);
+        final (a, c) = ctx.alias(q, columns);
+        // TODO: Handle ModelExpression in orderBy, this probably means order by
+        //       the elements given in the primary key! This isn't particularly
+        //       hard to do. We just need to find a way through.
+        if (orderBy is ModelExpression) {
+          throw UnsupportedError('OrderBy primaryKey is not yet supported!');
+        }
+        return (
+          'SELECT ${columns.map(escape).join(', ')} '
+              'FROM ($sql) AS $a '
+              'ORDER BY ${expr(orderBy, c)} '
+              '${descending ? 'DESC' : 'ASC'}',
+          columns,
+        );
+    }
+  }
+
+  String expr<T>(
+    Expr<T> e,
+    QueryContext ctx,
   ) =>
-      switch (expr) {
-        RowExpression<Model>() => throw UnsupportedError(
-            'Rows cannot be used in expressions, but fields of rows can be!',
-          ),
-        FieldExpression<T>(alias: final alias, name: final name) =>
-          '${escape(alias)}.${escape(name)}',
-        Literal<T>(value: final value) => param(value),
+      switch (e) {
+        FieldExpression<T>() => escape(ctx.field(e)),
+        Literal<T>(value: final value) => ctx.parameter(value),
         final BinaryOperationExpression e =>
-          '( ${_expr(e.left, param)} ${e.operator} ${_expr(e.right, param)} )',
-        ExpressionBoolNot(value: final value) =>
-          '( NOT ${_expr(value, param)} )',
+          '( ${expr(e.left, ctx)} ${e.operator} ${expr(e.right, ctx)} )',
+        ExpressionBoolNot(value: final value) => '( NOT ${expr(value, ctx)} )',
         ExpressionStringIsEmpty(value: final value) =>
-          '( ${_expr(value, param)} = ' ' )',
+          '( ${expr(value, ctx)} = ' ' )',
         ExpressionStringLength(value: final value) =>
-          'LENGTH( ${_expr(value, param)} )',
+          'LENGTH( ${expr(value, ctx)} )',
         ExpressionStringStartsWith(value: final value, prefix: final prefix) =>
-          '( ${_expr(value, param)} GLOB ${_expr(prefix, param)} || \'*\' )',
+          '( ${expr(value, ctx)} GLOB ${expr(prefix, ctx)} || \'*\' )',
         ExpressionStringEndsWith(value: final value, suffix: final suffix) =>
-          '( ${_expr(value, param)} GLOB \'*\' || ${_expr(suffix, param)} )',
+          '( ${expr(value, ctx)} GLOB \'*\' || ${expr(suffix, ctx)} )',
         ExpressionStringLike(value: final value, pattern: final pattern) =>
-          '( ${_expr(value, param)} LIKE ${param(pattern)} )',
+          '( ${expr(value, ctx)} LIKE ${ctx.parameter(pattern)} )',
         ExpressionStringContains(value: final value, needle: final needle) =>
-          '( INSTR( ${_expr(value, param)} , ${_expr(needle, param)} ) = 0 )',
+          '( INSTR( ${expr(value, ctx)} , ${expr(needle, ctx)} ) = 0 )',
         ExpressionStringToUpperCase(value: final value) =>
-          'UPPER( ${_expr(value, param)} )',
+          'UPPER( ${expr(value, ctx)} )',
         ExpressionStringToLowerCase(value: final value) =>
-          'LOWER( ${_expr(value, param)} )',
+          'LOWER( ${expr(value, ctx)} )',
+        ModelExpression<Model>() => throw UnsupportedError(
+            'ModelExpression cannot be used as expressions!',
+          )
       };
+}
+
+extension on QueryContext {
+  String parameter(Object? value) {
+    final index = param(value);
+    return '?$index';
+  }
 }
 
 final _sqlSafe = RegExp(r'^[a-zA-Z][a-zA-Z0-9_]*$');

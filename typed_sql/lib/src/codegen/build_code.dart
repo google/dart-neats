@@ -44,18 +44,16 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
               ..name = table.name
               ..docs.add('/// TODO: Propagate documentation for tables!')
               ..type = MethodType.getter
-              ..returns = TypeReference(
-                (b) => b
-                  ..symbol = 'Table'
-                  ..types.add(refer(table.model.name)),
-              )
+              ..returns = refer('Table<${table.model.name}>')
               ..lambda = true
-              ..body = refer('ExposedForCodeGen.declareTable').call([], {
-                'context': refer('this'),
-                'tableName': literal(table.name),
-                'columns': refer('_\$${table.model.name}._\$fields'),
-                'deserialize': refer('_\$${table.model.name}.new'),
-              }).code,
+              ..body = Code('''
+                ExposedForCodeGen.declareTable(
+                  context: this,
+                  tableName: '${table.name}',
+                  columns: _\$${table.model.name}._\$fields,
+                  deserialize: _\$${table.model.name}.new,
+                )
+              '''),
           ),
         ),
       ),
@@ -130,11 +128,31 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
           ..optionalParameters.addAll(model.fields.asRequiredNamedParameters)
           ..returns = refer('Future<$modelName>')
           ..lambda = true
-          ..body = refer('ExposedForCodeGen').property('insertInto').call([], {
-            'table': refer('this'),
-            'values':
-                literalList(model.fields.map((field) => refer(field.name))),
-          }).code,
+          ..body = Code('''
+            ExposedForCodeGen.insertInto(
+              table: this,
+              values: [
+                ${model.fields.map((field) => 'literal(${field.name})').join(', ')},
+              ],
+            )
+          '''),
+      ))
+      ..methods.add(Method(
+        (b) => b
+          ..name = 'insert'
+          ..docs.add('/// TODO: document insert')
+          ..optionalParameters
+              .addAll(model.fields.asRequiredNamedExprParameters)
+          ..returns = refer('Future<$modelName>')
+          ..lambda = true
+          ..body = Code('''
+            ExposedForCodeGen.insertInto(
+              table: this,
+              values: [
+                ${model.fields.map((field) => field.name).join(', ')},
+              ],
+            )
+          '''),
       ))
       ..methods.add(Method(
         (b) => b
@@ -155,16 +173,16 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
       )),
   );
 
-  // Extension for Query<model>
+  // Extension for Query<(Expr<model>,)>
   yield Extension(
     (b) => b
       ..name = 'Query${modelName}Ext'
-      ..on = refer('Query<$modelName>')
+      ..on = refer('Query<(Expr<$modelName>,)>')
       ..methods.add(Method(
         (b) => b
           ..name = 'byKey'
           ..docs.add('/// TODO: document lookup by PrimaryKey')
-          ..returns = refer('QuerySingle<$modelName>')
+          ..returns = refer('QuerySingle<(Expr<$modelName>,)>')
           ..optionalParameters.addAll(
             model.primaryKey.asRequiredNamedParameters,
           )
@@ -177,45 +195,6 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
                       '$modelInstanceName.${f.name}.equals.literal(${f.name})',
                 ).reduce((a, b) => '$a.and($b)')}).first',
           ),
-      ))
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'where'
-          ..docs.add('/// TODO: document where()')
-          ..returns = refer('Query<$modelName>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'conditionBuilder'
-              ..type = refer(
-                  'Expr<bool> Function(Expr<$modelName> $modelInstanceName)'),
-          ))
-          ..lambda = true
-          ..body = Code('''
-            ExposedForCodeGen.where(this, conditionBuilder)
-          '''),
-      ))
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'orderBy'
-          ..docs.add('/// TODO: document orderBy()')
-          ..returns = refer('Query<$modelName>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'fieldBuilder'
-              ..type =
-                  refer('Expr Function(Expr<$modelName> $modelInstanceName)'),
-          ))
-          ..optionalParameters.add(Parameter(
-            (b) => b
-              ..name = 'descending'
-              ..type = refer('bool')
-              ..named = true
-              ..defaultTo = literal(false).code,
-          ))
-          ..lambda = true
-          ..body = Code('''
-            ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending)
-          '''),
       ))
       ..methods.add(Method(
         (b) => b
@@ -236,7 +215,7 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
           ))
           ..lambda = true
           ..body = Code('''
-            ExposedForCodeGen.update(
+            ExposedForCodeGen.update<$modelName>(
               this,
               ($modelInstanceName) => updateBuilder($modelInstanceName, ({
                   ${model.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
@@ -257,7 +236,7 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
           ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
           ..lambda = true
           ..body = Code('''
-            ExposedForCodeGen.update(
+            ExposedForCodeGen.update<$modelName>(
               this,
               ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
                 ${model.fields.map((field) => 'literal(${field.name})').join(', ')},
@@ -270,7 +249,7 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
               (b) => b
                 ..name = 'by${upperCamelCase(field.name)}'
                 ..docs.add('/// TODO: document byXXX()}')
-                ..returns = refer('QuerySingle<$modelName>')
+                ..returns = refer('QuerySingle<(Expr<$modelName>,)>')
                 ..requiredParameters.add(Parameter(
                   (b) => b
                     ..name = field.name
@@ -287,10 +266,10 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
     // TODO: Add utility methods for easy lookup by field for each unique field!
   );
 
-  // Extension for QuerySingle<model>
+  // Extension for QuerySingle<(Expr<model>,)>
   yield Extension((b) => b
     ..name = 'QuerySingle${modelName}Ext'
-    ..on = refer('QuerySingle<$modelName>')
+    ..on = refer('QuerySingle<(Expr<$modelName>,)>')
     ..methods.add(Method(
       (b) => b
         ..name = 'update'
@@ -310,7 +289,7 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
         ))
         ..lambda = true
         ..body = Code('''
-            ExposedForCodeGen.update(
+            ExposedForCodeGen.update<$modelName>(
               asQuery,
               ($modelInstanceName) => updateBuilder($modelInstanceName, ({
                   ${model.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
@@ -331,28 +310,12 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
         ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
         ..lambda = true
         ..body = Code('''
-            ExposedForCodeGen.update(
+            ExposedForCodeGen.update<$modelName>(
               asQuery,
               ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
                 ${model.fields.map((field) => 'literal(${field.name})').join(', ')},
               ]),
             )
-          '''),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'where'
-        ..docs.add('/// TODO document where()')
-        ..returns = refer('QuerySingle<$modelName>')
-        ..requiredParameters.add(Parameter(
-          (b) => b
-            ..name = 'conditionBuilder'
-            ..type = refer(
-                'Expr<bool> Function(Expr<$modelName> $modelInstanceName)'),
-        ))
-        ..lambda = true
-        ..body = Code('''
-            ExposedForCodeGen.where(asQuery, conditionBuilder).first
           '''),
     )));
 
@@ -361,14 +324,14 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
     (b) => b
       ..name = 'Expression${modelName}Ext'
       ..on = refer('Expr<$modelName>')
-      ..methods.addAll(model.fields.map((field) => Method(
+      ..methods.addAll(model.fields.mapIndexed((i, field) => Method(
             (b) => b
               ..name = field.name
               ..docs.add('/// TODO: document ${field.name}')
               ..type = MethodType.getter
               ..returns = refer('Expr<${field.type}>')
               ..lambda = true
-              ..body = Code('ExposedForCodeGen.field(this, \'${field.name}\')'),
+              ..body = Code('ExposedForCodeGen.field(this, $i)'),
           ))),
   );
 }
@@ -381,6 +344,15 @@ extension on List<ParsedField> {
           ..required = true
           ..type = refer(field.type),
       ));
+
+  Iterable<Parameter> get asRequiredNamedExprParameters =>
+      map((field) => Parameter(
+            (b) => b
+              ..name = field.name
+              ..named = true
+              ..required = true
+              ..type = refer('Expr<${field.type}>'),
+          ));
 
   Iterable<Parameter> get asOptionalNamedParameters => map((field) => Parameter(
         (b) => b

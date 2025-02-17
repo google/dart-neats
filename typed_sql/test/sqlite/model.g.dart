@@ -51,6 +51,21 @@ extension TableUserExt on Table<User> {
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
+          literal(userId),
+          literal(name),
+          literal(email),
+        ],
+      );
+
+  /// TODO: document insert
+  Future<User> insert({
+    required Expr<int> userId,
+    required Expr<String> name,
+    required Expr<String> email,
+  }) =>
+      ExposedForCodeGen.insertInto(
+        table: this,
+        values: [
           userId,
           name,
           email,
@@ -61,21 +76,10 @@ extension TableUserExt on Table<User> {
   Future<void> delete({required int userId}) => byKey(userId: userId).delete();
 }
 
-extension QueryUserExt on Query<User> {
+extension QueryUserExt on Query<(Expr<User>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<User> byKey({required int userId}) =>
+  QuerySingle<(Expr<User>,)> byKey({required int userId}) =>
       where((user) => user.userId.equals.literal(userId)).first;
-
-  /// TODO: document where()
-  Query<User> where(Expr<bool> Function(Expr<User> user) conditionBuilder) =>
-      ExposedForCodeGen.where(this, conditionBuilder);
-
-  /// TODO: document orderBy()
-  Query<User> orderBy(
-    Expr Function(Expr<User> user) fieldBuilder, {
-    bool descending = false,
-  }) =>
-      ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
 
   /// TODO: document updateAll()
   Future<void> updateAll(
@@ -87,7 +91,7 @@ extension QueryUserExt on Query<User> {
               Expr<String> email,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<User>(
         this,
         (user) => updateBuilder(
           user,
@@ -111,7 +115,7 @@ extension QueryUserExt on Query<User> {
     String? name,
     String? email,
   }) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<User>(
         this,
         (user) => ExposedForCodeGen.buildUpdate<User>([
           literal(userId),
@@ -121,11 +125,11 @@ extension QueryUserExt on Query<User> {
       );
 
   /// TODO: document byXXX()}
-  QuerySingle<User> byEmail(String email) =>
+  QuerySingle<(Expr<User>,)> byEmail(String email) =>
       where((user) => user.email.equals.literal(email)).first;
 }
 
-extension QuerySingleUserExt on QuerySingle<User> {
+extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   /// TODO: document update()
   Future<void> update(
           Update<User> Function(
@@ -136,7 +140,7 @@ extension QuerySingleUserExt on QuerySingle<User> {
               Expr<String> email,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<User>(
         asQuery,
         (user) => updateBuilder(
           user,
@@ -160,7 +164,7 @@ extension QuerySingleUserExt on QuerySingle<User> {
     String? name,
     String? email,
   }) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<User>(
         asQuery,
         (user) => ExposedForCodeGen.buildUpdate<User>([
           literal(userId),
@@ -168,20 +172,15 @@ extension QuerySingleUserExt on QuerySingle<User> {
           literal(email),
         ]),
       );
-
-  /// TODO document where()
-  QuerySingle<User> where(
-          Expr<bool> Function(Expr<User> user) conditionBuilder) =>
-      ExposedForCodeGen.where(asQuery, conditionBuilder).first;
 }
 
 extension ExpressionUserExt on Expr<User> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 'userId');
+  Expr<int> get userId => ExposedForCodeGen.field(this, 0);
 
   /// TODO: document name
-  Expr<String> get name => ExposedForCodeGen.field(this, 'name');
+  Expr<String> get name => ExposedForCodeGen.field(this, 1);
 
   /// TODO: document email
-  Expr<String> get email => ExposedForCodeGen.field(this, 'email');
+  Expr<String> get email => ExposedForCodeGen.field(this, 2);
 }

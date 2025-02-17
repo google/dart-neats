@@ -61,6 +61,19 @@ extension TableUserExt on Table<User> {
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
+          literal(userId),
+          literal(email),
+        ],
+      );
+
+  /// TODO: document insert
+  Future<User> insert({
+    required Expr<int> userId,
+    required Expr<String> email,
+  }) =>
+      ExposedForCodeGen.insertInto(
+        table: this,
+        values: [
           userId,
           email,
         ],
@@ -70,21 +83,10 @@ extension TableUserExt on Table<User> {
   Future<void> delete({required int userId}) => byKey(userId: userId).delete();
 }
 
-extension QueryUserExt on Query<User> {
+extension QueryUserExt on Query<(Expr<User>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<User> byKey({required int userId}) =>
+  QuerySingle<(Expr<User>,)> byKey({required int userId}) =>
       where((user) => user.userId.equals.literal(userId)).first;
-
-  /// TODO: document where()
-  Query<User> where(Expr<bool> Function(Expr<User> user) conditionBuilder) =>
-      ExposedForCodeGen.where(this, conditionBuilder);
-
-  /// TODO: document orderBy()
-  Query<User> orderBy(
-    Expr Function(Expr<User> user) fieldBuilder, {
-    bool descending = false,
-  }) =>
-      ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
 
   /// TODO: document updateAll()
   Future<void> updateAll(
@@ -95,7 +97,7 @@ extension QueryUserExt on Query<User> {
               Expr<String> email,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<User>(
         this,
         (user) => updateBuilder(
           user,
@@ -116,7 +118,7 @@ extension QueryUserExt on Query<User> {
     int? userId,
     String? email,
   }) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<User>(
         this,
         (user) => ExposedForCodeGen.buildUpdate<User>([
           literal(userId),
@@ -125,11 +127,11 @@ extension QueryUserExt on Query<User> {
       );
 
   /// TODO: document byXXX()}
-  QuerySingle<User> byEmail(String email) =>
+  QuerySingle<(Expr<User>,)> byEmail(String email) =>
       where((user) => user.email.equals.literal(email)).first;
 }
 
-extension QuerySingleUserExt on QuerySingle<User> {
+extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   /// TODO: document update()
   Future<void> update(
           Update<User> Function(
@@ -139,7 +141,7 @@ extension QuerySingleUserExt on QuerySingle<User> {
               Expr<String> email,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<User>(
         asQuery,
         (user) => updateBuilder(
           user,
@@ -160,26 +162,21 @@ extension QuerySingleUserExt on QuerySingle<User> {
     int? userId,
     String? email,
   }) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<User>(
         asQuery,
         (user) => ExposedForCodeGen.buildUpdate<User>([
           literal(userId),
           literal(email),
         ]),
       );
-
-  /// TODO document where()
-  QuerySingle<User> where(
-          Expr<bool> Function(Expr<User> user) conditionBuilder) =>
-      ExposedForCodeGen.where(asQuery, conditionBuilder).first;
 }
 
 extension ExpressionUserExt on Expr<User> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 'userId');
+  Expr<int> get userId => ExposedForCodeGen.field(this, 0);
 
   /// TODO: document email
-  Expr<String> get email => ExposedForCodeGen.field(this, 'email');
+  Expr<String> get email => ExposedForCodeGen.field(this, 1);
 }
 
 final class _$Package extends Package {
@@ -201,29 +198,28 @@ extension TablePackageExt on Table<Package> {
   Future<Package> create({required String name}) =>
       ExposedForCodeGen.insertInto(
         table: this,
-        values: [name],
+        values: [
+          literal(name),
+        ],
+      );
+
+  /// TODO: document insert
+  Future<Package> insert({required Expr<String> name}) =>
+      ExposedForCodeGen.insertInto(
+        table: this,
+        values: [
+          name,
+        ],
       );
 
   /// TODO: document delete
   Future<void> delete({required String name}) => byKey(name: name).delete();
 }
 
-extension QueryPackageExt on Query<Package> {
+extension QueryPackageExt on Query<(Expr<Package>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<Package> byKey({required String name}) =>
+  QuerySingle<(Expr<Package>,)> byKey({required String name}) =>
       where((package) => package.name.equals.literal(name)).first;
-
-  /// TODO: document where()
-  Query<Package> where(
-          Expr<bool> Function(Expr<Package> package) conditionBuilder) =>
-      ExposedForCodeGen.where(this, conditionBuilder);
-
-  /// TODO: document orderBy()
-  Query<Package> orderBy(
-    Expr Function(Expr<Package> package) fieldBuilder, {
-    bool descending = false,
-  }) =>
-      ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
 
   /// TODO: document updateAll()
   Future<void> updateAll(
@@ -233,7 +229,7 @@ extension QueryPackageExt on Query<Package> {
               Expr<String> name,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<Package>(
         this,
         (package) => updateBuilder(
           package,
@@ -248,7 +244,8 @@ extension QueryPackageExt on Query<Package> {
 
   /// TODO: document updateAllLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateAllLiteral({String? name}) => ExposedForCodeGen.update(
+  Future<void> updateAllLiteral({String? name}) =>
+      ExposedForCodeGen.update<Package>(
         this,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
           literal(name),
@@ -256,7 +253,7 @@ extension QueryPackageExt on Query<Package> {
       );
 }
 
-extension QuerySinglePackageExt on QuerySingle<Package> {
+extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
   /// TODO: document update()
   Future<void> update(
           Update<Package> Function(
@@ -265,7 +262,7 @@ extension QuerySinglePackageExt on QuerySingle<Package> {
               Expr<String> name,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<Package>(
         asQuery,
         (package) => updateBuilder(
           package,
@@ -280,22 +277,18 @@ extension QuerySinglePackageExt on QuerySingle<Package> {
 
   /// TODO: document updateLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateLiteral({String? name}) => ExposedForCodeGen.update(
+  Future<void> updateLiteral({String? name}) =>
+      ExposedForCodeGen.update<Package>(
         asQuery,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
           literal(name),
         ]),
       );
-
-  /// TODO document where()
-  QuerySingle<Package> where(
-          Expr<bool> Function(Expr<Package> package) conditionBuilder) =>
-      ExposedForCodeGen.where(asQuery, conditionBuilder).first;
 }
 
 extension ExpressionPackageExt on Expr<Package> {
   /// TODO: document name
-  Expr<String> get name => ExposedForCodeGen.field(this, 'name');
+  Expr<String> get name => ExposedForCodeGen.field(this, 0);
 }
 
 final class _$Like extends Like {
@@ -327,6 +320,19 @@ extension TableLikeExt on Table<Like> {
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
+          literal(userId),
+          literal(packageName),
+        ],
+      );
+
+  /// TODO: document insert
+  Future<Like> insert({
+    required Expr<int> userId,
+    required Expr<String> packageName,
+  }) =>
+      ExposedForCodeGen.insertInto(
+        table: this,
+        values: [
           userId,
           packageName,
         ],
@@ -343,26 +349,15 @@ extension TableLikeExt on Table<Like> {
       ).delete();
 }
 
-extension QueryLikeExt on Query<Like> {
+extension QueryLikeExt on Query<(Expr<Like>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<Like> byKey({
+  QuerySingle<(Expr<Like>,)> byKey({
     required int userId,
     required String packageName,
   }) =>
       where((like) => like.userId.equals
           .literal(userId)
           .and(like.packageName.equals.literal(packageName))).first;
-
-  /// TODO: document where()
-  Query<Like> where(Expr<bool> Function(Expr<Like> like) conditionBuilder) =>
-      ExposedForCodeGen.where(this, conditionBuilder);
-
-  /// TODO: document orderBy()
-  Query<Like> orderBy(
-    Expr Function(Expr<Like> like) fieldBuilder, {
-    bool descending = false,
-  }) =>
-      ExposedForCodeGen.orderBy(this, fieldBuilder, descending: descending);
 
   /// TODO: document updateAll()
   Future<void> updateAll(
@@ -373,7 +368,7 @@ extension QueryLikeExt on Query<Like> {
               Expr<String> packageName,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<Like>(
         this,
         (like) => updateBuilder(
           like,
@@ -394,7 +389,7 @@ extension QueryLikeExt on Query<Like> {
     int? userId,
     String? packageName,
   }) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<Like>(
         this,
         (like) => ExposedForCodeGen.buildUpdate<Like>([
           literal(userId),
@@ -403,7 +398,7 @@ extension QueryLikeExt on Query<Like> {
       );
 }
 
-extension QuerySingleLikeExt on QuerySingle<Like> {
+extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
   /// TODO: document update()
   Future<void> update(
           Update<Like> Function(
@@ -413,7 +408,7 @@ extension QuerySingleLikeExt on QuerySingle<Like> {
               Expr<String> packageName,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<Like>(
         asQuery,
         (like) => updateBuilder(
           like,
@@ -434,24 +429,19 @@ extension QuerySingleLikeExt on QuerySingle<Like> {
     int? userId,
     String? packageName,
   }) =>
-      ExposedForCodeGen.update(
+      ExposedForCodeGen.update<Like>(
         asQuery,
         (like) => ExposedForCodeGen.buildUpdate<Like>([
           literal(userId),
           literal(packageName),
         ]),
       );
-
-  /// TODO document where()
-  QuerySingle<Like> where(
-          Expr<bool> Function(Expr<Like> like) conditionBuilder) =>
-      ExposedForCodeGen.where(asQuery, conditionBuilder).first;
 }
 
 extension ExpressionLikeExt on Expr<Like> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 'userId');
+  Expr<int> get userId => ExposedForCodeGen.field(this, 0);
 
   /// TODO: document packageName
-  Expr<String> get packageName => ExposedForCodeGen.field(this, 'packageName');
+  Expr<String> get packageName => ExposedForCodeGen.field(this, 1);
 }

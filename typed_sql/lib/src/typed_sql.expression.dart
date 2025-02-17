@@ -19,6 +19,11 @@ sealed class Expr<T extends Object?> {
 
   const Expr._();
 
+  int get _columns => 1;
+  T _decode(Object? Function(int index) get) => get(0) as T;
+
+  Expr<T> _standin(int index, Object handle) => FieldExpression(index, handle);
+
   static const true$ = Literal.true$;
   static const false$ = Literal.false$;
 
@@ -27,16 +32,42 @@ sealed class Expr<T extends Object?> {
 
 Literal<T> literal<T extends Object?>(T value) => Literal(value);
 
-final class RowExpression<T extends Model> extends Expr<T> {
-  final String alias;
-  RowExpression(this.alias) : super._();
+final class ModelExpression<T extends Model> extends Expr<T> {
+  // TODO: These should be private!
+  final Table<T> table;
+  final int index;
+  final Object handle;
+
+  @override
+  Expr<T> _standin(int index, Object handle) =>
+      ModelExpression(index, table, handle);
+
+  @override
+  int get _columns => table._columns.length;
+
+  @override
+  T _decode(Object? Function(int index) get) => table._deserialize(get);
+
+  Expr<R> field<R>(int index) {
+    if (index < 0 || index >= table._columns.length) {
+      throw ArgumentError.value(
+        index,
+        'index',
+        'Table "${table._tableName}" does not have a field at index $index',
+      );
+    }
+    return FieldExpression(this.index + index, handle);
+  }
+
+  ModelExpression(this.index, this.table, this.handle) : super._();
 }
 
 final class FieldExpression<T> extends Expr<T> {
-  // TODO: Consider using field index numbers, that would be much cooler!
-  final String alias;
-  final String name;
-  FieldExpression(this.alias, this.name) : super._();
+  // TODO: These should be private!
+  final int index;
+  final Object handle;
+
+  FieldExpression(this.index, this.handle) : super._();
 }
 
 final class Literal<T> extends Expr<T> {

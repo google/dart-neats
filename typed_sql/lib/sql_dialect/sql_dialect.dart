@@ -13,74 +13,39 @@
 // limitations under the License.
 
 import 'package:typed_sql/sql_dialect/sqlite.dart';
-import 'package:typed_sql/typed_sql.dart';
+import 'package:typed_sql/src/typed_sql.dart';
 
 abstract base class SqlDialect {
   static SqlDialect sqlite() => sqliteDialect();
 
-  /// Insert [columns] into [table] returning columns mentioned in [returning].
+  /// Insert [columns] into [table] returning columns from [returning].
   ///
   /// ```sql
-  /// INSERT INTO [table] ([columns]) VALUES ($1, ...) RETURNING [returning]
+  /// INSERT INTO [table] ([columns]) VALUES ($1, ...)
   /// ```
   (String, List<Object?>) insertInto(
     String table,
     List<String> columns,
-    List<Object?> values,
+    List<Expr> values,
     List<String> returning,
   );
 
-  /// Select [columns] from [table] aliased as [alias].
-  ///
-  /// This returns rows satisfying the [where] expression.
-  /// Results start from [offset].
-  /// At most [limit] rows are returned, use -1 for no limit.
-  ///
-  /// Rows are ordered by [orderBy], if given.
-  (String, List<Object?>) selectFrom(
-    String table,
-    String alias,
-    List<String> columns,
-    int limit, // -1, if there is no limit
-    int offset,
-    Expr<bool> where,
-    ({bool descending, Expr term})? orderBy, // default to null
-  );
-
-  /// Update [columns] from [table] aliased as [alias] with [values].
+  /// Update [columns] from [table] with [values].
   ///
   /// This updates rows satisfying the [where] expression.
-  /// Only updates rows starting from [offset].
-  /// At most [limit] rows are updated, use -1 for no limit.
-  ///
-  /// Rows are ordered by [orderBy], if given.
-  (String, List<Object?>) update(
-    String table,
-    String alias,
-    List<String> columns,
-    List<Expr> values,
-    int limit, // -1, if there is no limit
-    int offset,
-    Expr<bool> where,
-    ({bool descending, Expr term})? orderBy, // default to null
-  );
+  (String, List<Object?>) update(UpdateStatement statement);
 
-  /// Delete from [table] aliased as [alias].
+  /// Delete from [table].
   ///
   /// Delete rows satisfying the [where] expression.
-  /// Delete results starting from [offset].
-  /// Delete at-most [limit] (-1 for no limit).
-  /// Rows ordered by [orderBy], if given.
   ///
   /// This SQL statement should not return any rows,
   /// all return values are read but ignored.
-  (String, List<Object?>) deleteFrom(
-    String table,
-    String alias,
-    int limit, // -1, if there is no limit
-    int offset,
-    Expr<bool> where,
-    ({bool descending, Expr term})? orderBy, // default to null
+  (String, List<Object?>) delete(DeleteStatement statement);
+
+  // TODO: Document rendering method!
+  (String sql, List<String> columns, List<Object?> params) select(
+    SelectStatement statement,
   );
 }
 
