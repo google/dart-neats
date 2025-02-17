@@ -63,6 +63,24 @@ void main() {
           name: 'jonasfj',
         );
 
+    final email = await db.users
+        .byKey(userId: 42)
+        .select((user) => (user.email,))
+        .fetch();
+    if (email != null) {
+      print('email: $email');
+    }
+
+    // TODO: Consider a fetchOrThrow or fetchOrNulls
+    final result = await db.users
+        .byKey(userId: 42)
+        .select((user) => (user.email, user.name))
+        .fetch();
+    if (result != null) {
+      final (email, name) = result;
+      print('$name has $email');
+    }
+
     final users = await db.users.fetch().toList();
     print(users);
 
