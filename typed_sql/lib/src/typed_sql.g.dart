@@ -64,7 +64,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield (decode1((i) => row[offset1 + 1]));
+      yield (decode1((i) => row[offset1 + i]));
     }
   }
 }
@@ -134,8 +134,8 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i])
       );
     }
   }
@@ -210,9 +210,9 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i])
       );
     }
   }
@@ -297,10 +297,10 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i])
       );
     }
   }
@@ -393,11 +393,11 @@ extension Query5<A, B, C, D, E>
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i])
       );
     }
   }
@@ -499,12 +499,12 @@ extension Query6<A, B, C, D, E, F>
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i])
       );
     }
   }
@@ -611,13 +611,13 @@ extension Query7<A, B, C, D, E, F, G>
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i])
       );
     }
   }
@@ -755,14 +755,14 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1]),
-        decode8((i) => row[offset8 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i]),
+        decode8((i) => row[offset8 + i])
       );
     }
   }
@@ -928,15 +928,15 @@ extension Query9<A, B, C, D, E, F, G, H, I> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1]),
-        decode8((i) => row[offset8 + 1]),
-        decode9((i) => row[offset9 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i]),
+        decode8((i) => row[offset8 + i]),
+        decode9((i) => row[offset9 + i])
       );
     }
   }
@@ -1142,16 +1142,16 @@ extension Query10<A, B, C, D, E, F, G, H, I, J> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1]),
-        decode8((i) => row[offset8 + 1]),
-        decode9((i) => row[offset9 + 1]),
-        decode10((i) => row[offset10 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i]),
+        decode8((i) => row[offset8 + i]),
+        decode9((i) => row[offset9 + i]),
+        decode10((i) => row[offset10 + i])
       );
     }
   }
@@ -1369,17 +1369,17 @@ extension Query11<A, B, C, D, E, F, G, H, I, J, K> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1]),
-        decode8((i) => row[offset8 + 1]),
-        decode9((i) => row[offset9 + 1]),
-        decode10((i) => row[offset10 + 1]),
-        decode11((i) => row[offset11 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i]),
+        decode8((i) => row[offset8 + i]),
+        decode9((i) => row[offset9 + i]),
+        decode10((i) => row[offset10 + i]),
+        decode11((i) => row[offset11 + i])
       );
     }
   }
@@ -1642,18 +1642,18 @@ extension Query12<A, B, C, D, E, F, G, H, I, J, K, L> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1]),
-        decode8((i) => row[offset8 + 1]),
-        decode9((i) => row[offset9 + 1]),
-        decode10((i) => row[offset10 + 1]),
-        decode11((i) => row[offset11 + 1]),
-        decode12((i) => row[offset12 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i]),
+        decode8((i) => row[offset8 + i]),
+        decode9((i) => row[offset9 + i]),
+        decode10((i) => row[offset10 + i]),
+        decode11((i) => row[offset11 + i]),
+        decode12((i) => row[offset12 + i])
       );
     }
   }
@@ -1931,19 +1931,19 @@ extension Query13<A, B, C, D, E, F, G, H, I, J, K, L, M> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1]),
-        decode8((i) => row[offset8 + 1]),
-        decode9((i) => row[offset9 + 1]),
-        decode10((i) => row[offset10 + 1]),
-        decode11((i) => row[offset11 + 1]),
-        decode12((i) => row[offset12 + 1]),
-        decode13((i) => row[offset13 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i]),
+        decode8((i) => row[offset8 + i]),
+        decode9((i) => row[offset9 + i]),
+        decode10((i) => row[offset10 + i]),
+        decode11((i) => row[offset11 + i]),
+        decode12((i) => row[offset12 + i]),
+        decode13((i) => row[offset13 + i])
       );
     }
   }
@@ -2236,20 +2236,20 @@ extension Query14<A, B, C, D, E, F, G, H, I, J, K, L, M, N> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1]),
-        decode8((i) => row[offset8 + 1]),
-        decode9((i) => row[offset9 + 1]),
-        decode10((i) => row[offset10 + 1]),
-        decode11((i) => row[offset11 + 1]),
-        decode12((i) => row[offset12 + 1]),
-        decode13((i) => row[offset13 + 1]),
-        decode14((i) => row[offset14 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i]),
+        decode8((i) => row[offset8 + i]),
+        decode9((i) => row[offset9 + i]),
+        decode10((i) => row[offset10 + i]),
+        decode11((i) => row[offset11 + i]),
+        decode12((i) => row[offset12 + i]),
+        decode13((i) => row[offset13 + i]),
+        decode14((i) => row[offset14 + i])
       );
     }
   }
@@ -2557,21 +2557,21 @@ extension Query15<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1]),
-        decode8((i) => row[offset8 + 1]),
-        decode9((i) => row[offset9 + 1]),
-        decode10((i) => row[offset10 + 1]),
-        decode11((i) => row[offset11 + 1]),
-        decode12((i) => row[offset12 + 1]),
-        decode13((i) => row[offset13 + 1]),
-        decode14((i) => row[offset14 + 1]),
-        decode15((i) => row[offset15 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i]),
+        decode8((i) => row[offset8 + i]),
+        decode9((i) => row[offset9 + i]),
+        decode10((i) => row[offset10 + i]),
+        decode11((i) => row[offset11 + i]),
+        decode12((i) => row[offset12 + i]),
+        decode13((i) => row[offset13 + i]),
+        decode14((i) => row[offset14 + i]),
+        decode15((i) => row[offset15 + i])
       );
     }
   }
@@ -2894,22 +2894,22 @@ extension Query16<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + 1]),
-        decode2((i) => row[offset2 + 1]),
-        decode3((i) => row[offset3 + 1]),
-        decode4((i) => row[offset4 + 1]),
-        decode5((i) => row[offset5 + 1]),
-        decode6((i) => row[offset6 + 1]),
-        decode7((i) => row[offset7 + 1]),
-        decode8((i) => row[offset8 + 1]),
-        decode9((i) => row[offset9 + 1]),
-        decode10((i) => row[offset10 + 1]),
-        decode11((i) => row[offset11 + 1]),
-        decode12((i) => row[offset12 + 1]),
-        decode13((i) => row[offset13 + 1]),
-        decode14((i) => row[offset14 + 1]),
-        decode15((i) => row[offset15 + 1]),
-        decode16((i) => row[offset16 + 1])
+        decode1((i) => row[offset1 + i]),
+        decode2((i) => row[offset2 + i]),
+        decode3((i) => row[offset3 + i]),
+        decode4((i) => row[offset4 + i]),
+        decode5((i) => row[offset5 + i]),
+        decode6((i) => row[offset6 + i]),
+        decode7((i) => row[offset7 + i]),
+        decode8((i) => row[offset8 + i]),
+        decode9((i) => row[offset9 + i]),
+        decode10((i) => row[offset10 + i]),
+        decode11((i) => row[offset11 + i]),
+        decode12((i) => row[offset12 + i]),
+        decode13((i) => row[offset13 + i]),
+        decode14((i) => row[offset14 + i]),
+        decode15((i) => row[offset15 + i]),
+        decode16((i) => row[offset16 + i])
       );
     }
   }

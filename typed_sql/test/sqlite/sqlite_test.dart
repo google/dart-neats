@@ -65,7 +65,6 @@ void main() {
     await db.users.byKey(userId: 42).update((u, set) => set(
           name: literal('jonasfj'),
         ));
-
     // Update user 42 to have new name, using updateLiteral
     await db.users.byKey(userId: 42).updateLiteral(
           name: 'jonasfj',
@@ -99,6 +98,11 @@ void main() {
     print(alice);
 
     await db.users.byKey(userId: 42).delete();
+
+    {
+      final users = await db.users.fetch().toList();
+      print(users);
+    }
 
     await adaptor.close();
   });

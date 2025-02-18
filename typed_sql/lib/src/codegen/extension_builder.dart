@@ -335,7 +335,7 @@ Spec _buildQueryExtension(int i) => Extension(
               'yield (',
               List.generate(
                 i,
-                (i) => 'decode${i + 1}((i) => row[offset${i + 1} +1])',
+                (i) => 'decode${i + 1}((i) => row[offset${i + 1} + i])',
               ).join(','),
               ');',
               '}',
