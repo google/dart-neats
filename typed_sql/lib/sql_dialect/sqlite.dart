@@ -47,8 +47,7 @@ final class _Sqlite extends SqlDialect {
         'SET',
         statement.columns
             .mapIndexed(
-              (i, column) =>
-                  '${escape(column)} = (${expr(statement.values[i], c)})',
+              (i, column) => '$column = (${expr(statement.values[i], c)})',
             )
             .join(', '),
         'WHERE (${statement.table.columns.map(escape).join(', ')}) IN ($sql)',
@@ -224,7 +223,7 @@ final class _Sqlite extends SqlDialect {
     QueryContext ctx,
   ) =>
       switch (e) {
-        FieldExpression<T>() => escape(ctx.field(e)),
+        FieldExpression<T>() => ctx.field(e),
         Literal<T>(value: final value) => ctx.parameter(value),
         final BinaryOperationExpression e =>
           '( ${expr(e.left, ctx)} ${e.operator} ${expr(e.right, ctx)} )',
