@@ -79,7 +79,7 @@ extension TableUserExt on Table<User> {
 extension QueryUserExt on Query<(Expr<User>,)> {
   /// TODO: document lookup by PrimaryKey
   QuerySingle<(Expr<User>,)> byKey({required int userId}) =>
-      where((user) => user.userId.equals.literal(userId)).first;
+      where((user) => user.userId.equalsLiteral(userId)).first;
 
   /// TODO: document updateAll()
   Future<void> updateAll(
@@ -126,7 +126,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
 
   /// TODO: document byXXX()}
   QuerySingle<(Expr<User>,)> byEmail(String email) =>
-      where((user) => user.email.equals.literal(email)).first;
+      where((user) => user.email.equalsLiteral(email)).first;
 }
 
 extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {

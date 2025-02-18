@@ -92,7 +92,7 @@ void main() {
     print(users);
 
     final alice = await db.users
-        .where((u) => u.name.equals.literal('Alice'))
+        .where((u) => u.name.equalsLiteral('Alice'))
         .first
         .fetch();
     print(alice);

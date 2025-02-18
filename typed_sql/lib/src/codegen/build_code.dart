@@ -192,7 +192,7 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
             //       this much easier!
             'where(($modelInstanceName) => ${model.primaryKey.map(
                   (f) =>
-                      '$modelInstanceName.${f.name}.equals.literal(${f.name})',
+                      '$modelInstanceName.${f.name}.equalsLiteral(${f.name})',
                 ).reduce((a, b) => '$a.and($b)')}).first',
           ),
       ))
@@ -258,7 +258,7 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
                 ..lambda = true
                 ..body = Code('''
                   where(($modelInstanceName) =>
-                    $modelInstanceName.${field.name}.equals.literal(${field.name})
+                    $modelInstanceName.${field.name}.equalsLiteral(${field.name})
                   ).first
                 '''),
             ),

@@ -107,10 +107,6 @@ final class Literal<T> extends Expr<T> {
   }
 }
 
-extension DotLiteral<R, T> on R Function(Expr<T>) {
-  R literal(T value) => this(Literal(value));
-}
-
 sealed class BinaryOperationExpression<T, R> extends Expr<R> {
   final Expr<T> left;
   final Expr<T> right;
@@ -294,8 +290,10 @@ extension ExpressionBool on Expr<bool> {
 
 extension ExpressionString on Expr<String> {
   Expr<bool> equals(Expr<String> value) => ExpressionStringEquals(this, value);
+  Expr<bool> equalsLiteral(String value) => equals(literal(value));
 
   Expr<bool> notEquals(Expr<String> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(String value) => notEquals(literal(value));
 
   Expr<bool> get isEmpty => ExpressionStringIsEmpty(this);
   Expr<bool> get isNotEmpty => isEmpty.not();
@@ -304,9 +302,13 @@ extension ExpressionString on Expr<String> {
 
   Expr<bool> startsWith(Expr<String> value) =>
       ExpressionStringStartsWith(this, value);
+  Expr<bool> startsWithLiteral(String value) =>
+      ExpressionStringStartsWith(this, literal(value));
 
   Expr<bool> endsWith(Expr<String> value) =>
       ExpressionStringEndsWith(this, value);
+  Expr<bool> endsWithLiteral(String value) =>
+      ExpressionStringEndsWith(this, literal(value));
 
   /// Matches pattern where `%` is one or more characters, and
   /// `_` is one character.
@@ -314,6 +316,9 @@ extension ExpressionString on Expr<String> {
 
   Expr<bool> contains(Expr<String> substring) =>
       ExpressionStringContains(this, substring);
+
+  Expr<bool> containsLiteral(String substring) =>
+      ExpressionStringContains(this, literal(substring));
 
   Expr<String> toLowerCase() => ExpressionStringToLowerCase(this);
 
@@ -331,8 +336,11 @@ extension ExpressionString on Expr<String> {
 
 extension ExpressionNum on Expr<num> {
   Expr<bool> equals(Expr<num> value) => ExpressionNumEquals(this, value);
+  Expr<bool> equalsLiteral(num value) =>
+      ExpressionNumEquals(this, literal(value));
 
   Expr<bool> notEquals(Expr<num> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(num value) => notEquals(literal(value));
 
   Expr<num> operator +(Expr<num> other) => ExpressionNumAdd(this, other);
   Expr<num> operator -(Expr<num> other) => ExpressionNumSubtract(this, other);
@@ -353,8 +361,11 @@ extension ExpressionNum on Expr<num> {
 extension ExpressionDateTime on Expr<DateTime> {
   Expr<bool> equals(Expr<DateTime> value) =>
       ExpressionDateTimeEquals(this, value);
+  Expr<bool> equalsLiteral(DateTime value) =>
+      ExpressionDateTimeEquals(this, literal(value));
 
   Expr<bool> notEquals(Expr<DateTime> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(DateTime value) => notEquals(literal(value));
 
   // TODO: Decide if we want to support storing a Duration
   // Expression<bool> difference(Expression<DateTime> value) =>
@@ -369,8 +380,10 @@ extension ExpressionDateTime on Expr<DateTime> {
       ExpressionDateTimeLessThan(this, other);
 
   Expr<bool> isBefore(Expr<DateTime> value) => this < value;
+  Expr<bool> isBeforeLiteral(DateTime value) => isBefore(literal(value));
 
   Expr<bool> isAfter(Expr<DateTime> value) => this > value;
+  Expr<bool> isAfterLiteral(DateTime value) => isAfter(literal(value));
 
   // TODO: More features... maybe there is a duration in SQL?
 }
