@@ -46,7 +46,7 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
     this._tableName,
     this._columns,
     this._deserialize,
-  )   : _from = ((_) => TableClause(_tableName, _columns)),
+  )   : _from = ((_) => TableClause._(_tableName, _columns)),
         super._();
 }
 
@@ -107,7 +107,7 @@ final class TableClause extends QueryClause {
   /// Name of table
   final String name;
   final List<String> columns;
-  TableClause(this.name, this.columns);
+  TableClause._(this.name, this.columns);
 }
 
 /*
@@ -120,7 +120,7 @@ final class ViewClause extends QueryClause {
 
 sealed class FromClause extends QueryClause {
   final QueryClause from;
-  FromClause(this.from);
+  FromClause._(this.from);
 }
 
 /// Interface implemented by object with-in which expressions may exist.
@@ -136,14 +136,14 @@ final class SelectClause extends FromClause implements ExpressionContext {
   @override
   final Object handle;
   final List<Expr> projection;
-  SelectClause(super.from, this.handle, this.projection);
+  SelectClause._(super.from, this.handle, this.projection) : super._();
 }
 
 final class WhereClause extends FromClause implements ExpressionContext {
   @override
   final Object handle;
   final Expr<bool> where;
-  WhereClause(super.from, this.handle, this.where);
+  WhereClause._(super.from, this.handle, this.where) : super._();
 }
 
 final class OrderByClause extends FromClause implements ExpressionContext {
@@ -151,17 +151,18 @@ final class OrderByClause extends FromClause implements ExpressionContext {
   final Object handle;
   final Expr orderBy;
   final bool descending;
-  OrderByClause(super.from, this.handle, this.orderBy, this.descending);
+  OrderByClause._(super.from, this.handle, this.orderBy, this.descending)
+      : super._();
 }
 
 final class LimitClause extends FromClause {
   final int limit;
-  LimitClause(super.from, this.limit);
+  LimitClause._(super.from, this.limit) : super._();
 }
 
 final class OffsetClause extends FromClause {
   final int offset;
-  OffsetClause(super.from, this.offset);
+  OffsetClause._(super.from, this.offset) : super._();
 }
 
 /* --------------------- Query extensions ---------------------- */
@@ -181,7 +182,7 @@ extension Query2A<A> on Query<(Expr<A>,)> {
     return _Query(
       _context,
       _expressions,
-      (e) => WhereClause(_from(e), handle, where),
+      (e) => WhereClause._(_from(e), handle, where),
     );
   }
 
@@ -193,20 +194,20 @@ extension Query2A<A> on Query<(Expr<A>,)> {
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
     );
   }
 
   Query<(Expr<A>,)> offset(int offset) => _Query(
         _context,
         _expressions,
-        (e) => OffsetClause(_from(e), offset),
+        (e) => OffsetClause._(_from(e), offset),
       );
 
   Query<(Expr<A>,)> limit(int limit) => _Query(
         _context,
         _expressions,
-        (e) => LimitClause(_from(e), limit),
+        (e) => LimitClause._(_from(e), limit),
       );
 
   QuerySingle<(Expr<A>,)> get first => QuerySingle._(limit(1));
@@ -218,7 +219,7 @@ extension Query2A<A> on Query<(Expr<A>,)> {
     return _Query(
       _context,
       projection,
-      (e) => SelectClause(_from(_expressions.toList()), handle, e),
+      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -254,7 +255,7 @@ extension Query2AB<A, B> on Query<(Expr<A>, Expr<B>)> {
     return _Query(
       _context,
       _expressions,
-      (e) => WhereClause(_from(e), handle, where),
+      (e) => WhereClause._(_from(e), handle, where),
     );
   }
 
@@ -266,20 +267,20 @@ extension Query2AB<A, B> on Query<(Expr<A>, Expr<B>)> {
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
     );
   }
 
   Query<(Expr<A>, Expr<B>)> offset(int offset) => _Query(
         _context,
         _expressions,
-        (e) => OffsetClause(_from(e), offset),
+        (e) => OffsetClause._(_from(e), offset),
       );
 
   Query<(Expr<A>, Expr<B>)> limit(int limit) => _Query(
         _context,
         _expressions,
-        (e) => LimitClause(_from(e), limit),
+        (e) => LimitClause._(_from(e), limit),
       );
 
   QuerySingle<(Expr<A>, Expr<B>)> get first => QuerySingle._(limit(1));
@@ -291,7 +292,7 @@ extension Query2AB<A, B> on Query<(Expr<A>, Expr<B>)> {
     return _Query(
       _context,
       projection,
-      (e) => SelectClause(_from(_expressions.toList()), handle, e),
+      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -334,7 +335,7 @@ extension Query2ABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     return _Query(
       _context,
       _expressions,
-      (e) => WhereClause(_from(e), handle, where),
+      (e) => WhereClause._(_from(e), handle, where),
     );
   }
 
@@ -346,20 +347,20 @@ extension Query2ABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
     );
   }
 
   Query<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => _Query(
         _context,
         _expressions,
-        (e) => OffsetClause(_from(e), offset),
+        (e) => OffsetClause._(_from(e), offset),
       );
 
   Query<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => _Query(
         _context,
         _expressions,
-        (e) => LimitClause(_from(e), limit),
+        (e) => LimitClause._(_from(e), limit),
       );
 
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => QuerySingle._(limit(1));
@@ -371,7 +372,7 @@ extension Query2ABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     return _Query(
       _context,
       projection,
-      (e) => SelectClause(_from(_expressions.toList()), handle, e),
+      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -458,7 +459,7 @@ extension Query2Model<A extends Model> on Query<(Expr<A>,)> {
 
     final from = _from(_expressions.toList());
     final (sql, params) = _context._dialect.delete(
-      DeleteStatement._(TableClause(table._tableName, table._columns), from),
+      DeleteStatement._(TableClause._(table._tableName, table._columns), from),
     );
 
     await _context._db.query(sql, params).drain();
