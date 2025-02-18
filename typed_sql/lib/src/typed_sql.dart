@@ -67,7 +67,7 @@ final class ExposedForCodeGen {
     required Table<T> table,
     required List<Expr> values,
   }) async {
-    final (sql, params) = table._context._dialect.insertInto(InsertStatement(
+    final (sql, params) = table._context._dialect.insertInto(InsertStatement._(
       table._tableName,
       table._columns,
       values,
@@ -91,7 +91,7 @@ final class ExposedForCodeGen {
     final values = updateBuilder(row)._values;
 
     final (sql, params) = table._context._dialect.update(
-      UpdateStatement(
+      UpdateStatement._(
         TableClause(table._tableName, table._columns),
         table._columns
             .whereIndexed((index, value) => values[index] != null)

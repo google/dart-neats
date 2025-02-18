@@ -62,7 +62,7 @@ sealed class Statement {}
 
 final class SelectStatement extends Statement {
   final QueryClause query;
-  SelectStatement(this.query);
+  SelectStatement._(this.query);
 }
 
 final class InsertStatement extends Statement {
@@ -71,7 +71,7 @@ final class InsertStatement extends Statement {
   final List<Expr> values;
   final List<String> returning;
 
-  InsertStatement(this.table, this.columns, this.values, this.returning);
+  InsertStatement._(this.table, this.columns, this.values, this.returning);
 }
 
 final class UpdateStatement extends Statement implements ExpressionContext {
@@ -82,7 +82,7 @@ final class UpdateStatement extends Statement implements ExpressionContext {
   final List<Expr> values;
   final QueryClause where;
 
-  UpdateStatement(
+  UpdateStatement._(
     this.table,
     this.columns,
     this.values,
@@ -95,7 +95,7 @@ final class DeleteStatement extends Statement {
   final TableClause table;
   final QueryClause where;
 
-  DeleteStatement(
+  DeleteStatement._(
     this.table,
     this.where,
   );
@@ -228,7 +228,7 @@ extension Query2A<A> on Query<(Expr<A>,)> {
     final decode1 = _expressions.$1._decode;
 
     final (sql, columns, params) = _context._dialect.select(
-      SelectStatement(from),
+      SelectStatement._(from),
     );
 
     await for (final row in _context._db.query(sql, params)) {
@@ -303,7 +303,7 @@ extension Query2AB<A, B> on Query<(Expr<A>, Expr<B>)> {
     final decode2 = _expressions.$2._decode;
 
     final (sql, columns, params) = _context._dialect.select(
-      SelectStatement(from),
+      SelectStatement._(from),
     );
 
     await for (final row in _context._db.query(sql, params)) {
@@ -385,7 +385,7 @@ extension Query2ABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     final decode3 = _expressions.$3._decode;
 
     final (sql, columns, params) = _context._dialect.select(
-      SelectStatement(from),
+      SelectStatement._(from),
     );
 
     await for (final row in _context._db.query(sql, params)) {
@@ -458,7 +458,7 @@ extension Query2Model<A extends Model> on Query<(Expr<A>,)> {
 
     final from = _from(_expressions.toList());
     final (sql, params) = _context._dialect.delete(
-      DeleteStatement(TableClause(table._tableName, table._columns), from),
+      DeleteStatement._(TableClause(table._tableName, table._columns), from),
     );
 
     await _context._db.query(sql, params).drain();
