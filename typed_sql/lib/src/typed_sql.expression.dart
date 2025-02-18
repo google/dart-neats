@@ -315,9 +315,9 @@ extension ExpressionString on Expr<String> {
   Expr<bool> contains(Expr<String> substring) =>
       ExpressionStringContains(this, substring);
 
-  Expr<String> toLowerCase() => ExpressionStringToUpperCase(this);
+  Expr<String> toLowerCase() => ExpressionStringToLowerCase(this);
 
-  Expr<String> toUpperCase() => ExpressionStringToLowerCase(this);
+  Expr<String> toUpperCase() => ExpressionStringToUpperCase(this);
 
   Expr<bool> operator >=(Expr<String> other) =>
       ExpressionStringGreaterThanOrEqual(this, other);
