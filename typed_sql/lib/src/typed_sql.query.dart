@@ -30,6 +30,18 @@ final class _Query<T extends Record> extends Query<T> {
   _Query(super._context, this._expressions, this._from) : super._();
 }
 
+/*
+final class View<T extends Record> extends Query<T> {
+  @override
+  T get _expressions => throw UnimplementedError();
+
+  @override
+  QueryClause Function(List<Expr<Object?>> expressions) get _from =>
+      throw UnimplementedError();
+
+  View._(super._context) : super._();
+}*/
+
 final class Table<T extends Model> extends Query<(Expr<T>,)> {
   @override
   late final (Expr<T>,) _expressions = (ModelExpression(0, this, Object()),);

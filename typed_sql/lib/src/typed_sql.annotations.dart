@@ -32,3 +32,9 @@ final class Unique {
   //       that are unique given fields 'foo' and 'bar'.
   const Unique();
 }
+
+final class Sql {
+  final String sql;
+
+  const Sql(this.sql);
+}
