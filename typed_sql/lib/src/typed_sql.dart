@@ -20,6 +20,7 @@ import 'package:typed_sql/sql_dialect/sql_dialect.dart';
 part 'typed_sql.annotations.dart';
 part 'typed_sql.database.dart';
 part 'typed_sql.expression.dart';
+part 'typed_sql.g.dart';
 part 'typed_sql.query.dart';
 
 abstract base class Schema {

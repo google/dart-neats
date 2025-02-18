@@ -198,6 +198,24 @@ final class _Sqlite extends SqlDialect {
               '${descending ? 'DESC' : 'ASC'}',
           columns,
         );
+
+      case JoinClause(:final from, :final join):
+        final (sql1, columns1) = clause(from, ctx);
+        final (sql2, columns2) = clause(join, ctx);
+        return (
+          [
+            'SELECT',
+            [
+              ...columns1.mapIndexed((i, c) => 't1.${escape(c)} AS t1_$i'),
+              ...columns2.mapIndexed((i, c) => 't2.${escape(c)} AS t2_$i'),
+            ].join(', '),
+            'FROM ($sql1) as t1 JOIN ($sql2) as t2',
+          ].join(' '),
+          [
+            ...columns1.mapIndexed((i, c) => 't1_$i'),
+            ...columns2.mapIndexed((i, c) => 't2_$i'),
+          ]
+        );
     }
   }
 

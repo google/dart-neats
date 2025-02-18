@@ -30,6 +30,13 @@ final class _Query<T extends Record> extends Query<T> {
   _Query(super._context, this._expressions, this._from) : super._();
 }
 
+final class Join<T extends Record, S extends Record> {
+  final Query<T> _from;
+  final Query<S> _join;
+
+  Join._(this._from, this._join);
+}
+
 /*
 final class View<T extends Record> extends Query<T> {
   @override
@@ -166,6 +173,11 @@ final class OrderByClause extends FromClause implements ExpressionContext {
       : super._();
 }
 
+final class JoinClause extends FromClause {
+  final QueryClause join;
+  JoinClause._(super.from, this.join) : super._();
+}
+
 final class LimitClause extends FromClause {
   final int limit;
   LimitClause._(super.from, this.limit) : super._();
@@ -177,287 +189,6 @@ final class OffsetClause extends FromClause {
 }
 
 /* --------------------- Query extensions ---------------------- */
-
-extension QueryA<A> on Query<(Expr<A>,)> {
-  (Object, T) _build<T>(T Function(Expr<A> row) builder) {
-    final handle = Object();
-    var offset = 0;
-    final a = _expressions.$1._standin(offset, handle);
-    return (handle, builder(a));
-  }
-
-  Query<(Expr<A>,)> where(
-    Expr<bool> Function(Expr<A> row) conditionBuilder,
-  ) {
-    final (handle, where) = _build(conditionBuilder);
-    return _Query(
-      _context,
-      _expressions,
-      (e) => WhereClause._(_from(e), handle, where),
-    );
-  }
-
-  Query<(Expr<A>,)> orderBy<T extends Object?>(
-    Expr<T> Function(Expr<A> row) expressionBuilder, {
-    bool descending = false,
-  }) {
-    final (handle, orderBy) = _build(expressionBuilder);
-    return _Query(
-      _context,
-      _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
-    );
-  }
-
-  Query<(Expr<A>,)> offset(int offset) => _Query(
-        _context,
-        _expressions,
-        (e) => OffsetClause._(_from(e), offset),
-      );
-
-  Query<(Expr<A>,)> limit(int limit) => _Query(
-        _context,
-        _expressions,
-        (e) => LimitClause._(_from(e), limit),
-      );
-
-  QuerySingle<(Expr<A>,)> get first => QuerySingle._(limit(1));
-
-  Query<T> select<T extends Record>(
-    T Function(Expr<A> row) projectionBuilder,
-  ) {
-    final (handle, projection) = _build(projectionBuilder);
-    return _Query(
-      _context,
-      projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
-    );
-  }
-
-  Stream<A> fetch() async* {
-    final from = _from(_expressions.toList());
-    final offset1 = 0;
-    final decode1 = _expressions.$1._decode;
-
-    final (sql, columns, params) = _context._dialect.select(
-      SelectStatement._(from),
-    );
-
-    await for (final row in _context._db.query(sql, params)) {
-      yield decode1((i) => row[offset1 + i]);
-    }
-  }
-}
-
-extension QueryAB<A, B> on Query<(Expr<A>, Expr<B>)> {
-  (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b) builder) {
-    final handle = Object();
-    var offset = 0;
-    final a = _expressions.$1._standin(offset, handle);
-    offset += _expressions.$1._columns;
-    final b = _expressions.$2._standin(offset, handle);
-    return (handle, builder(a, b));
-  }
-
-  Query<(Expr<A>, Expr<B>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
-  ) {
-    final (handle, where) = _build(conditionBuilder);
-    return _Query(
-      _context,
-      _expressions,
-      (e) => WhereClause._(_from(e), handle, where),
-    );
-  }
-
-  Query<(Expr<A>, Expr<B>)> orderBy<T extends Object?>(
-    Expr<T> Function(Expr<A> a, Expr<B> b) expressionBuilder, {
-    bool descending = false,
-  }) {
-    final (handle, orderBy) = _build(expressionBuilder);
-    return _Query(
-      _context,
-      _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
-    );
-  }
-
-  Query<(Expr<A>, Expr<B>)> offset(int offset) => _Query(
-        _context,
-        _expressions,
-        (e) => OffsetClause._(_from(e), offset),
-      );
-
-  Query<(Expr<A>, Expr<B>)> limit(int limit) => _Query(
-        _context,
-        _expressions,
-        (e) => LimitClause._(_from(e), limit),
-      );
-
-  QuerySingle<(Expr<A>, Expr<B>)> get first => QuerySingle._(limit(1));
-
-  Query<T> select<T extends Record>(
-    T Function(Expr<A> a, Expr<B> b) projectionBuilder,
-  ) {
-    final (handle, projection) = _build(projectionBuilder);
-    return _Query(
-      _context,
-      projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
-    );
-  }
-
-  Stream<(A, B)> fetch() async* {
-    final from = _from(_expressions.toList());
-    final offset1 = 0;
-    final decode1 = _expressions.$1._decode;
-    final offset2 = offset1 + _expressions.$1._columns;
-    final decode2 = _expressions.$2._decode;
-
-    final (sql, columns, params) = _context._dialect.select(
-      SelectStatement._(from),
-    );
-
-    await for (final row in _context._db.query(sql, params)) {
-      yield (
-        decode1((i) => row[offset1 + i]),
-        decode2((i) => row[offset2 + i]),
-      );
-    }
-  }
-}
-
-extension QueryABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
-  (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b, Expr<C> c) builder) {
-    final handle = Object();
-    var offset = 0;
-    final a = _expressions.$1._standin(offset, handle);
-    offset += _expressions.$1._columns;
-    final b = _expressions.$2._standin(offset, handle);
-    offset += _expressions.$2._columns;
-    final c = _expressions.$3._standin(offset, handle);
-    return (handle, builder(a, b, c));
-  }
-
-  Query<(Expr<A>, Expr<B>, Expr<C>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
-  ) {
-    final (handle, where) = _build(conditionBuilder);
-    return _Query(
-      _context,
-      _expressions,
-      (e) => WhereClause._(_from(e), handle, where),
-    );
-  }
-
-  Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy<T extends Object?>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder, {
-    bool descending = false,
-  }) {
-    final (handle, orderBy) = _build(expressionBuilder);
-    return _Query(
-      _context,
-      _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
-    );
-  }
-
-  Query<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => _Query(
-        _context,
-        _expressions,
-        (e) => OffsetClause._(_from(e), offset),
-      );
-
-  Query<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => _Query(
-        _context,
-        _expressions,
-        (e) => LimitClause._(_from(e), limit),
-      );
-
-  QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => QuerySingle._(limit(1));
-
-  Query<T> select<T extends Record>(
-    T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder,
-  ) {
-    final (handle, projection) = _build(projectionBuilder);
-    return _Query(
-      _context,
-      projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
-    );
-  }
-
-  Stream<(A, B, C)> fetch() async* {
-    final from = _from(_expressions.toList());
-    final offset1 = 0;
-    final decode1 = _expressions.$1._decode;
-    final offset2 = offset1 + _expressions.$1._columns;
-    final decode2 = _expressions.$2._decode;
-    final offset3 = offset2 + _expressions.$2._columns;
-    final decode3 = _expressions.$3._decode;
-
-    final (sql, columns, params) = _context._dialect.select(
-      SelectStatement._(from),
-    );
-
-    await for (final row in _context._db.query(sql, params)) {
-      yield (
-        decode1((i) => row[offset1 + i]),
-        decode2((i) => row[offset2 + i]),
-        decode3((i) => row[offset3 + i]),
-      );
-    }
-  }
-}
-
-extension QuerySingleA<A> on QuerySingle<(Expr<A>,)> {
-  Query<(Expr<A>,)> get asQuery => _query;
-
-  QuerySingle<(Expr<A>,)> where(
-    Expr<bool> Function(Expr<A> row) conditionBuilder,
-  ) =>
-      asQuery.where(conditionBuilder).first;
-
-  QuerySingle<T> select<T extends Record>(
-    T Function(Expr<A> row) projectionBuilder,
-  ) =>
-      QuerySingle._(asQuery.select(projectionBuilder));
-
-  Future<A?> fetch() async => (await asQuery.fetch().toList()).firstOrNull;
-}
-
-extension QuerySingleAB<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
-  Query<(Expr<A>, Expr<B>)> get asQuery => _query;
-
-  QuerySingle<(Expr<A>, Expr<B>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
-  ) =>
-      asQuery.where(conditionBuilder).first;
-
-  QuerySingle<T> select<T extends Record>(
-    T Function(Expr<A> a, Expr<B> b) projectionBuilder,
-  ) =>
-      QuerySingle._(asQuery.select(projectionBuilder));
-
-  Future<(A, B)?> fetch() async => (await asQuery.fetch().toList()).firstOrNull;
-}
-
-extension QuerySingleABC<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
-  Query<(Expr<A>, Expr<B>, Expr<C>)> get asQuery => _query;
-
-  QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
-  ) =>
-      asQuery.where(conditionBuilder).first;
-
-  QuerySingle<T> select<T extends Record>(
-    T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder,
-  ) =>
-      QuerySingle._(asQuery.select(projectionBuilder));
-
-  Future<(A, B, C)?> fetch() async =>
-      (await asQuery.fetch().toList()).firstOrNull;
-}
 
 // DELETE and UPDATE is only possible for a single column, where the columns is
 // model!
@@ -479,20 +210,6 @@ extension QueryModel<A extends Model> on Query<(Expr<A>,)> {
 
 extension QuerySingleModel<A extends Model> on QuerySingle<(Expr<A>,)> {
   Future<void> delete() async => await asQuery.delete();
-}
-
-/* --------------------- Auxiliary toList ---------------------- */
-
-extension<A> on (Expr<A>,) {
-  List<Expr> toList() => [$1];
-}
-
-extension<A, B> on (Expr<A>, Expr<B>) {
-  List<Expr> toList() => [$1, $2];
-}
-
-extension<A, B, C> on (Expr<A>, Expr<B>, Expr<C>) {
-  List<Expr> toList() => [$1, $2, $3];
 }
 
 /* --------------------- Auxiliary utils for SQL rendering------------------- */

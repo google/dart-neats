@@ -11,6 +11,10 @@ targets:
         generate_for:
          - 'test/**/model.dart'
          - 'example/model.dart'
+      typed_sql|typed_sql_extensions:
+        enabled: true
+        generate_for:
+         - 'lib/src/typed_sql.dart'
 builders:
   typed_sql:
     import: "package:typed_sql/builder.dart"
@@ -25,3 +29,15 @@ builders:
     build_extensions: {".dart": [".sql"]}
     auto_apply: dependents
     build_to: source
+  typed_sql_extensions:
+    import: "package:typed_sql/src/codegen/extension_builder.dart"
+    builder_factories: ["typedSqlExtensionBuilder"]
+    build_extensions: {".dart": [".typed_sql_extensions.g.part"]}
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]
+
+#  typed_sql_extensions:
+#    import: "package:typed_sql/src/codegen/extension_builder.dart"
+#    builder_factories: ["typedSqlExtensionBuilder"]
+#    build_extensions: {"typed_sql.dart": ["typed_sql.extensions.dart"]}
+#    build_to: source
