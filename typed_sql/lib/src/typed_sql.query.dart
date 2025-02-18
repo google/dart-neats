@@ -76,7 +76,7 @@ final class InsertStatement extends Statement {
 
 final class UpdateStatement extends Statement implements ExpressionContext {
   @override
-  final Object handle;
+  final Object _handle;
   final TableClause table;
   final List<String> columns;
   final List<Expr> values;
@@ -86,7 +86,7 @@ final class UpdateStatement extends Statement implements ExpressionContext {
     this.table,
     this.columns,
     this.values,
-    this.handle,
+    this._handle,
     this.where,
   );
 }
@@ -128,30 +128,29 @@ sealed class FromClause extends QueryClause {
 /// Expressions can be bound to context, that is the context from which they
 /// are referencing fields.
 abstract final class ExpressionContext {
-  // TODO: [handle] should probably be private!
-  Object get handle;
+  Object get _handle;
 }
 
 final class SelectClause extends FromClause implements ExpressionContext {
   @override
-  final Object handle;
+  final Object _handle;
   final List<Expr> projection;
-  SelectClause._(super.from, this.handle, this.projection) : super._();
+  SelectClause._(super.from, this._handle, this.projection) : super._();
 }
 
 final class WhereClause extends FromClause implements ExpressionContext {
   @override
-  final Object handle;
+  final Object _handle;
   final Expr<bool> where;
-  WhereClause._(super.from, this.handle, this.where) : super._();
+  WhereClause._(super.from, this._handle, this.where) : super._();
 }
 
 final class OrderByClause extends FromClause implements ExpressionContext {
   @override
-  final Object handle;
+  final Object _handle;
   final Expr orderBy;
   final bool descending;
-  OrderByClause._(super.from, this.handle, this.orderBy, this.descending)
+  OrderByClause._(super.from, this._handle, this.orderBy, this.descending)
       : super._();
 }
 
@@ -514,7 +513,7 @@ abstract final class QueryContext {
       't${_depth + 1}',
       _AliasedQueryContext(
         this,
-        clause.handle,
+        clause._handle,
         columns,
         _depth + 1,
         _parameters,
