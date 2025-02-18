@@ -98,6 +98,8 @@ void main() {
         .fetch();
     print(alice);
 
+    await db.users.byKey(userId: 42).delete();
+
     await adaptor.close();
   });
 }

@@ -65,6 +65,15 @@ final class SelectStatement extends Statement {
   SelectStatement(this.query);
 }
 
+final class InsertStatement extends Statement {
+  final String table;
+  final List<String> columns;
+  final List<Expr> values;
+  final List<String> returning;
+
+  InsertStatement(this.table, this.columns, this.values, this.returning);
+}
+
 final class UpdateStatement extends Statement implements ExpressionContext {
   @override
   final Object handle;

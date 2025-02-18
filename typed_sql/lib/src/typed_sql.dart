@@ -67,12 +67,12 @@ final class ExposedForCodeGen {
     required Table<T> table,
     required List<Expr> values,
   }) async {
-    final (sql, params) = table._context._dialect.insertInto(
+    final (sql, params) = table._context._dialect.insertInto(InsertStatement(
       table._tableName,
       table._columns,
       values,
       table._columns,
-    );
+    ));
     final returned = await table._context._query(sql, params).first;
     return table._deserialize((i) => returned[i]);
   }

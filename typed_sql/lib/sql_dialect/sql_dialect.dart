@@ -23,12 +23,7 @@ abstract base class SqlDialect {
   /// ```sql
   /// INSERT INTO [table] ([columns]) VALUES ($1, ...)
   /// ```
-  (String, List<Object?>) insertInto(
-    String table,
-    List<String> columns,
-    List<Expr> values,
-    List<String> returning,
-  );
+  (String, List<Object?>) insertInto(InsertStatement statement);
 
   /// Update [columns] from [table] with [values].
   ///

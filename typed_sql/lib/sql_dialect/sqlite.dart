@@ -20,21 +20,16 @@ SqlDialect sqliteDialect() => _Sqlite();
 
 final class _Sqlite extends SqlDialect {
   @override
-  (String, List<Object?>) insertInto(
-    String table,
-    List<String> columns,
-    List<Expr> values,
-    List<String> returning,
-  ) {
+  (String, List<Object?>) insertInto(InsertStatement statement) {
     final (params, ctx) = QueryContext.create();
     // TODO: Is it possible to insert a ModelExpression
     //       It probably is, if copying a row from one table to another!
     return (
       [
-        'INSERT INTO ${escape(table)}',
-        '(${columns.map(escape).join(', ')})',
-        'VALUES (${values.map((e) => expr(e, ctx)).join(', ')})',
-        'RETURNING ${returning.map(escape).join(', ')}',
+        'INSERT INTO ${escape(statement.table)}',
+        '(${statement.columns.map(escape).join(', ')})',
+        'VALUES (${statement.values.map((e) => expr(e, ctx)).join(', ')})',
+        'RETURNING ${statement.returning.map(escape).join(', ')}',
       ].join(' '),
       params,
     );
