@@ -61,6 +61,14 @@ void main() {
               name: literal('jonasfj'),
             ));
 
+    print(
+      await db.users
+          .join(db.users)
+          .on((u1, u2) => u1.userId.equals(u2.userId))
+          .fetch()
+          .toList(),
+    );
+
     // Update user 42 to have new name, using short-cuts
     await db.users.byKey(userId: 42).update((u, set) => set(
           name: literal('jonasfj'),
