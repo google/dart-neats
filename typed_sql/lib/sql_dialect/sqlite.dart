@@ -106,14 +106,13 @@ final class _Sqlite extends SqlDialect {
           columns,
         );
 
-      case LimitClause(:final from, :final limit):
+      case OffsetClause(:final LimitClause from, :final offset):
         final (sql, columns) = clause(from, ctx);
-        return (
-          'SELECT ${columns.map(escape).join(', ')} '
-              'FROM ($sql) '
-              'LIMIT $limit',
-          columns,
-        );
+        return ('$sql OFFSET $offset', columns);
+
+      case OffsetClause(:final WhereClause from, :final offset):
+        final (sql, columns) = clause(from, ctx);
+        return ('$sql OFFSET $offset', columns);
 
       case OffsetClause(:final from, :final offset):
         final (sql, columns) = clause(from, ctx);
@@ -121,6 +120,19 @@ final class _Sqlite extends SqlDialect {
           'SELECT ${columns.map(escape).join(', ')} '
               'FROM ($sql) '
               'LIMIT $offset',
+          columns,
+        );
+
+      case LimitClause(:final WhereClause from, :final limit):
+        final (sql, columns) = clause(from, ctx);
+        return ('$sql LIMIT $limit', columns);
+
+      case LimitClause(:final from, :final limit):
+        final (sql, columns) = clause(from, ctx);
+        return (
+          'SELECT ${columns.map(escape).join(', ')} '
+              'FROM ($sql) '
+              'LIMIT $limit',
           columns,
         );
 
@@ -146,6 +158,18 @@ final class _Sqlite extends SqlDialect {
                   ).join(', ')} '
               'FROM ($sql) AS $a',
           aliases,
+        );
+
+      case WhereClause(
+          from: TableClause(:var name, :var columns),
+          :final where
+        ):
+        final (a, c) = ctx.alias(q, columns);
+        return (
+          'SELECT ${columns.map(escape).join(', ')} '
+              'FROM $name AS $a '
+              'WHERE ${expr(where, c)}',
+          columns,
         );
 
       case WhereClause(:final from, :final where):
