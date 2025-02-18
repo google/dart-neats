@@ -178,7 +178,7 @@ final class OffsetClause extends FromClause {
 
 /* --------------------- Query extensions ---------------------- */
 
-extension Query2A<A> on Query<(Expr<A>,)> {
+extension QueryA<A> on Query<(Expr<A>,)> {
   (Object, T) _build<T>(T Function(Expr<A> row) builder) {
     final handle = Object();
     var offset = 0;
@@ -249,7 +249,7 @@ extension Query2A<A> on Query<(Expr<A>,)> {
   }
 }
 
-extension Query2AB<A, B> on Query<(Expr<A>, Expr<B>)> {
+extension QueryAB<A, B> on Query<(Expr<A>, Expr<B>)> {
   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b) builder) {
     final handle = Object();
     var offset = 0;
@@ -327,7 +327,7 @@ extension Query2AB<A, B> on Query<(Expr<A>, Expr<B>)> {
   }
 }
 
-extension Query2ABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
+extension QueryABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b, Expr<C> c) builder) {
     final handle = Object();
     var offset = 0;
@@ -410,7 +410,7 @@ extension Query2ABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   }
 }
 
-extension QuerySingle2A<A> on QuerySingle<(Expr<A>,)> {
+extension QuerySingleA<A> on QuerySingle<(Expr<A>,)> {
   Query<(Expr<A>,)> get asQuery => _query;
 
   QuerySingle<(Expr<A>,)> where(
@@ -426,7 +426,7 @@ extension QuerySingle2A<A> on QuerySingle<(Expr<A>,)> {
   Future<A?> fetch() async => (await asQuery.fetch().toList()).firstOrNull;
 }
 
-extension QuerySingle2AB<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
+extension QuerySingleAB<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
   Query<(Expr<A>, Expr<B>)> get asQuery => _query;
 
   QuerySingle<(Expr<A>, Expr<B>)> where(
@@ -442,7 +442,7 @@ extension QuerySingle2AB<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
   Future<(A, B)?> fetch() async => (await asQuery.fetch().toList()).firstOrNull;
 }
 
-extension QuerySingle2ABC<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
+extension QuerySingleABC<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>)> get asQuery => _query;
 
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> where(
@@ -461,7 +461,7 @@ extension QuerySingle2ABC<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
 
 // DELETE and UPDATE is only possible for a single column, where the columns is
 // model!
-extension Query2Model<A extends Model> on Query<(Expr<A>,)> {
+extension QueryModel<A extends Model> on Query<(Expr<A>,)> {
   Future<void> delete() async {
     final table = switch (_expressions.$1) {
       final ModelExpression e => e.table,
@@ -477,7 +477,7 @@ extension Query2Model<A extends Model> on Query<(Expr<A>,)> {
   }
 }
 
-extension QuerySingle2Model<A extends Model> on QuerySingle<(Expr<A>,)> {
+extension QuerySingleModel<A extends Model> on QuerySingle<(Expr<A>,)> {
   Future<void> delete() async => await asQuery.delete();
 }
 
