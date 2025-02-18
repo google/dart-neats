@@ -121,8 +121,8 @@ extension QueryUserExt on Query<(Expr<User>,)> {
       ExposedForCodeGen.update<User>(
         this,
         (user) => ExposedForCodeGen.buildUpdate<User>([
-          literal(userId),
-          literal(email),
+          userId != null ? literal(userId) : null,
+          email != null ? literal(email) : null,
         ]),
       );
 
@@ -165,8 +165,8 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
       ExposedForCodeGen.update<User>(
         asQuery,
         (user) => ExposedForCodeGen.buildUpdate<User>([
-          literal(userId),
-          literal(email),
+          userId != null ? literal(userId) : null,
+          email != null ? literal(email) : null,
         ]),
       );
 }
@@ -248,7 +248,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
       ExposedForCodeGen.update<Package>(
         this,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
-          literal(name),
+          name != null ? literal(name) : null,
         ]),
       );
 }
@@ -281,7 +281,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
       ExposedForCodeGen.update<Package>(
         asQuery,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
-          literal(name),
+          name != null ? literal(name) : null,
         ]),
       );
 }
@@ -392,8 +392,8 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
       ExposedForCodeGen.update<Like>(
         this,
         (like) => ExposedForCodeGen.buildUpdate<Like>([
-          literal(userId),
-          literal(packageName),
+          userId != null ? literal(userId) : null,
+          packageName != null ? literal(packageName) : null,
         ]),
       );
 }
@@ -432,8 +432,8 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
       ExposedForCodeGen.update<Like>(
         asQuery,
         (like) => ExposedForCodeGen.buildUpdate<Like>([
-          literal(userId),
-          literal(packageName),
+          userId != null ? literal(userId) : null,
+          packageName != null ? literal(packageName) : null,
         ]),
       );
 }

@@ -92,7 +92,7 @@ final class ExposedForCodeGen {
 
     final (sql, params) = table._context._dialect.update(
       UpdateStatement(
-        table._tableName,
+        TableClause(table._tableName, table._columns),
         table._columns
             .whereIndexed((index, value) => values[index] != null)
             .toList(),

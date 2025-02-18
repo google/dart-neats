@@ -118,9 +118,9 @@ extension QueryUserExt on Query<(Expr<User>,)> {
       ExposedForCodeGen.update<User>(
         this,
         (user) => ExposedForCodeGen.buildUpdate<User>([
-          literal(userId),
-          literal(name),
-          literal(email),
+          userId != null ? literal(userId) : null,
+          name != null ? literal(name) : null,
+          email != null ? literal(email) : null,
         ]),
       );
 
@@ -167,9 +167,9 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
       ExposedForCodeGen.update<User>(
         asQuery,
         (user) => ExposedForCodeGen.buildUpdate<User>([
-          literal(userId),
-          literal(name),
-          literal(email),
+          userId != null ? literal(userId) : null,
+          name != null ? literal(name) : null,
+          email != null ? literal(email) : null,
         ]),
       );
 }

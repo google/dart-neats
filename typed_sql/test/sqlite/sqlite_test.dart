@@ -27,6 +27,14 @@ void main() {
     );
     final db = Database<PrimaryDatabase>(adaptor, SqlDialect.sqlite());
 
+    await adaptor.query('''
+    CREATE TABLE users (
+      userId INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL
+    )
+    ''', []).drain();
+
     //await db.migrate();
 
     await db.users.create(

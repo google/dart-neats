@@ -239,7 +239,7 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
             ExposedForCodeGen.update<$modelName>(
               this,
               ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
-                ${model.fields.map((field) => 'literal(${field.name})').join(', ')},
+                ${model.fields.map((field) => '${field.name} != null ? literal(${field.name}) : null').join(', ')},
               ]),
             )
           '''),
@@ -313,7 +313,7 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
             ExposedForCodeGen.update<$modelName>(
               asQuery,
               ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
-                ${model.fields.map((field) => 'literal(${field.name})').join(', ')},
+                ${model.fields.map((field) => '${field.name} != null ? literal(${field.name}) : null').join(', ')},
               ]),
             )
           '''),

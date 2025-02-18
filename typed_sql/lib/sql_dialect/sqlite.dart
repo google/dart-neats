@@ -42,15 +42,13 @@ final class _Sqlite extends SqlDialect {
 
   @override
   (String, List<Object?>) update(UpdateStatement statement) {
-    // TODO: We probably need to find the primary key and put it in the statement!
-    throw UnimplementedError('TODO: Finish update statement!');
-    /*
     final (params, ctx) = QueryContext.create();
-    final (alias, c) = ctx.alias(statement, statement.columns);
+    final (alias, c) = ctx.alias(statement, statement.table.columns);
+    final (sql, _) = clause(statement.where, ctx);
 
     return (
       [
-        'UPDATE ${escape(statement.table)} AS $alias',
+        'UPDATE ${escape(statement.table.name)} AS $alias',
         'SET',
         statement.columns
             .mapIndexed(
@@ -58,16 +56,24 @@ final class _Sqlite extends SqlDialect {
                   '${escape(column)} = (${expr(statement.values[i], c)})',
             )
             .join(', '),
-        'WHERE ', // TODO: We need to match primary keys against QueryClause
+        'WHERE (${statement.table.columns.map(escape).join(', ')}) IN ($sql)',
       ].join(' '),
       params,
-    );*/
+    );
   }
 
   @override
   (String, List<Object?>) delete(DeleteStatement statement) {
-    // TODO: We probably need to find the primary key and put it in the statement!
-    throw UnimplementedError();
+    final (params, ctx) = QueryContext.create();
+    final (sql, _) = clause(statement.where, ctx);
+
+    return (
+      [
+        'DELETE FROM ${escape(statement.table.name)}',
+        'WHERE (${statement.table.columns.map(escape).join(', ')}) IN ($sql)'
+      ].join(' '),
+      params,
+    );
   }
 
   /// Escape [name] for use as identifier in SQL.

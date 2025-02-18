@@ -46,7 +46,7 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
     this._tableName,
     this._columns,
     this._deserialize,
-  )   : _from = ((_) => TableClause('name', [])),
+  )   : _from = ((_) => TableClause(_tableName, _columns)),
         super._();
 }
 
@@ -68,7 +68,7 @@ final class SelectStatement extends Statement {
 final class UpdateStatement extends Statement implements ExpressionContext {
   @override
   final Object handle;
-  final String table;
+  final TableClause table;
   final List<String> columns;
   final List<Expr> values;
   final QueryClause where;
@@ -83,7 +83,7 @@ final class UpdateStatement extends Statement implements ExpressionContext {
 }
 
 final class DeleteStatement extends Statement {
-  final String table;
+  final TableClause table;
   final QueryClause where;
 
   DeleteStatement(
@@ -95,11 +95,19 @@ final class DeleteStatement extends Statement {
 sealed class QueryClause {}
 
 final class TableClause extends QueryClause {
-  /// Name of table or view
+  /// Name of table
   final String name;
   final List<String> columns;
   TableClause(this.name, this.columns);
 }
+
+/*
+final class ViewClause extends QueryClause {
+  /// Name of view
+  final String name;
+  final List<String> columns;
+  ViewClause(this.name, this.columns);
+}*/
 
 sealed class FromClause extends QueryClause {
   final QueryClause from;
@@ -435,13 +443,13 @@ extension QuerySingle2ABC<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
 extension Query2Model<A extends Model> on Query<(Expr<A>,)> {
   Future<void> delete() async {
     final table = switch (_expressions.$1) {
-      final ModelExpression e => e.table._tableName,
+      final ModelExpression e => e.table,
       _ => throw AssertionError('Expr<Model> must be a ModelExpression'),
     };
 
     final from = _from(_expressions.toList());
     final (sql, params) = _context._dialect.delete(
-      DeleteStatement(table, from),
+      DeleteStatement(TableClause(table._tableName, table._columns), from),
     );
 
     await _context._db.query(sql, params).drain();
