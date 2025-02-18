@@ -76,6 +76,11 @@ final class _Sqlite extends SqlDialect {
   ///
   /// Throws if [name] cannot be safely escaped.
   String escape(String name) {
+    // TODO: Escaping is not exactly super consistent, some things that comes
+    //       out of QueryContext.field() are not escaped further.
+    //       We can debate what is sane, perhaps we should just not support
+    //       field names that require escaping!
+    //       Or pass an escape method to QueryContext when creating an instance!
     if (_sqlSafe.hasMatch(name) &&
         !_sqliteReservedKeywords.contains(name.toUpperCase())) {
       return name;
