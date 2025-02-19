@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart' show log;
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:analyzer/dart/element/element.dart';
 
-import 'package:typed_sql/src/codegen/parsed_library.dart';
+import 'parsed_library.dart';
 
 final _typedSqlSrcUri = Uri.parse('package:typed_sql/src/typed_sql.dart');
 

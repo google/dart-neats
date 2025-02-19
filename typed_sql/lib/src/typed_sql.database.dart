@@ -25,9 +25,9 @@ sealed class DatabaseContext<T extends Schema> {
 }
 
 final class Database<T extends Schema> extends DatabaseContext<T> {
-  Database(DatabaseAdaptor adaptor, SqlDialect dialect)
+  Database(DatabaseAdaptor adaptor, super.dialect)
       : _db = adaptor,
-        super._(dialect);
+        super._();
 
   @override
   final DatabaseAdaptor _db;

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:typed_sql/adaptor/adaptor.dart';
+import 'adaptor.dart';
 
 DatabaseAdaptor loggingAdaptor(
   DatabaseAdaptor adaptor,

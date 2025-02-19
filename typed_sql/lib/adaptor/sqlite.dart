@@ -15,8 +15,9 @@
 import 'dart:async';
 
 import 'package:sqlite3/sqlite3.dart';
-import 'package:typed_sql/adaptor/adaptor.dart';
-import 'package:typed_sql/src/utils/notifier.dart';
+
+import '../src/utils/notifier.dart';
+import 'adaptor.dart';
 
 DatabaseAdaptor sqlite3Adaptor(Uri uri) => _SqliteDatabaseAdaptor(uri);
 

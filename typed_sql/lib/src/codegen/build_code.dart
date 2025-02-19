@@ -17,8 +17,9 @@ library;
 
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
-import 'package:typed_sql/src/codegen/parsed_library.dart';
-import 'package:typed_sql/src/utils/camelcase.dart';
+
+import '../utils/camelcase.dart';
+import 'parsed_library.dart';
 
 Iterable<Spec> buildCode(ParsedLibrary library) sync* {
   yield* library.schemas.map(buildSchema).flattened;

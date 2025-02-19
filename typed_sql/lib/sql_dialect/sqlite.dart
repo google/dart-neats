@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import 'package:collection/collection.dart';
-import 'package:typed_sql/sql_dialect/sql_dialect.dart';
-import 'package:typed_sql/src/typed_sql.dart';
+
+import '../src/typed_sql.dart';
+import 'sql_dialect.dart';
 
 SqlDialect sqliteDialect() => _Sqlite();
 

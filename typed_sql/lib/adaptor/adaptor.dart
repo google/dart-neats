@@ -32,7 +32,8 @@ abstract base class DatabaseAdaptor extends QueryExecutor {
   static DatabaseAdaptor withLogging(
     DatabaseAdaptor adaptor,
     void Function(String message) logDrain,
-  ) => loggingAdaptor(adaptor, logDrain);
+  ) =>
+      loggingAdaptor(adaptor, logDrain);
 }
 
 abstract base class DatabaseTransaction extends QueryExecutor {
