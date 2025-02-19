@@ -16,7 +16,7 @@
 
 import 'dart:async';
 
-import 'package:build/build.dart' show BuildStep, log, Builder, BuilderOptions;
+import 'package:build/build.dart' show BuildStep, Builder, BuilderOptions, log;
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart' as g;
@@ -44,10 +44,10 @@ final class _TypedSqlExtensionBuilder extends g.Generator {
   }
 }
 
-const N = 16; // max = 20
+const N = 8; // max = 24
 
 Iterable<Spec> _buildExtensions() sync* {
-  if (N >= _typeArg.length) {
+  if (N > _typeArg.length) {
     throw AssertionError('N must be less than ${_typeArg.length}');
   }
 
@@ -538,7 +538,14 @@ const _typeArg = [
   'P',
   'Q',
   'R',
-  'S',
+  //'S', // reserved for use in method templates
+  //'T', // reserved for use in method templates
+  'U',
+  'V',
+  'W',
+  'X',
+  'Y',
+  'Z'
 ];
 
 final _arg = _typeArg.map((s) => s.toLowerCase()).toList();
