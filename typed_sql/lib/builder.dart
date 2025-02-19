@@ -14,11 +14,12 @@
 
 import 'dart:async';
 
-import 'package:build/build.dart' show BuildStep, log, Builder, BuilderOptions;
-import 'package:source_gen/source_gen.dart' as g;
-import 'package:typed_sql/src/codegen/parse_library.dart';
+import 'package:build/build.dart' show BuildStep, Builder, BuilderOptions, log;
 import 'package:code_builder/code_builder.dart' as code;
-import 'package:typed_sql/src/codegen/build_code.dart';
+import 'package:source_gen/source_gen.dart' as g;
+
+import 'src/codegen/build_code.dart';
+import 'src/codegen/parse_library.dart';
 
 /// A [Builder] that generates extension methods and classes for typed_sql.
 Builder typedSqlBuilder(BuilderOptions options) => g.SharedPartBuilder(
@@ -39,7 +40,7 @@ final class _SqlSchemaBuilder extends Builder {
     }
 
     log.info('Generating SQL schema');
-    buildStep.writeAsString(buildStep.allowedOutputs.first, '''
+    await buildStep.writeAsString(buildStep.allowedOutputs.first, '''
       -- TODO: Create tables, and figure out how users specify dialect!
     ''');
   }
