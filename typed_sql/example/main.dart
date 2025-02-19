@@ -18,6 +18,7 @@ import 'model.dart';
 Future<void> main() async {
   final dynamic conn = null; // TODO: Get hold of a DatabaseConnectionPool
   final dynamic dialect = null; // TODO: Get hold of an SqlDialect object
+  // ignore: argument_type_not_assignable
   final db = Database<PrimaryDatabase>(conn, dialect);
 
   //await db.migrate();
