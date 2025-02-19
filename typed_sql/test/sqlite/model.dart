@@ -18,6 +18,8 @@ part 'model.g.dart';
 
 abstract final class PrimaryDatabase extends Schema {
   Table<User> get users;
+  Table<Package> get packages;
+  Table<Like> get likes;
 }
 
 @PrimaryKey(['userId'])
@@ -28,4 +30,59 @@ abstract final class User extends Model {
 
   @Unique()
   String get email;
+}
+
+@PrimaryKey(['packageName'])
+abstract final class Package extends Model {
+  String get packageName;
+
+  int get likes;
+
+  // TODO: Support references!
+  int get ownerId;
+}
+
+@PrimaryKey(['userId', 'packageName'])
+abstract final class Like extends Model {
+  // TODO: Support references
+  int get userId;
+
+  // TODO: Support references
+  String get packageName;
+}
+
+extension DatabaseAdaptorExtensions on DatabaseAdaptor {
+  Future<void> createTables() async {
+    await query(
+      '''CREATE TABLE users (${[
+        'userId INTEGER',
+        'name TEXT NOT NULL',
+        'email TEXT NOT NULL',
+        'PRIMARY KEY (userId)',
+      ].join(', ')})''',
+      [],
+    ).drain<void>();
+
+    await query(
+      '''CREATE TABLE packages (${[
+        'packageName TEXT NOT NULL',
+        'likes INTEGER NOT NULL',
+        'ownerId INTEGER NOT NULL',
+        'PRIMARY KEY (packageName)',
+        'FOREIGN KEY (ownerId) REFERENCES users(userId)',
+      ].join(', ')})''',
+      [],
+    ).drain<void>();
+
+    await query(
+      '''CREATE TABLE likes (${[
+        'packageName TEXT NOT NULL',
+        'userId INTEGER NOT NULL',
+        'PRIMARY KEY (userId, packageName)',
+        'FOREIGN KEY (userId) REFERENCES users(userId)',
+        'FOREIGN KEY (packageName) REFERENCES packages(packageName)',
+      ].join(', ')})''',
+      [],
+    ).drain<void>();
+  }
 }

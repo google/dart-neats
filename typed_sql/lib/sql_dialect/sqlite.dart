@@ -116,14 +116,17 @@ final class _Sqlite extends SqlDialect {
 
       case OffsetClause(:final WhereClause from, :final offset):
         final (sql, columns) = clause(from, ctx);
-        return ('$sql OFFSET $offset', columns);
+        return ('$sql LIMIT -1 OFFSET $offset', columns);
+
+      case OffsetClause(:final from, offset: 0):
+        return clause(from, ctx);
 
       case OffsetClause(:final from, :final offset):
         final (sql, columns) = clause(from, ctx);
         return (
           'SELECT ${columns.map(escape).join(', ')} '
               'FROM ($sql) '
-              'LIMIT $offset',
+              'LIMIT -1 OFFSET $offset',
           columns,
         );
 

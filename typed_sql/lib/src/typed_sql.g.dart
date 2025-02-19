@@ -24,9 +24,9 @@ extension Query1<A> on Query<(Expr<A>,)> {
   }
 
   Query<(Expr<A>,)> orderBy<T>(
-    Expr<T> Function(Expr<A> a) expressionBuilder, [
+    Expr<T> Function(Expr<A> a) expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -90,9 +90,9 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   }
 
   Query<(Expr<A>, Expr<B>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b) expressionBuilder, [
+    Expr<T> Function(Expr<A> a, Expr<B> b) expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -164,9 +164,9 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   }
 
   Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder, [
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -246,9 +246,9 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
 
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy<T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -338,9 +338,9 @@ extension Query5<A, B, C, D, E>
 
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy<T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -440,9 +440,9 @@ extension Query6<A, B, C, D, E, F>
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy<T>(
     Expr<T> Function(
             Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -550,9 +550,9 @@ extension Query7<A, B, C, D, E, F, G>
       orderBy<T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
             Expr<F> f, Expr<G> g)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -685,9 +685,9 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
       )> orderBy<T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
             Expr<F> f, Expr<G> g, Expr<H> h)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -844,9 +844,9 @@ extension Query9<A, B, C, D, E, F, G, H, I> on Query<
       )> orderBy<T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
             Expr<F> f, Expr<G> g, Expr<H> h, Expr<I> i)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -1032,9 +1032,9 @@ extension Query10<A, B, C, D, E, F, G, H, I, J> on Query<
       )> orderBy<T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
             Expr<F> f, Expr<G> g, Expr<H> h, Expr<I> i, Expr<J> j)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -1253,9 +1253,9 @@ extension Query11<A, B, C, D, E, F, G, H, I, J, K> on Query<
       )> orderBy<T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
             Expr<F> f, Expr<G> g, Expr<H> h, Expr<I> i, Expr<J> j, Expr<K> k)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -1509,9 +1509,9 @@ extension Query12<A, B, C, D, E, F, G, H, I, J, K, L> on Query<
             Expr<J> j,
             Expr<K> k,
             Expr<L> l)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -1791,9 +1791,9 @@ extension Query13<A, B, C, D, E, F, G, H, I, J, K, L, M> on Query<
             Expr<K> k,
             Expr<L> l,
             Expr<M> m)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -2089,9 +2089,9 @@ extension Query14<A, B, C, D, E, F, G, H, I, J, K, L, M, N> on Query<
             Expr<L> l,
             Expr<M> m,
             Expr<N> n)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -2403,9 +2403,9 @@ extension Query15<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> on Query<
             Expr<M> m,
             Expr<N> n,
             Expr<O> o)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
@@ -2733,9 +2733,9 @@ extension Query16<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> on Query<
             Expr<N> n,
             Expr<O> o,
             Expr<P> p)
-        expressionBuilder, [
+        expressionBuilder, {
     bool descending = false,
-  ]) {
+  }) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,

@@ -13,9 +13,11 @@
 // limitations under the License.
 
 import 'dart:async';
+
 import 'package:collection/collection.dart';
-import 'package:typed_sql/adaptor/adaptor.dart';
-import 'package:typed_sql/sql_dialect/sql_dialect.dart';
+
+import '../adaptor/adaptor.dart';
+import '../sql_dialect/sql_dialect.dart';
 
 part 'typed_sql.annotations.dart';
 part 'typed_sql.database.dart';
@@ -57,12 +59,7 @@ final class ExposedForCodeGen {
     required List<String> columns,
     required T Function(Object? Function(int index) get) deserialize,
   }) =>
-      Table._(
-        context,
-        tableName,
-        columns,
-        deserialize,
-      );
+      Table._(context, tableName, columns, deserialize);
 
   static Future<T> insertInto<T extends Model>({
     required Table<T> table,
@@ -103,7 +100,7 @@ final class ExposedForCodeGen {
       ),
     );
 
-    await table._context._query(sql, params).drain();
+    await table._context._query(sql, params).drain<void>();
   }
 
   // TODO: Design a solution for migrations using atlas creating dialect
@@ -113,7 +110,7 @@ final class ExposedForCodeGen {
     DatabaseContext context,
     String migration,
   ) async {
-    await context._query(migration, const []).drain();
+    await context._query(migration, const []).drain<void>();
   }
 
   static Update<T> buildUpdate<T extends Model>(List<Expr?> values) =>

@@ -12,106 +12,345 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
+
 import 'package:test/test.dart';
 import 'package:typed_sql/sql_dialect/sql_dialect.dart';
-import 'model.dart';
 import 'package:typed_sql/typed_sql.dart';
+
+import 'model.dart';
 
 final u = Uri.parse('file:shared-inmemory?mode=memory&cache=shared');
 
-void main() {
-  test('sqlite', () async {
+void _test(
+  String name,
+  FutureOr<void> Function(Database<PrimaryDatabase> db) fn,
+) async {
+  test(name, () async {
     final adaptor = DatabaseAdaptor.withLogging(
       DatabaseAdaptor.sqlite3(u),
-      print,
+      printOnFailure,
+      //print,
     );
     final db = Database<PrimaryDatabase>(adaptor, SqlDialect.sqlite());
-
-    await adaptor.query('''
-    CREATE TABLE users (
-      userId INTEGER PRIMARY KEY,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL
-    )
-    ''', []).drain();
-
-    //await db.migrate();
-
-    await db.users.create(
-      userId: 22,
-      name: 'Bob',
-      email: 'bob@example.com',
-    );
-    await db.users.create(
-      userId: 42,
-      name: 'Alice',
-      email: 'alice@example.com',
-    );
-
-    // Change all users to a have lower case email
-    await db.users.updateAll((u, set) => set(
-          email: u.email.toLowerCase(),
-        ));
-
-    // Update user 42 to have new name!
-    await db.users
-        .where((u) => u.userId.equals(literal(42)))
-        .first
-        .update((u, set) => set(
-              name: literal('jonasfj'),
-            ));
-
-    print(
-      await db.users
-          .join(db.users)
-          .on((u1, u2) => u1.userId.equals(u2.userId))
-          .fetch()
-          .toList(),
-    );
-
-    // Update user 42 to have new name, using short-cuts
-    await db.users.byKey(userId: 42).update((u, set) => set(
-          name: literal('jonasfj'),
-        ));
-    // Update user 42 to have new name, using updateLiteral
-    await db.users.byKey(userId: 42).updateLiteral(
-          name: 'jonasfj',
-        );
-
-    final email = await db.users
-        .byKey(userId: 42)
-        .select((user) => (user.email,))
-        .fetch();
-    if (email != null) {
-      print('email: $email');
+    await adaptor.createTables();
+    try {
+      await db.users.create(
+        userId: 1,
+        name: 'Alice',
+        email: 'alice@example.com',
+      );
+      await db.users.create(userId: 2, name: 'Bob', email: 'bob@example.com');
+      await db.packages.create(
+        packageName: 'foo',
+        likes: 2,
+        ownerId: 1,
+      );
+      await db.likes.create(userId: 1, packageName: 'foo');
+      await db.likes.create(userId: 2, packageName: 'foo');
+      await fn(db);
+    } finally {
+      await adaptor.close();
     }
+  });
+}
 
-    // TODO: Consider a fetchOrThrow or fetchOrNulls
-    final result = await db.users
-        .byKey(userId: 42)
-        .select((user) => (user.email, user.name))
-        .fetch();
-    if (result != null) {
-      final (email, name) = result;
-      print('$name has $email');
-    }
+void main() {
+  _test('db.users.create()', (db) async {
+    // Do nothing, this is covered in the setup
+  });
 
-    final users = await db.users.fetch().toList();
-    print(users);
+  _test('db.packages.insert()', (db) async {
+    await db.packages.insert(
+      packageName: literal('bar'),
+      likes: literal(0),
+      ownerId: literal(2),
+    );
+  });
 
-    final alice = await db.users
-        .where((u) => u.name.equalsLiteral('Alice'))
-        .first
-        .fetch();
-    print(alice);
+  _test('db.users.where(.endsWithLiteral).select()', (db) async {
+    final users = await db.users
+        .where((u) => u.email.endsWithLiteral('@example.com'))
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, contains('Alice'));
+    expect(users, contains('Bob'));
+    expect(users, hasLength(2));
+  });
 
-    await db.users.byKey(userId: 42).delete();
+  _test('db.users.where(.startsWithLiteral).select()', (db) async {
+    final users = await db.users
+        .where((u) => u.email.startsWithLiteral('alice@'))
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, contains('Alice'));
+    expect(users, hasLength(1));
+  });
 
+  _test('db.packages.where().updateAllLiteral()', (db) async {
     {
-      final users = await db.users.fetch().toList();
-      print(users);
+      final p = await db.packages.byKey(packageName: 'foo').fetch();
+      expect(p!.ownerId, equals(1));
     }
+    await db.packages
+        .where((p) => p.packageName.equalsLiteral('foo'))
+        .updateAllLiteral(
+          ownerId: 2,
+        );
+    {
+      final p = await db.packages.byKey(packageName: 'foo').fetch();
+      expect(p!.ownerId, equals(2));
+    }
+  });
 
-    await adaptor.close();
+  _test('db.packages.byKey().update(.add / .subtract)', (db) async {
+    expect(
+      await db.packages
+          .byKey(packageName: 'foo')
+          .select((p) => (p.likes,))
+          .fetch(),
+      equals(2),
+    );
+
+    await db.packages.byKey(packageName: 'foo').update((u, set) => set(
+          likes: u.likes + literal(1),
+        ));
+
+    expect(
+      await db.packages
+          .byKey(packageName: 'foo')
+          .select((p) => (p.likes,))
+          .fetch(),
+      equals(3),
+    );
+
+    await db.packages.byKey(packageName: 'foo').update((u, set) => set(
+          likes: u.likes.addLiteral(1),
+        ));
+
+    expect(
+      await db.packages
+          .byKey(packageName: 'foo')
+          .select((p) => (p.likes,))
+          .fetch(),
+      equals(4),
+    );
+
+    await db.packages.byKey(packageName: 'foo').update((u, set) => set(
+          likes: u.likes.subtractLiteral(1),
+        ));
+
+    await db.packages.byKey(packageName: 'foo').update((u, set) => set(
+          likes: u.likes - literal(1),
+        ));
+
+    expect(
+      await db.packages
+          .byKey(packageName: 'foo')
+          .select((p) => (p.likes,))
+          .fetch(),
+      equals(2),
+    );
+  });
+
+  _test('db.packages.byKey().delete()', (db) async {
+    {
+      final p = await db.packages.byKey(packageName: 'foo').fetch();
+      expect(p, isNotNull);
+    }
+    await db.packages.byKey(packageName: 'foo').delete();
+    {
+      final p = await db.packages.byKey(packageName: 'foo').fetch();
+      expect(p, isNull);
+    }
+  });
+
+  _test('db.packages.where().deleteAll()', (db) async {
+    {
+      final packages = await db.packages.fetch().toList();
+      expect(packages, hasLength(1));
+    }
+    await db.packages.where((p) => p.packageName.equalsLiteral('foo')).delete();
+    {
+      final packages = await db.packages.fetch().toList();
+      expect(packages, isEmpty);
+    }
+  });
+
+  _test('db.users.where().limit()', (db) async {
+    final users = await db.users
+        .where((u) => u.email.equalsLiteral('alice@example.com'))
+        .limit(1)
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, contains('Alice'));
+    expect(users, hasLength(1));
+  });
+
+  _test('db.users.limit().where()', (db) async {
+    final users = await db.users
+        .limit(2)
+        .where((u) => u.email.equalsLiteral('alice@example.com'))
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, contains('Alice'));
+    expect(users, hasLength(1));
+  });
+
+  _test('db.users.offset(0).limit().where()', (db) async {
+    final users = await db.users
+        .offset(0)
+        .limit(2)
+        .where((u) => u.email.equalsLiteral('bob@example.com'))
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, contains('Bob'));
+    expect(users, hasLength(1));
+  });
+
+  _test('db.users.limit(0).offset().where()', (db) async {
+    final users = await db.users
+        .limit(2)
+        .offset(0)
+        .where((u) => u.email.equalsLiteral('bob@example.com'))
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, contains('Bob'));
+    expect(users, hasLength(1));
+  });
+
+  _test('db.users.orderBy().offset().where(1) (empty)', (db) async {
+    final users = await db.users
+        .orderBy((u) => u.userId)
+        .offset(1)
+        .where((u) => u.email.equalsLiteral('alice@example.com'))
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, isEmpty);
+  });
+
+  _test('db.users.orderBy().offset(1).where()', (db) async {
+    final users = await db.users
+        .orderBy((u) => u.userId)
+        .offset(1)
+        .where((u) => u.email.equalsLiteral('bob@example.com'))
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, contains('Bob'));
+    expect(users, hasLength(1));
+  });
+
+  _test('db.users.orderBy(descending).offset(1).where() (empty)', (db) async {
+    final users = await db.users
+        .orderBy((u) => u.userId, descending: true)
+        .offset(1)
+        .where((u) => u.email.equalsLiteral('bob@example.com'))
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, isEmpty);
+  });
+
+  _test('db.users.orderBy(descending).offset(1).where()', (db) async {
+    final users = await db.users
+        .orderBy((u) => u.userId, descending: true)
+        .offset(1)
+        .where((u) => u.email.equalsLiteral('alice@example.com'))
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(users, contains('Alice'));
+    expect(users, hasLength(1));
+  });
+
+  _test('db.users.join(db.packages).on()', (db) async {
+    final result = await db.users
+        .join(db.packages)
+        .on((u, p) => u.userId.equals(p.ownerId))
+        .fetch()
+        .toList();
+    expect(result, hasLength(1));
+    final (u, p) = result[0];
+    expect(u.name, equals('Alice'));
+    expect(p.packageName, equals('foo'));
+  });
+
+  _test('db.users.join(db.packages).on().select()', (db) async {
+    final result = await db.users
+        .join(db.packages)
+        .on((u, p) => u.userId.equals(p.ownerId))
+        .select((u, p) => (u.name, p.packageName))
+        .fetch()
+        .toList();
+    expect(result, contains(('Alice', 'foo')));
+    expect(result, hasLength(1));
+  });
+
+  _test('db.users.byKey().asQuery.join(db.packages).on().select()', (db) async {
+    final result = await db.users
+        .byKey(userId: 1)
+        .asQuery
+        .join(db.packages)
+        .on((u, p) => u.userId.equals(p.ownerId))
+        .select((u, p) => (u.name, p.packageName))
+        .fetch()
+        .toList();
+    expect(result, contains(('Alice', 'foo')));
+    expect(result, hasLength(1));
+  });
+
+  _test('db.users.byKey().asQuery.join(db.packages).on() (empty)', (db) async {
+    final result = await db.users
+        .byKey(userId: 2)
+        .asQuery
+        .join(db.packages)
+        .on((u, p) => u.userId.equals(p.ownerId))
+        .fetch()
+        .toList();
+    expect(result, hasLength(0));
+  });
+
+  _test('db.users.join(db.packages.where().select()).on()', (db) async {
+    final result = await db.users
+        .join(
+          db.packages
+              .where((p) => p.likes > literal(1))
+              .select((p) => (p.packageName, p.ownerId)),
+        )
+        .on((u, packageName, ownerId) => u.userId.equals(ownerId))
+        .fetch()
+        .toList();
+    expect(result, hasLength(1));
+    final (u, packageName, ownerId) = result[0];
+    expect(u.name, equals('Alice'));
+    expect(packageName, equals('foo'));
+    expect(ownerId, equals(1));
+  });
+
+  _test('db.users.join(db.packages.select().where().select()).on()',
+      (db) async {
+    final result = await db.users
+        .join(
+          db.packages
+              .select((p) => (p.packageName, p.ownerId, p.likes))
+              .where((packageName, ownerId, likes) => likes > literal(1))
+              .select((packageName, ownerId, likes) => (packageName, ownerId)),
+        )
+        .on((u, packageName, ownerId) => u.userId.equals(ownerId))
+        .fetch()
+        .toList();
+    expect(result, hasLength(1));
+    final (u, packageName, ownerId) = result[0];
+    expect(u.name, equals('Alice'));
+    expect(packageName, equals('foo'));
+    expect(ownerId, equals(1));
   });
 }

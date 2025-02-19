@@ -332,28 +332,69 @@ extension ExpressionString on Expr<String> {
       ExpressionStringGreaterThan(this, other);
   Expr<bool> operator <(Expr<String> other) =>
       ExpressionStringLessThan(this, other);
+
+  Expr<bool> lessThan(Expr<String> other) =>
+      ExpressionStringLessThan(this, other);
+  Expr<bool> lessThanOrEqual(Expr<String> other) =>
+      ExpressionStringLessThanOrEqual(this, other);
+  Expr<bool> greaterThan(Expr<String> other) =>
+      ExpressionStringGreaterThan(this, other);
+  Expr<bool> greaterThanOrEqual(Expr<String> other) =>
+      ExpressionStringGreaterThanOrEqual(this, other);
+
+  Expr<bool> lessThanLiteral(String other) => lessThan(literal(other));
+  Expr<bool> lessThanOrEqualLiteral(String other) =>
+      lessThanOrEqual(literal(other));
+  Expr<bool> greaterThanLiteral(String other) => greaterThan(literal(other));
+  Expr<bool> greaterThanOrEqualLiteral(String other) =>
+      greaterThanOrEqual(literal(other));
 }
 
-extension ExpressionNum on Expr<num> {
-  Expr<bool> equals(Expr<num> value) => ExpressionNumEquals(this, value);
+extension ExpressionNum<T extends num> on Expr<T> {
+  Expr<bool> equals(Expr<T> value) => ExpressionNumEquals(this, value);
   Expr<bool> equalsLiteral(num value) =>
       ExpressionNumEquals(this, literal(value));
 
-  Expr<bool> notEquals(Expr<num> value) => equals(value).not();
-  Expr<bool> notEqualsLiteral(num value) => notEquals(literal(value));
+  Expr<bool> notEquals(Expr<T> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(T value) => notEquals(literal(value));
 
-  Expr<num> operator +(Expr<num> other) => ExpressionNumAdd(this, other);
-  Expr<num> operator -(Expr<num> other) => ExpressionNumSubtract(this, other);
-  Expr<num> operator *(Expr<num> other) => ExpressionNumMultiply(this, other);
-  Expr<num> operator /(Expr<num> other) => ExpressionNumDivide(this, other);
+  Expr<T> operator +(Expr<T> other) => ExpressionNumAdd(this, other);
+  Expr<T> operator -(Expr<T> other) => ExpressionNumSubtract(this, other);
+  Expr<T> operator *(Expr<T> other) => ExpressionNumMultiply(this, other);
+  Expr<T> operator /(Expr<T> other) => ExpressionNumDivide(this, other);
 
-  Expr<bool> operator >=(Expr<num> other) =>
+  Expr<T> add(Expr<T> other) => ExpressionNumAdd(this, other);
+  Expr<T> subtract(Expr<T> other) => ExpressionNumSubtract(this, other);
+  Expr<T> multiply(Expr<T> other) => ExpressionNumMultiply(this, other);
+  Expr<T> divide(Expr<T> other) => ExpressionNumDivide(this, other);
+
+  Expr<T> addLiteral(T other) => ExpressionNumAdd(this, literal(other));
+  Expr<T> subtractLiteral(T other) =>
+      ExpressionNumSubtract(this, literal(other));
+  Expr<T> multiplyLiteral(T other) =>
+      ExpressionNumMultiply(this, literal(other));
+  Expr<T> divideLiteral(T other) => ExpressionNumDivide(this, literal(other));
+
+  Expr<bool> operator >=(Expr<T> other) =>
       ExpressionNumGreaterThanOrEqual(this, other);
-  Expr<bool> operator <=(Expr<num> other) =>
+  Expr<bool> operator <=(Expr<T> other) =>
       ExpressionNumLessThanOrEqual(this, other);
-  Expr<bool> operator >(Expr<num> other) =>
+  Expr<bool> operator >(Expr<T> other) => ExpressionNumGreaterThan(this, other);
+  Expr<bool> operator <(Expr<T> other) => ExpressionNumLessThan(this, other);
+
+  Expr<bool> lessThan(Expr<T> other) => ExpressionNumLessThan(this, other);
+  Expr<bool> lessThanOrEqual(Expr<T> other) =>
+      ExpressionNumLessThanOrEqual(this, other);
+  Expr<bool> greaterThan(Expr<T> other) =>
       ExpressionNumGreaterThan(this, other);
-  Expr<bool> operator <(Expr<num> other) => ExpressionNumLessThan(this, other);
+  Expr<bool> greaterThanOrEqual(Expr<T> other) =>
+      ExpressionNumGreaterThanOrEqual(this, other);
+
+  Expr<bool> lessThanLiteral(T other) => lessThan(literal(other));
+  Expr<bool> lessThanOrEqualLiteral(T other) => lessThanOrEqual(literal(other));
+  Expr<bool> greaterThanLiteral(T other) => greaterThan(literal(other));
+  Expr<bool> greaterThanOrEqualLiteral(T other) =>
+      greaterThanOrEqual(literal(other));
 
   //... do other operators...
 }

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
 
 import 'package:build/build.dart' show BuildStep, log, Builder, BuilderOptions;
@@ -172,6 +174,8 @@ Spec _buildQueryExtension(int i) => Extension(
             ..optionalParameters.add(Parameter(
               (b) => b
                 ..name = 'descending'
+                ..required = false
+                ..named = true
                 ..type = refer('bool')
                 ..defaultTo = Code('false'),
             ))

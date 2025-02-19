@@ -22,7 +22,8 @@ void _test(String name, Future<void> Function(DatabaseAdaptor db) fn) async {
     final u = Uri.parse('file:shared-inmemory?mode=memory&cache=shared');
     final db = DatabaseAdaptor.sqlite3(u);
     try {
-      await db.query('CREATE TABLE users (id INT, name TEXT)', []).drain();
+      await db
+          .query('CREATE TABLE users (id INT, name TEXT)', []).drain<void>();
       await fn(db);
     } finally {
       await db.close();
@@ -34,11 +35,11 @@ Future<void> insertAliceBob(DatabaseAdaptor db) async {
   await db.query(
     'INSERT INTO users (id, name) VALUES (?, ?)',
     [1, 'Alice'],
-  ).drain();
+  ).drain<void>();
   await db.query(
     'INSERT INTO users (id, name) VALUES (?, ?)',
     [2, 'Bob'],
-  ).drain();
+  ).drain<void>();
 }
 
 void main() {
@@ -60,7 +61,7 @@ void main() {
     await db.query(
       'UPDATE users SET name = ? WHERE id = ?',
       ['Bob Builder', 2],
-    ).drain();
+    ).drain<void>();
 
     final users = await db.query('SELECT id, name FROM users', []).toList();
     expect(users.firstWhere((u) => u[0] == 1), [1, 'Alice']);
@@ -70,7 +71,7 @@ void main() {
   _test('delete', (db) async {
     await insertAliceBob(db);
 
-    await db.query('DELETE FROM users WHERE id = ?', [1]).drain();
+    await db.query('DELETE FROM users WHERE id = ?', [1]).drain<void>();
 
     final users = await db.query('SELECT id, name FROM users', []).toList();
     expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob']);
@@ -81,7 +82,7 @@ void main() {
     await insertAliceBob(db);
 
     await db.transaction((tx) async {
-      await tx.query('DELETE FROM users WHERE id = ?', [1]).drain();
+      await tx.query('DELETE FROM users WHERE id = ?', [1]).drain<void>();
     });
 
     final users = await db.query('SELECT id, name FROM users', []).toList();
@@ -105,7 +106,7 @@ void main() {
             await tx.query(
               'UPDATE users SET name = ? WHERE id = ?',
               ['Alice1', 1],
-            ).drain();
+            ).drain<void>();
           });
         }(),
         () async {
@@ -116,7 +117,7 @@ void main() {
             await tx.query(
               'UPDATE users SET name = ? WHERE id = ?',
               ['Alice2', 1],
-            ).drain();
+            ).drain<void>();
           });
         }(),
       ]),
@@ -129,7 +130,7 @@ void main() {
 
     await db.transaction((tx) async {
       await tx.savePoint((sp) async {
-        await sp.query('DELETE FROM users WHERE id = ?', [1]).drain();
+        await sp.query('DELETE FROM users WHERE id = ?', [1]).drain<void>();
       });
     });
 
@@ -157,7 +158,7 @@ void main() {
               await sp.query(
                 'UPDATE users SET name = ? WHERE id = ?',
                 ['Alice1', 1],
-              ).drain();
+              ).drain<void>();
             });
           });
         }(),
@@ -170,7 +171,7 @@ void main() {
               await sp.query(
                 'UPDATE users SET name = ? WHERE id = ?',
                 ['Alice2', 1],
-              ).drain();
+              ).drain<void>();
             });
           });
         }(),

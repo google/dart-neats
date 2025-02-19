@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:typed_sql/adaptor/logging_adaptor.dart';
-import 'package:typed_sql/adaptor/sqlite.dart';
+import 'logging_adaptor.dart';
+import 'sqlite.dart';
 
 abstract base class DatabaseAdaptor extends QueryExecutor {
   /// Begin a transaction ad call [fn] before committing the transaction.
@@ -27,13 +27,12 @@ abstract base class DatabaseAdaptor extends QueryExecutor {
 
   Future<void> close({bool force = false});
 
-  static sqlite3(Uri uri) => sqlite3Adaptor(uri);
+  static DatabaseAdaptor sqlite3(Uri uri) => sqlite3Adaptor(uri);
 
   static DatabaseAdaptor withLogging(
     DatabaseAdaptor adaptor,
     void Function(String message) logDrain,
-  ) =>
-      loggingAdaptor(adaptor, logDrain);
+  ) => loggingAdaptor(adaptor, logDrain);
 }
 
 abstract base class DatabaseTransaction extends QueryExecutor {
