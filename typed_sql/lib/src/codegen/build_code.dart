@@ -52,6 +52,7 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
                   context: this,
                   tableName: '${table.name}',
                   columns: _\$${table.model.name}._\$fields,
+                  primaryKey: _\$${table.model.name}._\$primaryKey,
                   deserialize: _\$${table.model.name}.new,
                 )
               '''),
@@ -102,6 +103,15 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
           ..static = true
           ..modifier = FieldModifier.constant
           ..assignment = literal(model.fields.map((f) => f.name).toList()).code,
+      ))
+      ..fields.add(Field(
+        (b) => b
+          ..name = r'_$primaryKey'
+          ..static = true
+          ..modifier = FieldModifier.constant
+          ..assignment = literal(
+            model.primaryKey.map((f) => f.name).toList(),
+          ).code,
       ))
       ..methods.add(Method(
         (b) => b
@@ -358,11 +368,13 @@ extension on List<ParsedField> {
   Iterable<Parameter> get asOptionalNamedParameters => map((field) => Parameter(
         (b) => b
           ..name = field.name
-          ..type = TypeReference(
-            (b) => b
-              ..symbol = field.type
-              ..isNullable = true,
-          )
+          ..type = refer(field.nullable)
           ..named = true,
       ));
+}
+
+extension on ParsedField {
+  String get type => isNullable ? '$typeName?' : typeName;
+
+  String get nullable => '$typeName?';
 }

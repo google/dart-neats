@@ -24,6 +24,7 @@ sealed class Expr<T extends Object?> {
 
   Expr<T> _standin(int index, Object handle) => FieldExpression(index, handle);
 
+  static const null$ = Literal.null$;
   static const true$ = Literal.true$;
   static const false$ = Literal.false$;
 
@@ -43,17 +44,18 @@ final class ModelExpression<T extends Model> extends Expr<T> {
       ModelExpression(index, table, handle);
 
   @override
-  int get _columns => table._columns.length;
+  int get _columns => table._tableClause.columns.length;
 
   @override
   T _decode(Object? Function(int index) get) => table._deserialize(get);
 
   Expr<R> field<R>(int index) {
-    if (index < 0 || index >= table._columns.length) {
+    if (index < 0 || index >= table._tableClause.columns.length) {
       throw ArgumentError.value(
         index,
         'index',
-        'Table "${table._tableName}" does not have a field at index $index',
+        'Table "${table._tableClause.name}" does not have a field '
+            'at index $index',
       );
     }
     return FieldExpression(this.index + index, handle);
@@ -79,12 +81,16 @@ final class Literal<T> extends Expr<T> {
   //       whether a literal is encoded as value or constant
   //       If we do this, we might have rename Literal to Value!
 
+  static const null$ = Literal._(null);
   static const true$ = Literal._(true);
   static const false$ = Literal._(false);
 
   const Literal._(this.value) : super._();
 
   factory Literal(T value) {
+    if (value == null) {
+      return null$ as Literal<T>;
+    }
     if (value is bool) {
       if (value) {
         return true$ as Literal<T>;
@@ -100,7 +106,8 @@ final class Literal<T> extends Expr<T> {
       throw ArgumentError.value(
         value,
         'value',
-        'Only String, int, double, bool and DateTime literals are allowed',
+        'Only String, int, double, bool, null, and DateTime '
+            'literals are allowed',
       );
     }
     return Literal._(value);

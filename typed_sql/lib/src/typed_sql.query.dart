@@ -56,12 +56,11 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
   @override
   final QueryClause Function(List<Expr> expressions) _from;
 
-  final String _tableName;
-  final List<String> _columns;
   final T Function(Object? Function(int index) get) _deserialize;
+  final TableClause _tableClause;
 
-  Table._(super._context, this._tableName, this._columns, this._deserialize)
-      : _from = ((_) => TableClause._(_tableName, _columns)),
+  Table._(super.context, this._tableClause, this._deserialize)
+      : _from = ((_) => _tableClause),
         super._();
 }
 
@@ -119,7 +118,8 @@ final class TableClause extends QueryClause {
   /// Name of table
   final String name;
   final List<String> columns;
-  TableClause._(this.name, this.columns);
+  final List<String> primaryKey;
+  TableClause._(this.name, this.columns, this.primaryKey);
 }
 
 /*
@@ -194,7 +194,7 @@ extension QueryModel<A extends Model> on Query<(Expr<A>,)> {
 
     final from = _from(_expressions.toList());
     final (sql, params) = _context._dialect.delete(
-      DeleteStatement._(TableClause._(table._tableName, table._columns), from),
+      DeleteStatement._(table._tableClause, from),
     );
 
     await _context._db.query(sql, params).drain<void>();

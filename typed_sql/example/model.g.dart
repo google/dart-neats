@@ -12,6 +12,7 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'users',
         columns: _$User._$fields,
+        primaryKey: _$User._$primaryKey,
         deserialize: _$User.new,
       );
 
@@ -20,6 +21,7 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'likes',
         columns: _$Like._$fields,
+        primaryKey: _$Like._$primaryKey,
         deserialize: _$Like.new,
       );
 
@@ -28,6 +30,7 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'packages',
         columns: _$Package._$fields,
+        primaryKey: _$Package._$primaryKey,
         deserialize: _$Package.new,
       );
 }
@@ -47,6 +50,8 @@ final class _$User extends User {
     'userId',
     'email',
   ];
+
+  static const _$primaryKey = ['userId'];
 
   @override
   String toString() => 'User(userId: "$userId", email: "$email")';
@@ -189,6 +194,8 @@ final class _$Package extends Package {
 
   static const _$fields = ['name'];
 
+  static const _$primaryKey = ['name'];
+
   @override
   String toString() => 'Package(name: "$name")';
 }
@@ -303,6 +310,11 @@ final class _$Like extends Like {
   late final packageName = _$get(1) as String;
 
   static const _$fields = [
+    'userId',
+    'packageName',
+  ];
+
+  static const _$primaryKey = [
     'userId',
     'packageName',
   ];

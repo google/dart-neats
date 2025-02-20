@@ -44,6 +44,7 @@ void _test(
       await db.packages.create(
         packageName: 'foo',
         likes: 2,
+        publisher: null,
         ownerId: 1,
       );
       await db.likes.create(userId: 1, packageName: 'foo');
@@ -64,6 +65,7 @@ void main() {
     await db.packages.insert(
       packageName: literal('bar'),
       likes: literal(0),
+      publisher: literal(null),
       ownerId: literal(2),
     );
   });

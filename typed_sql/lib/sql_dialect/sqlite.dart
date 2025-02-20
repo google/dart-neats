@@ -51,7 +51,11 @@ final class _Sqlite extends SqlDialect {
               (i, column) => '$column = (${expr(statement.values[i], c)})',
             )
             .join(', '),
-        'WHERE (${statement.table.columns.map(escape).join(', ')}) IN ($sql)',
+        'WHERE EXISTS (SELECT TRUE FROM ($sql) AS _subq WHERE',
+        statement.table.primaryKey
+            .map((f) => '$alias.${escape(f)} = _subq.${escape(f)}')
+            .join(', '),
+        ')',
       ].join(' '),
       params,
     );
@@ -64,8 +68,12 @@ final class _Sqlite extends SqlDialect {
 
     return (
       [
-        'DELETE FROM ${escape(statement.table.name)}',
-        'WHERE (${statement.table.columns.map(escape).join(', ')}) IN ($sql)'
+        'DELETE FROM ${escape(statement.table.name)} as _topq',
+        'WHERE EXISTS (SELECT TRUE FROM ($sql) AS _subq WHERE',
+        statement.table.primaryKey
+            .map((f) => '_topq.${escape(f)} = _subq.${escape(f)}')
+            .join(', '),
+        ')',
       ].join(' '),
       params,
     );

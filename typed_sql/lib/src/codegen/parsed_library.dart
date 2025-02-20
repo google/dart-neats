@@ -58,12 +58,14 @@ final class ParsedModel {
 
 final class ParsedField {
   final String name;
-  final String type;
+  final String typeName;
+  final bool isNullable;
   final bool unique;
 
   ParsedField({
     required this.name,
-    required this.type,
+    required this.typeName,
+    required this.isNullable,
     required this.unique,
   });
 }

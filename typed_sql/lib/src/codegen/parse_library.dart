@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart' show log;
 import 'package:collection/collection.dart';
@@ -38,7 +39,7 @@ final _primaryKeyTypeChecker = TypeChecker.fromUrl(
   _typedSqlSrcUri.resolve('#PrimaryKey'),
 );
 
-final _dateTimeTypeChecker = TypeChecker.fromUrl('dart:core#DateTime');
+final _dateTimeTypeChecker = const TypeChecker.fromUrl('dart:core#DateTime');
 
 Future<ParsedLibrary> parseLibrary(LibraryReader library) async {
   // Cache models when parsing, this saves time, but more importantly ensures
@@ -214,7 +215,8 @@ ParsedModel _parseModel(ClassElement cls) {
 
     fields.add(ParsedField(
       name: a.name,
-      type: type,
+      typeName: type,
+      isNullable: returnType.nullabilitySuffix != NullabilitySuffix.none,
       // TODO: Support Unique(given: [...])
       unique: _uniqueTypeChecker.hasAnnotationOf(a),
     ));
@@ -250,6 +252,25 @@ ParsedModel _parseModel(ClassElement cls) {
     }
     return field;
   }).toList();
+
+  if (primaryKey.isEmpty) {
+    throw InvalidGenerationSource(
+      'subclasses of `Model` must have a non-empty `PrimaryKey` annotation',
+      element: cls,
+    );
+  }
+  if (primaryKey.length != primaryKey.toSet().length) {
+    throw InvalidGenerationSource(
+      'subclasses of `Model` cannot have duplicate fields in `PrimaryKey`',
+      element: cls,
+    );
+  }
+  if (primaryKey.any((f) => f.isNullable)) {
+    throw InvalidGenerationSource(
+      'PrimaryKey fields cannot be nullable',
+      element: cls,
+    );
+  }
 
   return ParsedModel(
     name: cls.name,

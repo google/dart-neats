@@ -57,19 +57,24 @@ final class ExposedForCodeGen {
     required DatabaseContext context,
     required String tableName,
     required List<String> columns,
+    required List<String> primaryKey,
     required T Function(Object? Function(int index) get) deserialize,
   }) =>
-      Table._(context, tableName, columns, deserialize);
+      Table._(
+        context,
+        TableClause._(tableName, columns, primaryKey),
+        deserialize,
+      );
 
   static Future<T> insertInto<T extends Model>({
     required Table<T> table,
     required List<Expr> values,
   }) async {
     final (sql, params) = table._context._dialect.insertInto(InsertStatement._(
-      table._tableName,
-      table._columns,
+      table._tableClause.name,
+      table._tableClause.columns,
       values,
-      table._columns,
+      table._tableClause.columns,
     ));
     final returned = await table._context._query(sql, params).first;
     return table._deserialize((i) => returned[i]);
@@ -90,8 +95,8 @@ final class ExposedForCodeGen {
 
     final (sql, params) = table._context._dialect.update(
       UpdateStatement._(
-        TableClause._(table._tableName, table._columns),
-        table._columns
+        table._tableClause,
+        table._tableClause.columns
             .whereIndexed((index, value) => values[index] != null)
             .toList(),
         values.nonNulls.toList(),

@@ -12,6 +12,7 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'users',
         columns: _$User._$fields,
+        primaryKey: _$User._$primaryKey,
         deserialize: _$User.new,
       );
 
@@ -20,6 +21,7 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'packages',
         columns: _$Package._$fields,
+        primaryKey: _$Package._$primaryKey,
         deserialize: _$Package.new,
       );
 
@@ -28,6 +30,7 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         context: this,
         tableName: 'likes',
         columns: _$Like._$fields,
+        primaryKey: _$Like._$primaryKey,
         deserialize: _$Like.new,
       );
 }
@@ -51,6 +54,8 @@ final class _$User extends User {
     'name',
     'email',
   ];
+
+  static const _$primaryKey = ['userId'];
 
   @override
   String toString() =>
@@ -215,15 +220,21 @@ final class _$Package extends Package {
   @override
   late final ownerId = _$get(2) as int;
 
+  @override
+  late final publisher = _$get(3) as String?;
+
   static const _$fields = [
     'packageName',
     'likes',
     'ownerId',
+    'publisher',
   ];
+
+  static const _$primaryKey = ['packageName'];
 
   @override
   String toString() =>
-      'Package(packageName: "$packageName", likes: "$likes", ownerId: "$ownerId")';
+      'Package(packageName: "$packageName", likes: "$likes", ownerId: "$ownerId", publisher: "$publisher")';
 }
 
 extension TablePackageExt on Table<Package> {
@@ -232,6 +243,7 @@ extension TablePackageExt on Table<Package> {
     required String packageName,
     required int likes,
     required int ownerId,
+    required String? publisher,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
@@ -239,6 +251,7 @@ extension TablePackageExt on Table<Package> {
           literal(packageName),
           literal(likes),
           literal(ownerId),
+          literal(publisher),
         ],
       );
 
@@ -247,6 +260,7 @@ extension TablePackageExt on Table<Package> {
     required Expr<String> packageName,
     required Expr<int> likes,
     required Expr<int> ownerId,
+    required Expr<String?> publisher,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
@@ -254,6 +268,7 @@ extension TablePackageExt on Table<Package> {
           packageName,
           likes,
           ownerId,
+          publisher,
         ],
       );
 
@@ -275,6 +290,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
               Expr<String> packageName,
               Expr<int> likes,
               Expr<int> ownerId,
+              Expr<String?> publisher,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Package>(
@@ -285,11 +301,13 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
             Expr<String>? packageName,
             Expr<int>? likes,
             Expr<int>? ownerId,
+            Expr<String?>? publisher,
           }) =>
               ExposedForCodeGen.buildUpdate<Package>([
             packageName,
             likes,
             ownerId,
+            publisher,
           ]),
         ),
       );
@@ -300,6 +318,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
     String? packageName,
     int? likes,
     int? ownerId,
+    String? publisher,
   }) =>
       ExposedForCodeGen.update<Package>(
         this,
@@ -307,6 +326,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
           packageName != null ? literal(packageName) : null,
           likes != null ? literal(likes) : null,
           ownerId != null ? literal(ownerId) : null,
+          publisher != null ? literal(publisher) : null,
         ]),
       );
 }
@@ -320,6 +340,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
               Expr<String> packageName,
               Expr<int> likes,
               Expr<int> ownerId,
+              Expr<String?> publisher,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Package>(
@@ -330,11 +351,13 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
             Expr<String>? packageName,
             Expr<int>? likes,
             Expr<int>? ownerId,
+            Expr<String?>? publisher,
           }) =>
               ExposedForCodeGen.buildUpdate<Package>([
             packageName,
             likes,
             ownerId,
+            publisher,
           ]),
         ),
       );
@@ -345,6 +368,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
     String? packageName,
     int? likes,
     int? ownerId,
+    String? publisher,
   }) =>
       ExposedForCodeGen.update<Package>(
         asQuery,
@@ -352,6 +376,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
           packageName != null ? literal(packageName) : null,
           likes != null ? literal(likes) : null,
           ownerId != null ? literal(ownerId) : null,
+          publisher != null ? literal(publisher) : null,
         ]),
       );
 }
@@ -365,6 +390,9 @@ extension ExpressionPackageExt on Expr<Package> {
 
   /// TODO: document ownerId
   Expr<int> get ownerId => ExposedForCodeGen.field(this, 2);
+
+  /// TODO: document publisher
+  Expr<String?> get publisher => ExposedForCodeGen.field(this, 3);
 }
 
 final class _$Like extends Like {
@@ -379,6 +407,11 @@ final class _$Like extends Like {
   late final packageName = _$get(1) as String;
 
   static const _$fields = [
+    'userId',
+    'packageName',
+  ];
+
+  static const _$primaryKey = [
     'userId',
     'packageName',
   ];

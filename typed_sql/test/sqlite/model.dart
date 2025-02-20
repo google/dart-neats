@@ -40,6 +40,8 @@ abstract final class Package extends Model {
 
   // TODO: Support references!
   int get ownerId;
+
+  String? get publisher;
 }
 
 @PrimaryKey(['userId', 'packageName'])
@@ -68,6 +70,7 @@ extension DatabaseAdaptorExtensions on DatabaseAdaptor {
         'packageName TEXT NOT NULL',
         'likes INTEGER NOT NULL',
         'ownerId INTEGER NOT NULL',
+        'publisher TEXT',
         'PRIMARY KEY (packageName)',
         'FOREIGN KEY (ownerId) REFERENCES users(userId)',
       ].join(', ')})''',
