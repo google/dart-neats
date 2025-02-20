@@ -241,6 +241,9 @@ final class _Sqlite extends SqlDialect {
   ) =>
       switch (e) {
         FieldExpression<T>() => ctx.field(e),
+        Literal.false$ => 'FALSE',
+        Literal.true$ => 'TRUE',
+        Literal.null$ => 'NULL',
         Literal<T>(value: final value) => ctx.parameter(value),
         final BinaryOperationExpression e =>
           '( ${expr(e.left, ctx)} ${e.operator} ${expr(e.right, ctx)} )',

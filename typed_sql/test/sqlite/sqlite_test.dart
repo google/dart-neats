@@ -355,4 +355,15 @@ void main() {
     expect(packageName, equals('foo'));
     expect(ownerId, equals(1));
   });
+
+  // TODO: Support operators on nullable values!
+  /*_test('db.packages.where(publisher == null).select()', (db) async {
+    final result = await db.packages
+        .where((p) => p.publisher.equals(Expr.null$))
+        .select((p) => (p.packageName,))
+        .fetch()
+        .toList();
+    expect(result, contains('foo'));
+    expect(result, hasLength(1));
+  });*/
 }
