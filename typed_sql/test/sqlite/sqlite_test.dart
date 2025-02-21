@@ -356,6 +356,43 @@ void main() {
     expect(ownerId, equals(1));
   });
 
+  _test('db.packages.select(db.users.where().select().first)', (db) async {
+    final result = await db.packages
+        .select(
+          (p) => (
+            p,
+            db.users
+                .where((u) => u.userId.equals(p.ownerId))
+                .select((u) => (u.name,))
+                .first
+                .asExpr
+          ),
+        )
+        .fetch()
+        .toList();
+    expect(result, hasLength(1));
+    final (p, name) = result[0];
+    expect(p.packageName, equals('foo'));
+    expect(name, equals('Alice'));
+  });
+
+  _test('db.packages.select(db.users.where().first)', (db) async {
+    final result = await db.packages
+        .select(
+          (p) => (
+            p,
+            // This isn't efficient, but we can do it!
+            db.users.where((u) => u.userId.equals(p.ownerId)).first.asExpr,
+          ),
+        )
+        .fetch()
+        .toList();
+    expect(result, hasLength(1));
+    final (p, user) = result[0];
+    expect(p.packageName, equals('foo'));
+    expect(user.name, equals('Alice'));
+  });
+
   // TODO: Support operators on nullable values!
   /*_test('db.packages.where(publisher == null).select()', (db) async {
     final result = await db.packages

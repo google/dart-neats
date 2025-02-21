@@ -28,20 +28,39 @@ sealed class Expr<T extends Object?> {
   static const true$ = Literal.true$;
   static const false$ = Literal.false$;
 
+  Expr<R> _field<R>(int index) =>
+      // This should never happen!
+      throw AssertionError('Only Expr<Model> can have fields');
+
   static Literal<T> literal<T extends Object?>(T value) => Literal(value);
 }
 
 Literal<T> literal<T extends Object?>(T value) => Literal(value);
 
-final class ModelExpression<T extends Model> extends Expr<T> {
+/// An expression that consists of multiple values.
+///
+/// Expression that forms a tuple or represents a model.
+sealed class MultiValueExpression<T> extends Expr<T> {
+  /// Return list of subexpressions for the underlying values.
+  List<Expr<Object?>> explode();
+
+  MultiValueExpression._() : super._();
+}
+
+extension<T extends Model> on Query<(Expr<T>,)> {
+  Table<T> get table => switch (_expressions.$1) {
+        final ModelFieldExpression<T> e => e.table,
+        _ => throw AssertionError('Expr<Model> must be ModelExpression'),
+      };
+}
+
+sealed class ModelExpression<T extends Model> extends MultiValueExpression<T> {
   // TODO: These should be private!
   final Table<T> table;
-  final int index;
-  final Object handle;
 
   @override
   Expr<T> _standin(int index, Object handle) =>
-      ModelExpression(index, table, handle);
+      ModelFieldExpression(index, table, handle);
 
   @override
   int get _columns => table._tableClause.columns.length;
@@ -49,7 +68,28 @@ final class ModelExpression<T extends Model> extends Expr<T> {
   @override
   T _decode(Object? Function(int index) get) => table._deserialize(get);
 
-  Expr<R> field<R>(int index) {
+  @override
+  List<Expr<Object?>> explode() => List.generate(_columns, _field);
+
+  ModelExpression._(this.table) : super._();
+}
+
+final class ModelFieldExpression<T extends Model> extends ModelExpression<T> {
+  // TODO: These should be private!
+  final int index;
+  final Object handle;
+
+  @override
+  Expr<T> _standin(int index, Object handle) =>
+      ModelFieldExpression(index, table, handle);
+
+  @override
+  int get _columns => table._tableClause.columns.length;
+
+  @override
+  T _decode(Object? Function(int index) get) => table._deserialize(get);
+
+  Expr<R> _field<R>(int index) {
     if (index < 0 || index >= table._tableClause.columns.length) {
       throw ArgumentError.value(
         index,
@@ -61,7 +101,35 @@ final class ModelExpression<T extends Model> extends Expr<T> {
     return FieldExpression(this.index + index, handle);
   }
 
-  ModelExpression(this.index, this.table, this.handle) : super._();
+  @override
+  List<Expr<Object?>> explode() => List.generate(_columns, _field);
+
+  ModelFieldExpression(this.index, super.table, this.handle) : super._();
+}
+
+final class ModelSubQueryExpression<T extends Model>
+    extends ModelExpression<T> {
+  final QueryClause query;
+
+  Expr<R> _field<R>(int index) {
+    if (index < 0 || index >= table._tableClause.columns.length) {
+      throw ArgumentError.value(
+        index,
+        'index',
+        'Table "${table._tableClause.name}" does not have a field '
+            'at index $index',
+      );
+    }
+
+    final handle = Object();
+    return SubQueryExpression._(SelectClause._(
+      query,
+      handle,
+      [FieldExpression(index, handle)],
+    ));
+  }
+
+  ModelSubQueryExpression._(this.query, super.table) : super._();
 }
 
 final class FieldExpression<T> extends Expr<T> {
@@ -70,6 +138,12 @@ final class FieldExpression<T> extends Expr<T> {
   final Object handle;
 
   FieldExpression(this.index, this.handle) : super._();
+}
+
+final class SubQueryExpression<T> extends Expr<T> {
+  final QueryClause query;
+
+  SubQueryExpression._(this.query) : super._();
 }
 
 final class Literal<T> extends Expr<T> {

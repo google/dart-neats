@@ -18,8 +18,11 @@ abstract final class Query<T extends Record> {
   QueryClause Function(List<Expr> expressions) get _from;
 
   Query._(this._context);
+
+  // TODO: Consider a toString method!
 }
 
+// TODO: Consider making this an instance of Query
 final class _Query<T extends Record> extends Query<T> {
   @override
   final T _expressions;
@@ -51,7 +54,8 @@ final class View<T extends Record> extends Query<T> {
 
 final class Table<T extends Model> extends Query<(Expr<T>,)> {
   @override
-  late final (Expr<T>,) _expressions = (ModelExpression(0, this, Object()),);
+  late final (Expr<T>,) _expressions =
+      (ModelFieldExpression(0, this, Object()),);
 
   @override
   final QueryClause Function(List<Expr> expressions) _from;
@@ -183,12 +187,23 @@ final class OffsetClause extends FromClause {
 
 /* --------------------- Query extensions ---------------------- */
 
-// DELETE and UPDATE is only possible for a single column, where the columns is
-// model!
-extension QueryModel<A extends Model> on Query<(Expr<A>,)> {
+extension QuerySingleModel1AsExpr<T extends Model> on QuerySingle<(Expr<T>,)> {
+  Expr<T> get asExpr => ModelSubQueryExpression._(
+        _query._from(_query._expressions.toList()),
+        _query.table,
+      );
+}
+
+extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
+  Expr<T> get asExpr => SubQueryExpression._(
+        _query._from(_query._expressions.toList()),
+      );
+}
+
+extension QueryModel<T extends Model> on Query<(Expr<T>,)> {
   Future<void> delete() async {
     final table = switch (_expressions.$1) {
-      final ModelExpression e => e.table,
+      final ModelFieldExpression e => e.table,
       _ => throw AssertionError('Expr<Model> must be a ModelExpression'),
     };
 
@@ -201,7 +216,7 @@ extension QueryModel<A extends Model> on Query<(Expr<A>,)> {
   }
 }
 
-extension QuerySingleModel<A extends Model> on QuerySingle<(Expr<A>,)> {
+extension QuerySingleModel<T extends Model> on QuerySingle<(Expr<T>,)> {
   Future<void> delete() async => await asQuery.delete();
 }
 
@@ -223,7 +238,7 @@ abstract final class QueryContext {
     return _parameters.length;
   }
 
-  List<String> model(ModelExpression model);
+  List<String> model(ModelFieldExpression model);
 
   String field(FieldExpression field);
 
@@ -258,8 +273,14 @@ final class _AliasedQueryContext extends QueryContext {
   ) : super._();
 
   @override
-  List<String> model(ModelExpression model) {
-    throw UnimplementedError();
+  List<String> model(ModelFieldExpression model) {
+    if (model.handle == _handle) {
+      return List.generate(
+        model._columns,
+        (i) => 't$_depth.${_columns[i]}',
+      ).toList();
+    }
+    return _parent.model(model);
   }
 
   @override
@@ -284,7 +305,7 @@ final class _RootQueryContext extends QueryContext {
   }
 
   @override
-  List<String> model(ModelExpression<Model> model) {
+  List<String> model(ModelFieldExpression<Model> model) {
     throw ArgumentError.value(
       model,
       'model',

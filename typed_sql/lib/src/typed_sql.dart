@@ -84,10 +84,7 @@ final class ExposedForCodeGen {
     Query<(Expr<T>,)> query,
     Update<T> Function(Expr<T> row) updateBuilder,
   ) async {
-    final table = switch (query._expressions.$1) {
-      final ModelExpression e => e.table,
-      _ => throw AssertionError('Expr<Model> must be ModelExpression'),
-    };
+    final table = query.table;
 
     final handle = Object();
     final row = query._expressions.$1._standin(0, handle);
@@ -125,9 +122,5 @@ final class ExposedForCodeGen {
     Expr<M> row,
     int index,
   ) =>
-      switch (row) {
-        final ModelExpression row => row.field(index),
-        // This can't actually happen
-        _ => throw AssertionError('Expr<Model> must be a ModelExpression'),
-      };
+      row._field(index);
 }

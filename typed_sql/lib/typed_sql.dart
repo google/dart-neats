@@ -53,7 +53,7 @@ export 'src/typed_sql.dart'
         InsertStatement,
         JoinClause,
         LimitClause,
-        ModelExpression,
+        ModelFieldExpression,
         OffsetClause,
         OrderByClause,
         QueryClause,

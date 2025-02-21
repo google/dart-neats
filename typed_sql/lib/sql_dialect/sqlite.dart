@@ -158,9 +158,12 @@ final class _Sqlite extends SqlDialect {
         final explodedProjection = <String>[];
         final aliases = <String>[];
         for (final (i, e) in projection.indexed) {
-          if (e is ModelExpression) {
-            for (final (j, field) in c.model(e).indexed) {
-              explodedProjection.add(field);
+          // TODO: Avoid is ModelExpression, instead let's introspec if it's a
+          //       multi-column expression or not. Or possibly just treat all
+          //       expressions as multi-column!
+          if (e is MultiValueExpression) {
+            for (final (j, sube) in e.explode().indexed) {
+              explodedProjection.add('(${expr(sube, c)})');
               aliases.add('c_${i}_$j');
             }
           } else {
@@ -204,7 +207,7 @@ final class _Sqlite extends SqlDialect {
         // TODO: Handle ModelExpression in orderBy, this probably means order by
         //       the elements given in the primary key! This isn't particularly
         //       hard to do. We just need to find a way through.
-        if (orderBy is ModelExpression) {
+        if (orderBy is ModelFieldExpression) {
           throw UnsupportedError('OrderBy primaryKey is not yet supported!');
         }
         return (
@@ -241,6 +244,7 @@ final class _Sqlite extends SqlDialect {
   ) =>
       switch (e) {
         FieldExpression<T>() => ctx.field(e),
+        SubQueryExpression<T>(:final query) => '(${clause(query, ctx).$1})',
         Literal.false$ => 'FALSE',
         Literal.true$ => 'TRUE',
         Literal.null$ => 'NULL',
@@ -264,7 +268,7 @@ final class _Sqlite extends SqlDialect {
           'UPPER( ${expr(value, ctx)} )',
         ExpressionStringToLowerCase(value: final value) =>
           'LOWER( ${expr(value, ctx)} )',
-        ModelExpression<Model>() => throw UnsupportedError(
+        MultiValueExpression<Model>() => throw UnsupportedError(
             'ModelExpression cannot be used as expressions!',
           )
       };
