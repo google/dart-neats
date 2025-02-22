@@ -39,6 +39,9 @@ final class Database<T extends Schema> extends DatabaseContext<T> {
       return await fn(Transaction._(tx, _dialect));
     });
   }
+
+  Query<S> select<S extends Record>(S expressions) =>
+      _Query(this, expressions, SelectClause._);
 }
 
 final class Transaction<T extends Schema> extends DatabaseContext<T> {

@@ -51,7 +51,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
     return _Query(
       _context,
       projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -119,7 +119,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     return _Query(
       _context,
       projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -190,7 +190,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     return _Query(
       _context,
       projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -269,7 +269,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     return _Query(
       _context,
       projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -356,7 +356,7 @@ extension Query5<A, B, C, D, E>
     return _Query(
       _context,
       projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -458,7 +458,7 @@ extension Query6<A, B, C, D, E, F>
     return _Query(
       _context,
       projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -564,7 +564,7 @@ extension Query7<A, B, C, D, E, F, G>
     return _Query(
       _context,
       projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
     );
   }
 
@@ -701,7 +701,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     return _Query(
       _context,
       projection,
-      (e) => SelectClause._(_from(_expressions.toList()), handle, e),
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
     );
   }
 

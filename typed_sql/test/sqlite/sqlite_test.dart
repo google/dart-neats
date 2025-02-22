@@ -407,6 +407,18 @@ void main() {
     print(result);
   });
 
+  _test('db.select(true, "hello world", 42)', (db) async {
+    final result = await db
+        .select((
+          literal(true),
+          literal('hello world'),
+          literal(42),
+        ))
+        .fetch()
+        .toList();
+    expect(result, equals([(true, 'hello world', 42)]));
+  });
+
   /*
   _test('db.users.select(db.packages.where().isNotEmpty)', (db) async {
     final result = await db.users

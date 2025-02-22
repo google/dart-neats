@@ -152,7 +152,7 @@ final class _Sqlite extends SqlDialect {
           columns,
         );
 
-      case SelectClause(:final from, :final projection):
+      case SelectFromClause(:final from, :final projection):
         final (sql, columns) = clause(from, ctx);
         final (a, c) = ctx.alias(q, columns);
         final explodedProjection = <String>[];
@@ -234,6 +234,16 @@ final class _Sqlite extends SqlDialect {
             ...columns1.mapIndexed((i, c) => 't1_$i'),
             ...columns2.mapIndexed((i, c) => 't2_$i'),
           ]
+        );
+      case SelectClause(:final expressions):
+        return (
+          [
+            'SELECT',
+            expressions
+                .mapIndexed((i, e) => '( ${expr(e, ctx)} ) AS c_$i')
+                .join(','),
+          ].join(' '),
+          expressions.mapIndexed((i, e) => 'c_$i').toList(),
         );
     }
   }

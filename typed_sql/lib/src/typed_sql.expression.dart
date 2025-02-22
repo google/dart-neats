@@ -136,7 +136,7 @@ final class ModelSubQueryExpression<T extends Model>
     }
 
     final handle = Object();
-    return SubQueryExpression._(SelectClause._(
+    return SubQueryExpression._(SelectFromClause._(
       query,
       handle,
       [FieldExpression(index, handle)],

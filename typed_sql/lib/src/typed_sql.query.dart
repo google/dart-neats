@@ -126,6 +126,11 @@ final class TableClause extends QueryClause {
   TableClause._(this.name, this.columns, this.primaryKey);
 }
 
+final class SelectClause extends QueryClause {
+  final List<Expr> expressions;
+  SelectClause._(this.expressions);
+}
+
 /*
 final class ViewClause extends QueryClause {
   /// Name of view
@@ -147,11 +152,11 @@ abstract final class ExpressionContext {
   Object get _handle;
 }
 
-final class SelectClause extends FromClause implements ExpressionContext {
+final class SelectFromClause extends FromClause implements ExpressionContext {
   @override
   final Object _handle;
   final List<Expr> projection;
-  SelectClause._(super.from, this._handle, this.projection) : super._();
+  SelectFromClause._(super.from, this._handle, this.projection) : super._();
 }
 
 final class WhereClause extends FromClause implements ExpressionContext {
