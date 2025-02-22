@@ -115,7 +115,7 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
   }
 
   @override
-  Stream<List<Object?>> query(String sql, List<Object?> params) async* {
+  Stream<RowReader> query(String sql, List<Object?> params) async* {
     final conn = await _getConnection();
     try {
       yield* _query(conn, sql, params);
@@ -124,7 +124,7 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
     }
   }
 
-  Stream<List<Object?>> _query(
+  Stream<RowReader> _query(
     Database conn,
     String sql,
     List<Object?> params,
@@ -136,7 +136,7 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
         final cursor = stmt.selectCursor(params);
         while (cursor.moveNext()) {
           _throwIfClosed();
-          yield cursor.current.values;
+          yield _SqliteRowReader(cursor.current);
         }
       } finally {
         stmt.dispose();
@@ -170,7 +170,7 @@ mixin _SqliteDatabaseTransactionBase {
   Database get _conn;
   _SqliteDatabaseAdaptor get _adaptor;
 
-  Stream<List<Object?>> query(String sql, List<Object?> params) async* {
+  Stream<RowReader> query(String sql, List<Object?> params) async* {
     yield* _adaptor._query(_conn, sql, params);
   }
 
@@ -209,6 +209,28 @@ final class _SqliteDatabaseSavePoint extends DatabaseSavePoint
   final _SqliteDatabaseAdaptor _adaptor;
 
   _SqliteDatabaseSavePoint._(this._conn, this._adaptor);
+}
+
+final class _SqliteRowReader extends RowReader {
+  int _i = 0;
+  final Row _row;
+
+  _SqliteRowReader(this._row);
+
+  @override
+  bool? readBool() => _row.values[_i++] != 0;
+
+  @override
+  DateTime? readDateTime() => _row.values[_i++] as DateTime?;
+
+  @override
+  double? readDouble() => _row.values[_i++] as double?;
+
+  @override
+  int? readInt() => _row.values[_i++] as int?;
+
+  @override
+  String? readString() => _row.values[_i++] as String?;
 }
 
 Never _throwSqliteException(SqliteException e) {

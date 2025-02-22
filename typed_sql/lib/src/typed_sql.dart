@@ -58,7 +58,7 @@ final class ExposedForCodeGen {
     required String tableName,
     required List<String> columns,
     required List<String> primaryKey,
-    required T Function(Object? Function(int index) get) deserialize,
+    required T Function(RowReader) deserialize,
   }) =>
       Table._(
         context,
@@ -77,7 +77,7 @@ final class ExposedForCodeGen {
       table._tableClause.columns,
     ));
     final returned = await table._context._query(sql, params).first;
-    return table._deserialize((i) => returned[i]);
+    return table._deserialize(returned);
   }
 
   static Future<void> update<T extends Model>(

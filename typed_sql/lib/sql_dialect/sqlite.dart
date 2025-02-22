@@ -270,7 +270,8 @@ final class _Sqlite extends SqlDialect {
           'LOWER( ${expr(value, ctx)} )',
         MultiValueExpression<Model>() => throw UnsupportedError(
             'ModelExpression cannot be used as expressions!',
-          )
+          ),
+        ExistsExpression(:final query) => 'EXISTS (${clause(query, ctx).$1})',
       };
 }
 

@@ -33,7 +33,7 @@ final class _LoggingDatabaseAdaptor extends DatabaseAdaptor {
   }
 
   @override
-  Stream<List<Object?>> query(String sql, List<Object?> params) async* {
+  Stream<RowReader> query(String sql, List<Object?> params) async* {
     _log('db.query("$sql", [${params.join(', ')}])');
     yield* _adaptor.query(sql, params);
   }
@@ -56,7 +56,7 @@ final class _LoggingDatabaseTransaction extends DatabaseTransaction {
   _LoggingDatabaseTransaction(this._tx, this._log);
 
   @override
-  Stream<List<Object?>> query(String sql, List<Object?> params) async* {
+  Stream<RowReader> query(String sql, List<Object?> params) async* {
     _log('tx.query("$sql", [${params.join(', ')}])');
     yield* _tx.query(sql, params);
   }
@@ -77,7 +77,7 @@ final class _LoggingDatabaseSavePoint extends DatabaseSavePoint {
   _LoggingDatabaseSavePoint(this._sp, this._log);
 
   @override
-  Stream<List<Object?>> query(String sql, List<Object?> params) async* {
+  Stream<RowReader> query(String sql, List<Object?> params) async* {
     _log('sp.query("$sql", [${params.join(', ')}])');
     yield* _sp.query(sql, params);
   }

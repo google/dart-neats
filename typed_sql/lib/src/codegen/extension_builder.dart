@@ -295,13 +295,33 @@ Spec _buildQueryExtension(int i) => Extension(
             ..body = Code('Join._(this, query)'),
         ))
 
+        // Expr<bool> get isEmpty => ExistsExpression._(_from(_expressions.toList()));
+        // Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
+        ..methods.add(Method(
+          (b) => b
+            ..name = 'isEmpty'
+            ..returns = refer('Expr<bool>')
+            ..type = MethodType.getter
+            ..lambda = true
+            ..body = Code('''
+            isNotEmpty.not()
+          '''),
+        ))
+        ..methods.add(Method(
+          (b) => b
+            ..name = 'isNotEmpty'
+            ..returns = refer('Expr<bool>')
+            ..type = MethodType.getter
+            ..lambda = true
+            ..body = Code('''
+            ExistsExpression._(_from(_expressions.toList()))
+          '''),
+        ))
+
         //   Stream<(A, B, C)> fetch() async* {
         //     final from = _from(_expressions.toList());
-        //     final offset1 = 0;
         //     final decode1 = _expressions.$1._decode;
-        //     final offset2 = offset1 + _expressions.$1._columns;
         //     final decode2 = _expressions.$2._decode;
-        //     final offset3 = offset2 + _expressions.$2._columns;
         //     final decode3 = _expressions.$3._decode;
         //
         //     final (sql, columns, params) = _context._dialect.select(
@@ -310,9 +330,9 @@ Spec _buildQueryExtension(int i) => Extension(
         //
         //     await for (final row in _context._db.query(sql, params)) {
         //       yield (
-        //         decode1((i) => row[offset1 + i]),
-        //         decode2((i) => row[offset2 + i]),
-        //         decode3((i) => row[offset3 + i]),
+        //         decode1(row),
+        //         decode2(row),
+        //         decode3(row),
         //       );
         //     }
         //   }
@@ -326,21 +346,15 @@ Spec _buildQueryExtension(int i) => Extension(
             ..modifier = MethodModifier.asyncStar
             ..body = Code([
               'final from = _from(_expressions.toList());',
-              'final offset1 = 0;',
               ...List.generate(
                 i,
-                (i) => [
-                  'final decode${i + 1} = _expressions.\$${i + 1}._decode;',
-                  'final offset${i + 2} = offset${i + 1} + _expressions.\$${i + 1}._columns;',
-                ],
-              ).flattened.take(i * 2 - 1),
+                (i) =>
+                    'final decode${i + 1} = _expressions.\$${i + 1}._decode;',
+              ),
               'final (sql, columns, params) = _context._dialect.select(SelectStatement._(from));',
               'await for (final row in _context._db.query(sql, params)) {',
               'yield (',
-              List.generate(
-                i,
-                (i) => 'decode${i + 1}((i) => row[offset${i + 1} + i])',
-              ).join(','),
+              List.generate(i, (i) => 'decode${i + 1}(row)').join(','),
               ');',
               '}',
             ].join('')),

@@ -20,7 +20,7 @@ sealed class DatabaseContext<T extends Schema> {
   final SqlDialect _dialect;
   QueryExecutor get _db;
 
-  Stream<List<Object?>> _query(String sql, List<Object?> params) =>
+  Stream<RowReader> _query(String sql, List<Object?> params) =>
       _db.query(sql, params);
 }
 

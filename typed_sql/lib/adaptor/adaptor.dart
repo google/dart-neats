@@ -69,7 +69,15 @@ abstract final class QueryExecutor {
   ///  * `null`
   ///  * [Map<String, Object?>], [List<Object?>], [String], [int],
   ///    [double], [bool], `null` (for JSON).
-  Stream<List<Object?>> query(String sql, List<Object?> params);
+  Stream<RowReader> query(String sql, List<Object?> params);
+}
+
+abstract base class RowReader {
+  String? readString();
+  int? readInt();
+  double? readDouble();
+  bool? readBool();
+  DateTime? readDateTime();
 }
 
 sealed class DatabaseException implements Exception {}

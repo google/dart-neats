@@ -36,18 +36,19 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
 }
 
 final class _$User extends User {
-  _$User(this._$get);
-
-  final Object? Function(int index) _$get;
-
-  @override
-  late final userId = _$get(0) as int;
+  _$User(RowReader row)
+      : userId = row.readInt()!,
+        name = row.readString()!,
+        email = row.readString()!;
 
   @override
-  late final name = _$get(1) as String;
+  final int userId;
 
   @override
-  late final email = _$get(2) as String;
+  final String name;
+
+  @override
+  final String email;
 
   static const _$fields = [
     'userId',
@@ -207,21 +208,23 @@ extension ExpressionUserExt on Expr<User> {
 }
 
 final class _$Package extends Package {
-  _$Package(this._$get);
-
-  final Object? Function(int index) _$get;
-
-  @override
-  late final packageName = _$get(0) as String;
-
-  @override
-  late final likes = _$get(1) as int;
+  _$Package(RowReader row)
+      : packageName = row.readString()!,
+        likes = row.readInt()!,
+        ownerId = row.readInt()!,
+        publisher = row.readString();
 
   @override
-  late final ownerId = _$get(2) as int;
+  final String packageName;
 
   @override
-  late final publisher = _$get(3) as String?;
+  final int likes;
+
+  @override
+  final int ownerId;
+
+  @override
+  final String? publisher;
 
   static const _$fields = [
     'packageName',
@@ -396,15 +399,15 @@ extension ExpressionPackageExt on Expr<Package> {
 }
 
 final class _$Like extends Like {
-  _$Like(this._$get);
-
-  final Object? Function(int index) _$get;
-
-  @override
-  late final userId = _$get(0) as int;
+  _$Like(RowReader row)
+      : userId = row.readInt()!,
+        packageName = row.readString()!;
 
   @override
-  late final packageName = _$get(1) as String;
+  final int userId;
+
+  @override
+  final String packageName;
 
   static const _$fields = [
     'userId',

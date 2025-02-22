@@ -60,7 +60,7 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
   @override
   final QueryClause Function(List<Expr> expressions) _from;
 
-  final T Function(Object? Function(int index) get) _deserialize;
+  final T Function(RowReader) _deserialize;
   final TableClause _tableClause;
 
   Table._(super.context, this._tableClause, this._deserialize)

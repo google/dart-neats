@@ -57,14 +57,15 @@ extension Query1<A> on Query<(Expr<A>,)> {
 
   Join<(Expr<A>,), T> join<T extends Record>(Query<T> query) =>
       Join._(this, query);
+  Expr<bool> get isEmpty => isNotEmpty.not();
+  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
   Stream<A> fetch() async* {
     final from = _from(_expressions.toList());
-    final offset1 = 0;
     final decode1 = _expressions.$1._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield (decode1((i) => row[offset1 + i]));
+      yield (decode1(row));
     }
   }
 }
@@ -124,19 +125,16 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
 
   Join<(Expr<A>, Expr<B>), T> join<T extends Record>(Query<T> query) =>
       Join._(this, query);
+  Expr<bool> get isEmpty => isNotEmpty.not();
+  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
   Stream<(A, B)> fetch() async* {
     final from = _from(_expressions.toList());
-    final offset1 = 0;
     final decode1 = _expressions.$1._decode;
-    final offset2 = offset1 + _expressions.$1._columns;
     final decode2 = _expressions.$2._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield (
-        decode1((i) => row[offset1 + i]),
-        decode2((i) => row[offset2 + i])
-      );
+      yield (decode1(row), decode2(row));
     }
   }
 }
@@ -198,22 +196,17 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
 
   Join<(Expr<A>, Expr<B>, Expr<C>), T> join<T extends Record>(Query<T> query) =>
       Join._(this, query);
+  Expr<bool> get isEmpty => isNotEmpty.not();
+  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
   Stream<(A, B, C)> fetch() async* {
     final from = _from(_expressions.toList());
-    final offset1 = 0;
     final decode1 = _expressions.$1._decode;
-    final offset2 = offset1 + _expressions.$1._columns;
     final decode2 = _expressions.$2._decode;
-    final offset3 = offset2 + _expressions.$2._columns;
     final decode3 = _expressions.$3._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield (
-        decode1((i) => row[offset1 + i]),
-        decode2((i) => row[offset2 + i]),
-        decode3((i) => row[offset3 + i])
-      );
+      yield (decode1(row), decode2(row), decode3(row));
     }
   }
 }
@@ -283,25 +276,18 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), T> join<T extends Record>(
           Query<T> query) =>
       Join._(this, query);
+  Expr<bool> get isEmpty => isNotEmpty.not();
+  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
   Stream<(A, B, C, D)> fetch() async* {
     final from = _from(_expressions.toList());
-    final offset1 = 0;
     final decode1 = _expressions.$1._decode;
-    final offset2 = offset1 + _expressions.$1._columns;
     final decode2 = _expressions.$2._decode;
-    final offset3 = offset2 + _expressions.$2._columns;
     final decode3 = _expressions.$3._decode;
-    final offset4 = offset3 + _expressions.$3._columns;
     final decode4 = _expressions.$4._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield (
-        decode1((i) => row[offset1 + i]),
-        decode2((i) => row[offset2 + i]),
-        decode3((i) => row[offset3 + i]),
-        decode4((i) => row[offset4 + i])
-      );
+      yield (decode1(row), decode2(row), decode3(row), decode4(row));
     }
   }
 }
@@ -377,27 +363,24 @@ extension Query5<A, B, C, D, E>
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), T> join<T extends Record>(
           Query<T> query) =>
       Join._(this, query);
+  Expr<bool> get isEmpty => isNotEmpty.not();
+  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
   Stream<(A, B, C, D, E)> fetch() async* {
     final from = _from(_expressions.toList());
-    final offset1 = 0;
     final decode1 = _expressions.$1._decode;
-    final offset2 = offset1 + _expressions.$1._columns;
     final decode2 = _expressions.$2._decode;
-    final offset3 = offset2 + _expressions.$2._columns;
     final decode3 = _expressions.$3._decode;
-    final offset4 = offset3 + _expressions.$3._columns;
     final decode4 = _expressions.$4._decode;
-    final offset5 = offset4 + _expressions.$4._columns;
     final decode5 = _expressions.$5._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + i]),
-        decode2((i) => row[offset2 + i]),
-        decode3((i) => row[offset3 + i]),
-        decode4((i) => row[offset4 + i]),
-        decode5((i) => row[offset5 + i])
+        decode1(row),
+        decode2(row),
+        decode3(row),
+        decode4(row),
+        decode5(row)
       );
     }
   }
@@ -481,30 +464,26 @@ extension Query6<A, B, C, D, E, F>
 
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), T>
       join<T extends Record>(Query<T> query) => Join._(this, query);
+  Expr<bool> get isEmpty => isNotEmpty.not();
+  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
   Stream<(A, B, C, D, E, F)> fetch() async* {
     final from = _from(_expressions.toList());
-    final offset1 = 0;
     final decode1 = _expressions.$1._decode;
-    final offset2 = offset1 + _expressions.$1._columns;
     final decode2 = _expressions.$2._decode;
-    final offset3 = offset2 + _expressions.$2._columns;
     final decode3 = _expressions.$3._decode;
-    final offset4 = offset3 + _expressions.$3._columns;
     final decode4 = _expressions.$4._decode;
-    final offset5 = offset4 + _expressions.$4._columns;
     final decode5 = _expressions.$5._decode;
-    final offset6 = offset5 + _expressions.$5._columns;
     final decode6 = _expressions.$6._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + i]),
-        decode2((i) => row[offset2 + i]),
-        decode3((i) => row[offset3 + i]),
-        decode4((i) => row[offset4 + i]),
-        decode5((i) => row[offset5 + i]),
-        decode6((i) => row[offset6 + i])
+        decode1(row),
+        decode2(row),
+        decode3(row),
+        decode4(row),
+        decode5(row),
+        decode6(row)
       );
     }
   }
@@ -591,33 +570,28 @@ extension Query7<A, B, C, D, E, F, G>
 
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T>
       join<T extends Record>(Query<T> query) => Join._(this, query);
+  Expr<bool> get isEmpty => isNotEmpty.not();
+  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
   Stream<(A, B, C, D, E, F, G)> fetch() async* {
     final from = _from(_expressions.toList());
-    final offset1 = 0;
     final decode1 = _expressions.$1._decode;
-    final offset2 = offset1 + _expressions.$1._columns;
     final decode2 = _expressions.$2._decode;
-    final offset3 = offset2 + _expressions.$2._columns;
     final decode3 = _expressions.$3._decode;
-    final offset4 = offset3 + _expressions.$3._columns;
     final decode4 = _expressions.$4._decode;
-    final offset5 = offset4 + _expressions.$4._columns;
     final decode5 = _expressions.$5._decode;
-    final offset6 = offset5 + _expressions.$5._columns;
     final decode6 = _expressions.$6._decode;
-    final offset7 = offset6 + _expressions.$6._columns;
     final decode7 = _expressions.$7._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + i]),
-        decode2((i) => row[offset2 + i]),
-        decode3((i) => row[offset3 + i]),
-        decode4((i) => row[offset4 + i]),
-        decode5((i) => row[offset5 + i]),
-        decode6((i) => row[offset6 + i]),
-        decode7((i) => row[offset7 + i])
+        decode1(row),
+        decode2(row),
+        decode3(row),
+        decode4(row),
+        decode5(row),
+        decode6(row),
+        decode7(row)
       );
     }
   }
@@ -733,36 +707,30 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
 
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
       T> join<T extends Record>(Query<T> query) => Join._(this, query);
+  Expr<bool> get isEmpty => isNotEmpty.not();
+  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
   Stream<(A, B, C, D, E, F, G, H)> fetch() async* {
     final from = _from(_expressions.toList());
-    final offset1 = 0;
     final decode1 = _expressions.$1._decode;
-    final offset2 = offset1 + _expressions.$1._columns;
     final decode2 = _expressions.$2._decode;
-    final offset3 = offset2 + _expressions.$2._columns;
     final decode3 = _expressions.$3._decode;
-    final offset4 = offset3 + _expressions.$3._columns;
     final decode4 = _expressions.$4._decode;
-    final offset5 = offset4 + _expressions.$4._columns;
     final decode5 = _expressions.$5._decode;
-    final offset6 = offset5 + _expressions.$5._columns;
     final decode6 = _expressions.$6._decode;
-    final offset7 = offset6 + _expressions.$6._columns;
     final decode7 = _expressions.$7._decode;
-    final offset8 = offset7 + _expressions.$7._columns;
     final decode8 = _expressions.$8._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1((i) => row[offset1 + i]),
-        decode2((i) => row[offset2 + i]),
-        decode3((i) => row[offset3 + i]),
-        decode4((i) => row[offset4 + i]),
-        decode5((i) => row[offset5 + i]),
-        decode6((i) => row[offset6 + i]),
-        decode7((i) => row[offset7 + i]),
-        decode8((i) => row[offset8 + i])
+        decode1(row),
+        decode2(row),
+        decode3(row),
+        decode4(row),
+        decode5(row),
+        decode6(row),
+        decode7(row),
+        decode8(row)
       );
     }
   }

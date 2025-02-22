@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'adaptor/adaptor.dart' show DatabaseAdaptor;
+export 'adaptor/adaptor.dart' show DatabaseAdaptor, RowReader;
 export 'src/typed_sql.dart'
     hide
         BinaryOperationExpression,

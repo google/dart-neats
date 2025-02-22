@@ -393,6 +393,85 @@ void main() {
     expect(user.name, equals('Alice'));
   });
 
+  _test('db.users.select(db.packages.where().isNotEmpty)', (db) async {
+    final result = await db.users
+        .select(
+          (u) => (
+            u,
+            u.name.equalsLiteral('Alice'),
+          ),
+        )
+        .fetch()
+        .toList();
+    expect(result, hasLength(2));
+    print(result);
+  });
+
+  /*
+  _test('db.users.select(db.packages.where().isNotEmpty)', (db) async {
+    final result = await db.users
+        .select(
+          (u) => (
+            u,
+            db.packages.where((p) => p.ownerId.equals(u.userId)).isNotEmpty,
+          ),
+        )
+        .fetch()
+        .toList();
+    expect(result, hasLength(2));
+    final (user1, hasPackage1) = result[0];
+    final (user2, hasPackage2) = result[1];
+    expect(user1.name, equals('Alice'));
+    expect(hasPackage1, isTrue);
+    expect(user2.name, equals('Bob'));
+    expect(hasPackage2, isFalse);
+  });
+
+
+  _test('db.users.select(db.packages.where().isEmpty)', (db) async {
+    final result = await db.users
+        .select(
+          (u) => (
+            u,
+            db.packages.where((p) => p.ownerId.equals(u.userId)).isEmpty,
+          ),
+        )
+        .fetch()
+        .toList();
+    expect(result, hasLength(2));
+    final (user1, hasPackage1) = result[0];
+    final (user2, hasPackage2) = result[1];
+    expect(user1.name, equals('Alice'));
+    expect(hasPackage1, isFalse);
+    expect(user2.name, equals('Bob'));
+    expect(hasPackage2, isTrue);
+  });
+*/
+  _test('db.users.where(db.packages.where().isEmpty)', (db) async {
+    final result = await db.users
+        .where(
+          (u) => db.packages.where((p) => p.ownerId.equals(u.userId)).isEmpty,
+        )
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(result, hasLength(1));
+    expect(result, contains('Bob'));
+  });
+
+  _test('db.users.where(db.packages.where().isNotEmpty)', (db) async {
+    final result = await db.users
+        .where(
+          (u) =>
+              db.packages.where((p) => p.ownerId.equals(u.userId)).isNotEmpty,
+        )
+        .select((u) => (u.name,))
+        .fetch()
+        .toList();
+    expect(result, hasLength(1));
+    expect(result, contains('Alice'));
+  });
+
   // TODO: Support operators on nullable values!
   /*_test('db.packages.where(publisher == null).select()', (db) async {
     final result = await db.packages

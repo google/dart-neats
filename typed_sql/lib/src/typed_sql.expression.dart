@@ -20,7 +20,21 @@ sealed class Expr<T extends Object?> {
   const Expr._();
 
   int get _columns => 1;
-  T _decode(Object? Function(int index) get) => get(0) as T;
+  T _decode(RowReader row) {
+    return switch (this) {
+      Expr<bool>() => row.readBool() as T,
+      Expr<DateTime>() => row.readDateTime() as T,
+      Expr<double>() => row.readDouble() as T,
+      Expr<int>() => row.readInt() as T,
+      Expr<String>() => row.readString() as T,
+      Expr<bool?>() => row.readBool() as T,
+      Expr<DateTime?>() => row.readDateTime() as T,
+      Expr<double?>() => row.readDouble() as T,
+      Expr<int?>() => row.readInt() as T,
+      Expr<String?>() => row.readString() as T,
+      _ => throw AssertionError('Expr<T> must be bool, DateTime')
+    };
+  }
 
   Expr<T> _standin(int index, Object handle) => FieldExpression(index, handle);
 
@@ -66,7 +80,7 @@ sealed class ModelExpression<T extends Model> extends MultiValueExpression<T> {
   int get _columns => table._tableClause.columns.length;
 
   @override
-  T _decode(Object? Function(int index) get) => table._deserialize(get);
+  T _decode(RowReader row) => table._deserialize(row);
 
   @override
   List<Expr<Object?>> explode() => List.generate(_columns, _field);
@@ -87,7 +101,7 @@ final class ModelFieldExpression<T extends Model> extends ModelExpression<T> {
   int get _columns => table._tableClause.columns.length;
 
   @override
-  T _decode(Object? Function(int index) get) => table._deserialize(get);
+  T _decode(RowReader row) => table._deserialize(row);
 
   Expr<R> _field<R>(int index) {
     if (index < 0 || index >= table._tableClause.columns.length) {
@@ -144,6 +158,11 @@ final class SubQueryExpression<T> extends Expr<T> {
   final QueryClause query;
 
   SubQueryExpression._(this.query) : super._();
+}
+
+final class ExistsExpression extends Expr<bool> {
+  final QueryClause query;
+  ExistsExpression._(this.query) : super._();
 }
 
 final class Literal<T> extends Expr<T> {

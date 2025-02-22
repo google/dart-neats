@@ -42,6 +42,11 @@ Future<void> insertAliceBob(DatabaseAdaptor db) async {
   ).drain<void>();
 }
 
+extension on Stream<RowReader> {
+  Future<List<List<Object?>>> toIntStr() async =>
+      (await toList()).map((row) => [row.readInt(), row.readString()]).toList();
+}
+
 void main() {
   _test('insert', (db) async {
     await insertAliceBob(db);
@@ -50,7 +55,7 @@ void main() {
   _test('select', (db) async {
     await insertAliceBob(db);
 
-    final users = await db.query('SELECT id, name FROM users', []).toList();
+    final users = await db.query('SELECT id, name FROM users', []).toIntStr();
     expect(users.firstWhere((u) => u[0] == 1), [1, 'Alice']);
     expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob']);
   });
@@ -63,7 +68,7 @@ void main() {
       ['Bob Builder', 2],
     ).drain<void>();
 
-    final users = await db.query('SELECT id, name FROM users', []).toList();
+    final users = await db.query('SELECT id, name FROM users', []).toIntStr();
     expect(users.firstWhere((u) => u[0] == 1), [1, 'Alice']);
     expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob Builder']);
   });
@@ -73,7 +78,7 @@ void main() {
 
     await db.query('DELETE FROM users WHERE id = ?', [1]).drain<void>();
 
-    final users = await db.query('SELECT id, name FROM users', []).toList();
+    final users = await db.query('SELECT id, name FROM users', []).toIntStr();
     expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob']);
     expect(users, hasLength(1));
   });
@@ -85,7 +90,7 @@ void main() {
       await tx.query('DELETE FROM users WHERE id = ?', [1]).drain<void>();
     });
 
-    final users = await db.query('SELECT id, name FROM users', []).toList();
+    final users = await db.query('SELECT id, name FROM users', []).toIntStr();
     expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob']);
     expect(users, hasLength(1));
   });
@@ -134,7 +139,7 @@ void main() {
       });
     });
 
-    final users = await db.query('SELECT id, name FROM users', []).toList();
+    final users = await db.query('SELECT id, name FROM users', []).toIntStr();
     expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob']);
     expect(users, hasLength(1));
   });

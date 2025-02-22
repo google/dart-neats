@@ -73,29 +73,34 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
       ..name = '_\$$modelName'
       ..modifier = ClassModifier.final$
       ..extend = refer(model.name)
-      ..fields.add(Field(
-        (b) => b
-          ..name = r'_$get'
-          ..modifier = FieldModifier.final$
-          ..type = refer('Object? Function(int index)'),
-      ))
       ..constructors.add(Constructor(
         (b) => b
           ..requiredParameters.add(
             Parameter(
               (b) => b
-                ..name = r'_$get'
-                ..toThis = true,
+                ..name = 'row'
+                ..type = refer('RowReader'),
             ),
-          ),
+          )
+          ..initializers.addAll(model.fields.map(
+            (field) => Code('${field.name} = row.${switch (field.typeName) {
+              'String' => 'readString',
+              'int' => 'readInt',
+              'double' => 'readDouble',
+              'bool' => 'readBool',
+              'DateTime' => 'readDateTime',
+              _ => throw UnsupportedError(
+                  'Unsupported type "${field.typeName}"',
+                ),
+            }}()${field.isNullable ? '' : '!'}'),
+          )),
       ))
       ..fields.addAll(model.fields.mapIndexed((i, field) => Field(
             (b) => b
               ..name = field.name
               ..annotations.add(refer('override'))
-              ..modifier = FieldModifier.final$
-              ..late = true
-              ..assignment = Code('_\$get($i) as ${field.type}'),
+              ..type = refer(field.type)
+              ..modifier = FieldModifier.final$,
           )))
       ..fields.add(Field(
         (b) => b
