@@ -40,8 +40,8 @@ final class Database<T extends Schema> extends DatabaseContext<T> {
     });
   }
 
-  Query<S> select<S extends Record>(S expressions) =>
-      _Query(this, expressions, SelectClause._);
+  QuerySingle<S> select<S extends Record>(S expressions) =>
+      QuerySingle._(_Query(this, expressions, SelectClause._));
 }
 
 final class Transaction<T extends Schema> extends DatabaseContext<T> {

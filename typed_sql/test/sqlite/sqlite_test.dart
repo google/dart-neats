@@ -404,22 +404,94 @@ void main() {
         .fetch()
         .toList();
     expect(result, hasLength(2));
-    print(result);
   });
 
   _test('db.select(true, "hello world", 42)', (db) async {
-    final result = await db
-        .select((
-          literal(true),
-          literal('hello world'),
-          literal(42),
-        ))
-        .fetch()
-        .toList();
-    expect(result, equals([(true, 'hello world', 42)]));
+    final result = await db.select((
+      literal(true),
+      literal('hello world'),
+      literal(42),
+    )).fetch();
+    expect(result, equals((true, 'hello world', 42)));
   });
 
-  /*
+  _test('db.select(true && false)', (db) async {
+    final result = await db.select(
+      (literal(true) & literal(false),),
+    ).fetch();
+    expect(result, isFalse);
+  });
+
+  _test('db.select(true || false)', (db) async {
+    final result = await db.select(
+      (literal(true) | literal(false),),
+    ).fetch();
+    expect(result, isTrue);
+  });
+
+  _test('db.select(true.not)', (db) async {
+    final result = await db.select(
+      (literal(true).not(),),
+    ).fetch();
+    expect(result, isFalse);
+  });
+
+  _test('db.select(true.not())', (db) async {
+    final result = await db.select(
+      (literal(true).not(),),
+    ).fetch();
+    expect(result, isFalse);
+  });
+
+  _test('db.select(true.and(false))', (db) async {
+    final result = await db.select(
+      (literal(true).and(literal(false)),),
+    ).fetch();
+    expect(result, isFalse);
+  });
+
+  _test('db.select(true.or(false))', (db) async {
+    final result = await db.select(
+      (literal(true).or(literal(false)),),
+    ).fetch();
+    expect(result, isTrue);
+  });
+
+  _test('db.select(42.add(1))', (db) async {
+    final result = await db.select(
+      (literal(42).add(literal(1)),),
+    ).fetch();
+    expect(result, equals(43));
+  });
+
+  _test('db.select(42.subtract(1))', (db) async {
+    final result = await db.select(
+      (literal(42).subtract(literal(1)),),
+    ).fetch();
+    expect(result, equals(41));
+  });
+
+  _test('db.select(42.multiply(2))', (db) async {
+    final result = await db.select(
+      (literal(42).multiply(literal(2)),),
+    ).fetch();
+    expect(result, equals(84));
+  });
+
+  _test('db.select(42.divide(2))', (db) async {
+    final result = await db.select(
+      (literal(42).divide(literal(2)),),
+    ).fetch();
+    expect(result, equals(21));
+  });
+
+  _test('db.select(42.equals(42))', (db) async {
+    final result = await db.select(
+      (literal(42).equals(literal(42)),),
+    ).fetch();
+    expect(result, isTrue);
+  });
+
   _test('db.users.select(db.packages.where().isNotEmpty)', (db) async {
     final result = await db.users
         .select(
@@ -439,7 +511,6 @@ void main() {
     expect(hasPackage2, isFalse);
   });
 
-
   _test('db.users.select(db.packages.where().isEmpty)', (db) async {
     final result = await db.users
         .select(
@@ -458,7 +529,7 @@ void main() {
     expect(user2.name, equals('Bob'));
     expect(hasPackage2, isTrue);
   });
-*/
+
   _test('db.users.where(db.packages.where().isEmpty)', (db) async {
     final result = await db.users
         .where(
