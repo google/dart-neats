@@ -597,6 +597,34 @@ void main() {
     expect(result, equals(3));
   });
 
+  _test('db.likes.countAll()', (db) async {
+    final result = await db.likes.countAll().fetch();
+    expect(result, equals(2));
+  });
+
+  _test('db.likes.select().countAll()', (db) async {
+    final result =
+        await db.likes.select((l) => (l.packageName,)).countAll().fetch();
+    expect(result, equals(2));
+  });
+
+  _test('db.likes.where().select().count()', (db) async {
+    final result = await db.likes
+        .where((l) => l.packageName.equalsLiteral('bar'))
+        .select((l) => (l.packageName,))
+        .count()
+        .fetch();
+    expect(result, equals(0));
+  });
+
+  _test('db.likes.select().count(distinct: true)', (db) async {
+    final result = await db.likes
+        .select((l) => (l.packageName,))
+        .count(distinct: true)
+        .fetch();
+    expect(result, equals(1));
+  });
+
   // TODO: Support operators on nullable values!
   /*_test('db.packages.where(publisher == null).select()', (db) async {
     final result = await db.packages

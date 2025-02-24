@@ -46,6 +46,8 @@ extension Query1<A> on Query<(Expr<A>,)> {
         (e) => OffsetClause._(_from(e), offset),
       );
   QuerySingle<(Expr<A>,)> get first => QuerySingle._(limit(1));
+  QuerySingle<(Expr<int>,)> countAll() =>
+      select((a) => (CountAllExpression._(),)).first;
   Query<T> select<T extends Record>(T Function(Expr<A> a) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
     return _Query(
@@ -65,7 +67,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield (decode1(row));
+      yield decode1(row);
     }
   }
 }
@@ -113,6 +115,8 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         (e) => OffsetClause._(_from(e), offset),
       );
   QuerySingle<(Expr<A>, Expr<B>)> get first => QuerySingle._(limit(1));
+  QuerySingle<(Expr<int>,)> countAll() =>
+      select((a, b) => (CountAllExpression._(),)).first;
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -184,6 +188,8 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         (e) => OffsetClause._(_from(e), offset),
       );
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => QuerySingle._(limit(1));
+  QuerySingle<(Expr<int>,)> countAll() =>
+      select((a, b, c) => (CountAllExpression._(),)).first;
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -262,6 +268,8 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
       );
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get first =>
       QuerySingle._(limit(1));
+  QuerySingle<(Expr<int>,)> countAll() =>
+      select((a, b, c, d) => (CountAllExpression._(),)).first;
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           projectionBuilder) {
@@ -349,6 +357,8 @@ extension Query5<A, B, C, D, E>
       );
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get first =>
       QuerySingle._(limit(1));
+  QuerySingle<(Expr<int>,)> countAll() =>
+      select((a, b, c, d, e) => (CountAllExpression._(),)).first;
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           projectionBuilder) {
@@ -450,6 +460,8 @@ extension Query6<A, B, C, D, E, F>
       );
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
       get first => QuerySingle._(limit(1));
+  QuerySingle<(Expr<int>,)> countAll() =>
+      select((a, b, c, d, e, f) => (CountAllExpression._(),)).first;
   Query<T> select<T extends Record>(
       T Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -556,6 +568,8 @@ extension Query7<A, B, C, D, E, F, G>
       );
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get first => QuerySingle._(limit(1));
+  QuerySingle<(Expr<int>,)> countAll() =>
+      select((a, b, c, d, e, f, g) => (CountAllExpression._(),)).first;
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -693,6 +707,8 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         Expr<G>,
         Expr<H>
       )> get first => QuerySingle._(limit(1));
+  QuerySingle<(Expr<int>,)> countAll() =>
+      select((a, b, c, d, e, f, g, h) => (CountAllExpression._(),)).first;
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g, Expr<H> h)

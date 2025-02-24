@@ -251,6 +251,17 @@ Spec _buildQueryExtension(int i) => Extension(
           '''),
         ))
 
+        //   QuerySingle<(Expr<int>)> countAll() =>
+        ..methods.add(Method(
+          (b) => b
+            ..name = 'countAll'
+            ..returns = refer('QuerySingle<(Expr<int>,)>')
+            ..lambda = true
+            ..body = Code('''
+            select((${arg.take(i).join(',')}) => (CountAllExpression._(),)).first
+          '''),
+        ))
+
         //   Query<T> select<T extends Record>(
         //     T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder,
         //   ) {
@@ -355,9 +366,13 @@ Spec _buildQueryExtension(int i) => Extension(
               ),
               'final (sql, columns, params) = _context._dialect.select(SelectStatement._(from));',
               'await for (final row in _context._db.query(sql, params)) {',
-              'yield (',
-              List.generate(i, (i) => 'decode${i + 1}(row)').join(','),
-              ');',
+              if (i == 1) ...[
+                'yield decode1(row);',
+              ] else ...[
+                'yield (',
+                List.generate(i, (i) => 'decode${i + 1}(row)').join(','),
+                ');',
+              ],
               '}',
             ].join('')),
         )),

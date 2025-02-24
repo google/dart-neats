@@ -286,6 +286,9 @@ final class _Sqlite extends SqlDialect {
         AvgExpression<T>(:final value) => 'AVG(${expr(value, ctx)})',
         MinExpression<T>(:final value) => 'MIN(${expr(value, ctx)})',
         MaxExpression<T>(:final value) => 'MAX(${expr(value, ctx)})',
+        CountExpression(:final expression, :final distinct) =>
+          'COUNT(${distinct ? 'DISTINCT ' : ''} ${expr(expression, ctx)})',
+        CountAllExpression() => 'COUNT(*)',
       };
 }
 

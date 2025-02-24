@@ -19,7 +19,7 @@ builders:
   typed_sql:
     import: "package:typed_sql/builder.dart"
     builder_factories: ["typedSqlBuilder"]
-    build_extensions: {"$lib$": [".typed_sql.g.part"]}
+    build_extensions: {"$package$": [".typed_sql.g.part"]}
     auto_apply: dependents
     build_to: cache
     applies_builders: ["source_gen|combining_builder"]

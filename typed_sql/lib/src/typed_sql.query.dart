@@ -257,6 +257,11 @@ extension QueryString on Query<(Expr<String>,)> {
       select((a) => (MaxExpression._(a),)).first;
 }
 
+extension QueryOne<T> on Query<(Expr<T>,)> {
+  QuerySingle<(Expr<int>,)> count({bool distinct = false}) =>
+      select<(Expr<int>,)>((a) => (CountExpression._(a, distinct),)).first;
+}
+
 /* --------------------- Auxiliary utils for SQL rendering------------------- */
 
 abstract final class QueryContext {
