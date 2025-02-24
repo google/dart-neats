@@ -305,6 +305,7 @@ final class _Sqlite extends SqlDialect {
         MinExpression<Comparable>(:final value) => 'MIN(${expr(value, ctx)})',
         MaxExpression<Comparable>(:final value) => 'MAX(${expr(value, ctx)})',
         CountExpression(:final expression, :final distinct) =>
+          // TODO: If expression is MultiValueExpression pick primary key, or use CountAll
           'COUNT(${distinct ? 'DISTINCT ' : ''} ${expr(expression, ctx)})',
         CountAllExpression() => 'COUNT(*)',
       };
