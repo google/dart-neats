@@ -641,6 +641,26 @@ void main() {
     expect(result[0].packageName, anyOf(equals('foo'), equals('bar')));
   });
 
+  _test('db.packages.union(db.packages)', (db) async {
+    final result = await db.packages.union(db.packages).fetch().toList();
+    expect(result, hasLength(2));
+  });
+
+  _test('db.packages.unionAll(db.packages)', (db) async {
+    final result = await db.packages.unionAll(db.packages).fetch().toList();
+    expect(result, hasLength(4));
+  });
+
+  _test('db.packages.intersect(db.packages)', (db) async {
+    final result = await db.packages.intersect(db.packages).fetch().toList();
+    expect(result, hasLength(2));
+  });
+
+  _test('db.packages.except(db.packages)', (db) async {
+    final result = await db.packages.except(db.packages).fetch().toList();
+    expect(result, hasLength(0));
+  });
+
   // TODO: Support operators on nullable values!
   /*_test('db.packages.where(publisher == null).select()', (db) async {
     final result = await db.packages

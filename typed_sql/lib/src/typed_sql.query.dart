@@ -194,6 +194,29 @@ final class DistinctClause extends FromClause {
   DistinctClause._(super.from) : super._();
 }
 
+sealed class CompositeQueryClause extends QueryClause {
+  final QueryClause left;
+  final QueryClause right;
+  CompositeQueryClause._(this.left, this.right);
+}
+
+// make these subclass of composite queryclause
+final class UnionClause extends CompositeQueryClause {
+  UnionClause._(super.left, super.right) : super._();
+}
+
+final class UnionAllClause extends CompositeQueryClause {
+  UnionAllClause._(super.left, super.right) : super._();
+}
+
+final class IntersectClause extends CompositeQueryClause {
+  IntersectClause._(super.left, super.right) : super._();
+}
+
+final class ExceptClause extends CompositeQueryClause {
+  ExceptClause._(super.left, super.right) : super._();
+}
+
 /* --------------------- Query extensions ---------------------- */
 
 extension QuerySingleModel1AsExpr<T extends Model> on QuerySingle<(Expr<T>,)> {
@@ -269,6 +292,35 @@ extension QueryOne<T> on Query<(Expr<T>,)> {
 extension QueryAny<T extends Record> on Query<T> {
   Query<T> distinct() =>
       _Query(_context, _expressions, (e) => DistinctClause._(_from(e)));
+
+  Query<T> union(Query<T> other) => _Query(
+        _context,
+        _expressions,
+        (e) => UnionClause._(_from(e), other._from(e)),
+      );
+
+  Query<T> unionAll(Query<T> other) => _Query(
+        _context,
+        _expressions,
+        (e) => UnionAllClause._(_from(e), other._from(e)),
+      );
+
+  Query<T> intersect(Query<T> other) => _Query(
+        _context,
+        _expressions,
+        (e) => IntersectClause._(_from(e), other._from(e)),
+      );
+
+  Query<T> except(Query<T> other) => _Query(
+        _context,
+        _expressions,
+        (e) => ExceptClause._(_from(e), other._from(e)),
+      );
+
+  Query<T> operator +(Query<T> other) => unionAll(other);
+  Query<T> operator -(Query<T> other) => except(other);
+  Query<T> operator &(Query<T> other) => intersect(other);
+  Query<T> operator |(Query<T> other) => union(other);
 }
 
 /* --------------------- Auxiliary utils for SQL rendering------------------- */

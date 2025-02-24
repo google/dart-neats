@@ -253,6 +253,16 @@ final class _Sqlite extends SqlDialect {
           ].join(' '),
           expressions.mapIndexed((i, e) => 'c_$i').toList(),
         );
+
+      case CompositeQueryClause(:final left, :final right):
+        final (sql1, columns1) = clause(left, ctx);
+        final (sql2, columns2) = clause(right, ctx);
+        return (
+          'SELECT ${columns1.join(', ')} FROM ($sql1) '
+              '${q.operator} '
+              'SELECT ${columns2.join(', ')} FROM ($sql2)',
+          columns1
+        );
     }
   }
 
@@ -308,6 +318,15 @@ extension on QueryContext {
 }
 
 final _sqlSafe = RegExp(r'^[a-zA-Z][a-zA-Z0-9_]*$');
+
+extension on CompositeQueryClause {
+  String get operator => switch (this) {
+        UnionClause() => 'UNION',
+        UnionAllClause() => 'UNION ALL',
+        IntersectClause() => 'INTERSECT',
+        ExceptClause() => 'EXCEPT',
+      };
+}
 
 extension on BinaryOperationExpression {
   String get operator => switch (this) {
