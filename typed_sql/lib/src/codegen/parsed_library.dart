@@ -22,6 +22,12 @@ final class ParsedLibrary {
   });
 
   bool get isEmpty => schemas.isEmpty && models.isEmpty;
+
+  @override
+  String toString() => 'ParsedLibrary(${[
+        'schemas: [${schemas.join(', ')}]',
+        'models: [${models.join(', ')}]',
+      ].join(', ')})';
 }
 
 final class ParsedSchema {
@@ -32,6 +38,12 @@ final class ParsedSchema {
     required this.name,
     required this.tables,
   });
+
+  @override
+  String toString() => 'ParsedSchema(${[
+        'name: "$name"',
+        'tables: [${tables.join(', ')}]',
+      ].join(', ')})';
 }
 
 final class ParsedTable {
@@ -42,6 +54,12 @@ final class ParsedTable {
     required this.name,
     required this.model,
   });
+
+  @override
+  String toString() => 'ParsedTable(${[
+        'name: "$name"',
+        'model: $model',
+      ].join(', ')})';
 }
 
 final class ParsedModel {
@@ -54,6 +72,13 @@ final class ParsedModel {
     required this.primaryKey,
     required this.fields,
   });
+
+  @override
+  String toString() => 'ParsedModel(${[
+        'name: "$name"',
+        'primaryKey: [${primaryKey.map((f) => '"${f.name}"').join(', ')}]',
+        'fields: [${fields.map((f) => '"${f.name}"').join(', ')}]',
+      ].join(', ')})';
 }
 
 final class ParsedField {
@@ -68,4 +93,25 @@ final class ParsedField {
     required this.isNullable,
     required this.unique,
   });
+
+  @override
+  String toString() => 'ParsedField(${[
+        'name: "$name"',
+        'typeName: "$typeName"',
+        'isNullable: $isNullable',
+        'unique: $unique',
+      ].join(', ')})';
+}
+
+final class ParsedRecord {
+  final List<String> fields;
+
+  ParsedRecord({
+    required this.fields,
+  });
+
+  @override
+  String toString() => 'ParsedRecord(${[
+        'fields: [${fields.map((f) => '"$f"').join(', ')}]',
+      ].join(', ')})';
 }

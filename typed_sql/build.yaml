@@ -19,7 +19,7 @@ builders:
   typed_sql:
     import: "package:typed_sql/builder.dart"
     builder_factories: ["typedSqlBuilder"]
-    build_extensions: {".dart": [".typed_sql.g.part"]}
+    build_extensions: {"$lib$": [".typed_sql.g.part"]}
     auto_apply: dependents
     build_to: cache
     applies_builders: ["source_gen|combining_builder"]
@@ -35,9 +35,3 @@ builders:
     build_extensions: {".dart": [".typed_sql_extensions.g.part"]}
     build_to: cache
     applies_builders: ["source_gen|combining_builder"]
-
-#  typed_sql_extensions:
-#    import: "package:typed_sql/src/codegen/extension_builder.dart"
-#    builder_factories: ["typedSqlExtensionBuilder"]
-#    build_extensions: {"typed_sql.dart": ["typed_sql.extensions.dart"]}
-#    build_to: source

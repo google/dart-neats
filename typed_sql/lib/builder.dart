@@ -14,17 +14,21 @@
 
 import 'dart:async';
 
-import 'package:build/build.dart' show BuildStep, Builder, BuilderOptions, log;
+import 'package:build/build.dart'
+    show BuildStep, Builder, BuilderOptions, NonLibraryAssetException, log;
 import 'package:code_builder/code_builder.dart' as code;
+import 'package:glob/glob.dart';
 import 'package:source_gen/source_gen.dart' as g;
 
 import 'src/codegen/build_code.dart';
 import 'src/codegen/parse_library.dart';
+import 'src/codegen/record_parser.dart';
 
 /// A [Builder] that generates extension methods and classes for typed_sql.
 Builder typedSqlBuilder(BuilderOptions options) => g.SharedPartBuilder(
       [_TypedSqlBuilder(options)],
       'typed_sql',
+      allowSyntaxErrors: false,
     );
 
 Builder sqlSchemaBuilder(BuilderOptions options) => _SqlSchemaBuilder();
@@ -58,16 +62,41 @@ final class _TypedSqlBuilder extends g.Generator {
 
   @override
   Future<String?> generate(
-    g.LibraryReader libraryReader,
+    g.LibraryReader targetLibrary,
     BuildStep buildStep,
   ) async {
-    final library = await parseLibrary(libraryReader);
+    final library = await parseLibrary(targetLibrary);
     if (library.isEmpty) {
       return null;
     }
 
+    final recordParser = RecordParser();
+    await for (final input in buildStep.findAssets(Glob('**.dart'))) {
+      try {
+        final library = await buildStep.resolver.libraryFor(input);
+        // We only consider libraries that are importing the library we are
+        // generating for!
+        if (!library.importedLibraries.contains(targetLibrary.element)) {
+          continue;
+        }
+        final astNode = await buildStep.resolver.astNodeFor(
+          library.definingCompilationUnit,
+          resolve: true,
+        );
+        if (astNode != null) {
+          recordParser.parseRecords(astNode);
+        }
+      } on NonLibraryAssetException {
+        // pass
+      }
+    }
+
     return code.Library(
-      (b) => b.body..addAll(buildCode(library)),
+      (b) => b.body
+        ..addAll(buildCode(
+          library,
+          recordParser.canonicalizedParsedRecords(),
+        )),
     ).accept(code.DartEmitter(useNullSafetySyntax: true)).toString();
   }
 }

@@ -20,26 +20,7 @@ import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'parsed_library.dart';
-
-final _typedSqlSrcUri = Uri.parse('package:typed_sql/src/typed_sql.dart');
-
-final _schemaTypeChecker = TypeChecker.fromUrl(
-  _typedSqlSrcUri.resolve('#Schema'),
-);
-final _modelTypeChecker = TypeChecker.fromUrl(
-  _typedSqlSrcUri.resolve('#Model'),
-);
-final _tableTypeChecker = TypeChecker.fromUrl(
-  _typedSqlSrcUri.resolve('#Table'),
-);
-final _uniqueTypeChecker = TypeChecker.fromUrl(
-  _typedSqlSrcUri.resolve('#Unique'),
-);
-final _primaryKeyTypeChecker = TypeChecker.fromUrl(
-  _typedSqlSrcUri.resolve('#PrimaryKey'),
-);
-
-final _dateTimeTypeChecker = const TypeChecker.fromUrl('dart:core#DateTime');
+import 'type_checkers.dart';
 
 Future<ParsedLibrary> parseLibrary(LibraryReader library) async {
   // Cache models when parsing, this saves time, but more importantly ensures
@@ -49,7 +30,7 @@ Future<ParsedLibrary> parseLibrary(LibraryReader library) async {
   final schemas = library.classes
       .where((cls) {
         final supertype = cls.supertype;
-        return supertype != null && _schemaTypeChecker.isExactlyType(supertype);
+        return supertype != null && schemaTypeChecker.isExactlyType(supertype);
       })
       .map((cls) => _parseSchema(cls, modelCache))
       .toList();
@@ -57,7 +38,7 @@ Future<ParsedLibrary> parseLibrary(LibraryReader library) async {
   final models = library.classes
       .where((cls) {
         final supertype = cls.supertype;
-        return supertype != null && _modelTypeChecker.isExactlyType(supertype);
+        return supertype != null && modelTypeChecker.isExactlyType(supertype);
       })
       .map((cls) => modelCache.putIfAbsent(cls, () => _parseModel(cls)))
       .toList();
@@ -112,7 +93,7 @@ ParsedSchema _parseSchema(
     final returnTypeElement = returnType.element;
     if (returnType is! ParameterizedType ||
         returnTypeElement == null ||
-        !_tableTypeChecker.isExactly(returnTypeElement)) {
+        !tableTypeChecker.isExactly(returnTypeElement)) {
       throw InvalidGenerationSource(
         'subclasses of `Schema` can only have `Table` properties',
         element: a,
@@ -129,7 +110,7 @@ ParsedSchema _parseSchema(
     }
     final typeArgSupertype = typeArgElement.supertype;
     if (typeArgSupertype == null ||
-        !_modelTypeChecker.isExactlyType(typeArgSupertype)) {
+        !modelTypeChecker.isExactlyType(typeArgSupertype)) {
       throw InvalidGenerationSource(
         'T in `Table<T>` must be a subclass of `Model`',
         element: a,
@@ -199,7 +180,7 @@ ParsedModel _parseModel(ClassElement cls) {
       type = 'double';
     } else if (returnType.isDartCoreInt) {
       type = 'int';
-    } else if (_dateTimeTypeChecker.isExactlyType(returnType)) {
+    } else if (dateTimeTypeChecker.isExactlyType(returnType)) {
       type = 'DateTime';
     } else {
       // TODO: Add support for dart:typed_data fields
@@ -218,7 +199,7 @@ ParsedModel _parseModel(ClassElement cls) {
       typeName: type,
       isNullable: returnType.nullabilitySuffix != NullabilitySuffix.none,
       // TODO: Support Unique(given: [...])
-      unique: _uniqueTypeChecker.hasAnnotationOf(a),
+      unique: uniqueTypeChecker.hasAnnotationOf(a),
     ));
   }
   // Check number of fields, as we're using a 64 bit integer as (bitfield) to
@@ -231,7 +212,7 @@ ParsedModel _parseModel(ClassElement cls) {
   }
 
   // Extract primary key!
-  final pks = _primaryKeyTypeChecker.annotationsOfExact(cls);
+  final pks = primaryKeyTypeChecker.annotationsOfExact(cls);
   if (pks.isEmpty || pks.length > 1) {
     throw InvalidGenerationSource(
       'subclasses of `Model` must have one `PrimaryKey` annotation',

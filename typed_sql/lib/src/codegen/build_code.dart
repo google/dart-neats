@@ -15,15 +15,22 @@
 /// @docImport 'package:typed_sql/typed_sql.dart';
 library;
 
+// ignore_for_file: prefer_const_constructors
+
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 
 import '../utils/camelcase.dart';
 import 'parsed_library.dart';
+import 'type_args.dart';
 
-Iterable<Spec> buildCode(ParsedLibrary library) sync* {
+Iterable<Spec> buildCode(
+  ParsedLibrary library,
+  List<ParsedRecord> records,
+) sync* {
   yield* library.schemas.map(buildSchema).flattened;
   yield* library.models.map(buildModel).flattened;
+  yield* records.map(buildRecord).flattened;
 }
 
 /// Generate code for [Schema] subclass, parsed into [schema].
@@ -350,6 +357,176 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
               ..body = Code('ExposedForCodeGen.field(this, $i)'),
           ))),
   );
+}
+
+/// Generate code for using `Query<T>` where `T` is a named record!
+Iterable<Spec> buildRecord(ParsedRecord record) sync* {
+  final positionalQueryType =
+      refer('Query<${typArgedExprTuple(record.fields.length)}>');
+  final namedQueryType = refer('Query<${record.type}>');
+
+  yield Extension((b) => b
+    ..name = 'Query${record.fields.map(upperCamelCase).join('')}Named'
+    ..on = namedQueryType
+    ..types.addAll(typeArg.take(record.fields.length).map(refer))
+    ..methods.add(
+      Method(
+        (b) => b
+          ..name = '_asPositionalQuery'
+          ..returns = positionalQueryType
+          ..type = MethodType.getter
+          ..lambda = true
+          ..body = Code('''
+              ExposedForCodeGen.renamedRecord(this, (e) => (${record.fields.map(
+                    (f) => 'e.$f',
+                  ).join(', ')},))
+            '''),
+      ),
+    )
+    ..methods.add(Method(
+      (b) => b
+        ..name = '_fromPositionalQuery'
+        ..returns = namedQueryType
+        ..static = true
+        ..types.addAll(typeArg.take(record.fields.length).map(refer))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'query'
+            ..type = positionalQueryType,
+        ))
+        ..lambda = true
+        ..body = Code('''
+            ExposedForCodeGen.renamedRecord(query, (e) => (${record.fields.mapIndexed(
+                  (i, f) => '$f: e.\$${i + 1}',
+                ).join(', ')},))
+          '''),
+    ))
+    ..methods.add(Method(
+      (b) => b
+        ..name = '_wrapBuilder'
+        ..returns = refer(
+            'T Function(${typArgedExprArgumentList(record.fields.length)})')
+        ..static = true
+        ..types.add(refer('T'))
+        ..types.addAll(typeArg.take(record.fields.length).map(refer))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'builder'
+            ..type = refer('T Function(${record.type} e)'),
+        ))
+        ..lambda = true
+        ..body = Code('''
+            (${arg.take(record.fields.length).join(', ')}) =>
+              builder((${record.fields.mapIndexed((i, f) => '$f: ${arg[i]}').join(', ')},))
+          '''),
+    ))
+    ..methods.add(Method(
+      (b) => b
+        ..name = 'fetch'
+        ..returns = refer('Stream<${record.returnType}>')
+        ..modifier = MethodModifier.asyncStar
+        ..body = Code('''
+            yield* _asPositionalQuery.fetch().map((e) => (${record.fields.mapIndexed(
+                  (i, f) => '$f: e.\$${i + 1}',
+                ).join(', ')},));
+          '''),
+    ))
+    ..methods.add(Method(
+      (b) => b
+        ..name = 'offset'
+        ..returns = namedQueryType
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'offset'
+            ..type = refer('int'),
+        ))
+        ..lambda = true
+        ..body = Code('''
+            _fromPositionalQuery(_asPositionalQuery.offset(offset))
+          '''),
+    ))
+    ..methods.add(Method(
+      (b) => b
+        ..name = 'limit'
+        ..returns = namedQueryType
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'limit'
+            ..type = refer('int'),
+        ))
+        ..lambda = true
+        ..body = Code('''
+            _fromPositionalQuery(_asPositionalQuery.limit(limit))
+          '''),
+    ))
+    ..methods.add(Method(
+      (b) => b
+        ..name = 'select'
+        ..returns = refer('Query<T>')
+        ..types.add(refer('T extends Record'))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'projectionBuilder'
+            ..type = refer('T Function(${record.type} expr)'),
+        ))
+        ..lambda = true
+        ..body = Code(
+          '_asPositionalQuery.select(_wrapBuilder(projectionBuilder))',
+        ),
+    ))
+    ..methods.add(Method(
+      (b) => b
+        ..name = 'where'
+        ..returns = namedQueryType
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'conditionBuilder'
+            ..type = refer('Expr<bool> Function(${record.type} expr)'),
+        ))
+        ..lambda = true
+        ..body = Code('''
+            _fromPositionalQuery(_asPositionalQuery.where(
+              _wrapBuilder(conditionBuilder)
+            ))
+          '''),
+    ))
+    ..methods.add(Method(
+      (b) => b
+        ..name = 'orderBy'
+        ..returns = namedQueryType
+        ..types.add(refer('T'))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'expressionBuilder'
+            ..type = refer('Expr<T> Function(${record.type} expr)'),
+        ))
+        ..optionalParameters.add(Parameter(
+          (b) => b
+            ..name = 'descending'
+            ..required = false
+            ..named = true
+            ..type = refer('bool')
+            ..defaultTo = Code('false'),
+        ))
+        ..lambda = true
+        ..body = Code('''
+            _fromPositionalQuery(_asPositionalQuery.orderBy(
+              _wrapBuilder(expressionBuilder),
+              descending: descending,
+            ))
+          '''),
+      // TODO: Add first when QuerySingle is supported!
+    )));
+}
+
+extension on ParsedRecord {
+  String get type => '({${fields.mapIndexed(
+        (i, f) => 'Expr<${typeArg[i]}> $f',
+      ).join(', ')},})';
+
+  String get returnType => '({${fields.mapIndexed(
+        (i, f) => '${typeArg[i]} $f',
+      ).join(', ')},})';
 }
 
 extension on List<ParsedField> {

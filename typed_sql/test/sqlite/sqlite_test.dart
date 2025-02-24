@@ -555,6 +555,31 @@ void main() {
     expect(result, contains('Alice'));
   });
 
+  _test('named records', (db) async {
+    // Note: extensions for named records is automatically generated!
+    final q = db.users
+        .select((u) => (
+              foo: u.userId,
+              bar: u.name,
+            ))
+        .limit(2);
+    final result = await q.fetch().toList();
+    print(result);
+  });
+
+  _test('named records (again)', (db) async {
+    final result = await db.users
+        .join(db.packages)
+        .on((u, p) => p.ownerId.equals(u.userId))
+        .select((u, p) => (
+              owner: u.name,
+              package: p.packageName,
+            ))
+        .fetch()
+        .toList();
+    print(result);
+  });
+
   // TODO: Support operators on nullable values!
   /*_test('db.packages.where(publisher == null).select()', (db) async {
     final result = await db.packages
@@ -566,3 +591,5 @@ void main() {
     expect(result, hasLength(1));
   });*/
 }
+
+// ignore_for_file: unreachable_from_main

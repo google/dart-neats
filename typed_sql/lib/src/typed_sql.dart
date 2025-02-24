@@ -123,4 +123,15 @@ final class ExposedForCodeGen {
     int index,
   ) =>
       row._field(index);
+
+  static Query<S> renamedRecord<T extends Record, S extends Record>(
+    Query<T> query,
+    S Function(T) fn,
+  ) {
+    return _Query(
+      query._context,
+      fn(query._expressions),
+      query._from,
+    );
+  }
 }

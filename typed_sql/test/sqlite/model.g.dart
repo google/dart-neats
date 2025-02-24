@@ -557,3 +557,203 @@ extension ExpressionLikeExt on Expr<Like> {
   /// TODO: document packageName
   Expr<String> get packageName => ExposedForCodeGen.field(this, 1);
 }
+
+extension QueryBarFooNamed<A, B> on Query<
+    ({
+      Expr<A> bar,
+      Expr<B> foo,
+    })> {
+  Query<(Expr<A>, Expr<B>)> get _asPositionalQuery =>
+      ExposedForCodeGen.renamedRecord(
+          this,
+          (e) => (
+                e.bar,
+                e.foo,
+              ));
+  static Query<
+      ({
+        Expr<A> bar,
+        Expr<B> foo,
+      })> _fromPositionalQuery<A, B>(
+          Query<(Expr<A>, Expr<B>)> query) =>
+      ExposedForCodeGen.renamedRecord(
+          query,
+          (e) => (
+                bar: e.$1,
+                foo: e.$2,
+              ));
+  static T Function(Expr<A> a, Expr<B> b) _wrapBuilder<T, A, B>(
+          T Function(
+                  ({
+                    Expr<A> bar,
+                    Expr<B> foo,
+                  }) e)
+              builder) =>
+      (a, b) => builder((
+            bar: a,
+            foo: b,
+          ));
+  Stream<
+      ({
+        A bar,
+        B foo,
+      })> fetch() async* {
+    yield* _asPositionalQuery.fetch().map((e) => (
+          bar: e.$1,
+          foo: e.$2,
+        ));
+  }
+
+  Query<
+      ({
+        Expr<A> bar,
+        Expr<B> foo,
+      })> offset(
+          int offset) =>
+      _fromPositionalQuery(_asPositionalQuery.offset(offset));
+  Query<
+      ({
+        Expr<A> bar,
+        Expr<B> foo,
+      })> limit(
+          int limit) =>
+      _fromPositionalQuery(_asPositionalQuery.limit(limit));
+  Query<T> select<T extends Record>(
+          T Function(
+                  ({
+                    Expr<A> bar,
+                    Expr<B> foo,
+                  }) expr)
+              projectionBuilder) =>
+      _asPositionalQuery.select(_wrapBuilder(projectionBuilder));
+  Query<
+      ({
+        Expr<A> bar,
+        Expr<B> foo,
+      })> where(
+          Expr<bool> Function(
+                  ({
+                    Expr<A> bar,
+                    Expr<B> foo,
+                  }) expr)
+              conditionBuilder) =>
+      _fromPositionalQuery(
+          _asPositionalQuery.where(_wrapBuilder(conditionBuilder)));
+  Query<
+      ({
+        Expr<A> bar,
+        Expr<B> foo,
+      })> orderBy<T>(
+    Expr<T> Function(
+            ({
+              Expr<A> bar,
+              Expr<B> foo,
+            }) expr)
+        expressionBuilder, {
+    bool descending = false,
+  }) =>
+      _fromPositionalQuery(_asPositionalQuery.orderBy(
+        _wrapBuilder(expressionBuilder),
+        descending: descending,
+      ));
+}
+
+extension QueryOwnerPackageNamed<A, B> on Query<
+    ({
+      Expr<A> owner,
+      Expr<B> package,
+    })> {
+  Query<(Expr<A>, Expr<B>)> get _asPositionalQuery =>
+      ExposedForCodeGen.renamedRecord(
+          this,
+          (e) => (
+                e.owner,
+                e.package,
+              ));
+  static Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> _fromPositionalQuery<A, B>(
+          Query<(Expr<A>, Expr<B>)> query) =>
+      ExposedForCodeGen.renamedRecord(
+          query,
+          (e) => (
+                owner: e.$1,
+                package: e.$2,
+              ));
+  static T Function(Expr<A> a, Expr<B> b) _wrapBuilder<T, A, B>(
+          T Function(
+                  ({
+                    Expr<A> owner,
+                    Expr<B> package,
+                  }) e)
+              builder) =>
+      (a, b) => builder((
+            owner: a,
+            package: b,
+          ));
+  Stream<
+      ({
+        A owner,
+        B package,
+      })> fetch() async* {
+    yield* _asPositionalQuery.fetch().map((e) => (
+          owner: e.$1,
+          package: e.$2,
+        ));
+  }
+
+  Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> offset(
+          int offset) =>
+      _fromPositionalQuery(_asPositionalQuery.offset(offset));
+  Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> limit(
+          int limit) =>
+      _fromPositionalQuery(_asPositionalQuery.limit(limit));
+  Query<T> select<T extends Record>(
+          T Function(
+                  ({
+                    Expr<A> owner,
+                    Expr<B> package,
+                  }) expr)
+              projectionBuilder) =>
+      _asPositionalQuery.select(_wrapBuilder(projectionBuilder));
+  Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> where(
+          Expr<bool> Function(
+                  ({
+                    Expr<A> owner,
+                    Expr<B> package,
+                  }) expr)
+              conditionBuilder) =>
+      _fromPositionalQuery(
+          _asPositionalQuery.where(_wrapBuilder(conditionBuilder)));
+  Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> orderBy<T>(
+    Expr<T> Function(
+            ({
+              Expr<A> owner,
+              Expr<B> package,
+            }) expr)
+        expressionBuilder, {
+    bool descending = false,
+  }) =>
+      _fromPositionalQuery(_asPositionalQuery.orderBy(
+        _wrapBuilder(expressionBuilder),
+        descending: descending,
+      ));
+}
