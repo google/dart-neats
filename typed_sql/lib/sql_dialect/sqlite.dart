@@ -301,9 +301,9 @@ final class _Sqlite extends SqlDialect {
           ),
         ExistsExpression(:final query) => 'EXISTS (${clause(query, ctx).$1})',
         SumExpression<num>(:final value) => 'SUM(${expr(value, ctx)})',
-        AvgExpression<T>(:final value) => 'AVG(${expr(value, ctx)})',
-        MinExpression<T>(:final value) => 'MIN(${expr(value, ctx)})',
-        MaxExpression<T>(:final value) => 'MAX(${expr(value, ctx)})',
+        AvgExpression(:final value) => 'AVG(${expr(value, ctx)})',
+        MinExpression<Comparable>(:final value) => 'MIN(${expr(value, ctx)})',
+        MaxExpression<Comparable>(:final value) => 'MAX(${expr(value, ctx)})',
         CountExpression(:final expression, :final distinct) =>
           'COUNT(${distinct ? 'DISTINCT ' : ''} ${expr(expression, ctx)})',
         CountAllExpression() => 'COUNT(*)',
