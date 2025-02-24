@@ -282,6 +282,10 @@ final class _Sqlite extends SqlDialect {
             'ModelExpression cannot be used as expressions!',
           ),
         ExistsExpression(:final query) => 'EXISTS (${clause(query, ctx).$1})',
+        SumExpression<num>(:final value) => 'SUM(${expr(value, ctx)})',
+        AvgExpression<T>(:final value) => 'AVG(${expr(value, ctx)})',
+        MinExpression<T>(:final value) => 'MIN(${expr(value, ctx)})',
+        MaxExpression<T>(:final value) => 'MAX(${expr(value, ctx)})',
       };
 }
 

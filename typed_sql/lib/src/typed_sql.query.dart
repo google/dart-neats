@@ -225,6 +225,38 @@ extension QuerySingleModel<T extends Model> on QuerySingle<(Expr<T>,)> {
   Future<void> delete() async => await asQuery.delete();
 }
 
+/* --------------------- Query aggregations ---------------------- */
+
+extension QueryNumber<T extends num> on Query<(Expr<T>,)> {
+  QuerySingle<(Expr<T>,)> sum() =>
+      select<(Expr<T>,)>((a) => (SumExpression._(a),)).first;
+
+  QuerySingle<(Expr<double>,)> avg() =>
+      select<(Expr<double>,)>((a) => (AvgExpression._(a),)).first;
+
+  QuerySingle<(Expr<T>,)> min() =>
+      select<(Expr<T>,)>((a) => (MinExpression._(a),)).first;
+
+  QuerySingle<(Expr<T>,)> max() =>
+      select<(Expr<T>,)>((a) => (MaxExpression._(a),)).first;
+}
+
+extension QueryDateTime on Query<(Expr<DateTime>,)> {
+  QuerySingle<(Expr<DateTime>,)> min() =>
+      select((a) => (MinExpression._(a),)).first;
+
+  QuerySingle<(Expr<DateTime>,)> max() =>
+      select((a) => (MaxExpression._(a),)).first;
+}
+
+extension QueryString on Query<(Expr<String>,)> {
+  QuerySingle<(Expr<String>,)> min() =>
+      select((a) => (MinExpression._(a),)).first;
+
+  QuerySingle<(Expr<String>,)> max() =>
+      select((a) => (MaxExpression._(a),)).first;
+}
+
 /* --------------------- Auxiliary utils for SQL rendering------------------- */
 
 abstract final class QueryContext {

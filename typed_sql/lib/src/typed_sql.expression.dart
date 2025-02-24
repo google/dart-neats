@@ -165,6 +165,26 @@ final class ExistsExpression extends Expr<bool> {
   ExistsExpression._(this.query) : super._();
 }
 
+final class SumExpression<T extends num> extends Expr<T> {
+  final Expr<T> value;
+  SumExpression._(this.value) : super._();
+}
+
+final class AvgExpression<double> extends Expr<double> {
+  final Expr<num> value;
+  AvgExpression._(this.value) : super._();
+}
+
+final class MinExpression<T> extends Expr<T> {
+  final Expr<T> value;
+  MinExpression._(this.value) : super._();
+}
+
+final class MaxExpression<T> extends Expr<T> {
+  final Expr<T> value;
+  MaxExpression._(this.value) : super._();
+}
+
 final class Literal<T> extends Expr<T> {
   final T value;
   // TODO: Consider supporting a Constant expression subclass, currently we
