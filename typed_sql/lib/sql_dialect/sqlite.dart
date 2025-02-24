@@ -152,6 +152,14 @@ final class _Sqlite extends SqlDialect {
           columns,
         );
 
+      case DistinctClause(:final from):
+        final (sql, columns) = clause(from, ctx);
+        return (
+          'SELECT DISTINCT ${columns.map(escape).join(', ')} '
+              'FROM ($sql) ',
+          columns,
+        );
+
       case SelectFromClause(:final from, :final projection):
         final (sql, columns) = clause(from, ctx);
         final (a, c) = ctx.alias(q, columns);

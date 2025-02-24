@@ -625,6 +625,22 @@ void main() {
     expect(result, equals(1));
   });
 
+  _test('db.packages.select(ownerId).distinct()', (db) async {
+    final result = await db.packages
+        .select((p) => (p.ownerId,))
+        .distinct()
+        .fetch()
+        .toList();
+    expect(result, hasLength(1));
+    expect(result, contains(1));
+  });
+
+  _test('db.packages.distinct()', (db) async {
+    final result = await db.packages.distinct().fetch().toList();
+    expect(result, hasLength(2));
+    expect(result[0].packageName, anyOf(equals('foo'), equals('bar')));
+  });
+
   // TODO: Support operators on nullable values!
   /*_test('db.packages.where(publisher == null).select()', (db) async {
     final result = await db.packages

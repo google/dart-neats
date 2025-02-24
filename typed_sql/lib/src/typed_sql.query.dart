@@ -190,6 +190,10 @@ final class OffsetClause extends FromClause {
   OffsetClause._(super.from, this.offset) : super._();
 }
 
+final class DistinctClause extends FromClause {
+  DistinctClause._(super.from) : super._();
+}
+
 /* --------------------- Query extensions ---------------------- */
 
 extension QuerySingleModel1AsExpr<T extends Model> on QuerySingle<(Expr<T>,)> {
@@ -260,6 +264,11 @@ extension QueryString on Query<(Expr<String>,)> {
 extension QueryOne<T> on Query<(Expr<T>,)> {
   QuerySingle<(Expr<int>,)> count({bool distinct = false}) =>
       select<(Expr<int>,)>((a) => (CountExpression._(a, distinct),)).first;
+}
+
+extension QueryAny<T extends Record> on Query<T> {
+  Query<T> distinct() =>
+      _Query(_context, _expressions, (e) => DistinctClause._(_from(e)));
 }
 
 /* --------------------- Auxiliary utils for SQL rendering------------------- */
