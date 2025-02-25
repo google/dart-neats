@@ -597,14 +597,14 @@ void main() {
     expect(result, equals(3));
   });
 
-  _test('db.likes.countAll()', (db) async {
-    final result = await db.likes.countAll().fetch();
+  _test('db.likes.count()', (db) async {
+    final result = await db.likes.count().fetch();
     expect(result, equals(2));
   });
 
-  _test('db.likes.select().countAll()', (db) async {
+  _test('db.likes.select().count()', (db) async {
     final result =
-        await db.likes.select((l) => (l.packageName,)).countAll().fetch();
+        await db.likes.select((l) => (l.packageName,)).count().fetch();
     expect(result, equals(2));
   });
 
@@ -615,14 +615,6 @@ void main() {
         .count()
         .fetch();
     expect(result, equals(0));
-  });
-
-  _test('db.likes.select().count(distinct: true)', (db) async {
-    final result = await db.likes
-        .select((l) => (l.packageName,))
-        .count(distinct: true)
-        .fetch();
-    expect(result, equals(1));
   });
 
   _test('db.packages.select(ownerId).distinct()', (db) async {

@@ -252,10 +252,10 @@ Spec _buildQueryExtension(int i) {
           '''),
       ),
 
-      //   QuerySingle<(Expr<int>)> countAll() =>
+      //   QuerySingle<(Expr<int>)> count() =>
       Method(
         (b) => b
-          ..name = 'countAll'
+          ..name = 'count'
           ..returns = refer('QuerySingle<(Expr<int>,)>')
           ..lambda = true
           ..body = Code('''

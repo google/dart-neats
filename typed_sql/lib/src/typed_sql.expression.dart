@@ -186,12 +186,6 @@ final class MaxExpression<T extends Comparable> extends Expr<T> {
   MaxExpression._(this.value) : super._();
 }
 
-final class CountExpression extends Expr<int> {
-  final Expr<Object?> expression;
-  final bool distinct;
-  CountExpression._(this.expression, this.distinct) : super._();
-}
-
 final class CountAllExpression extends Expr<int> {
   CountAllExpression._() : super._();
 }
