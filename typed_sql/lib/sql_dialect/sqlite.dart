@@ -300,7 +300,8 @@ final class _Sqlite extends SqlDialect {
             'ModelExpression cannot be used as expressions!',
           ),
         ExistsExpression(:final query) => 'EXISTS (${clause(query, ctx).$1})',
-        SumExpression<num>(:final value) => 'SUM(${expr(value, ctx)})',
+        SumExpression<num>(:final value) =>
+          'TOTAL(${expr(value, ctx)})', // We'll need to use COALESCE(SUM(a), 0.0) in postgres!
         AvgExpression(:final value) => 'AVG(${expr(value, ctx)})',
         MinExpression<Comparable>(:final value) => 'MIN(${expr(value, ctx)})',
         MaxExpression<Comparable>(:final value) => 'MAX(${expr(value, ctx)})',

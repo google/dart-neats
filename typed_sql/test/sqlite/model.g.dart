@@ -657,3 +657,118 @@ extension QueryOwnerPackageNamed<A, B> on Query<
         descending: descending,
       ));
 }
+
+extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
+    ({
+      Expr<A> packages,
+      Expr<B> totalLikes,
+      Expr<C> userName,
+    })> {
+  Query<(Expr<A>, Expr<B>, Expr<C>)> get _asPositionalQuery =>
+      ExposedForCodeGen.renamedRecord(
+          this,
+          (e) => (
+                e.packages,
+                e.totalLikes,
+                e.userName,
+              ));
+  static Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> _fromPositionalQuery<A, B, C>(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> query) =>
+      ExposedForCodeGen.renamedRecord(
+          query,
+          (e) => (
+                packages: e.$1,
+                totalLikes: e.$2,
+                userName: e.$3,
+              ));
+  static T Function(Expr<A> a, Expr<B> b, Expr<C> c) _wrapBuilder<T, A, B, C>(
+          T Function(
+                  ({
+                    Expr<A> packages,
+                    Expr<B> totalLikes,
+                    Expr<C> userName,
+                  }) e)
+              builder) =>
+      (a, b, c) => builder((
+            packages: a,
+            totalLikes: b,
+            userName: c,
+          ));
+  Stream<
+      ({
+        A packages,
+        B totalLikes,
+        C userName,
+      })> fetch() async* {
+    yield* _asPositionalQuery.fetch().map((e) => (
+          packages: e.$1,
+          totalLikes: e.$2,
+          userName: e.$3,
+        ));
+  }
+
+  Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> offset(
+          int offset) =>
+      _fromPositionalQuery(_asPositionalQuery.offset(offset));
+  Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> limit(
+          int limit) =>
+      _fromPositionalQuery(_asPositionalQuery.limit(limit));
+  Query<T> select<T extends Record>(
+          T Function(
+                  ({
+                    Expr<A> packages,
+                    Expr<B> totalLikes,
+                    Expr<C> userName,
+                  }) expr)
+              projectionBuilder) =>
+      _asPositionalQuery.select(_wrapBuilder(projectionBuilder));
+  Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> where(
+          Expr<bool> Function(
+                  ({
+                    Expr<A> packages,
+                    Expr<B> totalLikes,
+                    Expr<C> userName,
+                  }) expr)
+              conditionBuilder) =>
+      _fromPositionalQuery(
+          _asPositionalQuery.where(_wrapBuilder(conditionBuilder)));
+  Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> orderBy<T>(
+    Expr<T> Function(
+            ({
+              Expr<A> packages,
+              Expr<B> totalLikes,
+              Expr<C> userName,
+            }) expr)
+        expressionBuilder, {
+    bool descending = false,
+  }) =>
+      _fromPositionalQuery(_asPositionalQuery.orderBy(
+        _wrapBuilder(expressionBuilder),
+        descending: descending,
+      ));
+}

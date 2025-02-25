@@ -89,3 +89,13 @@ extension DatabaseAdaptorExtensions on DatabaseAdaptor {
     ).drain<void>();
   }
 }
+
+extension ExpressionUserExt2 on Expr<User> {
+  SubQuery<(Expr<Package>,)> get packages => ExposedForCodeGen.subqueryTable(
+        reference: this,
+        tableName: 'packages',
+        columns: _$Package._$fields,
+        primaryKey: _$Package._$primaryKey,
+        deserialize: _$Package.new,
+      ).where((p) => p.ownerId.equals(userId));
+}

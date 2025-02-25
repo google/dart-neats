@@ -134,4 +134,25 @@ final class ExposedForCodeGen {
       query._from,
     );
   }
+
+  static SubQuery<(Expr<T>,)> subqueryTable<T extends Model, S extends Model>({
+    required Expr<S> reference,
+    required String tableName,
+    required List<String> columns,
+    required List<String> primaryKey,
+    required T Function(RowReader) deserialize,
+  }) {
+    final table = Table._(
+      switch (reference) {
+        final ModelFieldExpression<S> e => e.table._context,
+        _ => throw AssertionError('Expr<Model> must be ModelExpression'),
+      },
+      TableClause._(tableName, columns, primaryKey),
+      deserialize,
+    );
+    return SubQuery._(
+      (ModelFieldExpression(0, table, Object()),),
+      (_) => table._tableClause,
+    );
+  }
 }

@@ -59,8 +59,11 @@ extension Query1<A> on Query<(Expr<A>,)> {
 
   Join<(Expr<A>,), T> join<T extends Record>(Query<T> query) =>
       Join._(this, query);
-  Expr<bool> get isEmpty => isNotEmpty.not();
-  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
+  QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
+        _context,
+        (ExistsExpression._(_from(_expressions.toList())),),
+        SelectClause._,
+      ));
   Stream<A> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -70,6 +73,54 @@ extension Query1<A> on Query<(Expr<A>,)> {
       yield decode1(row);
     }
   }
+}
+
+extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
+  (Object, T) _build<T>(T Function(Expr<A> a) builder) {
+    final handle = Object();
+    var offset = 0;
+    final a = _expressions.$1._standin(offset, handle);
+    return (handle, builder(a));
+  }
+
+  SubQuery<(Expr<A>,)> where(Expr<bool> Function(Expr<A> a) conditionBuilder) {
+    final (handle, where) = _build(conditionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => WhereClause._(_from(e), handle, where),
+    );
+  }
+
+  SubQuery<(Expr<A>,)> orderBy<T>(
+    Expr<T> Function(Expr<A> a) expressionBuilder, {
+    bool descending = false,
+  }) {
+    final (handle, orderBy) = _build(expressionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+    );
+  }
+
+  SubQuery<(Expr<A>,)> limit(int limit) => SubQuery._(
+        _expressions,
+        (e) => LimitClause._(_from(e), limit),
+      );
+  SubQuery<(Expr<A>,)> offset(int offset) => SubQuery._(
+        _expressions,
+        (e) => OffsetClause._(_from(e), offset),
+      );
+  Expr<int> count() => select((a) => (CountAllExpression._(),)).first;
+  SubQuery<T> select<T extends Record>(
+      T Function(Expr<A> a) projectionBuilder) {
+    final (handle, projection) = _build(projectionBuilder);
+    return SubQuery._(
+      projection,
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+    );
+  }
+
+  Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
 extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
@@ -129,8 +180,11 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
 
   Join<(Expr<A>, Expr<B>), T> join<T extends Record>(Query<T> query) =>
       Join._(this, query);
-  Expr<bool> get isEmpty => isNotEmpty.not();
-  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
+  QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
+        _context,
+        (ExistsExpression._(_from(_expressions.toList())),),
+        SelectClause._,
+      ));
   Stream<(A, B)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -141,6 +195,57 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
       yield (decode1(row), decode2(row));
     }
   }
+}
+
+extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
+  (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b) builder) {
+    final handle = Object();
+    var offset = 0;
+    final a = _expressions.$1._standin(offset, handle);
+    offset += _expressions.$1._columns;
+    final b = _expressions.$2._standin(offset, handle);
+    return (handle, builder(a, b));
+  }
+
+  SubQuery<(Expr<A>, Expr<B>)> where(
+      Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) {
+    final (handle, where) = _build(conditionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => WhereClause._(_from(e), handle, where),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>)> orderBy<T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b) expressionBuilder, {
+    bool descending = false,
+  }) {
+    final (handle, orderBy) = _build(expressionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>)> limit(int limit) => SubQuery._(
+        _expressions,
+        (e) => LimitClause._(_from(e), limit),
+      );
+  SubQuery<(Expr<A>, Expr<B>)> offset(int offset) => SubQuery._(
+        _expressions,
+        (e) => OffsetClause._(_from(e), offset),
+      );
+  Expr<int> count() => select((a, b) => (CountAllExpression._(),)).first;
+  SubQuery<T> select<T extends Record>(
+      T Function(Expr<A> a, Expr<B> b) projectionBuilder) {
+    final (handle, projection) = _build(projectionBuilder);
+    return SubQuery._(
+      projection,
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+    );
+  }
+
+  Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
 extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
@@ -202,8 +307,11 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
 
   Join<(Expr<A>, Expr<B>, Expr<C>), T> join<T extends Record>(Query<T> query) =>
       Join._(this, query);
-  Expr<bool> get isEmpty => isNotEmpty.not();
-  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
+  QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
+        _context,
+        (ExistsExpression._(_from(_expressions.toList())),),
+        SelectClause._,
+      ));
   Stream<(A, B, C)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -215,6 +323,59 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
       yield (decode1(row), decode2(row), decode3(row));
     }
   }
+}
+
+extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
+  (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b, Expr<C> c) builder) {
+    final handle = Object();
+    var offset = 0;
+    final a = _expressions.$1._standin(offset, handle);
+    offset += _expressions.$1._columns;
+    final b = _expressions.$2._standin(offset, handle);
+    offset += _expressions.$2._columns;
+    final c = _expressions.$3._standin(offset, handle);
+    return (handle, builder(a, b, c));
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> where(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
+    final (handle, where) = _build(conditionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => WhereClause._(_from(e), handle, where),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy<T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder, {
+    bool descending = false,
+  }) {
+    final (handle, orderBy) = _build(expressionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => SubQuery._(
+        _expressions,
+        (e) => LimitClause._(_from(e), limit),
+      );
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => SubQuery._(
+        _expressions,
+        (e) => OffsetClause._(_from(e), offset),
+      );
+  Expr<int> count() => select((a, b, c) => (CountAllExpression._(),)).first;
+  SubQuery<T> select<T extends Record>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) {
+    final (handle, projection) = _build(projectionBuilder);
+    return SubQuery._(
+      projection,
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+    );
+  }
+
+  Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
 extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
@@ -284,8 +445,11 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), T> join<T extends Record>(
           Query<T> query) =>
       Join._(this, query);
-  Expr<bool> get isEmpty => isNotEmpty.not();
-  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
+  QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
+        _context,
+        (ExistsExpression._(_from(_expressions.toList())),),
+        SelectClause._,
+      ));
   Stream<(A, B, C, D)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -298,6 +462,67 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
       yield (decode1(row), decode2(row), decode3(row), decode4(row));
     }
   }
+}
+
+extension SubQuery4<A, B, C, D>
+    on SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  (Object, T) _build<T>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d) builder) {
+    final handle = Object();
+    var offset = 0;
+    final a = _expressions.$1._standin(offset, handle);
+    offset += _expressions.$1._columns;
+    final b = _expressions.$2._standin(offset, handle);
+    offset += _expressions.$2._columns;
+    final c = _expressions.$3._standin(offset, handle);
+    offset += _expressions.$3._columns;
+    final d = _expressions.$4._standin(offset, handle);
+    return (handle, builder(a, b, c, d));
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    final (handle, where) = _build(conditionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => WhereClause._(_from(e), handle, where),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy<T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+        expressionBuilder, {
+    bool descending = false,
+  }) {
+    final (handle, orderBy) = _build(expressionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) => SubQuery._(
+        _expressions,
+        (e) => LimitClause._(_from(e), limit),
+      );
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(int offset) =>
+      SubQuery._(
+        _expressions,
+        (e) => OffsetClause._(_from(e), offset),
+      );
+  Expr<int> count() => select((a, b, c, d) => (CountAllExpression._(),)).first;
+  SubQuery<T> select<T extends Record>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          projectionBuilder) {
+    final (handle, projection) = _build(projectionBuilder);
+    return SubQuery._(
+      projection,
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+    );
+  }
+
+  Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
 extension Query5<A, B, C, D, E>
@@ -373,8 +598,11 @@ extension Query5<A, B, C, D, E>
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), T> join<T extends Record>(
           Query<T> query) =>
       Join._(this, query);
-  Expr<bool> get isEmpty => isNotEmpty.not();
-  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
+  QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
+        _context,
+        (ExistsExpression._(_from(_expressions.toList())),),
+        SelectClause._,
+      ));
   Stream<(A, B, C, D, E)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -394,6 +622,72 @@ extension Query5<A, B, C, D, E>
       );
     }
   }
+}
+
+extension SubQuery5<A, B, C, D, E>
+    on SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  (Object, T) _build<T>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          builder) {
+    final handle = Object();
+    var offset = 0;
+    final a = _expressions.$1._standin(offset, handle);
+    offset += _expressions.$1._columns;
+    final b = _expressions.$2._standin(offset, handle);
+    offset += _expressions.$2._columns;
+    final c = _expressions.$3._standin(offset, handle);
+    offset += _expressions.$3._columns;
+    final d = _expressions.$4._standin(offset, handle);
+    offset += _expressions.$4._columns;
+    final e = _expressions.$5._standin(offset, handle);
+    return (handle, builder(a, b, c, d, e));
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    final (handle, where) = _build(conditionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => WhereClause._(_from(e), handle, where),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy<T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+        expressionBuilder, {
+    bool descending = false,
+  }) {
+    final (handle, orderBy) = _build(expressionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> limit(int limit) =>
+      SubQuery._(
+        _expressions,
+        (e) => LimitClause._(_from(e), limit),
+      );
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> offset(int offset) =>
+      SubQuery._(
+        _expressions,
+        (e) => OffsetClause._(_from(e), offset),
+      );
+  Expr<int> count() =>
+      select((a, b, c, d, e) => (CountAllExpression._(),)).first;
+  SubQuery<T> select<T extends Record>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          projectionBuilder) {
+    final (handle, projection) = _build(projectionBuilder);
+    return SubQuery._(
+      projection,
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+    );
+  }
+
+  Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
 extension Query6<A, B, C, D, E, F>
@@ -476,8 +770,11 @@ extension Query6<A, B, C, D, E, F>
 
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), T>
       join<T extends Record>(Query<T> query) => Join._(this, query);
-  Expr<bool> get isEmpty => isNotEmpty.not();
-  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
+  QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
+        _context,
+        (ExistsExpression._(_from(_expressions.toList())),),
+        SelectClause._,
+      ));
   Stream<(A, B, C, D, E, F)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -499,6 +796,80 @@ extension Query6<A, B, C, D, E, F>
       );
     }
   }
+}
+
+extension SubQuery6<A, B, C, D, E, F>
+    on SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  (Object, T) _build<T>(
+      T Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          builder) {
+    final handle = Object();
+    var offset = 0;
+    final a = _expressions.$1._standin(offset, handle);
+    offset += _expressions.$1._columns;
+    final b = _expressions.$2._standin(offset, handle);
+    offset += _expressions.$2._columns;
+    final c = _expressions.$3._standin(offset, handle);
+    offset += _expressions.$3._columns;
+    final d = _expressions.$4._standin(offset, handle);
+    offset += _expressions.$4._columns;
+    final e = _expressions.$5._standin(offset, handle);
+    offset += _expressions.$5._columns;
+    final f = _expressions.$6._standin(offset, handle);
+    return (handle, builder(a, b, c, d, e, f));
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    final (handle, where) = _build(conditionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => WhereClause._(_from(e), handle, where),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy<T>(
+    Expr<T> Function(
+            Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+        expressionBuilder, {
+    bool descending = false,
+  }) {
+    final (handle, orderBy) = _build(expressionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> limit(
+          int limit) =>
+      SubQuery._(
+        _expressions,
+        (e) => LimitClause._(_from(e), limit),
+      );
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> offset(
+          int offset) =>
+      SubQuery._(
+        _expressions,
+        (e) => OffsetClause._(_from(e), offset),
+      );
+  Expr<int> count() =>
+      select((a, b, c, d, e, f) => (CountAllExpression._(),)).first;
+  SubQuery<T> select<T extends Record>(
+      T Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          projectionBuilder) {
+    final (handle, projection) = _build(projectionBuilder);
+    return SubQuery._(
+      projection,
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+    );
+  }
+
+  Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
 extension Query7<A, B, C, D, E, F, G>
@@ -584,8 +955,11 @@ extension Query7<A, B, C, D, E, F, G>
 
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T>
       join<T extends Record>(Query<T> query) => Join._(this, query);
-  Expr<bool> get isEmpty => isNotEmpty.not();
-  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
+  QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
+        _context,
+        (ExistsExpression._(_from(_expressions.toList())),),
+        SelectClause._,
+      ));
   Stream<(A, B, C, D, E, F, G)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -609,6 +983,82 @@ extension Query7<A, B, C, D, E, F, G>
       );
     }
   }
+}
+
+extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  (Object, T) _build<T>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          builder) {
+    final handle = Object();
+    var offset = 0;
+    final a = _expressions.$1._standin(offset, handle);
+    offset += _expressions.$1._columns;
+    final b = _expressions.$2._standin(offset, handle);
+    offset += _expressions.$2._columns;
+    final c = _expressions.$3._standin(offset, handle);
+    offset += _expressions.$3._columns;
+    final d = _expressions.$4._standin(offset, handle);
+    offset += _expressions.$4._columns;
+    final e = _expressions.$5._standin(offset, handle);
+    offset += _expressions.$5._columns;
+    final f = _expressions.$6._standin(offset, handle);
+    offset += _expressions.$6._columns;
+    final g = _expressions.$7._standin(offset, handle);
+    return (handle, builder(a, b, c, d, e, f, g));
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              conditionBuilder) {
+    final (handle, where) = _build(conditionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => WhereClause._(_from(e), handle, where),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      orderBy<T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+            Expr<F> f, Expr<G> g)
+        expressionBuilder, {
+    bool descending = false,
+  }) {
+    final (handle, orderBy) = _build(expressionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+    );
+  }
+
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      limit(int limit) => SubQuery._(
+            _expressions,
+            (e) => LimitClause._(_from(e), limit),
+          );
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      offset(int offset) => SubQuery._(
+            _expressions,
+            (e) => OffsetClause._(_from(e), offset),
+          );
+  Expr<int> count() =>
+      select((a, b, c, d, e, f, g) => (CountAllExpression._(),)).first;
+  SubQuery<T> select<T extends Record>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          projectionBuilder) {
+    final (handle, projection) = _build(projectionBuilder);
+    return SubQuery._(
+      projection,
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+    );
+  }
+
+  Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
 extension Query8<A, B, C, D, E, F, G, H> on Query<
@@ -723,8 +1173,11 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
 
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
       T> join<T extends Record>(Query<T> query) => Join._(this, query);
-  Expr<bool> get isEmpty => isNotEmpty.not();
-  Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
+  QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
+        _context,
+        (ExistsExpression._(_from(_expressions.toList())),),
+        SelectClause._,
+      ));
   Stream<(A, B, C, D, E, F, G, H)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -750,6 +1203,105 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
       );
     }
   }
+}
+
+extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  (Object, T) _build<T>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g, Expr<H> h)
+          builder) {
+    final handle = Object();
+    var offset = 0;
+    final a = _expressions.$1._standin(offset, handle);
+    offset += _expressions.$1._columns;
+    final b = _expressions.$2._standin(offset, handle);
+    offset += _expressions.$2._columns;
+    final c = _expressions.$3._standin(offset, handle);
+    offset += _expressions.$3._columns;
+    final d = _expressions.$4._standin(offset, handle);
+    offset += _expressions.$4._columns;
+    final e = _expressions.$5._standin(offset, handle);
+    offset += _expressions.$5._columns;
+    final f = _expressions.$6._standin(offset, handle);
+    offset += _expressions.$6._columns;
+    final g = _expressions.$7._standin(offset, handle);
+    offset += _expressions.$7._columns;
+    final h = _expressions.$8._standin(offset, handle);
+    return (handle, builder(a, b, c, d, e, f, g, h));
+  }
+
+  SubQuery<
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    final (handle, where) = _build(conditionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => WhereClause._(_from(e), handle, where),
+    );
+  }
+
+  SubQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> orderBy<T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+            Expr<F> f, Expr<G> g, Expr<H> h)
+        expressionBuilder, {
+    bool descending = false,
+  }) {
+    final (handle, orderBy) = _build(expressionBuilder);
+    return SubQuery._(
+      _expressions,
+      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+    );
+  }
+
+  SubQuery<
+          (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+      limit(int limit) => SubQuery._(
+            _expressions,
+            (e) => LimitClause._(_from(e), limit),
+          );
+  SubQuery<
+          (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+      offset(int offset) => SubQuery._(
+            _expressions,
+            (e) => OffsetClause._(_from(e), offset),
+          );
+  Expr<int> count() =>
+      select((a, b, c, d, e, f, g, h) => (CountAllExpression._(),)).first;
+  SubQuery<T> select<T extends Record>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g, Expr<H> h)
+          projectionBuilder) {
+    final (handle, projection) = _build(projectionBuilder);
+    return SubQuery._(
+      projection,
+      (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+    );
+  }
+
+  Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
 extension Join1On1<A, B> on Join<(Expr<A>,), (Expr<B>,)> {

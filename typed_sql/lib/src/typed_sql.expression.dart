@@ -68,6 +68,13 @@ extension<T extends Model> on Query<(Expr<T>,)> {
       };
 }
 
+extension<T extends Model> on SubQuery<(Expr<T>,)> {
+  Table<T> get table => switch (_expressions.$1) {
+        final ModelFieldExpression<T> e => e.table,
+        _ => throw AssertionError('Expr<Model> must be ModelExpression'),
+      };
+}
+
 sealed class ModelExpression<T extends Model> extends MultiValueExpression<T> {
   // TODO: These should be private!
   final Table<T> table;

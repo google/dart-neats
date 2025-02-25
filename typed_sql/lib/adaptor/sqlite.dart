@@ -224,10 +224,10 @@ final class _SqliteRowReader extends RowReader {
   DateTime? readDateTime() => _row.values[_i++] as DateTime?;
 
   @override
-  double? readDouble() => _row.values[_i++] as double?;
+  double? readDouble() => (_row.values[_i++] as num?)?.toDouble();
 
   @override
-  int? readInt() => _row.values[_i++] as int?;
+  int? readInt() => (_row.values[_i++] as num?)?.toInt();
 
   @override
   String? readString() => _row.values[_i++] as String?;

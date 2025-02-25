@@ -399,19 +399,6 @@ void main() {
     expect(user.name, equals('Alice'));
   });
 
-  _test('db.users.select(db.packages.where().isNotEmpty)', (db) async {
-    final result = await db.users
-        .select(
-          (u) => (
-            u,
-            u.name.equalsLiteral('Alice'),
-          ),
-        )
-        .fetch()
-        .toList();
-    expect(result, hasLength(2));
-  });
-
   _test('db.select(true, "hello world", 42)', (db) async {
     final result = await db.select((
       literal(true),
@@ -498,12 +485,31 @@ void main() {
     expect(result, isTrue);
   });
 
+  _test('db.packages.exists()', (db) async {
+    final result = await db.packages.exists().fetch();
+    expect(result, isTrue);
+  });
+
+  _test('db.packages.exists().asExpr', (db) async {
+    final result = await db.select((db.packages.exists().asExpr,)).fetch();
+    expect(result, isTrue);
+  });
+
+  _test('db.packages.exists().asExpr.not()', (db) async {
+    final result =
+        await db.select((db.packages.exists().asExpr.not(),)).fetch();
+    expect(result, isFalse);
+  });
+
   _test('db.users.select(db.packages.where().isNotEmpty)', (db) async {
     final result = await db.users
         .select(
           (u) => (
             u,
-            db.packages.where((p) => p.ownerId.equals(u.userId)).isNotEmpty,
+            db.packages
+                .where((p) => p.ownerId.equals(u.userId))
+                .exists()
+                .asExpr,
           ),
         )
         .fetch()
@@ -522,7 +528,11 @@ void main() {
         .select(
           (u) => (
             u,
-            db.packages.where((p) => p.ownerId.equals(u.userId)).isEmpty,
+            db.packages
+                .where((p) => p.ownerId.equals(u.userId))
+                .exists()
+                .asExpr
+                .not(),
           ),
         )
         .fetch()
@@ -539,7 +549,11 @@ void main() {
   _test('db.users.where(db.packages.where().isEmpty)', (db) async {
     final result = await db.users
         .where(
-          (u) => db.packages.where((p) => p.ownerId.equals(u.userId)).isEmpty,
+          (u) => db.packages
+              .where((p) => p.ownerId.equals(u.userId))
+              .exists()
+              .asExpr
+              .not(),
         )
         .select((u) => (u.name,))
         .fetch()
@@ -551,8 +565,10 @@ void main() {
   _test('db.users.where(db.packages.where().isNotEmpty)', (db) async {
     final result = await db.users
         .where(
-          (u) =>
-              db.packages.where((p) => p.ownerId.equals(u.userId)).isNotEmpty,
+          (u) => db.packages
+              .where((p) => p.ownerId.equals(u.userId))
+              .exists()
+              .asExpr,
         )
         .select((u) => (u.name,))
         .fetch()
@@ -651,6 +667,27 @@ void main() {
   _test('db.packages.except(db.packages)', (db) async {
     final result = await db.packages.except(db.packages).fetch().toList();
     expect(result, hasLength(0));
+  });
+
+  _test('db.users.select((u) => u.packages.countAll())', (db) async {
+    final result = await db.users
+        .select(
+          (u) => (
+            userName: u.name,
+            packages: u.packages.count(),
+            totalLikes: u.packages.select((p) => (p.likes,)).sum(),
+          ),
+        )
+        .orderBy((r) => r.userName)
+        .fetch()
+        .toList();
+    expect(result, hasLength(2));
+    expect(result[0].userName, equals('Alice'));
+    expect(result[0].packages, equals(2));
+    expect(result[0].totalLikes, equals(5));
+    expect(result[1].userName, equals('Bob'));
+    expect(result[1].packages, equals(0));
+    expect(result[1].totalLikes, equals(0));
   });
 
   // TODO: Support operators on nullable values!

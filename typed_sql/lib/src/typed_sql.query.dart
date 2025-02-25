@@ -11,6 +11,8 @@ part of 'typed_sql.dart';
 //       than once.
 //       If the subquery returns no rows, both sqlite and postgres will take
 //       that to mean NULL.
+
+/// A [Query] on the database from which results can be fetched.
 abstract final class Query<T extends Record> {
   final DatabaseContext _context;
 
@@ -72,6 +74,14 @@ final class QuerySingle<T extends Record> {
   final Query<T> _query;
 
   QuerySingle._(this._query);
+}
+
+/// A [Query] which can only be used as a subquery.
+final class SubQuery<T extends Record> {
+  final T _expressions;
+  final QueryClause Function(List<Expr> expressions) _from;
+
+  SubQuery._(this._expressions, this._from);
 }
 
 /* --------------------- Query clauses ---------------------- */
@@ -252,6 +262,19 @@ extension QuerySingleModel<T extends Model> on QuerySingle<(Expr<T>,)> {
   Future<void> delete() async => await asQuery.delete();
 }
 
+extension SubQueryModel1AsExpr<T extends Model> on SubQuery<(Expr<T>,)> {
+  Expr<T> get first => ModelSubQueryExpression._(
+        _from(_expressions.toList()),
+        table,
+      );
+}
+
+extension SubQuery1AsExpr<T> on SubQuery<(Expr<T>,)> {
+  Expr<T> get first => SubQueryExpression._(
+        _from(_expressions.toList()),
+      );
+}
+
 /* --------------------- Query aggregations ---------------------- */
 
 extension QueryNumber<T extends num> on Query<(Expr<T>,)> {
@@ -282,6 +305,29 @@ extension QueryString on Query<(Expr<String>,)> {
 
   QuerySingle<(Expr<String>,)> max() =>
       select((a) => (MaxExpression._(a),)).first;
+}
+
+extension SubQueryNumber<T extends num> on SubQuery<(Expr<T>,)> {
+  Expr<T> sum() => select<(Expr<T>,)>((a) => (SumExpression._(a),)).first;
+
+  Expr<double> avg() =>
+      select<(Expr<double>,)>((a) => (AvgExpression._(a),)).first;
+
+  Expr<T> min() => select<(Expr<T>,)>((a) => (MinExpression._(a),)).first;
+
+  Expr<T> max() => select<(Expr<T>,)>((a) => (MaxExpression._(a),)).first;
+}
+
+extension SubQueryDateTime on SubQuery<(Expr<DateTime>,)> {
+  Expr<DateTime> min() => select((a) => (MinExpression._(a),)).first;
+
+  Expr<DateTime> max() => select((a) => (MaxExpression._(a),)).first;
+}
+
+extension SubQueryString on SubQuery<(Expr<String>,)> {
+  Expr<String> min() => select((a) => (MinExpression._(a),)).first;
+
+  Expr<String> max() => select((a) => (MaxExpression._(a),)).first;
 }
 
 extension QueryAny<T extends Record> on Query<T> {
@@ -316,6 +362,8 @@ extension QueryAny<T extends Record> on Query<T> {
   Query<T> operator -(Query<T> other) => except(other);
   Query<T> operator &(Query<T> other) => intersect(other);
   Query<T> operator |(Query<T> other) => union(other);
+
+  SubQuery<T> get asSubQuery => SubQuery._(_expressions, _from);
 }
 
 /* --------------------- Auxiliary utils for SQL rendering------------------- */

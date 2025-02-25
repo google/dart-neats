@@ -55,6 +55,7 @@ Iterable<Spec> _buildExtensions() sync* {
 
   for (var i = 1; i < N + 1; i++) {
     yield _buildQueryExtension(i);
+    yield _buildSubQueryExtension(i);
   }
 
   for (var i = 1; i < N; i++) {
@@ -309,26 +310,20 @@ Spec _buildQueryExtension(int i) {
           ..body = Code('Join._(this, query)'),
       ),
 
-      // Expr<bool> get isEmpty => ExistsExpression._(_from(_expressions.toList()));
-      // Expr<bool> get isNotEmpty => ExistsExpression._(_from(_expressions.toList()));
       Method(
         (b) => b
-          ..name = 'isEmpty'
-          ..returns = refer('Expr<bool>')
-          ..type = MethodType.getter
+          ..name = 'exists'
+          ..returns = refer('QuerySingle<(Expr<bool>,)>')
           ..lambda = true
           ..body = Code('''
-            isNotEmpty.not()
-          '''),
-      ),
-      Method(
-        (b) => b
-          ..name = 'isNotEmpty'
-          ..returns = refer('Expr<bool>')
-          ..type = MethodType.getter
-          ..lambda = true
-          ..body = Code('''
-            ExistsExpression._(_from(_expressions.toList()))
+            QuerySingle._(_Query(
+              _context,
+              (
+                ExistsExpression._(_from(_expressions.toList())),
+              ),
+              SelectClause._,
+              )
+            )
           '''),
       ),
 
@@ -375,6 +370,170 @@ Spec _buildQueryExtension(int i) {
             ],
             '}',
           ].join('')),
+      ),
+    ]));
+}
+
+/// Extension for Query
+///
+/// ```dart
+/// extension SubQueryABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {...}
+/// ```
+Spec _buildSubQueryExtension(int i) {
+  return Extension((b) => b
+    ..name = 'SubQuery$i'
+    ..on = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..methods.addAll([
+      Method(
+        (b) => b
+          ..name = '_build'
+          ..returns = refer('(Object, T)')
+          ..types.add(refer('T'))
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'builder'
+              ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+          ))
+          ..body = Code([
+            'final handle = Object();',
+            'var offset = 0;',
+            ...arg
+                .take(i)
+                .mapIndexed((i, a) => [
+                      'final $a = _expressions.\$${i + 1}._standin(offset, handle);',
+                      'offset += _expressions.\$${i + 1}._columns;',
+                    ])
+                .flattened
+                .take(i * 2 - 1),
+            'return (handle, builder(${arg.take(i).join(',')}));',
+          ].join('')),
+      ),
+
+      Method(
+        (b) => b
+          ..name = 'where'
+          ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'conditionBuilder'
+              ..type =
+                  refer('Expr<bool> Function(${typArgedExprArgumentList(i)})'),
+          ))
+          ..body = Code('''
+            final (handle, where) = _build(conditionBuilder);
+            return SubQuery._(
+              _expressions,
+              (e) => WhereClause._(_from(e), handle, where),
+            );
+          '''),
+      ),
+
+      Method(
+        (b) => b
+          ..name = 'orderBy'
+          ..types.add(refer('T'))
+          ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'expressionBuilder'
+              ..type =
+                  refer('Expr<T> Function(${typArgedExprArgumentList(i)})'),
+          ))
+          ..optionalParameters.add(Parameter(
+            (b) => b
+              ..name = 'descending'
+              ..required = false
+              ..named = true
+              ..type = refer('bool')
+              ..defaultTo = Code('false'),
+          ))
+          ..body = Code('''
+            final (handle, orderBy) = _build(expressionBuilder);
+            return SubQuery._(
+              _expressions,
+              (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+            );
+          '''),
+      ),
+
+      Method(
+        (b) => b
+          ..name = 'limit'
+          ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'limit'
+              ..type = refer('int'),
+          ))
+          ..lambda = true
+          ..body = Code('''
+            SubQuery._(
+              _expressions,
+              (e) => LimitClause._(_from(e), limit),
+            )
+          '''),
+      ),
+
+      Method(
+        (b) => b
+          ..name = 'offset'
+          ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'offset'
+              ..type = refer('int'),
+          ))
+          ..lambda = true
+          ..body = Code('''
+            SubQuery._(
+              _expressions,
+              (e) => OffsetClause._(_from(e), offset),
+            )
+          '''),
+      ),
+
+      // TODO: Consider a .first method that returns Expr<(...)>
+
+      Method(
+        (b) => b
+          ..name = 'count'
+          ..returns = refer('Expr<int>')
+          ..lambda = true
+          ..body = Code('''
+            select((${arg.take(i).join(',')}) => (CountAllExpression._(),)).first
+          '''),
+      ),
+
+      Method(
+        (b) => b
+          ..name = 'select'
+          ..types.add(refer('T extends Record'))
+          ..returns = refer('SubQuery<T>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'projectionBuilder'
+              ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+          ))
+          ..body = Code('''
+            final (handle, projection) = _build(projectionBuilder);
+            return SubQuery._(
+              projection,
+              (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+            );
+          '''),
+      ),
+
+      // TODO: Consider introducing SubJoin
+
+      Method(
+        (b) => b
+          ..name = 'exists'
+          ..returns = refer('Expr<bool>')
+          ..lambda = true
+          ..body = Code('''
+            ExistsExpression._(_from(_expressions.toList()))
+          '''),
       ),
     ]));
 }
