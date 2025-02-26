@@ -39,6 +39,12 @@ final class _LoggingDatabaseAdaptor extends DatabaseAdaptor {
   }
 
   @override
+  Future<QueryResult> execute(String sql, List<Object?> params) async {
+    _log('db.execute("$sql", [${params.join(', ')}])');
+    return await _adaptor.execute(sql, params);
+  }
+
+  @override
   Future<T> transaction<T>(
     Future<T> Function(DatabaseTransaction tx) fn,
   ) async {
@@ -62,6 +68,12 @@ final class _LoggingDatabaseTransaction extends DatabaseTransaction {
   }
 
   @override
+  Future<QueryResult> execute(String sql, List<Object?> params) async {
+    _log('tx.execute("$sql", [${params.join(', ')}])');
+    return await _tx.execute(sql, params);
+  }
+
+  @override
   Future<T> savePoint<T>(Future<T> Function(DatabaseSavePoint sp) fn) async {
     _log('tx.savePoint()');
     return await _tx.savePoint((sp) async {
@@ -80,6 +92,12 @@ final class _LoggingDatabaseSavePoint extends DatabaseSavePoint {
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     _log('sp.query("$sql", [${params.join(', ')}])');
     yield* _sp.query(sql, params);
+  }
+
+  @override
+  Future<QueryResult> execute(String sql, List<Object?> params) async {
+    _log('sp.execute("$sql", [${params.join(', ')}])');
+    return await _sp.execute(sql, params);
   }
 
   @override

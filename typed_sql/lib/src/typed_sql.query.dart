@@ -243,7 +243,7 @@ extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
 }
 
 extension QueryModel<T extends Model> on Query<(Expr<T>,)> {
-  Future<void> delete() async {
+  Future<int> delete() async {
     final table = switch (_expressions.$1) {
       final ModelFieldExpression e => e.table,
       _ => throw AssertionError('Expr<Model> must be a ModelExpression'),
@@ -254,12 +254,13 @@ extension QueryModel<T extends Model> on Query<(Expr<T>,)> {
       DeleteStatement._(table._tableClause, from),
     );
 
-    await _context._db.query(sql, params).drain<void>();
+    final rs = await _context._execute(sql, params);
+    return rs.affectedRows;
   }
 }
 
 extension QuerySingleModel<T extends Model> on QuerySingle<(Expr<T>,)> {
-  Future<void> delete() async => await asQuery.delete();
+  Future<int> delete() async => await asQuery.delete();
 }
 
 extension SubQueryModel1AsExpr<T extends Model> on SubQuery<(Expr<T>,)> {

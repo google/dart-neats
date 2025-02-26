@@ -168,7 +168,8 @@ void main() {
       final p = await db.packages.byKey(packageName: 'foo').fetch();
       expect(p, isNotNull);
     }
-    await db.packages.byKey(packageName: 'foo').delete();
+    final count = await db.packages.byKey(packageName: 'foo').delete();
+    expect(count, 1);
     {
       final p = await db.packages.byKey(packageName: 'foo').fetch();
       expect(p, isNull);

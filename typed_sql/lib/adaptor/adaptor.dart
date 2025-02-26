@@ -50,6 +50,16 @@ abstract base class DatabaseTransaction extends QueryExecutor {
 
 abstract base class DatabaseSavePoint extends DatabaseTransaction {}
 
+class QueryResult {
+  final int affectedRows;
+  final List<RowReader> rows;
+
+  QueryResult({
+    required this.affectedRows,
+    required this.rows,
+  });
+}
+
 abstract final class QueryExecutor {
   /// Execute [sql] query with positional [params].
   ///
@@ -70,6 +80,8 @@ abstract final class QueryExecutor {
   ///  * [Map<String, Object?>], [List<Object?>], [String], [int],
   ///    [double], [bool], `null` (for JSON).
   Stream<RowReader> query(String sql, List<Object?> params);
+
+  Future<QueryResult> execute(String sql, List<Object?> params);
 }
 
 abstract base class RowReader {

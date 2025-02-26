@@ -147,6 +147,26 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
   }
 
   @override
+  Future<QueryResult> execute(String sql, List<Object?> params) async {
+    final conn = await _getConnection();
+    try {
+      return await _execute(conn, sql, params);
+    } finally {
+      _releaseConnection(conn);
+    }
+  }
+
+  Future<QueryResult> _execute(
+      Database conn, String sql, List<Object?> params) async {
+    final rows = await _query(conn, sql, params).toList();
+    final affectedRows = conn.updatedRows;
+    return QueryResult(
+      affectedRows: affectedRows,
+      rows: rows,
+    );
+  }
+
+  @override
   Future<T> transaction<T>(
     Future<T> Function(DatabaseTransaction tx) fn,
   ) async {
@@ -172,6 +192,10 @@ mixin _SqliteDatabaseTransactionBase {
 
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     yield* _adaptor._query(_conn, sql, params);
+  }
+
+  Future<QueryResult> execute(String sql, List<Object?> params) async {
+    return await _adaptor._execute(_conn, sql, params);
   }
 
   Future<T> savePoint<T>(Future<T> Function(DatabaseSavePoint sp) fn) async {
