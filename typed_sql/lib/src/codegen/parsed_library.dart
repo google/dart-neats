@@ -66,11 +66,13 @@ final class ParsedModel {
   final String name;
   final List<ParsedField> primaryKey;
   final List<ParsedField> fields;
+  final List<ParsedForeignKey> foreignKeys;
 
   ParsedModel({
     required this.name,
     required this.primaryKey,
     required this.fields,
+    required this.foreignKeys,
   });
 
   @override
@@ -78,6 +80,31 @@ final class ParsedModel {
         'name: "$name"',
         'primaryKey: [${primaryKey.map((f) => '"${f.name}"').join(', ')}]',
         'fields: [${fields.map((f) => '"${f.name}"').join(', ')}]',
+      ].join(', ')})';
+}
+
+final class ParsedForeignKey {
+  final String key;
+  final String table;
+  final String field;
+  final String? as;
+  final String? name;
+
+  ParsedForeignKey({
+    required this.key,
+    required this.table,
+    required this.field,
+    required this.as,
+    required this.name,
+  });
+
+  @override
+  String toString() => 'ParsedForeignKey(${[
+        'key: "$key"',
+        'table: "$table"',
+        'field: "$field"',
+        'as: ${as != null ? '"$as"' : 'null'}',
+        'name: ${name != null ? '"$name"' : 'null'}',
       ].join(', ')})';
 }
 

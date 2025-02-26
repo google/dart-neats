@@ -205,6 +205,15 @@ extension ExpressionUserExt on Expr<User> {
 
   /// TODO: document email
   Expr<String> get email => ExposedForCodeGen.field(this, 2);
+
+  /// TODO: document references
+  SubQuery<(Expr<Package>,)> get packages => ExposedForCodeGen.subqueryTable(
+        reference: this,
+        tableName: 'packages',
+        columns: _$Package._$fields,
+        primaryKey: _$Package._$primaryKey,
+        deserialize: _$Package.new,
+      ).where((r) => r.ownerId.equals(userId));
 }
 
 final class _$Package extends Package {
@@ -396,6 +405,15 @@ extension ExpressionPackageExt on Expr<Package> {
 
   /// TODO: document publisher
   Expr<String?> get publisher => ExposedForCodeGen.field(this, 3);
+
+  /// TODO: document references
+  Expr<User> get owner => ExposedForCodeGen.subqueryTable(
+        reference: this,
+        tableName: 'users',
+        columns: _$User._$fields,
+        primaryKey: _$User._$primaryKey,
+        deserialize: _$User.new,
+      ).where((r) => r.userId.equals(ownerId)).first;
 }
 
 final class _$Like extends Like {

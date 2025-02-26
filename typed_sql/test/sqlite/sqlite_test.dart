@@ -690,6 +690,30 @@ void main() {
     expect(result[1].totalLikes, equals(0));
   });
 
+  _test('db.packages.select((p) => p, p.owner)', (db) async {
+    final result = await db.packages
+        .select((p) => (
+              p,
+              p.owner,
+            ))
+        .fetch()
+        .toList();
+    expect(result, hasLength(2));
+  });
+
+  _test('db.packages.select((p) => p.packageName, p.owner.name)', (db) async {
+    final result = await db.packages
+        .select((p) => (
+              p.packageName,
+              p.owner.name,
+            ))
+        .fetch()
+        .toList();
+    expect(result, hasLength(2));
+    expect(result, contains(('foo', 'Alice')));
+    expect(result, contains(('bar', 'Alice')));
+  });
+
   // TODO: Support operators on nullable values!
   /*_test('db.packages.where(publisher == null).select()', (db) async {
     final result = await db.packages

@@ -29,7 +29,7 @@ Iterable<Spec> buildCode(
   List<ParsedRecord> records,
 ) sync* {
   yield* library.schemas.map(buildSchema).flattened;
-  yield* library.models.map(buildModel).flattened;
+  yield* library.models.map((m) => buildModel(m, library)).flattened;
   yield* records.map(buildRecord).flattened;
 }
 
@@ -70,9 +70,38 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
 }
 
 /// Generate code for [Model] subclass, parsed into [model].
-Iterable<Spec> buildModel(ParsedModel model) sync* {
+Iterable<Spec> buildModel(ParsedModel model, ParsedLibrary library) sync* {
   final modelName = model.name;
   final modelInstanceName = lowerCamelCase(modelName);
+
+  // Find all table using this model
+  final tableUsingModel = library.schemas
+      .expand((s) => s.tables)
+      .where((t) => t.model == model)
+      .toList();
+  // Check if all tables using this model has the same name, if this is not the
+  // case we can't have ForeignKeys with .as != null
+  var referencedFrom = <({ParsedTable table, ParsedForeignKey fk})>[];
+  if (tableUsingModel.map((t) => t.name).toSet().length == 1) {
+    final tableName = tableUsingModel.map((t) => t.name).first;
+
+    // Find all tables that has a foreign key referencing this table.
+    referencedFrom = library.schemas
+        .expand((s) => s.tables)
+        .expand((t) => t.model.foreignKeys.map((fk) => (table: t, fk: fk)))
+        .where((ref) => ref.fk.as != null)
+        .where((ref) => ref.fk.table == tableName)
+        .toList();
+  }
+
+  final referencedTables =
+      model.foreignKeys.where((fk) => fk.name != null).map((fk) {
+    final referencedTable = library.schemas
+        .expand((s) => s.tables)
+        .where((t) => t.name == fk.table)
+        .first;
+    return (fk: fk, referencedTable: referencedTable);
+  }).toList();
 
   // Create implementation class for model
   yield Class(
@@ -343,11 +372,11 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
     )));
 
   // Extension for Expression<model>
-  yield Extension(
-    (b) => b
-      ..name = 'Expression${modelName}Ext'
-      ..on = refer('Expr<$modelName>')
-      ..methods.addAll(model.fields.mapIndexed((i, field) => Method(
+  yield Extension((b) => b
+    ..name = 'Expression${modelName}Ext'
+    ..on = refer('Expr<$modelName>')
+    ..methods.addAll([
+      ...model.fields.mapIndexed((i, field) => Method(
             (b) => b
               ..name = field.name
               ..docs.add('/// TODO: document ${field.name}')
@@ -355,8 +384,42 @@ Iterable<Spec> buildModel(ParsedModel model) sync* {
               ..returns = refer('Expr<${field.type}>')
               ..lambda = true
               ..body = Code('ExposedForCodeGen.field(this, $i)'),
-          ))),
-  );
+          )),
+      ...referencedFrom.map((ref) => Method(
+            (b) => b
+              ..name = ref.fk.as!
+              ..docs.add('/// TODO: document references')
+              ..type = MethodType.getter
+              ..returns = refer('SubQuery<(Expr<${ref.table.model.name}>,)>')
+              ..lambda = true
+              ..body = Code('''
+                ExposedForCodeGen.subqueryTable(
+                  reference: this,
+                  tableName: '${ref.table.name}',
+                  columns: _\$${ref.table.model.name}._\$fields,
+                  primaryKey: _\$${ref.table.model.name}._\$primaryKey,
+                  deserialize: _\$${ref.table.model.name}.new,
+                ).where((r) => r.${ref.fk.key}.equals(${ref.fk.field}))
+              '''),
+          )),
+      ...referencedTables.map((ref) => Method(
+            (b) => b
+              ..name = ref.fk.name!
+              ..docs.add('/// TODO: document references')
+              ..type = MethodType.getter
+              ..returns = refer('Expr<${ref.referencedTable.model.name}>')
+              ..lambda = true
+              ..body = Code('''
+                ExposedForCodeGen.subqueryTable(
+                  reference: this,
+                  tableName: '${ref.referencedTable.name}',
+                  columns: _\$${ref.referencedTable.model.name}._\$fields,
+                  primaryKey: _\$${ref.referencedTable.model.name}._\$primaryKey,
+                  deserialize: _\$${ref.referencedTable.model.name}.new,
+                ).where((r) => r.${ref.fk.field}.equals(${ref.fk.key})).first
+              '''),
+          ))
+    ]));
 }
 
 /// Generate code for using `Query<T>` where `T` is a named record!

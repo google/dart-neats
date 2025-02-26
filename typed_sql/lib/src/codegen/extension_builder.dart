@@ -493,7 +493,7 @@ Spec _buildSubQueryExtension(int i) {
           '''),
       ),
 
-      // TODO: Consider a .first method that returns Expr<(...)>
+      // TODO: Consider a .first method that returns Expr<(A, B, C, ...)>
 
       Method(
         (b) => b

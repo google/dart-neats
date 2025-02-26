@@ -22,36 +22,124 @@ import 'package:source_gen/source_gen.dart';
 import 'parsed_library.dart';
 import 'type_checkers.dart';
 
-Future<ParsedLibrary> parseLibrary(LibraryReader library) async {
+Future<ParsedLibrary> parseLibrary(LibraryReader targetLibrary) async {
   // Cache models when parsing, this saves time, but more importantly ensures
   // that we can use identity equivalence on ParsedModel objects.
   final modelCache = <ClassElement, ParsedModel>{};
 
-  final schemas = library.classes
-      .where((cls) {
-        final supertype = cls.supertype;
-        return supertype != null && schemaTypeChecker.isExactlyType(supertype);
-      })
-      .map((cls) => _parseSchema(cls, modelCache))
-      .toList();
+  // We maintain maps to elements so we can make better errors later!
+  final schemaToElement = <ParsedSchema, ClassElement>{};
+  final foreignKeyToElement = <ParsedForeignKey, Element>{};
 
-  final models = library.classes
-      .where((cls) {
-        final supertype = cls.supertype;
-        return supertype != null && modelTypeChecker.isExactlyType(supertype);
-      })
-      .map((cls) => modelCache.putIfAbsent(cls, () => _parseModel(cls)))
-      .toList();
+  final schemas = targetLibrary.classes.where((cls) {
+    final supertype = cls.supertype;
+    return supertype != null && schemaTypeChecker.isExactlyType(supertype);
+  }).map((cls) {
+    final s = _parseSchema(cls, modelCache, foreignKeyToElement);
+    schemaToElement[s] = cls;
+    return s;
+  }).toList();
 
-  return ParsedLibrary(
+  final models = targetLibrary.classes.where((cls) {
+    final supertype = cls.supertype;
+    return supertype != null && modelTypeChecker.isExactlyType(supertype);
+  }).map((cls) {
+    return modelCache.putIfAbsent(
+      cls,
+      () => _parseModel(cls, foreignKeyToElement),
+    );
+  }).toList();
+
+  // At this point we only support one schema per library.
+  if (schemas.length > 1) {
+    throw InvalidGenerationSource(
+      'Only one Schema per library is a allowed!',
+      element: schemaToElement[schemas[1]],
+    );
+  }
+
+  final library = ParsedLibrary(
     schemas: schemas,
     models: models,
   );
+
+  for (final schema in schemas) {
+    for (final table in schema.tables) {
+      for (final fk in table.model.foreignKeys) {
+        // Resolve referencedTable
+        final referencedTable = schema.tables.firstWhereOrNull(
+          (t) => t.name == fk.table,
+        );
+        if (referencedTable == null) {
+          throw InvalidGenerationSource(
+            'Foreign key references unknown table "${fk.table}"',
+            element: foreignKeyToElement[fk],
+          );
+        }
+
+        // Resolve referencedField
+        final referencedField = referencedTable.model.fields.firstWhereOrNull(
+          (f) => f.name == fk.field,
+        );
+        if (referencedField == null) {
+          throw InvalidGenerationSource(
+            'Foreign key references unknown field "${fk.field}"',
+            element: foreignKeyToElement[fk],
+          );
+        }
+
+        // If 'as' or 'name' is provided we have more constraints:
+        if (fk.as != null || fk.name != null) {
+          if (referencedTable.model.fields.any((f) => f.name == fk.as)) {
+            throw InvalidGenerationSource(
+              'Foreign key with `as: "${fk.as}"` references table that '
+              'already has a field named "${fk.as}"!',
+              element: foreignKeyToElement[fk],
+            );
+          }
+
+          // We are adding an Expr<referencedTable.model>.[fk.as] property,
+          // so we can't have anyone reusing referencedTable.model for tables
+          // with a differnet name! Thus, all tables using referencedTable.model
+          // must have the same name!
+          final illegalReferencedModelReuse = schemas
+              .expand((s) => s.tables)
+              .where((t) =>
+                  t.model == referencedTable.model &&
+                  t.name != referencedTable.name);
+          if (illegalReferencedModelReuse.isNotEmpty) {
+            throw InvalidGenerationSource(
+              'Foreign key with `as` / `name` references table that uses'
+              'a Model subclass used in tables with a different name.',
+              element: foreignKeyToElement[fk],
+            );
+          }
+
+          // We are adding an Expr<referencedTable.model>.[fk.as] property,
+          // which will query tables that references referencedTable.
+          // So all tables that uses table.model must have the same name.
+          final illegalModelReuse = schemas
+              .expand((s) => s.tables)
+              .where((t) => t.model == table.model && t.name != table.name);
+          if (illegalModelReuse.isNotEmpty) {
+            throw InvalidGenerationSource(
+              'Foreign key with `as` / `name` is located on a Model that '
+              'is used in tables with different names.',
+              element: foreignKeyToElement[fk],
+            );
+          }
+        }
+      }
+    }
+  }
+
+  return library;
 }
 
 ParsedSchema _parseSchema(
   ClassElement cls,
   Map<ClassElement, ParsedModel> modelCache,
+  Map<ParsedForeignKey, Element> foreignKeyToElement,
 ) {
   log.info('Found schema "${cls.name}"');
 
@@ -121,7 +209,7 @@ ParsedSchema _parseSchema(
       name: a.name,
       model: modelCache.putIfAbsent(
         typeArgElement,
-        () => _parseModel(typeArgElement),
+        () => _parseModel(typeArgElement, foreignKeyToElement),
       ),
     ));
   }
@@ -132,7 +220,10 @@ ParsedSchema _parseSchema(
   );
 }
 
-ParsedModel _parseModel(ClassElement cls) {
+ParsedModel _parseModel(
+  ClassElement cls,
+  Map<ParsedForeignKey, Element> foreignKeyToElement,
+) {
   log.info('Found model "${cls.name}"');
 
   if (!cls.isAbstract || !cls.isFinal) {
@@ -194,13 +285,14 @@ ParsedModel _parseModel(ClassElement cls) {
       );
     }
 
-    fields.add(ParsedField(
+    final field = ParsedField(
       name: a.name,
       typeName: type,
       isNullable: returnType.nullabilitySuffix != NullabilitySuffix.none,
       // TODO: Support Unique(given: [...])
       unique: uniqueTypeChecker.hasAnnotationOf(a),
-    ));
+    );
+    fields.add(field);
   }
   // Check number of fields, as we're using a 64 bit integer as (bitfield) to
   // track fields are fetched, we can't have more than 64 fields in a row!
@@ -209,6 +301,41 @@ ParsedModel _parseModel(ClassElement cls) {
       'subclasses of `Model` can at-most have 64 fields',
       element: cls,
     );
+  }
+
+  // Extract @References annotations
+  final foreignKeys = <ParsedForeignKey>[];
+  for (final a in cls.accessors) {
+    for (final annotation in referencesTypeChecker.annotationsOf(a)) {
+      final key = a.name;
+      final table = annotation.getField('table')?.toStringValue();
+      final field = annotation.getField('field')?.toStringValue();
+      final as = annotation.getField('as')?.toStringValue();
+      final name = annotation.getField('name')?.toStringValue();
+      if (table == null || field == null) {
+        throw InvalidGenerationSource(
+          'References annotation must have `table` and `field` fields!',
+          element: a,
+        );
+      }
+      if (fields.any((f) => f.name == name)) {
+        throw InvalidGenerationSource(
+          'References have `name: "$name"` which conflicts with the field '
+          'that has the same name!',
+          element: a,
+        );
+      }
+
+      final fk = ParsedForeignKey(
+        key: key,
+        table: table,
+        field: field,
+        as: as,
+        name: name,
+      );
+      foreignKeyToElement[fk] = a;
+      foreignKeys.add(fk);
+    }
   }
 
   // Extract primary key!
@@ -257,5 +384,6 @@ ParsedModel _parseModel(ClassElement cls) {
     name: cls.name,
     primaryKey: primaryKey,
     fields: fields,
+    foreignKeys: foreignKeys,
   );
 }

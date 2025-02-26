@@ -30,6 +30,9 @@ final tableTypeChecker = TypeChecker.fromUrl(
 final uniqueTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#Unique'),
 );
+final referencesTypeChecker = TypeChecker.fromUrl(
+  typedSqlSrcUri.resolve('#References'),
+);
 final primaryKeyTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#PrimaryKey'),
 );

@@ -72,9 +72,7 @@ abstract final class Package extends Model {
 
 @PrimaryKey(['userId', 'packageName'])
 abstract final class Like extends Model {
-  @References(User, 'userId')
   int get userId;
 
-  @References(Package, 'name')
   String get packageName;
 }

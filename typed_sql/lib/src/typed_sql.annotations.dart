@@ -23,7 +23,17 @@ final class PrimaryKey {
 
 /// Annotation for references within a table.
 final class References {
-  const References(Type table, String field);
+  final String table;
+  final String field;
+  final String? as;
+  final String? name;
+
+  const References({
+    required this.table,
+    required this.field,
+    this.as,
+    this.name,
+  });
 }
 
 /// Annotation for a property that are unique.
