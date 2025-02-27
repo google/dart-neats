@@ -18,6 +18,8 @@ import 'sqlite.dart';
 abstract base class SqlDialect {
   static SqlDialect sqlite() => sqliteDialect();
 
+  String createTables(List<CreateTableStatement> statement);
+
   /// Insert [columns] into [table] returning columns from [returning].
   ///
   /// ```sql

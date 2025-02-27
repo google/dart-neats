@@ -19,6 +19,7 @@ import 'package:build/build.dart' show log;
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
+import '../../typed_sql.dart';
 import 'parsed_library.dart';
 import 'type_checkers.dart';
 
@@ -285,12 +286,22 @@ ParsedModel _parseModel(
       );
     }
 
+    final autoIncrement = autoIncrementTypeChecker.hasAnnotationOf(a);
+    if (autoIncrement && type != 'int') {
+      throw InvalidGenerationSource(
+        'AutoIncrement is only allowed for int fields',
+        element: a,
+      );
+    }
+
     final field = ParsedField(
       name: a.name,
       typeName: type,
       isNullable: returnType.nullabilitySuffix != NullabilitySuffix.none,
       // TODO: Support Unique(given: [...])
       unique: uniqueTypeChecker.hasAnnotationOf(a),
+      autoIncrement: autoIncrement,
+      defaultValue: _parseDefaultValue(a, type),
     );
     fields.add(field);
   }
@@ -386,4 +397,66 @@ ParsedModel _parseModel(
     fields: fields,
     foreignKeys: foreignKeys,
   );
+}
+
+/// Parsed [DefaultValue] annotations from [field] with [type].
+Object? _parseDefaultValue(Element field, String type) {
+  final defaultValueAnnotations = defaultValueTypeChecker.annotationsOfExact(
+    field,
+  );
+  if (defaultValueAnnotations.isEmpty) {
+    return null;
+  }
+  if (defaultValueAnnotations.length > 1) {
+    throw InvalidGenerationSource(
+      'Only one DefaultValue annotation is allowed',
+      element: field,
+    );
+  }
+
+  final annotation = defaultValueAnnotations.first;
+  final value = annotation.getField('value');
+  if (value == null) {
+    throw InvalidGenerationSource(
+      'DefaultValue annotation must have a non-null value',
+      element: field,
+    );
+  }
+  final defaultValue = value.toBoolValue() ??
+      value.toIntValue() ??
+      value.toDoubleValue() ??
+      value.toStringValue();
+  // TODO: Support parsing date-time!
+  if (defaultValue == null) {
+    throw InvalidGenerationSource(
+      'Unsupported DefaultValue',
+      element: field,
+    );
+  }
+  if (defaultValue is String && type != 'String') {
+    throw InvalidGenerationSource(
+      'DefaultValue of type String is only allowed for String fields',
+      element: field,
+    );
+  }
+  if (defaultValue is bool && type != 'bool') {
+    throw InvalidGenerationSource(
+      'DefaultValue of type bool is only allowed for bool fields',
+      element: field,
+    );
+  }
+  if (defaultValue is int && type != 'int') {
+    throw InvalidGenerationSource(
+      'DefaultValue of type int is only allowed for int fields',
+      element: field,
+    );
+  }
+  if (defaultValue is double && type != 'double') {
+    throw InvalidGenerationSource(
+      'DefaultValue of type double is only allowed for double fields',
+      element: field,
+    );
+  }
+
+  return defaultValue;
 }

@@ -30,6 +30,12 @@ final tableTypeChecker = TypeChecker.fromUrl(
 final uniqueTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#Unique'),
 );
+final autoIncrementTypeChecker = TypeChecker.fromUrl(
+  typedSqlSrcUri.resolve('#AutoIncrement'),
+);
+final defaultValueTypeChecker = TypeChecker.fromUrl(
+  typedSqlSrcUri.resolve('#DefaultValue'),
+);
 final referencesTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#References'),
 );

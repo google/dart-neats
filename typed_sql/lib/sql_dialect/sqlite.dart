@@ -19,7 +19,67 @@ import 'sql_dialect.dart';
 
 SqlDialect sqliteDialect() => _Sqlite();
 
+String _literal(Object? value) => switch (value) {
+      null => 'NULL',
+      true => 'TRUE',
+      false => 'TRUE',
+      int i => i.toString(),
+      double d => d.toString(),
+      String s => '\'${s.replaceAll('\'', '\'\'')}\'',
+      DateTime d => '\'${d.toIso8601String()}\'',
+      _ => throw UnsupportedError('message'),
+    };
+
 final class _Sqlite extends SqlDialect {
+  @override
+  String createTables(List<CreateTableStatement> statements) {
+    return statements.map((table) {
+      return [
+        'CREATE TABLE ${escape(table.tableName)} (',
+        [
+          // Columns
+          ...table.columns.map((c) {
+            final isPrimaryKey = table.primaryKey.contains(c.name) &&
+                table.primaryKey.length == 1;
+
+            if (c.autoIncrement &&
+                table.primaryKey.contains(c.name) &&
+                table.primaryKey.length > 1) {
+              throw UnsupportedError(
+                'sqlite does not support AUTOINCREMENT in composite primary keys',
+              );
+            }
+
+            return [
+              escape(c.name),
+              c.type.sqlType,
+              c.isNotNull ? 'NOT NULL' : '',
+              if (isPrimaryKey) 'PRIMARY KEY',
+              if (c.autoIncrement && isPrimaryKey) 'AUTOINCREMENT',
+              if (c.autoIncrement && !isPrimaryKey)
+                'GENERATED ALWAYS AS (rowid) STORED',
+              if (c.defaultValue != null) 'DEFAULT ${_literal(c.defaultValue)}',
+            ].join(' ');
+          }),
+          // Primary key
+          if (table.primaryKey.length > 1)
+            'PRIMARY KEY (${table.primaryKey.map(escape).join(', ')})',
+          // Unique constraints
+          ...table.unique.map((u) => 'UNIQUE (${u.map(escape).join(', ')})'),
+          // Foreign keys
+          ...table.foreignKeys.map(
+            (fk) => [
+              'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
+              'REFERENCES ${escape(fk.referencedTable)}',
+              '(${fk.referencedColumns.map(escape).join(', ')})',
+            ].join(' '),
+          ),
+        ].map((l) => '  $l').join(',\n'),
+        ');\n',
+      ].join('\n');
+    }).join('\n');
+  }
+
   @override
   (String, List<Object?>) insertInto(InsertStatement statement) {
     final (params, ctx) = QueryContext.create();
@@ -352,6 +412,17 @@ extension on BinaryOperationExpression {
         ExpressionDateTimeLessThanOrEqual() => '<=',
         ExpressionDateTimeGreaterThan() => '>',
         ExpressionDateTimeGreaterThanOrEqual() => '>=',
+      };
+}
+
+extension on ColumnType {
+  String get sqlType => switch (this) {
+        ColumnType.integer => 'INTEGER',
+        ColumnType.real => 'REAL',
+        ColumnType.text => 'TEXT',
+        ColumnType.datetime => 'DATETIME',
+        ColumnType.blob => 'BLOB',
+        ColumnType.boolean => 'BOOLEAN',
       };
 }
 

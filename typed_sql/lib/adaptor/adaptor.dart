@@ -61,6 +61,8 @@ class QueryResult {
 }
 
 abstract final class QueryExecutor {
+  Future<void> script(String sql);
+
   /// Execute [sql] query with positional [params].
   ///
   /// Parameters may be referenced in the [sql] query using `$1`, `$2`, ...

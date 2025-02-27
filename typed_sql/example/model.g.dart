@@ -7,6 +7,103 @@ part of 'model.dart';
 // **************************************************************************
 
 extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
+  static const _$tables = [
+    (
+      tableName: 'users',
+      columns: <({
+        String name,
+        Type type,
+        bool isNotNull,
+        Object? defaultValue,
+        bool autoIncrement,
+      })>[
+        (
+          name: 'userId',
+          type: int,
+          isNotNull: true,
+          defaultValue: null,
+          autoIncrement: false,
+        ),
+        (
+          name: 'email',
+          type: String,
+          isNotNull: true,
+          defaultValue: null,
+          autoIncrement: false,
+        )
+      ],
+      primaryKey: _$User._$primaryKey,
+      unique: <List<String>>[
+        ['email']
+      ],
+      foreignKeys: <({
+        String name,
+        List<String> columns,
+        String referencedTable,
+        List<String> referencedColumns,
+      })>[],
+    ),
+    (
+      tableName: 'likes',
+      columns: <({
+        String name,
+        Type type,
+        bool isNotNull,
+        Object? defaultValue,
+        bool autoIncrement,
+      })>[
+        (
+          name: 'userId',
+          type: int,
+          isNotNull: true,
+          defaultValue: null,
+          autoIncrement: false,
+        ),
+        (
+          name: 'packageName',
+          type: String,
+          isNotNull: true,
+          defaultValue: null,
+          autoIncrement: false,
+        )
+      ],
+      primaryKey: _$Like._$primaryKey,
+      unique: <List<String>>[],
+      foreignKeys: <({
+        String name,
+        List<String> columns,
+        String referencedTable,
+        List<String> referencedColumns,
+      })>[],
+    ),
+    (
+      tableName: 'packages',
+      columns: <({
+        String name,
+        Type type,
+        bool isNotNull,
+        Object? defaultValue,
+        bool autoIncrement,
+      })>[
+        (
+          name: 'name',
+          type: String,
+          isNotNull: true,
+          defaultValue: null,
+          autoIncrement: false,
+        )
+      ],
+      primaryKey: _$Package._$primaryKey,
+      unique: <List<String>>[],
+      foreignKeys: <({
+        String name,
+        List<String> columns,
+        String referencedTable,
+        List<String> referencedColumns,
+      })>[],
+    ),
+  ];
+
   /// TODO: Propagate documentation for tables!
   Table<User> get users => ExposedForCodeGen.declareTable(
         context: this,
@@ -33,7 +130,17 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         primaryKey: _$Package._$primaryKey,
         deserialize: _$Package.new,
       );
+  Future<void> createTables() async => ExposedForCodeGen.createTables(
+        context: this,
+        tables: _$tables,
+      );
 }
+
+String createPrimaryDatabaseTables(SqlDialect dialect) =>
+    ExposedForCodeGen.createTableSchema(
+      dialect: dialect,
+      tables: PrimaryDatabaseSchema._$tables,
+    );
 
 final class _$User extends User {
   _$User(RowReader row)

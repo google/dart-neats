@@ -15,7 +15,6 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:typed_sql/sql_dialect/sql_dialect.dart';
 import 'package:typed_sql/typed_sql.dart';
 
 import 'model.dart';
@@ -33,7 +32,7 @@ void _test(
       //print,
     );
     final db = Database<PrimaryDatabase>(adaptor, SqlDialect.sqlite());
-    await adaptor.createTables();
+    await db.createTables();
     try {
       await db.users.create(
         userId: 1,

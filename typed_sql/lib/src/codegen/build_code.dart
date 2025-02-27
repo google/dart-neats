@@ -45,8 +45,8 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
           ..symbol = 'DatabaseContext'
           ..types.add(refer(schema.name)),
       )
-      ..methods.addAll(
-        schema.tables.map(
+      ..methods.addAll([
+        ...schema.tables.map(
           (table) => Method(
             (b) => b
               ..name = table.name
@@ -65,7 +65,92 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
               '''),
           ),
         ),
-      ),
+        Method(
+          (b) => b
+            ..name = 'createTables'
+            ..modifier = MethodModifier.async
+            ..returns = refer('Future<void>')
+            ..lambda = true
+            ..body = Code('''
+              ExposedForCodeGen.createTables(
+                context: this,
+                tables: _\$tables,
+              )
+            '''),
+        ),
+      ])
+      ..fields.add(Field(
+        (b) => b
+          ..name = '_\$tables'
+          ..static = true
+          ..modifier = FieldModifier.constant
+          ..assignment = Code('''
+          [
+            ${schema.tables.map((table) => '''
+            (
+              tableName: '${table.name}',
+              columns: <({
+                    String name,
+                    Type type,
+                    bool isNotNull,
+                    Object? defaultValue,
+                    bool autoIncrement,
+                  })>[
+                ${table.model.fields.map((f) => '''
+                  (
+                    name: '${f.name}',
+                    type: ${f.typeName},
+                    isNotNull: ${!f.isNullable},
+                    defaultValue: ${f.defaultValue},
+                    autoIncrement: ${f.autoIncrement},
+                  )
+                ''').join(', ')}
+              ],
+              primaryKey: _\$${table.model.name}._\$primaryKey,
+              unique: <List<String>>[
+                ${table.model.fields.where((f) => f.unique).map(
+                        (f) => '[\'${f.name}\']',
+                      ).join(', ')}
+              ],
+              foreignKeys: <({
+                    String name,
+                    List<String> columns,
+                    String referencedTable,
+                    List<String> referencedColumns,
+                  })>[
+                ${table.model.foreignKeys.map((fk) => '''
+                  (
+                    name: '${fk.name}',
+                    columns: ['${fk.key}'],
+                    referencedTable: '${fk.table}',
+                    referencedColumns: ['${fk.field}'],
+                  )
+                ''').join(',')}
+              ],
+            ),
+            ''').join(' ')}
+          ]
+          '''),
+      )),
+  );
+
+  // Create tables
+  yield Method(
+    (b) => b
+      ..name = 'create${schema.name}Tables'
+      ..returns = refer('String')
+      ..requiredParameters.add(Parameter(
+        (b) => b
+          ..type = refer('SqlDialect')
+          ..name = 'dialect',
+      ))
+      ..lambda = true
+      ..body = Code('''
+        ExposedForCodeGen.createTableSchema(
+          dialect: dialect,
+          tables: ${schema.name}Schema._\$tables,
+        )
+      '''),
   );
 }
 

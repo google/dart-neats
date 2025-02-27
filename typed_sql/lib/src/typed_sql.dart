@@ -24,6 +24,7 @@ part 'typed_sql.database.dart';
 part 'typed_sql.expression.dart';
 part 'typed_sql.g.dart';
 part 'typed_sql.query.dart';
+part 'typed_sql.statements.dart';
 
 abstract base class Schema {
   Schema() {
@@ -50,6 +51,95 @@ final class Update<T extends Model> {
 ///
 /// @nodoc
 final class ExposedForCodeGen {
+  static String createTableSchema({
+    required SqlDialect dialect,
+    required List<
+            ({
+              String tableName,
+              List<
+                  ({
+                    String name,
+                    Type type,
+                    bool isNotNull,
+                    Object? defaultValue,
+                    bool autoIncrement,
+                  })> columns,
+              List<String> primaryKey,
+              List<List<String>> unique,
+              List<
+                  ({
+                    String name,
+                    List<String> columns,
+                    String referencedTable,
+                    List<String> referencedColumns,
+                  })> foreignKeys,
+            })>
+        tables,
+  }) {
+    return dialect.createTables(
+      tables
+          .map((t) => CreateTableStatement._(
+                tableName: t.tableName,
+                primaryKey: t.primaryKey,
+                columns: t.columns
+                    .map((c) => (
+                          name: c.name,
+                          type: switch (c.type) {
+                            const (int) => ColumnType.integer,
+                            const (double) => ColumnType.real,
+                            const (String) => ColumnType.text,
+                            const (bool) => ColumnType.boolean,
+                            const (DateTime) => ColumnType.datetime,
+                            _ => throw UnsupportedError(
+                                'Unsupported type: ${c.type}'),
+                          },
+                          isNotNull: c.isNotNull,
+                          defaultValue: c.defaultValue,
+                          autoIncrement: c.autoIncrement,
+                        ))
+                    .toList(),
+                unique: t.unique,
+                foreignKeys: t.foreignKeys,
+              ))
+          .toList(),
+    );
+  }
+
+  static Future<void> createTables({
+    required DatabaseContext context,
+    required List<
+            ({
+              String tableName,
+              List<
+                  ({
+                    String name,
+                    Type type,
+                    bool isNotNull,
+                    Object? defaultValue,
+                    bool autoIncrement,
+                  })> columns,
+              List<String> primaryKey,
+              List<List<String>> unique,
+              List<
+                  ({
+                    String name,
+                    List<String> columns,
+                    String referencedTable,
+                    List<String> referencedColumns,
+                  })> foreignKeys,
+            })>
+        tables,
+  }) async {
+    final sql = createTableSchema(dialect: context._dialect, tables: tables);
+    await context._db.script(sql);
+  }
+
+  static Future<void> execute({
+    required DatabaseContext context,
+    required String sql,
+    required List<Object?> params,
+  }) async {}
+
   /// Create [Table] object.
   ///
   /// @nodoc

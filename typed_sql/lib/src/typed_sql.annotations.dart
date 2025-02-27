@@ -21,6 +21,16 @@ final class PrimaryKey {
   const PrimaryKey(this.fields);
 }
 
+final class DefaultValue<T> {
+  final T value;
+
+  const DefaultValue(this.value);
+}
+
+final class AutoIncrement {
+  const AutoIncrement();
+}
+
 /// Annotation for references within a table.
 final class References {
   final String table;

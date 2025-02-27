@@ -147,6 +147,33 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
   }
 
   @override
+  Future<void> script(String sql) async {
+    final conn = await _getConnection();
+    try {
+      await _script(conn, sql);
+    } finally {
+      _releaseConnection(conn);
+    }
+  }
+
+  Future<void> _script(Database conn, String sql) async {
+    try {
+      final statements = conn.prepareMultiple(sql);
+      try {
+        for (final statement in statements) {
+          statement.execute();
+        }
+      } finally {
+        for (final statement in statements) {
+          statement.dispose();
+        }
+      }
+    } on SqliteException catch (e) {
+      _throwSqliteException(e);
+    }
+  }
+
+  @override
   Future<QueryResult> execute(String sql, List<Object?> params) async {
     final conn = await _getConnection();
     try {
@@ -192,6 +219,10 @@ mixin _SqliteDatabaseTransactionBase {
 
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     yield* _adaptor._query(_conn, sql, params);
+  }
+
+  Future<void> script(String sql) async {
+    await _adaptor._script(_conn, sql);
   }
 
   Future<QueryResult> execute(String sql, List<Object?> params) async {

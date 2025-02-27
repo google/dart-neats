@@ -53,6 +53,12 @@ final class _LoggingDatabaseAdaptor extends DatabaseAdaptor {
       return await fn(_LoggingDatabaseTransaction(tx, _log));
     });
   }
+
+  @override
+  Future<void> script(String sql) {
+    _log('db.script("$sql")');
+    return _adaptor.script(sql);
+  }
 }
 
 final class _LoggingDatabaseTransaction extends DatabaseTransaction {
@@ -71,6 +77,12 @@ final class _LoggingDatabaseTransaction extends DatabaseTransaction {
   Future<QueryResult> execute(String sql, List<Object?> params) async {
     _log('tx.execute("$sql", [${params.join(', ')}])');
     return await _tx.execute(sql, params);
+  }
+
+  @override
+  Future<void> script(String sql) {
+    _log('tx.script("$sql")');
+    return _tx.script(sql);
   }
 
   @override
@@ -98,6 +110,12 @@ final class _LoggingDatabaseSavePoint extends DatabaseSavePoint {
   Future<QueryResult> execute(String sql, List<Object?> params) async {
     _log('sp.execute("$sql", [${params.join(', ')}])');
     return await _sp.execute(sql, params);
+  }
+
+  @override
+  Future<void> script(String sql) {
+    _log('sp.script("$sql")');
+    return _sp.script(sql);
   }
 
   @override

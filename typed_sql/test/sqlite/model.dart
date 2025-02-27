@@ -24,6 +24,7 @@ abstract final class PrimaryDatabase extends Schema {
 
 @PrimaryKey(['userId'])
 abstract final class User extends Model {
+  @AutoIncrement()
   int get userId;
 
   String get name;
@@ -36,6 +37,7 @@ abstract final class User extends Model {
 abstract final class Package extends Model {
   String get packageName;
 
+  @DefaultValue(0)
   int get likes;
 
   @References(table: 'users', field: 'userId', as: 'packages', name: 'owner')
@@ -51,41 +53,4 @@ abstract final class Like extends Model {
 
   // TODO: Support references
   String get packageName;
-}
-
-extension DatabaseAdaptorExtensions on DatabaseAdaptor {
-  Future<void> createTables() async {
-    await query(
-      '''CREATE TABLE users (${[
-        'userId INTEGER',
-        'name TEXT NOT NULL',
-        'email TEXT NOT NULL',
-        'PRIMARY KEY (userId)',
-      ].join(', ')})''',
-      [],
-    ).drain<void>();
-
-    await query(
-      '''CREATE TABLE packages (${[
-        'packageName TEXT NOT NULL',
-        'likes INTEGER NOT NULL',
-        'ownerId INTEGER NOT NULL',
-        'publisher TEXT',
-        'PRIMARY KEY (packageName)',
-        'FOREIGN KEY (ownerId) REFERENCES users(userId)',
-      ].join(', ')})''',
-      [],
-    ).drain<void>();
-
-    await query(
-      '''CREATE TABLE likes (${[
-        'packageName TEXT NOT NULL',
-        'userId INTEGER NOT NULL',
-        'PRIMARY KEY (userId, packageName)',
-        'FOREIGN KEY (userId) REFERENCES users(userId)',
-        'FOREIGN KEY (packageName) REFERENCES packages(packageName)',
-      ].join(', ')})''',
-      [],
-    ).drain<void>();
-  }
 }
