@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:typed_data';
+
 import 'logging_adaptor.dart';
 import 'sqlite.dart';
 
@@ -107,11 +109,11 @@ base class DatabaseQueryException implements DatabaseException {}
 /// when it was attempted.
 base class DatabaseTransactionConflictException implements DatabaseException {}
 
-/// Thrown, when [DatabaseConnection] has failed to maintain or obtain a
+/// Thrown, when [DatabaseAdaptor] has failed to maintain or obtain a
 /// connection.
 sealed class DatabaseConnectionException implements DatabaseException {}
 
-/// Thrown, when [DatabaseConnection] is broken, but it's believed that
+/// Thrown, when [DatabaseAdaptor] is broken, but it's believed that
 /// the issue is intermittent.
 ///
 /// **Example**: A broken TCP connection can often be resolved by creating a new
@@ -119,7 +121,7 @@ sealed class DatabaseConnectionException implements DatabaseException {}
 base class DatabaseConnectionBrokenException
     extends DatabaseConnectionException {}
 
-/// Thrown, when a [DatabaseConnection] fails and it is believe that the issue
+/// Thrown, when a [DatabaseAdaptor] fails and it is believe that the issue
 /// is persistent.
 ///
 /// **Example**: An authentication error can usually not be resolved by trying

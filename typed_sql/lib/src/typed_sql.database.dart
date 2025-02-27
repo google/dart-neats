@@ -48,9 +48,9 @@ final class Database<T extends Schema> extends DatabaseContext<T> {
 }
 
 final class Transaction<T extends Schema> extends DatabaseContext<T> {
-  Transaction._(DatabaseTransaction adaptor, SqlDialect dialect)
+  Transaction._(DatabaseTransaction adaptor, super.dialect)
       : _db = adaptor,
-        super._(dialect);
+        super._();
 
   @override
   final DatabaseTransaction _db;
@@ -86,6 +86,5 @@ final class Transaction<T extends Schema> extends DatabaseContext<T> {
 }
 
 final class SavePoint<T extends Schema> extends Transaction<T> {
-  SavePoint._(DatabaseSavePoint adaptor, SqlDialect dialect)
-      : super._(adaptor, dialect);
+  SavePoint._(DatabaseSavePoint super.adaptor, super.dialect) : super._();
 }

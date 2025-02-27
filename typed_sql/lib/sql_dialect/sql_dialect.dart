@@ -20,21 +20,23 @@ abstract base class SqlDialect {
 
   String createTables(List<CreateTableStatement> statement);
 
-  /// Insert [columns] into [table] returning columns from [returning].
+  /// Insert [InsertStatement.columns] into [InsertStatement.table] returning
+  /// columns from [InsertStatement.returning].
   ///
   /// ```sql
   /// INSERT INTO [table] ([columns]) VALUES ($1, ...)
   /// ```
   (String, List<Object?>) insertInto(InsertStatement statement);
 
-  /// Update [columns] from [table] with [values].
+  /// Update [UpdateStatement.columns] from [UpdateStatement.table] with
+  /// [UpdateStatement.values].
   ///
-  /// This updates rows satisfying the [where] expression.
+  /// This updates rows satisfying the [UpdateStatement.where] expression.
   (String, List<Object?>) update(UpdateStatement statement);
 
-  /// Delete from [table].
+  /// Delete from [DeleteStatement.table].
   ///
-  /// Delete rows satisfying the [where] expression.
+  /// Delete rows satisfying the [DeleteStatement.where] expression.
   ///
   /// This SQL statement should not return any rows,
   /// all return values are read but ignored.
