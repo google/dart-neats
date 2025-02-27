@@ -1,0 +1,32 @@
+#!/bin/bash
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+ATLAS="$SCRIPT_DIR/../.dart_tool/atlas-community-linux-amd64-latest"
+if [ ! -f "$ATLAS" ]; then
+  mkdir -p "$SCRIPT_DIR/../.dart_tool"
+  curl -L "https://release.ariga.io/atlas/atlas-community-linux-amd64-latest" -o "$ATLAS"
+  chmod +x "$ATLAS"
+fi
+
+dart "$SCRIPT_DIR/../bin/schema.dart" > "$SCRIPT_DIR/../.dart_tool/schema.sql"
+
+CONFIG="file://$SCRIPT_DIR/../atlas.hcl"
+
+case "$1" in
+    "validate")
+      exec "$ATLAS" migrate validate -c "$CONFIG" --env dev
+    ;;
+
+    "lint")
+      exec "$ATLAS" migrate lint -c "$CONFIG" --env dev
+    ;;
+
+    "diff")
+      exec "$ATLAS" migrate diff -c "$CONFIG" "$2" --env dev
+    ;;
+
+    *)
+        echo "Usage: ./tool/atlas [lint | diff <migration-name>]";
+    ;;
+esac

@@ -15,7 +15,7 @@
 import 'dart:async';
 
 import 'package:build/build.dart'
-    show BuildStep, Builder, BuilderOptions, NonLibraryAssetException, log;
+    show BuildStep, Builder, BuilderOptions, NonLibraryAssetException;
 import 'package:code_builder/code_builder.dart' as code;
 import 'package:glob/glob.dart';
 import 'package:source_gen/source_gen.dart' as g;
@@ -30,30 +30,6 @@ Builder typedSqlBuilder(BuilderOptions options) => g.SharedPartBuilder(
       'typed_sql',
       allowSyntaxErrors: false,
     );
-
-Builder sqlSchemaBuilder(BuilderOptions options) => _SqlSchemaBuilder();
-
-final class _SqlSchemaBuilder extends Builder {
-  @override
-  Future<void> build(BuildStep buildStep) async {
-    final library = await parseLibrary(g.LibraryReader(
-      await buildStep.inputLibrary,
-    ));
-    if (library.isEmpty) {
-      return;
-    }
-
-    log.info('Generating SQL schema');
-    await buildStep.writeAsString(buildStep.allowedOutputs.first, '''
-      -- TODO: Create tables, and figure out how users specify dialect!
-    ''');
-  }
-
-  @override
-  Map<String, List<String>> get buildExtensions => const {
-        '.dart': ['.sql'],
-      };
-}
 
 final class _TypedSqlBuilder extends g.Generator {
   final BuilderOptions options;

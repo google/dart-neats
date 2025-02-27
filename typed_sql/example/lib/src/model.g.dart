@@ -22,6 +22,13 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
           type: int,
           isNotNull: true,
           defaultValue: null,
+          autoIncrement: true,
+        ),
+        (
+          name: 'name',
+          type: String,
+          isNotNull: true,
+          defaultValue: null,
           autoIncrement: false,
         ),
         (
@@ -42,6 +49,60 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         String referencedTable,
         List<String> referencedColumns,
       })>[],
+    ),
+    (
+      tableName: 'packages',
+      columns: <({
+        String name,
+        Type type,
+        bool isNotNull,
+        Object? defaultValue,
+        bool autoIncrement,
+      })>[
+        (
+          name: 'packageName',
+          type: String,
+          isNotNull: true,
+          defaultValue: null,
+          autoIncrement: false,
+        ),
+        (
+          name: 'likes',
+          type: int,
+          isNotNull: true,
+          defaultValue: 0,
+          autoIncrement: false,
+        ),
+        (
+          name: 'ownerId',
+          type: int,
+          isNotNull: true,
+          defaultValue: null,
+          autoIncrement: false,
+        ),
+        (
+          name: 'publisher',
+          type: String,
+          isNotNull: false,
+          defaultValue: null,
+          autoIncrement: false,
+        )
+      ],
+      primaryKey: _$Package._$primaryKey,
+      unique: <List<String>>[],
+      foreignKeys: <({
+        String name,
+        List<String> columns,
+        String referencedTable,
+        List<String> referencedColumns,
+      })>[
+        (
+          name: 'owner',
+          columns: ['ownerId'],
+          referencedTable: 'users',
+          referencedColumns: ['userId'],
+        )
+      ],
     ),
     (
       tableName: 'likes',
@@ -76,32 +137,6 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
         List<String> referencedColumns,
       })>[],
     ),
-    (
-      tableName: 'packages',
-      columns: <({
-        String name,
-        Type type,
-        bool isNotNull,
-        Object? defaultValue,
-        bool autoIncrement,
-      })>[
-        (
-          name: 'name',
-          type: String,
-          isNotNull: true,
-          defaultValue: null,
-          autoIncrement: false,
-        )
-      ],
-      primaryKey: _$Package._$primaryKey,
-      unique: <List<String>>[],
-      foreignKeys: <({
-        String name,
-        List<String> columns,
-        String referencedTable,
-        List<String> referencedColumns,
-      })>[],
-    ),
   ];
 
   /// TODO: Propagate documentation for tables!
@@ -114,21 +149,21 @@ extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
       );
 
   /// TODO: Propagate documentation for tables!
-  Table<Like> get likes => ExposedForCodeGen.declareTable(
-        context: this,
-        tableName: 'likes',
-        columns: _$Like._$fields,
-        primaryKey: _$Like._$primaryKey,
-        deserialize: _$Like.new,
-      );
-
-  /// TODO: Propagate documentation for tables!
   Table<Package> get packages => ExposedForCodeGen.declareTable(
         context: this,
         tableName: 'packages',
         columns: _$Package._$fields,
         primaryKey: _$Package._$primaryKey,
         deserialize: _$Package.new,
+      );
+
+  /// TODO: Propagate documentation for tables!
+  Table<Like> get likes => ExposedForCodeGen.declareTable(
+        context: this,
+        tableName: 'likes',
+        columns: _$Like._$fields,
+        primaryKey: _$Like._$primaryKey,
+        deserialize: _$Like.new,
       );
   Future<void> createTables() async => ExposedForCodeGen.createTables(
         context: this,
@@ -145,35 +180,43 @@ String createPrimaryDatabaseTables(SqlDialect dialect) =>
 final class _$User extends User {
   _$User(RowReader row)
       : userId = row.readInt()!,
+        name = row.readString()!,
         email = row.readString()!;
 
   @override
   final int userId;
 
   @override
+  final String name;
+
+  @override
   final String email;
 
   static const _$fields = [
     'userId',
+    'name',
     'email',
   ];
 
   static const _$primaryKey = ['userId'];
 
   @override
-  String toString() => 'User(userId: "$userId", email: "$email")';
+  String toString() =>
+      'User(userId: "$userId", name: "$name", email: "$email")';
 }
 
 extension TableUserExt on Table<User> {
   /// TODO: document create
   Future<User> create({
     required int userId,
+    required String name,
     required String email,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
           literal(userId),
+          literal(name),
           literal(email),
         ],
       );
@@ -181,12 +224,14 @@ extension TableUserExt on Table<User> {
   /// TODO: document insert
   Future<User> insert({
     required Expr<int> userId,
+    required Expr<String> name,
     required Expr<String> email,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
           userId,
+          name,
           email,
         ],
       );
@@ -206,6 +251,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
             Expr<User> user,
             Update<User> Function({
               Expr<int> userId,
+              Expr<String> name,
               Expr<String> email,
             }) set,
           ) updateBuilder) =>
@@ -215,10 +261,12 @@ extension QueryUserExt on Query<(Expr<User>,)> {
           user,
           ({
             Expr<int>? userId,
+            Expr<String>? name,
             Expr<String>? email,
           }) =>
               ExposedForCodeGen.buildUpdate<User>([
             userId,
+            name,
             email,
           ]),
         ),
@@ -228,12 +276,14 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// WARNING: This cannot set properties to `null`!
   Future<void> updateAllLiteral({
     int? userId,
+    String? name,
     String? email,
   }) =>
       ExposedForCodeGen.update<User>(
         this,
         (user) => ExposedForCodeGen.buildUpdate<User>([
           userId != null ? literal(userId) : null,
+          name != null ? literal(name) : null,
           email != null ? literal(email) : null,
         ]),
       );
@@ -250,6 +300,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
             Expr<User> user,
             Update<User> Function({
               Expr<int> userId,
+              Expr<String> name,
               Expr<String> email,
             }) set,
           ) updateBuilder) =>
@@ -259,10 +310,12 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
           user,
           ({
             Expr<int>? userId,
+            Expr<String>? name,
             Expr<String>? email,
           }) =>
               ExposedForCodeGen.buildUpdate<User>([
             userId,
+            name,
             email,
           ]),
         ),
@@ -272,12 +325,14 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   /// WARNING: This cannot set properties to `null`!
   Future<void> updateLiteral({
     int? userId,
+    String? name,
     String? email,
   }) =>
       ExposedForCodeGen.update<User>(
         asQuery,
         (user) => ExposedForCodeGen.buildUpdate<User>([
           userId != null ? literal(userId) : null,
+          name != null ? literal(name) : null,
           email != null ? literal(email) : null,
         ]),
       );
@@ -287,58 +342,109 @@ extension ExpressionUserExt on Expr<User> {
   /// TODO: document userId
   Expr<int> get userId => ExposedForCodeGen.field(this, 0);
 
+  /// TODO: document name
+  Expr<String> get name => ExposedForCodeGen.field(this, 1);
+
   /// TODO: document email
-  Expr<String> get email => ExposedForCodeGen.field(this, 1);
+  Expr<String> get email => ExposedForCodeGen.field(this, 2);
+
+  /// TODO: document references
+  SubQuery<(Expr<Package>,)> get packages => ExposedForCodeGen.subqueryTable(
+        reference: this,
+        tableName: 'packages',
+        columns: _$Package._$fields,
+        primaryKey: _$Package._$primaryKey,
+        deserialize: _$Package.new,
+      ).where((r) => r.ownerId.equals(userId));
 }
 
 final class _$Package extends Package {
-  _$Package(RowReader row) : name = row.readString()!;
+  _$Package(RowReader row)
+      : packageName = row.readString()!,
+        likes = row.readInt()!,
+        ownerId = row.readInt()!,
+        publisher = row.readString();
 
   @override
-  final String name;
-
-  static const _$fields = ['name'];
-
-  static const _$primaryKey = ['name'];
+  final String packageName;
 
   @override
-  String toString() => 'Package(name: "$name")';
+  final int likes;
+
+  @override
+  final int ownerId;
+
+  @override
+  final String? publisher;
+
+  static const _$fields = [
+    'packageName',
+    'likes',
+    'ownerId',
+    'publisher',
+  ];
+
+  static const _$primaryKey = ['packageName'];
+
+  @override
+  String toString() =>
+      'Package(packageName: "$packageName", likes: "$likes", ownerId: "$ownerId", publisher: "$publisher")';
 }
 
 extension TablePackageExt on Table<Package> {
   /// TODO: document create
-  Future<Package> create({required String name}) =>
+  Future<Package> create({
+    required String packageName,
+    required int likes,
+    required int ownerId,
+    required String? publisher,
+  }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
-          literal(name),
+          literal(packageName),
+          literal(likes),
+          literal(ownerId),
+          literal(publisher),
         ],
       );
 
   /// TODO: document insert
-  Future<Package> insert({required Expr<String> name}) =>
+  Future<Package> insert({
+    required Expr<String> packageName,
+    required Expr<int> likes,
+    required Expr<int> ownerId,
+    required Expr<String?> publisher,
+  }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
-          name,
+          packageName,
+          likes,
+          ownerId,
+          publisher,
         ],
       );
 
   /// TODO: document delete
-  Future<void> delete({required String name}) => byKey(name: name).delete();
+  Future<void> delete({required String packageName}) =>
+      byKey(packageName: packageName).delete();
 }
 
 extension QueryPackageExt on Query<(Expr<Package>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Package>,)> byKey({required String name}) =>
-      where((package) => package.name.equalsLiteral(name)).first;
+  QuerySingle<(Expr<Package>,)> byKey({required String packageName}) =>
+      where((package) => package.packageName.equalsLiteral(packageName)).first;
 
   /// TODO: document updateAll()
   Future<void> updateAll(
           Update<Package> Function(
             Expr<Package> package,
             Update<Package> Function({
-              Expr<String> name,
+              Expr<String> packageName,
+              Expr<int> likes,
+              Expr<int> ownerId,
+              Expr<String?> publisher,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Package>(
@@ -346,21 +452,35 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
         (package) => updateBuilder(
           package,
           ({
-            Expr<String>? name,
+            Expr<String>? packageName,
+            Expr<int>? likes,
+            Expr<int>? ownerId,
+            Expr<String?>? publisher,
           }) =>
               ExposedForCodeGen.buildUpdate<Package>([
-            name,
+            packageName,
+            likes,
+            ownerId,
+            publisher,
           ]),
         ),
       );
 
   /// TODO: document updateAllLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateAllLiteral({String? name}) =>
+  Future<void> updateAllLiteral({
+    String? packageName,
+    int? likes,
+    int? ownerId,
+    String? publisher,
+  }) =>
       ExposedForCodeGen.update<Package>(
         this,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
-          name != null ? literal(name) : null,
+          packageName != null ? literal(packageName) : null,
+          likes != null ? literal(likes) : null,
+          ownerId != null ? literal(ownerId) : null,
+          publisher != null ? literal(publisher) : null,
         ]),
       );
 }
@@ -371,7 +491,10 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
           Update<Package> Function(
             Expr<Package> package,
             Update<Package> Function({
-              Expr<String> name,
+              Expr<String> packageName,
+              Expr<int> likes,
+              Expr<int> ownerId,
+              Expr<String?> publisher,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Package>(
@@ -379,28 +502,60 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
         (package) => updateBuilder(
           package,
           ({
-            Expr<String>? name,
+            Expr<String>? packageName,
+            Expr<int>? likes,
+            Expr<int>? ownerId,
+            Expr<String?>? publisher,
           }) =>
               ExposedForCodeGen.buildUpdate<Package>([
-            name,
+            packageName,
+            likes,
+            ownerId,
+            publisher,
           ]),
         ),
       );
 
   /// TODO: document updateLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateLiteral({String? name}) =>
+  Future<void> updateLiteral({
+    String? packageName,
+    int? likes,
+    int? ownerId,
+    String? publisher,
+  }) =>
       ExposedForCodeGen.update<Package>(
         asQuery,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
-          name != null ? literal(name) : null,
+          packageName != null ? literal(packageName) : null,
+          likes != null ? literal(likes) : null,
+          ownerId != null ? literal(ownerId) : null,
+          publisher != null ? literal(publisher) : null,
         ]),
       );
 }
 
 extension ExpressionPackageExt on Expr<Package> {
-  /// TODO: document name
-  Expr<String> get name => ExposedForCodeGen.field(this, 0);
+  /// TODO: document packageName
+  Expr<String> get packageName => ExposedForCodeGen.field(this, 0);
+
+  /// TODO: document likes
+  Expr<int> get likes => ExposedForCodeGen.field(this, 1);
+
+  /// TODO: document ownerId
+  Expr<int> get ownerId => ExposedForCodeGen.field(this, 2);
+
+  /// TODO: document publisher
+  Expr<String?> get publisher => ExposedForCodeGen.field(this, 3);
+
+  /// TODO: document references
+  Expr<User> get owner => ExposedForCodeGen.subqueryTable(
+        reference: this,
+        tableName: 'users',
+        columns: _$User._$fields,
+        primaryKey: _$User._$primaryKey,
+        deserialize: _$User.new,
+      ).where((r) => r.userId.equals(ownerId)).first;
 }
 
 final class _$Like extends Like {

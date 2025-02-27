@@ -24,13 +24,24 @@ Future<void> main() async {
   //await db.migrate();
 
   // Create 3 users
-  await db.users.create(userId: 12, email: 'alice@wonderland.com');
-  await db.users.create(userId: 13, email: 'trudy@evil.inc');
-  await db.users.create(userId: 14, email: 'bob@builders.com');
+  await db.users
+      .create(userId: 12, name: 'alice', email: 'alice@wonderland.com');
+  await db.users.create(userId: 13, name: 'trudy', email: 'trudy@evil.inc');
+  await db.users.create(userId: 14, name: 'bob', email: 'bob@builders.com');
 
   // Create two packages
-  await db.packages.create(name: 'try');
-  await db.packages.create(name: 'retry');
+  await db.packages.create(
+    packageName: 'try',
+    ownerId: 12,
+    likes: 0,
+    publisher: null,
+  );
+  await db.packages.create(
+    packageName: 'retry',
+    ownerId: 12,
+    likes: 0,
+    publisher: null,
+  );
 
   // Create some likes
   await db.likes.create(userId: 12, packageName: 'retry');
@@ -99,6 +110,7 @@ Future<void> main() async {
         await sp.savePoint((sp) async {
           await sp.users.create(
             userId: 42,
+            name: 'user',
             email: 'user@example.com',
           );
         });
