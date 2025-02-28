@@ -234,6 +234,12 @@ final class _Sqlite extends SqlDialect {
               explodedProjection.add('(${expr(sube, c)})');
               aliases.add('c_${i}_$j');
             }
+          } else if (e
+              case NullAssertionExpression(:final MultiValueExpression value)) {
+            for (final (j, sube) in value.explode().indexed) {
+              explodedProjection.add('(${expr(sube, c)})');
+              aliases.add('c_${i}_$j');
+            }
           } else {
             explodedProjection.add('(${expr(e, c)})');
             aliases.add('c_$i');

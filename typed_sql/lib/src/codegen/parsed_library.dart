@@ -84,7 +84,7 @@ final class ParsedModel {
 }
 
 final class ParsedForeignKey {
-  final String key;
+  final ParsedField key;
   final String table;
   final String field;
   final String? as;
@@ -97,6 +97,9 @@ final class ParsedForeignKey {
     required this.as,
     required this.name,
   });
+
+  late final ParsedField referencedField;
+  late final ParsedTable referencedTable;
 
   @override
   String toString() => 'ParsedForeignKey(${[

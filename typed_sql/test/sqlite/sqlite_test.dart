@@ -709,7 +709,7 @@ void main() {
     final result = await db.packages
         .select((p) => (
               p.packageName,
-              p.owner.assertNotNull().name,
+              p.owner.name,
             ))
         .fetch()
         .toList();

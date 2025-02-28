@@ -549,13 +549,13 @@ extension ExpressionPackageExt on Expr<Package> {
   Expr<String?> get publisher => ExposedForCodeGen.field(this, 3);
 
   /// TODO: document references
-  Expr<User?> get owner => ExposedForCodeGen.subqueryTable(
+  Expr<User> get owner => ExposedForCodeGen.subqueryTable(
         reference: this,
         tableName: 'users',
         columns: _$User._$fields,
         primaryKey: _$User._$primaryKey,
         deserialize: _$User.new,
-      ).where((r) => r.userId.equals(ownerId)).first;
+      ).where((r) => r.userId.equals(ownerId)).first.assertNotNull();
 }
 
 final class _$Like extends Like {

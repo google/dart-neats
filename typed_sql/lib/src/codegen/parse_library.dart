@@ -63,6 +63,20 @@ Future<ParsedLibrary> parseLibrary(LibraryReader targetLibrary) async {
     models: models,
   );
 
+  // We only allow a Model subclass to be used for one table!
+  final allTables = schemas.expand((s) => s.tables);
+  for (final schema in schemas) {
+    for (final table in schema.tables) {
+      if (allTables.any((t) => t != table && t.model == table.model)) {
+        throw InvalidGenerationSource(
+          'Model subclass "${table.model.name}" is used in more than one table!',
+          element:
+              modelCache.entries.firstWhere((e) => e.value == table.model).key,
+        );
+      }
+    }
+  }
+
   for (final schema in schemas) {
     for (final table in schema.tables) {
       for (final fk in table.model.foreignKeys) {
@@ -76,6 +90,7 @@ Future<ParsedLibrary> parseLibrary(LibraryReader targetLibrary) async {
             element: foreignKeyToElement[fk],
           );
         }
+        fk.referencedTable = referencedTable;
 
         // Resolve referencedField
         final referencedField = referencedTable.model.fields.firstWhereOrNull(
@@ -87,48 +102,7 @@ Future<ParsedLibrary> parseLibrary(LibraryReader targetLibrary) async {
             element: foreignKeyToElement[fk],
           );
         }
-
-        // If 'as' or 'name' is provided we have more constraints:
-        if (fk.as != null || fk.name != null) {
-          if (referencedTable.model.fields.any((f) => f.name == fk.as)) {
-            throw InvalidGenerationSource(
-              'Foreign key with `as: "${fk.as}"` references table that '
-              'already has a field named "${fk.as}"!',
-              element: foreignKeyToElement[fk],
-            );
-          }
-
-          // We are adding an Expr<referencedTable.model>.[fk.as] property,
-          // so we can't have anyone reusing referencedTable.model for tables
-          // with a differnet name! Thus, all tables using referencedTable.model
-          // must have the same name!
-          final illegalReferencedModelReuse = schemas
-              .expand((s) => s.tables)
-              .where((t) =>
-                  t.model == referencedTable.model &&
-                  t.name != referencedTable.name);
-          if (illegalReferencedModelReuse.isNotEmpty) {
-            throw InvalidGenerationSource(
-              'Foreign key with `as` / `name` references table that uses'
-              'a Model subclass used in tables with a different name.',
-              element: foreignKeyToElement[fk],
-            );
-          }
-
-          // We are adding an Expr<referencedTable.model>.[fk.as] property,
-          // which will query tables that references referencedTable.
-          // So all tables that uses table.model must have the same name.
-          final illegalModelReuse = schemas
-              .expand((s) => s.tables)
-              .where((t) => t.model == table.model && t.name != table.name);
-          if (illegalModelReuse.isNotEmpty) {
-            throw InvalidGenerationSource(
-              'Foreign key with `as` / `name` is located on a Model that '
-              'is used in tables with different names.',
-              element: foreignKeyToElement[fk],
-            );
-          }
-        }
+        fk.referencedField = referencedField;
       }
     }
   }
@@ -337,7 +311,7 @@ ParsedModel _parseModel(
       }
 
       final fk = ParsedForeignKey(
-        key: key,
+        key: fields.firstWhere((f) => f.name == key),
         table: table,
         field: field,
         as: as,
