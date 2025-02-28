@@ -396,7 +396,8 @@ void main() {
     expect(result, hasLength(2));
     final (p, user) = result[0];
     expect(p.packageName, anyOf(equals('foo'), equals('bar')));
-    expect(user.name, equals('Alice'));
+    expect(user, isNotNull);
+    expect(user!.name, equals('Alice'));
   });
 
   _test('db.select(true, "hello world", 42)', (db) async {
@@ -496,8 +497,8 @@ void main() {
   });
 
   _test('db.packages.exists().asExpr.not()', (db) async {
-    final result =
-        await db.select((db.packages.exists().asExpr.not(),)).fetch();
+    final result = await db
+        .select((db.packages.exists().asExpr.assertNotNull().not(),)).fetch();
     expect(result, isFalse);
   });
 
@@ -532,6 +533,7 @@ void main() {
                 .where((p) => p.ownerId.equals(u.userId))
                 .exists()
                 .asExpr
+                .assertNotNull()
                 .not(),
           ),
         )
@@ -553,6 +555,7 @@ void main() {
               .where((p) => p.ownerId.equals(u.userId))
               .exists()
               .asExpr
+              .assertNotNull()
               .not(),
         )
         .select((u) => (u.name,))
@@ -568,7 +571,8 @@ void main() {
           (u) => db.packages
               .where((p) => p.ownerId.equals(u.userId))
               .exists()
-              .asExpr,
+              .asExpr
+              .assertNotNull(),
         )
         .select((u) => (u.name,))
         .fetch()
@@ -705,7 +709,7 @@ void main() {
     final result = await db.packages
         .select((p) => (
               p.packageName,
-              p.owner.name,
+              p.owner.assertNotNull().name,
             ))
         .fetch()
         .toList();

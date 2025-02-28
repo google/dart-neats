@@ -110,7 +110,8 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
-  Expr<int> count() => select((a) => (CountAllExpression._(),)).first;
+  Expr<int> count() =>
+      select((a) => (CountAllExpression._(),)).first.assertNotNull();
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -235,7 +236,8 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
-  Expr<int> count() => select((a, b) => (CountAllExpression._(),)).first;
+  Expr<int> count() =>
+      select((a, b) => (CountAllExpression._(),)).first.assertNotNull();
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -365,7 +367,8 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
-  Expr<int> count() => select((a, b, c) => (CountAllExpression._(),)).first;
+  Expr<int> count() =>
+      select((a, b, c) => (CountAllExpression._(),)).first.assertNotNull();
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -511,7 +514,8 @@ extension SubQuery4<A, B, C, D>
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
-  Expr<int> count() => select((a, b, c, d) => (CountAllExpression._(),)).first;
+  Expr<int> count() =>
+      select((a, b, c, d) => (CountAllExpression._(),)).first.assertNotNull();
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           projectionBuilder) {
@@ -675,8 +679,9 @@ extension SubQuery5<A, B, C, D, E>
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
-  Expr<int> count() =>
-      select((a, b, c, d, e) => (CountAllExpression._(),)).first;
+  Expr<int> count() => select((a, b, c, d, e) => (CountAllExpression._(),))
+      .first
+      .assertNotNull();
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           projectionBuilder) {
@@ -856,8 +861,9 @@ extension SubQuery6<A, B, C, D, E, F>
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
-  Expr<int> count() =>
-      select((a, b, c, d, e, f) => (CountAllExpression._(),)).first;
+  Expr<int> count() => select((a, b, c, d, e, f) => (CountAllExpression._(),))
+      .first
+      .assertNotNull();
   SubQuery<T> select<T extends Record>(
       T Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -1046,7 +1052,9 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
             (e) => OffsetClause._(_from(e), offset),
           );
   Expr<int> count() =>
-      select((a, b, c, d, e, f, g) => (CountAllExpression._(),)).first;
+      select((a, b, c, d, e, f, g) => (CountAllExpression._(),))
+          .first
+          .assertNotNull();
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -1289,7 +1297,9 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
             (e) => OffsetClause._(_from(e), offset),
           );
   Expr<int> count() =>
-      select((a, b, c, d, e, f, g, h) => (CountAllExpression._(),)).first;
+      select((a, b, c, d, e, f, g, h) => (CountAllExpression._(),))
+          .first
+          .assertNotNull();
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g, Expr<H> h)

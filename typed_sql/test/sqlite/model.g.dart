@@ -549,7 +549,7 @@ extension ExpressionPackageExt on Expr<Package> {
   Expr<String?> get publisher => ExposedForCodeGen.field(this, 3);
 
   /// TODO: document references
-  Expr<User> get owner => ExposedForCodeGen.subqueryTable(
+  Expr<User?> get owner => ExposedForCodeGen.subqueryTable(
         reference: this,
         tableName: 'users',
         columns: _$User._$fields,

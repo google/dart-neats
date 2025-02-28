@@ -19,7 +19,6 @@ import 'package:build/build.dart' show log;
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../../typed_sql.dart';
 import 'parsed_library.dart';
 import 'type_checkers.dart';
 

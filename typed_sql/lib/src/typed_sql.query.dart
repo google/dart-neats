@@ -204,14 +204,14 @@ final class ExceptClause extends CompositeQueryClause {
 /* --------------------- Query extensions ---------------------- */
 
 extension QuerySingleModel1AsExpr<T extends Model> on QuerySingle<(Expr<T>,)> {
-  Expr<T> get asExpr => ModelSubQueryExpression._(
+  Expr<T?> get asExpr => ModelSubQueryExpression._(
         _query._from(_query._expressions.toList()),
         _query.table,
       );
 }
 
 extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
-  Expr<T> get asExpr => SubQueryExpression._(
+  Expr<T?> get asExpr => SubQueryExpression._(
         _query._from(_query._expressions.toList()),
       );
 }
@@ -238,14 +238,14 @@ extension QuerySingleModel<T extends Model> on QuerySingle<(Expr<T>,)> {
 }
 
 extension SubQueryModel1AsExpr<T extends Model> on SubQuery<(Expr<T>,)> {
-  Expr<T> get first => ModelSubQueryExpression._(
+  Expr<T?> get first => ModelSubQueryExpression._(
         _from(_expressions.toList()),
         table,
       );
 }
 
 extension SubQuery1AsExpr<T> on SubQuery<(Expr<T>,)> {
-  Expr<T> get first => SubQueryExpression._(
+  Expr<T?> get first => SubQueryExpression._(
         _from(_expressions.toList()),
       );
 }
@@ -283,26 +283,34 @@ extension QueryString on Query<(Expr<String>,)> {
 }
 
 extension SubQueryNumber<T extends num> on SubQuery<(Expr<T>,)> {
-  Expr<T> sum() => select<(Expr<T>,)>((a) => (SumExpression._(a),)).first;
+  Expr<T> sum() =>
+      select<(Expr<T>,)>((a) => (SumExpression._(a),)).first.assertNotNull();
 
-  Expr<double> avg() =>
-      select<(Expr<double>,)>((a) => (AvgExpression._(a),)).first;
+  Expr<double> avg() => select<(Expr<double>,)>((a) => (AvgExpression._(a),))
+      .first
+      .assertNotNull();
 
-  Expr<T> min() => select<(Expr<T>,)>((a) => (MinExpression._(a),)).first;
+  Expr<T> min() =>
+      select<(Expr<T>,)>((a) => (MinExpression._(a),)).first.assertNotNull();
 
-  Expr<T> max() => select<(Expr<T>,)>((a) => (MaxExpression._(a),)).first;
+  Expr<T> max() =>
+      select<(Expr<T>,)>((a) => (MaxExpression._(a),)).first.assertNotNull();
 }
 
 extension SubQueryDateTime on SubQuery<(Expr<DateTime>,)> {
-  Expr<DateTime> min() => select((a) => (MinExpression._(a),)).first;
+  Expr<DateTime> min() =>
+      select((a) => (MinExpression._(a),)).first.assertNotNull();
 
-  Expr<DateTime> max() => select((a) => (MaxExpression._(a),)).first;
+  Expr<DateTime> max() =>
+      select((a) => (MaxExpression._(a),)).first.assertNotNull();
 }
 
 extension SubQueryString on SubQuery<(Expr<String>,)> {
-  Expr<String> min() => select((a) => (MinExpression._(a),)).first;
+  Expr<String> min() =>
+      select((a) => (MinExpression._(a),)).first.assertNotNull();
 
-  Expr<String> max() => select((a) => (MaxExpression._(a),)).first;
+  Expr<String> max() =>
+      select((a) => (MaxExpression._(a),)).first.assertNotNull();
 }
 
 extension QueryAny<T extends Record> on Query<T> {
@@ -359,8 +367,6 @@ abstract final class QueryContext {
     return _parameters.length;
   }
 
-  List<String> model(ModelFieldExpression model);
-
   String field(FieldExpression field);
 
   (String alias, QueryContext ctx) alias(
@@ -394,17 +400,6 @@ final class _AliasedQueryContext extends QueryContext {
   ) : super._();
 
   @override
-  List<String> model(ModelFieldExpression model) {
-    if (model.handle == _handle) {
-      return List.generate(
-        model._columns,
-        (i) => 't$_depth.${_columns[i]}',
-      ).toList();
-    }
-    return _parent.model(model);
-  }
-
-  @override
   String field(FieldExpression field) {
     if (field.handle == _handle) {
       return 't$_depth.${_columns[field.index]}';
@@ -421,15 +416,6 @@ final class _RootQueryContext extends QueryContext {
     throw ArgumentError.value(
       field,
       'field',
-      'cannot be resolved in the given context',
-    );
-  }
-
-  @override
-  List<String> model(ModelFieldExpression<Model> model) {
-    throw ArgumentError.value(
-      model,
-      'model',
       'cannot be resolved in the given context',
     );
   }

@@ -37,14 +37,13 @@ sealed class Expr<T extends Object?> {
   }
 
   Expr<T> _standin(int index, Object handle) => FieldExpression(index, handle);
+  Expr<R> _field<R>(int index) =>
+      // This should never happen!
+      throw AssertionError('Only Expr<Model> can have fields');
 
   static const null$ = Literal.null$;
   static const true$ = Literal.true$;
   static const false$ = Literal.false$;
-
-  Expr<R> _field<R>(int index) =>
-      // This should never happen!
-      throw AssertionError('Only Expr<Model> can have fields');
 
   static Literal<T> literal<T extends Object?>(T value) => Literal(value);
 }
@@ -64,6 +63,8 @@ sealed class MultiValueExpression<T> extends Expr<T> {
 extension<T extends Model> on Query<(Expr<T>,)> {
   Table<T> get table => switch (_expressions.$1) {
         final ModelFieldExpression<T> e => e.table,
+        NullAssertionExpression<T>(:final ModelFieldExpression<T> value) =>
+          value.table,
         _ => throw AssertionError('Expr<Model> must be ModelExpression'),
       };
 }
@@ -71,6 +72,8 @@ extension<T extends Model> on Query<(Expr<T>,)> {
 extension<T extends Model> on SubQuery<(Expr<T>,)> {
   Table<T> get table => switch (_expressions.$1) {
         final ModelFieldExpression<T> e => e.table,
+        NullAssertionExpression<T>(:final ModelFieldExpression<T> value) =>
+          value.table,
         _ => throw AssertionError('Expr<Model> must be ModelExpression'),
       };
 }
@@ -195,6 +198,54 @@ final class MaxExpression<T extends Comparable> extends Expr<T> {
 
 final class CountAllExpression extends Expr<int> {
   CountAllExpression._() : super._();
+}
+
+final class OrElseExpression<T> extends Expr<T> {
+  final Expr<T?> value;
+  final Expr<T> orElse;
+
+  OrElseExpression._(this.value, this.orElse) : super._();
+}
+
+final class NullAssertionExpression<T> extends Expr<T> {
+  final Expr<T?> value;
+
+  @override
+  int get _columns => value._columns;
+
+  @override
+  T _decode(RowReader row) => value._decode(row)!;
+
+  Expr<T> _standin(int index, Object handle) =>
+      NullAssertionExpression._(value._standin(index, handle));
+  Expr<R> _field<R>(int index) => value._field(index);
+
+  NullAssertionExpression._(this.value) : super._();
+}
+
+extension ExpressionNullable<T> on Expr<T?> {
+  Expr<T> assertNotNull() => NullAssertionExpression._(this);
+}
+
+extension ExpressionNullableNum<T extends num> on Expr<T?> {
+  Expr<T> orElse(Expr<T> value) => OrElseExpression._(this, value);
+  Expr<T> orElseLiteral(T value) => orElse(literal(value));
+}
+
+extension ExpressionNullableString on Expr<String?> {
+  Expr<String> orElse(Expr<String> value) => OrElseExpression._(this, value);
+  Expr<String> orElseLiteral(String value) => orElse(literal(value));
+}
+
+extension ExpressionNullableBool on Expr<bool?> {
+  Expr<bool> orElse(Expr<bool> value) => OrElseExpression._(this, value);
+  Expr<bool> orElseLiteral(bool value) => orElse(literal(value));
+}
+
+extension ExpressionNullableDateTime on Expr<DateTime?> {
+  Expr<DateTime> orElse(Expr<DateTime> value) =>
+      OrElseExpression._(this, value);
+  Expr<DateTime> orElseLiteral(DateTime value) => orElse(literal(value));
 }
 
 final class Literal<T> extends Expr<T> {

@@ -501,7 +501,7 @@ Spec _buildSubQueryExtension(int i) {
           ..returns = refer('Expr<int>')
           ..lambda = true
           ..body = Code('''
-            select((${arg.take(i).join(',')}) => (CountAllExpression._(),)).first
+            select((${arg.take(i).join(',')}) => (CountAllExpression._(),)).first.assertNotNull()
           '''),
       ),
 

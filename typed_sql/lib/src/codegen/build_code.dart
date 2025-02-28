@@ -492,7 +492,7 @@ Iterable<Spec> buildModel(ParsedModel model, ParsedLibrary library) sync* {
               ..name = ref.fk.name!
               ..docs.add('/// TODO: document references')
               ..type = MethodType.getter
-              ..returns = refer('Expr<${ref.referencedTable.model.name}>')
+              ..returns = refer('Expr<${ref.referencedTable.model.name}?>')
               ..lambda = true
               ..body = Code('''
                 ExposedForCodeGen.subqueryTable(

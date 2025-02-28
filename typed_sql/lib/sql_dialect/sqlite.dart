@@ -366,6 +366,10 @@ final class _Sqlite extends SqlDialect {
         MinExpression<Comparable>(:final value) => 'MIN(${expr(value, ctx)})',
         MaxExpression<Comparable>(:final value) => 'MAX(${expr(value, ctx)})',
         CountAllExpression() => 'COUNT(*)',
+        OrElseExpression<T>(:final value, :final orElse) =>
+          'COALESCE(${expr(value, ctx)}, ${expr(orElse, ctx)})',
+        // Null assertions do nothing!
+        NullAssertionExpression<T>(:final value) => expr(value, ctx),
       };
 }
 
