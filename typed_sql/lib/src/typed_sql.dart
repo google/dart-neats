@@ -47,34 +47,35 @@ final class Update<T extends Model> {
   Update._(this._values);
 }
 
+typedef TableDefinition<T extends Model> = ({
+  String tableName,
+  List<
+      ({
+        String name,
+        Type type,
+        bool isNotNull,
+        Object? defaultValue,
+        bool autoIncrement,
+      })> columns,
+  List<String> primaryKey,
+  List<List<String>> unique,
+  List<
+      ({
+        String name,
+        List<String> columns,
+        String referencedTable,
+        List<String> referencedColumns,
+      })> foreignKeys,
+  T Function(RowReader) readModel,
+});
+
 /// Methods exclusively exposed for use by generated code.
 ///
 /// @nodoc
 final class ExposedForCodeGen {
   static String createTableSchema({
     required SqlDialect dialect,
-    required List<
-            ({
-              String tableName,
-              List<
-                  ({
-                    String name,
-                    Type type,
-                    bool isNotNull,
-                    Object? defaultValue,
-                    bool autoIncrement,
-                  })> columns,
-              List<String> primaryKey,
-              List<List<String>> unique,
-              List<
-                  ({
-                    String name,
-                    List<String> columns,
-                    String referencedTable,
-                    List<String> referencedColumns,
-                  })> foreignKeys,
-            })>
-        tables,
+    required List<TableDefinition> tables,
   }) {
     return dialect.createTables(
       tables
@@ -107,28 +108,7 @@ final class ExposedForCodeGen {
 
   static Future<void> createTables({
     required DatabaseContext context,
-    required List<
-            ({
-              String tableName,
-              List<
-                  ({
-                    String name,
-                    Type type,
-                    bool isNotNull,
-                    Object? defaultValue,
-                    bool autoIncrement,
-                  })> columns,
-              List<String> primaryKey,
-              List<List<String>> unique,
-              List<
-                  ({
-                    String name,
-                    List<String> columns,
-                    String referencedTable,
-                    List<String> referencedColumns,
-                  })> foreignKeys,
-            })>
-        tables,
+    required List<TableDefinition> tables,
   }) async {
     final sql = createTableSchema(dialect: context._dialect, tables: tables);
     await context._db.script(sql);
@@ -143,17 +123,18 @@ final class ExposedForCodeGen {
   /// Create [Table] object.
   ///
   /// @nodoc
-  static Table<T> declareTable<T extends Model>({
-    required DatabaseContext context,
-    required String tableName,
-    required List<String> columns,
-    required List<String> primaryKey,
-    required T Function(RowReader) deserialize,
-  }) =>
+  static Table<T> declareTable<T extends Model>(
+    DatabaseContext context,
+    TableDefinition<T> table,
+  ) =>
       Table._(
         context,
-        TableClause._(tableName, columns, primaryKey),
-        deserialize,
+        TableClause._(
+          table.tableName,
+          table.columns.map((c) => c.name).toList(),
+          table.primaryKey,
+        ),
+        table.readModel,
       );
 
   static Future<T> insertInto<T extends Model>({
@@ -225,24 +206,25 @@ final class ExposedForCodeGen {
     );
   }
 
-  static SubQuery<(Expr<T>,)> subqueryTable<T extends Model, S extends Model>({
-    required Expr<S> reference,
-    required String tableName,
-    required List<String> columns,
-    required List<String> primaryKey,
-    required T Function(RowReader) deserialize,
-  }) {
-    final table = Table._(
+  static SubQuery<(Expr<T>,)> subqueryTable<T extends Model, S extends Model>(
+    Expr<S> reference,
+    TableDefinition<T> table,
+  ) {
+    final t = Table._(
       switch (reference) {
         final ModelFieldExpression<S> e => e.table._context,
         _ => throw AssertionError('Expr<Model> must be ModelExpression'),
       },
-      TableClause._(tableName, columns, primaryKey),
-      deserialize,
+      TableClause._(
+        table.tableName,
+        table.columns.map((c) => c.name).toList(),
+        table.primaryKey,
+      ),
+      table.readModel,
     );
     return SubQuery._(
-      (ModelFieldExpression(0, table, Object()),),
-      (_) => table._tableClause,
+      (ModelFieldExpression(0, t, Object()),),
+      (_) => t._tableClause,
     );
   }
 }

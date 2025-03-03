@@ -7,163 +7,24 @@ part of 'model.dart';
 // **************************************************************************
 
 extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
-  static const _$tables = [
-    (
-      tableName: 'users',
-      columns: <({
-        String name,
-        Type type,
-        bool isNotNull,
-        Object? defaultValue,
-        bool autoIncrement,
-      })>[
-        (
-          name: 'userId',
-          type: int,
-          isNotNull: true,
-          defaultValue: null,
-          autoIncrement: true,
-        ),
-        (
-          name: 'name',
-          type: String,
-          isNotNull: true,
-          defaultValue: null,
-          autoIncrement: false,
-        ),
-        (
-          name: 'email',
-          type: String,
-          isNotNull: true,
-          defaultValue: null,
-          autoIncrement: false,
-        )
-      ],
-      primaryKey: _$User._$primaryKey,
-      unique: <List<String>>[
-        ['email']
-      ],
-      foreignKeys: <({
-        String name,
-        List<String> columns,
-        String referencedTable,
-        List<String> referencedColumns,
-      })>[],
-    ),
-    (
-      tableName: 'packages',
-      columns: <({
-        String name,
-        Type type,
-        bool isNotNull,
-        Object? defaultValue,
-        bool autoIncrement,
-      })>[
-        (
-          name: 'packageName',
-          type: String,
-          isNotNull: true,
-          defaultValue: null,
-          autoIncrement: false,
-        ),
-        (
-          name: 'likes',
-          type: int,
-          isNotNull: true,
-          defaultValue: 0,
-          autoIncrement: false,
-        ),
-        (
-          name: 'ownerId',
-          type: int,
-          isNotNull: true,
-          defaultValue: null,
-          autoIncrement: false,
-        ),
-        (
-          name: 'publisher',
-          type: String,
-          isNotNull: false,
-          defaultValue: null,
-          autoIncrement: false,
-        )
-      ],
-      primaryKey: _$Package._$primaryKey,
-      unique: <List<String>>[],
-      foreignKeys: <({
-        String name,
-        List<String> columns,
-        String referencedTable,
-        List<String> referencedColumns,
-      })>[
-        (
-          name: 'owner',
-          columns: ['ownerId'],
-          referencedTable: 'users',
-          referencedColumns: ['userId'],
-        )
-      ],
-    ),
-    (
-      tableName: 'likes',
-      columns: <({
-        String name,
-        Type type,
-        bool isNotNull,
-        Object? defaultValue,
-        bool autoIncrement,
-      })>[
-        (
-          name: 'userId',
-          type: int,
-          isNotNull: true,
-          defaultValue: null,
-          autoIncrement: false,
-        ),
-        (
-          name: 'packageName',
-          type: String,
-          isNotNull: true,
-          defaultValue: null,
-          autoIncrement: false,
-        )
-      ],
-      primaryKey: _$Like._$primaryKey,
-      unique: <List<String>>[],
-      foreignKeys: <({
-        String name,
-        List<String> columns,
-        String referencedTable,
-        List<String> referencedColumns,
-      })>[],
-    ),
-  ];
+  static const _$tables = [_$User._$table, _$Package._$table, _$Like._$table];
 
   /// TODO: Propagate documentation for tables!
   Table<User> get users => ExposedForCodeGen.declareTable(
-        context: this,
-        tableName: 'users',
-        columns: _$User._$fields,
-        primaryKey: _$User._$primaryKey,
-        deserialize: _$User.new,
+        this,
+        _$User._$table,
       );
 
   /// TODO: Propagate documentation for tables!
   Table<Package> get packages => ExposedForCodeGen.declareTable(
-        context: this,
-        tableName: 'packages',
-        columns: _$Package._$fields,
-        primaryKey: _$Package._$primaryKey,
-        deserialize: _$Package.new,
+        this,
+        _$Package._$table,
       );
 
   /// TODO: Propagate documentation for tables!
   Table<Like> get likes => ExposedForCodeGen.declareTable(
-        context: this,
-        tableName: 'likes',
-        columns: _$Like._$fields,
-        primaryKey: _$Like._$primaryKey,
-        deserialize: _$Like.new,
+        this,
+        _$Like._$table,
       );
   Future<void> createTables() async => ExposedForCodeGen.createTables(
         context: this,
@@ -192,13 +53,49 @@ final class _$User extends User {
   @override
   final String email;
 
-  static const _$fields = [
-    'userId',
-    'name',
-    'email',
-  ];
-
-  static const _$primaryKey = ['userId'];
+  static const _$table = (
+    tableName: 'users',
+    columns: <({
+      String name,
+      Type type,
+      bool isNotNull,
+      Object? defaultValue,
+      bool autoIncrement,
+    })>[
+      (
+        name: 'userId',
+        type: int,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+      ),
+      (
+        name: 'name',
+        type: String,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        name: 'email',
+        type: String,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      )
+    ],
+    primaryKey: ['userId'],
+    unique: <List<String>>[
+      ['email']
+    ],
+    foreignKeys: <({
+      String name,
+      List<String> columns,
+      String referencedTable,
+      List<String> referencedColumns,
+    })>[],
+    readModel: _$User.new,
+  );
 
   @override
   String toString() =>
@@ -349,13 +246,9 @@ extension ExpressionUserExt on Expr<User> {
   Expr<String> get email => ExposedForCodeGen.field(this, 2);
 
   /// TODO: document references
-  SubQuery<(Expr<Package>,)> get packages => ExposedForCodeGen.subqueryTable(
-        reference: this,
-        tableName: 'packages',
-        columns: _$Package._$fields,
-        primaryKey: _$Package._$primaryKey,
-        deserialize: _$Package.new,
-      ).where((r) => r.ownerId.equals(userId));
+  SubQuery<(Expr<Package>,)> get packages =>
+      ExposedForCodeGen.subqueryTable(this, _$Package._$table)
+          .where((r) => r.ownerId.equals(userId));
 }
 
 final class _$Package extends Package {
@@ -377,14 +270,61 @@ final class _$Package extends Package {
   @override
   final String? publisher;
 
-  static const _$fields = [
-    'packageName',
-    'likes',
-    'ownerId',
-    'publisher',
-  ];
-
-  static const _$primaryKey = ['packageName'];
+  static const _$table = (
+    tableName: 'packages',
+    columns: <({
+      String name,
+      Type type,
+      bool isNotNull,
+      Object? defaultValue,
+      bool autoIncrement,
+    })>[
+      (
+        name: 'packageName',
+        type: String,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        name: 'likes',
+        type: int,
+        isNotNull: true,
+        defaultValue: 0,
+        autoIncrement: false,
+      ),
+      (
+        name: 'ownerId',
+        type: int,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        name: 'publisher',
+        type: String,
+        isNotNull: false,
+        defaultValue: null,
+        autoIncrement: false,
+      )
+    ],
+    primaryKey: ['packageName'],
+    unique: <List<String>>[],
+    foreignKeys: <({
+      String name,
+      List<String> columns,
+      String referencedTable,
+      List<String> referencedColumns,
+    })>[
+      (
+        name: 'owner',
+        columns: ['ownerId'],
+        referencedTable: 'users',
+        referencedColumns: ['userId'],
+      )
+    ],
+    readModel: _$Package.new,
+  );
 
   @override
   String toString() =>
@@ -549,13 +489,10 @@ extension ExpressionPackageExt on Expr<Package> {
   Expr<String?> get publisher => ExposedForCodeGen.field(this, 3);
 
   /// TODO: document references
-  Expr<User> get owner => ExposedForCodeGen.subqueryTable(
-        reference: this,
-        tableName: 'users',
-        columns: _$User._$fields,
-        primaryKey: _$User._$primaryKey,
-        deserialize: _$User.new,
-      ).where((r) => r.userId.equals(ownerId)).first.assertNotNull();
+  Expr<User> get owner => ExposedForCodeGen.subqueryTable(this, _$User._$table)
+      .where((r) => r.userId.equals(ownerId))
+      .first
+      .assertNotNull();
 }
 
 final class _$Like extends Like {
@@ -569,15 +506,40 @@ final class _$Like extends Like {
   @override
   final String packageName;
 
-  static const _$fields = [
-    'userId',
-    'packageName',
-  ];
-
-  static const _$primaryKey = [
-    'userId',
-    'packageName',
-  ];
+  static const _$table = (
+    tableName: 'likes',
+    columns: <({
+      String name,
+      Type type,
+      bool isNotNull,
+      Object? defaultValue,
+      bool autoIncrement,
+    })>[
+      (
+        name: 'userId',
+        type: int,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        name: 'packageName',
+        type: String,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      )
+    ],
+    primaryKey: ['userId', 'packageName'],
+    unique: <List<String>>[],
+    foreignKeys: <({
+      String name,
+      List<String> columns,
+      String referencedTable,
+      List<String> referencedColumns,
+    })>[],
+    readModel: _$Like.new,
+  );
 
   @override
   String toString() => 'Like(userId: "$userId", packageName: "$packageName")';

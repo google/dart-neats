@@ -55,11 +55,8 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
               ..lambda = true
               ..body = Code('''
                 ExposedForCodeGen.declareTable(
-                  context: this,
-                  tableName: '${table.name}',
-                  columns: _\$${table.model.name}._\$fields,
-                  primaryKey: _\$${table.model.name}._\$primaryKey,
-                  deserialize: _\$${table.model.name}.new,
+                  this,
+                  _\$${table.model.name}._\$table,
                 )
               '''),
           ),
@@ -83,52 +80,11 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
           ..name = '_\$tables'
           ..static = true
           ..modifier = FieldModifier.constant
-          ..assignment = Code('''
-          [
-            ${schema.tables.map((table) => '''
-            (
-              tableName: '${table.name}',
-              columns: <({
-                    String name,
-                    Type type,
-                    bool isNotNull,
-                    Object? defaultValue,
-                    bool autoIncrement,
-                  })>[
-                ${table.model.fields.map((f) => '''
-                  (
-                    name: '${f.name}',
-                    type: ${f.typeName},
-                    isNotNull: ${!f.isNullable},
-                    defaultValue: ${f.defaultValue},
-                    autoIncrement: ${f.autoIncrement},
-                  )
-                ''').join(', ')}
-              ],
-              primaryKey: _\$${table.model.name}._\$primaryKey,
-              unique: <List<String>>[
-                ${table.model.fields.where((f) => f.unique).map(
-                        (f) => '[\'${f.name}\']',
-                      ).join(', ')}
-              ],
-              foreignKeys: <({
-                    String name,
-                    List<String> columns,
-                    String referencedTable,
-                    List<String> referencedColumns,
-                  })>[
-                ${table.model.foreignKeys.map((fk) => '''
-                  (
-                    name: '${fk.name}',
-                    columns: ['${fk.key.name}'],
-                    referencedTable: '${fk.table}',
-                    referencedColumns: ['${fk.field}'],
-                  )
-                ''').join(',')}
-              ],
-            ),
-            ''').join(' ')}
-          ]
+          ..assignment = Code('''[
+              ${schema.tables.map(
+                    (table) => '_\$${table.model.name}._\$table',
+                  ).join(', ')}
+            ]
           '''),
       )),
   );
@@ -206,19 +162,53 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           )))
       ..fields.add(Field(
         (b) => b
-          ..name = r'_$fields'
+          ..name = '_\$table'
           ..static = true
           ..modifier = FieldModifier.constant
-          ..assignment = literal(model.fields.map((f) => f.name).toList()).code,
-      ))
-      ..fields.add(Field(
-        (b) => b
-          ..name = r'_$primaryKey'
-          ..static = true
-          ..modifier = FieldModifier.constant
-          ..assignment = literal(
-            model.primaryKey.map((f) => f.name).toList(),
-          ).code,
+          ..assignment = Code('''
+            (
+              tableName: '${table.name}',
+              columns: <({
+                    String name,
+                    Type type,
+                    bool isNotNull,
+                    Object? defaultValue,
+                    bool autoIncrement,
+                  })>[
+                ${table.model.fields.map((f) => '''
+                  (
+                    name: '${f.name}',
+                    type: ${f.typeName},
+                    isNotNull: ${!f.isNullable},
+                    defaultValue: ${f.defaultValue},
+                    autoIncrement: ${f.autoIncrement},
+                  )
+                ''').join(', ')}
+              ],
+              primaryKey: [${model.primaryKey.map((f) => '\'${f.name}\'').join(', ')}],
+              unique: <List<String>>[
+                ${table.model.fields.where((f) => f.unique).map(
+                    (f) => '[\'${f.name}\']',
+                  ).join(', ')}
+              ],
+              foreignKeys: <({
+                    String name,
+                    List<String> columns,
+                    String referencedTable,
+                    List<String> referencedColumns,
+                  })>[
+                ${table.model.foreignKeys.map((fk) => '''
+                  (
+                    name: '${fk.name}',
+                    columns: ['${fk.key.name}'],
+                    referencedTable: '${fk.table}',
+                    referencedColumns: ['${fk.field}'],
+                  )
+                ''').join(',')}
+              ],
+              readModel: _\$${table.model.name}.new,
+            )
+          '''),
       ))
       ..methods.add(Method(
         (b) => b
@@ -460,11 +450,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..lambda = true
               ..body = Code('''
                 ExposedForCodeGen.subqueryTable(
-                  reference: this,
-                  tableName: '${ref.table.name}',
-                  columns: _\$${ref.table.model.name}._\$fields,
-                  primaryKey: _\$${ref.table.model.name}._\$primaryKey,
-                  deserialize: _\$${ref.table.model.name}.new,
+                  this,
+                  _\$${ref.table.model.name}._\$table
                 ).where((r) => r.${ref.fk.key.name}.equals(${ref.fk.field}))
               '''),
           )),
@@ -484,11 +471,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..lambda = true
             ..body = Code('''
               ExposedForCodeGen.subqueryTable(
-                reference: this,
-                tableName: '${fk.referencedTable.name}',
-                columns: _\$${fk.referencedTable.model.name}._\$fields,
-                primaryKey: _\$${fk.referencedTable.model.name}._\$primaryKey,
-                deserialize: _\$${fk.referencedTable.model.name}.new,
+                this,
+                _\$${fk.referencedTable.model.name}._\$table
               ).where(
                 (r) => r.${fk.field}.equals(${fk.key.name})
               ).$firstAssertNotNull

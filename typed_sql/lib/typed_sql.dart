@@ -63,5 +63,6 @@ export 'src/typed_sql.dart'
         SelectStatement,
         Statement,
         TableClause,
+        TableDefinition,
         UpdateStatement,
         WhereClause;
