@@ -238,7 +238,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
         ]),
       );
 
-  /// TODO: document delete()}
+  /// TODO: document delete()
   Future<int> delete() => asQuery.delete();
 }
 
@@ -484,7 +484,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
         ]),
       );
 
-  /// TODO: document delete()}
+  /// TODO: document delete()
   Future<int> delete() => asQuery.delete();
 }
 
@@ -689,7 +689,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
         ]),
       );
 
-  /// TODO: document delete()}
+  /// TODO: document delete()
   Future<int> delete() => asQuery.delete();
 }
 

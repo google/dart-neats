@@ -69,9 +69,11 @@ final class View<T extends Record> extends Query<T> {
 }*/
 
 final class Table<T extends Model> extends Query<(Expr<T>,)> {
+  final TableDefinition<T> _definition;
+
   @override
   late final (Expr<T>,) _expressions =
-      (ModelFieldExpression(0, this, Object()),);
+      (ModelFieldExpression(0, _definition, Object()),);
 
   @override
   final QueryClause Function(List<Expr> expressions) _from;
@@ -79,7 +81,7 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
   final T Function(RowReader) _deserialize;
   final TableClause _tableClause;
 
-  Table._(super.context, this._tableClause, this._deserialize)
+  Table._(super.context, this._tableClause, this._deserialize, this._definition)
       : _from = ((_) => _tableClause),
         super._();
 }

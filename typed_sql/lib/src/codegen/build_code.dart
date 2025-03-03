@@ -443,7 +443,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ..methods.add(Method(
         (b) => b
           ..name = 'delete'
-          ..docs.add('/// TODO: document delete()}')
+          ..docs.add('/// TODO: document delete()')
           ..returns = refer('Future<int>')
           ..lambda = true
           ..body = Code('asQuery.delete()'),

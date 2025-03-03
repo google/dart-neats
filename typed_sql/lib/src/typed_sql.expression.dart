@@ -61,7 +61,7 @@ sealed class MultiValueExpression<T> extends Expr<T> {
 }
 
 extension<T extends Model> on Query<(Expr<T>,)> {
-  Table<T> get table => switch (_expressions.$1) {
+  TableDefinition<T> get table => switch (_expressions.$1) {
         final ModelFieldExpression<T> e => e.table,
         NullAssertionExpression<T>(:final ModelFieldExpression<T> value) =>
           value.table,
@@ -70,7 +70,7 @@ extension<T extends Model> on Query<(Expr<T>,)> {
 }
 
 extension<T extends Model> on SubQuery<(Expr<T>,)> {
-  Table<T> get table => switch (_expressions.$1) {
+  TableDefinition<T> get table => switch (_expressions.$1) {
         final ModelFieldExpression<T> e => e.table,
         NullAssertionExpression<T>(:final ModelFieldExpression<T> value) =>
           value.table,
@@ -80,17 +80,17 @@ extension<T extends Model> on SubQuery<(Expr<T>,)> {
 
 sealed class ModelExpression<T extends Model> extends MultiValueExpression<T> {
   // TODO: These should be private!
-  final Table<T> table;
+  final TableDefinition<T> table;
 
   @override
   Expr<T> _standin(int index, Object handle) =>
       ModelFieldExpression(index, table, handle);
 
   @override
-  int get _columns => table._tableClause.columns.length;
+  int get _columns => table.columns.length;
 
   @override
-  T _decode(RowReader row) => table._deserialize(row);
+  T _decode(RowReader row) => table.readModel(row);
 
   @override
   List<Expr<Object?>> explode() => List.generate(_columns, _field);
@@ -108,17 +108,17 @@ final class ModelFieldExpression<T extends Model> extends ModelExpression<T> {
       ModelFieldExpression(index, table, handle);
 
   @override
-  int get _columns => table._tableClause.columns.length;
+  int get _columns => table.columns.length;
 
   @override
-  T _decode(RowReader row) => table._deserialize(row);
+  T _decode(RowReader row) => table.readModel(row);
 
   Expr<R> _field<R>(int index) {
-    if (index < 0 || index >= table._tableClause.columns.length) {
+    if (index < 0 || index >= table.columns.length) {
       throw ArgumentError.value(
         index,
         'index',
-        'Table "${table._tableClause.name}" does not have a field '
+        'Table "${table.tableName}" does not have a field '
             'at index $index',
       );
     }
@@ -136,11 +136,11 @@ final class ModelSubQueryExpression<T extends Model>
   final QueryClause query;
 
   Expr<R> _field<R>(int index) {
-    if (index < 0 || index >= table._tableClause.columns.length) {
+    if (index < 0 || index >= table.columns.length) {
       throw ArgumentError.value(
         index,
         'index',
-        'Table "${table._tableClause.name}" does not have a field '
+        'Table "${table.tableName}" does not have a field '
             'at index $index',
       );
     }

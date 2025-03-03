@@ -131,6 +131,7 @@ final class ExposedForCodeGen {
         context,
         TableClause._(table),
         table.readModel,
+        table,
       );
 
   static Future<T> insertInto<T extends Model>({
@@ -215,20 +216,12 @@ final class ExposedForCodeGen {
   }
 
   static SubQuery<(Expr<T>,)> subqueryTable<T extends Model, S extends Model>(
-    Expr<S> reference,
+    Expr<S> reference, // TODO: Remove reference!
     TableDefinition<T> table,
   ) {
-    final t = Table._(
-      switch (reference) {
-        final ModelFieldExpression<S> e => e.table._context,
-        _ => throw AssertionError('Expr<Model> must be ModelExpression'),
-      },
-      TableClause._(table),
-      table.readModel,
-    );
     return SubQuery._(
-      (ModelFieldExpression(0, t, Object()),),
-      (_) => t._tableClause,
+      (ModelFieldExpression(0, table, Object()),),
+      (_) => TableClause._(table),
     );
   }
 }
