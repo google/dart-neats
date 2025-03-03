@@ -49,14 +49,14 @@ final class Update<T extends Model> {
 
 typedef TableDefinition<T extends Model> = ({
   String tableName,
+  List<String> columns,
   List<
       ({
-        String name,
         Type type,
         bool isNotNull,
         Object? defaultValue,
         bool autoIncrement,
-      })> columns,
+      })> columnInfo,
   List<String> primaryKey,
   List<List<String>> unique,
   List<
@@ -83,20 +83,20 @@ final class ExposedForCodeGen {
                 tableName: t.tableName,
                 primaryKey: t.primaryKey,
                 columns: t.columns
-                    .map((c) => (
-                          name: c.name,
-                          type: switch (c.type) {
+                    .mapIndexed((i, c) => (
+                          name: c,
+                          type: switch (t.columnInfo[i].type) {
                             const (int) => ColumnType.integer,
                             const (double) => ColumnType.real,
                             const (String) => ColumnType.text,
                             const (bool) => ColumnType.boolean,
                             const (DateTime) => ColumnType.datetime,
                             _ => throw UnsupportedError(
-                                'Unsupported type: ${c.type}'),
+                                'Unsupported type: ${t.columnInfo[i].type}'),
                           },
-                          isNotNull: c.isNotNull,
-                          defaultValue: c.defaultValue,
-                          autoIncrement: c.autoIncrement,
+                          isNotNull: t.columnInfo[i].isNotNull,
+                          defaultValue: t.columnInfo[i].defaultValue,
+                          autoIncrement: t.columnInfo[i].autoIncrement,
                         ))
                     .toList(),
                 unique: t.unique,
@@ -129,11 +129,7 @@ final class ExposedForCodeGen {
   ) =>
       Table._(
         context,
-        TableClause._(
-          table.tableName,
-          table.columns.map((c) => c.name).toList(),
-          table.primaryKey,
-        ),
+        TableClause._(table),
         table.readModel,
       );
 
@@ -215,11 +211,7 @@ final class ExposedForCodeGen {
         final ModelFieldExpression<S> e => e.table._context,
         _ => throw AssertionError('Expr<Model> must be ModelExpression'),
       },
-      TableClause._(
-        table.tableName,
-        table.columns.map((c) => c.name).toList(),
-        table.primaryKey,
-      ),
+      TableClause._(table),
       table.readModel,
     );
     return SubQuery._(

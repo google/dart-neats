@@ -168,16 +168,15 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..assignment = Code('''
             (
               tableName: '${table.name}',
-              columns: <({
-                    String name,
+              columns: <String>[${model.fields.map((f) => '\'${f.name}\'').join(', ')}],
+              columnInfo: <({
                     Type type,
                     bool isNotNull,
                     Object? defaultValue,
                     bool autoIncrement,
                   })>[
-                ${table.model.fields.map((f) => '''
+                ${model.fields.map((f) => '''
                   (
-                    name: '${f.name}',
                     type: ${f.typeName},
                     isNotNull: ${!f.isNullable},
                     defaultValue: ${f.defaultValue},
@@ -185,9 +184,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   )
                 ''').join(', ')}
               ],
-              primaryKey: [${model.primaryKey.map((f) => '\'${f.name}\'').join(', ')}],
+              primaryKey: <String>[${model.primaryKey.map((f) => '\'${f.name}\'').join(', ')}],
               unique: <List<String>>[
-                ${table.model.fields.where((f) => f.unique).map(
+                ${model.fields.where((f) => f.unique).map(
                     (f) => '[\'${f.name}\']',
                   ).join(', ')}
               ],
@@ -197,7 +196,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     String referencedTable,
                     List<String> referencedColumns,
                   })>[
-                ${table.model.foreignKeys.map((fk) => '''
+                ${model.foreignKeys.map((fk) => '''
                   (
                     name: '${fk.name}',
                     columns: ['${fk.key.name}'],
@@ -206,7 +205,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   )
                 ''').join(',')}
               ],
-              readModel: _\$${table.model.name}.new,
+              readModel: _\$${model.name}.new,
             )
           '''),
       ))

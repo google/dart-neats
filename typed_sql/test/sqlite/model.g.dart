@@ -55,36 +55,33 @@ final class _$User extends User {
 
   static const _$table = (
     tableName: 'users',
-    columns: <({
-      String name,
+    columns: <String>['userId', 'name', 'email'],
+    columnInfo: <({
       Type type,
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
     })>[
       (
-        name: 'userId',
         type: int,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
       ),
       (
-        name: 'name',
         type: String,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       ),
       (
-        name: 'email',
         type: String,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       )
     ],
-    primaryKey: ['userId'],
+    primaryKey: <String>['userId'],
     unique: <List<String>>[
       ['email']
     ],
@@ -272,43 +269,39 @@ final class _$Package extends Package {
 
   static const _$table = (
     tableName: 'packages',
-    columns: <({
-      String name,
+    columns: <String>['packageName', 'likes', 'ownerId', 'publisher'],
+    columnInfo: <({
       Type type,
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
     })>[
       (
-        name: 'packageName',
         type: String,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       ),
       (
-        name: 'likes',
         type: int,
         isNotNull: true,
         defaultValue: 0,
         autoIncrement: false,
       ),
       (
-        name: 'ownerId',
         type: int,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       ),
       (
-        name: 'publisher',
         type: String,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
       )
     ],
-    primaryKey: ['packageName'],
+    primaryKey: <String>['packageName'],
     unique: <List<String>>[],
     foreignKeys: <({
       String name,
@@ -508,29 +501,27 @@ final class _$Like extends Like {
 
   static const _$table = (
     tableName: 'likes',
-    columns: <({
-      String name,
+    columns: <String>['userId', 'packageName'],
+    columnInfo: <({
       Type type,
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
     })>[
       (
-        name: 'userId',
         type: int,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       ),
       (
-        name: 'packageName',
         type: String,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       )
     ],
-    primaryKey: ['userId', 'packageName'],
+    primaryKey: <String>['userId', 'packageName'],
     unique: <List<String>>[],
     foreignKeys: <({
       String name,

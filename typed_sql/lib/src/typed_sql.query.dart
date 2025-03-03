@@ -103,11 +103,14 @@ final class SubQuery<T extends Record> {
 sealed class QueryClause {}
 
 final class TableClause extends QueryClause {
+  final TableDefinition _definition;
+
   /// Name of table
-  final String name;
-  final List<String> columns;
-  final List<String> primaryKey;
-  TableClause._(this.name, this.columns, this.primaryKey);
+  String get name => _definition.tableName;
+  List<String> get columns => _definition.columns;
+  List<String> get primaryKey => _definition.primaryKey;
+
+  TableClause._(this._definition);
 }
 
 final class SelectClause extends QueryClause {
