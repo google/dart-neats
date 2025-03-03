@@ -25,7 +25,7 @@ sealed class Expr<T extends Object?> {
   Expr<T> _standin(int index, Object handle);
   Expr<R> _field<R>(int index);
 
-  Iterable<SingleValueExpr<Object?>> _explode();
+  Iterable<Expr<Object?>> _explode();
 
   static const null$ = Literal.null$;
   static const true$ = Literal.true$;
@@ -38,7 +38,7 @@ sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
   const SingleValueExpr._() : super._();
 
   @override
-  Iterable<SingleValueExpr<T>> _explode() sync* {
+  Iterable<Expr<T>> _explode() sync* {
     yield this;
   }
 
@@ -73,62 +73,15 @@ sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
 
 Literal<T> literal<T extends Object?>(T value) => Literal(value);
 
-/// An expression that consists of multiple values.
-///
-/// Expression that forms a tuple or represents a model.
-sealed class MultiValueExpression<T> extends Expr<T> {
-  /// Return list of subexpressions for the underlying values.
-  List<Expr<Object?>> explode();
-
-  MultiValueExpression._() : super._();
-}
-
-extension<T extends Model> on Query<(Expr<T>,)> {
-  TableDefinition<T> get table => switch (_expressions.$1) {
-        final ModelFieldExpression<T> e => e.table,
-        NullAssertionExpression<T>(:final ModelFieldExpression<T> value) =>
-          value.table,
-        _ => throw AssertionError('Expr<Model> must be ModelExpression'),
-      };
-}
-
-extension<T extends Model> on SubQuery<(Expr<T>,)> {
-  TableDefinition<T> get table => switch (_expressions.$1) {
-        final ModelFieldExpression<T> e => e.table,
-        NullAssertionExpression<T>(:final ModelFieldExpression<T> value) =>
-          value.table,
-        _ => throw AssertionError('Expr<Model> must be ModelExpression'),
-      };
-}
-
-sealed class ModelExpression<T extends Model> extends MultiValueExpression<T> {
+final class ModelExpression<T extends Model> extends Expr<T> {
   // TODO: These should be private!
   final TableDefinition<T> table;
-
-  @override
-  Expr<T> _standin(int index, Object handle) =>
-      ModelFieldExpression(index, table, handle);
-
-  @override
-  int get _columns => table.columns.length;
-
-  @override
-  T _decode(RowReader row) => table.readModel(row);
-
-  @override
-  List<Expr<Object?>> explode() => List.generate(_columns, _field);
-
-  ModelExpression._(this.table) : super._();
-}
-
-final class ModelFieldExpression<T extends Model> extends ModelExpression<T> {
-  // TODO: These should be private!
   final int index;
   final Object handle;
 
   @override
   Expr<T> _standin(int index, Object handle) =>
-      ModelFieldExpression(index, table, handle);
+      ModelExpression(index, table, handle);
 
   @override
   int get _columns => table.columns.length;
@@ -149,42 +102,10 @@ final class ModelFieldExpression<T extends Model> extends ModelExpression<T> {
   }
 
   @override
-  List<Expr<Object?>> explode() => List.generate(_columns, _field);
-
-  @override
-  Iterable<SingleValueExpr<Object?>> _explode() =>
+  Iterable<Expr<Object?>> _explode() =>
       Iterable.generate(_columns, _field<Object?>).expand((e) => e._explode());
 
-  ModelFieldExpression(this.index, super.table, this.handle) : super._();
-}
-
-final class ModelSubQueryExpression<T extends Model>
-    extends ModelExpression<T> {
-  final QueryClause query;
-
-  Expr<R> _field<R>(int index) {
-    if (index < 0 || index >= table.columns.length) {
-      throw ArgumentError.value(
-        index,
-        'index',
-        'Table "${table.tableName}" does not have a field '
-            'at index $index',
-      );
-    }
-
-    final handle = Object();
-    return SubQueryExpression._(SelectFromClause._(
-      query,
-      handle,
-      [FieldExpression(index, handle)],
-    ));
-  }
-
-  @override
-  Iterable<SingleValueExpr<Object?>> _explode() =>
-      Iterable.generate(_columns, _field<Object?>).expand((e) => e._explode());
-
-  ModelSubQueryExpression._(this.query, super.table) : super._();
+  ModelExpression(this.index, this.table, this.handle) : super._();
 }
 
 final class FieldExpression<T> extends SingleValueExpr<T> {
@@ -195,10 +116,42 @@ final class FieldExpression<T> extends SingleValueExpr<T> {
   FieldExpression(this.index, this.handle) : super._();
 }
 
-final class SubQueryExpression<T> extends SingleValueExpr<T> {
+final class SubQueryExpression<T> extends Expr<T> {
   final QueryClause query;
+  final Expr<T> _value;
 
-  SubQueryExpression._(this.query) : super._();
+  SubQueryExpression._(this.query, this._value) : super._();
+
+  @override
+  int get _columns => _value._columns;
+
+  @override
+  T _decode(RowReader row) => _value._decode(row);
+
+  @override
+  Iterable<Expr<Object?>> _explode() {
+    if (_columns == 1) {
+      return [this];
+    }
+    return Iterable.generate(_columns, _field<Object?>)
+        .expand((e) => e._explode());
+  }
+
+  @override
+  Expr<R> _field<R>(int index) {
+    final handle = Object();
+    return SubQueryExpression._(
+      SelectFromClause._(
+        query,
+        handle,
+        [FieldExpression(index, handle)],
+      ),
+      _value._field<R>(index),
+    );
+  }
+
+  @override
+  Expr<T> _standin(int index, Object handle) => _value._standin(index, handle);
 }
 
 final class ExistsExpression extends SingleValueExpr<bool> {
@@ -248,7 +201,7 @@ final class NullAssertionExpression<T> extends Expr<T> {
   T _decode(RowReader row) => value._decode(row)!;
 
   @override
-  Iterable<SingleValueExpr<Object?>> _explode() => value._explode();
+  Iterable<Expr<Object?>> _explode() => value._explode();
 
   Expr<T> _standin(int index, Object handle) =>
       NullAssertionExpression._(value._standin(index, handle));

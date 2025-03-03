@@ -73,7 +73,7 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
 
   @override
   late final (Expr<T>,) _expressions =
-      (ModelFieldExpression(0, _definition, Object()),);
+      (ModelExpression(0, _definition, Object()),);
 
   @override
   final QueryClause Function(List<Expr> expressions) _from;
@@ -118,8 +118,7 @@ final class TableClause extends QueryClause {
 final class SelectClause extends QueryClause {
   final List<Expr> _expressions;
 
-  Iterable<SingleValueExpr> get expressions =>
-      _expressions.expand((e) => e._explode());
+  Iterable<Expr> get expressions => _expressions.expand((e) => e._explode());
 
   SelectClause._(this._expressions);
 }
@@ -150,8 +149,7 @@ final class SelectFromClause extends FromClause implements ExpressionContext {
   final Object _handle;
   final List<Expr> _projection;
 
-  Iterable<SingleValueExpr> get projection =>
-      _projection.expand((e) => e._explode());
+  Iterable<Expr> get projection => _projection.expand((e) => e._explode());
 
   SelectFromClause._(super.from, this._handle, this._projection) : super._();
 }
@@ -169,7 +167,15 @@ final class OrderByClause extends FromClause implements ExpressionContext {
   final Expr orderBy;
   final bool descending;
   OrderByClause._(super.from, this._handle, this.orderBy, this.descending)
-      : super._();
+      : super._() {
+    // TODO: Consider adding Expr._explodeOrderBy() which returns expressions
+    //       that make up the primary key of a table.
+    if (orderBy._columns > 1) {
+      throw UnsupportedError(
+        'Expr<Model> expressions cannot be used for ordering',
+      );
+    }
+  }
 }
 
 final class JoinClause extends FromClause {
@@ -216,29 +222,17 @@ final class ExceptClause extends CompositeQueryClause {
 
 /* --------------------- Query extensions ---------------------- */
 
-extension QuerySingleModel1AsExpr<T extends Model> on QuerySingle<(Expr<T>,)> {
-  Expr<T?> get asExpr => ModelSubQueryExpression._(
-        _query._from(_query._expressions.toList()),
-        _query.table,
-      );
-}
-
 extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
   Expr<T?> get asExpr => SubQueryExpression._(
         _query._from(_query._expressions.toList()),
-      );
-}
-
-extension SubQueryModel1AsExpr<T extends Model> on SubQuery<(Expr<T>,)> {
-  Expr<T?> get first => ModelSubQueryExpression._(
-        _from(_expressions.toList()),
-        table,
+        _query._expressions.$1,
       );
 }
 
 extension SubQuery1AsExpr<T> on SubQuery<(Expr<T>,)> {
   Expr<T?> get first => SubQueryExpression._(
         _from(_expressions.toList()),
+        _expressions.$1,
       );
 }
 

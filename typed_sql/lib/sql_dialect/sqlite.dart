@@ -262,12 +262,6 @@ final class _Sqlite extends SqlDialect {
       case OrderByClause(:final from, :final orderBy, :final descending):
         final (sql, columns) = clause(from, ctx);
         final (a, c) = ctx.alias(q, columns);
-        // TODO: Handle ModelExpression in orderBy, this probably means order by
-        //       the elements given in the primary key! This isn't particularly
-        //       hard to do. We just need to find a way through.
-        if (orderBy is ModelFieldExpression) {
-          throw UnsupportedError('OrderBy primaryKey is not yet supported!');
-        }
         return (
           'SELECT ${columns.map(escape).join(', ')} '
               'FROM ($sql) AS $a '
@@ -346,8 +340,8 @@ final class _Sqlite extends SqlDialect {
           'UPPER( ${expr(value, ctx)} )',
         ExpressionStringToLowerCase(value: final value) =>
           'LOWER( ${expr(value, ctx)} )',
-        MultiValueExpression<Model>() => throw UnsupportedError(
-            'ModelExpression cannot be used as expressions!',
+        ModelExpression<Model>() => throw AssertionError(
+            'ModelExpression exist in a context where they are rendered',
           ),
         ExistsExpression(:final query) => 'EXISTS (${clause(query, ctx).$1})',
         SumExpression<num>(:final value) =>

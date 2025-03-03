@@ -220,7 +220,7 @@ final class ExposedForCodeGen {
     TableDefinition<T> table,
   ) {
     return SubQuery._(
-      (ModelFieldExpression(0, table, Object()),),
+      (ModelExpression(0, table, Object()),),
       (_) => TableClause._(table),
     );
   }
