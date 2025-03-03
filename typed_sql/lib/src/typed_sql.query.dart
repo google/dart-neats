@@ -387,8 +387,8 @@ final class _AliasedQueryContext extends QueryContext {
 
   @override
   String field(FieldExpression field) {
-    if (field.handle == _handle) {
-      return 't$_depth.${_columns[field.index]}';
+    if (field._handle == _handle) {
+      return 't$_depth.${_columns[field._index]}';
     }
     return _parent.field(field);
   }

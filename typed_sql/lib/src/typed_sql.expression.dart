@@ -74,46 +74,44 @@ sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
 Literal<T> literal<T extends Object?>(T value) => Literal(value);
 
 final class ModelExpression<T extends Model> extends Expr<T> {
-  // TODO: These should be private!
-  final TableDefinition<T> table;
-  final int index;
-  final Object handle;
+  final TableDefinition<T> _table;
+  final int _index;
+  final Object _handle;
 
   @override
   Expr<T> _standin(int index, Object handle) =>
-      ModelExpression(index, table, handle);
+      ModelExpression(index, _table, handle);
 
   @override
-  int get _columns => table.columns.length;
+  int get _columns => _table.columns.length;
 
   @override
-  T _decode(RowReader row) => table.readModel(row);
+  T _decode(RowReader row) => _table.readModel(row);
 
   Expr<R> _field<R>(int index) {
-    if (index < 0 || index >= table.columns.length) {
+    if (index < 0 || index >= _table.columns.length) {
       throw ArgumentError.value(
         index,
         'index',
-        'Table "${table.tableName}" does not have a field '
+        'Table "${_table.tableName}" does not have a field '
             'at index $index',
       );
     }
-    return FieldExpression(this.index + index, handle);
+    return FieldExpression(this._index + index, _handle);
   }
 
   @override
   Iterable<Expr<Object?>> _explode() =>
       Iterable.generate(_columns, _field<Object?>).expand((e) => e._explode());
 
-  ModelExpression(this.index, this.table, this.handle) : super._();
+  ModelExpression(this._index, this._table, this._handle) : super._();
 }
 
 final class FieldExpression<T> extends SingleValueExpr<T> {
-  // TODO: These should be private!
-  final int index;
-  final Object handle;
+  final int _index;
+  final Object _handle;
 
-  FieldExpression(this.index, this.handle) : super._();
+  FieldExpression(this._index, this._handle) : super._();
 }
 
 final class SubQueryExpression<T> extends Expr<T> {
