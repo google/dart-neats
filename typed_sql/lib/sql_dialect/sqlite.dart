@@ -226,24 +226,8 @@ final class _Sqlite extends SqlDialect {
         final explodedProjection = <String>[];
         final aliases = <String>[];
         for (final (i, e) in projection.indexed) {
-          // TODO: Avoid is ModelExpression, instead let's introspec if it's a
-          //       multi-column expression or not. Or possibly just treat all
-          //       expressions as multi-column!
-          if (e is MultiValueExpression) {
-            for (final (j, sube) in e.explode().indexed) {
-              explodedProjection.add('(${expr(sube, c)})');
-              aliases.add('c_${i}_$j');
-            }
-          } else if (e
-              case NullAssertionExpression(:final MultiValueExpression value)) {
-            for (final (j, sube) in value.explode().indexed) {
-              explodedProjection.add('(${expr(sube, c)})');
-              aliases.add('c_${i}_$j');
-            }
-          } else {
-            explodedProjection.add('(${expr(e, c)})');
-            aliases.add('c_$i');
-          }
+          explodedProjection.add('(${expr(e, c)})');
+          aliases.add('c_$i');
         }
         return (
           'SELECT ${explodedProjection.mapIndexed(

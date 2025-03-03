@@ -19,7 +19,41 @@ sealed class Expr<T extends Object?> {
 
   const Expr._();
 
+  int get _columns;
+  T _decode(RowReader row);
+
+  Expr<T> _standin(int index, Object handle);
+  Expr<R> _field<R>(int index);
+
+  Iterable<SingleValueExpr<Object?>> _explode();
+
+  static const null$ = Literal.null$;
+  static const true$ = Literal.true$;
+  static const false$ = Literal.false$;
+
+  static Literal<T> literal<T extends Object?>(T value) => Literal(value);
+}
+
+sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
+  const SingleValueExpr._() : super._();
+
+  @override
+  Iterable<SingleValueExpr<T>> _explode() sync* {
+    yield this;
+  }
+
+  @override
+  Expr<T> _standin(int index, Object handle) => FieldExpression(index, handle);
+
+  @override
+  Expr<R> _field<R>(int index) =>
+      // This should never happen!
+      throw AssertionError('Only Expr<Model> can have fields');
+
+  @override
   int get _columns => 1;
+
+  @override
   T _decode(RowReader row) {
     return switch (this) {
       Expr<bool>() => row.readBool() as T,
@@ -35,17 +69,6 @@ sealed class Expr<T extends Object?> {
       _ => throw AssertionError('Expr<T> must be bool, DateTime')
     };
   }
-
-  Expr<T> _standin(int index, Object handle) => FieldExpression(index, handle);
-  Expr<R> _field<R>(int index) =>
-      // This should never happen!
-      throw AssertionError('Only Expr<Model> can have fields');
-
-  static const null$ = Literal.null$;
-  static const true$ = Literal.true$;
-  static const false$ = Literal.false$;
-
-  static Literal<T> literal<T extends Object?>(T value) => Literal(value);
 }
 
 Literal<T> literal<T extends Object?>(T value) => Literal(value);
@@ -128,6 +151,10 @@ final class ModelFieldExpression<T extends Model> extends ModelExpression<T> {
   @override
   List<Expr<Object?>> explode() => List.generate(_columns, _field);
 
+  @override
+  Iterable<SingleValueExpr<Object?>> _explode() =>
+      Iterable.generate(_columns, _field<Object?>).expand((e) => e._explode());
+
   ModelFieldExpression(this.index, super.table, this.handle) : super._();
 }
 
@@ -153,10 +180,14 @@ final class ModelSubQueryExpression<T extends Model>
     ));
   }
 
+  @override
+  Iterable<SingleValueExpr<Object?>> _explode() =>
+      Iterable.generate(_columns, _field<Object?>).expand((e) => e._explode());
+
   ModelSubQueryExpression._(this.query, super.table) : super._();
 }
 
-final class FieldExpression<T> extends Expr<T> {
+final class FieldExpression<T> extends SingleValueExpr<T> {
   // TODO: These should be private!
   final int index;
   final Object handle;
@@ -164,43 +195,43 @@ final class FieldExpression<T> extends Expr<T> {
   FieldExpression(this.index, this.handle) : super._();
 }
 
-final class SubQueryExpression<T> extends Expr<T> {
+final class SubQueryExpression<T> extends SingleValueExpr<T> {
   final QueryClause query;
 
   SubQueryExpression._(this.query) : super._();
 }
 
-final class ExistsExpression extends Expr<bool> {
+final class ExistsExpression extends SingleValueExpr<bool> {
   final QueryClause query;
   ExistsExpression._(this.query) : super._();
 }
 
-final class SumExpression<T extends num> extends Expr<T> {
+final class SumExpression<T extends num> extends SingleValueExpr<T> {
   final Expr<T> value;
   SumExpression._(this.value) : super._();
 }
 
-final class AvgExpression extends Expr<double> {
+final class AvgExpression extends SingleValueExpr<double> {
   final Expr<num> value;
   AvgExpression._(this.value) : super._();
 }
 
 // TODO: Consider if T extends Comparable makes sense!
-final class MinExpression<T extends Comparable> extends Expr<T> {
+final class MinExpression<T extends Comparable> extends SingleValueExpr<T> {
   final Expr<T> value;
   MinExpression._(this.value) : super._();
 }
 
-final class MaxExpression<T extends Comparable> extends Expr<T> {
+final class MaxExpression<T extends Comparable> extends SingleValueExpr<T> {
   final Expr<T> value;
   MaxExpression._(this.value) : super._();
 }
 
-final class CountAllExpression extends Expr<int> {
+final class CountAllExpression extends SingleValueExpr<int> {
   CountAllExpression._() : super._();
 }
 
-final class OrElseExpression<T> extends Expr<T> {
+final class OrElseExpression<T> extends SingleValueExpr<T> {
   final Expr<T?> value;
   final Expr<T> orElse;
 
@@ -215,6 +246,9 @@ final class NullAssertionExpression<T> extends Expr<T> {
 
   @override
   T _decode(RowReader row) => value._decode(row)!;
+
+  @override
+  Iterable<SingleValueExpr<Object?>> _explode() => value._explode();
 
   Expr<T> _standin(int index, Object handle) =>
       NullAssertionExpression._(value._standin(index, handle));
@@ -248,7 +282,7 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
   Expr<DateTime> orElseLiteral(DateTime value) => orElse(literal(value));
 }
 
-final class Literal<T> extends Expr<T> {
+final class Literal<T> extends SingleValueExpr<T> {
   final T value;
   // TODO: Consider supporting a Constant expression subclass, currently we
   //       always encode literals as ? and attach them as parameters.
@@ -290,13 +324,13 @@ final class Literal<T> extends Expr<T> {
   }
 }
 
-sealed class BinaryOperationExpression<T, R> extends Expr<R> {
+sealed class BinaryOperationExpression<T, R> extends SingleValueExpr<R> {
   final Expr<T> left;
   final Expr<T> right;
   BinaryOperationExpression(this.left, this.right) : super._();
 }
 
-final class ExpressionBoolNot extends Expr<bool> {
+final class ExpressionBoolNot extends SingleValueExpr<bool> {
   final Expr<bool> value;
   ExpressionBoolNot(this.value) : super._();
 }
@@ -334,46 +368,46 @@ final class ExpressionStringGreaterThanOrEqual
   ExpressionStringGreaterThanOrEqual(super.left, super.right);
 }
 
-final class ExpressionStringIsEmpty extends Expr<bool> {
+final class ExpressionStringIsEmpty extends SingleValueExpr<bool> {
   final Expr<String> value;
   ExpressionStringIsEmpty(this.value) : super._();
 }
 
-final class ExpressionStringLength extends Expr<int> {
+final class ExpressionStringLength extends SingleValueExpr<int> {
   final Expr<String> value;
   ExpressionStringLength(this.value) : super._();
 }
 
-final class ExpressionStringStartsWith extends Expr<bool> {
+final class ExpressionStringStartsWith extends SingleValueExpr<bool> {
   final Expr<String> value;
   final Expr<String> prefix;
   ExpressionStringStartsWith(this.value, this.prefix) : super._();
 }
 
-final class ExpressionStringEndsWith extends Expr<bool> {
+final class ExpressionStringEndsWith extends SingleValueExpr<bool> {
   final Expr<String> value;
   final Expr<String> suffix;
   ExpressionStringEndsWith(this.value, this.suffix) : super._();
 }
 
-final class ExpressionStringLike extends Expr<bool> {
+final class ExpressionStringLike extends SingleValueExpr<bool> {
   final Expr<String> value;
   final String pattern;
   ExpressionStringLike(this.value, this.pattern) : super._();
 }
 
-final class ExpressionStringContains extends Expr<bool> {
+final class ExpressionStringContains extends SingleValueExpr<bool> {
   final Expr<String> value;
   final Expr<String> needle;
   ExpressionStringContains(this.value, this.needle) : super._();
 }
 
-final class ExpressionStringToUpperCase extends Expr<String> {
+final class ExpressionStringToUpperCase extends SingleValueExpr<String> {
   final Expr<String> value;
   ExpressionStringToUpperCase(this.value) : super._();
 }
 
-final class ExpressionStringToLowerCase extends Expr<String> {
+final class ExpressionStringToLowerCase extends SingleValueExpr<String> {
   final Expr<String> value;
   ExpressionStringToLowerCase(this.value) : super._();
 }

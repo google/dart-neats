@@ -116,8 +116,12 @@ final class TableClause extends QueryClause {
 }
 
 final class SelectClause extends QueryClause {
-  final List<Expr> expressions;
-  SelectClause._(this.expressions);
+  final List<Expr> _expressions;
+
+  Iterable<SingleValueExpr> get expressions =>
+      _expressions.expand((e) => e._explode());
+
+  SelectClause._(this._expressions);
 }
 
 /*
@@ -144,8 +148,12 @@ abstract final class ExpressionContext {
 final class SelectFromClause extends FromClause implements ExpressionContext {
   @override
   final Object _handle;
-  final List<Expr> projection;
-  SelectFromClause._(super.from, this._handle, this.projection) : super._();
+  final List<Expr> _projection;
+
+  Iterable<SingleValueExpr> get projection =>
+      _projection.expand((e) => e._explode());
+
+  SelectFromClause._(super.from, this._handle, this._projection) : super._();
 }
 
 final class WhereClause extends FromClause implements ExpressionContext {
@@ -404,5 +412,3 @@ final class _RootQueryContext extends QueryContext {
     );
   }
 }
-
-/* --------------------- sqlite dialect! ---------------------- */
