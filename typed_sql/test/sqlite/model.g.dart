@@ -185,6 +185,9 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// TODO: document byXXX()}
   QuerySingle<(Expr<User>,)> byEmail(String email) =>
       where((user) => user.email.equalsLiteral(email)).first;
+
+  /// TODO: document delete()}
+  Future<int> delete() => ExposedForCodeGen.delete(this, _$User._$table);
 }
 
 extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
@@ -230,6 +233,9 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
           email != null ? literal(email) : null,
         ]),
       );
+
+  /// TODO: document delete()}
+  Future<int> delete() => asQuery.delete();
 }
 
 extension ExpressionUserExt on Expr<User> {
@@ -416,6 +422,9 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
           publisher != null ? literal(publisher) : null,
         ]),
       );
+
+  /// TODO: document delete()}
+  Future<int> delete() => ExposedForCodeGen.delete(this, _$Package._$table);
 }
 
 extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
@@ -466,6 +475,9 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
           publisher != null ? literal(publisher) : null,
         ]),
       );
+
+  /// TODO: document delete()}
+  Future<int> delete() => asQuery.delete();
 }
 
 extension ExpressionPackageExt on Expr<Package> {
@@ -621,6 +633,9 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
           packageName != null ? literal(packageName) : null,
         ]),
       );
+
+  /// TODO: document delete()}
+  Future<int> delete() => ExposedForCodeGen.delete(this, _$Like._$table);
 }
 
 extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
@@ -661,6 +676,9 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
           packageName != null ? literal(packageName) : null,
         ]),
       );
+
+  /// TODO: document delete()}
+  Future<int> delete() => asQuery.delete();
 }
 
 extension ExpressionLikeExt on Expr<Like> {

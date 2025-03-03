@@ -172,6 +172,19 @@ final class ExposedForCodeGen {
     await table._context._query(sql, params).drain<void>();
   }
 
+  static Future<int> delete<T extends Model>(
+    Query<(Expr<T>,)> query,
+    TableDefinition<T> table,
+  ) async {
+    final from = query._from(query._expressions.toList());
+    final (sql, params) = query._context._dialect.delete(
+      DeleteStatement._(TableClause._(table), from),
+    );
+
+    final rs = await query._context._execute(sql, params);
+    return rs.affectedRows;
+  }
+
   // TODO: Design a solution for migrations using atlas creating dialect
   //       specific migraiton files in a folder, such that we just have to
   //       apply the migrations.

@@ -369,22 +369,33 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   ).first
                 '''),
             ),
-          )),
+          ))
+      ..methods.add(Method(
+        (b) => b
+          ..name = 'delete'
+          ..docs.add('/// TODO: document delete()}')
+          ..returns = refer('Future<int>')
+          ..lambda = true
+          ..body = Code('''
+              ExposedForCodeGen.delete(this, _\$${model.name}._\$table)
+            '''),
+      )),
     // TODO: Add utility methods for easy lookup by field for each unique field!
   );
 
   // Extension for QuerySingle<(Expr<model>,)>
-  yield Extension((b) => b
-    ..name = 'QuerySingle${modelName}Ext'
-    ..on = refer('QuerySingle<(Expr<$modelName>,)>')
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'update'
-        ..docs.add('/// TODO: document update()')
-        ..returns = refer('Future<void>')
-        ..requiredParameters.add(Parameter(
-          (b) => b
-            ..type = refer('''
+  yield Extension(
+    (b) => b
+      ..name = 'QuerySingle${modelName}Ext'
+      ..on = refer('QuerySingle<(Expr<$modelName>,)>')
+      ..methods.add(Method(
+        (b) => b
+          ..name = 'update'
+          ..docs.add('/// TODO: document update()')
+          ..returns = refer('Future<void>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..type = refer('''
                 Update<$modelName> Function(
                   Expr<$modelName> $modelInstanceName,
                   Update<$modelName> Function({
@@ -392,10 +403,10 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   }) set,
                 )
               ''')
-            ..name = 'updateBuilder',
-        ))
-        ..lambda = true
-        ..body = Code('''
+              ..name = 'updateBuilder',
+          ))
+          ..lambda = true
+          ..body = Code('''
             ExposedForCodeGen.update<$modelName>(
               asQuery,
               ($modelInstanceName) => updateBuilder($modelInstanceName, ({
@@ -407,16 +418,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ),
             )
           '''),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'updateLiteral'
-        ..docs.add('/// TODO: document updateLiteral()')
-        ..docs.add('/// WARNING: This cannot set properties to `null`!')
-        ..returns = refer('Future<void>')
-        ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
-        ..lambda = true
-        ..body = Code('''
+      ))
+      ..methods.add(Method(
+        (b) => b
+          ..name = 'updateLiteral'
+          ..docs.add('/// TODO: document updateLiteral()')
+          ..docs.add('/// WARNING: This cannot set properties to `null`!')
+          ..returns = refer('Future<void>')
+          ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
+          ..lambda = true
+          ..body = Code('''
             ExposedForCodeGen.update<$modelName>(
               asQuery,
               ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
@@ -424,7 +435,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ]),
             )
           '''),
-    )));
+      ))
+      ..methods.add(Method(
+        (b) => b
+          ..name = 'delete'
+          ..docs.add('/// TODO: document delete()}')
+          ..returns = refer('Future<int>')
+          ..lambda = true
+          ..body = Code('asQuery.delete()'),
+      )),
+  );
 
   // Extension for Expression<model>
   yield Extension((b) => b
