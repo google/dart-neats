@@ -149,18 +149,17 @@ final class ExposedForCodeGen {
 
   static Future<void> update<T extends Model>(
     Query<(Expr<T>,)> query,
+    TableDefinition<T> table,
     Update<T> Function(Expr<T> row) updateBuilder,
   ) async {
-    final table = query.table;
-
     final handle = Object();
     final row = query._expressions.$1._standin(0, handle);
     final values = updateBuilder(row)._values;
 
-    final (sql, params) = table._context._dialect.update(
+    final (sql, params) = query._context._dialect.update(
       UpdateStatement._(
-        table._tableClause,
-        table._tableClause.columns
+        TableClause._(table),
+        table.columns
             .whereIndexed((index, value) => values[index] != null)
             .toList(),
         values.nonNulls.toList(),
@@ -169,7 +168,7 @@ final class ExposedForCodeGen {
       ),
     );
 
-    await table._context._query(sql, params).drain<void>();
+    await query._context._query(sql, params).drain<void>();
   }
 
   static Future<int> delete<T extends Model>(

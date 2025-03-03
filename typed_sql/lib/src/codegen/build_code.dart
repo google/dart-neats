@@ -324,6 +324,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..body = Code('''
             ExposedForCodeGen.update<$modelName>(
               this,
+              _\$${model.name}._\$table,
               ($modelInstanceName) => updateBuilder($modelInstanceName, ({
                   ${model.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
                 }) =>
@@ -345,6 +346,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..body = Code('''
             ExposedForCodeGen.update<$modelName>(
               this,
+              _\$${model.name}._\$table,
               ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
                 ${model.fields.map((field) => '${field.name} != null ? literal(${field.name}) : null').join(', ')},
               ]),
@@ -409,6 +411,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..body = Code('''
             ExposedForCodeGen.update<$modelName>(
               asQuery,
+              _\$${model.name}._\$table,
               ($modelInstanceName) => updateBuilder($modelInstanceName, ({
                   ${model.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
                 }) =>
@@ -430,6 +433,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..body = Code('''
             ExposedForCodeGen.update<$modelName>(
               asQuery,
+              _\$${model.name}._\$table,
               ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
                 ${model.fields.map((field) => '${field.name} != null ? literal(${field.name}) : null').join(', ')},
               ]),

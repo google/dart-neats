@@ -151,6 +151,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
           ) updateBuilder) =>
       ExposedForCodeGen.update<User>(
         this,
+        _$User._$table,
         (user) => updateBuilder(
           user,
           ({
@@ -175,6 +176,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   }) =>
       ExposedForCodeGen.update<User>(
         this,
+        _$User._$table,
         (user) => ExposedForCodeGen.buildUpdate<User>([
           userId != null ? literal(userId) : null,
           name != null ? literal(name) : null,
@@ -203,6 +205,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
           ) updateBuilder) =>
       ExposedForCodeGen.update<User>(
         asQuery,
+        _$User._$table,
         (user) => updateBuilder(
           user,
           ({
@@ -227,6 +230,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   }) =>
       ExposedForCodeGen.update<User>(
         asQuery,
+        _$User._$table,
         (user) => ExposedForCodeGen.buildUpdate<User>([
           userId != null ? literal(userId) : null,
           name != null ? literal(name) : null,
@@ -388,6 +392,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
           ) updateBuilder) =>
       ExposedForCodeGen.update<Package>(
         this,
+        _$Package._$table,
         (package) => updateBuilder(
           package,
           ({
@@ -415,6 +420,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
   }) =>
       ExposedForCodeGen.update<Package>(
         this,
+        _$Package._$table,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
           packageName != null ? literal(packageName) : null,
           likes != null ? literal(likes) : null,
@@ -441,6 +447,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
           ) updateBuilder) =>
       ExposedForCodeGen.update<Package>(
         asQuery,
+        _$Package._$table,
         (package) => updateBuilder(
           package,
           ({
@@ -468,6 +475,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
   }) =>
       ExposedForCodeGen.update<Package>(
         asQuery,
+        _$Package._$table,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
           packageName != null ? literal(packageName) : null,
           likes != null ? literal(likes) : null,
@@ -607,6 +615,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
           ) updateBuilder) =>
       ExposedForCodeGen.update<Like>(
         this,
+        _$Like._$table,
         (like) => updateBuilder(
           like,
           ({
@@ -628,6 +637,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
   }) =>
       ExposedForCodeGen.update<Like>(
         this,
+        _$Like._$table,
         (like) => ExposedForCodeGen.buildUpdate<Like>([
           userId != null ? literal(userId) : null,
           packageName != null ? literal(packageName) : null,
@@ -650,6 +660,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
           ) updateBuilder) =>
       ExposedForCodeGen.update<Like>(
         asQuery,
+        _$Like._$table,
         (like) => updateBuilder(
           like,
           ({
@@ -671,6 +682,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
   }) =>
       ExposedForCodeGen.update<Like>(
         asQuery,
+        _$Like._$table,
         (like) => ExposedForCodeGen.buildUpdate<Like>([
           userId != null ? literal(userId) : null,
           packageName != null ? literal(packageName) : null,
