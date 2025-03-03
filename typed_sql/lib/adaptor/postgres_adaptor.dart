@@ -20,12 +20,9 @@ import 'adaptor.dart';
 
 DatabaseAdaptor postgresAdaptor(Pool pool) => _PostgresDatabaseAdaptor(pool);
 
-class _QueryExecutor<S extends Session> extends QueryExecutor {
-  final S _session;
+mixin _QueryExecutor<S extends Session> {
+  S get _session;
 
-  _QueryExecutor(this._session);
-
-  @override
   Future<QueryResult> execute(String sql, List<Object?> params) async {
     final rs = await _session.execute(sql, parameters: params);
     return QueryResult(
@@ -34,21 +31,22 @@ class _QueryExecutor<S extends Session> extends QueryExecutor {
     );
   }
 
-  @override
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     final ps = await _session.prepare(sql);
     yield* ps.bind(params).map(_PostgresRowReader.new);
   }
 
-  @override
   Future<void> script(String sql) async {
     await _session.execute(sql, queryMode: QueryMode.simple);
   }
 }
 
-final class _PostgresDatabaseAdaptor extends _QueryExecutor<Pool>
-    implements DatabaseAdaptor {
-  _PostgresDatabaseAdaptor(super._session);
+final class _PostgresDatabaseAdaptor extends DatabaseAdaptor
+    with _QueryExecutor<Pool> {
+  @override
+  final Pool _session;
+
+  _PostgresDatabaseAdaptor(this._session);
 
   @override
   Future<T> transaction<T>(
@@ -64,9 +62,12 @@ final class _PostgresDatabaseAdaptor extends _QueryExecutor<Pool>
   }
 }
 
-class _DatabaseTransaction extends _QueryExecutor<TxSession>
-    implements DatabaseTransaction {
-  _DatabaseTransaction(super._session);
+final class _DatabaseTransaction extends DatabaseTransaction
+    with _QueryExecutor<TxSession> {
+  @override
+  final TxSession _session;
+
+  _DatabaseTransaction(this._session);
 
   @override
   Future<T> savePoint<T>(Future<T> Function(DatabaseSavePoint sp) fn) {

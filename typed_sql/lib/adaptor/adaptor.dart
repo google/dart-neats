@@ -17,7 +17,7 @@ import 'dart:typed_data';
 import 'logging_adaptor.dart';
 import 'sqlite.dart';
 
-abstract class DatabaseAdaptor extends QueryExecutor {
+abstract base class DatabaseAdaptor extends QueryExecutor {
   /// Begin a transaction ad call [fn] before committing the transaction.
   ///
   /// If [fn] throws, the transaction shall be rolled back and the [Exception]
@@ -38,7 +38,7 @@ abstract class DatabaseAdaptor extends QueryExecutor {
       loggingAdaptor(adaptor, logDrain);
 }
 
-abstract class DatabaseTransaction extends QueryExecutor {
+abstract base class DatabaseTransaction extends QueryExecutor {
   /// Create a save-point and runs `fn` before releasing the save-point.
   ///
   /// If [fn] throws, this transaction shall be rolled back to the
@@ -62,7 +62,7 @@ class QueryResult {
   });
 }
 
-abstract class QueryExecutor {
+abstract final class QueryExecutor {
   Future<void> script(String sql);
 
   /// Execute [sql] query with positional [params].
