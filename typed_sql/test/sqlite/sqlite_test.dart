@@ -14,26 +14,38 @@
 
 import 'dart:async';
 
+import 'package:meta/meta.dart' hide literal;
 import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
 
 import 'model.dart';
 
-final u = Uri.parse('file:shared-inmemory?mode=memory&cache=shared');
+var _testFileCounter = 0;
 
-void _test(
+@isTestGroup
+void _withSqlite(
   String name,
   FutureOr<void> Function(Database<PrimaryDatabase> db) fn,
-) async {
-  test(name, () async {
-    final adaptor = DatabaseAdaptor.withLogging(
-      DatabaseAdaptor.sqlite3(u),
-      printOnFailure,
-      //print,
-    );
-    final db = Database<PrimaryDatabase>(adaptor, SqlDialect.sqlite());
-    await db.createTables();
-    try {
+) {
+  group(name, () {
+    late DatabaseAdaptor adaptor;
+    late Database<PrimaryDatabase> db;
+
+    setUpAll(() async {
+      _testFileCounter++;
+      final filename = [
+        name.hashCode.abs(),
+        DateTime.now().microsecondsSinceEpoch,
+        _testFileCounter,
+      ].join('-');
+      final u = Uri.parse('file:inmemory-$filename?mode=memory&cache=shared');
+      adaptor = DatabaseAdaptor.withLogging(
+        DatabaseAdaptor.sqlite3(u),
+        printOnFailure,
+        //print,
+      );
+      db = Database<PrimaryDatabase>(adaptor, SqlDialect.sqlite());
+      await db.createTables();
       await db.users.create(
         userId: 1,
         name: 'Alice',
@@ -54,10 +66,21 @@ void _test(
       );
       await db.likes.create(userId: 1, packageName: 'foo');
       await db.likes.create(userId: 2, packageName: 'foo');
-      await fn(db);
-    } finally {
+    });
+
+    tearDownAll(() async {
       await adaptor.close();
-    }
+    });
+  });
+}
+
+@isTest
+void _test(
+  String name,
+  FutureOr<void> Function(Database<PrimaryDatabase> db) fn,
+) async {
+  _withSqlite(name, (db) async {
+    test('test', () => fn(db));
   });
 }
 
