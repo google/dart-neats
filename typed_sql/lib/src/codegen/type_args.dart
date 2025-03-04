@@ -12,16 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// (Expr<A>, Expr<B>) for i = 2
-String typArgedExprTuple(int i, [int offset = 0]) {
-  if (i == 1) {
-    return '(Expr<${typeArg[0 + offset]}>,)';
-  }
-  return '(${List.generate(i, (i) => 'Expr<${typeArg[i + offset]}>').join(',')})';
-}
+/// `(Expr<A>, Expr<B>)` for i = 2
+String typArgedExprTuple(int i, [int offset = 0]) =>
+    listToTuple(typArgedExprAsList(i, offset));
 
+/// `Expr<A> a, Expr<B> b` for i = 2
 String typArgedExprArgumentList(int i) {
   return List.generate(i, (i) => 'Expr<${typeArg[i]}> ${arg[i]}').join(',');
+}
+
+/// `['Expr<A>', 'Expr<B>']` for i = 2
+List<String> typArgedExprAsList(int i, [int offset = 0]) {
+  if (i == 1) {
+    return ['Expr<${typeArg[0 + offset]}>'];
+  }
+  return List.generate(i, (i) => 'Expr<${typeArg[i + offset]}>');
+}
+
+/// Render a list of type expressions to a positional tuple.
+String listToTuple(List<String> types) {
+  if (types.isEmpty) {
+    return '()';
+  }
+  if (types.length == 1) {
+    return '(${types[0]},)';
+  }
+  return '(${types.join(', ')})';
 }
 
 const typeArg = [

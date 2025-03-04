@@ -718,6 +718,21 @@ void main() {
     expect(result, contains(('bar', 'Alice')));
   });
 
+  _test('db.likes.groupBy((l) => p.package).aggregate(count, avg)', (db) async {
+    final result = await db.likes
+        .groupBy((like) => (like.packageName,))
+        .aggregate(
+          (agg) => agg
+              // Aggregates
+              .count()
+              .min((like) => like.userId), // doesn't make sense, but tests min
+        )
+        .fetch()
+        .toList();
+    expect(result, hasLength(1));
+    expect(result[0], equals(('foo', 2, 1)));
+  });
+
   // TODO: Support operators on nullable values!
   /*_test('db.packages.where(publisher == null).select()', (db) async {
     final result = await db.packages

@@ -64,6 +64,14 @@ extension Query1<A> on Query<(Expr<A>,)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Group<T, (Expr<A>,)> groupBy<T extends Record>(
+      T Function(Expr<A> a) groupBuilder) {
+    final (handle, (group, standins)) = _build((a) {
+      return (groupBuilder(a), (a,));
+    });
+    return Group._(this, handle, group, standins);
+  }
+
   Stream<A> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -186,6 +194,20 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Group<T, (Expr<A>, Expr<B>)> groupBy<T extends Record>(
+      T Function(Expr<A> a, Expr<B> b) groupBuilder) {
+    final (handle, (group, standins)) = _build((a, b) {
+      return (
+        groupBuilder(a, b),
+        (
+          a,
+          b,
+        )
+      );
+    });
+    return Group._(this, handle, group, standins);
+  }
+
   Stream<(A, B)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -314,6 +336,21 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Group<T, (Expr<A>, Expr<B>, Expr<C>)> groupBy<T extends Record>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c) groupBuilder) {
+    final (handle, (group, standins)) = _build((a, b, c) {
+      return (
+        groupBuilder(a, b, c),
+        (
+          a,
+          b,
+          c,
+        )
+      );
+    });
+    return Group._(this, handle, group, standins);
+  }
+
   Stream<(A, B, C)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -453,6 +490,22 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>)> groupBy<T extends Record>(
+      T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d) groupBuilder) {
+    final (handle, (group, standins)) = _build((a, b, c, d) {
+      return (
+        groupBuilder(a, b, c, d),
+        (
+          a,
+          b,
+          c,
+          d,
+        )
+      );
+    });
+    return Group._(this, handle, group, standins);
+  }
+
   Stream<(A, B, C, D)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -607,6 +660,25 @@ extension Query5<A, B, C, D, E>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      groupBy<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              groupBuilder) {
+    final (handle, (group, standins)) = _build((a, b, c, d, e) {
+      return (
+        groupBuilder(a, b, c, d, e),
+        (
+          a,
+          b,
+          c,
+          d,
+          e,
+        )
+      );
+    });
+    return Group._(this, handle, group, standins);
+  }
+
   Stream<(A, B, C, D, E)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -780,6 +852,27 @@ extension Query6<A, B, C, D, E, F>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      groupBy<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f)
+              groupBuilder) {
+    final (handle, (group, standins)) = _build((a, b, c, d, e, f) {
+      return (
+        groupBuilder(a, b, c, d, e, f),
+        (
+          a,
+          b,
+          c,
+          d,
+          e,
+          f,
+        )
+      );
+    });
+    return Group._(this, handle, group, standins);
+  }
+
   Stream<(A, B, C, D, E, F)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -966,6 +1059,28 @@ extension Query7<A, B, C, D, E, F, G>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      groupBy<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g)
+              groupBuilder) {
+    final (handle, (group, standins)) = _build((a, b, c, d, e, f, g) {
+      return (
+        groupBuilder(a, b, c, d, e, f, g),
+        (
+          a,
+          b,
+          c,
+          d,
+          e,
+          f,
+          g,
+        )
+      );
+    });
+    return Group._(this, handle, group, standins);
+  }
+
   Stream<(A, B, C, D, E, F, G)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -1186,6 +1301,40 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Group<
+          T,
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      groupBy<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g, Expr<H> h)
+              groupBuilder) {
+    final (handle, (group, standins)) = _build((a, b, c, d, e, f, g, h) {
+      return (
+        groupBuilder(a, b, c, d, e, f, g, h),
+        (
+          a,
+          b,
+          c,
+          d,
+          e,
+          f,
+          g,
+          h,
+        )
+      );
+    });
+    return Group._(this, handle, group, standins);
+  }
+
   Stream<(A, B, C, D, E, F, G, H)> fetch() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -2065,6 +2214,1948 @@ extension Join7On1<A, B, C, D, E, F, G, H> on Join<
                   Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
               conditionBuilder) =>
       all.where(conditionBuilder);
+}
+
+extension Group1By1<A, B> on Group<(Expr<A>,), (Expr<B>,)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<B>,), T> Function(
+              Aggregation<(Expr<B>,), (Expr<A>,)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate1Project1<A, B> on Aggregation<(Expr<A>,), (Expr<B>,)> {
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> _build<C, T>(
+    Expr<T> Function(Expr<A> a) aggregateBuilder,
+    Expr<C> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          wrap(aggregateBuilder(
+            _standins.$1,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> sum<C extends num>(
+          Expr<C> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<double>)> avg<C extends num>(
+          Expr<C> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> min<C extends Comparable>(
+          Expr<C> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> max<C extends Comparable>(
+          Expr<C> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<int>)> count() =>
+      _build((a) => CountAllExpression._(), (a) => a);
+}
+
+extension Group2By1<A, B, C> on Group<(Expr<A>,), (Expr<B>, Expr<C>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<B>, Expr<C>), T> Function(
+              Aggregation<(Expr<B>, Expr<C>), (Expr<A>,)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate1Project2<A, B, C>
+    on Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> {
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> _build<D, T>(
+    Expr<T> Function(Expr<A> a) aggregateBuilder,
+    Expr<D> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          wrap(aggregateBuilder(
+            _standins.$1,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> sum<D extends num>(
+          Expr<D> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<double>)> avg<D extends num>(
+          Expr<D> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)>
+      min<D extends Comparable>(Expr<D> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)>
+      max<D extends Comparable>(Expr<D> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<int>)> count() =>
+      _build((a) => CountAllExpression._(), (a) => a);
+}
+
+extension Group3By1<A, B, C, D>
+    on Group<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<B>, Expr<C>, Expr<D>), T> Function(
+              Aggregation<(Expr<B>, Expr<C>, Expr<D>), (Expr<A>,)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate1Project3<A, B, C, D>
+    on Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> _build<E, T>(
+    Expr<T> Function(Expr<A> a) aggregateBuilder,
+    Expr<E> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          _projection.$3,
+          wrap(aggregateBuilder(
+            _standins.$1,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      sum<E extends num>(Expr<E> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<double>)>
+      avg<E extends num>(Expr<E> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      min<E extends Comparable>(Expr<E> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      max<E extends Comparable>(Expr<E> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<int>)> count() =>
+      _build((a) => CountAllExpression._(), (a) => a);
+}
+
+extension Group4By1<A, B, C, D, E>
+    on Group<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>), T> Function(
+              Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<A>,)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate1Project4<A, B, C, D, E>
+    on Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      _build<F, T>(
+    Expr<T> Function(Expr<A> a) aggregateBuilder,
+    Expr<F> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              _projection.$2,
+              _projection.$3,
+              _projection.$4,
+              wrap(aggregateBuilder(
+                _standins.$1,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      sum<F extends num>(Expr<F> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<double>)>
+      avg<F extends num>(Expr<F> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      min<F extends Comparable>(Expr<F> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      max<F extends Comparable>(Expr<F> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<int>)>
+      count() => _build((a) => CountAllExpression._(), (a) => a);
+}
+
+extension Group5By1<A, B, C, D, E, F>
+    on Group<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), T> Function(
+              Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+                      (Expr<A>,)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate1Project5<A, B, C, D, E, F>
+    on Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Aggregation<(Expr<A>,),
+      (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> _build<G, T>(
+    Expr<T> Function(Expr<A> a) aggregateBuilder,
+    Expr<G> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          _projection.$3,
+          _projection.$4,
+          _projection.$5,
+          wrap(aggregateBuilder(
+            _standins.$1,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      sum<G extends num>(Expr<G> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double>)>
+      avg<G extends num>(Expr<G> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      min<G extends Comparable>(Expr<G> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      max<G extends Comparable>(Expr<G> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<int>)>
+      count() => _build((a) => CountAllExpression._(), (a) => a);
+}
+
+extension Group6By1<A, B, C, D, E, F, G> on Group<(Expr<A>,),
+    (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T> Function(
+              Aggregation<
+                      (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+                      (Expr<A>,)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate1Project6<A, B, C, D, E, F, G> on Aggregation<(Expr<A>,),
+    (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+      _build<H, T>(
+    Expr<T> Function(Expr<A> a) aggregateBuilder,
+    Expr<H> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              _projection.$2,
+              _projection.$3,
+              _projection.$4,
+              _projection.$5,
+              _projection.$6,
+              wrap(aggregateBuilder(
+                _standins.$1,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+      sum<H extends num>(Expr<H> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double>)>
+      avg<H extends num>(Expr<H> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+      min<H extends Comparable>(Expr<H> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+      max<H extends Comparable>(Expr<H> Function(Expr<A> a) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>,),
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
+      count() => _build((a) => CountAllExpression._(), (a) => a);
+}
+
+extension Group7By1<A, B, C, D, E, F, G, H> on Group<(Expr<A>,),
+    (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>), T> Function(
+              Aggregation<
+                      (
+                        Expr<B>,
+                        Expr<C>,
+                        Expr<D>,
+                        Expr<E>,
+                        Expr<F>,
+                        Expr<G>,
+                        Expr<H>
+                      ),
+                      (Expr<A>,)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
+    (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Aggregation<
+      (Expr<A>,),
+      (
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<I>
+      )> _build<I, T>(
+    Expr<T> Function(Expr<A> a) aggregateBuilder,
+    Expr<I> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          _projection.$3,
+          _projection.$4,
+          _projection.$5,
+          _projection.$6,
+          _projection.$7,
+          wrap(aggregateBuilder(
+            _standins.$1,
+          )),
+        ),
+      );
+  Aggregation<
+      (Expr<A>,),
+      (
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<I>
+      )> sum<I extends num>(
+          Expr<I> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<
+      (Expr<A>,),
+      (
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<double>
+      )> avg<I extends num>(
+          Expr<I> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<
+      (Expr<A>,),
+      (
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<I>
+      )> min<I extends Comparable>(
+          Expr<I> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<
+      (Expr<A>,),
+      (
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<I>
+      )> max<I extends Comparable>(
+          Expr<I> Function(Expr<A> a) aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<
+      (Expr<A>,),
+      (
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<int>
+      )> count() => _build((a) => CountAllExpression._(), (a) => a);
+}
+
+extension Group1By2<A, B, C> on Group<(Expr<A>, Expr<B>), (Expr<C>,)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<C>,), T> Function(
+              Aggregation<(Expr<C>,), (Expr<A>, Expr<B>)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate2Project1<A, B, C>
+    on Aggregation<(Expr<A>, Expr<B>), (Expr<C>,)> {
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> _build<D, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+    Expr<D> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> sum<D extends num>(
+          Expr<D> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<double>)> avg<D extends num>(
+          Expr<D> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> min<D extends Comparable>(
+          Expr<D> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> max<D extends Comparable>(
+          Expr<D> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<int>)> count() =>
+      _build((a, b) => CountAllExpression._(), (a) => a);
+}
+
+extension Group2By2<A, B, C, D>
+    on Group<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<C>, Expr<D>), T> Function(
+              Aggregation<(Expr<C>, Expr<D>), (Expr<A>, Expr<B>)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate2Project2<A, B, C, D>
+    on Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> _build<E, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+    Expr<E> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)>
+      sum<E extends num>(
+              Expr<E> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<double>)>
+      avg<E extends num>(
+              Expr<E> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)>
+      min<E extends Comparable>(
+              Expr<E> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)>
+      max<E extends Comparable>(
+              Expr<E> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<int>)> count() =>
+      _build((a, b) => CountAllExpression._(), (a) => a);
+}
+
+extension Group3By2<A, B, C, D, E>
+    on Group<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<C>, Expr<D>, Expr<E>), T> Function(
+              Aggregation<(Expr<C>, Expr<D>, Expr<E>), (Expr<A>, Expr<B>)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate2Project3<A, B, C, D, E>
+    on Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      _build<F, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+    Expr<F> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              _projection.$2,
+              _projection.$3,
+              wrap(aggregateBuilder(
+                _standins.$1,
+                _standins.$2,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      sum<F extends num>(
+              Expr<F> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<double>)>
+      avg<F extends num>(
+              Expr<F> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      min<F extends Comparable>(
+              Expr<F> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      max<F extends Comparable>(
+              Expr<F> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<int>)>
+      count() => _build((a, b) => CountAllExpression._(), (a) => a);
+}
+
+extension Group4By2<A, B, C, D, E, F>
+    on Group<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>), T> Function(
+              Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+                      (Expr<A>, Expr<B>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate2Project4<A, B, C, D, E, F>
+    on Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      _build<G, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+    Expr<G> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              _projection.$2,
+              _projection.$3,
+              _projection.$4,
+              wrap(aggregateBuilder(
+                _standins.$1,
+                _standins.$2,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      sum<G extends num>(
+              Expr<G> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+      (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double>)> avg<G extends num>(
+          Expr<G> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      min<G extends Comparable>(
+              Expr<G> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      max<G extends Comparable>(
+              Expr<G> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<int>)>
+      count() => _build((a, b) => CountAllExpression._(), (a) => a);
+}
+
+extension Group5By2<A, B, C, D, E, F, G> on Group<(Expr<A>, Expr<B>),
+    (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T> Function(
+              Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+                      (Expr<A>, Expr<B>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate2Project5<A, B, C, D, E, F, G> on Aggregation<
+    (Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Aggregation<(Expr<A>, Expr<B>),
+      (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> _build<H, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+    Expr<H> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          _projection.$3,
+          _projection.$4,
+          _projection.$5,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+      sum<H extends num>(
+              Expr<H> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double>)>
+      avg<H extends num>(
+              Expr<H> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+      min<H extends Comparable>(
+              Expr<H> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+      max<H extends Comparable>(
+              Expr<H> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
+      count() => _build((a, b) => CountAllExpression._(), (a) => a);
+}
+
+extension Group6By2<A, B, C, D, E, F, G, H> on Group<(Expr<A>, Expr<B>),
+    (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>), T> Function(
+              Aggregation<
+                      (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
+                      (Expr<A>, Expr<B>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate2Project6<A, B, C, D, E, F, G, H> on Aggregation<
+    (Expr<A>, Expr<B>),
+    (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
+      _build<I, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+    Expr<I> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              _projection.$2,
+              _projection.$3,
+              _projection.$4,
+              _projection.$5,
+              _projection.$6,
+              wrap(aggregateBuilder(
+                _standins.$1,
+                _standins.$2,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
+      sum<I extends num>(
+              Expr<I> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double>)>
+      avg<I extends num>(
+              Expr<I> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
+      min<I extends Comparable>(
+              Expr<I> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
+      max<I extends Comparable>(
+              Expr<I> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
+      count() => _build((a, b) => CountAllExpression._(), (a) => a);
+}
+
+extension Group1By3<A, B, C, D>
+    on Group<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<D>,), T> Function(
+              Aggregation<(Expr<D>,), (Expr<A>, Expr<B>, Expr<C>)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate3Project1<A, B, C, D>
+    on Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> _build<E, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
+    Expr<E> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> sum<
+              E extends num>(
+          Expr<E> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<double>)> avg<
+              E extends num>(
+          Expr<E> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> min<
+              E extends Comparable>(
+          Expr<E> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> max<
+              E extends Comparable>(
+          Expr<E> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<int>)> count() =>
+      _build((a, b, c) => CountAllExpression._(), (a) => a);
+}
+
+extension Group2By3<A, B, C, D, E>
+    on Group<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<D>, Expr<E>), T> Function(
+              Aggregation<(Expr<D>, Expr<E>), (Expr<A>, Expr<B>, Expr<C>)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate3Project2<A, B, C, D, E>
+    on Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)>
+      _build<F, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
+    Expr<F> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              _projection.$2,
+              wrap(aggregateBuilder(
+                _standins.$1,
+                _standins.$2,
+                _standins.$3,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> sum<
+              F extends num>(
+          Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<double>)> avg<F extends num>(
+          Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> min<
+              F extends Comparable>(
+          Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> max<
+              F extends Comparable>(
+          Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<int>)>
+      count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
+}
+
+extension Group3By3<A, B, C, D, E, F>
+    on Group<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<D>, Expr<E>, Expr<F>), T> Function(
+              Aggregation<(Expr<D>, Expr<E>, Expr<F>),
+                      (Expr<A>, Expr<B>, Expr<C>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate3Project3<A, B, C, D, E, F>
+    on Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      _build<G, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
+    Expr<G> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              _projection.$2,
+              _projection.$3,
+              wrap(aggregateBuilder(
+                _standins.$1,
+                _standins.$2,
+                _standins.$3,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> sum<G extends num>(
+          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<double>)> avg<G extends num>(
+          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> min<G extends Comparable>(
+          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> max<G extends Comparable>(
+          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+          (Expr<D>, Expr<E>, Expr<F>, Expr<int>)>
+      count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
+}
+
+extension Group4By3<A, B, C, D, E, F, G> on Group<(Expr<A>, Expr<B>, Expr<C>),
+    (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<D>, Expr<E>, Expr<F>, Expr<G>), T> Function(
+              Aggregation<(Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+                      (Expr<A>, Expr<B>, Expr<C>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate3Project4<A, B, C, D, E, F, G> on Aggregation<
+    (Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> _build<H, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
+    Expr<H> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          _projection.$3,
+          _projection.$4,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> sum<H extends num>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double>)> avg<H extends num>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> min<H extends Comparable>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> max<H extends Comparable>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+          (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
+      count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
+}
+
+extension Group5By3<A, B, C, D, E, F, G, H> on Group<
+    (Expr<A>, Expr<B>, Expr<C>),
+    (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>), T> Function(
+              Aggregation<(Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
+                      (Expr<A>, Expr<B>, Expr<C>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate3Project5<A, B, C, D, E, F, G, H> on Aggregation<
+    (Expr<A>, Expr<B>, Expr<C>),
+    (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)> _build<I, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
+    Expr<I> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          _projection.$3,
+          _projection.$4,
+          _projection.$5,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+          )),
+        ),
+      );
+  Aggregation<
+      (Expr<A>, Expr<B>, Expr<C>),
+      (
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<I>
+      )> sum<I extends num>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<
+      (Expr<A>, Expr<B>, Expr<C>),
+      (
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<double>
+      )> avg<I extends num>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<
+      (Expr<A>, Expr<B>, Expr<C>),
+      (
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<I>
+      )> min<I extends Comparable>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<
+      (Expr<A>, Expr<B>, Expr<C>),
+      (
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>,
+        Expr<I>
+      )> max<I extends Comparable>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+          (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
+      count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
+}
+
+extension Group1By4<A, B, C, D, E>
+    on Group<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<E>,), T> Function(
+              Aggregation<(Expr<E>,), (Expr<A>, Expr<B>, Expr<C>, Expr<D>)> agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate4Project1<A, B, C, D, E>
+    on Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)>
+      _build<F, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+        aggregateBuilder,
+    Expr<F> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              wrap(aggregateBuilder(
+                _standins.$1,
+                _standins.$2,
+                _standins.$3,
+                _standins.$4,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)>
+      sum<F extends num>(
+              Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<double>)>
+      avg<F extends num>(
+              Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)>
+      min<F extends Comparable>(
+              Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)>
+      max<F extends Comparable>(
+              Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<int>)>
+      count() => _build((a, b, c, d) => CountAllExpression._(), (a) => a);
+}
+
+extension Group2By4<A, B, C, D, E, F>
+    on Group<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<E>, Expr<F>), T> Function(
+              Aggregation<(Expr<E>, Expr<F>),
+                      (Expr<A>, Expr<B>, Expr<C>, Expr<D>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate4Project2<A, B, C, D, E, F>
+    on Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)>
+      _build<G, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+        aggregateBuilder,
+    Expr<G> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              _projection.$2,
+              wrap(aggregateBuilder(
+                _standins.$1,
+                _standins.$2,
+                _standins.$3,
+                _standins.$4,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)>
+      sum<G extends num>(
+              Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<double>)> avg<G extends num>(
+          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)>
+      min<G extends Comparable>(
+              Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)>
+      max<G extends Comparable>(
+              Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+          (Expr<E>, Expr<F>, Expr<int>)>
+      count() => _build((a, b, c, d) => CountAllExpression._(), (a) => a);
+}
+
+extension Group3By4<A, B, C, D, E, F, G> on Group<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<E>, Expr<F>, Expr<G>), T> Function(
+              Aggregation<(Expr<E>, Expr<F>, Expr<G>),
+                      (Expr<A>, Expr<B>, Expr<C>, Expr<D>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate4Project3<A, B, C, D, E, F, G> on Aggregation<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> _build<H, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+        aggregateBuilder,
+    Expr<H> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          _projection.$3,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+            _standins.$4,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> sum<H extends num>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<double>)> avg<H extends num>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> min<H extends Comparable>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> max<H extends Comparable>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+          (Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
+      count() => _build((a, b, c, d) => CountAllExpression._(), (a) => a);
+}
+
+extension Group4By4<A, B, C, D, E, F, G, H> on Group<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+    (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<E>, Expr<F>, Expr<G>, Expr<H>), T> Function(
+              Aggregation<(Expr<E>, Expr<F>, Expr<G>, Expr<H>),
+                      (Expr<A>, Expr<B>, Expr<C>, Expr<D>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate4Project4<A, B, C, D, E, F, G, H> on Aggregation<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+    (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)> _build<I, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+        aggregateBuilder,
+    Expr<I> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          _projection.$3,
+          _projection.$4,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+            _standins.$4,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)> sum<I extends num>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double>)> avg<I extends num>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)> min<I extends Comparable>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)> max<I extends Comparable>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+          (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
+      count() => _build((a, b, c, d) => CountAllExpression._(), (a) => a);
+}
+
+extension Group1By5<A, B, C, D, E, F>
+    on Group<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<F>,), T> Function(
+              Aggregation<(Expr<F>,),
+                      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate5Project1<A, B, C, D, E, F>
+    on Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)>
+      _build<G, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+        aggregateBuilder,
+    Expr<G> Function(Expr<T> e) wrap,
+  ) =>
+          Aggregation._(
+            _standins,
+            (
+              _projection.$1,
+              wrap(aggregateBuilder(
+                _standins.$1,
+                _standins.$2,
+                _standins.$3,
+                _standins.$4,
+                _standins.$5,
+              )),
+            ),
+          );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)>
+      sum<G extends num>(
+              Expr<G> Function(
+                      Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<double>)> avg<G extends num>(
+          Expr<G> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)>
+      min<G extends Comparable>(
+              Expr<G> Function(
+                      Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)>
+      max<G extends Comparable>(
+              Expr<G> Function(
+                      Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+          (Expr<F>, Expr<int>)>
+      count() => _build((a, b, c, d, e) => CountAllExpression._(), (a) => a);
+}
+
+extension Group2By5<A, B, C, D, E, F, G> on Group<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<F>, Expr<G>), T> Function(
+              Aggregation<(Expr<F>, Expr<G>),
+                      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate5Project2<A, B, C, D, E, F, G> on Aggregation<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<H>)> _build<H, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+        aggregateBuilder,
+    Expr<H> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+            _standins.$4,
+            _standins.$5,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<H>)> sum<H extends num>(
+          Expr<H> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<double>)> avg<H extends num>(
+          Expr<H> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<H>)> min<H extends Comparable>(
+          Expr<H> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<H>)> max<H extends Comparable>(
+          Expr<H> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+          (Expr<F>, Expr<G>, Expr<int>)>
+      count() => _build((a, b, c, d, e) => CountAllExpression._(), (a) => a);
+}
+
+extension Group3By5<A, B, C, D, E, F, G, H> on Group<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+    (Expr<F>, Expr<G>, Expr<H>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<F>, Expr<G>, Expr<H>), T> Function(
+              Aggregation<(Expr<F>, Expr<G>, Expr<H>),
+                      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate5Project3<A, B, C, D, E, F, G, H> on Aggregation<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+    (Expr<F>, Expr<G>, Expr<H>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<H>, Expr<I>)> _build<I, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+        aggregateBuilder,
+    Expr<I> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          _projection.$3,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+            _standins.$4,
+            _standins.$5,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<H>, Expr<I>)> sum<I extends num>(
+          Expr<I> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<H>, Expr<double>)> avg<I extends num>(
+          Expr<I> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<H>, Expr<I>)> min<I extends Comparable>(
+          Expr<I> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G>, Expr<H>, Expr<I>)> max<I extends Comparable>(
+          Expr<I> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+          (Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
+      count() => _build((a, b, c, d, e) => CountAllExpression._(), (a) => a);
+}
+
+extension Group1By6<A, B, C, D, E, F, G> on Group<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<G>,), T> Function(
+              Aggregation<(Expr<G>,),
+                      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate6Project1<A, B, C, D, E, F, G> on Aggregation<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<H>)> _build<H, T>(
+    Expr<T> Function(
+            Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+        aggregateBuilder,
+    Expr<H> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+            _standins.$4,
+            _standins.$5,
+            _standins.$6,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<H>)> sum<H extends num>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<double>)> avg<H extends num>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<H>)> min<H extends Comparable>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<H>)> max<H extends Comparable>(
+          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+          (Expr<G>, Expr<int>)>
+      count() => _build((a, b, c, d, e, f) => CountAllExpression._(), (a) => a);
+}
+
+extension Group2By6<A, B, C, D, E, F, G, H> on Group<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+    (Expr<G>, Expr<H>)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<G>, Expr<H>), T> Function(
+              Aggregation<(Expr<G>, Expr<H>),
+                      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate6Project2<A, B, C, D, E, F, G, H> on Aggregation<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+    (Expr<G>, Expr<H>)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<H>, Expr<I>)> _build<I, T>(
+    Expr<T> Function(
+            Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+        aggregateBuilder,
+    Expr<I> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          _projection.$2,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+            _standins.$4,
+            _standins.$5,
+            _standins.$6,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<H>, Expr<I>)> sum<I extends num>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<H>, Expr<double>)> avg<I extends num>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<H>, Expr<I>)> min<I extends Comparable>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+      (Expr<G>, Expr<H>, Expr<I>)> max<I extends Comparable>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+          (Expr<G>, Expr<H>, Expr<int>)>
+      count() => _build((a, b, c, d, e, f) => CountAllExpression._(), (a) => a);
+}
+
+extension Group1By7<A, B, C, D, E, F, G, H> on Group<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+    (Expr<H>,)> {
+  Query<T> aggregate<T extends Record>(
+      Aggregation<(Expr<H>,), T> Function(
+              Aggregation<
+                      (Expr<H>,),
+                      (
+                        Expr<A>,
+                        Expr<B>,
+                        Expr<C>,
+                        Expr<D>,
+                        Expr<E>,
+                        Expr<F>,
+                        Expr<G>
+                      )>
+                  agg)
+          aggregationBuilder) {
+    final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+    return _Query(
+      _from._context,
+      agg._projection,
+      (e) => GroupByClause._(
+        _from._from(_from._expressions.toList()),
+        _handle,
+        _group.toList(),
+        e,
+      ),
+    );
+  }
+}
+
+extension Aggregate7Project1<A, B, C, D, E, F, G, H> on Aggregation<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+    (Expr<H>,)> {
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+      (Expr<H>, Expr<I>)> _build<I, T>(
+    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+            Expr<F> f, Expr<G> g)
+        aggregateBuilder,
+    Expr<I> Function(Expr<T> e) wrap,
+  ) =>
+      Aggregation._(
+        _standins,
+        (
+          _projection.$1,
+          wrap(aggregateBuilder(
+            _standins.$1,
+            _standins.$2,
+            _standins.$3,
+            _standins.$4,
+            _standins.$5,
+            _standins.$6,
+            _standins.$7,
+          )),
+        ),
+      );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+      (Expr<H>, Expr<I>)> sum<I extends num>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+      (Expr<H>, Expr<double>)> avg<I extends num>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+      (Expr<H>, Expr<I>)> min<I extends Comparable>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+      (Expr<H>, Expr<I>)> max<I extends Comparable>(
+          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+          (Expr<H>, Expr<int>)>
+      count() =>
+          _build((a, b, c, d, e, f, g) => CountAllExpression._(), (a) => a);
 }
 
 extension QuerySingle1<A> on QuerySingle<(Expr<A>,)> {

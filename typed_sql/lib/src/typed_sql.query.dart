@@ -197,6 +197,24 @@ final class DistinctClause extends FromClause {
   DistinctClause._(super.from) : super._();
 }
 
+final class GroupByClause extends FromClause implements ExpressionContext {
+  @override
+  final Object _handle;
+
+  final List<Expr> _groupBy;
+  final List<Expr> _projection;
+
+  Iterable<Expr> get groupBy => _groupBy.expand((e) => e._explode());
+  Iterable<Expr> get projection => _projection.expand((e) => e._explode());
+
+  GroupByClause._(
+    super.from,
+    this._handle,
+    this._groupBy,
+    this._projection,
+  ) : super._();
+}
+
 sealed class CompositeQueryClause extends QueryClause {
   final QueryClause left;
   final QueryClause right;
@@ -405,4 +423,25 @@ final class _RootQueryContext extends QueryContext {
       'cannot be resolved in the given context',
     );
   }
+}
+
+/* --------------------- GroupBy / Aggregation ------------------- */
+
+final class Group<S extends Record, T extends Record> {
+  final Query<T> _from;
+  final Object _handle;
+  final S _group;
+  final T _standins;
+
+  Group._(this._from, this._handle, this._group, this._standins);
+}
+
+final class Aggregation<T extends Record, S extends Record> {
+  /// Expressions that can be used in the aggregations.
+  final T _standins;
+
+  /// Projection that has been made.
+  final S _projection;
+
+  Aggregation._(this._standins, this._projection);
 }

@@ -222,19 +222,13 @@ final class _Sqlite extends SqlDialect {
 
       case SelectFromClause(:final from, :final projection):
         final (sql, columns) = clause(from, ctx);
-        final (a, c) = ctx.alias(q, columns);
-        final explodedProjection = <String>[];
-        final aliases = <String>[];
-        for (final (i, e) in projection.indexed) {
-          explodedProjection.add('(${expr(e, c)})');
-          aliases.add('c_$i');
-        }
+        final (alias, c) = ctx.alias(q, columns);
         return (
-          'SELECT ${explodedProjection.mapIndexed(
-                    (i, e) => '$e AS ${aliases[i]}',
+          'SELECT ${projection.mapIndexed(
+                    (i, e) => '(${expr(e, c)}) AS c_$i',
                   ).join(', ')} '
-              'FROM ($sql) AS $a',
-          aliases,
+              'FROM ($sql) AS $alias',
+          projection.mapIndexed((i, e) => 'c_$i').toList(),
         );
 
       case WhereClause(
@@ -306,6 +300,18 @@ final class _Sqlite extends SqlDialect {
               '${q.operator} '
               'SELECT ${columns2.join(', ')} FROM ($sql2)',
           columns1
+        );
+
+      case GroupByClause(:final projection, :final from, :final groupBy):
+        final (sql, columns) = clause(from, ctx);
+        final (alias, c) = ctx.alias(q, columns);
+        return (
+          'SELECT ${projection.mapIndexed(
+                    (i, e) => '(${expr(e, c)}) AS c_$i',
+                  ).join(', ')} '
+              'FROM ($sql) AS $alias '
+              'GROUP BY ${groupBy.map((e) => expr(e, c)).join(', ')}',
+          projection.mapIndexed((i, e) => 'c_$i').toList(),
         );
     }
   }

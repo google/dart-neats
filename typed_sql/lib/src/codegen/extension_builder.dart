@@ -67,6 +67,16 @@ Iterable<Spec> _buildExtensions() sync* {
     }
   }
 
+  for (var i = 1; i < N; i++) {
+    for (var j = 1; j < N; j++) {
+      if (i + j > N) {
+        continue;
+      }
+      yield _buildGroupByExtension(i, j);
+      yield _buildAggregationExtension(i, j);
+    }
+  }
+
   for (var i = 1; i < N + 1; i++) {
     yield _buildSingleQueryExtension(i);
   }
@@ -324,6 +334,32 @@ Spec _buildQueryExtension(int i) {
               SelectClause._,
               )
             )
+          '''),
+      ),
+
+      //    Group<T, (Expr<A>, Expr<B>)> groupBy<T extends Record>(
+      //      T Function(Expr<A> a, Expr<B> b) groupBuilder,
+      //    ) {
+      //      final (handle, (group, standins)) = _build((a, b) {
+      //        return (groupBuilder(a, b), (a, b));
+      //      });
+      //      return Group._(this, handle, group, standins);
+      //    }
+      Method(
+        (b) => b
+          ..name = 'groupBy'
+          ..types.add(refer('T extends Record'))
+          ..returns = refer('Group<T, ${typArgedExprTuple(i)}>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'groupBuilder'
+              ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+          ))
+          ..body = Code('''
+            final (handle, (group, standins)) = _build((${arg.take(i).join(',')}) {
+              return (groupBuilder(${arg.take(i).join(',')}), (${arg.take(i).join(',')},));
+            });
+            return Group._(this, handle, group, standins);
           '''),
       ),
 
@@ -695,4 +731,216 @@ Spec _buildJoinExtension(int i, int j) {
           all.where(conditionBuilder)
       '''),
     )));
+}
+
+/// Build extension for `Group`
+///
+/// ```dart
+/// extension Group2By1<A, B, C> on Group<(Expr<A>,), (Expr<B>, Expr<C>)> {
+///   Query<T> aggregate<T extends Record>(
+///     Aggregation<(Expr<B>, Expr<C>), T> Function(
+///       Aggregation<(Expr<B>, Expr<C>), (Expr<A>,)> agg,
+///     ) aggregationBuilder,
+///   ) {
+///     final agg = aggregationBuilder(Aggregation._(_standins, _group));
+///
+///     return _Query(
+///       _from._context,
+///       agg._projection,
+///       (e) => GroupByClause._(
+///         _from._from(_from._expressions.toList()),
+///         _handle,
+///         _group.toList(),
+///         e,
+///       ),
+///     );
+///   }
+/// }
+/// ```
+Spec _buildGroupByExtension(int i, int j) {
+  final S = typArgedExprTuple(i);
+  final T = typArgedExprTuple(j, i);
+
+  return Extension((b) => b
+    ..name = 'Group${j}By$i'
+    ..types.addAll(typeArg.take(i + j).map(refer))
+    ..on = refer('Group<$S, $T>')
+    // Note. There is no need for a .having clause, it's functionally equivalent
+    //       use .where on the resulting Query<R>.
+    ..methods.add(Method(
+      (b) => b
+        ..name = 'aggregate'
+        ..returns = refer('Query<T>')
+        ..types.add(refer('T extends Record'))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'aggregationBuilder'
+            ..type =
+                refer('Aggregation<$T, T> Function(Aggregation<$T, $S> agg)'),
+        ))
+        ..body = Code('''
+          final agg = aggregationBuilder(Aggregation._(_standins, _group));
+
+          return _Query(
+            _from._context,
+            agg._projection,
+            (e) => GroupByClause._(
+              _from._from(_from._expressions.toList()),
+              _handle,
+              _group.toList(),
+              e,
+            ),
+          );
+        '''),
+    )));
+}
+
+/// Build extension for `Aggregation`.
+///
+/// ```dart
+/// extension Aggregate2Project2<A, B, C, D>
+///     on Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+///   ...
+/// }
+/// ```
+Spec _buildAggregationExtension(int i, int j) {
+  // Types that can be aggregated
+  final S = typArgedExprTuple(i);
+  // Types in the projection so far
+  final t1 = typArgedExprTuple(j, i);
+  // Types in the returned projection
+  final t2 = typArgedExprTuple(j + 1, i);
+  final T = typeArg[i + j]; // typeArg is zero indexed, so +1 is not necessary!
+
+  return Extension((b) => b
+    ..name = 'Aggregate${i}Project$j'
+    ..types.addAll(typeArg.take(i + j).map(refer))
+    ..on = refer('Aggregation<$S, $t1>')
+    ..methods.addAll([
+      //  Aggregation<
+      //      (
+      //        Expr<A>,
+      //        Expr<B>,
+      //      ),
+      //      (
+      //        Expr<C>,
+      //        Expr<D>,
+      //        Expr<S>,
+      //      )> _build<T, S>(
+      //    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+      //    Expr<S> Function(Expr<T> e) wrap,
+      //  ) =>
+      //      Aggregation._(
+      //        _standins,
+      //        (
+      //          _projection.$1,
+      //          _projection.$2,
+      //          wrap(aggregateBuilder(_standins.$1, _standins.$2)),
+      //        ),
+      //      );
+      Method((b) => b
+        ..name = '_build'
+        ..returns = refer('Aggregation<$S, $t2>')
+        ..types.addAll([refer(T), refer('T')])
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'aggregateBuilder'
+            ..type = refer('Expr<T> Function(${typArgedExprArgumentList(i)})'),
+        ))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'wrap'
+            ..type = refer('Expr<$T> Function(Expr<T> e)'),
+        ))
+        ..lambda = true
+        ..body = Code('''
+          Aggregation._(
+            _standins,
+            (
+              ${List.generate(j, (i) => '_projection.\$${i + 1}').join(', ')},
+              wrap(aggregateBuilder(
+                ${List.generate(i, (i) => '_standins.\$${i + 1}').join(', ')},
+              )),
+            ),
+          )
+        ''')),
+
+      //  Aggregation<
+      //      (
+      //        Expr<A>,
+      //        Expr<B>,
+      //      ),
+      //      (
+      //        Expr<C>,
+      //        Expr<D>,
+      //        Expr<T>,
+      //      )> sum<T extends num>(
+      //    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+      //  ) =>
+      //      _build(aggregateBuilder, SumExpression._);
+      Method((b) => b
+        ..name = 'sum'
+        ..returns = refer('Aggregation<$S, $t2>')
+        ..types.add(refer('$T extends num'))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'aggregateBuilder'
+            ..type = refer('Expr<$T> Function(${typArgedExprArgumentList(i)})'),
+        ))
+        ..lambda = true
+        ..body = Code('_build(aggregateBuilder, SumExpression._)')),
+
+      Method((b) => b
+        ..name = 'avg'
+        ..returns = refer(
+            'Aggregation<$S, ${listToTuple(typArgedExprAsList(j, i) + [
+                  'Expr<double>'
+                ])}>')
+        ..types.add(refer('$T extends num'))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'aggregateBuilder'
+            ..type = refer('Expr<$T> Function(${typArgedExprArgumentList(i)})'),
+        ))
+        ..lambda = true
+        ..body = Code('_build(aggregateBuilder, AvgExpression._)')),
+
+      Method((b) => b
+        ..name = 'min'
+        ..returns = refer('Aggregation<$S, $t2>')
+        ..types.add(refer('$T extends Comparable'))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'aggregateBuilder'
+            ..type = refer('Expr<$T> Function(${typArgedExprArgumentList(i)})'),
+        ))
+        ..lambda = true
+        ..body = Code('_build(aggregateBuilder, MinExpression._)')),
+
+      Method((b) => b
+        ..name = 'max'
+        ..returns = refer('Aggregation<$S, $t2>')
+        ..types.add(refer('$T extends Comparable'))
+        ..requiredParameters.add(Parameter(
+          (b) => b
+            ..name = 'aggregateBuilder'
+            ..type = refer('Expr<$T> Function(${typArgedExprArgumentList(i)})'),
+        ))
+        ..lambda = true
+        ..body = Code('_build(aggregateBuilder, MaxExpression._)')),
+
+      Method((b) => b
+        ..name = 'count'
+        ..returns = refer(
+            'Aggregation<$S, ${listToTuple(typArgedExprAsList(j, i) + [
+                  'Expr<int>'
+                ])}>')
+        ..lambda = true
+        ..body = Code('''
+          _build(
+            (${arg.take(i).join(',')}) => CountAllExpression._(),
+            (a) => a
+          )
+        ''')),
+    ]));
 }
