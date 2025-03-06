@@ -262,7 +262,7 @@ final class Literal<T> extends SingleValueExpr<T> {
     if (value is! String &&
         value is! int &&
         value is! double &&
-        // TODO: Isn't null allowed?
+        value is! Uint8List &&
         value is! DateTime) {
       throw ArgumentError.value(
         value,

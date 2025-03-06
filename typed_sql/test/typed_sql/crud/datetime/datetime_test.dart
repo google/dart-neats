@@ -2,6 +2,9 @@
 //
 // See tool/generate_crud_tests.dart
 
+// ignore: unused_import
+import 'dart:typed_data';
+
 import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';

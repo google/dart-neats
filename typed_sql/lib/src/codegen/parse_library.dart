@@ -247,6 +247,8 @@ ParsedModel _parseModel(
       type = 'int';
     } else if (dateTimeTypeChecker.isExactlyType(returnType)) {
       type = 'DateTime';
+    } else if (uint8ListTypeChecker.isExactlyType(returnType)) {
+      type = 'Uint8List';
     } else {
       // TODO: Add support for dart:typed_data fields
       // TODO: Add support custom types (maybe using extension methods!)

@@ -293,6 +293,15 @@ final class _SqliteRowReader extends RowReader {
 
   @override
   String? readString() => _row.values[_i++] as String?;
+
+  @override
+  Uint8List? readUint8List() {
+    final value = _row.values[_i++];
+    if (value == null) {
+      return null;
+    }
+    return value as Uint8List;
+  }
 }
 
 List<Object?> _paramsForSqlite(List<Object?> params) => params

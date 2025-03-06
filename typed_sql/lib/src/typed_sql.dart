@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:collection/collection.dart';
 
@@ -91,6 +92,7 @@ final class ExposedForCodeGen {
                             const (String) => ColumnType.text,
                             const (bool) => ColumnType.boolean,
                             const (DateTime) => ColumnType.datetime,
+                            const (Uint8List) => ColumnType.blob,
                             _ => throw UnsupportedError(
                                 'Unsupported type: ${t.columnInfo[i].type}'),
                           },

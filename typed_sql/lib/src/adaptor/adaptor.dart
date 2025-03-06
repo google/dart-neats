@@ -99,6 +99,7 @@ abstract base class RowReader {
   double? readDouble();
   bool? readBool();
   DateTime? readDateTime();
+  Uint8List? readUint8List();
 }
 
 sealed class DatabaseException implements Exception {}

@@ -9,7 +9,7 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';
 
-part 'text_test.g.dart';
+part 'blob_test.g.dart';
 
 abstract final class TestDatabase extends Schema {
   Table<Item> get items;
@@ -20,7 +20,7 @@ abstract final class Item extends Model {
   @AutoIncrement()
   int get id;
 
-  String get value;
+  Uint8List get value;
 }
 
 void main() {
@@ -30,8 +30,8 @@ void main() {
     },
   );
 
-  final initialValue = 'hello';
-  final updatedValue = 'hello world';
+  final initialValue = Uint8List.fromList([1, 2, 3]);
+  final updatedValue = Uint8List.fromList([1, 2, 3, 4]);
 
   r.addTest('insert', (db) async {
     await db.items.insert(
@@ -40,7 +40,7 @@ void main() {
     );
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(initialValue);
+    check(item).isNotNull().value.deepEquals(initialValue);
   });
 
   r.addTest('update', (db) async {
@@ -54,7 +54,7 @@ void main() {
         ));
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(updatedValue);
+    check(item).isNotNull().value.deepEquals(updatedValue);
   });
 
   r.addTest('delete', (db) async {

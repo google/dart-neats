@@ -177,6 +177,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               'double' => 'readDouble',
               'bool' => 'readBool',
               'DateTime' => 'readDateTime',
+              'Uint8List' => 'readUint8List',
               _ => throw UnsupportedError(
                   'Unsupported type "${field.typeName}"',
                 ),

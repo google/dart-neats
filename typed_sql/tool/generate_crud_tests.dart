@@ -44,30 +44,42 @@ final instances = [
     'type': 'int',
     'initialValue': '42',
     'updatedValue': '21',
+    'equality': 'equals',
   },
   {
     'name': 'text',
     'type': 'String',
     'initialValue': '\'hello\'',
     'updatedValue': '\'hello world\'',
+    'equality': 'equals',
   },
   {
     'name': 'boolean',
     'type': 'bool',
     'initialValue': 'true',
     'updatedValue': 'false',
+    'equality': 'equals',
   },
   {
     'name': 'real',
     'type': 'double',
     'initialValue': '42.2',
     'updatedValue': '43.2',
+    'equality': 'equals',
   },
   {
     'name': 'datetime',
     'type': 'DateTime',
     'initialValue': 'DateTime(2024).toUtc()',
     'updatedValue': 'DateTime(2025).toUtc()',
+    'equality': 'equals',
+  },
+  {
+    'name': 'blob',
+    'type': 'Uint8List',
+    'initialValue': 'Uint8List.fromList([1, 2, 3])',
+    'updatedValue': 'Uint8List.fromList([1, 2, 3, 4])',
+    'equality': 'deepEquals',
   },
 ];
 
@@ -75,6 +87,9 @@ final template = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
 //
 // See tool/generate_crud_tests.dart
+
+// ignore: unused_import
+import 'dart:typed_data';
 
 import 'package:typed_sql/typed_sql.dart';
 
@@ -111,7 +126,7 @@ void main() {
     );
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(initialValue);
+    check(item).isNotNull().value.{{equality}}(initialValue);
   });
 
   r.addTest('update', (db) async {
@@ -125,7 +140,7 @@ void main() {
         ));
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(updatedValue);
+    check(item).isNotNull().value.{{equality}}(updatedValue);
   });
 
   r.addTest('delete', (db) async {

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:postgres/postgres.dart';
 
@@ -25,7 +26,10 @@ mixin _QueryExecutor<S extends Session> {
   S get _session;
 
   Future<QueryResult> execute(String sql, List<Object?> params) async {
-    final rs = await _session.execute(sql, parameters: params);
+    final rs = await _session.execute(
+      sql,
+      parameters: _paramsForPostgres(params),
+    );
     return QueryResult(
       affectedRows: rs.affectedRows,
       rows: rs.map(_PostgresRowReader.new).toList(),
@@ -35,7 +39,7 @@ mixin _QueryExecutor<S extends Session> {
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     final rs = await _session.execute(
       sql,
-      parameters: params,
+      parameters: _paramsForPostgres(params),
       queryMode: QueryMode.extended,
     );
     yield* Stream.fromIterable(rs.map(_PostgresRowReader.new));
@@ -113,4 +117,26 @@ final class _PostgresRowReader extends RowReader {
   String? readString() {
     return _row[_i++] as String?;
   }
+
+  @override
+  Uint8List? readUint8List() {
+    final value = _row[_i++];
+    if (value == null) {
+      return null;
+    }
+    return value as Uint8List;
+  }
 }
+
+List<Object?> _paramsForPostgres(List<Object?> params) => params
+    .map((p) => switch (p) {
+          DateTime d => d.toIso8601String(),
+          String s => s,
+          null => null,
+          bool b => b,
+          int i => i,
+          double d => d,
+          Uint8List u => TypedValue(Type.byteArray, u, isSqlNull: false),
+          _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
+        })
+    .toList();
