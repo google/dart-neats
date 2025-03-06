@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'adaptor/adaptor.dart' show DatabaseAdaptor, RowReader;
-export 'sql_dialect/sql_dialect.dart' show SqlDialect;
+export 'src/adaptor/adaptor.dart' show DatabaseAdaptor, RowReader;
+export 'src/dialect/sql_dialect.dart' show SqlDialect;
 export 'src/typed_sql.dart'
     hide
         BinaryOperationExpression,

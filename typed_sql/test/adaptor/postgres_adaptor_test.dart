@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import 'package:test/test.dart';
-import 'package:typed_sql/adaptor/adaptor.dart';
-import 'package:typed_sql/adaptor/postgres_adaptor.dart';
+import 'package:typed_sql/adaptor.dart';
 
 import '../testutil/postgres_manager.dart';
 
@@ -32,7 +31,7 @@ void main() async {
     final pg = PostgresManager();
     final pool = await pg.getPool();
 
-    final db = postgresAdaptor(pool);
+    final db = DatabaseAdaptor.postgres(pool);
 
     await db.execute('CREATE TABLE users (id INT, name TEXT)', []);
 

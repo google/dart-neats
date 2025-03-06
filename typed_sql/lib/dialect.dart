@@ -12,11 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:typed_sql/dialect.dart';
-
-// ignore: avoid_relative_lib_imports
-import '../lib/src/model.dart';
-
-void main() {
-  print(createPrimaryDatabaseTables(SqlDialect.sqlite()));
-}
+export 'src/dialect/sql_dialect.dart';
