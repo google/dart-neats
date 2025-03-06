@@ -14,8 +14,11 @@
 
 import 'dart:typed_data';
 
+import 'package:postgres/postgres.dart' show Pool;
+
 import 'logging_adaptor.dart';
-import 'sqlite.dart';
+import 'postgres_adaptor.dart';
+import 'sqlite_adaptor.dart';
 
 abstract base class DatabaseAdaptor extends QueryExecutor {
   /// Begin a transaction ad call [fn] before committing the transaction.
@@ -30,6 +33,8 @@ abstract base class DatabaseAdaptor extends QueryExecutor {
   Future<void> close({bool force = false});
 
   static DatabaseAdaptor sqlite3(Uri uri) => sqlite3Adaptor(uri);
+
+  static DatabaseAdaptor postgres(Pool<void> pool) => postgresAdaptor(pool);
 
   static DatabaseAdaptor withLogging(
     DatabaseAdaptor adaptor,

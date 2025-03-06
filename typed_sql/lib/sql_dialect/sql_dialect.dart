@@ -13,10 +13,12 @@
 // limitations under the License.
 
 import '../src/typed_sql.dart';
-import 'sqlite.dart';
+import 'postgres_dialect.dart';
+import 'sqlite_dialect.dart';
 
 abstract base class SqlDialect {
   static SqlDialect sqlite() => sqliteDialect();
+  static SqlDialect postgres() => postgresDialect();
 
   String createTables(List<CreateTableStatement> statement);
 

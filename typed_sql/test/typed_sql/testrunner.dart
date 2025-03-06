@@ -14,18 +14,24 @@
 
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
+
+import '../testutil/postgres_manager.dart';
 
 export 'package:checks/checks.dart';
 
 var _testFileCounter = 0;
 
 final class TestRunner<T extends Schema> {
+  final _pg = PostgresManager();
+
   final _tests = <({
     String name,
     FutureOr<void> Function(Database<T> db) fn,
     String? skipSqlite,
+    String? skipPostgres,
   })>[];
 
   final FutureOr<void> Function(Database<T> db)? _setup;
@@ -37,39 +43,78 @@ final class TestRunner<T extends Schema> {
   })  : _setup = setup,
         _validate = validate;
 
+  @isTest
   void addTest(
     String name,
     FutureOr<void> Function(Database<T> db) fn, {
     String? skipSqlite,
+    String? skipPostgres,
   }) =>
       _tests.add((
         name: name,
         fn: fn,
         skipSqlite: skipSqlite,
+        skipPostgres: skipPostgres,
       ));
 
   void run() {
     for (final testcase in _tests) {
-      group('sqlite', () {
-        test(testcase.name, () async {
-          await Future<void>.delayed(Duration.zero);
+      test('${testcase.name} (variant: sqlite)', () async {
+        if (testcase.skipSqlite != null) {
+          markTestSkipped(testcase.skipSqlite!);
+          return;
+        }
 
-          if (testcase.skipSqlite != null) {
-            markTestSkipped(testcase.skipSqlite!);
+        _testFileCounter++;
+        final filename = [
+          DateTime.now().microsecondsSinceEpoch,
+          _testFileCounter,
+        ].join('-');
+        final u = Uri.parse('file:inmemory-$filename?mode=memory&cache=shared');
+        final adaptor = DatabaseAdaptor.withLogging(
+          DatabaseAdaptor.sqlite3(u),
+          printOnFailure,
+        );
+        final db = Database<T>(adaptor, SqlDialect.sqlite());
+
+        try {
+          if (_setup != null) {
+            await _setup(db);
           }
 
-          _testFileCounter++;
-          final filename = [
-            DateTime.now().microsecondsSinceEpoch,
-            _testFileCounter,
-          ].join('-');
-          final u =
-              Uri.parse('file:inmemory-$filename?mode=memory&cache=shared');
+          await testcase.fn(db);
+
+          if (_validate != null) {
+            await _validate(db);
+          }
+        } finally {
+          try {
+            await adaptor.close();
+          } catch (e) {
+            // ignore
+          }
+        }
+      });
+    }
+
+    final skipPg = !_pg.isAvailable
+        ? 'postgres unavailable, try ./tool/run_postgres_test_server.sh'
+        : null;
+
+    for (final testcase in _tests) {
+      test('${testcase.name} (variant: postgres)', () async {
+        if (testcase.skipSqlite != null) {
+          markTestSkipped(testcase.skipSqlite!);
+          return;
+        }
+
+        final pool = await _pg.getPool();
+        try {
           final adaptor = DatabaseAdaptor.withLogging(
-            DatabaseAdaptor.sqlite3(u),
+            DatabaseAdaptor.postgres(pool),
             printOnFailure,
           );
-          final db = Database<T>(adaptor, SqlDialect.sqlite());
+          final db = Database<T>(adaptor, SqlDialect.postgres());
 
           try {
             if (_setup != null) {
@@ -88,8 +133,10 @@ final class TestRunner<T extends Schema> {
               // ignore
             }
           }
-        });
-      });
+        } finally {
+          await pool.close(force: true);
+        }
+      }, skip: skipPg);
     }
   }
 }

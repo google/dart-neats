@@ -18,7 +18,8 @@ import 'package:postgres/postgres.dart';
 
 import 'adaptor.dart';
 
-DatabaseAdaptor postgresAdaptor(Pool pool) => _PostgresDatabaseAdaptor(pool);
+DatabaseAdaptor postgresAdaptor(Pool<void> pool) =>
+    _PostgresDatabaseAdaptor(pool);
 
 mixin _QueryExecutor<S extends Session> {
   S get _session;
@@ -32,8 +33,15 @@ mixin _QueryExecutor<S extends Session> {
   }
 
   Stream<RowReader> query(String sql, List<Object?> params) async* {
-    final ps = await _session.prepare(sql);
-    yield* ps.bind(params).map(_PostgresRowReader.new);
+    final rs = await _session.execute(
+      sql,
+      parameters: params,
+      queryMode: QueryMode.extended,
+    );
+    yield* Stream.fromIterable(rs.map(_PostgresRowReader.new));
+    // TODO: Explore why streaming mode doesn't work
+    // final ps = await _session.prepare(sql);
+    // yield* ps.bind(params).map(_PostgresRowReader.new);
   }
 
   Future<void> script(String sql) async {
@@ -42,7 +50,7 @@ mixin _QueryExecutor<S extends Session> {
 }
 
 final class _PostgresDatabaseAdaptor extends DatabaseAdaptor
-    with _QueryExecutor<Pool> {
+    with _QueryExecutor<Pool<void>> {
   @override
   final Pool _session;
 
