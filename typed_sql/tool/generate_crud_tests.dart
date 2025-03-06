@@ -63,6 +63,12 @@ final instances = [
     'initialValue': '42.2',
     'updatedValue': '43.2',
   },
+  {
+    'name': 'datetime',
+    'type': 'DateTime',
+    'initialValue': 'DateTime(2024)',
+    'updatedValue': 'DateTime(2025)',
+  },
 ];
 
 final template = '''

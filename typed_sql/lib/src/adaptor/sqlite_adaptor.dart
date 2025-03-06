@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:sqlite3/sqlite3.dart';
 
@@ -133,7 +134,7 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
       _throwIfClosed();
       final stmt = conn.prepare(sql);
       try {
-        final cursor = stmt.selectCursor(params);
+        final cursor = stmt.selectCursor(_paramsForSqlite(params));
         while (cursor.moveNext()) {
           _throwIfClosed();
           yield _SqliteRowReader(cursor.current);
@@ -276,7 +277,13 @@ final class _SqliteRowReader extends RowReader {
   bool? readBool() => _row.values[_i++] != 0;
 
   @override
-  DateTime? readDateTime() => _row.values[_i++] as DateTime?;
+  DateTime? readDateTime() {
+    final value = _row.values[_i++] as String?;
+    if (value == null) {
+      return null;
+    }
+    return DateTime.parse(value);
+  }
 
   @override
   double? readDouble() => (_row.values[_i++] as num?)?.toDouble();
@@ -287,6 +294,19 @@ final class _SqliteRowReader extends RowReader {
   @override
   String? readString() => _row.values[_i++] as String?;
 }
+
+List<Object?> _paramsForSqlite(List<Object?> params) => params
+    .map((p) => switch (p) {
+          DateTime d => d.toIso8601String(),
+          String s => s,
+          null => null,
+          bool b => b,
+          int i => i,
+          double d => d,
+          Uint8List u => u,
+          _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
+        })
+    .toList();
 
 Never _throwSqliteException(SqliteException e) {
   // TODO: Separate error code into:
