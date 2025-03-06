@@ -46,6 +46,13 @@ final class _TypedSqlBuilder extends g.Generator {
       return null;
     }
 
+    // Check if Subjects from package:checks is imported!
+    final hasSubjectFromChecks = targetLibrary.element.importedLibraries
+        .map((l) => l.exportNamespace.get('Subject')?.library?.identifier)
+        .nonNulls
+        .any((id) => id.startsWith('package:checks/'));
+
+    // Find all records using in all dart libraries in the target package!
     final recordParser = RecordParser();
     await for (final input in buildStep.findAssets(Glob('**.dart'))) {
       try {
@@ -72,6 +79,7 @@ final class _TypedSqlBuilder extends g.Generator {
         ..addAll(buildCode(
           library,
           recordParser.canonicalizedParsedRecords(),
+          createChecksExtensions: hasSubjectFromChecks,
         )),
     ).accept(code.DartEmitter(useNullSafetySyntax: true)).toString();
   }

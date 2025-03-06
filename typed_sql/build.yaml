@@ -4,7 +4,7 @@ targets:
       typed_sql|typed_sql:
         enabled: true
         generate_for:
-         - 'test/**/model.dart'
+         - 'test/**.dart'
          - 'example/lib/src/model.dart'
       typed_sql|typed_sql_extensions:
         enabled: true

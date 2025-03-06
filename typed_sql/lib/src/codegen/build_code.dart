@@ -26,10 +26,40 @@ import 'type_args.dart';
 
 Iterable<Spec> buildCode(
   ParsedLibrary library,
-  List<ParsedRecord> records,
-) sync* {
-  yield* library.schemas.map(buildSchema).flattened;
-  yield* records.map(buildRecord).flattened;
+  List<ParsedRecord> records, {
+  required bool createChecksExtensions,
+}) sync* {
+  yield* library.schemas.expand(buildSchema);
+  yield* records.expand(buildRecord);
+
+  if (createChecksExtensions) {
+    yield* library.schemas
+        .expand((s) => s.tables)
+        .map((t) => t.model)
+        .toSet()
+        .sortedBy((m) => m.name)
+        .expand(buildChecksForModel);
+  }
+}
+
+/// Generate extensions for use with `package:checks`
+Iterable<Spec> buildChecksForModel(ParsedModel model) sync* {
+  // Create extension for Subject<Model>
+  yield Extension((b) => b
+    ..name = '${model.name}Checks'
+    ..on = TypeReference(
+      (b) => b
+        ..symbol = 'Subject'
+        ..types.add(refer(model.name)),
+    )
+    ..methods.addAll(model.fields.map((field) => Method(
+          (b) => b
+            ..name = field.name
+            ..returns = refer('Subject<${field.type}>')
+            ..type = MethodType.getter
+            ..lambda = true
+            ..body = Code('has((m) => m.${field.name}, \'${field.name}\')'),
+        ))));
 }
 
 /// Generate code for [Schema] subclass, parsed into [schema].
