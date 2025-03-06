@@ -14,8 +14,7 @@
 
 import 'package:collection/collection.dart';
 
-import '../typed_sql.dart';
-import 'sql_dialect.dart';
+import 'dialect.dart';
 
 SqlDialect sqliteDialect() => _Sqlite();
 

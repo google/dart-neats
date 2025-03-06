@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/adaptor/adaptor.dart' show DatabaseAdaptor, RowReader;
-export 'src/dialect/dialect.dart' show SqlDialect;
-export 'src/typed_sql.dart'
-    hide
+import '../typed_sql.dart';
+import 'postgres_dialect.dart';
+import 'sqlite_dialect.dart';
+
+export '../typed_sql.dart'
+    show
         Aggregation,
         AvgExpression,
         BinaryOperationExpression,
@@ -27,6 +29,7 @@ export 'src/typed_sql.dart'
         DistinctClause,
         ExceptClause,
         ExistsExpression,
+        Expr,
         ExpressionBoolAnd,
         ExpressionBoolNot,
         ExpressionBoolOr,
@@ -60,16 +63,15 @@ export 'src/typed_sql.dart'
         ExpressionStringToUpperCase,
         FieldExpression,
         FromClause,
-        Group,
         GroupByClause,
         InsertStatement,
         IntersectClause,
-        Join,
         JoinClause,
         LimitClause,
         Literal,
         MaxExpression,
         MinExpression,
+        Model,
         ModelExpression,
         NullAssertionExpression,
         OffsetClause,
@@ -80,13 +82,48 @@ export 'src/typed_sql.dart'
         SelectClause,
         SelectFromClause,
         SelectStatement,
-        SingleValueExpr,
         Statement,
         SubQueryExpression,
         SumExpression,
         TableClause,
-        TableDefinition,
         UnionAllClause,
         UnionClause,
         UpdateStatement,
         WhereClause;
+
+abstract base class SqlDialect {
+  static SqlDialect sqlite() => sqliteDialect();
+  static SqlDialect postgres() => postgresDialect();
+
+  String createTables(List<CreateTableStatement> statement);
+
+  /// Insert [InsertStatement.columns] into [InsertStatement.table] returning
+  /// columns from [InsertStatement.returning].
+  ///
+  /// ```sql
+  /// INSERT INTO [table] ([columns]) VALUES ($1, ...)
+  /// ```
+  (String, List<Object?>) insertInto(InsertStatement statement);
+
+  /// Update [UpdateStatement.columns] from [UpdateStatement.table] with
+  /// [UpdateStatement.values].
+  ///
+  /// This updates rows satisfying the [UpdateStatement.where] expression.
+  (String, List<Object?>) update(UpdateStatement statement);
+
+  /// Delete from [DeleteStatement.table].
+  ///
+  /// Delete rows satisfying the [DeleteStatement.where] expression.
+  ///
+  /// This SQL statement should not return any rows,
+  /// all return values are read but ignored.
+  (String, List<Object?>) delete(DeleteStatement statement);
+
+  // TODO: Document rendering method!
+  (String sql, List<String> columns, List<Object?> params) select(
+    SelectStatement statement,
+  );
+}
+
+// NOTE: All Expression subclasses are sealed, so we can do exhaustive switching
+//       over them.

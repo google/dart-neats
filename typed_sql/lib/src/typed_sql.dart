@@ -17,7 +17,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 
 import 'adaptor/adaptor.dart';
-import 'dialect/sql_dialect.dart';
+import 'dialect/dialect.dart';
 
 part 'typed_sql.annotations.dart';
 part 'typed_sql.database.dart';
