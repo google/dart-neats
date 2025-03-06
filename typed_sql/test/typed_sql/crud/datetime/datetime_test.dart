@@ -27,8 +27,8 @@ void main() {
     },
   );
 
-  final initialValue = DateTime(2024);
-  final updatedValue = DateTime(2025);
+  final initialValue = DateTime(2024).toUtc();
+  final updatedValue = DateTime(2025).toUtc();
 
   r.addTest('insert', (db) async {
     await db.items.insert(

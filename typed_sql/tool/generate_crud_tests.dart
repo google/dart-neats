@@ -66,8 +66,8 @@ final instances = [
   {
     'name': 'datetime',
     'type': 'DateTime',
-    'initialValue': 'DateTime(2024)',
-    'updatedValue': 'DateTime(2025)',
+    'initialValue': 'DateTime(2024).toUtc()',
+    'updatedValue': 'DateTime(2025).toUtc()',
   },
 ];
 
