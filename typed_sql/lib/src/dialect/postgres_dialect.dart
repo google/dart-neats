@@ -323,6 +323,8 @@ final class _PostgresDialect extends SqlDialect {
         Literal.false$ => 'FALSE',
         Literal.true$ => 'TRUE',
         Literal.null$ => 'NULL',
+        Literal<CustomDataType>(value: final value) =>
+          ctx.parameter(value.toDatabase()),
         Literal<T>(value: final value) => ctx.parameter(value),
         final BinaryOperationExpression e =>
           '( ${expr(e.left, ctx)} ${e.operator} ${expr(e.right, ctx)} )',

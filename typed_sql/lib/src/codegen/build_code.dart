@@ -155,6 +155,32 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       .where((ref) => ref.fk.referencedTable == table)
       .toList();
 
+  String readFromRowReader(String rowReader, ParsedField field) {
+    var readBackingType = switch (field.backingType) {
+      'String' => '$rowReader.readString()',
+      'int' => '$rowReader.readInt()',
+      'double' => '$rowReader.readDouble()',
+      'bool' => '$rowReader.readBool()',
+      'DateTime' => '$rowReader.readDateTime()',
+      'Uint8List' => '$rowReader.readUint8List()',
+      _ => throw UnsupportedError(
+          'Unsupported type "${field.typeName}"',
+        ),
+    };
+    if (field.backingType == field.typeName) {
+      return readBackingType + (field.isNullable ? '' : '!');
+    }
+    if (!field.isNullable) {
+      return '${field.typeName}.fromDatabase($readBackingType!)';
+    }
+    return '''
+      ExposedForCodeGen.customDataTypeOrNull(
+        $readBackingType,
+        ${field.typeName}.fromDatabase,
+      );
+    ''';
+  }
+
   // Create implementation class for model
   yield Class(
     (b) => b
@@ -171,17 +197,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ),
           )
           ..initializers.addAll(model.fields.map(
-            (field) => Code('${field.name} = row.${switch (field.typeName) {
-              'String' => 'readString',
-              'int' => 'readInt',
-              'double' => 'readDouble',
-              'bool' => 'readBool',
-              'DateTime' => 'readDateTime',
-              'Uint8List' => 'readUint8List',
-              _ => throw UnsupportedError(
-                  'Unsupported type "${field.typeName}"',
-                ),
-            }}()${field.isNullable ? '' : '!'}'),
+            (field) => Code(
+              '${field.name} = ${readFromRowReader('row', field)}',
+            ),
           )),
       ))
       ..fields.addAll(model.fields.mapIndexed((i, field) => Field(
@@ -208,7 +226,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   })>[
                 ${model.fields.map((f) => '''
                   (
-                    type: ${f.typeName},
+                    type: ${f.backingType},
                     isNotNull: ${!f.isNullable},
                     defaultValue: ${f.defaultValue},
                     autoIncrement: ${f.autoIncrement},
@@ -493,7 +511,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..type = MethodType.getter
               ..returns = refer('Expr<${field.type}>')
               ..lambda = true
-              ..body = Code('ExposedForCodeGen.field(this, $i)'),
+              ..body = Code(
+                'ExposedForCodeGen.field(this, $i, (r) => ${readFromRowReader('r', field)})',
+              ),
           )),
       ...referencedFrom.map((ref) => Method(
             (b) => b

@@ -42,6 +42,9 @@ final referencesTypeChecker = TypeChecker.fromUrl(
 final primaryKeyTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#PrimaryKey'),
 );
+final customDataTypeTypeChecker = TypeChecker.fromUrl(
+  typedSqlSrcUri.resolve('#CustomDataType'),
+);
 final dateTimeTypeChecker = const TypeChecker.fromUrl('dart:core#DateTime');
 final uint8ListTypeChecker =
     const TypeChecker.fromUrl('dart:typed_data#Uint8List');

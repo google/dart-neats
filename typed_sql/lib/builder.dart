@@ -14,6 +14,8 @@
 
 import 'dart:async';
 
+import 'package:analyzer/dart/analysis/results.dart' show LibraryElementResult;
+import 'package:analyzer/dart/element/element.dart' show ClassElement;
 import 'package:build/build.dart'
     show BuildStep, Builder, BuilderOptions, NonLibraryAssetException;
 import 'package:code_builder/code_builder.dart' as code;
@@ -41,7 +43,25 @@ final class _TypedSqlBuilder extends g.Generator {
     g.LibraryReader targetLibrary,
     BuildStep buildStep,
   ) async {
-    final library = await parseLibrary(targetLibrary);
+    // Look up CustomDataType for later use!
+    final typedSqlLibrary = await targetLibrary.element.session
+        .getLibraryByUri('package:typed_sql/typed_sql.dart');
+    if (typedSqlLibrary is! LibraryElementResult) {
+      throw g.InvalidGenerationSource(
+        'Unable to resolve "package:typed_sql/typed_sql.dart"',
+      );
+    }
+    final customDataType =
+        typedSqlLibrary.element.exportNamespace.get('CustomDataType');
+    if (customDataType is! ClassElement) {
+      throw g.InvalidGenerationSource('Unable to resolve `CustomDataType`');
+    }
+
+    final ctx = ParserContext(
+      customDataType: customDataType,
+    );
+
+    final library = await parseLibrary(ctx, targetLibrary);
     if (library.isEmpty) {
       return null;
     }

@@ -58,3 +58,21 @@ final class Sql {
 
   const Sql(this.sql);
 }
+
+/// Interface to be implemented by custom types that can be stored in a [Model].
+///
+/// Subclasses must:
+///  * specify a concrete `T` as one of:
+///    - String
+///    - Uint8List
+///    - bool
+///    - int
+///    - double
+///    - DateTime
+///  * have a `fromDatabase(T value)` constructor.
+///
+/// If a subclass implements [Comparable] then the encoded values returns from
+/// [toDatabase] **must** also be comparable and have the same ordering!
+abstract interface class CustomDataType<T extends Object?> {
+  T toDatabase();
+}

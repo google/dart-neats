@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'real_test.dart';
+part of 'custom_blob_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
@@ -29,13 +29,13 @@ String createTestDatabaseTables(SqlDialect dialect) =>
 final class _$Item extends Item {
   _$Item(RowReader row)
       : id = row.readInt()!,
-        value = row.readDouble()!;
+        value = MyJsonValue.fromDatabase(row.readUint8List()!);
 
   @override
   final int id;
 
   @override
-  final double value;
+  final MyJsonValue value;
 
   static const _$table = (
     tableName: 'items',
@@ -53,7 +53,7 @@ final class _$Item extends Item {
         autoIncrement: true,
       ),
       (
-        type: double,
+        type: Uint8List,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -78,7 +78,7 @@ extension TableItemExt on Table<Item> {
   /// TODO: document create
   Future<Item> create({
     required int id,
-    required double value,
+    required MyJsonValue value,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
@@ -91,7 +91,7 @@ extension TableItemExt on Table<Item> {
   /// TODO: document insert
   Future<Item> insert({
     required Expr<int> id,
-    required Expr<double> value,
+    required Expr<MyJsonValue> value,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
@@ -116,7 +116,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             Expr<Item> item,
             Update<Item> Function({
               Expr<int> id,
-              Expr<double> value,
+              Expr<MyJsonValue> value,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Item>(
@@ -126,7 +126,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<double>? value,
+            Expr<MyJsonValue>? value,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
@@ -139,7 +139,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   /// WARNING: This cannot set properties to `null`!
   Future<void> updateAllLiteral({
     int? id,
-    double? value,
+    MyJsonValue? value,
   }) =>
       ExposedForCodeGen.update<Item>(
         this,
@@ -161,7 +161,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             Expr<Item> item,
             Update<Item> Function({
               Expr<int> id,
-              Expr<double> value,
+              Expr<MyJsonValue> value,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Item>(
@@ -171,7 +171,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<double>? value,
+            Expr<MyJsonValue>? value,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
@@ -184,7 +184,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
   /// WARNING: This cannot set properties to `null`!
   Future<void> updateLiteral({
     int? id,
-    double? value,
+    MyJsonValue? value,
   }) =>
       ExposedForCodeGen.update<Item>(
         asQuery,
@@ -204,11 +204,11 @@ extension ExpressionItemExt on Expr<Item> {
   Expr<int> get id => ExposedForCodeGen.field(this, 0, (r) => r.readInt()!);
 
   /// TODO: document value
-  Expr<double> get value =>
-      ExposedForCodeGen.field(this, 1, (r) => r.readDouble()!);
+  Expr<MyJsonValue> get value => ExposedForCodeGen.field(
+      this, 1, (r) => MyJsonValue.fromDatabase(r.readUint8List()!));
 }
 
 extension ItemChecks on Subject<Item> {
   Subject<int> get id => has((m) => m.id, 'id');
-  Subject<double> get value => has((m) => m.value, 'value');
+  Subject<MyJsonValue> get value => has((m) => m.value, 'value');
 }

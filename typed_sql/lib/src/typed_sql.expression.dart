@@ -23,7 +23,7 @@ sealed class Expr<T extends Object?> {
   T _decode(RowReader row);
 
   Expr<T> _standin(int index, Object handle);
-  Expr<R> _field<R>(int index);
+  Expr<R> _field<R>(int index, R Function(RowReader) readValue);
 
   Iterable<Expr<Object?>> _explode();
 
@@ -43,10 +43,11 @@ sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
   }
 
   @override
-  Expr<T> _standin(int index, Object handle) => FieldExpression(index, handle);
+  Expr<T> _standin(int index, Object handle) =>
+      FieldExpression(index, handle, _decode);
 
   @override
-  Expr<R> _field<R>(int index) =>
+  Expr<R> _field<R>(int index, R Function(RowReader) readValue) =>
       // This should never happen!
       throw AssertionError('Only Expr<Model> can have fields');
 
@@ -88,7 +89,7 @@ final class ModelExpression<T extends Model> extends Expr<T> {
   @override
   T _decode(RowReader row) => _table.readModel(row);
 
-  Expr<R> _field<R>(int index) {
+  Expr<R> _field<R>(int index, R Function(RowReader) readValue) {
     if (index < 0 || index >= _table.columns.length) {
       throw ArgumentError.value(
         index,
@@ -97,12 +98,19 @@ final class ModelExpression<T extends Model> extends Expr<T> {
             'at index $index',
       );
     }
-    return FieldExpression(this._index + index, _handle);
+    return FieldExpression(this._index + index, _handle, readValue);
   }
 
   @override
-  Iterable<Expr<Object?>> _explode() =>
-      Iterable.generate(_columns, _field<Object?>).expand((e) => e._explode());
+  Iterable<Expr<Object?>> _explode() => Iterable.generate(
+      _columns,
+      (index) => _field<Never>(
+            index,
+            (r) => throw AssertionError(
+              'Exploded Expr<T> may not be decoded, '
+              'Expr<T> from QueryClause may not be reused!',
+            ),
+          )).expand((e) => e._explode());
 
   ModelExpression(this._index, this._table, this._handle) : super._();
 }
@@ -110,8 +118,12 @@ final class ModelExpression<T extends Model> extends Expr<T> {
 final class FieldExpression<T> extends SingleValueExpr<T> {
   final int _index;
   final Object _handle;
+  final T Function(RowReader) _readValue;
 
-  FieldExpression(this._index, this._handle) : super._();
+  @override
+  T _decode(RowReader row) => _readValue(row);
+
+  FieldExpression(this._index, this._handle, this._readValue) : super._();
 }
 
 final class SubQueryExpression<T> extends Expr<T> {
@@ -131,20 +143,27 @@ final class SubQueryExpression<T> extends Expr<T> {
     if (_columns == 1) {
       return [this];
     }
-    return Iterable.generate(_columns, _field<Object?>)
-        .expand((e) => e._explode());
+    return Iterable.generate(
+        _columns,
+        (index) => _field<Never>(
+              index,
+              (r) => throw AssertionError(
+                'Exploded Expr<T> may not be decoded, '
+                'Expr<T> from QueryClause may not be reused!',
+              ),
+            )).expand((e) => e._explode());
   }
 
   @override
-  Expr<R> _field<R>(int index) {
+  Expr<R> _field<R>(int index, R Function(RowReader) readValue) {
     final handle = Object();
     return SubQueryExpression._(
       SelectFromClause._(
         query,
         handle,
-        [FieldExpression(index, handle)],
+        [FieldExpression(index, handle, readValue)],
       ),
-      _value._field<R>(index),
+      _value._field<R>(index, readValue),
     );
   }
 
@@ -203,7 +222,8 @@ final class NullAssertionExpression<T> extends Expr<T> {
 
   Expr<T> _standin(int index, Object handle) =>
       NullAssertionExpression._(value._standin(index, handle));
-  Expr<R> _field<R>(int index) => value._field(index);
+  Expr<R> _field<R>(int index, R Function(RowReader) readValue) =>
+      value._field(index, readValue);
 
   NullAssertionExpression._(this.value) : super._();
 }
@@ -249,29 +269,36 @@ final class Literal<T> extends SingleValueExpr<T> {
   const Literal._(this.value) : super._();
 
   factory Literal(T value) {
-    if (value == null) {
-      return null$ as Literal<T>;
-    }
-    if (value is bool) {
-      if (value) {
+    switch (value) {
+      case true:
         return true$ as Literal<T>;
-      } else {
+
+      case false:
         return false$ as Literal<T>;
-      }
+
+      case null:
+        return null$ as Literal<T>;
+
+      case String _:
+      case int _:
+      case double _:
+      case Uint8List _:
+      case DateTime _:
+      case CustomDataType<String> _:
+      case CustomDataType<int> _:
+      case CustomDataType<double> _:
+      case CustomDataType<Uint8List> _:
+      case CustomDataType<DateTime> _:
+        return Literal._(value);
+
+      default:
+        throw ArgumentError.value(
+          value,
+          'value',
+          'Only String, int, double, bool, null, and DateTime '
+              'literals are allowed',
+        );
     }
-    if (value is! String &&
-        value is! int &&
-        value is! double &&
-        value is! Uint8List &&
-        value is! DateTime) {
-      throw ArgumentError.value(
-        value,
-        'value',
-        'Only String, int, double, bool, null, and DateTime '
-            'literals are allowed',
-      );
-    }
-    return Literal._(value);
   }
 }
 

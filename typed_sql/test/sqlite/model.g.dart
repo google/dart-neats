@@ -244,13 +244,15 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
 
 extension ExpressionUserExt on Expr<User> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 0);
+  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt()!);
 
   /// TODO: document name
-  Expr<String> get name => ExposedForCodeGen.field(this, 1);
+  Expr<String> get name =>
+      ExposedForCodeGen.field(this, 1, (r) => r.readString()!);
 
   /// TODO: document email
-  Expr<String> get email => ExposedForCodeGen.field(this, 2);
+  Expr<String> get email =>
+      ExposedForCodeGen.field(this, 2, (r) => r.readString()!);
 
   /// TODO: document references
   SubQuery<(Expr<Package>,)> get packages =>
@@ -490,16 +492,19 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
 
 extension ExpressionPackageExt on Expr<Package> {
   /// TODO: document packageName
-  Expr<String> get packageName => ExposedForCodeGen.field(this, 0);
+  Expr<String> get packageName =>
+      ExposedForCodeGen.field(this, 0, (r) => r.readString()!);
 
   /// TODO: document likes
-  Expr<int> get likes => ExposedForCodeGen.field(this, 1);
+  Expr<int> get likes => ExposedForCodeGen.field(this, 1, (r) => r.readInt()!);
 
   /// TODO: document ownerId
-  Expr<int> get ownerId => ExposedForCodeGen.field(this, 2);
+  Expr<int> get ownerId =>
+      ExposedForCodeGen.field(this, 2, (r) => r.readInt()!);
 
   /// TODO: document publisher
-  Expr<String?> get publisher => ExposedForCodeGen.field(this, 3);
+  Expr<String?> get publisher =>
+      ExposedForCodeGen.field(this, 3, (r) => r.readString());
 
   /// TODO: document references
   Expr<User> get owner => ExposedForCodeGen.subqueryTable(this, _$User._$table)
@@ -695,10 +700,11 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
 
 extension ExpressionLikeExt on Expr<Like> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 0);
+  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt()!);
 
   /// TODO: document packageName
-  Expr<String> get packageName => ExposedForCodeGen.field(this, 1);
+  Expr<String> get packageName =>
+      ExposedForCodeGen.field(this, 1, (r) => r.readString()!);
 }
 
 extension QueryOwnerPackageNamed<A, B> on Query<

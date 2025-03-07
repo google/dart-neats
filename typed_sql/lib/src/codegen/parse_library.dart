@@ -22,7 +22,16 @@ import 'package:source_gen/source_gen.dart';
 import 'parsed_library.dart';
 import 'type_checkers.dart';
 
-Future<ParsedLibrary> parseLibrary(LibraryReader targetLibrary) async {
+final class ParserContext {
+  final ClassElement customDataType;
+
+  ParserContext({required this.customDataType});
+}
+
+Future<ParsedLibrary> parseLibrary(
+  ParserContext ctx,
+  LibraryReader targetLibrary,
+) async {
   // Cache models when parsing, this saves time, but more importantly ensures
   // that we can use identity equivalence on ParsedModel objects.
   final modelCache = <ClassElement, ParsedModel>{};
@@ -35,7 +44,7 @@ Future<ParsedLibrary> parseLibrary(LibraryReader targetLibrary) async {
     final supertype = cls.supertype;
     return supertype != null && schemaTypeChecker.isExactlyType(supertype);
   }).map((cls) {
-    final s = _parseSchema(cls, modelCache, foreignKeyToElement);
+    final s = _parseSchema(ctx, cls, modelCache, foreignKeyToElement);
     schemaToElement[s] = cls;
     return s;
   }).toList();
@@ -46,7 +55,7 @@ Future<ParsedLibrary> parseLibrary(LibraryReader targetLibrary) async {
   }).map((cls) {
     return modelCache.putIfAbsent(
       cls,
-      () => _parseModel(cls, foreignKeyToElement),
+      () => _parseModel(ctx, cls, foreignKeyToElement),
     );
   }).toList();
 
@@ -111,6 +120,7 @@ Future<ParsedLibrary> parseLibrary(LibraryReader targetLibrary) async {
 }
 
 ParsedSchema _parseSchema(
+  ParserContext ctx,
   ClassElement cls,
   Map<ClassElement, ParsedModel> modelCache,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
@@ -183,7 +193,7 @@ ParsedSchema _parseSchema(
       name: a.name,
       model: modelCache.putIfAbsent(
         typeArgElement,
-        () => _parseModel(typeArgElement, foreignKeyToElement),
+        () => _parseModel(ctx, typeArgElement, foreignKeyToElement),
       ),
     ));
   }
@@ -195,6 +205,7 @@ ParsedSchema _parseSchema(
 }
 
 ParsedModel _parseModel(
+  ParserContext ctx,
   ClassElement cls,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
 ) {
@@ -235,30 +246,59 @@ ParsedModel _parseModel(
       );
     }
 
-    final String type;
-    final returnType = a.returnType;
-    if (returnType.isDartCoreBool) {
-      type = 'bool';
-    } else if (returnType.isDartCoreString) {
-      type = 'String';
-    } else if (returnType.isDartCoreDouble) {
-      type = 'double';
-    } else if (returnType.isDartCoreInt) {
-      type = 'int';
-    } else if (dateTimeTypeChecker.isExactlyType(returnType)) {
-      type = 'DateTime';
-    } else if (uint8ListTypeChecker.isExactlyType(returnType)) {
-      type = 'Uint8List';
+    var type = _tryGetColumnType(a.returnType);
+    var backingType = type;
+    if (type != null) {
+      backingType = type;
     } else {
-      // TODO: Add support for dart:typed_data fields
-      // TODO: Add support custom types (maybe using extension methods!)
-      // TODO: Consider support for Duration
-      // TODO: Consider support for List, Set, Map, Record (probably not)
-      // TODO: Consider support for enums
-      throw InvalidGenerationSource(
-        'Unsupported data-type',
-        element: a,
-      );
+      final customDataTypeVariant =
+          a.returnType.asInstanceOf(ctx.customDataType);
+      if (customDataTypeVariant != null) {
+        final T = customDataTypeVariant.typeArguments.first;
+        backingType = _tryGetColumnType(T);
+        if (backingType == null) {
+          throw InvalidGenerationSource(
+            'Unsupported type parameter for `CustomDataType<T>`!',
+            element: a,
+          );
+        }
+        if (T.nullabilitySuffix != NullabilitySuffix.none) {
+          throw InvalidGenerationSource(
+            'CustomDataType<T?> is not supported',
+            element: a,
+          );
+        }
+        var returnType = a.returnType as InterfaceType;
+        final alias = returnType.alias;
+        if (alias != null) {
+          if (alias.typeArguments.isNotEmpty) {
+            throw InvalidGenerationSource(
+              'Field types may not have type arguments, '
+              'use a typedef to create an alias without type arguments.',
+              element: a,
+            );
+          }
+          type = alias.element.name;
+        } else {
+          if (returnType.typeArguments.isNotEmpty) {
+            throw InvalidGenerationSource(
+              'Field types may not have type arguments, '
+              'use a typedef to create an alias without type arguments.',
+              element: a,
+            );
+          }
+          type = returnType.element.name;
+        }
+      } else {
+        // TODO: Add support for dart:typed_data fields
+        // TODO: Consider support for Duration
+        // TODO: Consider support for List, Set, Map, Record (probably not)
+        // TODO: Consider support for enums
+        throw InvalidGenerationSource(
+          'Unsupported data-type',
+          element: a,
+        );
+      }
     }
 
     final autoIncrement = autoIncrementTypeChecker.hasAnnotationOf(a);
@@ -272,7 +312,8 @@ ParsedModel _parseModel(
     final field = ParsedField(
       name: a.name,
       typeName: type,
-      isNullable: returnType.nullabilitySuffix != NullabilitySuffix.none,
+      isNullable: a.returnType.nullabilitySuffix != NullabilitySuffix.none,
+      backingType: backingType,
       // TODO: Support Unique(given: [...])
       unique: uniqueTypeChecker.hasAnnotationOf(a),
       autoIncrement: autoIncrement,
@@ -372,6 +413,23 @@ ParsedModel _parseModel(
     fields: fields,
     foreignKeys: foreignKeys,
   );
+}
+
+String? _tryGetColumnType(DartType t) {
+  if (t.isDartCoreBool) {
+    return 'bool';
+  } else if (t.isDartCoreString) {
+    return 'String';
+  } else if (t.isDartCoreDouble) {
+    return 'double';
+  } else if (t.isDartCoreInt) {
+    return 'int';
+  } else if (dateTimeTypeChecker.isExactlyType(t)) {
+    return 'DateTime';
+  } else if (uint8ListTypeChecker.isExactlyType(t)) {
+    return 'Uint8List';
+  }
+  return null;
 }
 
 /// Parsed [DefaultValue] annotations from [field] with [type].

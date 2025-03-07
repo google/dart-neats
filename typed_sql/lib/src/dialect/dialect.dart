@@ -25,6 +25,7 @@ export '../typed_sql.dart'
         CompositeQueryClause,
         CountAllExpression,
         CreateTableStatement,
+        CustomDataType,
         DeleteStatement,
         DistinctClause,
         ExceptClause,

@@ -203,8 +203,9 @@ final class ExposedForCodeGen {
   static Expr<T> field<T extends Object?, M extends Model>(
     Expr<M> row,
     int index,
+    T Function(RowReader) readValue,
   ) =>
-      row._field(index);
+      row._field(index, readValue);
 
   static Query<S> renamedRecord<T extends Record, S extends Record>(
     Query<T> query,
@@ -225,5 +226,15 @@ final class ExposedForCodeGen {
       (ModelExpression(0, table, Object()),),
       (_) => TableClause._(table),
     );
+  }
+
+  static T? customDataTypeOrNull<S, T extends CustomDataType<S>>(
+    S? value,
+    T Function(S) fromDatabase,
+  ) {
+    if (value == null) {
+      return null;
+    }
+    return fromDatabase(value);
   }
 }

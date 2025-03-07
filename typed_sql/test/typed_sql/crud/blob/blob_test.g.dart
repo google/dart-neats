@@ -201,10 +201,11 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
 
 extension ExpressionItemExt on Expr<Item> {
   /// TODO: document id
-  Expr<int> get id => ExposedForCodeGen.field(this, 0);
+  Expr<int> get id => ExposedForCodeGen.field(this, 0, (r) => r.readInt()!);
 
   /// TODO: document value
-  Expr<Uint8List> get value => ExposedForCodeGen.field(this, 1);
+  Expr<Uint8List> get value =>
+      ExposedForCodeGen.field(this, 1, (r) => r.readUint8List()!);
 }
 
 extension ItemChecks on Subject<Item> {

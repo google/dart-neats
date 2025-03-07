@@ -115,6 +115,7 @@ final class ParsedField {
   final String name;
   final String typeName;
   final bool isNullable;
+  final String backingType;
   final Object? defaultValue;
   final bool autoIncrement;
   final bool unique;
@@ -123,6 +124,7 @@ final class ParsedField {
     required this.name,
     required this.typeName,
     required this.isNullable,
+    required this.backingType,
     required this.defaultValue,
     required this.autoIncrement,
     required this.unique,
@@ -133,6 +135,7 @@ final class ParsedField {
         'name: "$name"',
         'typeName: "$typeName"',
         'isNullable: $isNullable',
+        'backingType: "$backingType"',
         'defaultValue: ${defaultValue != null ? '"$defaultValue"' : 'null'}',
         'autoIncrement: $autoIncrement',
         'unique: $unique',
