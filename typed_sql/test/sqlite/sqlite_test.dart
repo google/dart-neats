@@ -18,60 +18,68 @@ import 'package:meta/meta.dart' hide literal;
 import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
 
+import '../testutil/postgres_manager.dart';
 import 'model.dart';
+
+@isTestGroup
+void _withDatabase<T extends Schema>(
+  String name,
+  FutureOr<void> Function(Database<T> db) fn, {
+  Future<void> Function(Database<T> db)? setupAll,
+}) {
+  final adaptorFns = {
+    'sqlite': _createSqliteAdaptor,
+    'postgres': _createPostgresAdaptor,
+  };
+
+  for (final adaptorEntry in adaptorFns.entries) {
+    final adaptorName = adaptorEntry.key;
+
+    // TODO: fix postgres adaptor issues
+    if (adaptorName == 'postgres') {
+      continue;
+    }
+
+    group('$name $adaptorName', () {
+      late DatabaseAdaptor adaptor;
+      late Database<T> db;
+
+      setUpAll(() async {
+        adaptor = DatabaseAdaptor.withLogging(
+          await adaptorEntry.value(name),
+          printOnFailure,
+          //print,
+        );
+        db = Database<T>(adaptor, SqlDialect.sqlite());
+        if (setupAll != null) {
+          await setupAll(db);
+        }
+      });
+
+      tearDownAll(() async {
+        await adaptor.close();
+      });
+    });
+  }
+}
 
 var _testFileCounter = 0;
 
-@isTestGroup
-void _withSqlite(
-  String name,
-  FutureOr<void> Function(Database<PrimaryDatabase> db) fn,
-) {
-  group(name, () {
-    late DatabaseAdaptor adaptor;
-    late Database<PrimaryDatabase> db;
+Future<DatabaseAdaptor> _createSqliteAdaptor(String name) async {
+  _testFileCounter++;
+  final filename = [
+    name.hashCode.abs(),
+    DateTime.now().microsecondsSinceEpoch,
+    _testFileCounter,
+  ].join('-');
+  final u = Uri.parse('file:inmemory-$filename?mode=memory&cache=shared');
+  return DatabaseAdaptor.sqlite3(u);
+}
 
-    setUpAll(() async {
-      _testFileCounter++;
-      final filename = [
-        name.hashCode.abs(),
-        DateTime.now().microsecondsSinceEpoch,
-        _testFileCounter,
-      ].join('-');
-      final u = Uri.parse('file:inmemory-$filename?mode=memory&cache=shared');
-      adaptor = DatabaseAdaptor.withLogging(
-        DatabaseAdaptor.sqlite3(u),
-        printOnFailure,
-        //print,
-      );
-      db = Database<PrimaryDatabase>(adaptor, SqlDialect.sqlite());
-      await db.createTables();
-      await db.users.create(
-        userId: 1,
-        name: 'Alice',
-        email: 'alice@example.com',
-      );
-      await db.users.create(userId: 2, name: 'Bob', email: 'bob@example.com');
-      await db.packages.create(
-        packageName: 'foo',
-        likes: 2,
-        publisher: null,
-        ownerId: 1,
-      );
-      await db.packages.create(
-        packageName: 'bar',
-        likes: 3,
-        publisher: null,
-        ownerId: 1,
-      );
-      await db.likes.create(userId: 1, packageName: 'foo');
-      await db.likes.create(userId: 2, packageName: 'foo');
-    });
-
-    tearDownAll(() async {
-      await adaptor.close();
-    });
-  });
+Future<DatabaseAdaptor> _createPostgresAdaptor(String name) async {
+  final pg = PostgresManager();
+  final pool = await pg.getPool();
+  return DatabaseAdaptor.postgres(pool);
 }
 
 @isTest
@@ -79,7 +87,29 @@ void _test(
   String name,
   FutureOr<void> Function(Database<PrimaryDatabase> db) fn,
 ) async {
-  _withSqlite(name, (db) async {
+  _withDatabase<PrimaryDatabase>(name, setupAll: (db) async {
+    await db.createTables();
+    await db.users.create(
+      userId: 1,
+      name: 'Alice',
+      email: 'alice@example.com',
+    );
+    await db.users.create(userId: 2, name: 'Bob', email: 'bob@example.com');
+    await db.packages.create(
+      packageName: 'foo',
+      likes: 2,
+      publisher: null,
+      ownerId: 1,
+    );
+    await db.packages.create(
+      packageName: 'bar',
+      likes: 3,
+      publisher: null,
+      ownerId: 1,
+    );
+    await db.likes.create(userId: 1, packageName: 'foo');
+    await db.likes.create(userId: 2, packageName: 'foo');
+  }, (db) async {
     test('test', () => fn(db));
   });
 }
