@@ -100,17 +100,38 @@ final class _PostgresRowReader extends RowReader {
 
   @override
   DateTime? readDateTime() {
-    return _row[_i++] as DateTime?;
+    final value = _row[_i++];
+    if (value is String) {
+      // No idea why postgres sometimes return dates as strings.
+      // Maybe, it does this only for literal values, because it can't infer
+      // the type as a date.
+      return DateTime.parse(value);
+    }
+    return value as DateTime?;
   }
 
   @override
   double? readDouble() {
-    return _row[_i++] as double?;
+    final value = _row[_i++];
+    if (value is String) {
+      // No idea why postgres sometimes return doubles as strings.
+      // Maybe, it does this only for literal values, because they could be more
+      // than 64 bits!
+      return double.parse(value);
+    }
+    return value as double?;
   }
 
   @override
   int? readInt() {
-    return _row[_i++] as int?;
+    final value = _row[_i++];
+    if (value is String) {
+      // No idea why postgres sometimes return integers as strings.
+      // Maybe, it does this only for literal values, because they could be more
+      // than 64 bits!
+      return int.parse(value);
+    }
+    return value as int?;
   }
 
   @override

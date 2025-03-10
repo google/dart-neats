@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:typed_data';
+
 import 'package:collection/collection.dart';
 
 import 'dialect.dart';
@@ -326,21 +328,23 @@ final class _PostgresDialect extends SqlDialect {
         Literal<CustomDataType>(value: final value) =>
           ctx.parameter(value.toDatabase()),
         Literal<T>(value: final value) => ctx.parameter(value),
+        final ExpressionNumDivide e =>
+          '( CAST(${expr(e.left, ctx)} AS NUMERIC) ${e.operator} ${expr(e.right, ctx)} )',
         final BinaryOperationExpression e =>
           '( ${expr(e.left, ctx)} ${e.operator} ${expr(e.right, ctx)} )',
         ExpressionBoolNot(value: final value) => '( NOT ${expr(value, ctx)} )',
         ExpressionStringIsEmpty(value: final value) =>
-          '( ${expr(value, ctx)} = ' ' )',
+          '( ${expr(value, ctx)} = \'\' )',
         ExpressionStringLength(value: final value) =>
           'LENGTH( ${expr(value, ctx)} )',
         ExpressionStringStartsWith(value: final value, prefix: final prefix) =>
-          '( ${expr(value, ctx)} GLOB ${expr(prefix, ctx)} || \'*\' )',
+          'STARTS_WITH(${expr(value, ctx)}, ${expr(prefix, ctx)})',
         ExpressionStringEndsWith(value: final value, suffix: final suffix) =>
-          '( ${expr(value, ctx)} GLOB \'*\' || ${expr(suffix, ctx)} )',
+          'STARTS_WITH(REVERSE(${expr(value, ctx)}), REVERSE(${expr(suffix, ctx)}))',
         ExpressionStringLike(value: final value, pattern: final pattern) =>
           '( ${expr(value, ctx)} LIKE ${ctx.parameter(pattern)} )',
         ExpressionStringContains(value: final value, needle: final needle) =>
-          '( INSTR( ${expr(value, ctx)} , ${expr(needle, ctx)} ) = 0 )',
+          '( STRPOS( ${expr(value, ctx)} , ${expr(needle, ctx)} ) > 0 )',
         ExpressionStringToUpperCase(value: final value) =>
           'UPPER( ${expr(value, ctx)} )',
         ExpressionStringToLowerCase(value: final value) =>
@@ -364,6 +368,17 @@ final class _PostgresDialect extends SqlDialect {
 
 extension on QueryContext {
   String parameter(Object? value) {
+    switch (value) {
+      case int _:
+        final index = param(value);
+        return '\$$index::BIGINT';
+      case double _:
+        final index = param(value);
+        return '\$$index::DOUBLE PRECISION';
+      case Uint8List _:
+        final index = param(value);
+        return '\$$index::BYTEA';
+    }
     final index = param(value);
     return '\$$index';
   }

@@ -103,8 +103,8 @@ final class TestRunner<T extends Schema> {
 
     for (final testcase in _tests) {
       test('${testcase.name} (variant: postgres)', () async {
-        if (testcase.skipSqlite != null) {
-          markTestSkipped(testcase.skipSqlite!);
+        if (testcase.skipPostgres != null) {
+          markTestSkipped(testcase.skipPostgres!);
           return;
         }
 

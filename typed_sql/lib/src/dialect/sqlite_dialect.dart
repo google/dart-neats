@@ -328,11 +328,13 @@ final class _Sqlite extends SqlDialect {
         Literal<CustomDataType>(value: final value) =>
           ctx.parameter(value.toDatabase()),
         Literal<T>(value: final value) => ctx.parameter(value),
+        final ExpressionNumDivide e =>
+          '( CAST(${expr(e.left, ctx)} AS REAL) ${e.operator} ${expr(e.right, ctx)} )',
         final BinaryOperationExpression e =>
           '( ${expr(e.left, ctx)} ${e.operator} ${expr(e.right, ctx)} )',
         ExpressionBoolNot(value: final value) => '( NOT ${expr(value, ctx)} )',
         ExpressionStringIsEmpty(value: final value) =>
-          '( ${expr(value, ctx)} = ' ' )',
+          '( ${expr(value, ctx)} = \'\' )',
         ExpressionStringLength(value: final value) =>
           'LENGTH( ${expr(value, ctx)} )',
         ExpressionStringStartsWith(value: final value, prefix: final prefix) =>
@@ -342,7 +344,7 @@ final class _Sqlite extends SqlDialect {
         ExpressionStringLike(value: final value, pattern: final pattern) =>
           '( ${expr(value, ctx)} LIKE ${ctx.parameter(pattern)} )',
         ExpressionStringContains(value: final value, needle: final needle) =>
-          '( INSTR( ${expr(value, ctx)} , ${expr(needle, ctx)} ) = 0 )',
+          '( INSTR( ${expr(value, ctx)} , ${expr(needle, ctx)} ) > 0 )',
         ExpressionStringToUpperCase(value: final value) =>
           'UPPER( ${expr(value, ctx)} )',
         ExpressionStringToLowerCase(value: final value) =>

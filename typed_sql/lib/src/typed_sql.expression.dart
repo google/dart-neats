@@ -517,11 +517,11 @@ final class ExpressionNumMultiply<T extends num>
 }
 
 final class ExpressionNumDivide<T extends num>
-    extends BinaryOperationExpression<T, T> {
+    extends BinaryOperationExpression<T, double> {
   ExpressionNumDivide(super.left, super.right);
 
   @override
-  T _decode(RowReader r) => left._decode(r);
+  double _decode(RowReader r) => r.readDouble()!;
 }
 
 final class ExpressionNumLessThan<T extends num>
@@ -692,19 +692,20 @@ extension ExpressionNum<T extends num> on Expr<T> {
   Expr<T> operator +(Expr<T> other) => ExpressionNumAdd(this, other);
   Expr<T> operator -(Expr<T> other) => ExpressionNumSubtract(this, other);
   Expr<T> operator *(Expr<T> other) => ExpressionNumMultiply(this, other);
-  Expr<T> operator /(Expr<T> other) => ExpressionNumDivide(this, other);
+  Expr<double> operator /(Expr<T> other) => ExpressionNumDivide(this, other);
 
   Expr<T> add(Expr<T> other) => ExpressionNumAdd(this, other);
   Expr<T> subtract(Expr<T> other) => ExpressionNumSubtract(this, other);
   Expr<T> multiply(Expr<T> other) => ExpressionNumMultiply(this, other);
-  Expr<T> divide(Expr<T> other) => ExpressionNumDivide(this, other);
+  Expr<double> divide(Expr<T> other) => ExpressionNumDivide(this, other);
 
   Expr<T> addLiteral(T other) => ExpressionNumAdd(this, literal(other));
   Expr<T> subtractLiteral(T other) =>
       ExpressionNumSubtract(this, literal(other));
   Expr<T> multiplyLiteral(T other) =>
       ExpressionNumMultiply(this, literal(other));
-  Expr<T> divideLiteral(T other) => ExpressionNumDivide(this, literal(other));
+  Expr<double> divideLiteral(T other) =>
+      ExpressionNumDivide(this, literal(other));
 
   Expr<bool> operator >=(Expr<T> other) =>
       ExpressionNumGreaterThanOrEqual(this, other);
@@ -728,6 +729,7 @@ extension ExpressionNum<T extends num> on Expr<T> {
       greaterThanOrEqual(literal(other));
 
   //... do other operators...
+  // TODO: integerDivide!
 }
 
 extension ExpressionDateTime on Expr<DateTime> {
