@@ -66,7 +66,7 @@ void main() {
   r.addTest('insert', (db) async {
     await db.items.insert(
       id: literal(1),
-      value: literal(initialValue),
+      value: Literal.custom(initialValue, JsonValue.fromDatabase),
     );
 
     final item = await db.items.first.fetch();
@@ -76,11 +76,11 @@ void main() {
   r.addTest('update', (db) async {
     await db.items.insert(
       id: literal(1),
-      value: literal(initialValue),
+      value: Literal.custom(initialValue, JsonValue.fromDatabase),
     );
 
     await db.items.updateAll((item, set) => set(
-          value: literal(updatedValue),
+          value: Literal.custom(updatedValue, JsonValue.fromDatabase),
         ));
 
     final item = await db.items.first.fetch();
@@ -90,7 +90,7 @@ void main() {
   r.addTest('delete', (db) async {
     await db.items.insert(
       id: literal(1),
-      value: literal(initialValue),
+      value: Literal.custom(initialValue, JsonValue.fromDatabase),
     );
 
     final item1 = await db.items.first.fetch();

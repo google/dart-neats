@@ -302,6 +302,16 @@ final class _SqliteRowReader extends RowReader {
     }
     return value as Uint8List;
   }
+
+  @override
+  bool tryReadNull() {
+    final value = _row.values[_i];
+    if (value == null) {
+      _i++;
+      return true;
+    }
+    return false;
+  }
 }
 
 List<Object?> _paramsForSqlite(List<Object?> params) => params

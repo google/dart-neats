@@ -126,6 +126,15 @@ final class _PostgresRowReader extends RowReader {
     }
     return value as Uint8List;
   }
+
+  @override
+  bool tryReadNull() {
+    if (_row[_i] == null) {
+      _i++;
+      return true;
+    }
+    return false;
+  }
 }
 
 List<Object?> _paramsForPostgres(List<Object?> params) => params
