@@ -18,8 +18,6 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-abstract final class TestDatabase extends Schema {}
-
 final _values = <Object?>[
   'hello world',
   'æøå',
@@ -40,7 +38,7 @@ final _values = <Object?>[
 ];
 
 void main() {
-  final r = TestRunner<TestDatabase>();
+  final r = TestRunner<Schema>();
 
   for (final value in _values) {
     r.addTest('literal($value)', (db) async {

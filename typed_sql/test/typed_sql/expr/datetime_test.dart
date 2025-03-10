@@ -16,8 +16,6 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-abstract final class TestDatabase extends Schema {}
-
 final epoch = DateTime.fromMicrosecondsSinceEpoch(0).toUtc();
 final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
 
@@ -411,7 +409,7 @@ final _cases = [
 ];
 
 void main() {
-  final r = TestRunner<TestDatabase>();
+  final r = TestRunner<Schema>();
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {

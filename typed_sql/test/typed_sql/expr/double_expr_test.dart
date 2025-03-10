@@ -16,8 +16,6 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-abstract final class TestDatabase extends Schema {}
-
 final _cases = [
   // Test for .equals
   (
@@ -919,7 +917,7 @@ final _closeCases = [
 ];
 
 void main() {
-  final r = TestRunner<TestDatabase>();
+  final r = TestRunner<Schema>();
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {

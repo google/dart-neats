@@ -16,8 +16,6 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-abstract final class TestDatabase extends Schema {}
-
 // TODO: Consider tests with special characters!
 // TODO: Consider tests with *, ? and _ which will cause issue for sqlite
 //       given how we've currently implemented .endsWith and .startsWith
@@ -831,7 +829,7 @@ final _cases = [
 ];
 
 void main() {
-  final r = TestRunner<TestDatabase>();
+  final r = TestRunner<Schema>();
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {

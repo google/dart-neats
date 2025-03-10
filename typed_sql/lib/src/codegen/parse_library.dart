@@ -139,10 +139,11 @@ ParsedSchema _parseSchema(
         element: cls.methods.first);
   }
 
-  if (!cls.fields.any((f) => f.getter != null)) {
+  final firstNonGetter = cls.fields.where((f) => f.getter == null).firstOrNull;
+  if (firstNonGetter != null) {
     throw InvalidGenerationSource(
       'subclasses of `Schema` cannot have fields or setters',
-      element: cls.fields.first,
+      element: firstNonGetter,
     );
   }
 
