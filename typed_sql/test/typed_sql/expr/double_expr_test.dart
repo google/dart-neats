@@ -148,28 +148,388 @@ final _cases = [
   ),
 
   // Test for .lessThan
+  (
+    name: '0.0.lessThan(0.0)',
+    expr: literal(0.0).lessThan(literal(0.0)),
+    expected: false,
+  ),
+  (
+    name: '1.2.lessThan(1.5)',
+    expr: literal(1.2).lessThan(literal(1.5)),
+    expected: true,
+  ),
+  (
+    name: '1.5.lessThan(1.2)',
+    expr: literal(1.5).lessThan(literal(1.2)),
+    expected: false,
+  ),
+  (
+    name: '1.5.lessThan(1.5)',
+    expr: literal(1.5).lessThan(literal(1.5)),
+    expected: false,
+  ),
+  (
+    name: '-1.5.lessThan(3.14)',
+    expr: literal(-1.5).lessThan(literal(3.14)),
+    expected: true,
+  ),
+  (
+    name: '3.14.lessThan(3.14)',
+    expr: literal(3.14).lessThan(literal(3.14)),
+    expected: false,
+  ),
 
   // Tests for .lessThanLiteral
+  (
+    name: '0.0.lessThanLiteral(0.0)',
+    expr: literal(0.0).lessThanLiteral(0.0),
+    expected: false,
+  ),
+  (
+    name: '1.2.lessThanLiteral(1.5)',
+    expr: literal(1.2).lessThanLiteral(1.5),
+    expected: true,
+  ),
+  (
+    name: '1.5.lessThanLiteral(1.2)',
+    expr: literal(1.5).lessThanLiteral(1.2),
+    expected: false,
+  ),
+  (
+    name: '1.5.lessThanLiteral(1.5)',
+    expr: literal(1.5).lessThanLiteral(1.5),
+    expected: false,
+  ),
+  (
+    name: '-1.5.lessThanLiteral(3.14)',
+    expr: literal(-1.5).lessThanLiteral(3.14),
+    expected: true,
+  ),
+  (
+    name: '3.14.lessThanLiteral(3.14)',
+    expr: literal(3.14).lessThanLiteral(3.14),
+    expected: false,
+  ),
 
   // Test for <
+  (
+    name: '0.0 < 0.0',
+    expr: literal(0.0) < literal(0.0),
+    expected: false,
+  ),
+  (
+    name: '1.2 < 1.5',
+    expr: literal(1.2) < literal(1.5),
+    expected: true,
+  ),
+  (
+    name: '1.5 < 1.2',
+    expr: literal(1.5) < literal(1.2),
+    expected: false,
+  ),
+  (
+    name: '1.5 < 1.5',
+    expr: literal(1.5) < literal(1.5),
+    expected: false,
+  ),
+  (
+    name: '-1.5 < 3.14',
+    expr: literal(-1.5) < literal(3.14),
+    expected: true,
+  ),
+  (
+    name: '3.14 < 3.14',
+    expr: literal(3.14) < literal(3.14),
+    expected: false,
+  ),
 
   // Test for .lessThanOrEqual
+  (
+    name: '0.0.lessThanOrEqual(0.0)',
+    expr: literal(0.0).lessThanOrEqual(literal(0.0)),
+    expected: true,
+  ),
+  (
+    name: '1.2.lessThanOrEqual(1.5)',
+    expr: literal(1.2).lessThanOrEqual(literal(1.5)),
+    expected: true,
+  ),
+  (
+    name: '1.5.lessThanOrEqual(1.2)',
+    expr: literal(1.5).lessThanOrEqual(literal(1.2)),
+    expected: false,
+  ),
+  (
+    name: '1.5.lessThanOrEqual(1.5)',
+    expr: literal(1.5).lessThanOrEqual(literal(1.5)),
+    expected: true,
+  ),
+  (
+    name: '-1.5.lessThanOrEqual(3.14)',
+    expr: literal(-1.5).lessThanOrEqual(literal(3.14)),
+    expected: true,
+  ),
+  (
+    name: '3.14.lessThanOrEqual(3.14)',
+    expr: literal(3.14).lessThanOrEqual(literal(3.14)),
+    expected: true,
+  ),
 
   // Tests for .lessThanOrEqualLiteral
+  (
+    name: '0.0.lessThanOrEqualLiteral(0.0)',
+    expr: literal(0.0).lessThanOrEqualLiteral(0.0),
+    expected: true,
+  ),
+  (
+    name: '1.2.lessThanOrEqualLiteral(1.5)',
+    expr: literal(1.2).lessThanOrEqualLiteral(1.5),
+    expected: true,
+  ),
+  (
+    name: '1.5.lessThanOrEqualLiteral(1.2)',
+    expr: literal(1.5).lessThanOrEqualLiteral(1.2),
+    expected: false,
+  ),
+  (
+    name: '1.5.lessThanOrEqualLiteral(1.5)',
+    expr: literal(1.5).lessThanOrEqualLiteral(1.5),
+    expected: true,
+  ),
+  (
+    name: '-1.5.lessThanOrEqualLiteral(3.14)',
+    expr: literal(-1.5).lessThanOrEqualLiteral(3.14),
+    expected: true,
+  ),
+  (
+    name: '3.14.lessThanOrEqualLiteral(3.14)',
+    expr: literal(3.14).lessThanOrEqualLiteral(3.14),
+    expected: true,
+  ),
 
   // Test for <=
+  (
+    name: '0.0 <= 0.0',
+    expr: literal(0.0) <= literal(0.0),
+    expected: true,
+  ),
+  (
+    name: '1.2 <= 1.5',
+    expr: literal(1.2) <= literal(1.5),
+    expected: true,
+  ),
+  (
+    name: '1.5 <= 1.2',
+    expr: literal(1.5) <= literal(1.2),
+    expected: false,
+  ),
+  (
+    name: '1.5 <= 1.5',
+    expr: literal(1.5) <= literal(1.5),
+    expected: true,
+  ),
+  (
+    name: '-1.5 <= 3.14',
+    expr: literal(-1.5) <= literal(3.14),
+    expected: true,
+  ),
+  (
+    name: '3.14 <= 3.14',
+    expr: literal(3.14) <= literal(3.14),
+    expected: true,
+  ),
 
   // Test for .greaterThan
+  (
+    name: '0.0.greaterThan(0.0)',
+    expr: literal(0.0).greaterThan(literal(0.0)),
+    expected: false,
+  ),
+  (
+    name: '1.2.greaterThan(1.5)',
+    expr: literal(1.2).greaterThan(literal(1.5)),
+    expected: false,
+  ),
+  (
+    name: '1.5.greaterThan(1.2)',
+    expr: literal(1.5).greaterThan(literal(1.2)),
+    expected: true,
+  ),
+  (
+    name: '1.5.greaterThan(1.5)',
+    expr: literal(1.5).greaterThan(literal(1.5)),
+    expected: false,
+  ),
+  (
+    name: '-1.5.greaterThan(3.14)',
+    expr: literal(-1.5).greaterThan(literal(3.14)),
+    expected: false,
+  ),
+  (
+    name: '3.14.greaterThan(3.14)',
+    expr: literal(3.14).greaterThan(literal(3.14)),
+    expected: false,
+  ),
 
   // Tests for .greaterThanLiteral
+  (
+    name: '0.0.greaterThanLiteral(0.0)',
+    expr: literal(0.0).greaterThanLiteral(0.0),
+    expected: false,
+  ),
+  (
+    name: '1.2.greaterThanLiteral(1.5)',
+    expr: literal(1.2).greaterThanLiteral(1.5),
+    expected: false,
+  ),
+  (
+    name: '1.5.greaterThanLiteral(1.2)',
+    expr: literal(1.5).greaterThanLiteral(1.2),
+    expected: true,
+  ),
+  (
+    name: '1.5.greaterThanLiteral(1.5)',
+    expr: literal(1.5).greaterThanLiteral(1.5),
+    expected: false,
+  ),
+  (
+    name: '-1.5.greaterThanLiteral(3.14)',
+    expr: literal(-1.5).greaterThanLiteral(3.14),
+    expected: false,
+  ),
+  (
+    name: '3.14.greaterThanLiteral(3.14)',
+    expr: literal(3.14).greaterThanLiteral(3.14),
+    expected: false,
+  ),
 
   // Test for >
+  (
+    name: '0.0 > 0.0',
+    expr: literal(0.0) > literal(0.0),
+    expected: false,
+  ),
+  (
+    name: '1.2 > 1.5',
+    expr: literal(1.2) > literal(1.5),
+    expected: false,
+  ),
+  (
+    name: '1.5 > 1.2',
+    expr: literal(1.5) > literal(1.2),
+    expected: true,
+  ),
+  (
+    name: '1.5 > 1.5',
+    expr: literal(1.5) > literal(1.5),
+    expected: false,
+  ),
+  (
+    name: '-1.5 > 3.14',
+    expr: literal(-1.5) > literal(3.14),
+    expected: false,
+  ),
+  (
+    name: '3.14 > 3.14',
+    expr: literal(3.14) > literal(3.14),
+    expected: false,
+  ),
 
   // Test for .greaterThanOrEqual
+  (
+    name: '0.0.greaterThanOrEqual(0.0)',
+    expr: literal(0.0).greaterThanOrEqual(literal(0.0)),
+    expected: true,
+  ),
+  (
+    name: '1.2.greaterThanOrEqual(1.5)',
+    expr: literal(1.2).greaterThanOrEqual(literal(1.5)),
+    expected: false,
+  ),
+  (
+    name: '1.5.greaterThanOrEqual(1.2)',
+    expr: literal(1.5).greaterThanOrEqual(literal(1.2)),
+    expected: true,
+  ),
+  (
+    name: '1.5.greaterThanOrEqual(1.5)',
+    expr: literal(1.5).greaterThanOrEqual(literal(1.5)),
+    expected: true,
+  ),
+  (
+    name: '-1.5.greaterThanOrEqual(3.14)',
+    expr: literal(-1.5).greaterThanOrEqual(literal(3.14)),
+    expected: false,
+  ),
+  (
+    name: '3.14.greaterThanOrEqual(3.14)',
+    expr: literal(3.14).greaterThanOrEqual(literal(3.14)),
+    expected: true,
+  ),
 
   // Tests for .greaterThanOrEqualLiteral
+  (
+    name: '0.0.greaterThanOrEqualLiteral(0.0)',
+    expr: literal(0.0).greaterThanOrEqualLiteral(0.0),
+    expected: true,
+  ),
+  (
+    name: '1.2.greaterThanOrEqualLiteral(1.5)',
+    expr: literal(1.2).greaterThanOrEqualLiteral(1.5),
+    expected: false,
+  ),
+  (
+    name: '1.5.greaterThanOrEqualLiteral(1.2)',
+    expr: literal(1.5).greaterThanOrEqualLiteral(1.2),
+    expected: true,
+  ),
+  (
+    name: '1.5.greaterThanOrEqualLiteral(1.5)',
+    expr: literal(1.5).greaterThanOrEqualLiteral(1.5),
+    expected: true,
+  ),
+  (
+    name: '-1.5.greaterThanOrEqualLiteral(3.14)',
+    expr: literal(-1.5).greaterThanOrEqualLiteral(3.14),
+    expected: false,
+  ),
+  (
+    name: '3.14.greaterThanOrEqualLiteral(3.14)',
+    expr: literal(3.14).greaterThanOrEqualLiteral(3.14),
+    expected: true,
+  ),
 
   // Test for >=
+  (
+    name: '0.0 >= 0.0',
+    expr: literal(0.0) >= literal(0.0),
+    expected: true,
+  ),
+  (
+    name: '1.2 >= 1.5',
+    expr: literal(1.2) >= literal(1.5),
+    expected: false,
+  ),
+  (
+    name: '1.5 >= 1.2',
+    expr: literal(1.5) >= literal(1.2),
+    expected: true,
+  ),
+  (
+    name: '1.5 >= 1.5',
+    expr: literal(1.5) >= literal(1.5),
+    expected: true,
+  ),
+  (
+    name: '-1.5 >= 3.14',
+    expr: literal(-1.5) >= literal(3.14),
+    expected: false,
+  ),
+  (
+    name: '3.14 >= 3.14',
+    expr: literal(3.14) >= literal(3.14),
+    expected: true,
+  ),
 ];
 
 final _closeCases = [
