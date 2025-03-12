@@ -297,6 +297,7 @@ final class _PostgresDialect extends SqlDialect {
         return (
           'SELECT ${columns1.map((c) => 'a.$c').join(', ')} FROM ($sql1) AS a '
               '${q.operator} '
+              // HACK: Fixing some tests with NULL:
               // If one of the columns in [right] is NULL then we'll get a type
               // inference error, because once nested within multiple selects
               // postgres can't infer what type NULL should have. It often falls
@@ -312,7 +313,14 @@ final class _PostgresDialect extends SqlDialect {
               //   CAST( a.$c AS UNKNOWN)
               // which will force type inference. And this should be safe'ish
               // since we know the types match on the Dart side.
-              'SELECT ${columns2.map((c) => 'CAST(b.$c AS UNKNOWN)').join(', ')} FROM ($sql2) AS b',
+              //'SELECT ${columns2.map((c) => 'CAST(b.$c AS UNKNOWN)').join(', ')} FROM ($sql2) AS b',
+              //
+              // But maybe it's better to do this when creating the UnionClause,
+              // if we knew what type we should cast to. And when Expr in right
+              // doesn't explode similar to the matching one in left!
+
+              // This is probably the right thing to do.
+              'SELECT ${columns2.map((c) => 'b.$c').join(', ')} FROM ($sql2) AS b',
           columns1
         );
 

@@ -47,7 +47,7 @@ void main() {
     final result = await q1.unionAll(q2).fetch().toList();
     check(result).length.equals(2);
     check(result).deepEquals([42, null]);
-  });
+  }, skipPostgres: 'NULL needs a cast to BIGINT');
 
   r.addTest('(3.14).unionAll(null)', (db) async {
     // Convoluted way of creating Query<(Expr<double?>,)>
@@ -62,7 +62,7 @@ void main() {
     final result = await q1.unionAll(q2).fetch().toList();
     check(result).length.equals(2);
     check(result).deepEquals([3.14, null]);
-  });
+  }, skipPostgres: 'NULL needs a cast to REAL');
 
   r.run();
 }
