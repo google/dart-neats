@@ -38,10 +38,10 @@ final _values = <Object?>[
 ];
 
 void main() {
-  final r = TestRunner<Schema>();
+  final r = TestRunner<Schema>(resetDatabaseForEachTest: false);
 
   for (final value in _values) {
-    r.addTest('literal($value)', (db) async {
+    r.addTest('literal(${'$value'.replaceAll('\n', '\\n')})', (db) async {
       final result = await db.select((literal(value),)).fetch();
       check(result).equals(value);
     });

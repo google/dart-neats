@@ -168,16 +168,13 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         ),
     };
     if (field.backingType == field.typeName) {
-      return readBackingType + (field.isNullable ? '' : '!');
-    }
-    if (!field.isNullable) {
-      return '${field.typeName}.fromDatabase($readBackingType!)';
+      return readBackingType;
     }
     return '''
       ExposedForCodeGen.customDataTypeOrNull(
         $readBackingType,
         ${field.typeName}.fromDatabase,
-      );
+      )
     ''';
   }
 
@@ -187,7 +184,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ..name = '_\$$modelName'
       ..modifier = ClassModifier.final$
       ..extend = refer(model.name)
-      ..constructors.add(Constructor(
+      /*..constructors.add(Constructor(
         (b) => b
           ..requiredParameters.add(
             Parameter(
@@ -201,6 +198,15 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               '${field.name} = ${readFromRowReader('row', field)}',
             ),
           )),
+      ))*/
+      ..constructors.add(Constructor(
+        (b) => b
+          ..name = '_'
+          ..requiredParameters.addAll(model.fields.map((field) => Parameter(
+                (b) => b
+                  ..name = field.name
+                  ..toThis = true,
+              ))),
       ))
       ..fields.addAll(model.fields.mapIndexed((i, field) => Field(
             (b) => b
@@ -254,22 +260,45 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   )
                 ''').join(',')}
               ],
-              readModel: _\$${model.name}.new,
+              readModel: _\$${model.name}._\$fromDatabase,
             )
           '''),
       ))
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'toString'
-          ..annotations.add(refer('override'))
-          ..returns = refer('String')
-          ..lambda = true
-          ..body = Code(
-            // TODO: Avoid "" around types that don't need it when rendered to
-            //       string, like int, double, bool, etc.
-            '\'$modelName(${model.fields.map((field) => '${field.name}: "\$${field.name}"').join(', ')})\'',
-          ),
-      )),
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = '_\$fromDatabase'
+            ..returns = refer('$modelName?')
+            ..static = true
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'row'
+                  ..type = refer('RowReader'),
+              ),
+            )
+            ..body = Code([
+              for (final field in model.fields)
+                'final ${field.name} = ${readFromRowReader('row', field)};',
+              'if (${model.fields.map((f) => '${f.name} == null').join(' &&  ')}) {',
+              'return null;',
+              '}',
+              'return _\$$modelName._(${model.fields.map((f) => f.name + (f.isNullable ? '' : '!')).join(', ')});',
+            ].join('\n')),
+        ),
+        Method(
+          (b) => b
+            ..name = 'toString'
+            ..annotations.add(refer('override'))
+            ..returns = refer('String')
+            ..lambda = true
+            ..body = Code(
+              // TODO: Avoid "" around types that don't need it when rendered to
+              //       string, like int, double, bool, etc.
+              '\'$modelName(${model.fields.map((field) => '${field.name}: "\$${field.name}"').join(', ')})\'',
+            ),
+        ),
+      ]),
   );
 
   // Extension for Table<model>

@@ -26,6 +26,7 @@ var _testFileCounter = 0;
 
 final class TestRunner<T extends Schema> {
   final _pg = PostgresManager();
+  final bool _resetDatabaseForEachTest;
 
   final _tests = <({
     String name,
@@ -38,10 +39,12 @@ final class TestRunner<T extends Schema> {
   final FutureOr<void> Function(Database<T> db)? _validate;
 
   TestRunner({
+    bool resetDatabaseForEachTest = true,
     FutureOr<void> Function(Database<T> db)? setup,
     FutureOr<void> Function(Database<T> db)? validate,
   })  : _setup = setup,
-        _validate = validate;
+        _validate = validate,
+        _resetDatabaseForEachTest = resetDatabaseForEachTest;
 
   @isTest
   void addTest(
@@ -57,7 +60,51 @@ final class TestRunner<T extends Schema> {
         skipPostgres: skipPostgres,
       ));
 
+  Future<DatabaseAdaptor> _getSqlite() async {
+    _testFileCounter++;
+    final filename = [
+      DateTime.now().microsecondsSinceEpoch,
+      _testFileCounter,
+    ].join('-');
+    final u = Uri.parse('file:inmemory-$filename?mode=memory&cache=shared');
+    final adaptor = DatabaseAdaptor.withLogging(
+      DatabaseAdaptor.sqlite3(u),
+      printOnFailure,
+    );
+    return adaptor;
+  }
+
+  Future<DatabaseAdaptor> _getPostgres() async {
+    return DatabaseAdaptor.withLogging(
+      DatabaseAdaptor.postgres(await _pg.getPool()),
+      printOnFailure,
+    );
+  }
+
   void run() {
+    Future<DatabaseAdaptor> Function() getSqlite;
+    Future<DatabaseAdaptor> Function() getPostgres;
+
+    if (_resetDatabaseForEachTest) {
+      getSqlite = _getSqlite;
+      getPostgres = _getPostgres;
+    } else {
+      late DatabaseAdaptor sqlite;
+      getSqlite = () async => sqlite;
+
+      late DatabaseAdaptor postgres;
+      getPostgres = () async => postgres;
+
+      setUpAll(() async {
+        sqlite = await _getSqlite();
+        postgres = await _getPostgres();
+      });
+      tearDownAll(() async {
+        await sqlite.close();
+        await postgres.close();
+      });
+    }
+
     for (final testcase in _tests) {
       test('${testcase.name} (variant: sqlite)', () async {
         if (testcase.skipSqlite != null) {
@@ -65,16 +112,7 @@ final class TestRunner<T extends Schema> {
           return;
         }
 
-        _testFileCounter++;
-        final filename = [
-          DateTime.now().microsecondsSinceEpoch,
-          _testFileCounter,
-        ].join('-');
-        final u = Uri.parse('file:inmemory-$filename?mode=memory&cache=shared');
-        final adaptor = DatabaseAdaptor.withLogging(
-          DatabaseAdaptor.sqlite3(u),
-          printOnFailure,
-        );
+        final adaptor = await getSqlite();
         final db = Database<T>(adaptor, SqlDialect.sqlite());
 
         try {
@@ -89,7 +127,9 @@ final class TestRunner<T extends Schema> {
           }
         } finally {
           try {
-            await adaptor.close();
+            if (_resetDatabaseForEachTest) {
+              await adaptor.close();
+            }
           } catch (e) {
             // ignore
           }
@@ -108,33 +148,27 @@ final class TestRunner<T extends Schema> {
           return;
         }
 
-        final pool = await _pg.getPool();
+        final adaptor = await getPostgres();
+        final db = Database<T>(adaptor, SqlDialect.postgres());
+
         try {
-          final adaptor = DatabaseAdaptor.withLogging(
-            DatabaseAdaptor.postgres(pool),
-            printOnFailure,
-          );
-          final db = Database<T>(adaptor, SqlDialect.postgres());
+          if (_setup != null) {
+            await _setup(db);
+          }
 
-          try {
-            if (_setup != null) {
-              await _setup(db);
-            }
+          await testcase.fn(db);
 
-            await testcase.fn(db);
-
-            if (_validate != null) {
-              await _validate(db);
-            }
-          } finally {
-            try {
-              await adaptor.close();
-            } catch (e) {
-              // ignore
-            }
+          if (_validate != null) {
+            await _validate(db);
           }
         } finally {
-          await pool.close(force: true);
+          try {
+            if (_resetDatabaseForEachTest) {
+              await adaptor.close(force: true);
+            }
+          } catch (e) {
+            // ignore
+          }
         }
       }, skip: skipPg);
     }

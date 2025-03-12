@@ -20,10 +20,10 @@ sealed class Expr<T extends Object?> {
   const Expr._();
 
   int get _columns;
-  T _decode(RowReader row);
+  T? _decode(RowReader row);
 
   Expr<T> _standin(int index, Object handle);
-  Expr<R> _field<R>(int index, R Function(RowReader) readValue);
+  Expr<R> _field<R>(int index, R? Function(RowReader) readValue);
 
   Iterable<Expr<Object?>> _explode();
 
@@ -47,12 +47,32 @@ sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
       FieldExpression(index, handle, _decode);
 
   @override
-  Expr<R> _field<R>(int index, R Function(RowReader) readValue) =>
+  Expr<R> _field<R>(int index, R? Function(RowReader) readValue) =>
       // This should never happen!
       throw AssertionError('Only Expr<Model> can have fields');
 
   @override
   int get _columns => 1;
+}
+
+base mixin _DecodeBool {
+  // ignore: unused_element
+  bool? _decode(RowReader r) => r.readBool();
+}
+
+base mixin _DecodeString {
+  // ignore: unused_element
+  String? _decode(RowReader r) => r.readString();
+}
+
+base mixin _DecodeInt {
+  // ignore: unused_element
+  int? _decode(RowReader r) => r.readInt();
+}
+
+base mixin _DecodeDouble {
+  // ignore: unused_element
+  double? _decode(RowReader r) => r.readDouble();
 }
 
 Literal<T> literal<T extends Object?>(T value) => Literal(value);
@@ -70,9 +90,10 @@ final class ModelExpression<T extends Model> extends Expr<T> {
   int get _columns => _table.columns.length;
 
   @override
-  T _decode(RowReader row) => _table.readModel(row);
+  // TODO: How can this be null? probably if all the values are null?
+  T? _decode(RowReader row) => _table.readModel(row);
 
-  Expr<R> _field<R>(int index, R Function(RowReader) readValue) {
+  Expr<R> _field<R>(int index, R? Function(RowReader) readValue) {
     if (index < 0 || index >= _table.columns.length) {
       throw ArgumentError.value(
         index,
@@ -101,10 +122,10 @@ final class ModelExpression<T extends Model> extends Expr<T> {
 final class FieldExpression<T> extends SingleValueExpr<T> {
   final int _index;
   final Object _handle;
-  final T Function(RowReader) _readValue;
+  final T? Function(RowReader) _readValue;
 
   @override
-  T _decode(RowReader row) => _readValue(row);
+  T? _decode(RowReader row) => _readValue(row);
 
   FieldExpression(this._index, this._handle, this._readValue) : super._();
 }
@@ -119,7 +140,7 @@ final class SubQueryExpression<T> extends Expr<T> {
   int get _columns => _value._columns;
 
   @override
-  T _decode(RowReader row) => _value._decode(row);
+  T? _decode(RowReader row) => _value._decode(row);
 
   @override
   Iterable<Expr<Object?>> _explode() {
@@ -138,7 +159,7 @@ final class SubQueryExpression<T> extends Expr<T> {
   }
 
   @override
-  Expr<R> _field<R>(int index, R Function(RowReader) readValue) {
+  Expr<R> _field<R>(int index, R? Function(RowReader) readValue) {
     final handle = Object();
     return SubQueryExpression._(
       SelectFromClause._(
@@ -154,12 +175,9 @@ final class SubQueryExpression<T> extends Expr<T> {
   Expr<T> _standin(int index, Object handle) => _value._standin(index, handle);
 }
 
-final class ExistsExpression extends SingleValueExpr<bool> {
+final class ExistsExpression extends SingleValueExpr<bool> with _DecodeBool {
   final QueryClause query;
   ExistsExpression._(this.query) : super._();
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class SumExpression<T extends num> extends SingleValueExpr<T> {
@@ -167,15 +185,12 @@ final class SumExpression<T extends num> extends SingleValueExpr<T> {
   SumExpression._(this.value) : super._();
 
   @override
-  T _decode(RowReader r) => value._decode(r);
+  T? _decode(RowReader r) => value._decode(r);
 }
 
-final class AvgExpression extends SingleValueExpr<double> {
+final class AvgExpression extends SingleValueExpr<double> with _DecodeDouble {
   final Expr<num> value;
   AvgExpression._(this.value) : super._();
-
-  @override
-  double _decode(RowReader r) => r.readDouble()!;
 }
 
 // TODO: Consider if T extends Comparable makes sense!
@@ -184,7 +199,7 @@ final class MinExpression<T extends Comparable> extends SingleValueExpr<T> {
   MinExpression._(this.value) : super._();
 
   @override
-  T _decode(RowReader r) => value._decode(r);
+  T? _decode(RowReader r) => value._decode(r);
 }
 
 final class MaxExpression<T extends Comparable> extends SingleValueExpr<T> {
@@ -192,14 +207,11 @@ final class MaxExpression<T extends Comparable> extends SingleValueExpr<T> {
   MaxExpression._(this.value) : super._();
 
   @override
-  T _decode(RowReader r) => value._decode(r);
+  T? _decode(RowReader r) => value._decode(r);
 }
 
-final class CountAllExpression extends SingleValueExpr<int> {
+final class CountAllExpression extends SingleValueExpr<int> with _DecodeInt {
   CountAllExpression._() : super._();
-
-  @override
-  int _decode(RowReader r) => r.readInt()!;
 }
 
 final class OrElseExpression<T> extends SingleValueExpr<T> {
@@ -209,9 +221,10 @@ final class OrElseExpression<T> extends SingleValueExpr<T> {
   OrElseExpression._(this.value, this.orElse) : super._();
 
   @override
-  T _decode(RowReader r) => orElse._decode(r); // What if orElse is null???
+  T? _decode(RowReader r) => value._decode(r);
 }
 
+// TODO: Do we even need this, or can we simply cast?
 final class NullAssertionExpression<T> extends Expr<T> {
   final Expr<T?> value;
 
@@ -219,14 +232,14 @@ final class NullAssertionExpression<T> extends Expr<T> {
   int get _columns => value._columns;
 
   @override
-  T _decode(RowReader row) => value._decode(row)!;
+  T? _decode(RowReader row) => value._decode(row);
 
   @override
   Iterable<Expr<Object?>> _explode() => value._explode();
 
   Expr<T> _standin(int index, Object handle) =>
       NullAssertionExpression._(value._standin(index, handle));
-  Expr<R> _field<R>(int index, R Function(RowReader) readValue) =>
+  Expr<R> _field<R>(int index, R? Function(RowReader) readValue) =>
       value._field(index, readValue);
 
   NullAssertionExpression._(this.value) : super._();
@@ -258,7 +271,7 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
 }
 
 final class Literal<T> extends SingleValueExpr<T> {
-  final T Function(RowReader) _readValue;
+  final T? Function(RowReader) _readValue;
   final T value;
   // TODO: Consider supporting a Constant expression subclass, currently we
   //       always encode literals as ? and attach them as parameters.
@@ -267,7 +280,7 @@ final class Literal<T> extends SingleValueExpr<T> {
   //       whether a literal is encoded as value or constant
   //       If we do this, we might have rename Literal to Value!
 
-  static Object? _readNull(RowReader r) {
+  static Null _readNull(RowReader r) {
     if (!r.tryReadNull()) {
       throw AssertionError('Expr<Null> should always be `null`!');
     }
@@ -276,7 +289,7 @@ final class Literal<T> extends SingleValueExpr<T> {
 
   static bool _readBool(RowReader r) => r.readBool()!;
 
-  static const null$ = Literal._(null, _readNull);
+  static const null$ = Literal<Null>._(null, _readNull);
   static const true$ = Literal._(true, _readBool);
   static const false$ = Literal._(false, _readBool);
 
@@ -289,6 +302,8 @@ final class Literal<T> extends SingleValueExpr<T> {
       switch (value) {
         CustomDataType<bool> _ =>
           Literal._(value, (r) => fromDatabase(r.readBool() as S)),
+        CustomDataType<String> _ =>
+          Literal._(value, (r) => fromDatabase(r.readString() as S)),
         CustomDataType<int> _ =>
           Literal._(value, (r) => fromDatabase(r.readInt() as S)),
         CustomDataType<double> _ =>
@@ -317,15 +332,15 @@ final class Literal<T> extends SingleValueExpr<T> {
         return null$ as Literal<T>;
 
       case String _:
-        return Literal._(value, (r) => r.readString() as T);
+        return Literal._(value, (r) => r.readString() as T?);
       case int _:
-        return Literal._(value, (r) => r.readInt() as T);
+        return Literal._(value, (r) => r.readInt() as T?);
       case double _:
-        return Literal._(value, (r) => r.readDouble() as T);
+        return Literal._(value, (r) => r.readDouble() as T?);
       case Uint8List _:
-        return Literal._(value, (r) => r.readUint8List() as T);
+        return Literal._(value, (r) => r.readUint8List() as T?);
       case DateTime _:
-        return Literal._(value, (r) => r.readDateTime() as T);
+        return Literal._(value, (r) => r.readDateTime() as T?);
 
       case CustomDataType _:
         throw ArgumentError.value(
@@ -345,7 +360,7 @@ final class Literal<T> extends SingleValueExpr<T> {
   }
 
   @override
-  T _decode(RowReader row) => _readValue(row);
+  T? _decode(RowReader row) => _readValue(row);
 }
 
 sealed class BinaryOperationExpression<T, R> extends SingleValueExpr<R> {
@@ -354,142 +369,101 @@ sealed class BinaryOperationExpression<T, R> extends SingleValueExpr<R> {
   BinaryOperationExpression(this.left, this.right) : super._();
 }
 
-final class ExpressionBoolNot extends SingleValueExpr<bool> {
+final class ExpressionBoolNot extends SingleValueExpr<bool> with _DecodeBool {
   final Expr<bool> value;
   ExpressionBoolNot(this.value) : super._();
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
-final class ExpressionBoolAnd extends BinaryOperationExpression<bool, bool> {
+final class ExpressionBoolAnd extends BinaryOperationExpression<bool, bool>
+    with _DecodeBool {
   ExpressionBoolAnd(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
-final class ExpressionBoolOr extends BinaryOperationExpression<bool, bool> {
+final class ExpressionBoolOr extends BinaryOperationExpression<bool, bool>
+    with _DecodeBool {
   ExpressionBoolOr(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionStringEquals
-    extends BinaryOperationExpression<String, bool> {
+    extends BinaryOperationExpression<String, bool> with _DecodeBool {
   ExpressionStringEquals(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionStringLessThan
-    extends BinaryOperationExpression<String, bool> {
+    extends BinaryOperationExpression<String, bool> with _DecodeBool {
   ExpressionStringLessThan(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionStringLessThanOrEqual
-    extends BinaryOperationExpression<String, bool> {
+    extends BinaryOperationExpression<String, bool> with _DecodeBool {
   ExpressionStringLessThanOrEqual(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionStringGreaterThan
-    extends BinaryOperationExpression<String, bool> {
+    extends BinaryOperationExpression<String, bool> with _DecodeBool {
   ExpressionStringGreaterThan(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionStringGreaterThanOrEqual
-    extends BinaryOperationExpression<String, bool> {
+    extends BinaryOperationExpression<String, bool> with _DecodeBool {
   ExpressionStringGreaterThanOrEqual(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
-final class ExpressionStringIsEmpty extends SingleValueExpr<bool> {
+final class ExpressionStringIsEmpty extends SingleValueExpr<bool>
+    with _DecodeBool {
   final Expr<String> value;
   ExpressionStringIsEmpty(this.value) : super._();
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
-final class ExpressionStringLength extends SingleValueExpr<int> {
+final class ExpressionStringLength extends SingleValueExpr<int>
+    with _DecodeInt {
   final Expr<String> value;
   ExpressionStringLength(this.value) : super._();
-
-  @override
-  int _decode(RowReader r) => r.readInt()!;
 }
 
-final class ExpressionStringStartsWith extends SingleValueExpr<bool> {
+final class ExpressionStringStartsWith extends SingleValueExpr<bool>
+    with _DecodeBool {
   final Expr<String> value;
   final Expr<String> prefix;
   ExpressionStringStartsWith(this.value, this.prefix) : super._();
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
-final class ExpressionStringEndsWith extends SingleValueExpr<bool> {
+final class ExpressionStringEndsWith extends SingleValueExpr<bool>
+    with _DecodeBool {
   final Expr<String> value;
   final Expr<String> suffix;
   ExpressionStringEndsWith(this.value, this.suffix) : super._();
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
-final class ExpressionStringLike extends SingleValueExpr<bool> {
+final class ExpressionStringLike extends SingleValueExpr<bool>
+    with _DecodeBool {
   final Expr<String> value;
   final String pattern;
   ExpressionStringLike(this.value, this.pattern) : super._();
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
-final class ExpressionStringContains extends SingleValueExpr<bool> {
+final class ExpressionStringContains extends SingleValueExpr<bool>
+    with _DecodeBool {
   final Expr<String> value;
   final Expr<String> needle;
   ExpressionStringContains(this.value, this.needle) : super._();
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
-final class ExpressionStringToUpperCase extends SingleValueExpr<String> {
+final class ExpressionStringToUpperCase extends SingleValueExpr<String>
+    with _DecodeString {
   final Expr<String> value;
   ExpressionStringToUpperCase(this.value) : super._();
-
-  @override
-  String _decode(RowReader r) => r.readString()!;
 }
 
-final class ExpressionStringToLowerCase extends SingleValueExpr<String> {
+final class ExpressionStringToLowerCase extends SingleValueExpr<String>
+    with _DecodeString {
   final Expr<String> value;
   ExpressionStringToLowerCase(this.value) : super._();
-
-  @override
-  String _decode(RowReader r) => r.readString()!;
 }
 
 final class ExpressionNumEquals<T extends num>
-    extends BinaryOperationExpression<T, bool> {
+    extends BinaryOperationExpression<T, bool> with _DecodeBool {
   ExpressionNumEquals(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionNumAdd<T extends num>
@@ -497,7 +471,7 @@ final class ExpressionNumAdd<T extends num>
   ExpressionNumAdd(super.left, super.right);
 
   @override
-  T _decode(RowReader r) => left._decode(r);
+  T? _decode(RowReader r) => left._decode(r);
 }
 
 final class ExpressionNumSubtract<T extends num>
@@ -505,7 +479,7 @@ final class ExpressionNumSubtract<T extends num>
   ExpressionNumSubtract(super.left, super.right);
 
   @override
-  T _decode(RowReader r) => left._decode(r);
+  T? _decode(RowReader r) => left._decode(r);
 }
 
 final class ExpressionNumMultiply<T extends num>
@@ -513,87 +487,57 @@ final class ExpressionNumMultiply<T extends num>
   ExpressionNumMultiply(super.left, super.right);
 
   @override
-  T _decode(RowReader r) => left._decode(r);
+  T? _decode(RowReader r) => left._decode(r);
 }
 
 final class ExpressionNumDivide<T extends num>
-    extends BinaryOperationExpression<T, double> {
+    extends BinaryOperationExpression<T, double> with _DecodeDouble {
   ExpressionNumDivide(super.left, super.right);
-
-  @override
-  double _decode(RowReader r) => r.readDouble()!;
 }
 
 final class ExpressionNumLessThan<T extends num>
-    extends BinaryOperationExpression<T, bool> {
+    extends BinaryOperationExpression<T, bool> with _DecodeBool {
   ExpressionNumLessThan(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionNumLessThanOrEqual<T extends num>
-    extends BinaryOperationExpression<T, bool> {
+    extends BinaryOperationExpression<T, bool> with _DecodeBool {
   ExpressionNumLessThanOrEqual(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionNumGreaterThan<T extends num>
-    extends BinaryOperationExpression<T, bool> {
+    extends BinaryOperationExpression<T, bool> with _DecodeBool {
   ExpressionNumGreaterThan(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionNumGreaterThanOrEqual<T extends num>
-    extends BinaryOperationExpression<T, bool> {
+    extends BinaryOperationExpression<T, bool> with _DecodeBool {
   ExpressionNumGreaterThanOrEqual(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionDateTimeEquals
-    extends BinaryOperationExpression<DateTime, bool> {
+    extends BinaryOperationExpression<DateTime, bool> with _DecodeBool {
   ExpressionDateTimeEquals(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionDateTimeLessThan
-    extends BinaryOperationExpression<DateTime, bool> {
+    extends BinaryOperationExpression<DateTime, bool> with _DecodeBool {
   ExpressionDateTimeLessThan(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionDateTimeLessThanOrEqual
-    extends BinaryOperationExpression<DateTime, bool> {
+    extends BinaryOperationExpression<DateTime, bool> with _DecodeBool {
   ExpressionDateTimeLessThanOrEqual(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionDateTimeGreaterThan
-    extends BinaryOperationExpression<DateTime, bool> {
+    extends BinaryOperationExpression<DateTime, bool> with _DecodeBool {
   ExpressionDateTimeGreaterThan(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 final class ExpressionDateTimeGreaterThanOrEqual
-    extends BinaryOperationExpression<DateTime, bool> {
+    extends BinaryOperationExpression<DateTime, bool> with _DecodeBool {
   ExpressionDateTimeGreaterThanOrEqual(super.left, super.right);
-
-  @override
-  bool _decode(RowReader r) => r.readBool()!;
 }
 
 extension ExpressionBool on Expr<bool> {

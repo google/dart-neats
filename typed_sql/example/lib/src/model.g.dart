@@ -39,10 +39,11 @@ String createPrimaryDatabaseTables(SqlDialect dialect) =>
     );
 
 final class _$User extends User {
-  _$User(RowReader row)
-      : userId = row.readInt()!,
-        name = row.readString()!,
-        email = row.readString()!;
+  _$User._(
+    this.userId,
+    this.name,
+    this.email,
+  );
 
   @override
   final int userId;
@@ -91,8 +92,18 @@ final class _$User extends User {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$User.new,
+    readModel: _$User._$fromDatabase,
   );
+
+  static User? _$fromDatabase(RowReader row) {
+    final userId = row.readInt();
+    final name = row.readString();
+    final email = row.readString();
+    if (userId == null && name == null && email == null) {
+      return null;
+    }
+    return _$User._(userId!, name!, email!);
+  }
 
   @override
   String toString() =>
@@ -244,15 +255,15 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
 
 extension ExpressionUserExt on Expr<User> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt()!);
+  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt());
 
   /// TODO: document name
   Expr<String> get name =>
-      ExposedForCodeGen.field(this, 1, (r) => r.readString()!);
+      ExposedForCodeGen.field(this, 1, (r) => r.readString());
 
   /// TODO: document email
   Expr<String> get email =>
-      ExposedForCodeGen.field(this, 2, (r) => r.readString()!);
+      ExposedForCodeGen.field(this, 2, (r) => r.readString());
 
   /// TODO: document references
   SubQuery<(Expr<Package>,)> get packages =>
@@ -261,11 +272,12 @@ extension ExpressionUserExt on Expr<User> {
 }
 
 final class _$Package extends Package {
-  _$Package(RowReader row)
-      : packageName = row.readString()!,
-        likes = row.readInt()!,
-        ownerId = row.readInt()!,
-        publisher = row.readString();
+  _$Package._(
+    this.packageName,
+    this.likes,
+    this.ownerId,
+    this.publisher,
+  );
 
   @override
   final String packageName;
@@ -328,8 +340,22 @@ final class _$Package extends Package {
         referencedColumns: ['userId'],
       )
     ],
-    readModel: _$Package.new,
+    readModel: _$Package._$fromDatabase,
   );
+
+  static Package? _$fromDatabase(RowReader row) {
+    final packageName = row.readString();
+    final likes = row.readInt();
+    final ownerId = row.readInt();
+    final publisher = row.readString();
+    if (packageName == null &&
+        likes == null &&
+        ownerId == null &&
+        publisher == null) {
+      return null;
+    }
+    return _$Package._(packageName!, likes!, ownerId!, publisher);
+  }
 
   @override
   String toString() =>
@@ -493,14 +519,13 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
 extension ExpressionPackageExt on Expr<Package> {
   /// TODO: document packageName
   Expr<String> get packageName =>
-      ExposedForCodeGen.field(this, 0, (r) => r.readString()!);
+      ExposedForCodeGen.field(this, 0, (r) => r.readString());
 
   /// TODO: document likes
-  Expr<int> get likes => ExposedForCodeGen.field(this, 1, (r) => r.readInt()!);
+  Expr<int> get likes => ExposedForCodeGen.field(this, 1, (r) => r.readInt());
 
   /// TODO: document ownerId
-  Expr<int> get ownerId =>
-      ExposedForCodeGen.field(this, 2, (r) => r.readInt()!);
+  Expr<int> get ownerId => ExposedForCodeGen.field(this, 2, (r) => r.readInt());
 
   /// TODO: document publisher
   Expr<String?> get publisher =>
@@ -514,9 +539,10 @@ extension ExpressionPackageExt on Expr<Package> {
 }
 
 final class _$Like extends Like {
-  _$Like(RowReader row)
-      : userId = row.readInt()!,
-        packageName = row.readString()!;
+  _$Like._(
+    this.userId,
+    this.packageName,
+  );
 
   @override
   final int userId;
@@ -554,8 +580,17 @@ final class _$Like extends Like {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Like.new,
+    readModel: _$Like._$fromDatabase,
   );
+
+  static Like? _$fromDatabase(RowReader row) {
+    final userId = row.readInt();
+    final packageName = row.readString();
+    if (userId == null && packageName == null) {
+      return null;
+    }
+    return _$Like._(userId!, packageName!);
+  }
 
   @override
   String toString() => 'Like(userId: "$userId", packageName: "$packageName")';
@@ -700,9 +735,9 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
 
 extension ExpressionLikeExt on Expr<Like> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt()!);
+  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt());
 
   /// TODO: document packageName
   Expr<String> get packageName =>
-      ExposedForCodeGen.field(this, 1, (r) => r.readString()!);
+      ExposedForCodeGen.field(this, 1, (r) => r.readString());
 }

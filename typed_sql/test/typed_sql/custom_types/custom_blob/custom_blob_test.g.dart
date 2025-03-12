@@ -27,9 +27,10 @@ String createTestDatabaseTables(SqlDialect dialect) =>
     );
 
 final class _$Item extends Item {
-  _$Item(RowReader row)
-      : id = row.readInt()!,
-        value = MyJsonValue.fromDatabase(row.readUint8List()!);
+  _$Item._(
+    this.id,
+    this.value,
+  );
 
   @override
   final int id;
@@ -67,8 +68,20 @@ final class _$Item extends Item {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Item.new,
+    readModel: _$Item._$fromDatabase,
   );
+
+  static Item? _$fromDatabase(RowReader row) {
+    final id = row.readInt();
+    final value = ExposedForCodeGen.customDataTypeOrNull(
+      row.readUint8List(),
+      MyJsonValue.fromDatabase,
+    );
+    if (id == null && value == null) {
+      return null;
+    }
+    return _$Item._(id!, value!);
+  }
 
   @override
   String toString() => 'Item(id: "$id", value: "$value")';
@@ -201,11 +214,16 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
 
 extension ExpressionItemExt on Expr<Item> {
   /// TODO: document id
-  Expr<int> get id => ExposedForCodeGen.field(this, 0, (r) => r.readInt()!);
+  Expr<int> get id => ExposedForCodeGen.field(this, 0, (r) => r.readInt());
 
   /// TODO: document value
   Expr<MyJsonValue> get value => ExposedForCodeGen.field(
-      this, 1, (r) => MyJsonValue.fromDatabase(r.readUint8List()!));
+      this,
+      1,
+      (r) => ExposedForCodeGen.customDataTypeOrNull(
+            r.readUint8List(),
+            MyJsonValue.fromDatabase,
+          ));
 }
 
 extension ItemChecks on Subject<Item> {

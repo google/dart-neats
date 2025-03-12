@@ -39,10 +39,11 @@ String createPrimaryDatabaseTables(SqlDialect dialect) =>
     );
 
 final class _$User extends User {
-  _$User(RowReader row)
-      : userId = row.readInt()!,
-        name = row.readString()!,
-        email = row.readString()!;
+  _$User._(
+    this.userId,
+    this.name,
+    this.email,
+  );
 
   @override
   final int userId;
@@ -91,8 +92,18 @@ final class _$User extends User {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$User.new,
+    readModel: _$User._$fromDatabase,
   );
+
+  static User? _$fromDatabase(RowReader row) {
+    final userId = row.readInt();
+    final name = row.readString();
+    final email = row.readString();
+    if (userId == null && name == null && email == null) {
+      return null;
+    }
+    return _$User._(userId!, name!, email!);
+  }
 
   @override
   String toString() =>
@@ -244,15 +255,15 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
 
 extension ExpressionUserExt on Expr<User> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt()!);
+  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt());
 
   /// TODO: document name
   Expr<String> get name =>
-      ExposedForCodeGen.field(this, 1, (r) => r.readString()!);
+      ExposedForCodeGen.field(this, 1, (r) => r.readString());
 
   /// TODO: document email
   Expr<String> get email =>
-      ExposedForCodeGen.field(this, 2, (r) => r.readString()!);
+      ExposedForCodeGen.field(this, 2, (r) => r.readString());
 
   /// TODO: document references
   SubQuery<(Expr<Package>,)> get packages =>
@@ -261,11 +272,12 @@ extension ExpressionUserExt on Expr<User> {
 }
 
 final class _$Package extends Package {
-  _$Package(RowReader row)
-      : packageName = row.readString()!,
-        likes = row.readInt()!,
-        ownerId = row.readInt()!,
-        publisher = row.readString();
+  _$Package._(
+    this.packageName,
+    this.likes,
+    this.ownerId,
+    this.publisher,
+  );
 
   @override
   final String packageName;
@@ -328,8 +340,22 @@ final class _$Package extends Package {
         referencedColumns: ['userId'],
       )
     ],
-    readModel: _$Package.new,
+    readModel: _$Package._$fromDatabase,
   );
+
+  static Package? _$fromDatabase(RowReader row) {
+    final packageName = row.readString();
+    final likes = row.readInt();
+    final ownerId = row.readInt();
+    final publisher = row.readString();
+    if (packageName == null &&
+        likes == null &&
+        ownerId == null &&
+        publisher == null) {
+      return null;
+    }
+    return _$Package._(packageName!, likes!, ownerId!, publisher);
+  }
 
   @override
   String toString() =>
@@ -493,14 +519,13 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
 extension ExpressionPackageExt on Expr<Package> {
   /// TODO: document packageName
   Expr<String> get packageName =>
-      ExposedForCodeGen.field(this, 0, (r) => r.readString()!);
+      ExposedForCodeGen.field(this, 0, (r) => r.readString());
 
   /// TODO: document likes
-  Expr<int> get likes => ExposedForCodeGen.field(this, 1, (r) => r.readInt()!);
+  Expr<int> get likes => ExposedForCodeGen.field(this, 1, (r) => r.readInt());
 
   /// TODO: document ownerId
-  Expr<int> get ownerId =>
-      ExposedForCodeGen.field(this, 2, (r) => r.readInt()!);
+  Expr<int> get ownerId => ExposedForCodeGen.field(this, 2, (r) => r.readInt());
 
   /// TODO: document publisher
   Expr<String?> get publisher =>
@@ -514,9 +539,10 @@ extension ExpressionPackageExt on Expr<Package> {
 }
 
 final class _$Like extends Like {
-  _$Like(RowReader row)
-      : userId = row.readInt()!,
-        packageName = row.readString()!;
+  _$Like._(
+    this.userId,
+    this.packageName,
+  );
 
   @override
   final int userId;
@@ -554,8 +580,17 @@ final class _$Like extends Like {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Like.new,
+    readModel: _$Like._$fromDatabase,
   );
+
+  static Like? _$fromDatabase(RowReader row) {
+    final userId = row.readInt();
+    final packageName = row.readString();
+    if (userId == null && packageName == null) {
+      return null;
+    }
+    return _$Like._(userId!, packageName!);
+  }
 
   @override
   String toString() => 'Like(userId: "$userId", packageName: "$packageName")';
@@ -700,9 +735,224 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
 
 extension ExpressionLikeExt on Expr<Like> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt()!);
+  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt());
 
   /// TODO: document packageName
   Expr<String> get packageName =>
-      ExposedForCodeGen.field(this, 1, (r) => r.readString()!);
+      ExposedForCodeGen.field(this, 1, (r) => r.readString());
+}
+
+extension QueryOwnerPackageNamed<A, B> on Query<
+    ({
+      Expr<A> owner,
+      Expr<B> package,
+    })> {
+  Query<(Expr<A>, Expr<B>)> get _asPositionalQuery =>
+      ExposedForCodeGen.renamedRecord(
+          this,
+          (e) => (
+                e.owner,
+                e.package,
+              ));
+  static Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> _fromPositionalQuery<A, B>(
+          Query<(Expr<A>, Expr<B>)> query) =>
+      ExposedForCodeGen.renamedRecord(
+          query,
+          (e) => (
+                owner: e.$1,
+                package: e.$2,
+              ));
+  static T Function(Expr<A> a, Expr<B> b) _wrapBuilder<T, A, B>(
+          T Function(
+                  ({
+                    Expr<A> owner,
+                    Expr<B> package,
+                  }) e)
+              builder) =>
+      (a, b) => builder((
+            owner: a,
+            package: b,
+          ));
+  Stream<
+      ({
+        A owner,
+        B package,
+      })> fetch() async* {
+    yield* _asPositionalQuery.fetch().map((e) => (
+          owner: e.$1,
+          package: e.$2,
+        ));
+  }
+
+  Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> offset(
+          int offset) =>
+      _fromPositionalQuery(_asPositionalQuery.offset(offset));
+  Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> limit(
+          int limit) =>
+      _fromPositionalQuery(_asPositionalQuery.limit(limit));
+  Query<T> select<T extends Record>(
+          T Function(
+                  ({
+                    Expr<A> owner,
+                    Expr<B> package,
+                  }) expr)
+              projectionBuilder) =>
+      _asPositionalQuery.select(_wrapBuilder(projectionBuilder));
+  Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> where(
+          Expr<bool> Function(
+                  ({
+                    Expr<A> owner,
+                    Expr<B> package,
+                  }) expr)
+              conditionBuilder) =>
+      _fromPositionalQuery(
+          _asPositionalQuery.where(_wrapBuilder(conditionBuilder)));
+  Query<
+      ({
+        Expr<A> owner,
+        Expr<B> package,
+      })> orderBy<T>(
+    Expr<T> Function(
+            ({
+              Expr<A> owner,
+              Expr<B> package,
+            }) expr)
+        expressionBuilder, {
+    bool descending = false,
+  }) =>
+      _fromPositionalQuery(_asPositionalQuery.orderBy(
+        _wrapBuilder(expressionBuilder),
+        descending: descending,
+      ));
+}
+
+extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
+    ({
+      Expr<A> packages,
+      Expr<B> totalLikes,
+      Expr<C> userName,
+    })> {
+  Query<(Expr<A>, Expr<B>, Expr<C>)> get _asPositionalQuery =>
+      ExposedForCodeGen.renamedRecord(
+          this,
+          (e) => (
+                e.packages,
+                e.totalLikes,
+                e.userName,
+              ));
+  static Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> _fromPositionalQuery<A, B, C>(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> query) =>
+      ExposedForCodeGen.renamedRecord(
+          query,
+          (e) => (
+                packages: e.$1,
+                totalLikes: e.$2,
+                userName: e.$3,
+              ));
+  static T Function(Expr<A> a, Expr<B> b, Expr<C> c) _wrapBuilder<T, A, B, C>(
+          T Function(
+                  ({
+                    Expr<A> packages,
+                    Expr<B> totalLikes,
+                    Expr<C> userName,
+                  }) e)
+              builder) =>
+      (a, b, c) => builder((
+            packages: a,
+            totalLikes: b,
+            userName: c,
+          ));
+  Stream<
+      ({
+        A packages,
+        B totalLikes,
+        C userName,
+      })> fetch() async* {
+    yield* _asPositionalQuery.fetch().map((e) => (
+          packages: e.$1,
+          totalLikes: e.$2,
+          userName: e.$3,
+        ));
+  }
+
+  Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> offset(
+          int offset) =>
+      _fromPositionalQuery(_asPositionalQuery.offset(offset));
+  Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> limit(
+          int limit) =>
+      _fromPositionalQuery(_asPositionalQuery.limit(limit));
+  Query<T> select<T extends Record>(
+          T Function(
+                  ({
+                    Expr<A> packages,
+                    Expr<B> totalLikes,
+                    Expr<C> userName,
+                  }) expr)
+              projectionBuilder) =>
+      _asPositionalQuery.select(_wrapBuilder(projectionBuilder));
+  Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> where(
+          Expr<bool> Function(
+                  ({
+                    Expr<A> packages,
+                    Expr<B> totalLikes,
+                    Expr<C> userName,
+                  }) expr)
+              conditionBuilder) =>
+      _fromPositionalQuery(
+          _asPositionalQuery.where(_wrapBuilder(conditionBuilder)));
+  Query<
+      ({
+        Expr<A> packages,
+        Expr<B> totalLikes,
+        Expr<C> userName,
+      })> orderBy<T>(
+    Expr<T> Function(
+            ({
+              Expr<A> packages,
+              Expr<B> totalLikes,
+              Expr<C> userName,
+            }) expr)
+        expressionBuilder, {
+    bool descending = false,
+  }) =>
+      _fromPositionalQuery(_asPositionalQuery.orderBy(
+        _wrapBuilder(expressionBuilder),
+        descending: descending,
+      ));
 }

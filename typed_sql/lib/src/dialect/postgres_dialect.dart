@@ -295,9 +295,24 @@ final class _PostgresDialect extends SqlDialect {
         final (sql1, columns1) = clause(left, ctx);
         final (sql2, columns2) = clause(right, ctx);
         return (
-          'SELECT ${columns1.join(', ')} FROM ($sql1) '
+          'SELECT ${columns1.map((c) => 'a.$c').join(', ')} FROM ($sql1) AS a '
               '${q.operator} '
-              'SELECT ${columns2.join(', ')} FROM ($sql2)',
+              // If one of the columns in [right] is NULL then we'll get a type
+              // inference error, because once nested within multiple selects
+              // postgres can't infer what type NULL should have. It often falls
+              // back to TEXT, so if [left] is BIGINT, we'll get an error saying
+              //   42804: UNION types bigint and text cannot be matched
+              // The fix for this is ideally to use `NULL::BIGINT` whenever the
+              // matching column in [left] is a BIGINT. But this is complicated
+              // to carry down. We could also do CAST( b.$c AS ???) using types
+              // from matching column in [left]. But then Expr<T> would need to
+              // be able to tell us what type is has.
+              //
+              // As a simple (yet ugly) workaround we can do:
+              //   CAST( a.$c AS UNKNOWN)
+              // which will force type inference. And this should be safe'ish
+              // since we know the types match on the Dart side.
+              'SELECT ${columns2.map((c) => 'CAST(b.$c AS UNKNOWN)').join(', ')} FROM ($sql2) AS b',
           columns1
         );
 
@@ -324,7 +339,7 @@ final class _PostgresDialect extends SqlDialect {
         SubQueryExpression<T>(:final query) => '(${clause(query, ctx).$1})',
         Literal.false$ => 'FALSE',
         Literal.true$ => 'TRUE',
-        Literal.null$ => 'NULL',
+        Literal.null$ => '(NULL)::unknown',
         Literal<CustomDataType>(value: final value) =>
           ctx.parameter(value.toDatabase()),
         Literal<T>(value: final value) => ctx.parameter(value),

@@ -64,6 +64,54 @@ extension Query1<A> on Query<(Expr<A>,)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Query<(Expr<A>,)> union(Query<(Expr<A>,)> other) => _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>,)> unionAll(Query<(Expr<A>,)> other) => _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionAllClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>,)> intersect(Query<(Expr<A>,)> other) => _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => IntersectClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>,)> except(Query<(Expr<A>,)> other) => _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => ExceptClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>,)> operator +(Query<(Expr<A>,)> other) => unionAll(other);
+  Query<(Expr<A>,)> operator -(Query<(Expr<A>,)> other) => except(other);
+  Query<(Expr<A>,)> operator &(Query<(Expr<A>,)> other) => intersect(other);
+  Query<(Expr<A>,)> operator |(Query<(Expr<A>,)> other) => union(other);
   Group<T, (Expr<A>,)> groupBy<T extends Record>(
       T Function(Expr<A> a) groupBuilder) {
     final (handle, (group, standins)) = _build((a) {
@@ -78,7 +126,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield decode1(row);
+      yield decode1(row) as A;
     }
   }
 }
@@ -194,6 +242,59 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Query<(Expr<A>, Expr<B>)> union(Query<(Expr<A>, Expr<B>)> other) => _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>)> unionAll(Query<(Expr<A>, Expr<B>)> other) => _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionAllClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>)> intersect(Query<(Expr<A>, Expr<B>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => IntersectClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>)> except(Query<(Expr<A>, Expr<B>)> other) => _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => ExceptClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>)> operator +(Query<(Expr<A>, Expr<B>)> other) =>
+      unionAll(other);
+  Query<(Expr<A>, Expr<B>)> operator -(Query<(Expr<A>, Expr<B>)> other) =>
+      except(other);
+  Query<(Expr<A>, Expr<B>)> operator &(Query<(Expr<A>, Expr<B>)> other) =>
+      intersect(other);
+  Query<(Expr<A>, Expr<B>)> operator |(Query<(Expr<A>, Expr<B>)> other) =>
+      union(other);
   Group<T, (Expr<A>, Expr<B>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b) {
@@ -215,7 +316,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield (decode1(row), decode2(row));
+      yield (decode1(row) as A, decode2(row) as B);
     }
   }
 }
@@ -336,6 +437,70 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Query<(Expr<A>, Expr<B>, Expr<C>)> union(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>)> unionAll(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionAllClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>)> intersect(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => IntersectClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>)> except(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => ExceptClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>)> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
+      unionAll(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>)> operator -(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
+      except(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>)> operator &(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
+      intersect(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>)> operator |(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
+      union(other);
   Group<T, (Expr<A>, Expr<B>, Expr<C>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b, c) {
@@ -359,7 +524,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield (decode1(row), decode2(row), decode3(row));
+      yield (decode1(row) as A, decode2(row) as B, decode3(row) as C);
     }
   }
 }
@@ -490,6 +655,70 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> union(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> unionAll(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionAllClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> intersect(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => IntersectClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> except(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => ExceptClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
+      unionAll(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator -(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
+      except(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator &(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
+      intersect(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator |(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
+      union(other);
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b, c, d) {
@@ -515,7 +744,12 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
-      yield (decode1(row), decode2(row), decode3(row), decode4(row));
+      yield (
+        decode1(row) as A,
+        decode2(row) as B,
+        decode3(row) as C,
+        decode4(row) as D
+      );
     }
   }
 }
@@ -660,6 +894,70 @@ extension Query5<A, B, C, D, E>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> union(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> unionAll(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionAllClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> intersect(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => IntersectClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> except(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => ExceptClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
+      unionAll(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator -(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
+      except(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator &(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
+      intersect(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator |(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
+      union(other);
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
@@ -690,11 +988,11 @@ extension Query5<A, B, C, D, E>
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1(row),
-        decode2(row),
-        decode3(row),
-        decode4(row),
-        decode5(row)
+        decode1(row) as A,
+        decode2(row) as B,
+        decode3(row) as C,
+        decode4(row) as D,
+        decode5(row) as E
       );
     }
   }
@@ -852,6 +1150,78 @@ extension Query6<A, B, C, D, E, F>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> union(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> unionAll(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionAllClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> intersect(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => IntersectClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> except(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => ExceptClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+              other) =>
+      unionAll(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator -(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+              other) =>
+      except(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator &(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+              other) =>
+      intersect(other);
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator |(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+              other) =>
+      union(other);
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
@@ -885,12 +1255,12 @@ extension Query6<A, B, C, D, E, F>
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1(row),
-        decode2(row),
-        decode3(row),
-        decode4(row),
-        decode5(row),
-        decode6(row)
+        decode1(row) as A,
+        decode2(row) as B,
+        decode3(row) as C,
+        decode4(row) as D,
+        decode5(row) as E,
+        decode6(row) as F
       );
     }
   }
@@ -1059,6 +1429,124 @@ extension Query7<A, B, C, D, E, F, G>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> union(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> unionAll(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionAllClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>
+      )> intersect(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => IntersectClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> except(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => ExceptClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>
+      )> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+              other) =>
+      unionAll(other);
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>
+      )> operator -(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+              other) =>
+      except(other);
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>
+      )> operator &(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+              other) =>
+      intersect(other);
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>
+      )> operator |(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+              other) =>
+      union(other);
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
@@ -1094,13 +1582,13 @@ extension Query7<A, B, C, D, E, F, G>
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1(row),
-        decode2(row),
-        decode3(row),
-        decode4(row),
-        decode5(row),
-        decode6(row),
-        decode7(row)
+        decode1(row) as A,
+        decode2(row) as B,
+        decode3(row) as C,
+        decode4(row) as D,
+        decode5(row) as E,
+        decode6(row) as F,
+        decode7(row) as G
       );
     }
   }
@@ -1301,6 +1789,238 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> union(
+          Query<
+                  (
+                    Expr<A>,
+                    Expr<B>,
+                    Expr<C>,
+                    Expr<D>,
+                    Expr<E>,
+                    Expr<F>,
+                    Expr<G>,
+                    Expr<H>
+                  )>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> unionAll(
+          Query<
+                  (
+                    Expr<A>,
+                    Expr<B>,
+                    Expr<C>,
+                    Expr<D>,
+                    Expr<E>,
+                    Expr<F>,
+                    Expr<G>,
+                    Expr<H>
+                  )>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => UnionAllClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> intersect(
+          Query<
+                  (
+                    Expr<A>,
+                    Expr<B>,
+                    Expr<C>,
+                    Expr<D>,
+                    Expr<E>,
+                    Expr<F>,
+                    Expr<G>,
+                    Expr<H>
+                  )>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => IntersectClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> except(
+          Query<
+                  (
+                    Expr<A>,
+                    Expr<B>,
+                    Expr<C>,
+                    Expr<D>,
+                    Expr<E>,
+                    Expr<F>,
+                    Expr<G>,
+                    Expr<H>
+                  )>
+              other) =>
+      _Query(
+        _context,
+        // What if this was implicitly cast from Query<(Expr<A>,)> to
+        // Query<(Expr<A?>,)> which doesn't require a cast!
+        // Now, it can't return null, but also I can't know this!
+        _expressions, // TODO: Unclear if this right!
+        (e) => ExceptClause._(
+          _from(_expressions.toList()),
+          other._from(other._expressions.toList()),
+        ),
+      );
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> operator +(
+          Query<
+                  (
+                    Expr<A>,
+                    Expr<B>,
+                    Expr<C>,
+                    Expr<D>,
+                    Expr<E>,
+                    Expr<F>,
+                    Expr<G>,
+                    Expr<H>
+                  )>
+              other) =>
+      unionAll(other);
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> operator -(
+          Query<
+                  (
+                    Expr<A>,
+                    Expr<B>,
+                    Expr<C>,
+                    Expr<D>,
+                    Expr<E>,
+                    Expr<F>,
+                    Expr<G>,
+                    Expr<H>
+                  )>
+              other) =>
+      except(other);
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> operator &(
+          Query<
+                  (
+                    Expr<A>,
+                    Expr<B>,
+                    Expr<C>,
+                    Expr<D>,
+                    Expr<E>,
+                    Expr<F>,
+                    Expr<G>,
+                    Expr<H>
+                  )>
+              other) =>
+      intersect(other);
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> operator |(
+          Query<
+                  (
+                    Expr<A>,
+                    Expr<B>,
+                    Expr<C>,
+                    Expr<D>,
+                    Expr<E>,
+                    Expr<F>,
+                    Expr<G>,
+                    Expr<H>
+                  )>
+              other) =>
+      union(other);
   Group<
           T,
           (
@@ -1349,14 +2069,14 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         _context._dialect.select(SelectStatement._(from));
     await for (final row in _context._db.query(sql, params)) {
       yield (
-        decode1(row),
-        decode2(row),
-        decode3(row),
-        decode4(row),
-        decode5(row),
-        decode6(row),
-        decode7(row),
-        decode8(row)
+        decode1(row) as A,
+        decode2(row) as B,
+        decode3(row) as C,
+        decode4(row) as D,
+        decode5(row) as E,
+        decode6(row) as F,
+        decode7(row) as G,
+        decode8(row) as H
       );
     }
   }

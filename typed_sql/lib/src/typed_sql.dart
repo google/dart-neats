@@ -67,7 +67,7 @@ typedef TableDefinition<T extends Model> = ({
         String referencedTable,
         List<String> referencedColumns,
       })> foreignKeys,
-  T Function(RowReader) readModel,
+  T? Function(RowReader) readModel,
 });
 
 /// Methods exclusively exposed for use by generated code.
@@ -132,7 +132,6 @@ final class ExposedForCodeGen {
       Table._(
         context,
         TableClause._(table),
-        table.readModel,
         table,
       );
 
@@ -147,7 +146,7 @@ final class ExposedForCodeGen {
       table._tableClause.columns,
     ));
     final returned = await table._context._query(sql, params).first;
-    return table._deserialize(returned);
+    return table._definition.readModel(returned) as T;
   }
 
   static Future<void> update<T extends Model>(
@@ -203,7 +202,7 @@ final class ExposedForCodeGen {
   static Expr<T> field<T extends Object?, M extends Model>(
     Expr<M> row,
     int index,
-    T Function(RowReader) readValue,
+    T? Function(RowReader) readValue,
   ) =>
       row._field(index, readValue);
 

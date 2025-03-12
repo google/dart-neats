@@ -1035,7 +1035,7 @@ final _cases = [
 ];
 
 void main() {
-  final r = TestRunner<Schema>();
+  final r = TestRunner<Schema>(resetDatabaseForEachTest: false);
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {

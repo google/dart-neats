@@ -310,7 +310,7 @@ Spec _buildQueryExtension(int i) {
         (b) => b
           ..name = 'join'
           ..types.add(refer('T extends Record'))
-          ..returns = refer('Join<${typArgedExprTuple(i, 0)}, T>')
+          ..returns = refer('Join<${typArgedExprTuple(i)}, T>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..name = 'query'
@@ -336,6 +336,63 @@ Spec _buildQueryExtension(int i) {
             )
           '''),
       ),
+
+      //    Query<(Expr<A>, Expr<B>, Expr<C>)> $op(
+      //      Query<(Expr<A>, Expr<B>, Expr<C>)> other,
+      //    )
+      for (final (method, clause) in [
+        ('union', 'UnionClause'),
+        ('unionAll', 'UnionAllClause'),
+        ('intersect', 'IntersectClause'),
+        ('except', 'ExceptClause'),
+      ])
+        Method(
+          (b) => b
+            ..name = method
+            ..returns = refer('Query<${typArgedExprTuple(i)}>')
+            ..requiredParameters.add(Parameter(
+              (b) => b
+                ..name = 'other'
+                ..type = refer('Query<${typArgedExprTuple(i)}>'),
+            ))
+            ..lambda = true
+            ..body = Code('''
+            _Query(
+              _context,
+              // What if this was implicitly cast from Query<(Expr<A>,)> to
+              // Query<(Expr<A?>,)> which doesn't require a cast!
+              // Now, it can't return null, but also I can't know this!
+              _expressions, // TODO: Unclear if this right!
+              (e) => $clause._(
+                _from(_expressions.toList()),
+                other._from(other._expressions.toList()),
+              ),
+            )
+          '''),
+        ),
+
+      //    Query<T> operator +(Query<T> other) => unionAll(other);
+      //    Query<T> operator -(Query<T> other) => except(other);
+      //    Query<T> operator &(Query<T> other) => intersect(other);
+      //    Query<T> operator |(Query<T> other) => union(other);
+      for (final (op, method) in [
+        ('+', 'unionAll'),
+        ('-', 'except'),
+        ('&', 'intersect'),
+        ('|', 'union')
+      ])
+        Method(
+          (b) => b
+            ..name = 'operator $op'
+            ..returns = refer('Query<${typArgedExprTuple(i)}>')
+            ..requiredParameters.add(Parameter(
+              (b) => b
+                ..name = 'other'
+                ..type = refer('Query<${typArgedExprTuple(i)}>'),
+            ))
+            ..lambda = true
+            ..body = Code('$method(other)'),
+        ),
 
       //    Group<T, (Expr<A>, Expr<B>)> groupBy<T extends Record>(
       //      T Function(Expr<A> a, Expr<B> b) groupBuilder,
@@ -375,9 +432,9 @@ Spec _buildQueryExtension(int i) {
       //
       //     await for (final row in _context._db.query(sql, params)) {
       //       yield (
-      //         decode1(row),
-      //         decode2(row),
-      //         decode3(row),
+      //         decode1(row) as A,
+      //         decode2(row) as B,
+      //         decode3(row) as C,
       //       );
       //     }
       //   }
@@ -398,10 +455,11 @@ Spec _buildQueryExtension(int i) {
             'final (sql, columns, params) = _context._dialect.select(SelectStatement._(from));',
             'await for (final row in _context._db.query(sql, params)) {',
             if (i == 1) ...[
-              'yield decode1(row);',
+              'yield decode1(row) as ${typeArg[0]};',
             ] else ...[
               'yield (',
-              List.generate(i, (i) => 'decode${i + 1}(row)').join(','),
+              List.generate(i, (i) => 'decode${i + 1}(row) as ${typeArg[i]}')
+                  .join(','),
               ');',
             ],
             '}',
