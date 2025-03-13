@@ -21,6 +21,7 @@ export '../typed_sql.dart'
         Aggregation,
         AvgExpression,
         BinaryOperationExpression,
+        CastExpression,
         ColumnType,
         CompositeQueryClause,
         CountAllExpression,

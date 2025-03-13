@@ -363,6 +363,8 @@ final class _Sqlite extends SqlDialect {
           'COALESCE(${expr(value, ctx)}, ${expr(orElse, ctx)})',
         // Null assertions do nothing!
         NullAssertionExpression<T>(:final value) => expr(value, ctx),
+        final CastExpression e =>
+          'CAST(${expr(e.value, ctx)} AS ${e.type.sqlType})',
       };
 }
 

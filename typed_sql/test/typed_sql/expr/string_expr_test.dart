@@ -20,6 +20,9 @@ import '../testrunner.dart';
 // TODO: Consider tests with *, ? and _ which will cause issue for sqlite
 //       given how we've currently implemented .endsWith and .startsWith
 
+final epoch = DateTime.fromMicrosecondsSinceEpoch(0).toUtc();
+final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
+
 final _cases = [
   // Test for .length
   (
@@ -825,6 +828,40 @@ final _cases = [
     name: '"A" >= "B"',
     expr: literal('A') >= literal('B'),
     expected: false,
+  ),
+
+  // Tests for asInt()
+  (
+    name: '"42".asInt()',
+    expr: literal('42').asInt(),
+    expected: 42,
+  ),
+  (
+    name: '"0".asInt()',
+    expr: literal('0').asInt(),
+    expected: 0,
+  ),
+  (
+    name: '"-1".asInt()',
+    expr: literal('-1').asInt(),
+    expected: -1,
+  ),
+
+  // Tests for asDouble()
+  (
+    name: '"42.0".asDouble()',
+    expr: literal('42.0').asDouble(),
+    expected: 42.0,
+  ),
+  (
+    name: '"0.0".asDouble()',
+    expr: literal('0.0').asDouble(),
+    expected: 0.0,
+  ),
+  (
+    name: '"-1.0".asDouble()',
+    expr: literal('-1.0').asDouble(),
+    expected: -1.0,
   ),
 ];
 

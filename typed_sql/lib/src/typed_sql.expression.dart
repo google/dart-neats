@@ -14,13 +14,16 @@
 
 part of 'typed_sql.dart';
 
-sealed class Expr<T extends Object?> {
+abstract final class _Decoder<T extends Object?> {
+  T? _decode(RowReader r);
+}
+
+sealed class Expr<T extends Object?> implements _Decoder<T> {
   factory Expr(T value) => literal(value);
 
   const Expr._();
 
   int get _columns;
-  T? _decode(RowReader row);
 
   Expr<T> _standin(int index, Object handle);
   Expr<R> _field<R>(int index, R? Function(RowReader) readValue);
@@ -55,24 +58,34 @@ sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
   int get _columns => 1;
 }
 
-base mixin _DecodeBool {
-  // ignore: unused_element
+base mixin _DecodeBool implements _Decoder<bool> {
+  @override
   bool? _decode(RowReader r) => r.readBool();
 }
 
-base mixin _DecodeString {
-  // ignore: unused_element
+base mixin _DecodeString implements _Decoder<String> {
+  @override
   String? _decode(RowReader r) => r.readString();
 }
 
-base mixin _DecodeInt {
-  // ignore: unused_element
+base mixin _DecodeInt implements _Decoder<int> {
+  @override
   int? _decode(RowReader r) => r.readInt();
 }
 
-base mixin _DecodeDouble {
-  // ignore: unused_element
+base mixin _DecodeDouble implements _Decoder<double> {
+  @override
   double? _decode(RowReader r) => r.readDouble();
+}
+
+base mixin _DecodeDateTime implements _Decoder<DateTime> {
+  @override
+  DateTime? _decode(RowReader r) => r.readDateTime();
+}
+
+base mixin _DecodeUint8List implements _Decoder<Uint8List> {
+  @override
+  Uint8List? _decode(RowReader r) => r.readUint8List();
 }
 
 Literal<T> literal<T extends Object?>(T value) => Literal(value);
@@ -243,6 +256,64 @@ final class NullAssertionExpression<T> extends Expr<T> {
       value._field(index, readValue);
 
   NullAssertionExpression._(this.value) : super._();
+}
+
+sealed class CastExpression<T, R> extends SingleValueExpr<R> {
+  final Expr<T> value;
+  ColumnType get type;
+
+  CastExpression._(this.value) : super._();
+}
+
+final class _CastIntExpression<T> extends CastExpression<T, int>
+    with _DecodeInt {
+  @override
+  ColumnType get type => ColumnType.integer;
+
+  _CastIntExpression._(super.value) : super._();
+}
+
+// ignore: unused_element
+final class _CastBoolExpression<T> extends CastExpression<T, bool>
+    with _DecodeBool {
+  @override
+  ColumnType get type => ColumnType.boolean;
+
+  _CastBoolExpression._(super.value) : super._();
+}
+
+final class _CastDoubleExpression<T> extends CastExpression<T, double>
+    with _DecodeDouble {
+  @override
+  ColumnType get type => ColumnType.real;
+
+  _CastDoubleExpression._(super.value) : super._();
+}
+
+// ignore: unused_element
+final class _CastDateTimeExpression<T> extends CastExpression<T, DateTime>
+    with _DecodeDateTime {
+  @override
+  ColumnType get type => ColumnType.datetime;
+
+  _CastDateTimeExpression._(super.value) : super._();
+}
+
+final class _CastStringExpression<T> extends CastExpression<T, String>
+    with _DecodeString {
+  @override
+  ColumnType get type => ColumnType.text;
+
+  _CastStringExpression._(super.value) : super._();
+}
+
+// ignore: unused_element
+final class _CastUint8ListExpression<T> extends CastExpression<T, Uint8List>
+    with _DecodeUint8List {
+  @override
+  ColumnType get type => ColumnType.blob;
+
+  _CastUint8ListExpression._(super.value) : super._();
 }
 
 extension ExpressionNullable<T> on Expr<T?> {
@@ -561,6 +632,21 @@ extension ExpressionBool on Expr<bool> {
 
   Expr<bool> or(Expr<bool> other) => ExpressionBoolOr(this, other);
   Expr<bool> operator |(Expr<bool> other) => ExpressionBoolOr(this, other);
+
+  /// Cast as integer.
+  ///
+  /// In SQL often translates to `CAST(value AS BIGINT)`.
+  ///
+  /// This is generally safe and won't cause runtime errors.
+  ///
+  /// Results:
+  /// * `true` -> `1`
+  /// * `false` -> `0`
+  Expr<int> asInt() => _CastIntExpression._(this);
+  // Remark we could support casting to double it works, but requires an extra
+  // step in postgres. It's not really a sensible thing to do. Should you ever
+  // find it useful, just use `.asInt().asDouble()`.
+  // Notice, that `.asInt()´ can be useful for multiplication with boolean.
 }
 
 extension ExpressionString on Expr<String> {
@@ -623,6 +709,122 @@ extension ExpressionString on Expr<String> {
   Expr<bool> greaterThanLiteral(String other) => greaterThan(literal(other));
   Expr<bool> greaterThanOrEqualLiteral(String other) =>
       greaterThanOrEqual(literal(other));
+
+  /// Cast as integer.
+  ///
+  /// In SQL often translates to `CAST(value AS BIGINT)`.
+  ///
+  /// This is **unsafe** and may cause runtime errors.
+  ///
+  /// The behavior is also database dependent.
+  ///  * sqlite will return `0` when parsing fails.
+  ///  * postgres will abort the query when parsing fails.
+  ///
+  /// Example:
+  /// * `'123'` -> `123`
+  Expr<int> asInt() => _CastIntExpression._(this);
+
+  /// Cast as double.
+  ///
+  /// In SQL often translates to `CAST(value AS DOUBLE PRECISION)`.
+  ///
+  /// This is **unsafe** and may cause runtime errors.
+  ///
+  /// The behavior is also database dependent.
+  ///  * sqlite will return `0.0` when parsing fails.
+  ///  * postgres will abort the query when parsing fails.
+  ///
+  /// Example:
+  /// * `'3.14'` -> `3.14`
+  Expr<double> asDouble() => _CastDoubleExpression._(this);
+}
+
+extension ExpressionInt on Expr<int> {
+  Expr<int> operator +(Expr<int> other) => ExpressionNumAdd(this, other);
+  Expr<int> operator -(Expr<int> other) => ExpressionNumSubtract(this, other);
+  Expr<int> operator *(Expr<int> other) => ExpressionNumMultiply(this, other);
+  Expr<double> operator /(Expr<int> other) => ExpressionNumDivide(this, other);
+
+  Expr<int> add(Expr<int> other) => ExpressionNumAdd(this, other);
+  Expr<int> subtract(Expr<int> other) => ExpressionNumSubtract(this, other);
+  Expr<int> multiply(Expr<int> other) => ExpressionNumMultiply(this, other);
+  Expr<double> divide(Expr<int> other) => ExpressionNumDivide(this, other);
+
+  Expr<int> addLiteral(int other) => ExpressionNumAdd(this, literal(other));
+  Expr<int> subtractLiteral(int other) =>
+      ExpressionNumSubtract(this, literal(other));
+  Expr<int> multiplyLiteral(int other) =>
+      ExpressionNumMultiply(this, literal(other));
+  Expr<double> divideLiteral(int other) =>
+      ExpressionNumDivide(this, literal(other));
+
+  /// Cast as string.
+  ///
+  /// In SQL often translates to `CAST(value AS TEXT)`.
+  ///
+  /// This is generally safe and won't cause runtime errors.
+  ///
+  /// Example:
+  /// * `12345` -> `'12345'`
+  Expr<String> asString() => _CastStringExpression._(this);
+
+  /// Cast as double.
+  ///
+  /// In SQL often translates to `CAST(value AS DOUBLE PRECISION)`.
+  ///
+  /// This is generally safe and won't cause runtime errors.
+  /// Though precision may be lost when casting large integers to double.
+  ///
+  /// Example:
+  /// * `123` -> `123.0`
+  Expr<double> asDouble() => _CastDoubleExpression._(this);
+}
+
+extension ExpressionDouble on Expr<double> {
+  Expr<double> operator +(Expr<double> other) => ExpressionNumAdd(this, other);
+  Expr<double> operator -(Expr<double> other) =>
+      ExpressionNumSubtract(this, other);
+  Expr<double> operator *(Expr<double> other) =>
+      ExpressionNumMultiply(this, other);
+  Expr<double> operator /(Expr<double> other) =>
+      ExpressionNumDivide(this, other);
+
+  Expr<double> add(Expr<double> other) => ExpressionNumAdd(this, other);
+  Expr<double> subtract(Expr<double> other) =>
+      ExpressionNumSubtract(this, other);
+  Expr<double> multiply(Expr<double> other) =>
+      ExpressionNumMultiply(this, other);
+  Expr<double> divide(Expr<double> other) => ExpressionNumDivide(this, other);
+
+  Expr<double> addLiteral(double other) =>
+      ExpressionNumAdd(this, literal(other));
+  Expr<double> subtractLiteral(double other) =>
+      ExpressionNumSubtract(this, literal(other));
+  Expr<double> multiplyLiteral(double other) =>
+      ExpressionNumMultiply(this, literal(other));
+  Expr<double> divideLiteral(double other) =>
+      ExpressionNumDivide(this, literal(other));
+
+  /// Cast as string.
+  ///
+  /// In SQL often translates to `CAST(value AS TEXT)`.
+  ///
+  /// This is generally safe and won't cause runtime errors.
+  ///
+  /// Example:
+  /// * `3.14` -> `'3.14'`
+  Expr<String> asString() => _CastStringExpression._(this);
+
+  /// Cast as integer.
+  ///
+  /// In SQL often translates to `CAST(value AS BIGINT)`.
+  ///
+  /// This is generally safe and won't cause runtime errors.
+  /// Though decimals are truncated when casting a double to integer.
+  ///
+  /// Example:
+  /// * `3.14` -> `3`
+  Expr<int> asInt() => _CastIntExpression._(this);
 }
 
 extension ExpressionNum<T extends num> on Expr<T> {
@@ -632,24 +834,6 @@ extension ExpressionNum<T extends num> on Expr<T> {
 
   Expr<bool> notEquals(Expr<T> value) => equals(value).not();
   Expr<bool> notEqualsLiteral(T value) => notEquals(literal(value));
-
-  Expr<T> operator +(Expr<T> other) => ExpressionNumAdd(this, other);
-  Expr<T> operator -(Expr<T> other) => ExpressionNumSubtract(this, other);
-  Expr<T> operator *(Expr<T> other) => ExpressionNumMultiply(this, other);
-  Expr<double> operator /(Expr<T> other) => ExpressionNumDivide(this, other);
-
-  Expr<T> add(Expr<T> other) => ExpressionNumAdd(this, other);
-  Expr<T> subtract(Expr<T> other) => ExpressionNumSubtract(this, other);
-  Expr<T> multiply(Expr<T> other) => ExpressionNumMultiply(this, other);
-  Expr<double> divide(Expr<T> other) => ExpressionNumDivide(this, other);
-
-  Expr<T> addLiteral(T other) => ExpressionNumAdd(this, literal(other));
-  Expr<T> subtractLiteral(T other) =>
-      ExpressionNumSubtract(this, literal(other));
-  Expr<T> multiplyLiteral(T other) =>
-      ExpressionNumMultiply(this, literal(other));
-  Expr<double> divideLiteral(T other) =>
-      ExpressionNumDivide(this, literal(other));
 
   Expr<bool> operator >=(Expr<T> other) =>
       ExpressionNumGreaterThanOrEqual(this, other);

@@ -916,6 +916,72 @@ final _closeCases = [
   ),
 ];
 
+final _oneOfCases = [
+  // Tests for asString()
+  (
+    name: '3.14.asString()',
+    expr: literal(3.14).asString(),
+    expected: ['3.14'],
+  ),
+  (
+    name: '0.0.asString()',
+    expr: literal(0.0).asString(),
+    expected: ['0', '0.0'],
+  ),
+  (
+    name: '-1.5.asString()',
+    expr: literal(-1.5).asString(),
+    expected: ['-1.5'],
+  ),
+  (
+    name: '1.0.asString()',
+    expr: literal(1.0).asString(),
+    expected: ['1', '1.0'],
+  ),
+  (
+    name: '1.5.asString()',
+    expr: literal(1.5).asString(),
+    expected: ['1.5'],
+  ),
+  (
+    name: '-1.0.asString()',
+    expr: literal(-1.0).asString(),
+    expected: ['-1', '-1.0'],
+  ),
+
+  // Tests for asInt()
+  (
+    name: '3.14.asInt()',
+    expr: literal(3.14).asInt(),
+    expected: [3],
+  ),
+  (
+    name: '0.0.asInt()',
+    expr: literal(0.0).asInt(),
+    expected: [0],
+  ),
+  (
+    name: '-1.5.asInt()',
+    expr: literal(-1.5).asInt(),
+    expected: [-1, -2],
+  ),
+  (
+    name: '1.0.asInt()',
+    expr: literal(1.0).asInt(),
+    expected: [1],
+  ),
+  (
+    name: '1.5.asInt()',
+    expr: literal(1.5).asInt(),
+    expected: [1, 2],
+  ),
+  (
+    name: '-1.0.asInt()',
+    expr: literal(-1.0).asInt(),
+    expected: [-1],
+  ),
+];
+
 void main() {
   final r = TestRunner<Schema>(resetDatabaseForEachTest: false);
 
@@ -934,6 +1000,17 @@ void main() {
         (c.expr,),
       ).fetch();
       check(result).isNotNull().isCloseTo(c.expected, 0.00000000000001);
+    });
+  }
+
+  for (final c in _oneOfCases) {
+    r.addTest(c.name, (db) async {
+      final result = await db.select(
+        (c.expr,),
+      ).fetch();
+      check(result)
+          .isNotNull()
+          .anyOf(c.expected.map((v) => (l) => l.equals(v)));
     });
   }
 

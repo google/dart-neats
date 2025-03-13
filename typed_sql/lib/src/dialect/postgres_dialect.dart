@@ -386,6 +386,11 @@ final class _PostgresDialect extends SqlDialect {
           'COALESCE(${expr(value, ctx)}, ${expr(orElse, ctx)})',
         // Null assertions do nothing!
         NullAssertionExpression<T>(:final value) => expr(value, ctx),
+        // Postgres doesn't allow casting BOOL to BIGINT but we can to INTEGER
+        CastExpression(:final Expr<bool> value, type: ColumnType.integer) =>
+          'CAST(CAST(${expr(value, ctx)} AS INTEGER) AS ${e.type.sqlType})',
+        final CastExpression e =>
+          'CAST(${expr(e.value, ctx)} AS ${e.type.sqlType})',
       };
 }
 

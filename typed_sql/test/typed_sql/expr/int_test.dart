@@ -1032,6 +1032,40 @@ final _cases = [
     expr: literal(42) >= literal(42),
     expected: true,
   ),
+
+  // Test for asString()
+  (
+    name: '42.asString()',
+    expr: literal(42).asString(),
+    expected: '42',
+  ),
+  (
+    name: '0.asString()',
+    expr: literal(0).asString(),
+    expected: '0',
+  ),
+  (
+    name: '-1.asString()',
+    expr: literal(-1).asString(),
+    expected: '-1',
+  ),
+
+  // Test for asDouble()
+  (
+    name: '42.asDouble()',
+    expr: literal(42).asDouble(),
+    expected: 42.0,
+  ),
+  (
+    name: '0.asDouble()',
+    expr: literal(0).asDouble(),
+    expected: 0.0,
+  ),
+  (
+    name: '-1.asDouble()',
+    expr: literal(-1).asDouble(),
+    expected: -1.0,
+  ),
 ];
 
 void main() {

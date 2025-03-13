@@ -127,6 +127,16 @@ final _cases = [
     expr: ~literal(false),
     expected: true,
   ),
+  (
+    name: 'true.asInt()',
+    expr: literal(true).asInt(),
+    expected: 1,
+  ),
+  (
+    name: 'false.asInt()',
+    expr: literal(false).asInt(),
+    expected: 0,
+  ),
 ];
 
 void main() {
