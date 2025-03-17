@@ -16,15 +16,6 @@ part of 'typed_sql.dart';
 
 sealed class Statement {}
 
-enum ColumnType {
-  blob,
-  boolean,
-  datetime,
-  integer,
-  real,
-  text,
-}
-
 final class CreateTableStatement extends Statement {
   final String tableName;
   final List<String> primaryKey;

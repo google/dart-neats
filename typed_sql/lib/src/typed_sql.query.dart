@@ -73,7 +73,7 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
 
   @override
   late final (Expr<T>,) _expressions =
-      (ModelExpression(0, _definition, Object()),);
+      (ModelExpression._(0, _definition, Object()),);
 
   @override
   final QueryClause Function(List<Expr> expressions) _from;

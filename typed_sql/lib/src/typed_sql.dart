@@ -53,7 +53,7 @@ typedef TableDefinition<T extends Model> = ({
   List<String> columns,
   List<
       ({
-        Type type,
+        ColumnType type,
         bool isNotNull,
         Object? defaultValue,
         bool autoIncrement,
@@ -86,16 +86,7 @@ final class ExposedForCodeGen {
                 columns: t.columns
                     .mapIndexed((i, c) => (
                           name: c,
-                          type: switch (t.columnInfo[i].type) {
-                            const (int) => ColumnType.integer,
-                            const (double) => ColumnType.real,
-                            const (String) => ColumnType.text,
-                            const (bool) => ColumnType.boolean,
-                            const (DateTime) => ColumnType.datetime,
-                            const (Uint8List) => ColumnType.blob,
-                            _ => throw UnsupportedError(
-                                'Unsupported type: ${t.columnInfo[i].type}'),
-                          },
+                          type: t.columnInfo[i].type,
                           isNotNull: t.columnInfo[i].isNotNull,
                           defaultValue: t.columnInfo[i].defaultValue,
                           autoIncrement: t.columnInfo[i].autoIncrement,
@@ -202,9 +193,9 @@ final class ExposedForCodeGen {
   static Expr<T> field<T extends Object?, M extends Model>(
     Expr<M> row,
     int index,
-    T? Function(RowReader) readValue,
+    FieldType<T> type,
   ) =>
-      row._field(index, readValue);
+      row._field(index, type);
 
   static Query<S> renamedRecord<T extends Record, S extends Record>(
     Query<T> query,
@@ -222,7 +213,7 @@ final class ExposedForCodeGen {
     TableDefinition<T> table,
   ) {
     return SubQuery._(
-      (ModelExpression(0, table, Object()),),
+      (ModelExpression._(0, table, Object()),),
       (_) => TableClause._(table),
     );
   }
@@ -231,9 +222,23 @@ final class ExposedForCodeGen {
     S? value,
     T Function(S) fromDatabase,
   ) {
-    if (value == null) {
-      return null;
+    if (value != null) {
+      return fromDatabase(value);
     }
-    return fromDatabase(value);
+    return null;
   }
+
+  static CustomExprType<S, T> customDataType<S, T extends CustomDataType<S>>(
+    ColumnType<S> backingType,
+    T Function(S) fromDatabase,
+  ) =>
+      CustomExprType<S, T>._(backingType, fromDatabase);
+
+  static const ColumnType<Uint8List> blob = ColumnType.blob;
+  static const ColumnType<bool> boolean = ColumnType.boolean;
+  static const ColumnType<DateTime> dateTime = ColumnType.dateTime;
+  static const ColumnType<int> integer = ColumnType.integer;
+  static const ColumnType<double> real = ColumnType.real;
+  static const ColumnType<String> text = ColumnType.text;
+  static const ColumnType<Null> nullType = ColumnType.nullType;
 }

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:typed_data' show Uint8List;
+
 import 'package:collection/collection.dart';
 
 import 'dialect.dart';
@@ -416,12 +418,15 @@ extension on BinaryOperationExpression {
 
 extension on ColumnType {
   String get sqlType => switch (this) {
-        ColumnType.integer => 'INTEGER',
-        ColumnType.real => 'REAL',
-        ColumnType.text => 'TEXT',
-        ColumnType.datetime => 'DATETIME',
-        ColumnType.blob => 'BLOB',
-        ColumnType.boolean => 'BOOLEAN',
+        ColumnType<Uint8List> _ => 'BLOB',
+        ColumnType<bool> _ => 'BOOLEAN',
+        ColumnType<DateTime> _ => 'DATETIME',
+        ColumnType<int> _ => 'INTEGER',
+        ColumnType<double> _ => 'REAL',
+        ColumnType<String> _ => 'TEXT',
+        ColumnType<Null> _ => throw UnsupportedError(
+            'Null type cannot be used as column type',
+          ),
       };
 }
 

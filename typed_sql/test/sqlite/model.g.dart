@@ -58,25 +58,25 @@ final class _$User extends User {
     tableName: 'users',
     columns: <String>['userId', 'name', 'email'],
     columnInfo: <({
-      Type type,
+      ColumnType type,
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
     })>[
       (
-        type: int,
+        type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
       ),
       (
-        type: String,
+        type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       ),
       (
-        type: String,
+        type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -255,15 +255,16 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
 
 extension ExpressionUserExt on Expr<User> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt());
+  Expr<int> get userId =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
   /// TODO: document name
   Expr<String> get name =>
-      ExposedForCodeGen.field(this, 1, (r) => r.readString());
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
   /// TODO: document email
   Expr<String> get email =>
-      ExposedForCodeGen.field(this, 2, (r) => r.readString());
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
 
   /// TODO: document references
   SubQuery<(Expr<Package>,)> get packages =>
@@ -295,31 +296,31 @@ final class _$Package extends Package {
     tableName: 'packages',
     columns: <String>['packageName', 'likes', 'ownerId', 'publisher'],
     columnInfo: <({
-      Type type,
+      ColumnType type,
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
     })>[
       (
-        type: String,
+        type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       ),
       (
-        type: int,
+        type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: 0,
         autoIncrement: false,
       ),
       (
-        type: int,
+        type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       ),
       (
-        type: String,
+        type: ExposedForCodeGen.text,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
@@ -519,17 +520,19 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
 extension ExpressionPackageExt on Expr<Package> {
   /// TODO: document packageName
   Expr<String> get packageName =>
-      ExposedForCodeGen.field(this, 0, (r) => r.readString());
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
 
   /// TODO: document likes
-  Expr<int> get likes => ExposedForCodeGen.field(this, 1, (r) => r.readInt());
+  Expr<int> get likes =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.integer);
 
   /// TODO: document ownerId
-  Expr<int> get ownerId => ExposedForCodeGen.field(this, 2, (r) => r.readInt());
+  Expr<int> get ownerId =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
 
   /// TODO: document publisher
   Expr<String?> get publisher =>
-      ExposedForCodeGen.field(this, 3, (r) => r.readString());
+      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
 
   /// TODO: document references
   Expr<User> get owner => ExposedForCodeGen.subqueryTable(this, _$User._$table)
@@ -554,19 +557,19 @@ final class _$Like extends Like {
     tableName: 'likes',
     columns: <String>['userId', 'packageName'],
     columnInfo: <({
-      Type type,
+      ColumnType type,
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
     })>[
       (
-        type: int,
+        type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       ),
       (
-        type: String,
+        type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -735,11 +738,12 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
 
 extension ExpressionLikeExt on Expr<Like> {
   /// TODO: document userId
-  Expr<int> get userId => ExposedForCodeGen.field(this, 0, (r) => r.readInt());
+  Expr<int> get userId =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
   /// TODO: document packageName
   Expr<String> get packageName =>
-      ExposedForCodeGen.field(this, 1, (r) => r.readString());
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 }
 
 extension QueryOwnerPackageNamed<A, B> on Query<

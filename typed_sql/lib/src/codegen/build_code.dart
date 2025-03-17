@@ -178,27 +178,39 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
     ''';
   }
 
+  String fieldBackingType(ParsedField field) {
+    return switch (field.backingType) {
+      'String' => 'ExposedForCodeGen.text',
+      'int' => 'ExposedForCodeGen.integer',
+      'double' => 'ExposedForCodeGen.real',
+      'bool' => 'ExposedForCodeGen.boolean',
+      'DateTime' => 'ExposedForCodeGen.dateTime',
+      'Uint8List' => 'ExposedForCodeGen.blob',
+      _ => throw UnsupportedError(
+          'Unsupported type "${field.typeName}"',
+        ),
+    };
+  }
+
+  String fieldType(ParsedField field) {
+    var backingTypeName = fieldBackingType(field);
+    if (field.backingType == field.typeName) {
+      return backingTypeName;
+    }
+    return '''
+      ExposedForCodeGen.customDataType(
+        $backingTypeName,
+        ${field.typeName}.fromDatabase,
+      )
+    ''';
+  }
+
   // Create implementation class for model
   yield Class(
     (b) => b
       ..name = '_\$$modelName'
       ..modifier = ClassModifier.final$
       ..extend = refer(model.name)
-      /*..constructors.add(Constructor(
-        (b) => b
-          ..requiredParameters.add(
-            Parameter(
-              (b) => b
-                ..name = 'row'
-                ..type = refer('RowReader'),
-            ),
-          )
-          ..initializers.addAll(model.fields.map(
-            (field) => Code(
-              '${field.name} = ${readFromRowReader('row', field)}',
-            ),
-          )),
-      ))*/
       ..constructors.add(Constructor(
         (b) => b
           ..name = '_'
@@ -225,14 +237,14 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               tableName: '${table.name}',
               columns: <String>[${model.fields.map((f) => '\'${f.name}\'').join(', ')}],
               columnInfo: <({
-                    Type type,
+                    ColumnType type,
                     bool isNotNull,
                     Object? defaultValue,
                     bool autoIncrement,
                   })>[
                 ${model.fields.map((f) => '''
                   (
-                    type: ${f.backingType},
+                    type: ${fieldBackingType(f)},
                     isNotNull: ${!f.isNullable},
                     defaultValue: ${f.defaultValue},
                     autoIncrement: ${f.autoIncrement},
@@ -541,7 +553,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..returns = refer('Expr<${field.type}>')
               ..lambda = true
               ..body = Code(
-                'ExposedForCodeGen.field(this, $i, (r) => ${readFromRowReader('r', field)})',
+                'ExposedForCodeGen.field(this, $i, ${fieldType(field)})',
               ),
           )),
       ...referencedFrom.map((ref) => Method(

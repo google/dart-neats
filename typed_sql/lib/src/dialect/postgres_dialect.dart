@@ -453,12 +453,15 @@ extension on BinaryOperationExpression {
 
 extension on ColumnType {
   String get sqlType => switch (this) {
-        ColumnType.integer => 'BIGINT',
-        ColumnType.real => 'DOUBLE PRECISION',
-        ColumnType.text => 'TEXT',
-        ColumnType.datetime => 'TIMESTAMP WITH TIME ZONE',
-        ColumnType.blob => 'BYTEA',
-        ColumnType.boolean => 'BOOLEAN',
+        ColumnType<Uint8List> _ => 'BYTEA',
+        ColumnType<bool> _ => 'BOOLEAN',
+        ColumnType<DateTime> _ => 'TIMESTAMP WITH TIME ZONE',
+        ColumnType<int> _ => 'BIGINT',
+        ColumnType<double> _ => 'DOUBLE PRECISION',
+        ColumnType<String> _ => 'TEXT',
+        ColumnType<Null> _ => throw UnsupportedError(
+            'Null type cannot be used as column type',
+          ),
       };
 }
 

@@ -42,19 +42,19 @@ final class _$Item extends Item {
     tableName: 'items',
     columns: <String>['id', 'value'],
     columnInfo: <({
-      Type type,
+      ColumnType type,
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
     })>[
       (
-        type: int,
+        type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
       ),
       (
-        type: Uint8List,
+        type: ExposedForCodeGen.blob,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -214,16 +214,17 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
 
 extension ExpressionItemExt on Expr<Item> {
   /// TODO: document id
-  Expr<int> get id => ExposedForCodeGen.field(this, 0, (r) => r.readInt());
+  Expr<int> get id =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
   /// TODO: document value
   Expr<MyJsonValue> get value => ExposedForCodeGen.field(
       this,
       1,
-      (r) => ExposedForCodeGen.customDataTypeOrNull(
-            r.readUint8List(),
-            MyJsonValue.fromDatabase,
-          ));
+      ExposedForCodeGen.customDataType(
+        ExposedForCodeGen.blob,
+        MyJsonValue.fromDatabase,
+      ));
 }
 
 extension ItemChecks on Subject<Item> {
