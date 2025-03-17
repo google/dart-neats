@@ -186,11 +186,13 @@ base mixin _ExprReal implements _ExprTyped<double> {
   final _type = ColumnType.real;
 }
 
+// ignore: unused_element
 base mixin _ExprDateTime implements _ExprTyped<DateTime> {
   @override
   final _type = ColumnType.dateTime;
 }
 
+// ignore: unused_element
 base mixin _ExprBlob implements _ExprTyped<Uint8List> {
   @override
   final _type = ColumnType.blob;
@@ -355,62 +357,14 @@ final class NullAssertionExpression<T> extends Expr<T> {
   NullAssertionExpression._(this.value) : super._();
 }
 
-sealed class CastExpression<T, R> extends SingleValueExpr<R> {
+final class CastExpression<T, R> extends SingleValueExpr<R> {
   final Expr<T> value;
-  ColumnType get type;
+  final ColumnType<R> type;
 
-  CastExpression._(this.value) : super._();
-}
+  CastExpression._(this.value, this.type) : super._();
 
-final class _CastIntExpression<T> extends CastExpression<T, int>
-    with _ExprInteger {
   @override
-  ColumnType get type => ColumnType.integer;
-
-  _CastIntExpression._(super.value) : super._();
-}
-
-// ignore: unused_element
-final class _CastBoolExpression<T> extends CastExpression<T, bool>
-    with _ExprBoolean {
-  @override
-  ColumnType get type => ColumnType.boolean;
-
-  _CastBoolExpression._(super.value) : super._();
-}
-
-final class _CastDoubleExpression<T> extends CastExpression<T, double>
-    with _ExprReal {
-  @override
-  ColumnType get type => ColumnType.real;
-
-  _CastDoubleExpression._(super.value) : super._();
-}
-
-// ignore: unused_element
-final class _CastDateTimeExpression<T> extends CastExpression<T, DateTime>
-    with _ExprDateTime {
-  @override
-  ColumnType get type => ColumnType.dateTime;
-
-  _CastDateTimeExpression._(super.value) : super._();
-}
-
-final class _CastStringExpression<T> extends CastExpression<T, String>
-    with _ExprText {
-  @override
-  ColumnType get type => ColumnType.text;
-
-  _CastStringExpression._(super.value) : super._();
-}
-
-// ignore: unused_element
-final class _CastUint8ListExpression<T> extends CastExpression<T, Uint8List>
-    with _ExprBlob {
-  @override
-  ColumnType get type => ColumnType.blob;
-
-  _CastUint8ListExpression._(super.value) : super._();
+  _ExprType<R> get _type => type;
 }
 
 extension ExpressionNullable<T> on Expr<T?> {
@@ -726,7 +680,7 @@ extension ExpressionBool on Expr<bool> {
   /// Results:
   /// * `true` -> `1`
   /// * `false` -> `0`
-  Expr<int> asInt() => _CastIntExpression._(this);
+  Expr<int> asInt() => CastExpression._(this, ColumnType.integer);
   // Remark we could support casting to double it works, but requires an extra
   // step in postgres. It's not really a sensible thing to do. Should you ever
   // find it useful, just use `.asInt().asDouble()`.
@@ -806,7 +760,7 @@ extension ExpressionString on Expr<String> {
   ///
   /// Example:
   /// * `'123'` -> `123`
-  Expr<int> asInt() => _CastIntExpression._(this);
+  Expr<int> asInt() => CastExpression._(this, ColumnType.integer);
 
   /// Cast as double.
   ///
@@ -820,7 +774,7 @@ extension ExpressionString on Expr<String> {
   ///
   /// Example:
   /// * `'3.14'` -> `3.14`
-  Expr<double> asDouble() => _CastDoubleExpression._(this);
+  Expr<double> asDouble() => CastExpression._(this, ColumnType.real);
 }
 
 extension ExpressionInt on Expr<int> {
@@ -850,7 +804,7 @@ extension ExpressionInt on Expr<int> {
   ///
   /// Example:
   /// * `12345` -> `'12345'`
-  Expr<String> asString() => _CastStringExpression._(this);
+  Expr<String> asString() => CastExpression._(this, ColumnType.text);
 
   /// Cast as double.
   ///
@@ -861,7 +815,7 @@ extension ExpressionInt on Expr<int> {
   ///
   /// Example:
   /// * `123` -> `123.0`
-  Expr<double> asDouble() => _CastDoubleExpression._(this);
+  Expr<double> asDouble() => CastExpression._(this, ColumnType.real);
 }
 
 extension ExpressionDouble on Expr<double> {
@@ -897,7 +851,7 @@ extension ExpressionDouble on Expr<double> {
   ///
   /// Example:
   /// * `3.14` -> `'3.14'`
-  Expr<String> asString() => _CastStringExpression._(this);
+  Expr<String> asString() => CastExpression._(this, ColumnType.text);
 
   /// Cast as integer.
   ///
@@ -908,7 +862,7 @@ extension ExpressionDouble on Expr<double> {
   ///
   /// Example:
   /// * `3.14` -> `3`
-  Expr<int> asInt() => _CastIntExpression._(this);
+  Expr<int> asInt() => CastExpression._(this, ColumnType.integer);
 }
 
 extension ExpressionNum<T extends num> on Expr<T> {
