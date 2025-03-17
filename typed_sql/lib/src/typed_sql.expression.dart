@@ -89,6 +89,17 @@ final class _NullExprType extends ColumnType<Null> {
       : throw AssertionError(
           'Expr<Null> should always be `null`!',
         );
+
+  static Iterable<Expr> _explodedCastAs<T, S>(
+    Expr<T> value,
+    _ExprType<S> type,
+  ) =>
+      switch (type) {
+        _ModelExprType<Model> type =>
+          type.fields.map((f) => CastExpression._(value, f)),
+        CustomExprType type => [CastExpression._(value, type._backingType)],
+        ColumnType type => [CastExpression._(value, type)],
+      };
 }
 
 final class CustomExprType<S, T extends CustomDataType<S>>

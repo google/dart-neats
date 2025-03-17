@@ -37,19 +37,61 @@ void main() {
     },
   );
 
-  r.addTest('Query<(Expr<Model>,)>.unionAll(NULL)', (db) async {
+  // Tests that we can union with NULL, this is difficult because it requires
+  // casts, and those casts needs to be exploded if the left hand side is an
+  // Expr<Model>
+
+  r.addTest('.unionAll(NULL)', (db) async {
     final q1 = db.select((db.items.byKey(id: 42).asExpr,)).asQuery;
     final q2 = db.select((literal(null),)).asQuery;
 
-    // TODO: What if Expr._columnType was a thing? Then we could possibly do
-    //       the cast correctly. And if we get columnType UNKNOWN we know that
-    //       somewhere it's null so a cast to Expr<Model> involves explode!
-    //       Something something... still not sure how to hide such details from
-    //       dialect.. maybe it has to live in CompositeQuery!
-    //       I'm really not sure!!
+    final result = await q1.unionAll(q2).fetch().toList();
+    check(result).deepEquals([null, null]);
+  });
+
+  r.addTest('.unionAll((NULL, 42))', (db) async {
+    final q1 =
+        db.select((db.items.byKey(id: 42).asExpr,)).asQuery.select((item) => (
+              item,
+              literal(42),
+            ));
+    final q2 = db.select((literal(null), literal(42))).asQuery;
 
     final result = await q1.unionAll(q2).fetch().toList();
-    print(result);
+    check(result).length.equals(2);
+    check(result).first.equals((null, 42));
+  });
+
+  r.addTest('.insert + .unionAll((NULL, 42))', (db) async {
+    await db.items.insert(id: literal(42), value: literal('hello'));
+    final q1 =
+        db.select((db.items.byKey(id: 42).asExpr,)).asQuery.select((item) => (
+              item,
+              literal(42),
+            ));
+    final q2 = db.select((literal(null), literal(42))).asQuery;
+
+    final result = await q1.unionAll(q2).fetch().toList();
+    check(result).length.equals(2);
+    final (item, i) = result.first;
+    check(item).isNotNull().value.equals('hello');
+    check(i).equals(42);
+  });
+
+  r.addTest('.unionAll(select(NULL).where(42 > 21)).select()', (db) async {
+    final q1 = db.select((db.items.byKey(id: 42).asExpr,)).asQuery;
+    // This tests that .where doesn't change the expression in a manner that
+    // breaks our cast!
+    final q2 = db
+        .select((literal(null),))
+        .asQuery
+        // Using a non-trival expression to ensure trivial avoid optimizations
+        // don't compile the WHERE-clause away.
+        .where((v) => literal(42) > literal(21))
+        .select((v) => (v,));
+
+    final result = await q1.unionAll(q2).fetch().toList();
+    check(result).deepEquals([null, null]);
   });
 
   r.run();

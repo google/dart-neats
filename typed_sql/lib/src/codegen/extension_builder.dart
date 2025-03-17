@@ -337,6 +337,33 @@ Spec _buildQueryExtension(int i) {
           '''),
       ),
 
+      // QueryClause _castAs(Query<(Expr<A>,)> other)
+      Method(
+        (b) => b
+          ..name = '_castAs'
+          ..returns = refer('QueryClause')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'as'
+              ..type = refer('Query<${typArgedExprTuple(i)}>'),
+          ))
+          ..body = Code('''
+            final (handle, projection) = _build((${arg.take(i).join(',')}) => [
+              ${arg.take(i).mapIndexed((i, a) => '''
+                if ($a._type is _ExprType<Null>)
+                  ..._NullExprType._explodedCastAs($a, as._expressions.\$${i + 1}._type)
+                else
+                  $a
+              ''').join(', ')}
+            ]);
+            return SelectFromClause._(
+              _from(_expressions.toList()),
+              handle,
+              projection,
+            );
+          '''),
+      ),
+
       //    Query<(Expr<A>, Expr<B>, Expr<C>)> $op(
       //      Query<(Expr<A>, Expr<B>, Expr<C>)> other,
       //    )
@@ -365,7 +392,7 @@ Spec _buildQueryExtension(int i) {
               _expressions, // TODO: Unclear if this right!
               (e) => $clause._(
                 _from(_expressions.toList()),
-                other._from(other._expressions.toList()),
+                other._castAs(this),
               ),
             )
           '''),

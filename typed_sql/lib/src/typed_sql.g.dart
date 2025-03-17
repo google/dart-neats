@@ -64,6 +64,20 @@ extension Query1<A> on Query<(Expr<A>,)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  QueryClause _castAs(Query<(Expr<A>,)> as) {
+    final (handle, projection) = _build((a) => [
+          if (a._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(a, as._expressions.$1._type)
+          else
+            a
+        ]);
+    return SelectFromClause._(
+      _from(_expressions.toList()),
+      handle,
+      projection,
+    );
+  }
+
   Query<(Expr<A>,)> union(Query<(Expr<A>,)> other) => _Query(
         _context,
         // What if this was implicitly cast from Query<(Expr<A>,)> to
@@ -72,7 +86,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
         _expressions, // TODO: Unclear if this right!
         (e) => UnionClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>,)> unionAll(Query<(Expr<A>,)> other) => _Query(
@@ -83,7 +97,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
         _expressions, // TODO: Unclear if this right!
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>,)> intersect(Query<(Expr<A>,)> other) => _Query(
@@ -94,7 +108,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
         _expressions, // TODO: Unclear if this right!
         (e) => IntersectClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>,)> except(Query<(Expr<A>,)> other) => _Query(
@@ -105,7 +119,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
         _expressions, // TODO: Unclear if this right!
         (e) => ExceptClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>,)> operator +(Query<(Expr<A>,)> other) => unionAll(other);
@@ -242,6 +256,24 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  QueryClause _castAs(Query<(Expr<A>, Expr<B>)> as) {
+    final (handle, projection) = _build((a, b) => [
+          if (a._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(a, as._expressions.$1._type)
+          else
+            a,
+          if (b._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(b, as._expressions.$2._type)
+          else
+            b
+        ]);
+    return SelectFromClause._(
+      _from(_expressions.toList()),
+      handle,
+      projection,
+    );
+  }
+
   Query<(Expr<A>, Expr<B>)> union(Query<(Expr<A>, Expr<B>)> other) => _Query(
         _context,
         // What if this was implicitly cast from Query<(Expr<A>,)> to
@@ -250,7 +282,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => UnionClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>)> unionAll(Query<(Expr<A>, Expr<B>)> other) => _Query(
@@ -261,7 +293,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>)> intersect(Query<(Expr<A>, Expr<B>)> other) =>
@@ -273,7 +305,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => IntersectClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>)> except(Query<(Expr<A>, Expr<B>)> other) => _Query(
@@ -284,7 +316,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => ExceptClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>)> operator +(Query<(Expr<A>, Expr<B>)> other) =>
@@ -437,6 +469,28 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  QueryClause _castAs(Query<(Expr<A>, Expr<B>, Expr<C>)> as) {
+    final (handle, projection) = _build((a, b, c) => [
+          if (a._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(a, as._expressions.$1._type)
+          else
+            a,
+          if (b._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(b, as._expressions.$2._type)
+          else
+            b,
+          if (c._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(c, as._expressions.$3._type)
+          else
+            c
+        ]);
+    return SelectFromClause._(
+      _from(_expressions.toList()),
+      handle,
+      projection,
+    );
+  }
+
   Query<(Expr<A>, Expr<B>, Expr<C>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
       _Query(
@@ -447,7 +501,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => UnionClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>)> unionAll(
@@ -460,7 +514,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>)> intersect(
@@ -473,7 +527,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => IntersectClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>)> except(
@@ -486,7 +540,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => ExceptClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>)> operator +(
@@ -655,6 +709,32 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  QueryClause _castAs(Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> as) {
+    final (handle, projection) = _build((a, b, c, d) => [
+          if (a._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(a, as._expressions.$1._type)
+          else
+            a,
+          if (b._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(b, as._expressions.$2._type)
+          else
+            b,
+          if (c._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(c, as._expressions.$3._type)
+          else
+            c,
+          if (d._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(d, as._expressions.$4._type)
+          else
+            d
+        ]);
+    return SelectFromClause._(
+      _from(_expressions.toList()),
+      handle,
+      projection,
+    );
+  }
+
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
       _Query(
@@ -665,7 +745,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => UnionClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> unionAll(
@@ -678,7 +758,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> intersect(
@@ -691,7 +771,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => IntersectClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> except(
@@ -704,7 +784,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
         _expressions, // TODO: Unclear if this right!
         (e) => ExceptClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator +(
@@ -894,6 +974,36 @@ extension Query5<A, B, C, D, E>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  QueryClause _castAs(Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> as) {
+    final (handle, projection) = _build((a, b, c, d, e) => [
+          if (a._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(a, as._expressions.$1._type)
+          else
+            a,
+          if (b._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(b, as._expressions.$2._type)
+          else
+            b,
+          if (c._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(c, as._expressions.$3._type)
+          else
+            c,
+          if (d._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(d, as._expressions.$4._type)
+          else
+            d,
+          if (e._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(e, as._expressions.$5._type)
+          else
+            e
+        ]);
+    return SelectFromClause._(
+      _from(_expressions.toList()),
+      handle,
+      projection,
+    );
+  }
+
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
       _Query(
@@ -904,7 +1014,7 @@ extension Query5<A, B, C, D, E>
         _expressions, // TODO: Unclear if this right!
         (e) => UnionClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> unionAll(
@@ -917,7 +1027,7 @@ extension Query5<A, B, C, D, E>
         _expressions, // TODO: Unclear if this right!
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> intersect(
@@ -930,7 +1040,7 @@ extension Query5<A, B, C, D, E>
         _expressions, // TODO: Unclear if this right!
         (e) => IntersectClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> except(
@@ -943,7 +1053,7 @@ extension Query5<A, B, C, D, E>
         _expressions, // TODO: Unclear if this right!
         (e) => ExceptClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator +(
@@ -1150,6 +1260,41 @@ extension Query6<A, B, C, D, E, F>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  QueryClause _castAs(
+      Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> as) {
+    final (handle, projection) = _build((a, b, c, d, e, f) => [
+          if (a._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(a, as._expressions.$1._type)
+          else
+            a,
+          if (b._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(b, as._expressions.$2._type)
+          else
+            b,
+          if (c._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(c, as._expressions.$3._type)
+          else
+            c,
+          if (d._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(d, as._expressions.$4._type)
+          else
+            d,
+          if (e._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(e, as._expressions.$5._type)
+          else
+            e,
+          if (f._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(f, as._expressions.$6._type)
+          else
+            f
+        ]);
+    return SelectFromClause._(
+      _from(_expressions.toList()),
+      handle,
+      projection,
+    );
+  }
+
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
               other) =>
@@ -1161,7 +1306,7 @@ extension Query6<A, B, C, D, E, F>
         _expressions, // TODO: Unclear if this right!
         (e) => UnionClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> unionAll(
@@ -1175,7 +1320,7 @@ extension Query6<A, B, C, D, E, F>
         _expressions, // TODO: Unclear if this right!
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> intersect(
@@ -1189,7 +1334,7 @@ extension Query6<A, B, C, D, E, F>
         _expressions, // TODO: Unclear if this right!
         (e) => IntersectClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> except(
@@ -1203,7 +1348,7 @@ extension Query6<A, B, C, D, E, F>
         _expressions, // TODO: Unclear if this right!
         (e) => ExceptClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator +(
@@ -1429,6 +1574,46 @@ extension Query7<A, B, C, D, E, F, G>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  QueryClause _castAs(
+      Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+          as) {
+    final (handle, projection) = _build((a, b, c, d, e, f, g) => [
+          if (a._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(a, as._expressions.$1._type)
+          else
+            a,
+          if (b._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(b, as._expressions.$2._type)
+          else
+            b,
+          if (c._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(c, as._expressions.$3._type)
+          else
+            c,
+          if (d._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(d, as._expressions.$4._type)
+          else
+            d,
+          if (e._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(e, as._expressions.$5._type)
+          else
+            e,
+          if (f._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(f, as._expressions.$6._type)
+          else
+            f,
+          if (g._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(g, as._expressions.$7._type)
+          else
+            g
+        ]);
+    return SelectFromClause._(
+      _from(_expressions.toList()),
+      handle,
+      projection,
+    );
+  }
+
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
               other) =>
@@ -1440,7 +1625,7 @@ extension Query7<A, B, C, D, E, F, G>
         _expressions, // TODO: Unclear if this right!
         (e) => UnionClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<
@@ -1455,7 +1640,7 @@ extension Query7<A, B, C, D, E, F, G>
         _expressions, // TODO: Unclear if this right!
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<
@@ -1478,7 +1663,7 @@ extension Query7<A, B, C, D, E, F, G>
         _expressions, // TODO: Unclear if this right!
         (e) => IntersectClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> except(
@@ -1492,7 +1677,7 @@ extension Query7<A, B, C, D, E, F, G>
         _expressions, // TODO: Unclear if this right!
         (e) => ExceptClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<
@@ -1789,6 +1974,60 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+  QueryClause _castAs(
+      Query<
+              (
+                Expr<A>,
+                Expr<B>,
+                Expr<C>,
+                Expr<D>,
+                Expr<E>,
+                Expr<F>,
+                Expr<G>,
+                Expr<H>
+              )>
+          as) {
+    final (handle, projection) = _build((a, b, c, d, e, f, g, h) => [
+          if (a._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(a, as._expressions.$1._type)
+          else
+            a,
+          if (b._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(b, as._expressions.$2._type)
+          else
+            b,
+          if (c._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(c, as._expressions.$3._type)
+          else
+            c,
+          if (d._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(d, as._expressions.$4._type)
+          else
+            d,
+          if (e._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(e, as._expressions.$5._type)
+          else
+            e,
+          if (f._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(f, as._expressions.$6._type)
+          else
+            f,
+          if (g._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(g, as._expressions.$7._type)
+          else
+            g,
+          if (h._type is _ExprType<Null>)
+            ..._NullExprType._explodedCastAs(h, as._expressions.$8._type)
+          else
+            h
+        ]);
+    return SelectFromClause._(
+      _from(_expressions.toList()),
+      handle,
+      projection,
+    );
+  }
+
   Query<
       (
         Expr<A>,
@@ -1820,7 +2059,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         _expressions, // TODO: Unclear if this right!
         (e) => UnionClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<
@@ -1854,7 +2093,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         _expressions, // TODO: Unclear if this right!
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<
@@ -1888,7 +2127,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         _expressions, // TODO: Unclear if this right!
         (e) => IntersectClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<
@@ -1922,7 +2161,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         _expressions, // TODO: Unclear if this right!
         (e) => ExceptClause._(
           _from(_expressions.toList()),
-          other._from(other._expressions.toList()),
+          other._castAs(this),
         ),
       );
   Query<
