@@ -274,7 +274,13 @@ final class _SqliteRowReader extends RowReader {
   _SqliteRowReader(this._row);
 
   @override
-  bool? readBool() => _row.values[_i++] != 0;
+  bool? readBool() {
+    final value = _row.values[_i++];
+    if (value == null) {
+      return null;
+    }
+    return value != 0;
+  }
 
   @override
   DateTime? readDateTime() {

@@ -340,7 +340,7 @@ final class OrElseExpression<T> extends SingleValueExpr<T> {
 
   @override
   _ExprType<T> get _type {
-    if (value._type != ColumnType.nullType) {
+    if (value._type == ColumnType.nullType) {
       return orElse._type;
     }
     return value._type as _ExprType<T>; // TODO: Is this actually correct?
@@ -444,6 +444,9 @@ final class Literal<T> extends SingleValueExpr<T> {
 
   factory Literal(T value) {
     // TODO: Consider asking Lasse how to actually switch over T, because null is not a type!
+    // TODO: We need to switch over T or use an extension method! If someone does
+    //       select(literal(null as bool?)).union(select(literal(true)))
+    //       We'll have a expression that can't actually decode bools!
     switch (value) {
       case true:
         return true$ as Literal<T>;
@@ -696,6 +699,16 @@ extension ExpressionBool on Expr<bool> {
   // step in postgres. It's not really a sensible thing to do. Should you ever
   // find it useful, just use `.asInt().asDouble()`.
   // Notice, that `.asInt()´ can be useful for multiplication with boolean.
+}
+
+extension ExpressionNull on Expr<Null> {
+  Expr<int?> asInt() => CastExpression._(this, ColumnType.integer);
+  Expr<String?> asString() => CastExpression._(this, ColumnType.text);
+  Expr<double?> asDouble() => CastExpression._(this, ColumnType.real);
+  Expr<bool?> asBool() => CastExpression._(this, ColumnType.boolean);
+  Expr<DateTime?> asDateTime() => CastExpression._(this, ColumnType.dateTime);
+  Expr<Uint8List?> asBlob() => CastExpression._(this, ColumnType.blob);
+  // TODO: Generate cast for CustomDataType!
 }
 
 extension ExpressionString on Expr<String> {
