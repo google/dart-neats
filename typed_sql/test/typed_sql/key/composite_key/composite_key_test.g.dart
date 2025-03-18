@@ -86,7 +86,7 @@ final class _$Item extends Item {
 
 extension TableItemExt on Table<Item> {
   /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  Future<Item> insertLiteral({
+  InsertSingle<Item> insertLiteral({
     required int id,
     required String name,
   }) =>
@@ -99,7 +99,7 @@ extension TableItemExt on Table<Item> {
       );
 
   /// TODO: document insert
-  Future<Item> insert({
+  InsertSingle<Item> insert({
     required Expr<int> id,
     required Expr<String> name,
   }) =>

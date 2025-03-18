@@ -25,30 +25,37 @@ Future<void> main() async {
 
   // Create 3 users
   await db.users
-      .insertLiteral(userId: 12, name: 'alice', email: 'alice@wonderland.com');
+      .insertLiteral(userId: 12, name: 'alice', email: 'alice@wonderland.com')
+      .execute();
   await db.users
-      .insertLiteral(userId: 13, name: 'trudy', email: 'trudy@evil.inc');
+      .insertLiteral(userId: 13, name: 'trudy', email: 'trudy@evil.inc')
+      .execute();
   await db.users
-      .insertLiteral(userId: 14, name: 'bob', email: 'bob@builders.com');
+      .insertLiteral(userId: 14, name: 'bob', email: 'bob@builders.com')
+      .execute();
 
   // Create two packages
-  await db.packages.insertLiteral(
-    packageName: 'try',
-    ownerId: 12,
-    likes: 0,
-    publisher: null,
-  );
-  await db.packages.insertLiteral(
-    packageName: 'retry',
-    ownerId: 12,
-    likes: 0,
-    publisher: null,
-  );
+  await db.packages
+      .insertLiteral(
+        packageName: 'try',
+        ownerId: 12,
+        likes: 0,
+        publisher: null,
+      )
+      .execute();
+  await db.packages
+      .insertLiteral(
+        packageName: 'retry',
+        ownerId: 12,
+        likes: 0,
+        publisher: null,
+      )
+      .execute();
 
   // Create some likes
-  await db.likes.insertLiteral(userId: 12, packageName: 'retry');
-  await db.likes.insertLiteral(userId: 13, packageName: 'try');
-  await db.likes.insertLiteral(userId: 14, packageName: 'retry');
+  await db.likes.insertLiteral(userId: 12, packageName: 'retry').execute();
+  await db.likes.insertLiteral(userId: 13, packageName: 'try').execute();
+  await db.likes.insertLiteral(userId: 14, packageName: 'retry').execute();
 
   // Try to fetch all users
   {
@@ -110,11 +117,13 @@ Future<void> main() async {
         await sp.users.byEmail('user@example.com').delete();
 
         await sp.savePoint((sp) async {
-          await sp.users.insertLiteral(
-            userId: 42,
-            name: 'user',
-            email: 'user@example.com',
-          );
+          await sp.users
+              .insertLiteral(
+                userId: 42,
+                name: 'user',
+                email: 'user@example.com',
+              )
+              .execute();
         });
       });
     });

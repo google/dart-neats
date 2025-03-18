@@ -32,47 +32,57 @@ void main() {
   );
 
   r.addTest('.insert() without default', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      value: literal(_nonDefaultValue),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          value: literal(_nonDefaultValue),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(_nonDefaultValue);
   });
 
   r.addTest('.insertLiteral() without default', (db) async {
-    await db.items.insertLiteral(
-      id: 1,
-      value: _nonDefaultValue,
-    );
+    await db.items
+        .insertLiteral(
+          id: 1,
+          value: _nonDefaultValue,
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(_nonDefaultValue);
   });
 
   r.addTest('.insert() with default', (db) async {
-    await db.items.insert(
-      id: literal(1),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(_defaultValue);
   });
 
   r.addTest('.insertLiteral() with default', (db) async {
-    await db.items.insertLiteral(
-      id: 1,
-    );
+    await db.items
+        .insertLiteral(
+          id: 1,
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(_defaultValue);
   });
 
   r.addTest('.update() default value', (db) async {
-    await db.items.insert(
-      id: literal(1),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(_defaultValue);

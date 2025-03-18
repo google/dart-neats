@@ -37,38 +37,48 @@ void main() {
   );
 
   r.addTest('.insert() two with same ID, differnet name', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      name: literal('foo'),
-    );
-    await db.items.insert(
-      id: literal(1),
-      name: literal('bar'),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          name: literal('foo'),
+        )
+        .execute();
+    await db.items
+        .insert(
+          id: literal(1),
+          name: literal('bar'),
+        )
+        .execute();
 
     final items = await db.items.fetch().toList();
     check(items).length.equals(2);
   });
 
   r.addTest('.insert() two with different ID, same name', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      name: literal('foo'),
-    );
-    await db.items.insert(
-      id: literal(2),
-      name: literal('foo'),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          name: literal('foo'),
+        )
+        .execute();
+    await db.items
+        .insert(
+          id: literal(2),
+          name: literal('foo'),
+        )
+        .execute();
 
     final items = await db.items.fetch().toList();
     check(items).length.equals(2);
   });
 
   r.addTest('.byKey()', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      name: literal('foo'),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          name: literal('foo'),
+        )
+        .execute();
 
     final item = await db.items.byKey(id: 1, name: 'foo').fetch();
     check(item).isNotNull().name.equals('foo');

@@ -89,27 +89,34 @@ void _test(
 ) async {
   _withDatabase<PrimaryDatabase>(name, setupAll: (db) async {
     await db.createTables();
-    await db.users.insertLiteral(
-      userId: 1,
-      name: 'Alice',
-      email: 'alice@example.com',
-    );
     await db.users
-        .insertLiteral(userId: 2, name: 'Bob', email: 'bob@example.com');
-    await db.packages.insertLiteral(
-      packageName: 'foo',
-      likes: 2,
-      publisher: null,
-      ownerId: 1,
-    );
-    await db.packages.insertLiteral(
-      packageName: 'bar',
-      likes: 3,
-      publisher: null,
-      ownerId: 1,
-    );
-    await db.likes.insertLiteral(userId: 1, packageName: 'foo');
-    await db.likes.insertLiteral(userId: 2, packageName: 'foo');
+        .insertLiteral(
+          userId: 1,
+          name: 'Alice',
+          email: 'alice@example.com',
+        )
+        .execute();
+    await db.users
+        .insertLiteral(userId: 2, name: 'Bob', email: 'bob@example.com')
+        .execute();
+    await db.packages
+        .insertLiteral(
+          packageName: 'foo',
+          likes: 2,
+          publisher: null,
+          ownerId: 1,
+        )
+        .execute();
+    await db.packages
+        .insertLiteral(
+          packageName: 'bar',
+          likes: 3,
+          publisher: null,
+          ownerId: 1,
+        )
+        .execute();
+    await db.likes.insertLiteral(userId: 1, packageName: 'foo').execute();
+    await db.likes.insertLiteral(userId: 2, packageName: 'foo').execute();
   }, (db) async {
     test('test', () => fn(db));
   });
@@ -121,12 +128,14 @@ void main() {
   });
 
   _test('db.packages.insert()', (db) async {
-    await db.packages.insert(
-      packageName: literal('foobar'),
-      likes: literal(0),
-      publisher: literal(null),
-      ownerId: literal(2),
-    );
+    await db.packages
+        .insert(
+          packageName: literal('foobar'),
+          likes: literal(0),
+          publisher: literal(null),
+          ownerId: literal(2),
+        )
+        .execute();
   });
 
   _test('db.users.where(.endsWithLiteral).select()', (db) async {

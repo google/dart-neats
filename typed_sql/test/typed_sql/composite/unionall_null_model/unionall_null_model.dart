@@ -63,7 +63,7 @@ void main() {
   });
 
   r.addTest('.insert + .unionAll((NULL, 42))', (db) async {
-    await db.items.insert(id: literal(42), value: literal('hello'));
+    await db.items.insert(id: literal(42), value: literal('hello')).execute();
     final q1 =
         db.select((db.items.byKey(id: 42).asExpr,)).asQuery.select((item) => (
               item,

@@ -336,7 +336,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ..type = refer('${field.type}$addNullable'),
             );
           }))
-          ..returns = refer('Future<$modelName>')
+          ..returns = refer('InsertSingle<$modelName>')
           ..lambda = true
           ..body = Code('''
             ExposedForCodeGen.insertInto(
@@ -372,7 +372,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ..type = refer('Expr<${field.type}>$nullable'),
             );
           }))
-          ..returns = refer('Future<$modelName>')
+          ..returns = refer('InsertSingle<$modelName>')
           ..lambda = true
           ..body = Code('''
             ExposedForCodeGen.insertInto(

@@ -24,6 +24,7 @@ part 'typed_sql.annotations.dart';
 part 'typed_sql.database.dart';
 part 'typed_sql.expression.dart';
 part 'typed_sql.g.dart';
+part 'typed_sql.insert.dart';
 part 'typed_sql.query.dart';
 part 'typed_sql.statements.dart';
 
@@ -126,21 +127,11 @@ final class ExposedForCodeGen {
         table,
       );
 
-  static Future<T> insertInto<T extends Model>({
+  static InsertSingle<T> insertInto<T extends Model>({
     required Table<T> table,
     required List<Expr?> values,
-  }) async {
-    final (sql, params) = table._context._dialect.insertInto(InsertStatement._(
-      table._tableClause.name,
-      table._tableClause.columns
-          .whereIndexed((index, value) => values[index] != null)
-          .toList(),
-      values.nonNulls.toList(),
-      table._tableClause.columns,
-    ));
-    final returned = await table._context._query(sql, params).first;
-    return table._definition.readModel(returned) as T;
-  }
+  }) =>
+      InsertSingle._(table, values);
 
   static Future<void> update<T extends Model>(
     Query<(Expr<T>,)> query,

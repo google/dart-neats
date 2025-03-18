@@ -38,10 +38,12 @@ void main() {
   );
 
   r.addTest('.insert() with explicit ID', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      value: literal('hello'),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          value: literal('hello'),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals('hello');
@@ -58,10 +60,12 @@ void main() {
   });
 
   r.addTest('.insertLiteral() with explicit ID', (db) async {
-    await db.items.insertLiteral(
-      id: 1,
-      value: 'hello',
-    );
+    await db.items
+        .insertLiteral(
+          id: 1,
+          value: 'hello',
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals('hello');
@@ -78,13 +82,17 @@ void main() {
   });
 
   r.addTest('.insert() auto-incremented IDs', (db) async {
-    await db.items.insert(
-      value: literal('hello'),
-    );
+    await db.items
+        .insert(
+          value: literal('hello'),
+        )
+        .execute();
 
-    await db.items.insert(
-      value: literal('world'),
-    );
+    await db.items
+        .insert(
+          value: literal('world'),
+        )
+        .execute();
 
     final items = await db.items.fetch().toList();
     check(items).length.equals(2);
@@ -95,13 +103,17 @@ void main() {
   });
 
   r.addTest('.insertLiteral() auto-incremented IDs', (db) async {
-    await db.items.insertLiteral(
-      value: 'hello',
-    );
+    await db.items
+        .insertLiteral(
+          value: 'hello',
+        )
+        .execute();
 
-    await db.items.insertLiteral(
-      value: 'world',
-    );
+    await db.items
+        .insertLiteral(
+          value: 'world',
+        )
+        .execute();
 
     final items = await db.items.fetch().toList();
     check(items).length.equals(2);

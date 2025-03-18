@@ -120,20 +120,24 @@ void main() {
   final updatedValue = {{updatedValue}};
 
   r.addTest('insert', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      value: literal(initialValue),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          value: literal(initialValue),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.{{equality}}(initialValue);
   });
 
   r.addTest('update', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      value: literal(initialValue),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          value: literal(initialValue),
+        )
+        .execute();
 
     await db.items.updateAll((item, set) => set(
           value: literal(updatedValue),
@@ -144,10 +148,12 @@ void main() {
   });
 
   r.addTest('delete', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      value: literal(initialValue),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          value: literal(initialValue),
+        )
+        .execute();
 
     final item1 = await db.items.first.fetch();
     check(item1).isNotNull();

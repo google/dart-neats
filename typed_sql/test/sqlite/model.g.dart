@@ -112,7 +112,7 @@ final class _$User extends User {
 
 extension TableUserExt on Table<User> {
   /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  Future<User> insertLiteral({
+  InsertSingle<User> insertLiteral({
     int? userId,
     required String name,
     required String email,
@@ -127,7 +127,7 @@ extension TableUserExt on Table<User> {
       );
 
   /// TODO: document insert
-  Future<User> insert({
+  InsertSingle<User> insert({
     Expr<int>? userId,
     required Expr<String> name,
     required Expr<String> email,
@@ -365,7 +365,7 @@ final class _$Package extends Package {
 
 extension TablePackageExt on Table<Package> {
   /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  Future<Package> insertLiteral({
+  InsertSingle<Package> insertLiteral({
     required String packageName,
     int? likes,
     required int ownerId,
@@ -382,7 +382,7 @@ extension TablePackageExt on Table<Package> {
       );
 
   /// TODO: document insert
-  Future<Package> insert({
+  InsertSingle<Package> insert({
     required Expr<String> packageName,
     Expr<int>? likes,
     required Expr<int> ownerId,
@@ -601,7 +601,7 @@ final class _$Like extends Like {
 
 extension TableLikeExt on Table<Like> {
   /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  Future<Like> insertLiteral({
+  InsertSingle<Like> insertLiteral({
     required int userId,
     required String packageName,
   }) =>
@@ -614,7 +614,7 @@ extension TableLikeExt on Table<Like> {
       );
 
   /// TODO: document insert
-  Future<Like> insert({
+  InsertSingle<Like> insert({
     required Expr<int> userId,
     required Expr<String> packageName,
   }) =>

@@ -44,57 +44,69 @@ void main() {
   );
 
   r.addTest('.insert() non-null value', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      value: literal(_value),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          value: literal(_value),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(_value);
   });
 
   r.addTest('.insertLiteral() non-null value', (db) async {
-    await db.items.insertLiteral(
-      id: 1,
-      value: _value,
-    );
+    await db.items
+        .insertLiteral(
+          id: 1,
+          value: _value,
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(_value);
   });
 
   r.addTest('.insert() null by default', (db) async {
-    await db.items.insert(
-      id: literal(1),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.isNull();
   });
 
   r.addTest('.insertLiteral() null by default', (db) async {
-    await db.items.insertLiteral(
-      id: 1,
-    );
+    await db.items
+        .insertLiteral(
+          id: 1,
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.isNull();
   });
 
   r.addTest('.insert() null explicitly', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      value: literal(null),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          value: literal(null),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.isNull();
   });
 
   r.addTest('.update() null by default', (db) async {
-    await db.items.insert(
-      id: literal(1),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.isNull();
@@ -108,10 +120,12 @@ void main() {
   });
 
   r.addTest('.update() null explicitly', (db) async {
-    await db.items.insert(
-      id: literal(1),
-      value: literal(null),
-    );
+    await db.items
+        .insert(
+          id: literal(1),
+          value: literal(null),
+        )
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.isNull();

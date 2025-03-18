@@ -91,7 +91,8 @@ final class _Sqlite extends SqlDialect {
         'INSERT INTO ${escape(statement.table)}',
         '(${statement.columns.map(escape).join(', ')})',
         'VALUES (${statement.values.map((e) => expr(e, ctx)).join(', ')})',
-        'RETURNING ${statement.returning.map(escape).join(', ')}',
+        if (statement.returning.isNotEmpty)
+          'RETURNING ${statement.returning.map(escape).join(', ')}',
       ].join(' '),
       params,
     );
