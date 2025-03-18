@@ -113,14 +113,14 @@ final class _$User extends User {
 extension TableUserExt on Table<User> {
   /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
   Future<User> insertLiteral({
-    required int userId,
+    int? userId,
     required String name,
     required String email,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
-          literal(userId),
+          userId != null ? literal(userId) : null,
           literal(name),
           literal(email),
         ],
@@ -128,7 +128,7 @@ extension TableUserExt on Table<User> {
 
   /// TODO: document insert
   Future<User> insert({
-    required Expr<int> userId,
+    Expr<int>? userId,
     required Expr<String> name,
     required Expr<String> email,
   }) =>

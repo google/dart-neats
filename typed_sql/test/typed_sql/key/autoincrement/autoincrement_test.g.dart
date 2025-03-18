@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'blob_test.dart';
+part of 'autoincrement_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
@@ -36,7 +36,7 @@ final class _$Item extends Item {
   final int id;
 
   @override
-  final Uint8List value;
+  final String value;
 
   static const _$table = (
     tableName: 'items',
@@ -54,7 +54,7 @@ final class _$Item extends Item {
         autoIncrement: true,
       ),
       (
-        type: ExposedForCodeGen.blob,
+        type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -73,7 +73,7 @@ final class _$Item extends Item {
 
   static Item? _$fromDatabase(RowReader row) {
     final id = row.readInt();
-    final value = row.readUint8List();
+    final value = row.readString();
     if (id == null && value == null) {
       return null;
     }
@@ -88,7 +88,7 @@ extension TableItemExt on Table<Item> {
   /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
   Future<Item> insertLiteral({
     int? id,
-    required Uint8List value,
+    required String value,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
@@ -101,7 +101,7 @@ extension TableItemExt on Table<Item> {
   /// TODO: document insert
   Future<Item> insert({
     Expr<int>? id,
-    required Expr<Uint8List> value,
+    required Expr<String> value,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
@@ -126,7 +126,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             Expr<Item> item,
             Update<Item> Function({
               Expr<int> id,
-              Expr<Uint8List> value,
+              Expr<String> value,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Item>(
@@ -136,7 +136,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<Uint8List>? value,
+            Expr<String>? value,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
@@ -149,7 +149,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   /// WARNING: This cannot set properties to `null`!
   Future<void> updateAllLiteral({
     int? id,
-    Uint8List? value,
+    String? value,
   }) =>
       ExposedForCodeGen.update<Item>(
         this,
@@ -171,7 +171,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             Expr<Item> item,
             Update<Item> Function({
               Expr<int> id,
-              Expr<Uint8List> value,
+              Expr<String> value,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Item>(
@@ -181,7 +181,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<Uint8List>? value,
+            Expr<String>? value,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
@@ -194,7 +194,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
   /// WARNING: This cannot set properties to `null`!
   Future<void> updateLiteral({
     int? id,
-    Uint8List? value,
+    String? value,
   }) =>
       ExposedForCodeGen.update<Item>(
         asQuery,
@@ -215,11 +215,11 @@ extension ExpressionItemExt on Expr<Item> {
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
   /// TODO: document value
-  Expr<Uint8List> get value =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.blob);
+  Expr<String> get value =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 }
 
 extension ItemChecks on Subject<Item> {
   Subject<int> get id => has((m) => m.id, 'id');
-  Subject<Uint8List> get value => has((m) => m.value, 'value');
+  Subject<String> get value => has((m) => m.value, 'value');
 }

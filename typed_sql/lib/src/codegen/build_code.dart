@@ -324,7 +324,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..docs.add(
               '/// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)')
           ..optionalParameters.addAll(model.fields.map((field) {
-            final hasDefault = field.defaultValue != null || field.isNullable;
+            final hasDefault = field.defaultValue != null ||
+                field.isNullable ||
+                field.autoIncrement;
             final addNullable = hasDefault && !field.isNullable ? '?' : '';
             return Parameter(
               (b) => b
@@ -341,7 +343,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               table: this,
               values: [
                 ${model.fields.map((field) {
-            final hasDefault = field.defaultValue != null || field.isNullable;
+            final hasDefault = field.defaultValue != null ||
+                field.isNullable ||
+                field.autoIncrement;
             if (hasDefault) {
               return '${field.name} != null ? literal(${field.name}) : null';
             }
@@ -356,7 +360,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..name = 'insert'
           ..docs.add('/// TODO: document insert')
           ..optionalParameters.addAll(model.fields.map((field) {
-            final hasDefault = field.defaultValue != null || field.isNullable;
+            final hasDefault = field.defaultValue != null ||
+                field.isNullable ||
+                field.autoIncrement;
             final nullable = hasDefault ? '?' : '';
             return Parameter(
               (b) => b

@@ -87,20 +87,20 @@ final class _$Item extends Item {
 extension TableItemExt on Table<Item> {
   /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
   Future<Item> insertLiteral({
-    required int id,
+    int? id,
     required int value,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
-          literal(id),
+          id != null ? literal(id) : null,
           literal(value),
         ],
       );
 
   /// TODO: document insert
   Future<Item> insert({
-    required Expr<int> id,
+    Expr<int>? id,
     required Expr<int> value,
   }) =>
       ExposedForCodeGen.insertInto(

@@ -25,18 +25,20 @@ Future<void> main() async {
 
   // Create 3 users
   await db.users
-      .create(userId: 12, name: 'alice', email: 'alice@wonderland.com');
-  await db.users.create(userId: 13, name: 'trudy', email: 'trudy@evil.inc');
-  await db.users.create(userId: 14, name: 'bob', email: 'bob@builders.com');
+      .insertLiteral(userId: 12, name: 'alice', email: 'alice@wonderland.com');
+  await db.users
+      .insertLiteral(userId: 13, name: 'trudy', email: 'trudy@evil.inc');
+  await db.users
+      .insertLiteral(userId: 14, name: 'bob', email: 'bob@builders.com');
 
   // Create two packages
-  await db.packages.create(
+  await db.packages.insertLiteral(
     packageName: 'try',
     ownerId: 12,
     likes: 0,
     publisher: null,
   );
-  await db.packages.create(
+  await db.packages.insertLiteral(
     packageName: 'retry',
     ownerId: 12,
     likes: 0,
@@ -44,9 +46,9 @@ Future<void> main() async {
   );
 
   // Create some likes
-  await db.likes.create(userId: 12, packageName: 'retry');
-  await db.likes.create(userId: 13, packageName: 'try');
-  await db.likes.create(userId: 14, packageName: 'retry');
+  await db.likes.insertLiteral(userId: 12, packageName: 'retry');
+  await db.likes.insertLiteral(userId: 13, packageName: 'try');
+  await db.likes.insertLiteral(userId: 14, packageName: 'retry');
 
   // Try to fetch all users
   {
@@ -108,7 +110,7 @@ Future<void> main() async {
         await sp.users.byEmail('user@example.com').delete();
 
         await sp.savePoint((sp) async {
-          await sp.users.create(
+          await sp.users.insertLiteral(
             userId: 42,
             name: 'user',
             email: 'user@example.com',

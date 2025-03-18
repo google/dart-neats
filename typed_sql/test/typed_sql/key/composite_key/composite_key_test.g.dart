@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'blob_test.dart';
+part of 'composite_key_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
@@ -29,18 +29,18 @@ String createTestDatabaseTables(SqlDialect dialect) =>
 final class _$Item extends Item {
   _$Item._(
     this.id,
-    this.value,
+    this.name,
   );
 
   @override
   final int id;
 
   @override
-  final Uint8List value;
+  final String name;
 
   static const _$table = (
     tableName: 'items',
-    columns: <String>['id', 'value'],
+    columns: <String>['id', 'name'],
     columnInfo: <({
       ColumnType type,
       bool isNotNull,
@@ -51,16 +51,16 @@ final class _$Item extends Item {
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
-        autoIncrement: true,
+        autoIncrement: false,
       ),
       (
-        type: ExposedForCodeGen.blob,
+        type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
       )
     ],
-    primaryKey: <String>['id'],
+    primaryKey: <String>['id', 'name'],
     unique: <List<String>>[],
     foreignKeys: <({
       String name,
@@ -73,52 +73,63 @@ final class _$Item extends Item {
 
   static Item? _$fromDatabase(RowReader row) {
     final id = row.readInt();
-    final value = row.readUint8List();
-    if (id == null && value == null) {
+    final name = row.readString();
+    if (id == null && name == null) {
       return null;
     }
-    return _$Item._(id!, value!);
+    return _$Item._(id!, name!);
   }
 
   @override
-  String toString() => 'Item(id: "$id", value: "$value")';
+  String toString() => 'Item(id: "$id", name: "$name")';
 }
 
 extension TableItemExt on Table<Item> {
   /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
   Future<Item> insertLiteral({
-    int? id,
-    required Uint8List value,
+    required int id,
+    required String name,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
-          id != null ? literal(id) : null,
-          literal(value),
+          literal(id),
+          literal(name),
         ],
       );
 
   /// TODO: document insert
   Future<Item> insert({
-    Expr<int>? id,
-    required Expr<Uint8List> value,
+    required Expr<int> id,
+    required Expr<String> name,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
           id,
-          value,
+          name,
         ],
       );
 
   /// TODO: document delete
-  Future<void> delete({required int id}) => byKey(id: id).delete();
+  Future<void> delete({
+    required int id,
+    required String name,
+  }) =>
+      byKey(
+        id: id,
+        name: name,
+      ).delete();
 }
 
 extension QueryItemExt on Query<(Expr<Item>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Item>,)> byKey({required int id}) =>
-      where((item) => item.id.equalsLiteral(id)).first;
+  QuerySingle<(Expr<Item>,)> byKey({
+    required int id,
+    required String name,
+  }) =>
+      where((item) =>
+          item.id.equalsLiteral(id).and(item.name.equalsLiteral(name))).first;
 
   /// TODO: document updateAll()
   Future<void> updateAll(
@@ -126,7 +137,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             Expr<Item> item,
             Update<Item> Function({
               Expr<int> id,
-              Expr<Uint8List> value,
+              Expr<String> name,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Item>(
@@ -136,11 +147,11 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<Uint8List>? value,
+            Expr<String>? name,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
-            value,
+            name,
           ]),
         ),
       );
@@ -149,14 +160,14 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   /// WARNING: This cannot set properties to `null`!
   Future<void> updateAllLiteral({
     int? id,
-    Uint8List? value,
+    String? name,
   }) =>
       ExposedForCodeGen.update<Item>(
         this,
         _$Item._$table,
         (item) => ExposedForCodeGen.buildUpdate<Item>([
           id != null ? literal(id) : null,
-          value != null ? literal(value) : null,
+          name != null ? literal(name) : null,
         ]),
       );
 
@@ -171,7 +182,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             Expr<Item> item,
             Update<Item> Function({
               Expr<int> id,
-              Expr<Uint8List> value,
+              Expr<String> name,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Item>(
@@ -181,11 +192,11 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<Uint8List>? value,
+            Expr<String>? name,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
-            value,
+            name,
           ]),
         ),
       );
@@ -194,14 +205,14 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
   /// WARNING: This cannot set properties to `null`!
   Future<void> updateLiteral({
     int? id,
-    Uint8List? value,
+    String? name,
   }) =>
       ExposedForCodeGen.update<Item>(
         asQuery,
         _$Item._$table,
         (item) => ExposedForCodeGen.buildUpdate<Item>([
           id != null ? literal(id) : null,
-          value != null ? literal(value) : null,
+          name != null ? literal(name) : null,
         ]),
       );
 
@@ -214,12 +225,12 @@ extension ExpressionItemExt on Expr<Item> {
   Expr<int> get id =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  /// TODO: document value
-  Expr<Uint8List> get value =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.blob);
+  /// TODO: document name
+  Expr<String> get name =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 }
 
 extension ItemChecks on Subject<Item> {
   Subject<int> get id => has((m) => m.id, 'id');
-  Subject<Uint8List> get value => has((m) => m.value, 'value');
+  Subject<String> get name => has((m) => m.name, 'name');
 }
