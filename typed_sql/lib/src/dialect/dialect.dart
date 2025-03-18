@@ -84,7 +84,7 @@ export '../typed_sql.dart'
         SelectClause,
         SelectFromClause,
         SelectStatement,
-        Statement,
+        SqlStatement,
         SubQueryExpression,
         SumExpression,
         TableClause,

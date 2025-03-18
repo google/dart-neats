@@ -14,9 +14,9 @@
 
 part of 'typed_sql.dart';
 
-sealed class Statement {}
+sealed class SqlStatement {}
 
-final class CreateTableStatement extends Statement {
+final class CreateTableStatement extends SqlStatement {
   final String tableName;
   final List<String> primaryKey;
   final List<
@@ -45,12 +45,12 @@ final class CreateTableStatement extends Statement {
   });
 }
 
-final class SelectStatement extends Statement {
+final class SelectStatement extends SqlStatement {
   final QueryClause query;
   SelectStatement._(this.query);
 }
 
-final class InsertStatement extends Statement {
+final class InsertStatement extends SqlStatement {
   final String table;
   final List<String> columns;
   final List<Expr> values;
@@ -59,7 +59,7 @@ final class InsertStatement extends Statement {
   InsertStatement._(this.table, this.columns, this.values, this.returning);
 }
 
-final class UpdateStatement extends Statement implements ExpressionContext {
+final class UpdateStatement extends SqlStatement implements ExpressionContext {
   @override
   final Object _handle;
   final TableClause table;
@@ -76,7 +76,7 @@ final class UpdateStatement extends Statement implements ExpressionContext {
   );
 }
 
-final class DeleteStatement extends Statement {
+final class DeleteStatement extends SqlStatement {
   final TableClause table;
   final QueryClause where;
 
