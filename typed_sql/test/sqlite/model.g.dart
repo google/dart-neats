@@ -384,9 +384,9 @@ extension TablePackageExt on Table<Package> {
   /// TODO: document insert
   Future<Package> insert({
     required Expr<String> packageName,
-    required Expr<int> likes,
+    Expr<int>? likes,
     required Expr<int> ownerId,
-    required Expr<String?> publisher,
+    Expr<String?>? publisher,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,

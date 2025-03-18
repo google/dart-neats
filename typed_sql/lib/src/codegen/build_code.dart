@@ -246,7 +246,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   (
                     type: ${fieldBackingType(f)},
                     isNotNull: ${!f.isNullable},
-                    defaultValue: ${f.defaultValue},
+                    defaultValue: ${literal(f.defaultValue)},
                     autoIncrement: ${f.autoIncrement},
                   )
                 ''').join(', ')}
@@ -338,8 +338,17 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         (b) => b
           ..name = 'insert'
           ..docs.add('/// TODO: document insert')
-          ..optionalParameters
-              .addAll(model.fields.asRequiredNamedExprParameters)
+          ..optionalParameters.addAll(model.fields.map((field) {
+            final hasDefault = field.defaultValue != null || field.isNullable;
+            final nullable = hasDefault ? '?' : '';
+            return Parameter(
+              (b) => b
+                ..name = field.name
+                ..named = true
+                ..required = !hasDefault
+                ..type = refer('Expr<${field.type}>$nullable'),
+            );
+          }))
           ..returns = refer('Future<$modelName>')
           ..lambda = true
           ..body = Code('''
@@ -775,15 +784,6 @@ extension on List<ParsedField> {
           ..required = true
           ..type = refer(field.type),
       ));
-
-  Iterable<Parameter> get asRequiredNamedExprParameters =>
-      map((field) => Parameter(
-            (b) => b
-              ..name = field.name
-              ..named = true
-              ..required = true
-              ..type = refer('Expr<${field.type}>'),
-          ));
 
   Iterable<Parameter> get asOptionalNamedParameters => map((field) => Parameter(
         (b) => b

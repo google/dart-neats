@@ -128,12 +128,14 @@ final class ExposedForCodeGen {
 
   static Future<T> insertInto<T extends Model>({
     required Table<T> table,
-    required List<Expr> values,
+    required List<Expr?> values,
   }) async {
     final (sql, params) = table._context._dialect.insertInto(InsertStatement._(
       table._tableClause.name,
-      table._tableClause.columns,
-      values,
+      table._tableClause.columns
+          .whereIndexed((index, value) => values[index] != null)
+          .toList(),
+      values.nonNulls.toList(),
       table._tableClause.columns,
     ));
     final returned = await table._context._query(sql, params).first;
