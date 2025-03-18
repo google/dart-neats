@@ -111,8 +111,8 @@ final class _$User extends User {
 }
 
 extension TableUserExt on Table<User> {
-  /// TODO: document create
-  Future<User> create({
+  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
+  Future<User> insertLiteral({
     required int userId,
     required String name,
     required String email,
@@ -364,20 +364,20 @@ final class _$Package extends Package {
 }
 
 extension TablePackageExt on Table<Package> {
-  /// TODO: document create
-  Future<Package> create({
+  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
+  Future<Package> insertLiteral({
     required String packageName,
-    required int likes,
+    int? likes,
     required int ownerId,
-    required String? publisher,
+    String? publisher,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
           literal(packageName),
-          literal(likes),
+          likes != null ? literal(likes) : null,
           literal(ownerId),
-          literal(publisher),
+          publisher != null ? literal(publisher) : null,
         ],
       );
 
@@ -600,8 +600,8 @@ final class _$Like extends Like {
 }
 
 extension TableLikeExt on Table<Like> {
-  /// TODO: document create
-  Future<Like> create({
+  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
+  Future<Like> insertLiteral({
     required int userId,
     required String packageName,
   }) =>

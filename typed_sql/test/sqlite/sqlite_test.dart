@@ -89,26 +89,27 @@ void _test(
 ) async {
   _withDatabase<PrimaryDatabase>(name, setupAll: (db) async {
     await db.createTables();
-    await db.users.create(
+    await db.users.insertLiteral(
       userId: 1,
       name: 'Alice',
       email: 'alice@example.com',
     );
-    await db.users.create(userId: 2, name: 'Bob', email: 'bob@example.com');
-    await db.packages.create(
+    await db.users
+        .insertLiteral(userId: 2, name: 'Bob', email: 'bob@example.com');
+    await db.packages.insertLiteral(
       packageName: 'foo',
       likes: 2,
       publisher: null,
       ownerId: 1,
     );
-    await db.packages.create(
+    await db.packages.insertLiteral(
       packageName: 'bar',
       likes: 3,
       publisher: null,
       ownerId: 1,
     );
-    await db.likes.create(userId: 1, packageName: 'foo');
-    await db.likes.create(userId: 2, packageName: 'foo');
+    await db.likes.insertLiteral(userId: 1, packageName: 'foo');
+    await db.likes.insertLiteral(userId: 2, packageName: 'foo');
   }, (db) async {
     test('test', () => fn(db));
   });

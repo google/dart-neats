@@ -320,16 +320,33 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ..on = refer('Table<$modelName>')
       ..methods.add(Method(
         (b) => b
-          ..name = 'create'
-          ..docs.add('/// TODO: document create')
-          ..optionalParameters.addAll(model.fields.asRequiredNamedParameters)
+          ..name = 'insertLiteral'
+          ..docs.add(
+              '/// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)')
+          ..optionalParameters.addAll(model.fields.map((field) {
+            final hasDefault = field.defaultValue != null || field.isNullable;
+            final addNullable = hasDefault && !field.isNullable ? '?' : '';
+            return Parameter(
+              (b) => b
+                ..name = field.name
+                ..named = true
+                ..required = !hasDefault
+                ..type = refer('${field.type}$addNullable'),
+            );
+          }))
           ..returns = refer('Future<$modelName>')
           ..lambda = true
           ..body = Code('''
             ExposedForCodeGen.insertInto(
               table: this,
               values: [
-                ${model.fields.map((field) => 'literal(${field.name})').join(', ')},
+                ${model.fields.map((field) {
+            final hasDefault = field.defaultValue != null || field.isNullable;
+            if (hasDefault) {
+              return '${field.name} != null ? literal(${field.name}) : null';
+            }
+            return 'literal(${field.name})';
+          }).join(', ')},
               ],
             )
           '''),

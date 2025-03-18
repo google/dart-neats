@@ -41,9 +41,28 @@ void main() {
     check(item).isNotNull().value.equals(_nonDefaultValue);
   });
 
+  r.addTest('.insertLiteral() without default', (db) async {
+    await db.items.insertLiteral(
+      id: 1,
+      value: _nonDefaultValue,
+    );
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.equals(_nonDefaultValue);
+  });
+
   r.addTest('.insert() with default', (db) async {
     await db.items.insert(
       id: literal(1),
+    );
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.equals(_defaultValue);
+  });
+
+  r.addTest('.insertLiteral() with default', (db) async {
+    await db.items.insertLiteral(
+      id: 1,
     );
 
     final item = await db.items.first.fetch();
