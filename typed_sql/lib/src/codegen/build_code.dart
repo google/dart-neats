@@ -429,7 +429,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         (b) => b
           ..name = 'updateAll'
           ..docs.add('/// TODO: document updateAll()')
-          ..returns = refer('Future<void>')
+          ..returns = refer('Update<$modelName>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..type = refer('''
@@ -462,7 +462,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..name = 'updateAllLiteral'
           ..docs.add('/// TODO: document updateAllLiteral()')
           ..docs.add('/// WARNING: This cannot set properties to `null`!')
-          ..returns = refer('Future<void>')
+          ..returns = refer('Update<$modelName>')
           ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
           ..lambda = true
           ..body = Code('''
@@ -516,7 +516,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         (b) => b
           ..name = 'update'
           ..docs.add('/// TODO: document update()')
-          ..returns = refer('Future<void>')
+          ..returns = refer('UpdateSingle<$modelName>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..type = refer('''
@@ -531,7 +531,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ))
           ..lambda = true
           ..body = Code('''
-            ExposedForCodeGen.update<$modelName>(
+            ExposedForCodeGen.updateSingle<$modelName>(
               asQuery,
               _\$${model.name}._\$table,
               ($modelInstanceName) => updateBuilder($modelInstanceName, ({
@@ -549,11 +549,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..name = 'updateLiteral'
           ..docs.add('/// TODO: document updateLiteral()')
           ..docs.add('/// WARNING: This cannot set properties to `null`!')
-          ..returns = refer('Future<void>')
+          ..returns = refer('UpdateSingle<$modelName>')
           ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
           ..lambda = true
           ..body = Code('''
-            ExposedForCodeGen.update<$modelName>(
+            ExposedForCodeGen.updateSingle<$modelName>(
               asQuery,
               _\$${model.name}._\$table,
               ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([

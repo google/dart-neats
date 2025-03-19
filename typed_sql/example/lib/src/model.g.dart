@@ -151,7 +151,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
       where((user) => user.userId.equalsLiteral(userId)).first;
 
   /// TODO: document updateAll()
-  Future<void> updateAll(
+  Update<User> updateAll(
           UpdateSet<User> Function(
             Expr<User> user,
             UpdateSet<User> Function({
@@ -180,7 +180,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
 
   /// TODO: document updateAllLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateAllLiteral({
+  Update<User> updateAllLiteral({
     int? userId,
     String? name,
     String? email,
@@ -205,7 +205,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
 
 extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   /// TODO: document update()
-  Future<void> update(
+  UpdateSingle<User> update(
           UpdateSet<User> Function(
             Expr<User> user,
             UpdateSet<User> Function({
@@ -214,7 +214,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
               Expr<String> email,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<User>(
+      ExposedForCodeGen.updateSingle<User>(
         asQuery,
         _$User._$table,
         (user) => updateBuilder(
@@ -234,12 +234,12 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
 
   /// TODO: document updateLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateLiteral({
+  UpdateSingle<User> updateLiteral({
     int? userId,
     String? name,
     String? email,
   }) =>
-      ExposedForCodeGen.update<User>(
+      ExposedForCodeGen.updateSingle<User>(
         asQuery,
         _$User._$table,
         (user) => ExposedForCodeGen.buildUpdate<User>([
@@ -409,7 +409,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
       where((package) => package.packageName.equalsLiteral(packageName)).first;
 
   /// TODO: document updateAll()
-  Future<void> updateAll(
+  Update<Package> updateAll(
           UpdateSet<Package> Function(
             Expr<Package> package,
             UpdateSet<Package> Function({
@@ -441,7 +441,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
 
   /// TODO: document updateAllLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateAllLiteral({
+  Update<Package> updateAllLiteral({
     String? packageName,
     int? likes,
     int? ownerId,
@@ -464,7 +464,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
 
 extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
   /// TODO: document update()
-  Future<void> update(
+  UpdateSingle<Package> update(
           UpdateSet<Package> Function(
             Expr<Package> package,
             UpdateSet<Package> Function({
@@ -474,7 +474,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
               Expr<String?> publisher,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Package>(
+      ExposedForCodeGen.updateSingle<Package>(
         asQuery,
         _$Package._$table,
         (package) => updateBuilder(
@@ -496,13 +496,13 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
 
   /// TODO: document updateLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateLiteral({
+  UpdateSingle<Package> updateLiteral({
     String? packageName,
     int? likes,
     int? ownerId,
     String? publisher,
   }) =>
-      ExposedForCodeGen.update<Package>(
+      ExposedForCodeGen.updateSingle<Package>(
         asQuery,
         _$Package._$table,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
@@ -648,7 +648,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
           .and(like.packageName.equalsLiteral(packageName))).first;
 
   /// TODO: document updateAll()
-  Future<void> updateAll(
+  Update<Like> updateAll(
           UpdateSet<Like> Function(
             Expr<Like> like,
             UpdateSet<Like> Function({
@@ -674,7 +674,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
 
   /// TODO: document updateAllLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateAllLiteral({
+  Update<Like> updateAllLiteral({
     int? userId,
     String? packageName,
   }) =>
@@ -693,7 +693,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
 
 extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
   /// TODO: document update()
-  Future<void> update(
+  UpdateSingle<Like> update(
           UpdateSet<Like> Function(
             Expr<Like> like,
             UpdateSet<Like> Function({
@@ -701,7 +701,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
               Expr<String> packageName,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Like>(
+      ExposedForCodeGen.updateSingle<Like>(
         asQuery,
         _$Like._$table,
         (like) => updateBuilder(
@@ -719,11 +719,11 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
 
   /// TODO: document updateLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateLiteral({
+  UpdateSingle<Like> updateLiteral({
     int? userId,
     String? packageName,
   }) =>
-      ExposedForCodeGen.update<Like>(
+      ExposedForCodeGen.updateSingle<Like>(
         asQuery,
         _$Like._$table,
         (like) => ExposedForCodeGen.buildUpdate<Like>([

@@ -53,9 +53,11 @@ void main() {
         )
         .execute();
 
-    await db.items.updateAll((item, set) => set(
-          value: literal(updatedValue),
-        ));
+    await db.items
+        .updateAll((item, set) => set(
+              value: literal(updatedValue),
+            ))
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.deepEquals(updatedValue);

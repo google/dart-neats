@@ -162,9 +162,12 @@ void main() {
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(_defaultValue);
 
-    await db.items.byKey(id: 1).update((item, set) => set(
-          value: literal(_nonDefaultValue),
-        ));
+    await db.items
+        .byKey(id: 1)
+        .update((item, set) => set(
+              value: literal(_nonDefaultValue),
+            ))
+        .execute();
 
     final updateItem = await db.items.first.fetch();
     check(updateItem).isNotNull().value.equals(_nonDefaultValue);

@@ -83,9 +83,11 @@ void main() {
         )
         .execute();
 
-    await db.items.updateAll((item, set) => set(
-          value: Literal.custom(updatedValue, JsonValue.fromDatabase),
-        ));
+    await db.items
+        .updateAll((item, set) => set(
+              value: Literal.custom(updatedValue, JsonValue.fromDatabase),
+            ))
+        .execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(updatedValue);

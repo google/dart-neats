@@ -77,6 +77,7 @@ final class UpdateStatement extends SqlStatement implements ExpressionContext {
   final List<String> columns;
   final List<Expr> values;
   final QueryClause where;
+  final ReturningClause? returning;
 
   UpdateStatement._(
     this.table,
@@ -84,6 +85,7 @@ final class UpdateStatement extends SqlStatement implements ExpressionContext {
     this.values,
     this._handle,
     this.where,
+    this.returning,
   );
 }
 

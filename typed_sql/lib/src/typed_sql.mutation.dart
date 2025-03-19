@@ -20,6 +20,73 @@ final class UpdateSet<T extends Model> {
   UpdateSet._(this._values);
 }
 
+final class UpdateSingle<T extends Model> {
+  final Update<T> _update;
+
+  UpdateSingle._(this._update);
+
+  Future<void> execute() async => await _update.execute();
+
+  ReturnSingle<S> returning<S extends Record>(
+    S Function(Expr<T> updated) projectionBuilder,
+  ) =>
+      _update.returning(projectionBuilder).first;
+
+  ReturnSingle<(Expr<T>,)> returnUpdated() => _update.returnUpdated().first;
+}
+
+final class Update<T extends Model> {
+  final Query<(Expr<T>,)> _query;
+  final TableDefinition<T> _table;
+  final Object _handle;
+  final UpdateSet<T> _set;
+
+  Update._(this._query, this._table, this._handle, this._set);
+
+  Future<void> execute() async {
+    final (sql, params) = _query._context._dialect.update(
+      UpdateStatement._(
+        TableClause._(_table),
+        _table.columns
+            .whereIndexed((index, value) => _set._values[index] != null)
+            .toList(),
+        _set._values.nonNulls.toList(),
+        _handle,
+        _query._from(_query._expressions.toList()),
+        null,
+      ),
+    );
+
+    await _query._context._query(sql, params).drain<void>();
+  }
+
+  Return<S> returning<S extends Record>(
+    S Function(Expr<T> updated) projectionBuilder,
+  ) {
+    final handle = Object();
+    final projection = projectionBuilder(
+      ModelExpression._(0, _table, Object())._standin(0, handle),
+    );
+
+    final table = TableClause._(_table);
+
+    return Return._(_query._context, projection, (e) {
+      return _query._context._dialect.update(UpdateStatement._(
+        table,
+        table.columns
+            .whereIndexed((index, value) => _set._values[index] != null)
+            .toList(),
+        _set._values.nonNulls.toList(),
+        _handle,
+        _query._from(_query._expressions.toList()),
+        ReturningClause._(handle, table.columns, e),
+      ));
+    });
+  }
+
+  Return<(Expr<T>,)> returnUpdated() => returning((updated) => (updated,));
+}
+
 final class InsertSingle<T extends Model> {
   final Table<T> _table;
   final List<Expr?> _values;

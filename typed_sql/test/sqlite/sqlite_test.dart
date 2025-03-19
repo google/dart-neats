@@ -130,7 +130,8 @@ void main() {
         .where((p) => p.packageName.equalsLiteral('foo'))
         .updateAllLiteral(
           ownerId: 2,
-        );
+        )
+        .execute();
     {
       final p = await db.packages.byKey(packageName: 'foo').fetch();
       expect(p!.ownerId, equals(2));
@@ -146,9 +147,12 @@ void main() {
       equals(2),
     );
 
-    await db.packages.byKey(packageName: 'foo').update((u, set) => set(
-          likes: u.likes + literal(1),
-        ));
+    await db.packages
+        .byKey(packageName: 'foo')
+        .update((u, set) => set(
+              likes: u.likes + literal(1),
+            ))
+        .execute();
 
     expect(
       await db.packages
@@ -158,9 +162,12 @@ void main() {
       equals(3),
     );
 
-    await db.packages.byKey(packageName: 'foo').update((u, set) => set(
-          likes: u.likes.addLiteral(1),
-        ));
+    await db.packages
+        .byKey(packageName: 'foo')
+        .update((u, set) => set(
+              likes: u.likes.addLiteral(1),
+            ))
+        .execute();
 
     expect(
       await db.packages
@@ -170,13 +177,19 @@ void main() {
       equals(4),
     );
 
-    await db.packages.byKey(packageName: 'foo').update((u, set) => set(
-          likes: u.likes.subtractLiteral(1),
-        ));
+    await db.packages
+        .byKey(packageName: 'foo')
+        .update((u, set) => set(
+              likes: u.likes.subtractLiteral(1),
+            ))
+        .execute();
 
-    await db.packages.byKey(packageName: 'foo').update((u, set) => set(
-          likes: u.likes - literal(1),
-        ));
+    await db.packages
+        .byKey(packageName: 'foo')
+        .update((u, set) => set(
+              likes: u.likes - literal(1),
+            ))
+        .execute();
 
     expect(
       await db.packages
@@ -775,6 +788,27 @@ void main() {
     expect(likes, equals(0));
     expect(owner!.userId, equals(1));
     expect(owner.name, equals('Alice'));
+  });
+
+  _test('db.update().returning()', (db) async {
+    final (likes, owner) = await db.packages
+        .byKey(packageName: 'foo')
+        .update((pkg, set) => set(likes: pkg.likes + literal(1)))
+        .returning((pkg) => (pkg.likes, pkg.owner))
+        .executeAndFetchOrNulls();
+    expect(likes, equals(3));
+    expect(owner!.userId, equals(1));
+    expect(owner.name, equals('Alice'));
+  });
+
+  _test('db.update().returnUpdated()', (db) async {
+    final result = await db.packages
+        .byKey(packageName: 'foo')
+        .update((pkg, set) => set(likes: pkg.likes + literal(1)))
+        .returnUpdated()
+        .executeAndFetch();
+    expect(result, isNotNull);
+    expect(result?.likes, equals(3));
   });
 
   // TODO: Support operators on nullable values!

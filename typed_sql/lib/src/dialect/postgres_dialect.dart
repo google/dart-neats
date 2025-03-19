@@ -109,6 +109,13 @@ final class _PostgresDialect extends SqlDialect {
     final (alias, c) = ctx.alias(statement, statement.table.columns);
     final (sql, _) = clause(statement.where, ctx);
 
+    var returnProjection = '';
+    final returning = statement.returning;
+    if (returning != null) {
+      final c = ctx.scope(returning, returning.columns);
+      returnProjection = returning.projection.map((e) => expr(e, c)).join(', ');
+    }
+
     return (
       [
         'UPDATE ${escape(statement.table.name)} AS $alias',
@@ -118,11 +125,15 @@ final class _PostgresDialect extends SqlDialect {
               (i, column) => '$column = (${expr(statement.values[i], c)})',
             )
             .join(', '),
+        // TODO: The nested subquery hacks should not be required for postgres
+        //       we did these in sqlite because DELETE FROM LIMIT only works
+        //       when sqlite is compiled with support for it.
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS _subq WHERE',
         statement.table.primaryKey
             .map((f) => '$alias.${escape(f)} = _subq.${escape(f)}')
             .join(', '),
         ')',
+        if (returnProjection.isNotEmpty) 'RETURNING $returnProjection',
       ].join(' '),
       params,
     );

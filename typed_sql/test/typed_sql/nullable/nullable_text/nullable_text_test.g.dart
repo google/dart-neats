@@ -121,7 +121,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
       where((item) => item.id.equalsLiteral(id)).first;
 
   /// TODO: document updateAll()
-  Future<void> updateAll(
+  Update<Item> updateAll(
           UpdateSet<Item> Function(
             Expr<Item> item,
             UpdateSet<Item> Function({
@@ -147,7 +147,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
 
   /// TODO: document updateAllLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateAllLiteral({
+  Update<Item> updateAllLiteral({
     int? id,
     String? value,
   }) =>
@@ -166,7 +166,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
 
 extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
   /// TODO: document update()
-  Future<void> update(
+  UpdateSingle<Item> update(
           UpdateSet<Item> Function(
             Expr<Item> item,
             UpdateSet<Item> Function({
@@ -174,7 +174,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
               Expr<String?> value,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Item>(
+      ExposedForCodeGen.updateSingle<Item>(
         asQuery,
         _$Item._$table,
         (item) => updateBuilder(
@@ -192,11 +192,11 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
 
   /// TODO: document updateLiteral()
   /// WARNING: This cannot set properties to `null`!
-  Future<void> updateLiteral({
+  UpdateSingle<Item> updateLiteral({
     int? id,
     String? value,
   }) =>
-      ExposedForCodeGen.update<Item>(
+      ExposedForCodeGen.updateSingle<Item>(
         asQuery,
         _$Item._$table,
         (item) => ExposedForCodeGen.buildUpdate<Item>([

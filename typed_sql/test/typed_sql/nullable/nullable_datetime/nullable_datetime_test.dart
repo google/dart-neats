@@ -111,9 +111,12 @@ void main() {
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.isNull();
 
-    await db.items.byKey(id: 1).update((item, set) => set(
-          value: literal(_value),
-        ));
+    await db.items
+        .byKey(id: 1)
+        .update((item, set) => set(
+              value: literal(_value),
+            ))
+        .execute();
 
     final updateItem = await db.items.first.fetch();
     check(updateItem).isNotNull().value.equals(_value);
@@ -130,9 +133,12 @@ void main() {
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.isNull();
 
-    await db.items.byKey(id: 1).update((item, set) => set(
-          value: literal(_value),
-        ));
+    await db.items
+        .byKey(id: 1)
+        .update((item, set) => set(
+              value: literal(_value),
+            ))
+        .execute();
 
     final updateItem = await db.items.first.fetch();
     check(updateItem).isNotNull().value.equals(_value);

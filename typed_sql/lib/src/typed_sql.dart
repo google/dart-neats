@@ -127,28 +127,36 @@ final class ExposedForCodeGen {
   }) =>
       InsertSingle._(table, values);
 
-  static Future<void> update<T extends Model>(
+  static Update<T> update<T extends Model>(
     Query<(Expr<T>,)> query,
     TableDefinition<T> table,
     UpdateSet<T> Function(Expr<T> row) updateBuilder,
-  ) async {
+  ) {
     final handle = Object();
     final row = query._expressions.$1._standin(0, handle);
-    final values = updateBuilder(row)._values;
 
-    final (sql, params) = query._context._dialect.update(
-      UpdateStatement._(
-        TableClause._(table),
-        table.columns
-            .whereIndexed((index, value) => values[index] != null)
-            .toList(),
-        values.nonNulls.toList(),
-        handle,
-        query._from(query._expressions.toList()),
-      ),
+    return Update._(
+      query,
+      table,
+      handle,
+      updateBuilder(row),
     );
+  }
 
-    await query._context._query(sql, params).drain<void>();
+  static UpdateSingle<T> updateSingle<T extends Model>(
+    Query<(Expr<T>,)> query,
+    TableDefinition<T> table,
+    UpdateSet<T> Function(Expr<T> row) updateBuilder,
+  ) {
+    final handle = Object();
+    final row = query._expressions.$1._standin(0, handle);
+
+    return UpdateSingle._(Update._(
+      query,
+      table,
+      handle,
+      updateBuilder(row),
+    ));
   }
 
   static Future<int> delete<T extends Model>(

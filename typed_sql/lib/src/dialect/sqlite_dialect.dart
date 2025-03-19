@@ -111,6 +111,13 @@ final class _Sqlite extends SqlDialect {
     final (alias, c) = ctx.alias(statement, statement.table.columns);
     final (sql, _) = clause(statement.where, ctx);
 
+    var returnProjection = '';
+    final returning = statement.returning;
+    if (returning != null) {
+      final c = ctx.scope(returning, returning.columns);
+      returnProjection = returning.projection.map((e) => expr(e, c)).join(', ');
+    }
+
     return (
       [
         'UPDATE ${escape(statement.table.name)} AS $alias',
@@ -125,6 +132,7 @@ final class _Sqlite extends SqlDialect {
             .map((f) => '$alias.${escape(f)} = _subq.${escape(f)}')
             .join(', '),
         ')',
+        if (returnProjection.isNotEmpty) 'RETURNING $returnProjection',
       ].join(' '),
       params,
     );
