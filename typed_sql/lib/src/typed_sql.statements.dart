@@ -54,9 +54,20 @@ final class InsertStatement extends SqlStatement {
   final String table;
   final List<String> columns;
   final List<Expr> values;
-  final List<String> returning;
+  final ReturningClause? returning;
 
   InsertStatement._(this.table, this.columns, this.values, this.returning);
+}
+
+final class ReturningClause implements ExpressionContext {
+  @override
+  final Object _handle;
+  final List<String> columns;
+  final List<Expr> _projection;
+
+  Iterable<Expr> get projection => _projection.expand((e) => e._explode());
+
+  ReturningClause._(this._handle, this.columns, this._projection);
 }
 
 final class UpdateStatement extends SqlStatement implements ExpressionContext {

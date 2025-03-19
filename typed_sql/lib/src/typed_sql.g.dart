@@ -5257,6 +5257,204 @@ extension QuerySingle8<A, B, C, D, E, F, G, H> on QuerySingle<
       (await asQuery.fetch().toList()).firstOrNull;
 }
 
+extension Return1<A> on Return<(Expr<A>,)> {
+  Stream<A> executeAndStream() async* {
+    final (sql, params) = _render(_expressions.toList());
+    await for (final r in _context._query(sql, params)) {
+      yield _expressions.$1._decode(r) as A;
+    }
+  }
+
+  Future<List<A>> executeAndFetch() async => await executeAndStream().toList();
+}
+
+extension ReturnSingle1<A> on ReturnSingle<(Expr<A>,)> {
+  Future<A?> executeAndFetch() async =>
+      (await _return.executeAndFetch()).firstOrNull;
+}
+
+extension Return2<A, B> on Return<(Expr<A>, Expr<B>)> {
+  Stream<(A, B)> executeAndStream() async* {
+    final (sql, params) = _render(_expressions.toList());
+    await for (final r in _context._query(sql, params)) {
+      yield (_expressions.$1._decode(r) as A, _expressions.$2._decode(r) as B);
+    }
+  }
+
+  Future<List<(A, B)>> executeAndFetch() async =>
+      await executeAndStream().toList();
+}
+
+extension ReturnSingle2<A, B> on ReturnSingle<(Expr<A>, Expr<B>)> {
+  Future<(A, B)?> executeAndFetch() async =>
+      (await _return.executeAndFetch()).firstOrNull;
+  Future<(A?, B?)> executeAndFetchOrNulls() async =>
+      await executeAndFetch() ?? (null, null);
+}
+
+extension Return3<A, B, C> on Return<(Expr<A>, Expr<B>, Expr<C>)> {
+  Stream<(A, B, C)> executeAndStream() async* {
+    final (sql, params) = _render(_expressions.toList());
+    await for (final r in _context._query(sql, params)) {
+      yield (
+        _expressions.$1._decode(r) as A,
+        _expressions.$2._decode(r) as B,
+        _expressions.$3._decode(r) as C
+      );
+    }
+  }
+
+  Future<List<(A, B, C)>> executeAndFetch() async =>
+      await executeAndStream().toList();
+}
+
+extension ReturnSingle3<A, B, C> on ReturnSingle<(Expr<A>, Expr<B>, Expr<C>)> {
+  Future<(A, B, C)?> executeAndFetch() async =>
+      (await _return.executeAndFetch()).firstOrNull;
+  Future<(A?, B?, C?)> executeAndFetchOrNulls() async =>
+      await executeAndFetch() ?? (null, null, null);
+}
+
+extension Return4<A, B, C, D> on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  Stream<(A, B, C, D)> executeAndStream() async* {
+    final (sql, params) = _render(_expressions.toList());
+    await for (final r in _context._query(sql, params)) {
+      yield (
+        _expressions.$1._decode(r) as A,
+        _expressions.$2._decode(r) as B,
+        _expressions.$3._decode(r) as C,
+        _expressions.$4._decode(r) as D
+      );
+    }
+  }
+
+  Future<List<(A, B, C, D)>> executeAndFetch() async =>
+      await executeAndStream().toList();
+}
+
+extension ReturnSingle4<A, B, C, D>
+    on ReturnSingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  Future<(A, B, C, D)?> executeAndFetch() async =>
+      (await _return.executeAndFetch()).firstOrNull;
+  Future<(A?, B?, C?, D?)> executeAndFetchOrNulls() async =>
+      await executeAndFetch() ?? (null, null, null, null);
+}
+
+extension Return5<A, B, C, D, E>
+    on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  Stream<(A, B, C, D, E)> executeAndStream() async* {
+    final (sql, params) = _render(_expressions.toList());
+    await for (final r in _context._query(sql, params)) {
+      yield (
+        _expressions.$1._decode(r) as A,
+        _expressions.$2._decode(r) as B,
+        _expressions.$3._decode(r) as C,
+        _expressions.$4._decode(r) as D,
+        _expressions.$5._decode(r) as E
+      );
+    }
+  }
+
+  Future<List<(A, B, C, D, E)>> executeAndFetch() async =>
+      await executeAndStream().toList();
+}
+
+extension ReturnSingle5<A, B, C, D, E>
+    on ReturnSingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  Future<(A, B, C, D, E)?> executeAndFetch() async =>
+      (await _return.executeAndFetch()).firstOrNull;
+  Future<(A?, B?, C?, D?, E?)> executeAndFetchOrNulls() async =>
+      await executeAndFetch() ?? (null, null, null, null, null);
+}
+
+extension Return6<A, B, C, D, E, F>
+    on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Stream<(A, B, C, D, E, F)> executeAndStream() async* {
+    final (sql, params) = _render(_expressions.toList());
+    await for (final r in _context._query(sql, params)) {
+      yield (
+        _expressions.$1._decode(r) as A,
+        _expressions.$2._decode(r) as B,
+        _expressions.$3._decode(r) as C,
+        _expressions.$4._decode(r) as D,
+        _expressions.$5._decode(r) as E,
+        _expressions.$6._decode(r) as F
+      );
+    }
+  }
+
+  Future<List<(A, B, C, D, E, F)>> executeAndFetch() async =>
+      await executeAndStream().toList();
+}
+
+extension ReturnSingle6<A, B, C, D, E, F>
+    on ReturnSingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Future<(A, B, C, D, E, F)?> executeAndFetch() async =>
+      (await _return.executeAndFetch()).firstOrNull;
+  Future<(A?, B?, C?, D?, E?, F?)> executeAndFetchOrNulls() async =>
+      await executeAndFetch() ?? (null, null, null, null, null, null);
+}
+
+extension Return7<A, B, C, D, E, F, G>
+    on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Stream<(A, B, C, D, E, F, G)> executeAndStream() async* {
+    final (sql, params) = _render(_expressions.toList());
+    await for (final r in _context._query(sql, params)) {
+      yield (
+        _expressions.$1._decode(r) as A,
+        _expressions.$2._decode(r) as B,
+        _expressions.$3._decode(r) as C,
+        _expressions.$4._decode(r) as D,
+        _expressions.$5._decode(r) as E,
+        _expressions.$6._decode(r) as F,
+        _expressions.$7._decode(r) as G
+      );
+    }
+  }
+
+  Future<List<(A, B, C, D, E, F, G)>> executeAndFetch() async =>
+      await executeAndStream().toList();
+}
+
+extension ReturnSingle7<A, B, C, D, E, F, G> on ReturnSingle<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Future<(A, B, C, D, E, F, G)?> executeAndFetch() async =>
+      (await _return.executeAndFetch()).firstOrNull;
+  Future<(A?, B?, C?, D?, E?, F?, G?)> executeAndFetchOrNulls() async =>
+      await executeAndFetch() ?? (null, null, null, null, null, null, null);
+}
+
+extension Return8<A, B, C, D, E, F, G, H> on Return<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Stream<(A, B, C, D, E, F, G, H)> executeAndStream() async* {
+    final (sql, params) = _render(_expressions.toList());
+    await for (final r in _context._query(sql, params)) {
+      yield (
+        _expressions.$1._decode(r) as A,
+        _expressions.$2._decode(r) as B,
+        _expressions.$3._decode(r) as C,
+        _expressions.$4._decode(r) as D,
+        _expressions.$5._decode(r) as E,
+        _expressions.$6._decode(r) as F,
+        _expressions.$7._decode(r) as G,
+        _expressions.$8._decode(r) as H
+      );
+    }
+  }
+
+  Future<List<(A, B, C, D, E, F, G, H)>> executeAndFetch() async =>
+      await executeAndStream().toList();
+}
+
+extension ReturnSingle8<A, B, C, D, E, F, G, H> on ReturnSingle<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Future<(A, B, C, D, E, F, G, H)?> executeAndFetch() async =>
+      (await _return.executeAndFetch()).firstOrNull;
+  Future<(A?, B?, C?, D?, E?, F?, G?, H?)> executeAndFetchOrNulls() async =>
+      await executeAndFetch() ??
+      (null, null, null, null, null, null, null, null);
+}
+
 extension<A> on (Expr<A>,) {
   List<Expr> toList() => [$1];
 }

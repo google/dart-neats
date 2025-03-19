@@ -18,50 +18,7 @@ import 'package:meta/meta.dart' hide literal;
 import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
 
-import '../testutil/postgres_manager.dart';
 import 'model.dart';
-
-@isTestGroup
-void _withDatabase<T extends Schema>(
-  String name,
-  FutureOr<void> Function(Database<T> db) fn, {
-  Future<void> Function(Database<T> db)? setupAll,
-}) {
-  final adaptorFns = {
-    'sqlite': _createSqliteAdaptor,
-    'postgres': _createPostgresAdaptor,
-  };
-
-  for (final adaptorEntry in adaptorFns.entries) {
-    final adaptorName = adaptorEntry.key;
-
-    // TODO: fix postgres adaptor issues
-    if (adaptorName == 'postgres') {
-      continue;
-    }
-
-    group('$name $adaptorName', () {
-      late DatabaseAdaptor adaptor;
-      late Database<T> db;
-
-      setUpAll(() async {
-        adaptor = DatabaseAdaptor.withLogging(
-          await adaptorEntry.value(name),
-          printOnFailure,
-          //print,
-        );
-        db = Database<T>(adaptor, SqlDialect.sqlite());
-        if (setupAll != null) {
-          await setupAll(db);
-        }
-      });
-
-      tearDownAll(() async {
-        await adaptor.close();
-      });
-    });
-  }
-}
 
 var _testFileCounter = 0;
 
@@ -76,18 +33,19 @@ Future<DatabaseAdaptor> _createSqliteAdaptor(String name) async {
   return DatabaseAdaptor.sqlite3(u);
 }
 
-Future<DatabaseAdaptor> _createPostgresAdaptor(String name) async {
-  final pg = PostgresManager();
-  final pool = await pg.getPool();
-  return DatabaseAdaptor.postgres(pool);
-}
-
 @isTest
 void _test(
   String name,
   FutureOr<void> Function(Database<PrimaryDatabase> db) fn,
 ) async {
-  _withDatabase<PrimaryDatabase>(name, setupAll: (db) async {
+  test(name, () async {
+    final adaptor = DatabaseAdaptor.withLogging(
+      await _createSqliteAdaptor(name),
+      printOnFailure,
+      //print,
+    );
+    final db = Database<PrimaryDatabase>(adaptor, SqlDialect.sqlite());
+
     await db.createTables();
     await db.users
         .insertLiteral(
@@ -117,8 +75,12 @@ void _test(
         .execute();
     await db.likes.insertLiteral(userId: 1, packageName: 'foo').execute();
     await db.likes.insertLiteral(userId: 2, packageName: 'foo').execute();
-  }, (db) async {
-    test('test', () => fn(db));
+
+    try {
+      await fn(db);
+    } finally {
+      await adaptor.close(force: true);
+    }
   });
 }
 
@@ -794,6 +756,25 @@ void main() {
         .toList();
     expect(result, hasLength(1));
     expect(result[0], equals(('foo', 2, 1)));
+  });
+
+  _test('db.insert().returnInserted()', (db) async {
+    final result = await db.packages
+        .insert(packageName: literal('foobar'), ownerId: literal(1))
+        .returnInserted()
+        .executeAndFetch();
+    expect(result, isNotNull);
+    expect(result?.ownerId, equals(1));
+  });
+
+  _test('db.insert().returning()', (db) async {
+    final (likes, owner) = await db.packages
+        .insert(packageName: literal('foobar'), ownerId: literal(1))
+        .returning((pkg) => (pkg.likes, pkg.owner))
+        .executeAndFetchOrNulls();
+    expect(likes, equals(0));
+    expect(owner!.userId, equals(1));
+    expect(owner.name, equals('Alice'));
   });
 
   // TODO: Support operators on nullable values!

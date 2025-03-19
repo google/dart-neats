@@ -82,6 +82,10 @@ Iterable<Spec> _buildExtensions() sync* {
   }
 
   for (var i = 1; i < N + 1; i++) {
+    yield* _buildReturnExtension(i);
+  }
+
+  for (var i = 1; i < N + 1; i++) {
     yield _buildToListExtension(i);
   }
 }
@@ -659,7 +663,7 @@ Spec _buildSubQueryExtension(int i) {
     ]));
 }
 
-/// Build extension for `toList` on tuple.
+/// Build extension for `QuerySingle`.
 ///
 /// ```dart
 /// extension QuerySingleAB<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
@@ -731,6 +735,90 @@ Spec _buildSingleQueryExtension(int i) => Extension(
             ..body = Code('(await asQuery.fetch().toList()).firstOrNull'),
         )),
     );
+
+/// Build extension for `ReturnSingle`.
+///
+/// ```dart
+/// extension Return2<A, B> on Return<(Expr<A>, Expr<B>)> {
+///   Stream<(A, B)> executeAndStream() async* {
+///     final (sql, params) = _render(_expressions.toList());
+///     await for (final r in _context._query(sql, params)) {
+///       yield (_expressions.$1._decode(r) as A, _expressions.$2._decode(r) as B);
+///     }
+///   }
+///
+///   Future<List<(A, B)>> executeAndFetch() async =>
+///       await executeAndStream().toList();
+/// }
+///
+/// extension ReturnSingle2<A, B> on ReturnSingle<(Expr<A>, Expr<B>)> {
+///   Future<(A, B)?> executeAndFetch() async =>
+///       (await _return.executeAndFetch()).firstOrNull;
+///
+///   Future<(A?, B?)> executeAndFetchOrNulls() async =>
+///       await executeAndFetch() ?? (null, null);
+/// }
+/// ```
+Iterable<Spec> _buildReturnExtension(int i) sync* {
+  yield Extension((b) => b
+    ..name = 'Return$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('Return<${typArgedExprTuple(i, 0)}>')
+    ..methods.addAll([
+      Method(
+        (b) => b
+          ..name = 'executeAndStream'
+          ..returns = refer(
+              'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>')
+          ..modifier = MethodModifier.asyncStar
+          ..body = Code('''
+            final (sql, params) = _render(_expressions.toList());
+            await for (final r in _context._query(sql, params)) {
+              yield ${i == 1 ? '_expressions.\$1._decode(r) as ${typeArg[0]}' : '(${List.generate(i, (i) => '_expressions.\$${i + 1}._decode(r) as ${typeArg[i]}').join(',')})'};
+            }
+          '''),
+      ),
+      Method(
+        (b) => b
+          ..name = 'executeAndFetch'
+          ..returns = refer(
+              'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>')
+          ..modifier = MethodModifier.async
+          ..lambda = true
+          ..body = Code('await executeAndStream().toList()'),
+      ),
+    ]));
+
+  yield Extension((b) => b
+    ..name = 'ReturnSingle$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('ReturnSingle<${typArgedExprTuple(i, 0)}>')
+    ..methods.addAll([
+      Method(
+        (b) => b
+          ..name = 'executeAndFetch'
+          ..returns = refer(
+            'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}?>',
+          )
+          ..modifier = MethodModifier.async
+          ..lambda = true
+          ..body = Code('(await _return.executeAndFetch()).firstOrNull'),
+      ),
+      if (i > 1)
+        Method(
+          (b) => b
+            ..name = 'executeAndFetchOrNulls'
+            ..returns = refer(
+              'Future<(${List.generate(i, (i) => '${typeArg[i]}?').join(',')})>',
+            )
+            ..modifier = MethodModifier.async
+            ..lambda = true
+            ..body = Code(
+              'await executeAndFetch() ?? (${List.generate(i, (i) => 'null').join(',')})',
+            ),
+        ),
+    ]));
+}
 
 /// Build extension for `toList` on tuple.
 ///

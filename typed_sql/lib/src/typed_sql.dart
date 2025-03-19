@@ -24,7 +24,7 @@ part 'typed_sql.annotations.dart';
 part 'typed_sql.database.dart';
 part 'typed_sql.expression.dart';
 part 'typed_sql.g.dart';
-part 'typed_sql.insert.dart';
+part 'typed_sql.mutation.dart';
 part 'typed_sql.query.dart';
 part 'typed_sql.statements.dart';
 

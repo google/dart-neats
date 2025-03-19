@@ -325,6 +325,9 @@ extension QueryAny<T extends Record> on Query<T> {
 
 /* --------------------- Auxiliary utils for SQL rendering------------------- */
 
+// TODO: Rename this to ExpressionContext / Scope / SqlContext and move it to a
+//       separate part file!
+// TODO: Consider moving parameter logic out of this context!
 abstract final class QueryContext {
   final int _depth;
   final List<Object?> _parameters;
@@ -358,6 +361,19 @@ abstract final class QueryContext {
       ),
     );
   }
+
+  QueryContext scope(
+    ExpressionContext clause,
+    List<String> columns,
+  ) {
+    return _QueryContextScope(
+      this,
+      clause._handle,
+      columns,
+      _depth,
+      _parameters,
+    );
+  }
 }
 
 final class _AliasedQueryContext extends QueryContext {
@@ -377,6 +393,28 @@ final class _AliasedQueryContext extends QueryContext {
   String field(FieldExpression field) {
     if (field._handle == _handle) {
       return 't$_depth.${_columns[field._index]}';
+    }
+    return _parent.field(field);
+  }
+}
+
+final class _QueryContextScope extends QueryContext {
+  final QueryContext _parent;
+  final Object _handle;
+  final List<String> _columns;
+
+  _QueryContextScope(
+    this._parent,
+    this._handle,
+    this._columns,
+    super._depth,
+    super._parameters,
+  ) : super._();
+
+  @override
+  String field(FieldExpression field) {
+    if (field._handle == _handle) {
+      return _columns[field._index];
     }
     return _parent.field(field);
   }

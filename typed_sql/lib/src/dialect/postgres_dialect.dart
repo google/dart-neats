@@ -82,6 +82,14 @@ final class _PostgresDialect extends SqlDialect {
   @override
   (String, List<Object?>) insertInto(InsertStatement statement) {
     final (params, ctx) = QueryContext.create();
+
+    var returnProjection = '';
+    final returning = statement.returning;
+    if (returning != null) {
+      final c = ctx.scope(returning, returning.columns);
+      returnProjection = returning.projection.map((e) => expr(e, c)).join(', ');
+    }
+
     // TODO: Is it possible to insert a ModelExpression
     //       It probably is, if copying a row from one table to another!
     return (
@@ -89,8 +97,7 @@ final class _PostgresDialect extends SqlDialect {
         'INSERT INTO ${escape(statement.table)}',
         '(${statement.columns.map(escape).join(', ')})',
         'VALUES (${statement.values.map((e) => expr(e, ctx)).join(', ')})',
-        if (statement.returning.isNotEmpty)
-          'RETURNING ${statement.returning.map(escape).join(', ')}',
+        if (returnProjection.isNotEmpty) 'RETURNING $returnProjection',
       ].join(' '),
       params,
     );
