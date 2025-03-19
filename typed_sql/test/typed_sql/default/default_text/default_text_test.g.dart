@@ -122,9 +122,9 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
 
   /// TODO: document updateAll()
   Future<void> updateAll(
-          Update<Item> Function(
+          UpdateSet<Item> Function(
             Expr<Item> item,
-            Update<Item> Function({
+            UpdateSet<Item> Function({
               Expr<int> id,
               Expr<String> value,
             }) set,
@@ -167,9 +167,9 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
 extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
   /// TODO: document update()
   Future<void> update(
-          Update<Item> Function(
+          UpdateSet<Item> Function(
             Expr<Item> item,
-            Update<Item> Function({
+            UpdateSet<Item> Function({
               Expr<int> id,
               Expr<String> value,
             }) set,

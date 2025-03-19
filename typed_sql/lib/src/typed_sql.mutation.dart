@@ -14,6 +14,12 @@
 
 part of 'typed_sql.dart';
 
+final class UpdateSet<T extends Model> {
+  final List<Expr?> _values;
+
+  UpdateSet._(this._values);
+}
+
 final class InsertSingle<T extends Model> {
   final Table<T> _table;
   final List<Expr?> _values;

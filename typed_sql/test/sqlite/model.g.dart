@@ -152,9 +152,9 @@ extension QueryUserExt on Query<(Expr<User>,)> {
 
   /// TODO: document updateAll()
   Future<void> updateAll(
-          Update<User> Function(
+          UpdateSet<User> Function(
             Expr<User> user,
-            Update<User> Function({
+            UpdateSet<User> Function({
               Expr<int> userId,
               Expr<String> name,
               Expr<String> email,
@@ -206,9 +206,9 @@ extension QueryUserExt on Query<(Expr<User>,)> {
 extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   /// TODO: document update()
   Future<void> update(
-          Update<User> Function(
+          UpdateSet<User> Function(
             Expr<User> user,
-            Update<User> Function({
+            UpdateSet<User> Function({
               Expr<int> userId,
               Expr<String> name,
               Expr<String> email,
@@ -410,9 +410,9 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
 
   /// TODO: document updateAll()
   Future<void> updateAll(
-          Update<Package> Function(
+          UpdateSet<Package> Function(
             Expr<Package> package,
-            Update<Package> Function({
+            UpdateSet<Package> Function({
               Expr<String> packageName,
               Expr<int> likes,
               Expr<int> ownerId,
@@ -465,9 +465,9 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
 extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
   /// TODO: document update()
   Future<void> update(
-          Update<Package> Function(
+          UpdateSet<Package> Function(
             Expr<Package> package,
-            Update<Package> Function({
+            UpdateSet<Package> Function({
               Expr<String> packageName,
               Expr<int> likes,
               Expr<int> ownerId,
@@ -649,9 +649,9 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
 
   /// TODO: document updateAll()
   Future<void> updateAll(
-          Update<Like> Function(
+          UpdateSet<Like> Function(
             Expr<Like> like,
-            Update<Like> Function({
+            UpdateSet<Like> Function({
               Expr<int> userId,
               Expr<String> packageName,
             }) set,
@@ -694,9 +694,9 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
 extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
   /// TODO: document update()
   Future<void> update(
-          Update<Like> Function(
+          UpdateSet<Like> Function(
             Expr<Like> like,
-            Update<Like> Function({
+            UpdateSet<Like> Function({
               Expr<int> userId,
               Expr<String> packageName,
             }) set,

@@ -43,12 +43,6 @@ abstract base class Schema {
 /// Class from which all model classes must implement.
 abstract base class Model {}
 
-final class Update<T extends Model> {
-  final List<Expr?> _values;
-
-  Update._(this._values);
-}
-
 typedef TableDefinition<T extends Model> = ({
   String tableName,
   List<String> columns,
@@ -136,7 +130,7 @@ final class ExposedForCodeGen {
   static Future<void> update<T extends Model>(
     Query<(Expr<T>,)> query,
     TableDefinition<T> table,
-    Update<T> Function(Expr<T> row) updateBuilder,
+    UpdateSet<T> Function(Expr<T> row) updateBuilder,
   ) async {
     final handle = Object();
     final row = query._expressions.$1._standin(0, handle);
@@ -180,8 +174,8 @@ final class ExposedForCodeGen {
     await context._query(migration, const []).drain<void>();
   }
 
-  static Update<T> buildUpdate<T extends Model>(List<Expr?> values) =>
-      Update._(values);
+  static UpdateSet<T> buildUpdate<T extends Model>(List<Expr?> values) =>
+      UpdateSet._(values);
 
   static Expr<T> field<T extends Object?, M extends Model>(
     Expr<M> row,

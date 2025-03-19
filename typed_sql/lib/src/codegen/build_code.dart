@@ -433,9 +433,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..requiredParameters.add(Parameter(
             (b) => b
               ..type = refer('''
-                  Update<$modelName> Function(
+                  UpdateSet<$modelName> Function(
                     Expr<$modelName> $modelInstanceName,
-                    Update<$modelName> Function({
+                    UpdateSet<$modelName> Function({
                       ${model.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
                     }) set,
                   )
@@ -520,9 +520,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..requiredParameters.add(Parameter(
             (b) => b
               ..type = refer('''
-                Update<$modelName> Function(
+                UpdateSet<$modelName> Function(
                   Expr<$modelName> $modelInstanceName,
-                  Update<$modelName> Function({
+                  UpdateSet<$modelName> Function({
                     ${model.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
                   }) set,
                 )
