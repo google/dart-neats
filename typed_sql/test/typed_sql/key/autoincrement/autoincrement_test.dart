@@ -51,8 +51,7 @@ void main() {
     // Check that we can find it by value
     final items = await db.items
         .where((item) => item.value.equals(literal('hello')))
-        .fetch()
-        .toList();
+        .fetch();
     check(items).length.equals(1);
     check(items).first
       ..id.equals(1)
@@ -73,8 +72,7 @@ void main() {
     // Check that we can find it by value
     final items = await db.items
         .where((item) => item.value.equals(literal('hello')))
-        .fetch()
-        .toList();
+        .fetch();
     check(items).length.equals(1);
     check(items).first
       ..id.equals(1)
@@ -94,7 +92,7 @@ void main() {
         )
         .execute();
 
-    final items = await db.items.fetch().toList();
+    final items = await db.items.fetch();
     check(items).length.equals(2);
     // Note: Auto-increment won't necessarily start from 1 or 0, and may skip
     //       values, in practice it probably won't but let's not rely on such
@@ -115,7 +113,7 @@ void main() {
         )
         .execute();
 
-    final items = await db.items.fetch().toList();
+    final items = await db.items.fetch();
     check(items).length.equals(2);
     // Note: Auto-increment won't necessarily start from 1 or 0, and may skip
     //       values, in practice it probably won't but let's not rely on such

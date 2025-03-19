@@ -451,7 +451,7 @@ Spec _buildQueryExtension(int i) {
           '''),
       ),
 
-      //   Stream<(A, B, C)> fetch() async* {
+      //   Stream<(A, B, C)> stream() async* {
       //     final from = _from(_expressions.toList());
       //     final decode1 = _expressions.$1._decode;
       //     final decode2 = _expressions.$2._decode;
@@ -471,7 +471,7 @@ Spec _buildQueryExtension(int i) {
       //   }
       Method(
         (b) => b
-          ..name = 'fetch'
+          ..name = 'stream'
           ..returns = refer(
             // Query1 return A, while Query2 returns (A, B)
             'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
@@ -495,6 +495,18 @@ Spec _buildQueryExtension(int i) {
             ],
             '}',
           ].join('')),
+      ),
+
+      Method(
+        (b) => b
+          ..name = 'fetch'
+          ..returns = refer(
+            // Query1 return A, while Query2 returns (A, B)
+            'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>',
+          )
+          ..modifier = MethodModifier.async
+          ..lambda = true
+          ..body = Code('await stream().toList()'),
       ),
     ]));
 }
@@ -679,62 +691,81 @@ Spec _buildSubQueryExtension(int i) {
 ///   ) =>
 ///       QuerySingle._(asQuery.select(projectionBuilder));
 ///
-///   Future<(A, B)?> fetch() async => (await asQuery.fetch().toList()).firstOrNull;
+///   Future<(A, B)?> fetch() async => (await asQuery.fetch()).firstOrNull;
 /// }
 /// ```
-Spec _buildSingleQueryExtension(int i) => Extension(
-      (b) => b
-        ..name = 'QuerySingle$i'
-        ..types.addAll(typeArg.take(i).map(refer))
-        ..on = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
-        ..methods.add(Method(
-          (b) => b
-            ..name = 'asQuery'
-            ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
-            ..type = MethodType.getter
-            ..lambda = true
-            ..body = Code('_query'),
-        ))
-        ..methods.add(Method(
-          (b) => b
-            ..name = 'where'
-            ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
-            ..requiredParameters.add(Parameter(
+Spec _buildSingleQueryExtension(int i) {
+  return Extension(
+    (b) => b
+      ..name = 'QuerySingle$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
+      ..methods.addAll(
+        [
+          Method(
+            (b) => b
+              ..name = 'asQuery'
+              ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
+              ..type = MethodType.getter
+              ..lambda = true
+              ..body = Code('_query'),
+          ),
+          Method(
+            (b) => b
+              ..name = 'where'
+              ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
+              ..requiredParameters.add(Parameter(
+                (b) => b
+                  ..name = 'conditionBuilder'
+                  ..type = refer(
+                    'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ))
+              ..lambda = true
+              ..body = Code('asQuery.where(conditionBuilder).first'),
+          ),
+          Method(
+            (b) => b
+              ..name = 'select'
+              ..types.add(refer('T extends Record'))
+              ..returns = refer('QuerySingle<T>')
+              ..requiredParameters.add(Parameter(
+                (b) => b
+                  ..name = 'projectionBuilder'
+                  ..type = refer(
+                    'T Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ))
+              ..lambda = true
+              ..body = Code('QuerySingle._(asQuery.select(projectionBuilder))'),
+          ),
+          Method(
+            (b) => b
+              ..name = 'fetch'
+              ..returns = refer(
+                'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}?>',
+              )
+              ..modifier = MethodModifier.async
+              ..lambda = true
+              ..body = Code('(await asQuery.fetch()).firstOrNull'),
+          ),
+          if (i > 1)
+            Method(
               (b) => b
-                ..name = 'conditionBuilder'
-                ..type = refer(
-                  'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+                ..name = 'fetchOrNulls'
+                ..returns = refer(
+                  'Future<(${List.generate(i, (i) => '${typeArg[i]}?').join(',')})>',
+                )
+                ..modifier = MethodModifier.async
+                ..lambda = true
+                ..body = Code(
+                  'await fetch() ?? (${List.generate(i, (i) => 'null').join(',')})',
                 ),
-            ))
-            ..lambda = true
-            ..body = Code('asQuery.where(conditionBuilder).first'),
-        ))
-        ..methods.add(Method(
-          (b) => b
-            ..name = 'select'
-            ..types.add(refer('T extends Record'))
-            ..returns = refer('QuerySingle<T>')
-            ..requiredParameters.add(Parameter(
-              (b) => b
-                ..name = 'projectionBuilder'
-                ..type = refer(
-                  'T Function(${typArgedExprArgumentList(i)})',
-                ),
-            ))
-            ..lambda = true
-            ..body = Code('QuerySingle._(asQuery.select(projectionBuilder))'),
-        ))
-        ..methods.add(Method(
-          (b) => b
-            ..name = 'fetch'
-            ..returns = refer(
-              'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}?>',
-            )
-            ..modifier = MethodModifier.async
-            ..lambda = true
-            ..body = Code('(await asQuery.fetch().toList()).firstOrNull'),
-        )),
-    );
+            ),
+        ],
+      ),
+  );
+}
 
 /// Build extension for `ReturnSingle`.
 ///

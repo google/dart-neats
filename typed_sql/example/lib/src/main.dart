@@ -59,7 +59,7 @@ Future<void> main() async {
 
   // Try to fetch all users
   {
-    final users = await db.users.fetch().toList();
+    final users = await db.users.fetch();
     assert(users.length == 2);
   }
 
@@ -71,7 +71,7 @@ Future<void> main() async {
       print('${user.email} has liked');
       final queryLikes =
           db.likes.where((like) => like.userId.equalsLiteral(user.userId));
-      await for (final like in queryLikes.fetch()) {
+      await for (final like in queryLikes.stream()) {
         print(like.packageName);
       }
     } else {
@@ -90,8 +90,7 @@ Future<void> main() async {
         .orderBy((user) => user.email)
         .offset(5)
         .limit(10)
-        .fetch()
-        .toList();
+        .fetch();
     print(users.first.email);
   }
 
@@ -106,12 +105,10 @@ Future<void> main() async {
     await db.transaction((tx) async {
       await tx.users
           .where((u) => u.email.endsWithLiteral('@google.com'))
-          .fetch()
-          .toList();
+          .fetch();
       await tx.likes
           .where((l) => l.packageName.startsWithLiteral('_').not())
-          .fetch()
-          .toList();
+          .fetch();
 
       await tx.savePoint((sp) async {
         await sp.users.byEmail('user@example.com').delete().execute();

@@ -795,13 +795,19 @@ extension QueryOwnerPackageNamed<A, B> on Query<
       ({
         A owner,
         B package,
-      })> fetch() async* {
-    yield* _asPositionalQuery.fetch().map((e) => (
+      })> stream() async* {
+    yield* _asPositionalQuery.stream().map((e) => (
           owner: e.$1,
           package: e.$2,
         ));
   }
 
+  Future<
+      List<
+          ({
+            A owner,
+            B package,
+          })>> fetch() async => await stream().toList();
   Query<
       ({
         Expr<A> owner,
@@ -902,14 +908,21 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
         A packages,
         B totalLikes,
         C userName,
-      })> fetch() async* {
-    yield* _asPositionalQuery.fetch().map((e) => (
+      })> stream() async* {
+    yield* _asPositionalQuery.stream().map((e) => (
           packages: e.$1,
           totalLikes: e.$2,
           userName: e.$3,
         ));
   }
 
+  Future<
+      List<
+          ({
+            A packages,
+            B totalLikes,
+            C userName,
+          })>> fetch() async => await stream().toList();
   Query<
       ({
         Expr<A> packages,

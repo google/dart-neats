@@ -29,7 +29,7 @@ void main() {
       (literal(null),),
     ).asQuery;
 
-    final result = await q1.unionAll(q2).fetch().toList();
+    final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
     check(result).deepEquals(['A', null]);
   });
@@ -44,7 +44,7 @@ void main() {
       (literal(null),),
     ).asQuery;
 
-    final result = await q1.unionAll(q2).fetch().toList();
+    final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
     check(result).deepEquals([42, null]);
   });
@@ -59,7 +59,7 @@ void main() {
       (literal(null),),
     ).asQuery;
 
-    final result = await q1.unionAll(q2).fetch().toList();
+    final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
     check(result).deepEquals([3.14, null]);
   });
@@ -71,7 +71,7 @@ void main() {
       (literal(null),),
     ).asQuery;
 
-    final result = await q1.unionAll(q2).fetch().toList();
+    final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
     check(result).deepEquals([3.14, null]);
   });

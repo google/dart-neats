@@ -50,7 +50,7 @@ void main() {
         )
         .execute();
 
-    final items = await db.items.fetch().toList();
+    final items = await db.items.fetch();
     check(items).length.equals(2);
   });
 
@@ -68,7 +68,7 @@ void main() {
         )
         .execute();
 
-    final items = await db.items.fetch().toList();
+    final items = await db.items.fetch();
     check(items).length.equals(2);
   });
 

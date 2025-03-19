@@ -104,8 +104,7 @@ void main() {
     final users = await db.users
         .where((u) => u.email.endsWithLiteral('@example.com'))
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, contains('Alice'));
     expect(users, contains('Bob'));
     expect(users, hasLength(2));
@@ -115,8 +114,7 @@ void main() {
     final users = await db.users
         .where((u) => u.email.startsWithLiteral('alice@'))
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, contains('Alice'));
     expect(users, hasLength(1));
   });
@@ -214,7 +212,7 @@ void main() {
 
   _test('db.packages.where().deleteAll()', (db) async {
     {
-      final packages = await db.packages.fetch().toList();
+      final packages = await db.packages.fetch();
       expect(packages, hasLength(2));
     }
     await db.packages
@@ -222,7 +220,7 @@ void main() {
         .delete()
         .execute();
     {
-      final packages = await db.packages.fetch().toList();
+      final packages = await db.packages.fetch();
       expect(packages, hasLength(1));
     }
   });
@@ -232,8 +230,7 @@ void main() {
         .where((u) => u.email.equalsLiteral('alice@example.com'))
         .limit(1)
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, contains('Alice'));
     expect(users, hasLength(1));
   });
@@ -243,8 +240,7 @@ void main() {
         .limit(2)
         .where((u) => u.email.equalsLiteral('alice@example.com'))
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, contains('Alice'));
     expect(users, hasLength(1));
   });
@@ -255,8 +251,7 @@ void main() {
         .limit(2)
         .where((u) => u.email.equalsLiteral('bob@example.com'))
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, contains('Bob'));
     expect(users, hasLength(1));
   });
@@ -267,8 +262,7 @@ void main() {
         .offset(0)
         .where((u) => u.email.equalsLiteral('bob@example.com'))
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, contains('Bob'));
     expect(users, hasLength(1));
   });
@@ -279,8 +273,7 @@ void main() {
         .offset(1)
         .where((u) => u.email.equalsLiteral('alice@example.com'))
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, isEmpty);
   });
 
@@ -290,8 +283,7 @@ void main() {
         .offset(1)
         .where((u) => u.email.equalsLiteral('bob@example.com'))
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, contains('Bob'));
     expect(users, hasLength(1));
   });
@@ -302,8 +294,7 @@ void main() {
         .offset(1)
         .where((u) => u.email.equalsLiteral('bob@example.com'))
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, isEmpty);
   });
 
@@ -313,8 +304,7 @@ void main() {
         .offset(1)
         .where((u) => u.email.equalsLiteral('alice@example.com'))
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(users, contains('Alice'));
     expect(users, hasLength(1));
   });
@@ -323,8 +313,7 @@ void main() {
     final result = await db.users
         .join(db.packages)
         .on((u, p) => u.userId.equals(p.ownerId))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     final (u, p) = result[0];
     expect(u.name, equals('Alice'));
@@ -336,8 +325,7 @@ void main() {
         .join(db.packages)
         .on((u, p) => u.userId.equals(p.ownerId))
         .select((u, p) => (u.name, p.packageName))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, contains(('Alice', 'foo')));
     expect(result, hasLength(2));
   });
@@ -349,8 +337,7 @@ void main() {
         .join(db.packages)
         .on((u, p) => u.userId.equals(p.ownerId))
         .select((u, p) => (u.name, p.packageName))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, contains(('Alice', 'foo')));
     expect(result, hasLength(2));
   });
@@ -361,8 +348,7 @@ void main() {
         .asQuery
         .join(db.packages)
         .on((u, p) => u.userId.equals(p.ownerId))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(0));
   });
 
@@ -374,8 +360,7 @@ void main() {
               .select((p) => (p.packageName, p.ownerId)),
         )
         .on((u, packageName, ownerId) => u.userId.equals(ownerId))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     final (u, packageName, ownerId) = result[0];
     expect(u.name, equals('Alice'));
@@ -393,8 +378,7 @@ void main() {
               .select((packageName, ownerId, likes) => (packageName, ownerId)),
         )
         .on((u, packageName, ownerId) => u.userId.equals(ownerId))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     final (u, packageName, ownerId) = result[0];
     expect(u.name, equals('Alice'));
@@ -414,8 +398,7 @@ void main() {
                 .asExpr
           ),
         )
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     final (p, name) = result[0];
     expect(p.packageName, anyOf(equals('foo'), equals('bar')));
@@ -431,8 +414,7 @@ void main() {
             db.users.where((u) => u.userId.equals(p.ownerId)).first.asExpr,
           ),
         )
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     final (p, user) = result[0];
     expect(p.packageName, anyOf(equals('foo'), equals('bar')));
@@ -553,8 +535,7 @@ void main() {
                 .asExpr,
           ),
         )
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     final (user1, hasPackage1) = result[0];
     final (user2, hasPackage2) = result[1];
@@ -577,8 +558,7 @@ void main() {
                 .not(),
           ),
         )
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     final (user1, hasPackage1) = result[0];
     final (user2, hasPackage2) = result[1];
@@ -599,8 +579,7 @@ void main() {
               .not(),
         )
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(1));
     expect(result, contains('Bob'));
   });
@@ -615,8 +594,7 @@ void main() {
               .assertNotNull(),
         )
         .select((u) => (u.name,))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(1));
     expect(result, contains('Alice'));
   });
@@ -630,8 +608,7 @@ void main() {
               owner: u.name,
               package: p.packageName,
             ))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     expect(result[0].owner, equals('Alice'));
     expect(result[0].package, anyOf(equals('foo'), equals('bar')));
@@ -678,38 +655,35 @@ void main() {
   });
 
   _test('db.packages.select(ownerId).distinct()', (db) async {
-    final result = await db.packages
-        .select((p) => (p.ownerId,))
-        .distinct()
-        .fetch()
-        .toList();
+    final result =
+        await db.packages.select((p) => (p.ownerId,)).distinct().fetch();
     expect(result, hasLength(1));
     expect(result, contains(1));
   });
 
   _test('db.packages.distinct()', (db) async {
-    final result = await db.packages.distinct().fetch().toList();
+    final result = await db.packages.distinct().fetch();
     expect(result, hasLength(2));
     expect(result[0].packageName, anyOf(equals('foo'), equals('bar')));
   });
 
   _test('db.packages.union(db.packages)', (db) async {
-    final result = await db.packages.union(db.packages).fetch().toList();
+    final result = await db.packages.union(db.packages).fetch();
     expect(result, hasLength(2));
   });
 
   _test('db.packages.unionAll(db.packages)', (db) async {
-    final result = await db.packages.unionAll(db.packages).fetch().toList();
+    final result = await db.packages.unionAll(db.packages).fetch();
     expect(result, hasLength(4));
   });
 
   _test('db.packages.intersect(db.packages)', (db) async {
-    final result = await db.packages.intersect(db.packages).fetch().toList();
+    final result = await db.packages.intersect(db.packages).fetch();
     expect(result, hasLength(2));
   });
 
   _test('db.packages.except(db.packages)', (db) async {
-    final result = await db.packages.except(db.packages).fetch().toList();
+    final result = await db.packages.except(db.packages).fetch();
     expect(result, hasLength(0));
   });
 
@@ -723,8 +697,7 @@ void main() {
           ),
         )
         .orderBy((r) => r.userName)
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     expect(result[0].userName, equals('Alice'));
     expect(result[0].packages, equals(2));
@@ -740,8 +713,7 @@ void main() {
               p,
               p.owner,
             ))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
   });
 
@@ -751,8 +723,7 @@ void main() {
               p.packageName,
               p.owner.name,
             ))
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(2));
     expect(result, contains(('foo', 'Alice')));
     expect(result, contains(('bar', 'Alice')));
@@ -767,8 +738,7 @@ void main() {
               .count()
               .min((like) => like.userId), // doesn't make sense, but tests min
         )
-        .fetch()
-        .toList();
+        .fetch();
     expect(result, hasLength(1));
     expect(result[0], equals(('foo', 2, 1)));
   });
@@ -840,7 +810,7 @@ void main() {
         .where((p) => p.publisher.equals(Expr.null$))
         .select((p) => (p.packageName,))
         .fetch()
-        .toList();
+        ;
     expect(result, contains('foo'));
     expect(result, hasLength(1));
   });*/

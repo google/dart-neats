@@ -695,14 +695,22 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
     ))
     ..methods.add(Method(
       (b) => b
-        ..name = 'fetch'
+        ..name = 'stream'
         ..returns = refer('Stream<${record.returnType}>')
         ..modifier = MethodModifier.asyncStar
         ..body = Code('''
-            yield* _asPositionalQuery.fetch().map((e) => (${record.fields.mapIndexed(
+            yield* _asPositionalQuery.stream().map((e) => (${record.fields.mapIndexed(
                   (i, f) => '$f: e.\$${i + 1}',
                 ).join(', ')},));
           '''),
+    ))
+    ..methods.add(Method(
+      (b) => b
+        ..name = 'fetch'
+        ..returns = refer('Future<List<${record.returnType}>>')
+        ..modifier = MethodModifier.async
+        ..lambda = true
+        ..body = Code('await stream().toList()'),
     ))
     ..methods.add(Method(
       (b) => b

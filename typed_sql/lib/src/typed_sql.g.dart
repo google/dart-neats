@@ -134,7 +134,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
     return Group._(this, handle, group, standins);
   }
 
-  Stream<A> fetch() async* {
+  Stream<A> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
     final (sql, columns, params) =
@@ -143,6 +143,8 @@ extension Query1<A> on Query<(Expr<A>,)> {
       yield decode1(row) as A;
     }
   }
+
+  Future<List<A>> fetch() async => await stream().toList();
 }
 
 extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
@@ -341,7 +343,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     return Group._(this, handle, group, standins);
   }
 
-  Stream<(A, B)> fetch() async* {
+  Stream<(A, B)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
     final decode2 = _expressions.$2._decode;
@@ -351,6 +353,8 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
       yield (decode1(row) as A, decode2(row) as B);
     }
   }
+
+  Future<List<(A, B)>> fetch() async => await stream().toList();
 }
 
 extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
@@ -570,7 +574,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     return Group._(this, handle, group, standins);
   }
 
-  Stream<(A, B, C)> fetch() async* {
+  Stream<(A, B, C)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
     final decode2 = _expressions.$2._decode;
@@ -581,6 +585,8 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
       yield (decode1(row) as A, decode2(row) as B, decode3(row) as C);
     }
   }
+
+  Future<List<(A, B, C)>> fetch() async => await stream().toList();
 }
 
 extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
@@ -815,7 +821,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     return Group._(this, handle, group, standins);
   }
 
-  Stream<(A, B, C, D)> fetch() async* {
+  Stream<(A, B, C, D)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
     final decode2 = _expressions.$2._decode;
@@ -832,6 +838,8 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
       );
     }
   }
+
+  Future<List<(A, B, C, D)>> fetch() async => await stream().toList();
 }
 
 extension SubQuery4<A, B, C, D>
@@ -1087,7 +1095,7 @@ extension Query5<A, B, C, D, E>
     return Group._(this, handle, group, standins);
   }
 
-  Stream<(A, B, C, D, E)> fetch() async* {
+  Stream<(A, B, C, D, E)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
     final decode2 = _expressions.$2._decode;
@@ -1106,6 +1114,8 @@ extension Query5<A, B, C, D, E>
       );
     }
   }
+
+  Future<List<(A, B, C, D, E)>> fetch() async => await stream().toList();
 }
 
 extension SubQuery5<A, B, C, D, E>
@@ -1388,7 +1398,7 @@ extension Query6<A, B, C, D, E, F>
     return Group._(this, handle, group, standins);
   }
 
-  Stream<(A, B, C, D, E, F)> fetch() async* {
+  Stream<(A, B, C, D, E, F)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
     final decode2 = _expressions.$2._decode;
@@ -1409,6 +1419,8 @@ extension Query6<A, B, C, D, E, F>
       );
     }
   }
+
+  Future<List<(A, B, C, D, E, F)>> fetch() async => await stream().toList();
 }
 
 extension SubQuery6<A, B, C, D, E, F>
@@ -1754,7 +1766,7 @@ extension Query7<A, B, C, D, E, F, G>
     return Group._(this, handle, group, standins);
   }
 
-  Stream<(A, B, C, D, E, F, G)> fetch() async* {
+  Stream<(A, B, C, D, E, F, G)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
     final decode2 = _expressions.$2._decode;
@@ -1777,6 +1789,8 @@ extension Query7<A, B, C, D, E, F, G>
       );
     }
   }
+
+  Future<List<(A, B, C, D, E, F, G)>> fetch() async => await stream().toList();
 }
 
 extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
@@ -2294,7 +2308,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     return Group._(this, handle, group, standins);
   }
 
-  Stream<(A, B, C, D, E, F, G, H)> fetch() async* {
+  Stream<(A, B, C, D, E, F, G, H)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
     final decode2 = _expressions.$2._decode;
@@ -2319,6 +2333,9 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
       );
     }
   }
+
+  Future<List<(A, B, C, D, E, F, G, H)>> fetch() async =>
+      await stream().toList();
 }
 
 extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
@@ -5125,7 +5142,7 @@ extension QuerySingle1<A> on QuerySingle<(Expr<A>,)> {
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a) projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
-  Future<A?> fetch() async => (await asQuery.fetch().toList()).firstOrNull;
+  Future<A?> fetch() async => (await asQuery.fetch()).firstOrNull;
 }
 
 extension QuerySingle2<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
@@ -5136,7 +5153,8 @@ extension QuerySingle2<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a, Expr<B> b) projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
-  Future<(A, B)?> fetch() async => (await asQuery.fetch().toList()).firstOrNull;
+  Future<(A, B)?> fetch() async => (await asQuery.fetch()).firstOrNull;
+  Future<(A?, B?)> fetchOrNulls() async => await fetch() ?? (null, null);
 }
 
 extension QuerySingle3<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
@@ -5148,8 +5166,9 @@ extension QuerySingle3<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
-  Future<(A, B, C)?> fetch() async =>
-      (await asQuery.fetch().toList()).firstOrNull;
+  Future<(A, B, C)?> fetch() async => (await asQuery.fetch()).firstOrNull;
+  Future<(A?, B?, C?)> fetchOrNulls() async =>
+      await fetch() ?? (null, null, null);
 }
 
 extension QuerySingle4<A, B, C, D>
@@ -5163,8 +5182,9 @@ extension QuerySingle4<A, B, C, D>
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
-  Future<(A, B, C, D)?> fetch() async =>
-      (await asQuery.fetch().toList()).firstOrNull;
+  Future<(A, B, C, D)?> fetch() async => (await asQuery.fetch()).firstOrNull;
+  Future<(A?, B?, C?, D?)> fetchOrNulls() async =>
+      await fetch() ?? (null, null, null, null);
 }
 
 extension QuerySingle5<A, B, C, D, E>
@@ -5179,8 +5199,9 @@ extension QuerySingle5<A, B, C, D, E>
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
-  Future<(A, B, C, D, E)?> fetch() async =>
-      (await asQuery.fetch().toList()).firstOrNull;
+  Future<(A, B, C, D, E)?> fetch() async => (await asQuery.fetch()).firstOrNull;
+  Future<(A?, B?, C?, D?, E?)> fetchOrNulls() async =>
+      await fetch() ?? (null, null, null, null, null);
 }
 
 extension QuerySingle6<A, B, C, D, E, F>
@@ -5198,7 +5219,9 @@ extension QuerySingle6<A, B, C, D, E, F>
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
   Future<(A, B, C, D, E, F)?> fetch() async =>
-      (await asQuery.fetch().toList()).firstOrNull;
+      (await asQuery.fetch()).firstOrNull;
+  Future<(A?, B?, C?, D?, E?, F?)> fetchOrNulls() async =>
+      await fetch() ?? (null, null, null, null, null, null);
 }
 
 extension QuerySingle7<A, B, C, D, E, F, G> on QuerySingle<
@@ -5217,7 +5240,9 @@ extension QuerySingle7<A, B, C, D, E, F, G> on QuerySingle<
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
   Future<(A, B, C, D, E, F, G)?> fetch() async =>
-      (await asQuery.fetch().toList()).firstOrNull;
+      (await asQuery.fetch()).firstOrNull;
+  Future<(A?, B?, C?, D?, E?, F?, G?)> fetchOrNulls() async =>
+      await fetch() ?? (null, null, null, null, null, null, null);
 }
 
 extension QuerySingle8<A, B, C, D, E, F, G, H> on QuerySingle<
@@ -5254,7 +5279,9 @@ extension QuerySingle8<A, B, C, D, E, F, G, H> on QuerySingle<
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
   Future<(A, B, C, D, E, F, G, H)?> fetch() async =>
-      (await asQuery.fetch().toList()).firstOrNull;
+      (await asQuery.fetch()).firstOrNull;
+  Future<(A?, B?, C?, D?, E?, F?, G?, H?)> fetchOrNulls() async =>
+      await fetch() ?? (null, null, null, null, null, null, null, null);
 }
 
 extension Return1<A> on Return<(Expr<A>,)> {

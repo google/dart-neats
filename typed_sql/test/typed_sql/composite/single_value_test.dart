@@ -104,7 +104,7 @@ void main() {
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2));
 
-      final result = await qA.union(qB).fetch().toList();
+      final result = await qA.union(qB).fetch();
       check(result).unorderedEquals(c.union);
     });
 
@@ -117,7 +117,7 @@ void main() {
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2));
 
-      final result = await qA.unionAll(qB).fetch().toList();
+      final result = await qA.unionAll(qB).fetch();
       check(result).deepEquals(c.unionAll);
     });
 
@@ -130,7 +130,7 @@ void main() {
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2));
 
-      final result = await qA.intersect(qB).fetch().toList();
+      final result = await qA.intersect(qB).fetch();
       check(result).unorderedEquals(c.intersect);
     });
 
@@ -143,7 +143,7 @@ void main() {
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2));
 
-      final result = await qA.except(qB).fetch().toList();
+      final result = await qA.except(qB).fetch();
       check(result).deepEquals(c.except);
     });
   }

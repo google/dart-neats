@@ -45,7 +45,7 @@ void main() {
     final q1 = db.select((db.items.byKey(id: 42).asExpr,)).asQuery;
     final q2 = db.select((literal(null),)).asQuery;
 
-    final result = await q1.unionAll(q2).fetch().toList();
+    final result = await q1.unionAll(q2).fetch();
     check(result).deepEquals([null, null]);
   });
 
@@ -57,7 +57,7 @@ void main() {
             ));
     final q2 = db.select((literal(null), literal(42))).asQuery;
 
-    final result = await q1.unionAll(q2).fetch().toList();
+    final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
     check(result).first.equals((null, 42));
   });
@@ -71,7 +71,7 @@ void main() {
             ));
     final q2 = db.select((literal(null), literal(42))).asQuery;
 
-    final result = await q1.unionAll(q2).fetch().toList();
+    final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
     final (item, i) = result.first;
     check(item).isNotNull().value.equals('hello');
@@ -90,7 +90,7 @@ void main() {
         .where((v) => literal(42) > literal(21))
         .select((v) => (v,));
 
-    final result = await q1.unionAll(q2).fetch().toList();
+    final result = await q1.unionAll(q2).fetch();
     check(result).deepEquals([null, null]);
   });
 
