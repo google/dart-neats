@@ -95,6 +95,16 @@ final _cases = [
     values: [literal(true), literal(false), literal(true)],
     distinct: {true, false},
   ),
+  (
+    name: 'true, true',
+    values: [literal(true), literal(true)],
+    distinct: {true},
+  ),
+  (
+    name: 'false, false',
+    values: [literal(false), literal(false)],
+    distinct: {false},
+  ),
 ];
 
 void main() {
