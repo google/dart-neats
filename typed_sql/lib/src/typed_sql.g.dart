@@ -3227,16 +3227,16 @@ extension Aggregate1Project1<A, B> on Aggregation<(Expr<A>,), (Expr<B>,)> {
         ),
       );
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> sum<C extends num>(
-          Expr<C> Function(Expr<A> a) aggregateBuilder) =>
+          Expr<C?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<double>)> avg<C extends num>(
-          Expr<C> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<double?>)> avg<C extends num>(
+          Expr<C?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> min<C extends Comparable>(
-          Expr<C> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C?>)> min<C extends Comparable>(
+          Expr<C?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> max<C extends Comparable>(
-          Expr<C> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C?>)> max<C extends Comparable>(
+          Expr<C?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>,), (Expr<B>, Expr<int>)> count() =>
       _build((a) => CountAllExpression._(), (a) => a);
@@ -3279,16 +3279,18 @@ extension Aggregate1Project2<A, B, C>
         ),
       );
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> sum<D extends num>(
-          Expr<D> Function(Expr<A> a) aggregateBuilder) =>
+          Expr<D?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<double>)> avg<D extends num>(
-          Expr<D> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<double?>)> avg<D extends num>(
+          Expr<D?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)>
-      min<D extends Comparable>(Expr<D> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D?>)>
+      min<D extends Comparable>(
+              Expr<D?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)>
-      max<D extends Comparable>(Expr<D> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D?>)>
+      max<D extends Comparable>(
+              Expr<D?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<int>)> count() =>
       _build((a) => CountAllExpression._(), (a) => a);
@@ -3333,16 +3335,18 @@ extension Aggregate1Project3<A, B, C, D>
         ),
       );
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
-      sum<E extends num>(Expr<E> Function(Expr<A> a) aggregateBuilder) =>
+      sum<E extends num>(Expr<E?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<double>)>
-      avg<E extends num>(Expr<E> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<double?>)>
+      avg<E extends num>(Expr<E?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
-      min<E extends Comparable>(Expr<E> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E?>)>
+      min<E extends Comparable>(
+              Expr<E?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
-      max<E extends Comparable>(Expr<E> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E?>)>
+      max<E extends Comparable>(
+              Expr<E?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<int>)> count() =>
       _build((a) => CountAllExpression._(), (a) => a);
@@ -3389,16 +3393,18 @@ extension Aggregate1Project4<A, B, C, D, E>
             ),
           );
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
-      sum<F extends num>(Expr<F> Function(Expr<A> a) aggregateBuilder) =>
+      sum<F extends num>(Expr<F?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<double>)>
-      avg<F extends num>(Expr<F> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<double?>)>
+      avg<F extends num>(Expr<F?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
-      min<F extends Comparable>(Expr<F> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>)>
+      min<F extends Comparable>(
+              Expr<F?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
-      max<F extends Comparable>(Expr<F> Function(Expr<A> a) aggregateBuilder) =>
+  Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>)>
+      max<F extends Comparable>(
+              Expr<F?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<int>)>
       count() => _build((a) => CountAllExpression._(), (a) => a);
@@ -3449,19 +3455,21 @@ extension Aggregate1Project5<A, B, C, D, E, F>
       );
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-      sum<G extends num>(Expr<G> Function(Expr<A> a) aggregateBuilder) =>
+      sum<G extends num>(Expr<G?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>,),
-          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double>)>
-      avg<G extends num>(Expr<G> Function(Expr<A> a) aggregateBuilder) =>
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double?>)>
+      avg<G extends num>(Expr<G?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>,),
-          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-      min<G extends Comparable>(Expr<G> Function(Expr<A> a) aggregateBuilder) =>
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)>
+      min<G extends Comparable>(
+              Expr<G?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>,),
-          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-      max<G extends Comparable>(Expr<G> Function(Expr<A> a) aggregateBuilder) =>
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)>
+      max<G extends Comparable>(
+              Expr<G?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<int>)>
@@ -3516,19 +3524,21 @@ extension Aggregate1Project6<A, B, C, D, E, F, G> on Aggregation<(Expr<A>,),
           );
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
-      sum<H extends num>(Expr<H> Function(Expr<A> a) aggregateBuilder) =>
+      sum<H extends num>(Expr<H?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>,),
-          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double>)>
-      avg<H extends num>(Expr<H> Function(Expr<A> a) aggregateBuilder) =>
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double?>)>
+      avg<H extends num>(Expr<H?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>,),
-          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
-      min<H extends Comparable>(Expr<H> Function(Expr<A> a) aggregateBuilder) =>
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)>
+      min<H extends Comparable>(
+              Expr<H?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>,),
-          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
-      max<H extends Comparable>(Expr<H> Function(Expr<A> a) aggregateBuilder) =>
+          (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)>
+      max<H extends Comparable>(
+              Expr<H?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
@@ -3611,7 +3621,7 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
         Expr<H>,
         Expr<I>
       )> sum<I extends num>(
-          Expr<I> Function(Expr<A> a) aggregateBuilder) =>
+          Expr<I?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
   Aggregation<
       (Expr<A>,),
@@ -3623,9 +3633,9 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
         Expr<F>,
         Expr<G>,
         Expr<H>,
-        Expr<double>
+        Expr<double?>
       )> avg<I extends num>(
-          Expr<I> Function(Expr<A> a) aggregateBuilder) =>
+          Expr<I?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<
       (Expr<A>,),
@@ -3637,9 +3647,9 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
         Expr<F>,
         Expr<G>,
         Expr<H>,
-        Expr<I>
+        Expr<I?>
       )> min<I extends Comparable>(
-          Expr<I> Function(Expr<A> a) aggregateBuilder) =>
+          Expr<I?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<
       (Expr<A>,),
@@ -3651,9 +3661,9 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
         Expr<F>,
         Expr<G>,
         Expr<H>,
-        Expr<I>
+        Expr<I?>
       )> max<I extends Comparable>(
-          Expr<I> Function(Expr<A> a) aggregateBuilder) =>
+          Expr<I?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
   Aggregation<
       (Expr<A>,),
@@ -3706,17 +3716,19 @@ extension Aggregate2Project1<A, B, C>
         ),
       );
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> sum<D extends num>(
-          Expr<D> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          Expr<D?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<double>)> avg<D extends num>(
-          Expr<D> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<double?>)> avg<D extends num>(
+          Expr<D?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> min<D extends Comparable>(
-          Expr<D> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
-      _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> max<D extends Comparable>(
-          Expr<D> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
-      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D?>)>
+      min<D extends Comparable>(
+              Expr<D?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D?>)>
+      max<D extends Comparable>(
+              Expr<D?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<int>)> count() =>
       _build((a, b) => CountAllExpression._(), (a) => a);
 }
@@ -3761,19 +3773,19 @@ extension Aggregate2Project2<A, B, C, D>
       );
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)>
       sum<E extends num>(
-              Expr<E> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<E?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<double>)>
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<double?>)>
       avg<E extends num>(
-              Expr<E> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<E?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)>
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E?>)>
       min<E extends Comparable>(
-              Expr<E> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<E?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)>
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E?>)>
       max<E extends Comparable>(
-              Expr<E> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<E?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<int>)> count() =>
       _build((a, b) => CountAllExpression._(), (a) => a);
@@ -3821,19 +3833,19 @@ extension Aggregate2Project3<A, B, C, D, E>
           );
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
       sum<F extends num>(
-              Expr<F> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<F?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<double>)>
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<double?>)>
       avg<F extends num>(
-              Expr<F> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<F?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F?>)>
       min<F extends Comparable>(
-              Expr<F> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<F?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F?>)>
       max<F extends Comparable>(
-              Expr<F> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<F?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<int>)>
       count() => _build((a, b) => CountAllExpression._(), (a) => a);
@@ -3884,20 +3896,20 @@ extension Aggregate2Project4<A, B, C, D, E, F>
           );
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       sum<G extends num>(
-              Expr<G> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<G?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>),
-      (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double>)> avg<G extends num>(
-          Expr<G> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+      (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double?>)> avg<G extends num>(
+          Expr<G?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-      min<G extends Comparable>(
-              Expr<G> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
-          _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-      max<G extends Comparable>(
-              Expr<G> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
-          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+      (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> min<G extends Comparable>(
+          Expr<G?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>),
+      (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> max<G extends Comparable>(
+          Expr<G?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<int>)>
       count() => _build((a, b) => CountAllExpression._(), (a) => a);
@@ -3950,22 +3962,22 @@ extension Aggregate2Project5<A, B, C, D, E, F, G> on Aggregation<
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       sum<H extends num>(
-              Expr<H> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<H?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>),
-          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double>)>
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double?>)>
       avg<H extends num>(
-              Expr<H> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<H?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>),
-          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)>
       min<H extends Comparable>(
-              Expr<H> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<H?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>),
-          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)>
       max<H extends Comparable>(
-              Expr<H> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<H?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
@@ -4023,22 +4035,22 @@ extension Aggregate2Project6<A, B, C, D, E, F, G, H> on Aggregation<
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
       sum<I extends num>(
-              Expr<I> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<I?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>),
-          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double>)>
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double?>)>
       avg<I extends num>(
-              Expr<I> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<I?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>),
-          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)>
       min<I extends Comparable>(
-              Expr<I> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<I?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>),
-          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
+          (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)>
       max<I extends Comparable>(
-              Expr<I> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
+              Expr<I?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
@@ -4083,22 +4095,26 @@ extension Aggregate3Project1<A, B, C, D>
           )),
         ),
       );
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> sum<
-              E extends num>(
-          Expr<E> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<double>)> avg<
-              E extends num>(
-          Expr<E> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> min<
-              E extends Comparable>(
-          Expr<E> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> max<
-              E extends Comparable>(
-          Expr<E> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)>
+      sum<E extends num>(
+              Expr<E?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<double?>)>
+      avg<E extends num>(
+              Expr<E?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E?>)>
+      min<E extends Comparable>(
+              Expr<E?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E?>)>
+      max<E extends Comparable>(
+              Expr<E?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<int>)> count() =>
       _build((a, b, c) => CountAllExpression._(), (a) => a);
 }
@@ -4143,22 +4159,26 @@ extension Aggregate3Project2<A, B, C, D, E>
               )),
             ),
           );
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> sum<
-              F extends num>(
-          Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
-      (Expr<D>, Expr<E>, Expr<double>)> avg<F extends num>(
-          Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> min<
-              F extends Comparable>(
-          Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> max<
-              F extends Comparable>(
-          Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)>
+      sum<F extends num>(
+              Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<double?>)>
+      avg<F extends num>(
+              Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F?>)>
+      min<F extends Comparable>(
+              Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F?>)>
+      max<F extends Comparable>(
+              Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<int>)>
       count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
 }
@@ -4206,21 +4226,25 @@ extension Aggregate3Project3<A, B, C, D, E, F>
               )),
             ),
           );
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      sum<G extends num>(
+              Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
-      (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> sum<G extends num>(
-          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
-      (Expr<D>, Expr<E>, Expr<F>, Expr<double>)> avg<G extends num>(
-          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      (Expr<D>, Expr<E>, Expr<F>, Expr<double?>)> avg<G extends num>(
+          Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+              aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
-      (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> min<G extends Comparable>(
-          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> min<G extends Comparable>(
+          Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+              aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
-      (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> max<G extends Comparable>(
-          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> max<G extends Comparable>(
+          Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+              aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<int>)>
@@ -4273,19 +4297,23 @@ extension Aggregate3Project4<A, B, C, D, E, F, G> on Aggregation<
       );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> sum<H extends num>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+              aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
-      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double>)> avg<H extends num>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double?>)> avg<H extends num>(
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+              aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
-      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> min<H extends Comparable>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)> min<H extends Comparable>(
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+              aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
-      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> max<H extends Comparable>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
+      (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)> max<H extends Comparable>(
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+              aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
@@ -4339,54 +4367,30 @@ extension Aggregate3Project5<A, B, C, D, E, F, G, H> on Aggregation<
           )),
         ),
       );
-  Aggregation<
-      (Expr<A>, Expr<B>, Expr<C>),
-      (
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>,
-        Expr<I>
-      )> sum<I extends num>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, SumExpression._);
-  Aggregation<
-      (Expr<A>, Expr<B>, Expr<C>),
-      (
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>,
-        Expr<double>
-      )> avg<I extends num>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, AvgExpression._);
-  Aggregation<
-      (Expr<A>, Expr<B>, Expr<C>),
-      (
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>,
-        Expr<I>
-      )> min<I extends Comparable>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, MinExpression._);
-  Aggregation<
-      (Expr<A>, Expr<B>, Expr<C>),
-      (
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>,
-        Expr<I>
-      )> max<I extends Comparable>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder) =>
-      _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+          (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
+      sum<I extends num>(
+              Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, SumExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+          (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double?>)>
+      avg<I extends num>(
+              Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, AvgExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+          (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)>
+      min<I extends Comparable>(
+              Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>),
+          (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)>
+      max<I extends Comparable>(
+              Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+                  aggregateBuilder) =>
+          _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
       count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
@@ -4435,22 +4439,22 @@ extension Aggregate4Project1<A, B, C, D, E>
           );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)>
       sum<F extends num>(
-              Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<double>)>
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<double?>)>
       avg<F extends num>(
-              Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)>
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F?>)>
       min<F extends Comparable>(
-              Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)>
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F?>)>
       max<F extends Comparable>(
-              Expr<F> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<int>)>
@@ -4503,24 +4507,24 @@ extension Aggregate4Project2<A, B, C, D, E, F>
           );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)>
       sum<G extends num>(
-              Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
-      (Expr<E>, Expr<F>, Expr<double>)> avg<G extends num>(
-          Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+      (Expr<E>, Expr<F>, Expr<double?>)> avg<G extends num>(
+          Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)>
-      min<G extends Comparable>(
-              Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-                  aggregateBuilder) =>
-          _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)>
-      max<G extends Comparable>(
-              Expr<G> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-                  aggregateBuilder) =>
-          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G?>)> min<G extends Comparable>(
+          Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+      (Expr<E>, Expr<F>, Expr<G?>)> max<G extends Comparable>(
+          Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
           (Expr<E>, Expr<F>, Expr<int>)>
       count() => _build((a, b, c, d) => CountAllExpression._(), (a) => a);
@@ -4573,22 +4577,22 @@ extension Aggregate4Project3<A, B, C, D, E, F, G> on Aggregation<
       );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> sum<H extends num>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
-      (Expr<E>, Expr<F>, Expr<G>, Expr<double>)> avg<H extends num>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+      (Expr<E>, Expr<F>, Expr<G>, Expr<double?>)> avg<H extends num>(
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
-      (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> min<H extends Comparable>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H?>)> min<H extends Comparable>(
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
-      (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> max<H extends Comparable>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H?>)> max<H extends Comparable>(
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
@@ -4646,22 +4650,22 @@ extension Aggregate4Project4<A, B, C, D, E, F, G, H> on Aggregation<
       );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)> sum<I extends num>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
-      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double>)> avg<I extends num>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double?>)> avg<I extends num>(
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
-      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)> min<I extends Comparable>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)> min<I extends Comparable>(
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
-      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)> max<I extends Comparable>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+      (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)> max<I extends Comparable>(
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
@@ -4715,28 +4719,28 @@ extension Aggregate5Project1<A, B, C, D, E, F>
           );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)>
       sum<G extends num>(
-              Expr<G> Function(
+              Expr<G?> Function(
                       Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
-      (Expr<F>, Expr<double>)> avg<G extends num>(
-          Expr<G> Function(
+      (Expr<F>, Expr<double?>)> avg<G extends num>(
+          Expr<G?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)>
-      min<G extends Comparable>(
-              Expr<G> Function(
-                      Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-                  aggregateBuilder) =>
-          _build(aggregateBuilder, MinExpression._);
-  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)>
-      max<G extends Comparable>(
-              Expr<G> Function(
-                      Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-                  aggregateBuilder) =>
-          _build(aggregateBuilder, MaxExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G?>)> min<G extends Comparable>(
+          Expr<G?> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MinExpression._);
+  Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+      (Expr<F>, Expr<G?>)> max<G extends Comparable>(
+          Expr<G?> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              aggregateBuilder) =>
+      _build(aggregateBuilder, MaxExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
           (Expr<F>, Expr<int>)>
       count() => _build((a, b, c, d, e) => CountAllExpression._(), (a) => a);
@@ -4789,25 +4793,25 @@ extension Aggregate5Project2<A, B, C, D, E, F, G> on Aggregation<
       );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H>)> sum<H extends num>(
-          Expr<H> Function(
+          Expr<H?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
-      (Expr<F>, Expr<G>, Expr<double>)> avg<H extends num>(
-          Expr<H> Function(
+      (Expr<F>, Expr<G>, Expr<double?>)> avg<H extends num>(
+          Expr<H?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
-      (Expr<F>, Expr<G>, Expr<H>)> min<H extends Comparable>(
-          Expr<H> Function(
+      (Expr<F>, Expr<G>, Expr<H?>)> min<H extends Comparable>(
+          Expr<H?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
-      (Expr<F>, Expr<G>, Expr<H>)> max<H extends Comparable>(
-          Expr<H> Function(
+      (Expr<F>, Expr<G>, Expr<H?>)> max<H extends Comparable>(
+          Expr<H?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
@@ -4866,25 +4870,25 @@ extension Aggregate5Project3<A, B, C, D, E, F, G, H> on Aggregation<
       );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H>, Expr<I>)> sum<I extends num>(
-          Expr<I> Function(
+          Expr<I?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
-      (Expr<F>, Expr<G>, Expr<H>, Expr<double>)> avg<I extends num>(
-          Expr<I> Function(
+      (Expr<F>, Expr<G>, Expr<H>, Expr<double?>)> avg<I extends num>(
+          Expr<I?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
-      (Expr<F>, Expr<G>, Expr<H>, Expr<I>)> min<I extends Comparable>(
-          Expr<I> Function(
+      (Expr<F>, Expr<G>, Expr<H>, Expr<I?>)> min<I extends Comparable>(
+          Expr<I?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
-      (Expr<F>, Expr<G>, Expr<H>, Expr<I>)> max<I extends Comparable>(
-          Expr<I> Function(
+      (Expr<F>, Expr<G>, Expr<H>, Expr<I?>)> max<I extends Comparable>(
+          Expr<I?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
@@ -4941,25 +4945,25 @@ extension Aggregate6Project1<A, B, C, D, E, F, G> on Aggregation<
       );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H>)> sum<H extends num>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
-      (Expr<G>, Expr<double>)> avg<H extends num>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+      (Expr<G>, Expr<double?>)> avg<H extends num>(
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
-      (Expr<G>, Expr<H>)> min<H extends Comparable>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+      (Expr<G>, Expr<H?>)> min<H extends Comparable>(
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
-      (Expr<G>, Expr<H>)> max<H extends Comparable>(
-          Expr<H> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+      (Expr<G>, Expr<H?>)> max<H extends Comparable>(
+          Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
@@ -5019,25 +5023,25 @@ extension Aggregate6Project2<A, B, C, D, E, F, G, H> on Aggregation<
       );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H>, Expr<I>)> sum<I extends num>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
-      (Expr<G>, Expr<H>, Expr<double>)> avg<I extends num>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+      (Expr<G>, Expr<H>, Expr<double?>)> avg<I extends num>(
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
-      (Expr<G>, Expr<H>, Expr<I>)> min<I extends Comparable>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+      (Expr<G>, Expr<H>, Expr<I?>)> min<I extends Comparable>(
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
-      (Expr<G>, Expr<H>, Expr<I>)> max<I extends Comparable>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+      (Expr<G>, Expr<H>, Expr<I?>)> max<I extends Comparable>(
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
@@ -5106,25 +5110,25 @@ extension Aggregate7Project1<A, B, C, D, E, F, G, H> on Aggregation<
       );
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
       (Expr<H>, Expr<I>)> sum<I extends num>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
-      (Expr<H>, Expr<double>)> avg<I extends num>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+      (Expr<H>, Expr<double?>)> avg<I extends num>(
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
-      (Expr<H>, Expr<I>)> min<I extends Comparable>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+      (Expr<H>, Expr<I?>)> min<I extends Comparable>(
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
-      (Expr<H>, Expr<I>)> max<I extends Comparable>(
-          Expr<I> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+      (Expr<H>, Expr<I?>)> max<I extends Comparable>(
+          Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);

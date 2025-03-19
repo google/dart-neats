@@ -300,32 +300,37 @@ final class ExistsExpression extends SingleValueExpr<bool> with _ExprBoolean {
 }
 
 final class SumExpression<T extends num> extends SingleValueExpr<T> {
-  final Expr<T> value;
+  final Expr<T?> value;
   SumExpression._(this.value) : super._();
 
   @override
-  _ExprType<T> get _type => value._type;
+  _ExprType<T> get _type => value._type as _ExprType<T>;
 }
 
-final class AvgExpression extends SingleValueExpr<double> with _ExprReal {
-  final Expr<num> value;
+// AVG returns NULL, if applied to the empty set of values, also it ignores
+// NULL and will return NULL if applied to set of NULLs
+final class AvgExpression extends SingleValueExpr<double?> {
+  final Expr<num?> value;
   AvgExpression._(this.value) : super._();
+
+  @override
+  final _type = ColumnType.real;
 }
 
-final class MinExpression<T extends Comparable> extends SingleValueExpr<T> {
-  final Expr<T> value;
+final class MinExpression<T extends Comparable> extends SingleValueExpr<T?> {
+  final Expr<T?> value;
   MinExpression._(this.value) : super._();
 
   @override
-  _ExprType<T> get _type => value._type;
+  _ExprType<T?> get _type => value._type;
 }
 
-final class MaxExpression<T extends Comparable> extends SingleValueExpr<T> {
-  final Expr<T> value;
+final class MaxExpression<T extends Comparable> extends SingleValueExpr<T?> {
+  final Expr<T?> value;
   MaxExpression._(this.value) : super._();
 
   @override
-  _ExprType<T> get _type => value._type;
+  _ExprType<T?> get _type => value._type;
 }
 
 final class CountAllExpression extends SingleValueExpr<int> with _ExprInteger {

@@ -401,7 +401,7 @@ final class _PostgresDialect extends SqlDialect {
           ),
         ExistsExpression(:final query) => 'EXISTS (${clause(query, ctx).$1})',
         SumExpression<num>(:final value) =>
-          'TOTAL(${expr(value, ctx)})', // We'll need to use COALESCE(SUM(a), 0.0) in postgres!
+          'COALESCE(SUM(${expr(value, ctx)}), 0)',
         AvgExpression(:final value) => 'AVG(${expr(value, ctx)})',
         MinExpression<Comparable>(:final value) => 'MIN(${expr(value, ctx)})',
         MaxExpression<Comparable>(:final value) => 'MAX(${expr(value, ctx)})',
@@ -430,6 +430,9 @@ extension on QueryContext {
       case Uint8List _:
         final index = param(value);
         return '\$$index::BYTEA';
+      case DateTime _:
+        final index = param(value.toUtc());
+        return '\$$index::TIMESTAMP WITH TIME ZONE';
     }
     final index = param(value);
     return '\$$index';

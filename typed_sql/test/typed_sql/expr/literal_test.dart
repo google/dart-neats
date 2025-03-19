@@ -33,9 +33,12 @@ final _values = <Object?>[
   3.14,
   -3.14,
   0.0,
-  DateTime(2025),
   DateTime(2025).toUtc(),
 ];
+
+final epoch = DateTime.fromMicrosecondsSinceEpoch(0).toUtc();
+final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
+final yearNoUtc = DateTime(2025);
 
 void main() {
   final r = TestRunner<Schema>(resetDatabaseForEachTest: false);
@@ -46,6 +49,22 @@ void main() {
       check(result).equals(value);
     });
   }
+
+  r.addTest('literal(epoch)', (db) async {
+    final result = await db.select((literal(epoch),)).fetch();
+    check(result).equals(epoch);
+  });
+
+  r.addTest('literal(today)', (db) async {
+    final result = await db.select((literal(today),)).fetch();
+    check(result).equals(today);
+  });
+
+  r.addTest('literal(yearNoUtc) (allow for conversion to UTC)', (db) async {
+    final result = await db.select((literal(yearNoUtc),)).fetch();
+    // We allow for conversion to UTC
+    check(result!.isAtSameMomentAs(yearNoUtc)).isTrue();
+  });
 
   r.addTest('literal(UintList)', (db) async {
     final result = await db.select(

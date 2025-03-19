@@ -255,65 +255,80 @@ extension SubQuery1AsExpr<T> on SubQuery<(Expr<T>,)> {
 
 /* --------------------- Query aggregations ---------------------- */
 
-extension QueryNumber<T extends num> on Query<(Expr<T>,)> {
-  QuerySingle<(Expr<T>,)> sum() =>
-      select<(Expr<T>,)>((a) => (SumExpression._(a),)).first;
+extension QueryInteger on Query<(Expr<int?>,)> {
+  QuerySingle<(Expr<int>,)> sum() => select((a) => (SumExpression._(a),)).first;
 
-  QuerySingle<(Expr<double>,)> avg() =>
-      select<(Expr<double>,)>((a) => (AvgExpression._(a),)).first;
+  QuerySingle<(Expr<double?>,)> avg() =>
+      select((a) => (AvgExpression._(a),)).first;
 
-  QuerySingle<(Expr<T>,)> min() =>
-      select<(Expr<T>,)>((a) => (MinExpression._(a),)).first;
-
-  QuerySingle<(Expr<T>,)> max() =>
-      select<(Expr<T>,)>((a) => (MaxExpression._(a),)).first;
-}
-
-extension QueryDateTime on Query<(Expr<DateTime>,)> {
-  QuerySingle<(Expr<DateTime>,)> min() =>
+  QuerySingle<(Expr<int?>,)> min() =>
       select((a) => (MinExpression._(a),)).first;
 
-  QuerySingle<(Expr<DateTime>,)> max() =>
+  QuerySingle<(Expr<int?>,)> max() =>
       select((a) => (MaxExpression._(a),)).first;
 }
 
-extension QueryString on Query<(Expr<String>,)> {
-  QuerySingle<(Expr<String>,)> min() =>
+extension QueryReal on Query<(Expr<double?>,)> {
+  QuerySingle<(Expr<double>,)> sum() =>
+      select((a) => (SumExpression._(a),)).first;
+
+  QuerySingle<(Expr<double?>,)> avg() =>
+      select((a) => (AvgExpression._(a),)).first;
+
+  QuerySingle<(Expr<double?>,)> min() =>
       select((a) => (MinExpression._(a),)).first;
 
-  QuerySingle<(Expr<String>,)> max() =>
+  QuerySingle<(Expr<double?>,)> max() =>
       select((a) => (MaxExpression._(a),)).first;
 }
 
-extension SubQueryNumber<T extends num> on SubQuery<(Expr<T>,)> {
-  Expr<T> sum() =>
-      select<(Expr<T>,)>((a) => (SumExpression._(a),)).first.assertNotNull();
+extension QueryDateTime on Query<(Expr<DateTime?>,)> {
+  QuerySingle<(Expr<DateTime?>,)> min() =>
+      select((a) => (MinExpression._(a),)).first;
 
-  Expr<double> avg() => select<(Expr<double>,)>((a) => (AvgExpression._(a),))
-      .first
-      .assertNotNull();
-
-  Expr<T> min() =>
-      select<(Expr<T>,)>((a) => (MinExpression._(a),)).first.assertNotNull();
-
-  Expr<T> max() =>
-      select<(Expr<T>,)>((a) => (MaxExpression._(a),)).first.assertNotNull();
+  QuerySingle<(Expr<DateTime?>,)> max() =>
+      select((a) => (MaxExpression._(a),)).first;
 }
 
-extension SubQueryDateTime on SubQuery<(Expr<DateTime>,)> {
-  Expr<DateTime> min() =>
-      select((a) => (MinExpression._(a),)).first.assertNotNull();
+extension QueryString on Query<(Expr<String?>,)> {
+  QuerySingle<(Expr<String?>,)> min() =>
+      select((a) => (MinExpression._(a),)).first;
 
-  Expr<DateTime> max() =>
-      select((a) => (MaxExpression._(a),)).first.assertNotNull();
+  QuerySingle<(Expr<String?>,)> max() =>
+      select((a) => (MaxExpression._(a),)).first;
 }
 
-extension SubQueryString on SubQuery<(Expr<String>,)> {
-  Expr<String> min() =>
-      select((a) => (MinExpression._(a),)).first.assertNotNull();
+extension SubQueryInteger on SubQuery<(Expr<int?>,)> {
+  Expr<int> sum() => select((a) => (SumExpression._(a),)).first.assertNotNull();
 
-  Expr<String> max() =>
-      select((a) => (MaxExpression._(a),)).first.assertNotNull();
+  Expr<double?> avg() => select((a) => (AvgExpression._(a),)).first;
+
+  Expr<int?> min() => select((a) => (MinExpression._(a),)).first;
+
+  Expr<int?> max() => select((a) => (MaxExpression._(a),)).first;
+}
+
+extension SubQueryReal on SubQuery<(Expr<double?>,)> {
+  Expr<double> sum() =>
+      select((a) => (SumExpression._(a),)).first.assertNotNull();
+
+  Expr<double?> avg() => select((a) => (AvgExpression._(a),)).first;
+
+  Expr<double?> min() => select((a) => (MinExpression._(a),)).first;
+
+  Expr<double?> max() => select((a) => (MaxExpression._(a),)).first;
+}
+
+extension SubQueryDateTime on SubQuery<(Expr<DateTime?>,)> {
+  Expr<DateTime?> min() => select((a) => (MinExpression._(a),)).first;
+
+  Expr<DateTime?> max() => select((a) => (MaxExpression._(a),)).first;
+}
+
+extension SubQueryString on SubQuery<(Expr<String?>,)> {
+  Expr<String?> min() => select((a) => (MinExpression._(a),)).first;
+
+  Expr<String?> max() => select((a) => (MaxExpression._(a),)).first;
 }
 
 extension QueryAny<T extends Record> on Query<T> {

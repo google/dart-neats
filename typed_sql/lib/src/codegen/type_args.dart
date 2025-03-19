@@ -22,12 +22,12 @@ String typArgedExprArgumentList(int i) {
 }
 
 /// `['Expr<A>', 'Expr<B>']` for i = 2
-List<String> typArgedExprAsList(int i, [int offset = 0]) {
-  if (i == 1) {
-    return ['Expr<${typeArg[0 + offset]}>'];
-  }
-  return List.generate(i, (i) => 'Expr<${typeArg[i + offset]}>');
-}
+List<String> typArgedExprAsList(int i, [int offset = 0]) =>
+    toArgedExprList(typeArg.skip(offset).take(i));
+
+/// `['A', 'B'] -> ['Expr<A>', 'Expr<B>']`
+List<String> toArgedExprList(Iterable<String> typArgs) =>
+    typArgs.map((typArg) => 'Expr<$typArg>').toList();
 
 /// Render a list of type expressions to a positional tuple.
 String listToTuple(List<String> types) {

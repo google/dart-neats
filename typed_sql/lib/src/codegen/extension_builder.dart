@@ -1016,6 +1016,10 @@ Spec _buildAggregationExtension(int i, int j) {
   final t2 = typArgedExprTuple(j + 1, i);
   final T = typeArg[i + j]; // typeArg is zero indexed, so +1 is not necessary!
 
+  // Types in the returned projection, where T is T?
+  final t2nullable =
+      listToTuple(toArgedExprList([...typeArg.skip(i).take(j), '$T?']));
+
   return Extension((b) => b
     ..name = 'Aggregate${i}Project$j'
     ..types.addAll(typeArg.take(i + j).map(refer))
@@ -1089,7 +1093,8 @@ Spec _buildAggregationExtension(int i, int j) {
         ..requiredParameters.add(Parameter(
           (b) => b
             ..name = 'aggregateBuilder'
-            ..type = refer('Expr<$T> Function(${typArgedExprArgumentList(i)})'),
+            ..type =
+                refer('Expr<$T?> Function(${typArgedExprArgumentList(i)})'),
         ))
         ..lambda = true
         ..body = Code('_build(aggregateBuilder, SumExpression._)')),
@@ -1098,37 +1103,40 @@ Spec _buildAggregationExtension(int i, int j) {
         ..name = 'avg'
         ..returns = refer(
             'Aggregation<$S, ${listToTuple(typArgedExprAsList(j, i) + [
-                  'Expr<double>'
+                  'Expr<double?>'
                 ])}>')
         ..types.add(refer('$T extends num'))
         ..requiredParameters.add(Parameter(
           (b) => b
             ..name = 'aggregateBuilder'
-            ..type = refer('Expr<$T> Function(${typArgedExprArgumentList(i)})'),
+            ..type =
+                refer('Expr<$T?> Function(${typArgedExprArgumentList(i)})'),
         ))
         ..lambda = true
         ..body = Code('_build(aggregateBuilder, AvgExpression._)')),
 
       Method((b) => b
         ..name = 'min'
-        ..returns = refer('Aggregation<$S, $t2>')
+        ..returns = refer('Aggregation<$S, $t2nullable>')
         ..types.add(refer('$T extends Comparable'))
         ..requiredParameters.add(Parameter(
           (b) => b
             ..name = 'aggregateBuilder'
-            ..type = refer('Expr<$T> Function(${typArgedExprArgumentList(i)})'),
+            ..type =
+                refer('Expr<$T?> Function(${typArgedExprArgumentList(i)})'),
         ))
         ..lambda = true
         ..body = Code('_build(aggregateBuilder, MinExpression._)')),
 
       Method((b) => b
         ..name = 'max'
-        ..returns = refer('Aggregation<$S, $t2>')
+        ..returns = refer('Aggregation<$S, $t2nullable>')
         ..types.add(refer('$T extends Comparable'))
         ..requiredParameters.add(Parameter(
           (b) => b
             ..name = 'aggregateBuilder'
-            ..type = refer('Expr<$T> Function(${typArgedExprArgumentList(i)})'),
+            ..type =
+                refer('Expr<$T?> Function(${typArgedExprArgumentList(i)})'),
         ))
         ..lambda = true
         ..body = Code('_build(aggregateBuilder, MaxExpression._)')),
