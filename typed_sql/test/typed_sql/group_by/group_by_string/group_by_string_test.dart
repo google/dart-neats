@@ -126,7 +126,8 @@ void main() {
     });
   });
 
-  r.addTest('.groupBy(.surname, .seniority).aggretate(.count)', (db) async {
+  r.addTest('.groupBy(.surname, .seniority).aggretate(.count).where(count > 1)',
+      (db) async {
     final result = await db.employees
         .groupBy((employee) => (employee.surname, employee.seniority))
         .aggregate(
@@ -134,14 +135,34 @@ void main() {
               //
               .count(),
         )
+        .where((surname, seniority, count) => count > literal(1))
         .fetch();
     check(result).unorderedEquals({
       ('Smith', 'junior', 3),
-      ('Jones', 'junior', 1),
-      ('Jones', 'senior', 1),
       ('Williams', 'senior', 2),
       ('Brown', 'junior', 2),
       ('Brown', 'senior', 3),
+    });
+  });
+
+  r.addTest(
+      '.groupBy(.surname, .seniority).aggretate(.count).where(count > 1).select()',
+      (db) async {
+    final result = await db.employees
+        .groupBy((employee) => (employee.surname, employee.seniority))
+        .aggregate(
+          (b) => b
+              //
+              .count(),
+        )
+        .where((surname, seniority, count) => count > literal(1))
+        .select((surname, seniority, count) => (surname, seniority))
+        .fetch();
+    check(result).unorderedEquals({
+      ('Smith', 'junior'),
+      ('Williams', 'senior'),
+      ('Brown', 'junior'),
+      ('Brown', 'senior'),
     });
   });
 
@@ -150,7 +171,7 @@ void main() {
         .groupBy((employee) => (employee.seniority,))
         .aggregate(
           (b) => b
-              //
+              // without orElse() NULL gets ignored!
               .min((employee) => employee.salary.orElse(literal(0)))
               .max((employee) => employee.salary),
         )
