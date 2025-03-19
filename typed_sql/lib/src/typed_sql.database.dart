@@ -22,9 +22,6 @@ sealed class DatabaseContext<T extends Schema> {
 
   Stream<RowReader> _query(String sql, List<Object?> params) =>
       _db.query(sql, params);
-
-  Future<QueryResult> _execute(String sql, List<Object?> params) =>
-      _db.execute(sql, params);
 }
 
 final class Database<T extends Schema> extends DatabaseContext<T> {

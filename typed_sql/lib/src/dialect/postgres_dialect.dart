@@ -125,9 +125,6 @@ final class _PostgresDialect extends SqlDialect {
               (i, column) => '$column = (${expr(statement.values[i], c)})',
             )
             .join(', '),
-        // TODO: The nested subquery hacks should not be required for postgres
-        //       we did these in sqlite because DELETE FROM LIMIT only works
-        //       when sqlite is compiled with support for it.
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS _subq WHERE',
         statement.table.primaryKey
             .map((f) => '$alias.${escape(f)} = _subq.${escape(f)}')
@@ -144,6 +141,13 @@ final class _PostgresDialect extends SqlDialect {
     final (params, ctx) = QueryContext.create();
     final (sql, _) = clause(statement.where, ctx);
 
+    var returnProjection = '';
+    final returning = statement.returning;
+    if (returning != null) {
+      final c = ctx.scope(returning, returning.columns);
+      returnProjection = returning.projection.map((e) => expr(e, c)).join(', ');
+    }
+
     return (
       [
         'DELETE FROM ${escape(statement.table.name)} as _topq',
@@ -152,6 +156,7 @@ final class _PostgresDialect extends SqlDialect {
             .map((f) => '_topq.${escape(f)} = _subq.${escape(f)}')
             .join(', '),
         ')',
+        if (returnProjection.isNotEmpty) 'RETURNING $returnProjection',
       ].join(' '),
       params,
     );

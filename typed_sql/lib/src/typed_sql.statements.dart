@@ -92,6 +92,7 @@ final class UpdateStatement extends SqlStatement implements ExpressionContext {
 final class DeleteStatement extends SqlStatement {
   final TableClause table;
   final QueryClause where;
+  final ReturningClause? returning;
 
-  DeleteStatement._(this.table, this.where);
+  DeleteStatement._(this.table, this.where, this.returning);
 }

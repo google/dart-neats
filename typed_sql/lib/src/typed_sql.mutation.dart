@@ -129,6 +129,60 @@ final class InsertSingle<T extends Model> {
       returning((inserted) => (inserted,));
 }
 
+final class Delete<T extends Model> {
+  final Query<(Expr<T>,)> _query;
+  final TableDefinition<T> _table;
+
+  Delete._(this._query, this._table);
+
+  Future<void> execute() async {
+    final (sql, params) = _query._context._dialect.delete(
+      DeleteStatement._(
+        TableClause._(_table),
+        _query._from(_query._expressions.toList()),
+        null,
+      ),
+    );
+
+    await _query._context._query(sql, params).drain<void>();
+  }
+
+  Return<S> returning<S extends Record>(
+    S Function(Expr<T> updated) projectionBuilder,
+  ) {
+    final handle = Object();
+    final projection = projectionBuilder(
+      ModelExpression._(0, _table, Object())._standin(0, handle),
+    );
+
+    final table = TableClause._(_table);
+
+    return Return._(_query._context, projection, (e) {
+      return _query._context._dialect.delete(DeleteStatement._(
+        table,
+        _query._from(_query._expressions.toList()),
+        ReturningClause._(handle, table.columns, e),
+      ));
+    });
+  }
+
+  Return<(Expr<T>,)> returnDeleted() => returning((deleted) => (deleted,));
+}
+
+final class DeleteSingle<T extends Model> {
+  final Delete<T> _delete;
+  DeleteSingle._(this._delete);
+
+  Future<void> execute() async => await _delete.execute();
+
+  ReturnSingle<S> returning<S extends Record>(
+    S Function(Expr<T> deleted) projectionBuilder,
+  ) =>
+      _delete.returning(projectionBuilder).first;
+
+  ReturnSingle<(Expr<T>,)> returnDeleted() => _delete.returnDeleted().first;
+}
+
 final class ReturnSingle<T extends Record> {
   final Return<T> _return;
   ReturnSingle._(this._return);

@@ -205,8 +205,7 @@ void main() {
       final p = await db.packages.byKey(packageName: 'foo').fetch();
       expect(p, isNotNull);
     }
-    final count = await db.packages.byKey(packageName: 'foo').delete();
-    expect(count, 1);
+    await db.packages.byKey(packageName: 'foo').delete().execute();
     {
       final p = await db.packages.byKey(packageName: 'foo').fetch();
       expect(p, isNull);
@@ -218,7 +217,10 @@ void main() {
       final packages = await db.packages.fetch().toList();
       expect(packages, hasLength(2));
     }
-    await db.packages.where((p) => p.packageName.equalsLiteral('foo')).delete();
+    await db.packages
+        .where((p) => p.packageName.equalsLiteral('foo'))
+        .delete()
+        .execute();
     {
       final packages = await db.packages.fetch().toList();
       expect(packages, hasLength(1));
@@ -809,6 +811,27 @@ void main() {
         .executeAndFetch();
     expect(result, isNotNull);
     expect(result?.likes, equals(3));
+  });
+
+  _test('db.delete().returning()', (db) async {
+    final (likes, owner) = await db.packages
+        .byKey(packageName: 'foo')
+        .delete()
+        .returning((pkg) => (pkg.likes, pkg.owner))
+        .executeAndFetchOrNulls();
+    expect(likes, equals(2));
+    expect(owner!.userId, equals(1));
+    expect(owner.name, equals('Alice'));
+  });
+
+  _test('db.delete().returnDeleted()', (db) async {
+    final result = await db.packages
+        .byKey(packageName: 'foo')
+        .delete()
+        .returnDeleted()
+        .executeAndFetch();
+    expect(result, isNotNull);
+    expect(result?.likes, equals(2));
   });
 
   // TODO: Support operators on nullable values!

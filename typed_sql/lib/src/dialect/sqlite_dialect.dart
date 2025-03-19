@@ -143,6 +143,13 @@ final class _Sqlite extends SqlDialect {
     final (params, ctx) = QueryContext.create();
     final (sql, _) = clause(statement.where, ctx);
 
+    var returnProjection = '';
+    final returning = statement.returning;
+    if (returning != null) {
+      final c = ctx.scope(returning, returning.columns);
+      returnProjection = returning.projection.map((e) => expr(e, c)).join(', ');
+    }
+
     return (
       [
         'DELETE FROM ${escape(statement.table.name)} as _topq',
@@ -151,6 +158,7 @@ final class _Sqlite extends SqlDialect {
             .map((f) => '_topq.${escape(f)} = _subq.${escape(f)}')
             .join(', '),
         ')',
+        if (returnProjection.isNotEmpty) 'RETURNING $returnProjection',
       ].join(' '),
       params,
     );

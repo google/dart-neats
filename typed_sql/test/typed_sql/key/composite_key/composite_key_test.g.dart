@@ -112,14 +112,14 @@ extension TableItemExt on Table<Item> {
       );
 
   /// TODO: document delete
-  Future<void> delete({
+  DeleteSingle<Item> delete({
     required int id,
     required String name,
   }) =>
-      byKey(
-        id: id,
-        name: name,
-      ).delete();
+      ExposedForCodeGen.deleteSingle(
+        byKey(id: id, name: name),
+        _$Item._$table,
+      );
 }
 
 extension QueryItemExt on Query<(Expr<Item>,)> {
@@ -172,7 +172,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
       );
 
   /// TODO: document delete()}
-  Future<int> delete() => ExposedForCodeGen.delete(this, _$Item._$table);
+  Delete<Item> delete() => ExposedForCodeGen.delete(this, _$Item._$table);
 }
 
 extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
@@ -186,7 +186,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.updateSingle<Item>(
-        asQuery,
+        this,
         _$Item._$table,
         (item) => updateBuilder(
           item,
@@ -208,7 +208,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
     String? name,
   }) =>
       ExposedForCodeGen.updateSingle<Item>(
-        asQuery,
+        this,
         _$Item._$table,
         (item) => ExposedForCodeGen.buildUpdate<Item>([
           id != null ? literal(id) : null,
@@ -217,7 +217,8 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
       );
 
   /// TODO: document delete()
-  Future<int> delete() => asQuery.delete();
+  DeleteSingle<Item> delete() =>
+      ExposedForCodeGen.deleteSingle(this, _$Item._$table);
 }
 
 extension ExpressionItemExt on Expr<Item> {

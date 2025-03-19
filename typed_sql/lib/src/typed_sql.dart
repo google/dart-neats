@@ -144,33 +144,34 @@ final class ExposedForCodeGen {
   }
 
   static UpdateSingle<T> updateSingle<T extends Model>(
-    Query<(Expr<T>,)> query,
+    QuerySingle<(Expr<T>,)> query,
     TableDefinition<T> table,
     UpdateSet<T> Function(Expr<T> row) updateBuilder,
   ) {
+    final q = query.asQuery;
+
     final handle = Object();
-    final row = query._expressions.$1._standin(0, handle);
+    final row = q._expressions.$1._standin(0, handle);
 
     return UpdateSingle._(Update._(
-      query,
+      q,
       table,
       handle,
       updateBuilder(row),
     ));
   }
 
-  static Future<int> delete<T extends Model>(
+  static Delete<T> delete<T extends Model>(
     Query<(Expr<T>,)> query,
     TableDefinition<T> table,
-  ) async {
-    final from = query._from(query._expressions.toList());
-    final (sql, params) = query._context._dialect.delete(
-      DeleteStatement._(TableClause._(table), from),
-    );
+  ) =>
+      Delete._(query, table);
 
-    final rs = await query._context._execute(sql, params);
-    return rs.affectedRows;
-  }
+  static DeleteSingle<T> deleteSingle<T extends Model>(
+    QuerySingle<(Expr<T>,)> query,
+    TableDefinition<T> table,
+  ) =>
+      DeleteSingle._(Delete._(query.asQuery, table));
 
   // TODO: Design a solution for migrations using atlas creating dialect
   //       specific migraiton files in a folder, such that we just have to

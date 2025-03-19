@@ -114,7 +114,7 @@ Future<void> main() async {
           .toList();
 
       await tx.savePoint((sp) async {
-        await sp.users.byEmail('user@example.com').delete();
+        await sp.users.byEmail('user@example.com').delete().execute();
 
         await sp.savePoint((sp) async {
           await sp.users

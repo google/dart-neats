@@ -74,7 +74,7 @@ void main() {
     final item1 = await db.items.first.fetch();
     check(item1).isNotNull();
 
-    await db.items.where((i) => i.id.equalsLiteral(1)).delete();
+    await db.items.where((i) => i.id.equalsLiteral(1)).delete().execute();
 
     final item2 = await db.items.first.fetch();
     check(item2).isNull();

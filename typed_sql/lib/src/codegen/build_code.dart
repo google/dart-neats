@@ -387,18 +387,19 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         (b) => b
           ..name = 'delete'
           ..docs.add('/// TODO: document delete')
-          ..returns = refer('Future<void>')
+          ..returns = refer('DeleteSingle<$modelName>')
           ..optionalParameters.addAll(
             model.primaryKey.asRequiredNamedParameters,
           )
-          ..body = refer('byKey')
-              .call([], {
-                for (final field in model.primaryKey)
-                  field.name: refer(field.name),
-              })
-              .property('delete')
-              .call([])
-              .code,
+          ..lambda = true
+          ..body = Code('''
+            ExposedForCodeGen.deleteSingle(
+              byKey(
+                ${model.primaryKey.map((f) => '${f.name}: ${f.name}').join(', ')}
+              ),
+              _\$${model.name}._\$table,
+            )
+          '''),
       )),
   );
 
@@ -498,7 +499,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         (b) => b
           ..name = 'delete'
           ..docs.add('/// TODO: document delete()}')
-          ..returns = refer('Future<int>')
+          ..returns = refer('Delete<$modelName>')
           ..lambda = true
           ..body = Code('''
               ExposedForCodeGen.delete(this, _\$${model.name}._\$table)
@@ -532,7 +533,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..lambda = true
           ..body = Code('''
             ExposedForCodeGen.updateSingle<$modelName>(
-              asQuery,
+              this,
               _\$${model.name}._\$table,
               ($modelInstanceName) => updateBuilder($modelInstanceName, ({
                   ${model.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
@@ -554,7 +555,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..lambda = true
           ..body = Code('''
             ExposedForCodeGen.updateSingle<$modelName>(
-              asQuery,
+              this,
               _\$${model.name}._\$table,
               ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
                 ${model.fields.map((field) => '${field.name} != null ? literal(${field.name}) : null').join(', ')},
@@ -566,9 +567,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         (b) => b
           ..name = 'delete'
           ..docs.add('/// TODO: document delete()')
-          ..returns = refer('Future<int>')
+          ..returns = refer('DeleteSingle<$modelName>')
           ..lambda = true
-          ..body = Code('asQuery.delete()'),
+          ..body = Code(
+            'ExposedForCodeGen.deleteSingle(this, _\$${model.name}._\$table)',
+          ),
       )),
   );
 

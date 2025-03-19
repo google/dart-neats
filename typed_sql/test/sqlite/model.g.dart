@@ -142,7 +142,11 @@ extension TableUserExt on Table<User> {
       );
 
   /// TODO: document delete
-  Future<void> delete({required int userId}) => byKey(userId: userId).delete();
+  DeleteSingle<User> delete({required int userId}) =>
+      ExposedForCodeGen.deleteSingle(
+        byKey(userId: userId),
+        _$User._$table,
+      );
 }
 
 extension QueryUserExt on Query<(Expr<User>,)> {
@@ -200,7 +204,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
       where((user) => user.email.equalsLiteral(email)).first;
 
   /// TODO: document delete()}
-  Future<int> delete() => ExposedForCodeGen.delete(this, _$User._$table);
+  Delete<User> delete() => ExposedForCodeGen.delete(this, _$User._$table);
 }
 
 extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
@@ -215,7 +219,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.updateSingle<User>(
-        asQuery,
+        this,
         _$User._$table,
         (user) => updateBuilder(
           user,
@@ -240,7 +244,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
     String? email,
   }) =>
       ExposedForCodeGen.updateSingle<User>(
-        asQuery,
+        this,
         _$User._$table,
         (user) => ExposedForCodeGen.buildUpdate<User>([
           userId != null ? literal(userId) : null,
@@ -250,7 +254,8 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
       );
 
   /// TODO: document delete()
-  Future<int> delete() => asQuery.delete();
+  DeleteSingle<User> delete() =>
+      ExposedForCodeGen.deleteSingle(this, _$User._$table);
 }
 
 extension ExpressionUserExt on Expr<User> {
@@ -399,8 +404,11 @@ extension TablePackageExt on Table<Package> {
       );
 
   /// TODO: document delete
-  Future<void> delete({required String packageName}) =>
-      byKey(packageName: packageName).delete();
+  DeleteSingle<Package> delete({required String packageName}) =>
+      ExposedForCodeGen.deleteSingle(
+        byKey(packageName: packageName),
+        _$Package._$table,
+      );
 }
 
 extension QueryPackageExt on Query<(Expr<Package>,)> {
@@ -459,7 +467,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
       );
 
   /// TODO: document delete()}
-  Future<int> delete() => ExposedForCodeGen.delete(this, _$Package._$table);
+  Delete<Package> delete() => ExposedForCodeGen.delete(this, _$Package._$table);
 }
 
 extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
@@ -475,7 +483,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.updateSingle<Package>(
-        asQuery,
+        this,
         _$Package._$table,
         (package) => updateBuilder(
           package,
@@ -503,7 +511,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
     String? publisher,
   }) =>
       ExposedForCodeGen.updateSingle<Package>(
-        asQuery,
+        this,
         _$Package._$table,
         (package) => ExposedForCodeGen.buildUpdate<Package>([
           packageName != null ? literal(packageName) : null,
@@ -514,7 +522,8 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
       );
 
   /// TODO: document delete()
-  Future<int> delete() => asQuery.delete();
+  DeleteSingle<Package> delete() =>
+      ExposedForCodeGen.deleteSingle(this, _$Package._$table);
 }
 
 extension ExpressionPackageExt on Expr<Package> {
@@ -627,14 +636,14 @@ extension TableLikeExt on Table<Like> {
       );
 
   /// TODO: document delete
-  Future<void> delete({
+  DeleteSingle<Like> delete({
     required int userId,
     required String packageName,
   }) =>
-      byKey(
-        userId: userId,
-        packageName: packageName,
-      ).delete();
+      ExposedForCodeGen.deleteSingle(
+        byKey(userId: userId, packageName: packageName),
+        _$Like._$table,
+      );
 }
 
 extension QueryLikeExt on Query<(Expr<Like>,)> {
@@ -688,7 +697,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
       );
 
   /// TODO: document delete()}
-  Future<int> delete() => ExposedForCodeGen.delete(this, _$Like._$table);
+  Delete<Like> delete() => ExposedForCodeGen.delete(this, _$Like._$table);
 }
 
 extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
@@ -702,7 +711,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.updateSingle<Like>(
-        asQuery,
+        this,
         _$Like._$table,
         (like) => updateBuilder(
           like,
@@ -724,7 +733,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
     String? packageName,
   }) =>
       ExposedForCodeGen.updateSingle<Like>(
-        asQuery,
+        this,
         _$Like._$table,
         (like) => ExposedForCodeGen.buildUpdate<Like>([
           userId != null ? literal(userId) : null,
@@ -733,7 +742,8 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
       );
 
   /// TODO: document delete()
-  Future<int> delete() => asQuery.delete();
+  DeleteSingle<Like> delete() =>
+      ExposedForCodeGen.deleteSingle(this, _$Like._$table);
 }
 
 extension ExpressionLikeExt on Expr<Like> {
