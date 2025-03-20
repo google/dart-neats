@@ -297,7 +297,7 @@ final class _PostgresDialect extends SqlDialect {
               ...columns1.mapIndexed((i, c) => 't1.${escape(c)} AS t1_$i'),
               ...columns2.mapIndexed((i, c) => 't2.${escape(c)} AS t2_$i'),
             ].join(', '),
-            'FROM ($sql1) as t1 JOIN ($sql2) as t2',
+            'FROM ($sql1) as t1 CROSS JOIN ($sql2) as t2',
           ].join(' '),
           [
             ...columns1.mapIndexed((i, c) => 't1_$i'),

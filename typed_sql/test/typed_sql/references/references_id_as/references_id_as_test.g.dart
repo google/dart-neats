@@ -1,0 +1,550 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'references_id_as_test.dart';
+
+// **************************************************************************
+// Generator: _TypedSqlBuilder
+// **************************************************************************
+
+extension TestDatabaseSchema on DatabaseContext<TestDatabase> {
+  static const _$tables = [_$Author._$table, _$Book._$table];
+
+  /// TODO: Propagate documentation for tables!
+  Table<Author> get authors => ExposedForCodeGen.declareTable(
+        this,
+        _$Author._$table,
+      );
+
+  /// TODO: Propagate documentation for tables!
+  Table<Book> get books => ExposedForCodeGen.declareTable(
+        this,
+        _$Book._$table,
+      );
+  Future<void> createTables() async => ExposedForCodeGen.createTables(
+        context: this,
+        tables: _$tables,
+      );
+}
+
+String createTestDatabaseTables(SqlDialect dialect) =>
+    ExposedForCodeGen.createTableSchema(
+      dialect: dialect,
+      tables: TestDatabaseSchema._$tables,
+    );
+
+final class _$Author extends Author {
+  _$Author._(
+    this.authorId,
+    this.firstname,
+    this.lastname,
+  );
+
+  @override
+  final int authorId;
+
+  @override
+  final String firstname;
+
+  @override
+  final String lastname;
+
+  static const _$table = (
+    tableName: 'authors',
+    columns: <String>['authorId', 'firstname', 'lastname'],
+    columnInfo: <({
+      ColumnType type,
+      bool isNotNull,
+      Object? defaultValue,
+      bool autoIncrement,
+    })>[
+      (
+        type: ExposedForCodeGen.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+      ),
+      (
+        type: ExposedForCodeGen.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        type: ExposedForCodeGen.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      )
+    ],
+    primaryKey: <String>['authorId'],
+    unique: <List<String>>[],
+    foreignKeys: <({
+      String name,
+      List<String> columns,
+      String referencedTable,
+      List<String> referencedColumns,
+    })>[],
+    readModel: _$Author._$fromDatabase,
+  );
+
+  static Author? _$fromDatabase(RowReader row) {
+    final authorId = row.readInt();
+    final firstname = row.readString();
+    final lastname = row.readString();
+    if (authorId == null && firstname == null && lastname == null) {
+      return null;
+    }
+    return _$Author._(authorId!, firstname!, lastname!);
+  }
+
+  @override
+  String toString() =>
+      'Author(authorId: "$authorId", firstname: "$firstname", lastname: "$lastname")';
+}
+
+extension TableAuthorExt on Table<Author> {
+  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
+  InsertSingle<Author> insertLiteral({
+    int? authorId,
+    required String firstname,
+    required String lastname,
+  }) =>
+      ExposedForCodeGen.insertInto(
+        table: this,
+        values: [
+          authorId != null ? literal(authorId) : null,
+          literal(firstname),
+          literal(lastname),
+        ],
+      );
+
+  /// TODO: document insert
+  InsertSingle<Author> insert({
+    Expr<int>? authorId,
+    required Expr<String> firstname,
+    required Expr<String> lastname,
+  }) =>
+      ExposedForCodeGen.insertInto(
+        table: this,
+        values: [
+          authorId,
+          firstname,
+          lastname,
+        ],
+      );
+
+  /// TODO: document delete
+  DeleteSingle<Author> delete({required int authorId}) =>
+      ExposedForCodeGen.deleteSingle(
+        byKey(authorId: authorId),
+        _$Author._$table,
+      );
+}
+
+extension QueryAuthorExt on Query<(Expr<Author>,)> {
+  /// TODO: document lookup by PrimaryKey
+  QuerySingle<(Expr<Author>,)> byKey({required int authorId}) =>
+      where((author) => author.authorId.equalsLiteral(authorId)).first;
+
+  /// TODO: document updateAll()
+  Update<Author> updateAll(
+          UpdateSet<Author> Function(
+            Expr<Author> author,
+            UpdateSet<Author> Function({
+              Expr<int> authorId,
+              Expr<String> firstname,
+              Expr<String> lastname,
+            }) set,
+          ) updateBuilder) =>
+      ExposedForCodeGen.update<Author>(
+        this,
+        _$Author._$table,
+        (author) => updateBuilder(
+          author,
+          ({
+            Expr<int>? authorId,
+            Expr<String>? firstname,
+            Expr<String>? lastname,
+          }) =>
+              ExposedForCodeGen.buildUpdate<Author>([
+            authorId,
+            firstname,
+            lastname,
+          ]),
+        ),
+      );
+
+  /// TODO: document updateAllLiteral()
+  /// WARNING: This cannot set properties to `null`!
+  Update<Author> updateAllLiteral({
+    int? authorId,
+    String? firstname,
+    String? lastname,
+  }) =>
+      ExposedForCodeGen.update<Author>(
+        this,
+        _$Author._$table,
+        (author) => ExposedForCodeGen.buildUpdate<Author>([
+          authorId != null ? literal(authorId) : null,
+          firstname != null ? literal(firstname) : null,
+          lastname != null ? literal(lastname) : null,
+        ]),
+      );
+
+  /// TODO: document delete()}
+  Delete<Author> delete() => ExposedForCodeGen.delete(this, _$Author._$table);
+}
+
+extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
+  /// TODO: document update()
+  UpdateSingle<Author> update(
+          UpdateSet<Author> Function(
+            Expr<Author> author,
+            UpdateSet<Author> Function({
+              Expr<int> authorId,
+              Expr<String> firstname,
+              Expr<String> lastname,
+            }) set,
+          ) updateBuilder) =>
+      ExposedForCodeGen.updateSingle<Author>(
+        this,
+        _$Author._$table,
+        (author) => updateBuilder(
+          author,
+          ({
+            Expr<int>? authorId,
+            Expr<String>? firstname,
+            Expr<String>? lastname,
+          }) =>
+              ExposedForCodeGen.buildUpdate<Author>([
+            authorId,
+            firstname,
+            lastname,
+          ]),
+        ),
+      );
+
+  /// TODO: document updateLiteral()
+  /// WARNING: This cannot set properties to `null`!
+  UpdateSingle<Author> updateLiteral({
+    int? authorId,
+    String? firstname,
+    String? lastname,
+  }) =>
+      ExposedForCodeGen.updateSingle<Author>(
+        this,
+        _$Author._$table,
+        (author) => ExposedForCodeGen.buildUpdate<Author>([
+          authorId != null ? literal(authorId) : null,
+          firstname != null ? literal(firstname) : null,
+          lastname != null ? literal(lastname) : null,
+        ]),
+      );
+
+  /// TODO: document delete()
+  DeleteSingle<Author> delete() =>
+      ExposedForCodeGen.deleteSingle(this, _$Author._$table);
+}
+
+extension ExpressionAuthorExt on Expr<Author> {
+  /// TODO: document authorId
+  Expr<int> get authorId =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+
+  /// TODO: document firstname
+  Expr<String> get firstname =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  /// TODO: document lastname
+  Expr<String> get lastname =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+
+  /// TODO: document references
+  SubQuery<(Expr<Book>,)> get books =>
+      ExposedForCodeGen.subqueryTable(this, _$Book._$table)
+          .where((r) => r.authorId.equals(authorId));
+}
+
+final class _$Book extends Book {
+  _$Book._(
+    this.bookId,
+    this.title,
+    this.authorId,
+    this.stock,
+  );
+
+  @override
+  final int bookId;
+
+  @override
+  final String title;
+
+  @override
+  final int authorId;
+
+  @override
+  final int stock;
+
+  static const _$table = (
+    tableName: 'books',
+    columns: <String>['bookId', 'title', 'authorId', 'stock'],
+    columnInfo: <({
+      ColumnType type,
+      bool isNotNull,
+      Object? defaultValue,
+      bool autoIncrement,
+    })>[
+      (
+        type: ExposedForCodeGen.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+      ),
+      (
+        type: ExposedForCodeGen.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        type: ExposedForCodeGen.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        type: ExposedForCodeGen.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      )
+    ],
+    primaryKey: <String>['bookId'],
+    unique: <List<String>>[],
+    foreignKeys: <({
+      String name,
+      List<String> columns,
+      String referencedTable,
+      List<String> referencedColumns,
+    })>[
+      (
+        name: 'author',
+        columns: ['authorId'],
+        referencedTable: 'authors',
+        referencedColumns: ['authorId'],
+      )
+    ],
+    readModel: _$Book._$fromDatabase,
+  );
+
+  static Book? _$fromDatabase(RowReader row) {
+    final bookId = row.readInt();
+    final title = row.readString();
+    final authorId = row.readInt();
+    final stock = row.readInt();
+    if (bookId == null && title == null && authorId == null && stock == null) {
+      return null;
+    }
+    return _$Book._(bookId!, title!, authorId!, stock!);
+  }
+
+  @override
+  String toString() =>
+      'Book(bookId: "$bookId", title: "$title", authorId: "$authorId", stock: "$stock")';
+}
+
+extension TableBookExt on Table<Book> {
+  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
+  InsertSingle<Book> insertLiteral({
+    int? bookId,
+    required String title,
+    required int authorId,
+    required int stock,
+  }) =>
+      ExposedForCodeGen.insertInto(
+        table: this,
+        values: [
+          bookId != null ? literal(bookId) : null,
+          literal(title),
+          literal(authorId),
+          literal(stock),
+        ],
+      );
+
+  /// TODO: document insert
+  InsertSingle<Book> insert({
+    Expr<int>? bookId,
+    required Expr<String> title,
+    required Expr<int> authorId,
+    required Expr<int> stock,
+  }) =>
+      ExposedForCodeGen.insertInto(
+        table: this,
+        values: [
+          bookId,
+          title,
+          authorId,
+          stock,
+        ],
+      );
+
+  /// TODO: document delete
+  DeleteSingle<Book> delete({required int bookId}) =>
+      ExposedForCodeGen.deleteSingle(
+        byKey(bookId: bookId),
+        _$Book._$table,
+      );
+}
+
+extension QueryBookExt on Query<(Expr<Book>,)> {
+  /// TODO: document lookup by PrimaryKey
+  QuerySingle<(Expr<Book>,)> byKey({required int bookId}) =>
+      where((book) => book.bookId.equalsLiteral(bookId)).first;
+
+  /// TODO: document updateAll()
+  Update<Book> updateAll(
+          UpdateSet<Book> Function(
+            Expr<Book> book,
+            UpdateSet<Book> Function({
+              Expr<int> bookId,
+              Expr<String> title,
+              Expr<int> authorId,
+              Expr<int> stock,
+            }) set,
+          ) updateBuilder) =>
+      ExposedForCodeGen.update<Book>(
+        this,
+        _$Book._$table,
+        (book) => updateBuilder(
+          book,
+          ({
+            Expr<int>? bookId,
+            Expr<String>? title,
+            Expr<int>? authorId,
+            Expr<int>? stock,
+          }) =>
+              ExposedForCodeGen.buildUpdate<Book>([
+            bookId,
+            title,
+            authorId,
+            stock,
+          ]),
+        ),
+      );
+
+  /// TODO: document updateAllLiteral()
+  /// WARNING: This cannot set properties to `null`!
+  Update<Book> updateAllLiteral({
+    int? bookId,
+    String? title,
+    int? authorId,
+    int? stock,
+  }) =>
+      ExposedForCodeGen.update<Book>(
+        this,
+        _$Book._$table,
+        (book) => ExposedForCodeGen.buildUpdate<Book>([
+          bookId != null ? literal(bookId) : null,
+          title != null ? literal(title) : null,
+          authorId != null ? literal(authorId) : null,
+          stock != null ? literal(stock) : null,
+        ]),
+      );
+
+  /// TODO: document delete()}
+  Delete<Book> delete() => ExposedForCodeGen.delete(this, _$Book._$table);
+}
+
+extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
+  /// TODO: document update()
+  UpdateSingle<Book> update(
+          UpdateSet<Book> Function(
+            Expr<Book> book,
+            UpdateSet<Book> Function({
+              Expr<int> bookId,
+              Expr<String> title,
+              Expr<int> authorId,
+              Expr<int> stock,
+            }) set,
+          ) updateBuilder) =>
+      ExposedForCodeGen.updateSingle<Book>(
+        this,
+        _$Book._$table,
+        (book) => updateBuilder(
+          book,
+          ({
+            Expr<int>? bookId,
+            Expr<String>? title,
+            Expr<int>? authorId,
+            Expr<int>? stock,
+          }) =>
+              ExposedForCodeGen.buildUpdate<Book>([
+            bookId,
+            title,
+            authorId,
+            stock,
+          ]),
+        ),
+      );
+
+  /// TODO: document updateLiteral()
+  /// WARNING: This cannot set properties to `null`!
+  UpdateSingle<Book> updateLiteral({
+    int? bookId,
+    String? title,
+    int? authorId,
+    int? stock,
+  }) =>
+      ExposedForCodeGen.updateSingle<Book>(
+        this,
+        _$Book._$table,
+        (book) => ExposedForCodeGen.buildUpdate<Book>([
+          bookId != null ? literal(bookId) : null,
+          title != null ? literal(title) : null,
+          authorId != null ? literal(authorId) : null,
+          stock != null ? literal(stock) : null,
+        ]),
+      );
+
+  /// TODO: document delete()
+  DeleteSingle<Book> delete() =>
+      ExposedForCodeGen.deleteSingle(this, _$Book._$table);
+}
+
+extension ExpressionBookExt on Expr<Book> {
+  /// TODO: document bookId
+  Expr<int> get bookId =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+
+  /// TODO: document title
+  Expr<String> get title =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  /// TODO: document authorId
+  Expr<int> get authorId =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+
+  /// TODO: document stock
+  Expr<int> get stock =>
+      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
+
+  /// TODO: document references
+  Expr<Author> get author =>
+      ExposedForCodeGen.subqueryTable(this, _$Author._$table)
+          .where((r) => r.authorId.equals(authorId))
+          .first
+          .assertNotNull();
+}
+
+extension AuthorChecks on Subject<Author> {
+  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
+  Subject<String> get firstname => has((m) => m.firstname, 'firstname');
+  Subject<String> get lastname => has((m) => m.lastname, 'lastname');
+}
+
+extension BookChecks on Subject<Book> {
+  Subject<int> get bookId => has((m) => m.bookId, 'bookId');
+  Subject<String> get title => has((m) => m.title, 'title');
+  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
+  Subject<int> get stock => has((m) => m.stock, 'stock');
+}
