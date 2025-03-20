@@ -185,24 +185,32 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
   }
 
   Future<QueryResult> _execute(
-      Database conn, String sql, List<Object?> params) async {
-    final rows = await _query(conn, sql, params).toList();
+    Database conn,
+    String sql,
+    List<Object?> params,
+  ) async {
+    await _query(conn, sql, params).toList();
     final affectedRows = conn.updatedRows;
     return QueryResult(
       affectedRows: affectedRows,
-      rows: rows,
     );
   }
 
   @override
-  Future<T> transaction<T>(
+  Future<T> transact<T>(
     Future<T> Function(DatabaseTransaction tx) fn,
   ) async {
     final conn = await _getConnection();
     _throwIfClosed();
     try {
       conn.execute('BEGIN');
-      final value = await fn(_SqliteDatabaseTransaction._(conn, this));
+      final tx = _SqliteDatabaseTransaction._(conn, this);
+      final T value;
+      try {
+        value = await fn(tx);
+      } finally {
+        tx._closed = true;
+      }
       conn.execute('COMMIT');
       return value;
     } on SqliteException catch (e) {
@@ -214,57 +222,74 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
   }
 }
 
-mixin _SqliteDatabaseTransactionBase {
-  Database get _conn;
-  _SqliteDatabaseAdaptor get _adaptor;
+final class _SqliteDatabaseTransaction extends DatabaseTransaction {
+  final Database _conn;
+  final _SqliteDatabaseAdaptor _adaptor;
+  var _closed = false;
+  var _activeSubtransaction = false;
 
-  Stream<RowReader> query(String sql, List<Object?> params) async* {
-    yield* _adaptor._query(_conn, sql, params);
+  _SqliteDatabaseTransaction._(this._conn, this._adaptor);
+
+  void _throwIfBlocked() {
+    _adaptor._throwIfClosed();
+    if (_closed) {
+      throw StateError('Transaction is closed!');
+    }
+    if (_activeSubtransaction) {
+      throw StateError('Nested transaction is in progress!');
+    }
   }
 
+  @override
+  Stream<RowReader> query(String sql, List<Object?> params) async* {
+    _throwIfBlocked();
+
+    // Ensure we're never offering a stream that can be blocked by back-pressure
+    yield* Stream.fromIterable(
+      await _adaptor._query(_conn, sql, params).toList(),
+    );
+  }
+
+  @override
   Future<void> script(String sql) async {
+    _throwIfBlocked();
+
     await _adaptor._script(_conn, sql);
   }
 
+  @override
   Future<QueryResult> execute(String sql, List<Object?> params) async {
+    _throwIfBlocked();
+
     return await _adaptor._execute(_conn, sql, params);
   }
 
-  Future<T> savePoint<T>(Future<T> Function(DatabaseSavePoint sp) fn) async {
-    _adaptor._throwIfClosed();
+  @override
+  Future<T> transact<T>(Future<T> Function(DatabaseTransaction sp) fn) async {
+    _throwIfBlocked();
+
     final sp = 'sp_${_adaptor._savePointIndex++}';
-    _conn.execute('SAVEPOINT "$sp"');
     try {
-      final value = await fn(_SqliteDatabaseSavePoint._(_conn, _adaptor));
-      _conn.execute('RELEASE "$sp"');
-      return value;
-    } on SqliteException catch (e) {
-      _conn.execute('ROLLBACK TO "$sp"');
-      _throwSqliteException(e);
+      _activeSubtransaction = true;
+      _conn.execute('SAVEPOINT "$sp"');
+      try {
+        final tx = _SqliteDatabaseTransaction._(_conn, _adaptor);
+        final T value;
+        try {
+          value = await fn(tx);
+        } finally {
+          tx._closed = true;
+        }
+        _conn.execute('RELEASE "$sp"');
+        return value;
+      } on SqliteException catch (e) {
+        _conn.execute('ROLLBACK TO "$sp"');
+        _throwSqliteException(e);
+      }
+    } finally {
+      _activeSubtransaction = false;
     }
   }
-}
-
-final class _SqliteDatabaseTransaction extends DatabaseTransaction
-    with _SqliteDatabaseTransactionBase {
-  @override
-  final Database _conn;
-
-  @override
-  final _SqliteDatabaseAdaptor _adaptor;
-
-  _SqliteDatabaseTransaction._(this._conn, this._adaptor);
-}
-
-final class _SqliteDatabaseSavePoint extends DatabaseSavePoint
-    with _SqliteDatabaseTransactionBase {
-  @override
-  final Database _conn;
-
-  @override
-  final _SqliteDatabaseAdaptor _adaptor;
-
-  _SqliteDatabaseSavePoint._(this._conn, this._adaptor);
 }
 
 final class _SqliteRowReader extends RowReader {
@@ -346,7 +371,7 @@ Never _throwSqliteException(SqliteException e) {
   switch (e.resultCode) {
     case SqlError.SQLITE_BUSY:
     case SqlError.SQLITE_LOCKED:
-      throw SqliteTransactionConflictException._(e);
+      throw SqliteTransactionAbortedException._(e);
 
     default:
       throw SqliteQueryException(e);
@@ -362,9 +387,9 @@ final class SqliteQueryException extends DatabaseQueryException {
   String toString() => 'SqliteQueryException(${e.toString()})';
 }
 
-final class SqliteTransactionConflictException
-    extends DatabaseTransactionConflictException {
-  SqliteTransactionConflictException._(this.e);
+final class SqliteTransactionAbortedException
+    extends DatabaseTransactionAbortedException {
+  SqliteTransactionAbortedException._(this.e);
 
   final SqliteException e;
 

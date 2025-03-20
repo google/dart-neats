@@ -139,7 +139,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
     final decode1 = _expressions.$1._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._db.query(sql, params)) {
+    await for (final row in _context._query(sql, params)) {
       yield decode1(row) as A;
     }
   }
@@ -349,7 +349,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     final decode2 = _expressions.$2._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._db.query(sql, params)) {
+    await for (final row in _context._query(sql, params)) {
       yield (decode1(row) as A, decode2(row) as B);
     }
   }
@@ -581,7 +581,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     final decode3 = _expressions.$3._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._db.query(sql, params)) {
+    await for (final row in _context._query(sql, params)) {
       yield (decode1(row) as A, decode2(row) as B, decode3(row) as C);
     }
   }
@@ -829,7 +829,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     final decode4 = _expressions.$4._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._db.query(sql, params)) {
+    await for (final row in _context._query(sql, params)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,
@@ -1104,7 +1104,7 @@ extension Query5<A, B, C, D, E>
     final decode5 = _expressions.$5._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._db.query(sql, params)) {
+    await for (final row in _context._query(sql, params)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,
@@ -1408,7 +1408,7 @@ extension Query6<A, B, C, D, E, F>
     final decode6 = _expressions.$6._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._db.query(sql, params)) {
+    await for (final row in _context._query(sql, params)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,
@@ -1777,7 +1777,7 @@ extension Query7<A, B, C, D, E, F, G>
     final decode7 = _expressions.$7._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._db.query(sql, params)) {
+    await for (final row in _context._query(sql, params)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,
@@ -2320,7 +2320,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     final decode8 = _expressions.$8._decode;
     final (sql, columns, params) =
         _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._db.query(sql, params)) {
+    await for (final row in _context._query(sql, params)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,

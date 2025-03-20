@@ -21,15 +21,6 @@ import 'postgres_adaptor.dart';
 import 'sqlite_adaptor.dart';
 
 abstract base class DatabaseAdaptor extends QueryExecutor {
-  /// Begin a transaction ad call [fn] before committing the transaction.
-  ///
-  /// If [fn] throws, the transaction shall be rolled back and the [Exception]
-  /// or [Error] propagated to the caller.
-  Future<T> transaction<T>(Future<T> Function(DatabaseTransaction tx) fn);
-
-  // TODO: Consider if we need session() similar to transaction, which ensures
-  //       that queries run sequentially on the same connection / session.
-
   Future<void> close({bool force = false});
 
   static DatabaseAdaptor sqlite3(Uri uri) => sqlite3Adaptor(uri);
@@ -44,30 +35,35 @@ abstract base class DatabaseAdaptor extends QueryExecutor {
 }
 
 abstract base class DatabaseTransaction extends QueryExecutor {
-  /// Create a save-point and runs `fn` before releasing the save-point.
+  /// Begin a transaction / save-point and call [fn] before committing the
+  /// transaction.
   ///
-  /// If [fn] throws, this transaction shall be rolled back to the
-  /// save-point and the [Exception] or [Error] propagated to the caller.
-  // TODO: Remark that calling [query] before [savePoint] has returned may
-  //       cause undefined behavior.
-  //       Indeed typed_sql wrappers will ensure that [query]/[savePoint] are
-  //       not called concurrently at the same level!
-  Future<T> savePoint<T>(Future<T> Function(DatabaseSavePoint sp) fn);
+  /// If [fn] throws, the transaction shall be rolled back and the [Exception]
+  /// or [Error] propagated to the caller.
+  ///
+  /// Any calls on the `tx` provided to [fn] shall throw [StateError] after the
+  /// transaction has been committed or rolled back.
+  ///
+  /// Any call to [script], [query], [execute] until this function has returned
+  /// shall throw [StateError].
+  @override
+  Future<T> transact<T>(Future<T> Function(QueryExecutor tx) fn);
 }
 
-abstract base class DatabaseSavePoint extends DatabaseTransaction {}
-
-class QueryResult {
+/// Result of executing an SQL statement.
+final class QueryResult {
+  /// Number of rows affected by the SQL statement.
   final int affectedRows;
-  final List<RowReader> rows;
 
   QueryResult({
     required this.affectedRows,
-    required this.rows,
   });
 }
 
 abstract final class QueryExecutor {
+  /// Execute an [sql] script that may contain multiple statements.
+  ///
+  /// Statements are typically separated by `;`.
   Future<void> script(String sql);
 
   /// Execute [sql] query with positional [params].
@@ -77,20 +73,36 @@ abstract final class QueryExecutor {
   /// Returns a stream of rows, where each row is a list columns.
   /// If there are no data to be returned, this yields an empty stream.
   ///
+  /// If inside a transaction the returned [Stream] must not disregard
+  /// back-pressure, to avoid deadlocks in the transaction. In practice this can
+  /// be trivially archived by buffering all results in a [List] and return
+  /// a [Stream] wrapping said list.
+  ///
   /// The following types can be passed in and out.
   ///  * [String]
   ///  * [int]
   ///  * [double]
   ///  * [bool]
   ///  * [DateTime]
-  ///  * [BigInt]
   ///  * [Uint8List]
   ///  * `null`
-  ///  * [Map<String, Object?>], [List<Object?>], [String], [int],
-  ///    [double], [bool], `null` (for JSON).
+  // TODO: Add support for JSON, Duration, BigInt
   Stream<RowReader> query(String sql, List<Object?> params);
 
+  /// Execute a single [sql] query with positional [params].
+  ///
+  /// Does not return any results.
   Future<QueryResult> execute(String sql, List<Object?> params);
+
+  /// Begin a transaction / save-point and call [fn] before committing the
+  /// transaction.
+  ///
+  /// If [fn] throws, the transaction shall be rolled back and the [Exception]
+  /// or [Error] propagated to the caller.
+  ///
+  /// Any calls on the `tx` provided to [fn] shall throw [StateError] after the
+  /// transaction has been committed or rolled back.
+  Future<T> transact<T>(Future<T> Function(QueryExecutor tx) fn);
 }
 
 abstract base class RowReader {
@@ -105,16 +117,13 @@ abstract base class RowReader {
 
 sealed class DatabaseException implements Exception {}
 
-/// Thrown by [QueryExecutor.query] if the query failed to execute.
+/// Thrown by [QueryExecutor] if the query failed to execute.
 ///
 /// This does not cause the underlying connection or transactions to be aborted.
 base class DatabaseQueryException implements DatabaseException {}
 
-/// Thrown by [DatabaseAdaptor.transaction] if the transaction fails to commit.
-///
-/// This should only be thrown because the transaction couldn't be committed,
-/// when it was attempted.
-base class DatabaseTransactionConflictException implements DatabaseException {}
+/// Thrown by [QueryExecutor] if the transaction/save-point is aborted.
+base class DatabaseTransactionAbortedException implements DatabaseException {}
 
 /// Thrown, when [DatabaseAdaptor] has failed to maintain or obtain a
 /// connection.

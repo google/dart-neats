@@ -86,7 +86,7 @@ void main() {
   _test('transaction', (db) async {
     await insertAliceBob(db);
 
-    await db.transaction((tx) async {
+    await db.transact((tx) async {
       await tx.query('DELETE FROM users WHERE id = ?', [1]).drain<void>();
     });
 
@@ -104,7 +104,7 @@ void main() {
     await expectLater(
       Future.wait([
         () async {
-          await db.transaction((tx) async {
+          await db.transact((tx) async {
             c1.complete();
             await c2.future;
 
@@ -115,7 +115,7 @@ void main() {
           });
         }(),
         () async {
-          await db.transaction((tx) async {
+          await db.transact((tx) async {
             c2.complete();
             await c1.future;
 
@@ -126,15 +126,15 @@ void main() {
           });
         }(),
       ]),
-      throwsA(isA<DatabaseTransactionConflictException>()),
+      throwsA(isA<DatabaseTransactionAbortedException>()),
     );
   });
 
   _test('savepoint', (db) async {
     await insertAliceBob(db);
 
-    await db.transaction((tx) async {
-      await tx.savePoint((sp) async {
+    await db.transact((tx) async {
+      await tx.transact((sp) async {
         await sp.query('DELETE FROM users WHERE id = ?', [1]).drain<void>();
       });
     });
@@ -155,11 +155,11 @@ void main() {
     await expectLater(
       Future.wait([
         () async {
-          await db.transaction((tx) async {
+          await db.transact((tx) async {
             await c2started.future;
             c1started.complete();
 
-            await tx.savePoint((sp) async {
+            await tx.transact((sp) async {
               await sp.query(
                 'UPDATE users SET name = ? WHERE id = ?',
                 ['Alice1', 1],
@@ -168,11 +168,11 @@ void main() {
           });
         }(),
         () async {
-          await db.transaction((tx) async {
+          await db.transact((tx) async {
             c2started.complete();
             await c1started.future;
 
-            await tx.savePoint((sp) async {
+            await tx.transact((sp) async {
               await sp.query(
                 'UPDATE users SET name = ? WHERE id = ?',
                 ['Alice2', 1],
@@ -181,7 +181,7 @@ void main() {
           });
         }(),
       ]),
-      throwsA(isA<DatabaseTransactionConflictException>()),
+      throwsA(isA<DatabaseTransactionAbortedException>()),
     );
   });
 }

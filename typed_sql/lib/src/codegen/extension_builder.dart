@@ -461,7 +461,7 @@ Spec _buildQueryExtension(int i) {
       //       SelectStatement._(from),
       //     );
       //
-      //     await for (final row in _context._db.query(sql, params)) {
+      //     await for (final row in _context._query(sql, params)) {
       //       yield (
       //         decode1(row) as A,
       //         decode2(row) as B,
@@ -484,7 +484,7 @@ Spec _buildQueryExtension(int i) {
               (i) => 'final decode${i + 1} = _expressions.\$${i + 1}._decode;',
             ),
             'final (sql, columns, params) = _context._dialect.select(SelectStatement._(from));',
-            'await for (final row in _context._db.query(sql, params)) {',
+            'await for (final row in _context._query(sql, params)) {',
             if (i == 1) ...[
               'yield decode1(row) as ${typeArg[0]};',
             ] else ...[

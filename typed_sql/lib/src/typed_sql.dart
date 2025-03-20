@@ -99,7 +99,7 @@ final class ExposedForCodeGen {
     required List<TableDefinition> tables,
   }) async {
     final sql = createTableSchema(dialect: context._dialect, tables: tables);
-    await context._db.script(sql);
+    await context._executor.script(sql);
   }
 
   static Future<void> execute({

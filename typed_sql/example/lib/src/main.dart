@@ -102,19 +102,19 @@ Future<void> main() async {
 
   // We can do transactions
   {
-    await db.transaction((tx) async {
-      await tx.users
+    await db.transact(() async {
+      await db.users
           .where((u) => u.email.endsWithLiteral('@google.com'))
           .fetch();
-      await tx.likes
+      await db.likes
           .where((l) => l.packageName.startsWithLiteral('_').not())
           .fetch();
 
-      await tx.savePoint((sp) async {
-        await sp.users.byEmail('user@example.com').delete().execute();
+      await db.transact(() async {
+        await db.users.byEmail('user@example.com').delete().execute();
 
-        await sp.savePoint((sp) async {
-          await sp.users
+        await db.transact(() async {
+          await db.users
               .insertLiteral(
                 userId: 42,
                 name: 'user',

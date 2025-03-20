@@ -45,24 +45,22 @@ final class _LoggingDatabaseAdaptor extends DatabaseAdaptor {
   }
 
   @override
-  Future<T> transaction<T>(
-    Future<T> Function(DatabaseTransaction tx) fn,
-  ) async {
-    _log('db.transaction()');
-    return await _adaptor.transaction((tx) async {
-      return await fn(_LoggingDatabaseTransaction(tx, _log));
-    });
-  }
-
-  @override
   Future<void> script(String sql) {
     _log('db.script("$sql")');
     return _adaptor.script(sql);
   }
+
+  @override
+  Future<T> transact<T>(Future<T> Function(QueryExecutor tx) fn) async {
+    _log('db.transact()');
+    return await _adaptor.transact((tx) async {
+      return await fn(_LoggingDatabaseTransaction(tx, _log));
+    });
+  }
 }
 
 final class _LoggingDatabaseTransaction extends DatabaseTransaction {
-  final DatabaseTransaction _tx;
+  final QueryExecutor _tx;
   final void Function(String message) _log;
 
   _LoggingDatabaseTransaction(this._tx, this._log);
@@ -86,43 +84,10 @@ final class _LoggingDatabaseTransaction extends DatabaseTransaction {
   }
 
   @override
-  Future<T> savePoint<T>(Future<T> Function(DatabaseSavePoint sp) fn) async {
-    _log('tx.savePoint()');
-    return await _tx.savePoint((sp) async {
-      return await fn(_LoggingDatabaseSavePoint(sp, _log));
-    });
-  }
-}
-
-final class _LoggingDatabaseSavePoint extends DatabaseSavePoint {
-  final DatabaseSavePoint _sp;
-  final void Function(String message) _log;
-
-  _LoggingDatabaseSavePoint(this._sp, this._log);
-
-  @override
-  Stream<RowReader> query(String sql, List<Object?> params) async* {
-    _log('sp.query("$sql", [${params.join(', ')}])');
-    yield* _sp.query(sql, params);
-  }
-
-  @override
-  Future<QueryResult> execute(String sql, List<Object?> params) async {
-    _log('sp.execute("$sql", [${params.join(', ')}])');
-    return await _sp.execute(sql, params);
-  }
-
-  @override
-  Future<void> script(String sql) {
-    _log('sp.script("$sql")');
-    return _sp.script(sql);
-  }
-
-  @override
-  Future<T> savePoint<T>(Future<T> Function(DatabaseSavePoint sp) fn) async {
-    _log('sp.savePoint()');
-    return await _sp.savePoint((sp) async {
-      return await fn(_LoggingDatabaseSavePoint(sp, _log));
+  Future<T> transact<T>(Future<T> Function(QueryExecutor tx) fn) async {
+    _log('tx.transact()');
+    return await _tx.transact((sp) async {
+      return await fn(_LoggingDatabaseTransaction(sp, _log));
     });
   }
 }
