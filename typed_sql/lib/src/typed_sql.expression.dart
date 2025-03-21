@@ -390,11 +390,24 @@ extension ExpressionNullable<T> on Expr<T?> {
 extension ExpressionNullableNum<T extends num> on Expr<T?> {
   Expr<T> orElse(Expr<T> value) => OrElseExpression._(this, value);
   Expr<T> orElseLiteral(T value) => orElse(literal(value));
+
+  Expr<bool> equals(Expr<T?> value) => ExpressionNumEquals(this, value);
+  Expr<bool> equalsLiteral(num? value) =>
+      ExpressionNumEquals(this, literal(value));
+
+  Expr<bool> notEquals(Expr<T?> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(T? value) => notEquals(literal(value));
 }
 
 extension ExpressionNullableString on Expr<String?> {
   Expr<String> orElse(Expr<String> value) => OrElseExpression._(this, value);
   Expr<String> orElseLiteral(String value) => orElse(literal(value));
+
+  Expr<bool> equals(Expr<String?> value) => ExpressionStringEquals(this, value);
+  Expr<bool> equalsLiteral(String? value) => equals(literal(value));
+
+  Expr<bool> notEquals(Expr<String?> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(String? value) => notEquals(literal(value));
 }
 
 extension ExpressionNullableBool on Expr<bool?> {
@@ -406,6 +419,14 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
   Expr<DateTime> orElse(Expr<DateTime> value) =>
       OrElseExpression._(this, value);
   Expr<DateTime> orElseLiteral(DateTime value) => orElse(literal(value));
+
+  Expr<bool> equals(Expr<DateTime?> value) =>
+      ExpressionDateTimeEquals(this, value);
+  Expr<bool> equalsLiteral(DateTime? value) =>
+      ExpressionDateTimeEquals(this, literal(value));
+
+  Expr<bool> notEquals(Expr<DateTime?> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(DateTime? value) => notEquals(literal(value));
 }
 
 final class Literal<T> extends SingleValueExpr<T> {
