@@ -40,35 +40,63 @@ final class _PostgresDatabaseAdaptor extends DatabaseAdaptor {
   @override
   Future<T> transact<T>(Future<T> Function(DatabaseTransaction tx) fn) async {
     _throwIfClosed();
-    return await _session.runTx((tx) async {
-      final tx_ = _DatabaseTransaction(tx, this);
-      try {
-        return await fn(tx_);
-      } finally {
-        tx_._closed = true;
-      }
-    });
+
+    try {
+      return await _session.withConnection((conn) async {
+        try {
+          await conn.execute('BEGIN');
+        } on PgException catch (e) {
+          _throwPostgresException(e);
+        }
+        try {
+          final tx = _DatabaseTransaction(conn, this);
+          final T value;
+          try {
+            value = await fn(tx);
+          } finally {
+            tx._closed = true;
+          }
+          await conn.execute('COMMIT');
+          return value;
+        } on PgException catch (e) {
+          // TODO: Find out what exception postgres might throw and only catch
+          //       those!
+          await conn.execute('ROLLBACK');
+          _throwPostgresException(e);
+        }
+      });
+    } on PgException catch (e) {
+      _throwPostgresException(e);
+    }
   }
 
   @override
   Future<QueryResult> execute(String sql, List<Object?> params) async {
     _throwIfClosed();
-    final rs = await _session.execute(
-      sql,
-      parameters: _paramsForPostgres(params),
-    );
-    return QueryResult(affectedRows: rs.affectedRows);
+    try {
+      final rs = await _session.execute(
+        sql,
+        parameters: _paramsForPostgres(params),
+      );
+      return QueryResult(affectedRows: rs.affectedRows);
+    } on PgException catch (e) {
+      _throwPostgresException(e);
+    }
   }
 
   @override
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     _throwIfClosed();
-    final rs = await _session.execute(
-      sql,
-      parameters: _paramsForPostgres(params),
-      queryMode: QueryMode.extended,
-    );
-    yield* Stream.fromIterable(rs.map(_PostgresRowReader.new));
+    try {
+      final rs = await _session.execute(
+        sql,
+        parameters: _paramsForPostgres(params),
+        queryMode: QueryMode.extended,
+      );
+      yield* Stream.fromIterable(rs.map(_PostgresRowReader.new));
+    } on PgException catch (e) {
+      _throwPostgresException(e);
+    }
     // TODO: Explore why streaming mode doesn't work
     // final ps = await _session.prepare(sql);
     // yield* ps.bind(params).map(_PostgresRowReader.new);
@@ -77,7 +105,11 @@ final class _PostgresDatabaseAdaptor extends DatabaseAdaptor {
   @override
   Future<void> script(String sql) async {
     _throwIfClosed();
-    await _session.execute(sql, queryMode: QueryMode.simple);
+    try {
+      await _session.execute(sql, queryMode: QueryMode.simple);
+    } on PgException catch (e) {
+      _throwPostgresException(e);
+    }
   }
 
   @override
@@ -89,7 +121,7 @@ final class _PostgresDatabaseAdaptor extends DatabaseAdaptor {
 
 final class _DatabaseTransaction extends DatabaseTransaction {
   final _PostgresDatabaseAdaptor _adaptor;
-  final TxSession _session;
+  final Session _session;
   var _closed = false;
   var _activeSubtransaction = false;
 
@@ -108,22 +140,30 @@ final class _DatabaseTransaction extends DatabaseTransaction {
   @override
   Future<QueryResult> execute(String sql, List<Object?> params) async {
     _throwIfBlocked();
-    final rs = await _session.execute(
-      sql,
-      parameters: _paramsForPostgres(params),
-    );
-    return QueryResult(affectedRows: rs.affectedRows);
+    try {
+      final rs = await _session.execute(
+        sql,
+        parameters: _paramsForPostgres(params),
+      );
+      return QueryResult(affectedRows: rs.affectedRows);
+    } on PgException catch (e) {
+      _throwPostgresException(e);
+    }
   }
 
   @override
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     _throwIfBlocked();
-    final rs = await _session.execute(
-      sql,
-      parameters: _paramsForPostgres(params),
-      queryMode: QueryMode.extended,
-    );
-    yield* Stream.fromIterable(rs.map(_PostgresRowReader.new));
+    try {
+      final rs = await _session.execute(
+        sql,
+        parameters: _paramsForPostgres(params),
+        queryMode: QueryMode.extended,
+      );
+      yield* Stream.fromIterable(rs.map(_PostgresRowReader.new));
+    } on PgException catch (e) {
+      _throwPostgresException(e);
+    }
     // TODO: Explore why streaming mode doesn't work
     // final ps = await _session.prepare(sql);
     // yield* ps.bind(params).map(_PostgresRowReader.new);
@@ -132,7 +172,11 @@ final class _DatabaseTransaction extends DatabaseTransaction {
   @override
   Future<void> script(String sql) async {
     _throwIfBlocked();
-    await _session.execute(sql, queryMode: QueryMode.simple);
+    try {
+      await _session.execute(sql, queryMode: QueryMode.simple);
+    } on PgException catch (e) {
+      _throwPostgresException(e);
+    }
   }
 
   @override
@@ -142,7 +186,11 @@ final class _DatabaseTransaction extends DatabaseTransaction {
     final sp = 'sp_${_adaptor._savePointIndex++}';
     try {
       _activeSubtransaction = true;
-      await _session.execute('SAVEPOINT "$sp"');
+      try {
+        await _session.execute('SAVEPOINT "$sp"');
+      } on PgException catch (e) {
+        _throwPostgresException(e);
+      }
       try {
         final tx = _DatabaseTransaction(_session, _adaptor);
         final T value;
@@ -153,11 +201,14 @@ final class _DatabaseTransaction extends DatabaseTransaction {
         }
         await _session.execute('RELEASE "$sp"');
         return value;
-      } on Exception catch (e) {
-        // TODO: Find out what exception postgres might throw and only catch
-        //       those!
-        await _session.execute('ROLLBACK TO "$sp"');
-        throw UnimplementedError('Exception handling not implemented: $e');
+      } on Exception {
+        try {
+          await _session.execute('ROLLBACK TO "$sp"');
+        } on PgException catch (e) {
+          // TODO: throw an exception that shouldn't be caught by the user!
+          _throwPostgresException(e);
+        }
+        rethrow;
       }
     } finally {
       _activeSubtransaction = false;
@@ -248,3 +299,42 @@ List<Object?> _paramsForPostgres(List<Object?> params) => params
           _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
         })
     .toList();
+
+// TODO: Fix all the places that calls this method, this was just thrown together!
+Never _throwPostgresException(PgException e) {
+  // TODO: Separate error code into:
+  //  - Temporary I/O error
+  //  - Permanent database connection error (configuration issue)
+  //  - Query issue
+  //  - Transaction conflict!
+  // NOTICE: that conflicts often happen as soon as offending statement is
+  //         executed, conflicts don't just happen on COMMIT. They can and often
+  //         do happen much sooner!
+
+  switch (e) {
+    case ServerException e:
+      throw PostgresQueryException._(e);
+
+    default:
+      throw UnsupportedError('exception handling is missing: $e');
+  }
+}
+
+final class PostgresQueryException extends DatabaseQueryException {
+  final ServerException e;
+
+  PostgresQueryException._(this.e);
+
+  @override
+  String toString() => 'DatabaseQueryException(${e.toString()})';
+}
+
+final class PostgresTransactionAbortedException
+    extends DatabaseTransactionAbortedException {
+  PostgresTransactionAbortedException._(this.e);
+
+  final ServerException e;
+
+  @override
+  String toString() => 'DatabaseTransactionAbortedException(${e.toString()})';
+}
