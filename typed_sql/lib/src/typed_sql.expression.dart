@@ -513,7 +513,7 @@ final class ExpressionBoolOr extends BinaryOperationExpression<bool, bool>
 }
 
 final class ExpressionStringEquals
-    extends BinaryOperationExpression<String, bool> with _ExprBoolean {
+    extends BinaryOperationExpression<String?, bool> with _ExprBoolean {
   ExpressionStringEquals(super.left, super.right);
 }
 
@@ -590,7 +590,7 @@ final class ExpressionStringToLowerCase extends SingleValueExpr<String>
 }
 
 final class ExpressionNumEquals<T extends num>
-    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
+    extends BinaryOperationExpression<T?, bool> with _ExprBoolean {
   ExpressionNumEquals(super.left, super.right);
 }
 
@@ -644,7 +644,7 @@ final class ExpressionNumGreaterThanOrEqual<T extends num>
 }
 
 final class ExpressionDateTimeEquals
-    extends BinaryOperationExpression<DateTime, bool> with _ExprBoolean {
+    extends BinaryOperationExpression<DateTime?, bool> with _ExprBoolean {
   ExpressionDateTimeEquals(super.left, super.right);
 }
 
@@ -717,11 +717,11 @@ extension ExpressionNull on Expr<Null> {
 }
 
 extension ExpressionString on Expr<String> {
-  Expr<bool> equals(Expr<String> value) => ExpressionStringEquals(this, value);
-  Expr<bool> equalsLiteral(String value) => equals(literal(value));
+  Expr<bool> equals(Expr<String?> value) => ExpressionStringEquals(this, value);
+  Expr<bool> equalsLiteral(String? value) => equals(literal(value));
 
-  Expr<bool> notEquals(Expr<String> value) => equals(value).not();
-  Expr<bool> notEqualsLiteral(String value) => notEquals(literal(value));
+  Expr<bool> notEquals(Expr<String?> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(String? value) => notEquals(literal(value));
 
   Expr<bool> get isEmpty => ExpressionStringIsEmpty(this);
   Expr<bool> get isNotEmpty => isEmpty.not();
@@ -895,12 +895,12 @@ extension ExpressionDouble on Expr<double> {
 }
 
 extension ExpressionNum<T extends num> on Expr<T> {
-  Expr<bool> equals(Expr<T> value) => ExpressionNumEquals(this, value);
-  Expr<bool> equalsLiteral(num value) =>
+  Expr<bool> equals(Expr<T?> value) => ExpressionNumEquals(this, value);
+  Expr<bool> equalsLiteral(num? value) =>
       ExpressionNumEquals(this, literal(value));
 
-  Expr<bool> notEquals(Expr<T> value) => equals(value).not();
-  Expr<bool> notEqualsLiteral(T value) => notEquals(literal(value));
+  Expr<bool> notEquals(Expr<T?> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(T? value) => notEquals(literal(value));
 
   Expr<bool> operator >=(Expr<T> other) =>
       ExpressionNumGreaterThanOrEqual(this, other);
@@ -928,13 +928,13 @@ extension ExpressionNum<T extends num> on Expr<T> {
 }
 
 extension ExpressionDateTime on Expr<DateTime> {
-  Expr<bool> equals(Expr<DateTime> value) =>
+  Expr<bool> equals(Expr<DateTime?> value) =>
       ExpressionDateTimeEquals(this, value);
-  Expr<bool> equalsLiteral(DateTime value) =>
+  Expr<bool> equalsLiteral(DateTime? value) =>
       ExpressionDateTimeEquals(this, literal(value));
 
-  Expr<bool> notEquals(Expr<DateTime> value) => equals(value).not();
-  Expr<bool> notEqualsLiteral(DateTime value) => notEquals(literal(value));
+  Expr<bool> notEquals(Expr<DateTime?> value) => equals(value).not();
+  Expr<bool> notEqualsLiteral(DateTime? value) => notEquals(literal(value));
 
   // TODO: Decide if we want to support storing a Duration
   // Expression<bool> difference(Expression<DateTime> value) =>

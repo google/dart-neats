@@ -48,6 +48,16 @@ final _cases = [
     expr: literal(3.14).equals(literal(3.14)),
     expected: true,
   ),
+  (
+    name: '0.0.equals(null)',
+    expr: literal(0.0).equals(literal(null)),
+    expected: false,
+  ),
+  (
+    name: '3.14.equals(null)',
+    expr: literal(3.14).equals(literal(null)),
+    expected: false,
+  ),
 
   // Test for .equalsLiteral
   (
@@ -79,6 +89,16 @@ final _cases = [
     name: '3.14.equalsLiteral(3.14)',
     expr: literal(3.14).equalsLiteral(3.14),
     expected: true,
+  ),
+  (
+    name: '0.0.equalsLiteral(null)',
+    expr: literal(0.0).equalsLiteral(null),
+    expected: false,
+  ),
+  (
+    name: '3.14.equalsLiteral(null)',
+    expr: literal(3.14).equalsLiteral(null),
+    expected: false,
   ),
 
   // Test for .notEquals
@@ -112,6 +132,16 @@ final _cases = [
     expr: literal(3.14).notEquals(literal(3.14)),
     expected: false,
   ),
+  (
+    name: '0.0.notEquals(null)',
+    expr: literal(0.0).notEquals(literal(null)),
+    expected: true,
+  ),
+  (
+    name: '3.14.notEquals(null)',
+    expr: literal(3.14).notEquals(literal(null)),
+    expected: true,
+  ),
 
   // Test for .notEqualsLiteral
   (
@@ -143,6 +173,16 @@ final _cases = [
     name: '3.14.notEqualsLiteral(3.14)',
     expr: literal(3.14).notEqualsLiteral(3.14),
     expected: false,
+  ),
+  (
+    name: '0.0.notEqualsLiteral(null)',
+    expr: literal(0.0).notEqualsLiteral(null),
+    expected: true,
+  ),
+  (
+    name: '3.14.notEqualsLiteral(null)',
+    expr: literal(3.14).notEqualsLiteral(null),
+    expected: true,
   ),
 
   // Test for .lessThan

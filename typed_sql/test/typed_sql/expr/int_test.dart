@@ -48,6 +48,16 @@ final _cases = [
     expr: literal(42).equals(literal(42)),
     expected: true,
   ),
+  (
+    name: '0.equals(null)',
+    expr: literal(0).equals(literal(null)),
+    expected: false,
+  ),
+  (
+    name: '42.equals(null)',
+    expr: literal(42).equals(literal(null)),
+    expected: false,
+  ),
 
   // Test for .equalsLiteral
   (
@@ -79,6 +89,16 @@ final _cases = [
     name: '42.equalsLiteral(42)',
     expr: literal(42).equalsLiteral(42),
     expected: true,
+  ),
+  (
+    name: '0.equalsLiteral(null)',
+    expr: literal(0).equalsLiteral(null),
+    expected: false,
+  ),
+  (
+    name: '42.equalsLiteral(null)',
+    expr: literal(42).equalsLiteral(null),
+    expected: false,
   ),
 
   // Test for .notEquals
@@ -112,6 +132,16 @@ final _cases = [
     expr: literal(42).notEquals(literal(42)),
     expected: false,
   ),
+  (
+    name: '0.notEquals(null)',
+    expr: literal(0).notEquals(literal(null)),
+    expected: true,
+  ),
+  (
+    name: '42.notEquals(null)',
+    expr: literal(42).notEquals(literal(null)),
+    expected: true,
+  ),
 
   // Test for .notEqualsLiteral
   (
@@ -143,6 +173,16 @@ final _cases = [
     name: '42.notEqualsLiteral(42)',
     expr: literal(42).notEqualsLiteral(42),
     expected: false,
+  ),
+  (
+    name: '0.notEqualsLiteral(null)',
+    expr: literal(0).notEqualsLiteral(null),
+    expected: true,
+  ),
+  (
+    name: '42.notEqualsLiteral(null)',
+    expr: literal(42).notEqualsLiteral(null),
+    expected: true,
   ),
 
   // Test for +

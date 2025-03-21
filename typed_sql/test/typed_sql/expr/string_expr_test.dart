@@ -106,6 +106,16 @@ final _cases = [
     expr: literal('hello').equals(literal('hello world')),
     expected: false,
   ),
+  (
+    name: '"".equals(null)',
+    expr: literal('').equals(literal(null)),
+    expected: false,
+  ),
+  (
+    name: '"hello".equals(null)',
+    expr: literal('hello').equals(literal(null)),
+    expected: false,
+  ),
 
   // Tests for .equalsLiteral
   (
@@ -131,6 +141,16 @@ final _cases = [
   (
     name: '"hello".equalsLiteral("hello world")',
     expr: literal('hello').equalsLiteral('hello world'),
+    expected: false,
+  ),
+  (
+    name: '"".equalsLiteral(null)',
+    expr: literal('').equalsLiteral(null),
+    expected: false,
+  ),
+  (
+    name: '"hello".equalsLiteral(null)',
+    expr: literal('hello').equalsLiteral(null),
     expected: false,
   ),
 
@@ -160,6 +180,16 @@ final _cases = [
     expr: literal('hello').notEquals(literal('hello world')),
     expected: true,
   ),
+  (
+    name: '"".notEquals(null)',
+    expr: literal('').notEquals(literal(null)),
+    expected: true,
+  ),
+  (
+    name: '"hello".notEquals(null)',
+    expr: literal('hello').notEquals(literal(null)),
+    expected: true,
+  ),
 
   // Tests for .notEqualsLiteral
   (
@@ -185,6 +215,16 @@ final _cases = [
   (
     name: '"hello".notEqualsLiteral("hello world")',
     expr: literal('hello').notEqualsLiteral('hello world'),
+    expected: true,
+  ),
+  (
+    name: '"".notEqualsLiteral(null)',
+    expr: literal('').notEqualsLiteral(null),
+    expected: true,
+  ),
+  (
+    name: '"hello".notEqualsLiteral(null)',
+    expr: literal('hello').notEqualsLiteral(null),
     expected: true,
   ),
 

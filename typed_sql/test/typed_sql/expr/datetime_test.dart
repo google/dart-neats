@@ -52,6 +52,16 @@ final _cases = [
     expr: literal(epoch).equals(literal(today)),
     expected: false,
   ),
+  (
+    name: 'epoch.equals(null)',
+    expr: literal(epoch).equals(literal(null)),
+    expected: false,
+  ),
+  (
+    name: 'today.equals(null)',
+    expr: literal(today).equals(literal(null)),
+    expected: false,
+  ),
 
   // Test for .equalsLiteral
   (
@@ -82,6 +92,16 @@ final _cases = [
   (
     name: 'epoch.equalsLiteral(today)',
     expr: literal(epoch).equalsLiteral(today),
+    expected: false,
+  ),
+  (
+    name: 'epoch.equalsLiteral(null)',
+    expr: literal(epoch).equalsLiteral(null),
+    expected: false,
+  ),
+  (
+    name: 'today.equalsLiteral(null)',
+    expr: literal(today).equalsLiteral(null),
     expected: false,
   ),
 
@@ -117,6 +137,16 @@ final _cases = [
     expr: literal(epoch).notEquals(literal(today)),
     expected: true,
   ),
+  (
+    name: 'epoch.notEquals(null)',
+    expr: literal(epoch).notEquals(literal(null)),
+    expected: true,
+  ),
+  (
+    name: 'today.notEquals(null)',
+    expr: literal(today).notEquals(literal(null)),
+    expected: true,
+  ),
 
   // Test for .notEqualsLiteral
   (
@@ -148,6 +178,16 @@ final _cases = [
   (
     name: 'epoch.notEqualsLiteral(today)',
     expr: literal(epoch).notEqualsLiteral(today),
+    expected: true,
+  ),
+  (
+    name: 'epoch.notEqualsLiteral(null)',
+    expr: literal(epoch).notEqualsLiteral(null),
+    expected: true,
+  ),
+  (
+    name: 'today.notEqualsLiteral(null)',
+    expr: literal(today).notEqualsLiteral(null),
     expected: true,
   ),
 
