@@ -186,7 +186,7 @@ final class ExposedForCodeGen {
   static UpdateSet<T> buildUpdate<T extends Model>(List<Expr?> values) =>
       UpdateSet._(values);
 
-  static Expr<T> field<T extends Object?, M extends Model>(
+  static Expr<T> field<T extends Object?, M extends Model?>(
     Expr<M> row,
     int index,
     FieldType<T> type,
@@ -204,7 +204,7 @@ final class ExposedForCodeGen {
     );
   }
 
-  static SubQuery<(Expr<T>,)> subqueryTable<T extends Model, S extends Model>(
+  static SubQuery<(Expr<T>,)> subqueryTable<T extends Model, S extends Model?>(
     Expr<S> reference, // TODO: Remove reference!
     TableDefinition<T> table,
   ) {

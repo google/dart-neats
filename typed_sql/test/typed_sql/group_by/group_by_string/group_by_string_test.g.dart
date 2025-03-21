@@ -284,6 +284,24 @@ extension ExpressionEmployeeExt on Expr<Employee> {
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
 }
 
+extension ExpressionNullableEmployeeExt on Expr<Employee?> {
+  /// TODO: document id
+  Expr<int?> get id =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+
+  /// TODO: document surname
+  Expr<String?> get surname =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  /// TODO: document seniority
+  Expr<String?> get seniority =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+
+  /// TODO: document salary
+  Expr<int?> get salary =>
+      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
+}
+
 extension EmployeeChecks on Subject<Employee> {
   Subject<int> get id => has((m) => m.id, 'id');
   Subject<String> get surname => has((m) => m.surname, 'surname');

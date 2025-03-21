@@ -277,6 +277,25 @@ extension ExpressionUserExt on Expr<User> {
           .where((r) => r.ownerId.equals(userId));
 }
 
+extension ExpressionNullableUserExt on Expr<User?> {
+  /// TODO: document userId
+  Expr<int?> get userId =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+
+  /// TODO: document name
+  Expr<String?> get name =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  /// TODO: document email
+  Expr<String?> get email =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+
+  /// TODO: document references
+  SubQuery<(Expr<Package>,)> get packages =>
+      ExposedForCodeGen.subqueryTable(this, _$Package._$table)
+          .where((r) => userId.isNotNull() & r.ownerId.equals(userId));
+}
+
 final class _$Package extends Package {
   _$Package._(
     this.packageName,
@@ -550,6 +569,29 @@ extension ExpressionPackageExt on Expr<Package> {
       .assertNotNull();
 }
 
+extension ExpressionNullablePackageExt on Expr<Package?> {
+  /// TODO: document packageName
+  Expr<String?> get packageName =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
+
+  /// TODO: document likes
+  Expr<int?> get likes =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.integer);
+
+  /// TODO: document ownerId
+  Expr<int?> get ownerId =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+
+  /// TODO: document publisher
+  Expr<String?> get publisher =>
+      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
+
+  /// TODO: document references
+  Expr<User?> get owner => ExposedForCodeGen.subqueryTable(this, _$User._$table)
+      .where((r) => ownerId.isNotNull() & r.userId.equals(ownerId))
+      .first;
+}
+
 final class _$Like extends Like {
   _$Like._(
     this.userId,
@@ -753,6 +795,16 @@ extension ExpressionLikeExt on Expr<Like> {
 
   /// TODO: document packageName
   Expr<String> get packageName =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+}
+
+extension ExpressionNullableLikeExt on Expr<Like?> {
+  /// TODO: document userId
+  Expr<int?> get userId =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+
+  /// TODO: document packageName
+  Expr<String?> get packageName =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 }
 

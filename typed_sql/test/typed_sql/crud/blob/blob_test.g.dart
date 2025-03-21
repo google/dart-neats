@@ -224,6 +224,16 @@ extension ExpressionItemExt on Expr<Item> {
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.blob);
 }
 
+extension ExpressionNullableItemExt on Expr<Item?> {
+  /// TODO: document id
+  Expr<int?> get id =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+
+  /// TODO: document value
+  Expr<Uint8List?> get value =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.blob);
+}
+
 extension ItemChecks on Subject<Item> {
   Subject<int> get id => has((m) => m.id, 'id');
   Subject<Uint8List> get value => has((m) => m.value, 'value');

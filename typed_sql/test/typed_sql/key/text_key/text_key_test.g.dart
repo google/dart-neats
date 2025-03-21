@@ -224,6 +224,16 @@ extension ExpressionItemExt on Expr<Item> {
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 }
 
+extension ExpressionNullableItemExt on Expr<Item?> {
+  /// TODO: document key
+  Expr<String?> get key =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
+
+  /// TODO: document value
+  Expr<String?> get value =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+}
+
 extension ItemChecks on Subject<Item> {
   Subject<String> get key => has((m) => m.key, 'key');
   Subject<String> get value => has((m) => m.value, 'value');

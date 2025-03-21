@@ -575,7 +575,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       )),
   );
 
-  // Extension for Expression<model>
+  // Extension for Expression<model>Ext
   yield Extension((b) => b
     ..name = 'Expression${modelName}Ext'
     ..on = refer('Expr<$modelName>')
@@ -626,6 +626,61 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ).where(
                 (r) => r.${fk.field}.equals(${fk.key.name})
               ).$firstAssertNotNull
+            '''),
+        );
+      }),
+    ]));
+
+  // Extension for ExpressionNullable<model>Ext
+  yield Extension((b) => b
+    ..name = 'ExpressionNullable${modelName}Ext'
+    ..on = refer('Expr<$modelName?>')
+    ..methods.addAll([
+      ...model.fields.mapIndexed((i, field) => Method(
+            (b) => b
+              ..name = field.name
+              ..docs.add('/// TODO: document ${field.name}')
+              ..type = MethodType.getter
+              ..returns = refer('Expr<${field.typeName}?>')
+              ..lambda = true
+              ..body = Code(
+                'ExposedForCodeGen.field(this, $i, ${fieldType(field)})',
+              ),
+          )),
+      ...referencedFrom.map((ref) => Method(
+            (b) => b
+              ..name = ref.fk.as!
+              ..docs.add('/// TODO: document references')
+              ..type = MethodType.getter
+              ..returns = refer('SubQuery<(Expr<${ref.table.model.name}>,)>')
+              ..lambda = true
+              ..body = Code('''
+                ExposedForCodeGen.subqueryTable(
+                  this,
+                  _\$${ref.table.model.name}._\$table
+                ).where((r) =>
+                  ${ref.fk.field}.isNotNull() &
+                  r.${ref.fk.key.name}.equals(${ref.fk.field})
+                )
+              '''),
+          )),
+      ...model.foreignKeys.where((fk) => fk.name != null).map((fk) {
+        return Method(
+          (b) => b
+            ..name = fk.name
+            ..docs.add('/// TODO: document references')
+            ..type = MethodType.getter
+            ..returns = refer('Expr<${fk.referencedTable.model.name}?>')
+            ..lambda = true
+            ..body = Code('''
+              ExposedForCodeGen.subqueryTable(
+                this,
+                _\$${fk.referencedTable.model.name}._\$table
+              ).where(
+                (r) =>
+                  ${fk.key.name}.isNotNull() &
+                  r.${fk.field}.equals(${fk.key.name})
+              ).first
             '''),
         );
       }),

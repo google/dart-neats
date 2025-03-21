@@ -215,6 +215,38 @@ final _cases = <({
     expr: literal(today as DateTime?).notEqualsLiteral(today),
     expected: false,
   ),
+  // Expr<DateTime?>.isNull()
+  (
+    name: 'null.asDateTime().isNull()',
+    expr: literal(null).asDateTime().isNull(),
+    expected: true,
+  ),
+  (
+    name: 'epoch.isNull()',
+    expr: literal(epoch as DateTime?).isNull(),
+    expected: false,
+  ),
+  (
+    name: 'today.isNull()',
+    expr: literal(today as DateTime?).isNull(),
+    expected: false,
+  ),
+  // Expr<DateTime?>.isNotNull()
+  (
+    name: 'null.asDateTime().isNotNull()',
+    expr: literal(null).asDateTime().isNotNull(),
+    expected: false,
+  ),
+  (
+    name: 'epoch.isNotNull()',
+    expr: literal(epoch as DateTime?).isNotNull(),
+    expected: true,
+  ),
+  (
+    name: 'today.isNotNull()',
+    expr: literal(today as DateTime?).isNotNull(),
+    expected: true,
+  ),
 ];
 
 void main() {

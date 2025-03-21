@@ -397,6 +397,9 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
 
   Expr<bool> notEquals(Expr<T?> value) => equals(value).not();
   Expr<bool> notEqualsLiteral(T? value) => notEquals(literal(value));
+
+  Expr<bool> isNull() => equals(literal(null));
+  Expr<bool> isNotNull() => isNull().not();
 }
 
 extension ExpressionNullableString on Expr<String?> {
@@ -408,11 +411,16 @@ extension ExpressionNullableString on Expr<String?> {
 
   Expr<bool> notEquals(Expr<String?> value) => equals(value).not();
   Expr<bool> notEqualsLiteral(String? value) => notEquals(literal(value));
+
+  Expr<bool> isNull() => equals(literal(null));
+  Expr<bool> isNotNull() => isNull().not();
 }
 
 extension ExpressionNullableBool on Expr<bool?> {
   Expr<bool> orElse(Expr<bool> value) => OrElseExpression._(this, value);
   Expr<bool> orElseLiteral(bool value) => orElse(literal(value));
+
+  // TODO: Add boolean equality, so that we can do isNull() / isNotNull()!
 }
 
 extension ExpressionNullableDateTime on Expr<DateTime?> {
@@ -427,6 +435,9 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
 
   Expr<bool> notEquals(Expr<DateTime?> value) => equals(value).not();
   Expr<bool> notEqualsLiteral(DateTime? value) => notEquals(literal(value));
+
+  Expr<bool> isNull() => equals(literal(null));
+  Expr<bool> isNotNull() => isNull().not();
 }
 
 final class Literal<T> extends SingleValueExpr<T> {

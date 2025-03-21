@@ -211,6 +211,38 @@ final _cases = <({
     expr: literal(0 as int?).notEqualsLiteral(0),
     expected: false,
   ),
+  // Expr<int?>.isNull()
+  (
+    name: 'null.asInt().isNull()',
+    expr: literal(null).asInt().isNull(),
+    expected: true,
+  ),
+  (
+    name: '42.isNull()',
+    expr: literal(42 as int?).isNull(),
+    expected: false,
+  ),
+  (
+    name: '0.isNull()',
+    expr: literal(0 as int?).isNull(),
+    expected: false,
+  ),
+  // Expr<int?>.isNotNull()
+  (
+    name: 'null.asInt().isNotNull()',
+    expr: literal(null).asInt().isNotNull(),
+    expected: false,
+  ),
+  (
+    name: '42.isNotNull()',
+    expr: literal(42 as int?).isNotNull(),
+    expected: true,
+  ),
+  (
+    name: '0.isNotNull()',
+    expr: literal(0 as int?).isNotNull(),
+    expected: true,
+  ),
 ];
 
 void main() {
