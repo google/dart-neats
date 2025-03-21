@@ -282,5 +282,25 @@ void main() {
     });
   });
 
+  r.addTest(
+      'books.join(authors).on(editorId = authorId).select(..., .editor.name)',
+      (db) async {
+    final result = await db.books
+        .join(db.authors)
+        .on((book, author) => book.editorId.equals(author.authorId))
+        .select(
+          (book, editor) => (
+            book.title,
+            editor.name,
+          ),
+        )
+        .fetch();
+    check(result).unorderedEquals({
+      ('Eggs for dummies', 'Bucks Bunny'),
+      ('Vegetarian Dining', 'Easter Bunny'),
+      ('Vegan Dining', 'Easter Bunny'),
+    });
+  });
+
   r.run();
 }
