@@ -248,7 +248,7 @@ extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
 
 extension SubQuery1AsExpr<T> on SubQuery<(Expr<T>,)> {
   Expr<T?> get first => SubQueryExpression._(
-        _from(_expressions.toList()),
+        LimitClause._(_from(_expressions.toList()), 1),
         _expressions.$1,
       );
 }
