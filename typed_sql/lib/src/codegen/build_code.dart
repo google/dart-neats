@@ -830,25 +830,17 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
       (b) => b
         ..name = 'orderBy'
         ..returns = namedQueryType
-        ..types.add(refer('T'))
         ..requiredParameters.add(Parameter(
           (b) => b
             ..name = 'expressionBuilder'
-            ..type = refer('Expr<T> Function(${record.type} expr)'),
-        ))
-        ..optionalParameters.add(Parameter(
-          (b) => b
-            ..name = 'descending'
-            ..required = false
-            ..named = true
-            ..type = refer('bool')
-            ..defaultTo = Code('false'),
+            ..type = refer(
+              'List<(Expr<Comparable?>, Order)> Function(${record.type} expr)',
+            ),
         ))
         ..lambda = true
         ..body = Code('''
             _fromPositionalQuery(_asPositionalQuery.orderBy(
               _wrapBuilder(expressionBuilder),
-              descending: descending,
             ))
           '''),
       // TODO: Add first when QuerySingle is supported!

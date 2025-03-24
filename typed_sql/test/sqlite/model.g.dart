@@ -899,18 +899,15 @@ extension QueryOwnerPackageNamed<A, B> on Query<
       ({
         Expr<A> owner,
         Expr<B> package,
-      })> orderBy<T>(
-    Expr<T> Function(
-            ({
-              Expr<A> owner,
-              Expr<B> package,
-            }) expr)
-        expressionBuilder, {
-    bool descending = false,
-  }) =>
+      })> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  ({
+                    Expr<A> owner,
+                    Expr<B> package,
+                  }) expr)
+              expressionBuilder) =>
       _fromPositionalQuery(_asPositionalQuery.orderBy(
         _wrapBuilder(expressionBuilder),
-        descending: descending,
       ));
 }
 
@@ -1020,18 +1017,15 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
         Expr<A> packages,
         Expr<B> totalLikes,
         Expr<C> userName,
-      })> orderBy<T>(
-    Expr<T> Function(
-            ({
-              Expr<A> packages,
-              Expr<B> totalLikes,
-              Expr<C> userName,
-            }) expr)
-        expressionBuilder, {
-    bool descending = false,
-  }) =>
+      })> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  ({
+                    Expr<A> packages,
+                    Expr<B> totalLikes,
+                    Expr<C> userName,
+                  }) expr)
+              expressionBuilder) =>
       _fromPositionalQuery(_asPositionalQuery.orderBy(
         _wrapBuilder(expressionBuilder),
-        descending: descending,
       ));
 }

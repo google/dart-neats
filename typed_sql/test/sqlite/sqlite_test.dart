@@ -269,7 +269,7 @@ void main() {
 
   _test('db.users.orderBy().offset().where(1) (empty)', (db) async {
     final users = await db.users
-        .orderBy((u) => u.userId)
+        .orderBy((u) => [(u.userId, Order.ascending)])
         .offset(1)
         .where((u) => u.email.equalsLiteral('alice@example.com'))
         .select((u) => (u.name,))
@@ -279,7 +279,7 @@ void main() {
 
   _test('db.users.orderBy().offset(1).where()', (db) async {
     final users = await db.users
-        .orderBy((u) => u.userId)
+        .orderBy((u) => [(u.userId, Order.ascending)])
         .offset(1)
         .where((u) => u.email.equalsLiteral('bob@example.com'))
         .select((u) => (u.name,))
@@ -290,7 +290,7 @@ void main() {
 
   _test('db.users.orderBy(descending).offset(1).where() (empty)', (db) async {
     final users = await db.users
-        .orderBy((u) => u.userId, descending: true)
+        .orderBy((u) => [(u.userId, Order.descending)])
         .offset(1)
         .where((u) => u.email.equalsLiteral('bob@example.com'))
         .select((u) => (u.name,))
@@ -300,7 +300,7 @@ void main() {
 
   _test('db.users.orderBy(descending).offset(1).where()', (db) async {
     final users = await db.users
-        .orderBy((u) => u.userId, descending: true)
+        .orderBy((u) => [(u.userId, Order.descending)])
         .offset(1)
         .where((u) => u.email.equalsLiteral('alice@example.com'))
         .select((u) => (u.name,))
@@ -696,7 +696,7 @@ void main() {
             totalLikes: u.packages.select((p) => (p.likes,)).sum(),
           ),
         )
-        .orderBy((r) => r.userName)
+        .orderBy((r) => [(r.userName, Order.ascending)])
         .fetch();
     expect(result, hasLength(2));
     expect(result[0].userName, equals('Alice'));

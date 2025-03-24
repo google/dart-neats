@@ -258,12 +258,16 @@ void main() {
         // Again groupBy first book the author wrote doesn't really make sense
         // the group size will always be one. But it's nice to test that we can
         // group by a reference fetched from a subquery.
-        .groupBy((author) => (author.books.orderBy((b) => b.bookId).first,))
+        .groupBy(
+          (author) => (
+            author.books.orderBy((b) => [(b.bookId, Order.ascending)]).first,
+          ),
+        )
         .aggregate(
           (agg) => agg //
               .count(), // should always be 1
         )
-        .orderBy((author, firstBook) => author.authorId)
+        .orderBy((author, firstBook) => [(author.authorId, Order.ascending)])
         .fetch();
     check(result).length.equals(2);
     check(result[0].$1).isNotNull().title.equals('Are Bunnies Unhealthy?');

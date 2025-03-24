@@ -78,6 +78,7 @@ export '../typed_sql.dart'
         NullAssertionExpression,
         OffsetClause,
         OrElseExpression,
+        Order,
         OrderByClause,
         QueryClause,
         QueryContext,

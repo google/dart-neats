@@ -165,18 +165,26 @@ final class WhereClause extends FromClause implements ExpressionContext {
 final class OrderByClause extends FromClause implements ExpressionContext {
   @override
   final Object _handle;
-  final Expr orderBy;
-  final bool descending;
-  OrderByClause._(super.from, this._handle, this.orderBy, this.descending)
-      : super._() {
-    // TODO: Consider adding Expr._explodeOrderBy() which returns expressions
-    //       that make up the primary key of a table.
-    if (orderBy._columns > 1) {
-      throw UnsupportedError(
-        'Expr<Model> expressions cannot be used for ordering',
+  final List<(Expr<Comparable?>, Order)> orderBy;
+
+  OrderByClause._(
+    super.from,
+    this._handle,
+    this.orderBy,
+  ) : super._() {
+    if (orderBy.any((e) => e.$1._columns > 1)) {
+      // This shouldn't be possible!
+      throw AssertionError(
+        'In Expr<T extends Model> T may not implement Comparable<T>, '
+        'using Expr<Model> in .orderBy is not supported!',
       );
     }
   }
+}
+
+enum Order {
+  ascending,
+  descending,
 }
 
 final class JoinClause extends FromClause {

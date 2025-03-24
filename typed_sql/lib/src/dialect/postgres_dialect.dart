@@ -283,14 +283,17 @@ final class _PostgresDialect extends SqlDialect {
           columns,
         );
 
-      case OrderByClause(:final from, :final orderBy, :final descending):
+      case OrderByClause(:final from, :final orderBy):
         final (sql, columns) = clause(from, ctx);
         final (a, c) = ctx.alias(q, columns);
         return (
           'SELECT ${columns.map(escape).join(', ')} '
               'FROM ($sql) AS $a '
-              'ORDER BY ${expr(orderBy, c)} '
-              '${descending ? 'DESC' : 'ASC'}',
+              'ORDER BY '
+              '${orderBy.map((key) {
+            final (e, order) = key;
+            return '${expr(e, c)} ${order == Order.descending ? 'DESC' : 'ASC'}';
+          }).join(', ')}',
           columns,
         );
 

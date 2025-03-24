@@ -93,7 +93,7 @@ void main() {
             item.value,
             db.items.asSubQuery
                 .where((i) => i.value.equals(item.value))
-                .orderBy((i) => i.id)
+                .orderBy((i) => [(i.id, Order.ascending)])
                 .first // test .first on SubQuery!
                 .id,
           ),
@@ -117,7 +117,7 @@ void main() {
             item.value,
             db.items
                 .where((i) => i.value.equals(item.value))
-                .orderBy((i) => i.id)
+                .orderBy((i) => [(i.id, Order.ascending)])
                 .first
                 .asExpr // test QuerySingle.first
                 .id,

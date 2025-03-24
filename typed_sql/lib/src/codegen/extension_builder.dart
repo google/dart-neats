@@ -167,10 +167,9 @@ Spec _buildQueryExtension(int i) {
           '''),
       ),
 
-      //   Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy<T extends Object?>(
-      //     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder, {
-      //     bool descending = false,
-      //   }) {
+      //   Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+      //     List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder,
+      //   ) {
       //     final (handle, orderBy) = _build(expressionBuilder);
       //     return _Query(
       //       _context,
@@ -181,28 +180,20 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'orderBy'
-          ..types.add(refer('T'))
           ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..name = 'expressionBuilder'
-              ..type =
-                  refer('Expr<T> Function(${typArgedExprArgumentList(i)})'),
-          ))
-          ..optionalParameters.add(Parameter(
-            (b) => b
-              ..name = 'descending'
-              ..required = false
-              ..named = true
-              ..type = refer('bool')
-              ..defaultTo = Code('false'),
+              ..type = refer(
+                'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
+              ),
           ))
           ..body = Code('''
             final (handle, orderBy) = _build(expressionBuilder);
             return _Query(
               _context,
               _expressions,
-              (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+              (e) => OrderByClause._(_from(e), handle, orderBy),
             );
           '''),
       ),
@@ -569,27 +560,19 @@ Spec _buildSubQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'orderBy'
-          ..types.add(refer('T'))
           ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..name = 'expressionBuilder'
-              ..type =
-                  refer('Expr<T> Function(${typArgedExprArgumentList(i)})'),
-          ))
-          ..optionalParameters.add(Parameter(
-            (b) => b
-              ..name = 'descending'
-              ..required = false
-              ..named = true
-              ..type = refer('bool')
-              ..defaultTo = Code('false'),
+              ..type = refer(
+                'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
+              ),
           ))
           ..body = Code('''
             final (handle, orderBy) = _build(expressionBuilder);
             return SubQuery._(
               _expressions,
-              (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+              (e) => OrderByClause._(_from(e), handle, orderBy),
             );
           '''),
       ),

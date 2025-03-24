@@ -23,15 +23,13 @@ extension Query1<A> on Query<(Expr<A>,)> {
     );
   }
 
-  Query<(Expr<A>,)> orderBy<T>(
-    Expr<T> Function(Expr<A> a) expressionBuilder, {
-    bool descending = false,
-  }) {
+  Query<(Expr<A>,)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a) expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -163,14 +161,12 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
     );
   }
 
-  SubQuery<(Expr<A>,)> orderBy<T>(
-    Expr<T> Function(Expr<A> a) expressionBuilder, {
-    bool descending = false,
-  }) {
+  SubQuery<(Expr<A>,)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a) expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return SubQuery._(
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -216,15 +212,14 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     );
   }
 
-  Query<(Expr<A>, Expr<B>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b) expressionBuilder, {
-    bool descending = false,
-  }) {
+  Query<(Expr<A>, Expr<B>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -376,14 +371,13 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
     );
   }
 
-  SubQuery<(Expr<A>, Expr<B>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b) expressionBuilder, {
-    bool descending = false,
-  }) {
+  SubQuery<(Expr<A>, Expr<B>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return SubQuery._(
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -431,15 +425,14 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
-  Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder, {
-    bool descending = false,
-  }) {
+  Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -610,14 +603,13 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder, {
-    bool descending = false,
-  }) {
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return SubQuery._(
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -669,16 +661,15 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     );
   }
 
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -868,15 +859,14 @@ extension SubQuery4<A, B, C, D>
     );
   }
 
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return SubQuery._(
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -934,16 +924,15 @@ extension Query5<A, B, C, D, E>
     );
   }
 
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -1147,15 +1136,14 @@ extension SubQuery5<A, B, C, D, E>
     );
   }
 
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return SubQuery._(
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -1219,17 +1207,15 @@ extension Query6<A, B, C, D, E, F>
     );
   }
 
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy<T>(
-    Expr<T> Function(
-            Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -1456,16 +1442,14 @@ extension SubQuery6<A, B, C, D, E, F>
     );
   }
 
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy<T>(
-    Expr<T> Function(
-            Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
+      List<(Expr<Comparable?>, Order)> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return SubQuery._(
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -1535,17 +1519,15 @@ extension Query7<A, B, C, D, E, F, G>
   }
 
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-      orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
-            Expr<F> f, Expr<G> g)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+      orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+              expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -1830,16 +1812,14 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
   }
 
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-      orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
-            Expr<F> f, Expr<G> g)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+      orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+              expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return SubQuery._(
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -1921,26 +1901,32 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
   }
 
   Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
-            Expr<F> f, Expr<G> g, Expr<H> h)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return _Query(
       _context,
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
@@ -2387,25 +2373,31 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
   }
 
   SubQuery<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> orderBy<T>(
-    Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
-            Expr<F> f, Expr<G> g, Expr<H> h)
-        expressionBuilder, {
-    bool descending = false,
-  }) {
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
     return SubQuery._(
       _expressions,
-      (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+      (e) => OrderByClause._(_from(e), handle, orderBy),
     );
   }
 
