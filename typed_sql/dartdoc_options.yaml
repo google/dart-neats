@@ -1,0 +1,8 @@
+dartdoc:
+  categories:
+    'Aggregate functions and group by':
+      markdown: doc/aggregate_functions_and_group_by.md
+      name: aggregate_functions_and_group_by
+  categoryOrder:
+    - aggregate_functions_and_group_by
+  showUndocumentedCategories: true
