@@ -287,7 +287,7 @@ final class _Sqlite extends SqlDialect {
               'ORDER BY '
               '${orderBy.map((key) {
             final (e, order) = key;
-            return '${expr(e, c)} ${order == Order.descending ? 'DESC' : 'ASC'}';
+            return '${expr(e, c)} ${order == Order.descending ? 'DESC' : 'ASC'} NULLS LAST';
           }).join(', ')}',
           columns,
         );

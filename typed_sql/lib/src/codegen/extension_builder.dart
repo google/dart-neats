@@ -171,6 +171,9 @@ Spec _buildQueryExtension(int i) {
       //     List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder,
       //   ) {
       //     final (handle, orderBy) = _build(expressionBuilder);
+      //     if (orderBy.isEmpty) {
+      //       return this;
+      //     }
       //     return _Query(
       //       _context,
       //       _expressions,
@@ -190,6 +193,9 @@ Spec _buildQueryExtension(int i) {
           ))
           ..body = Code('''
             final (handle, orderBy) = _build(expressionBuilder);
+            if (orderBy.isEmpty) {
+              return this;
+            }
             return _Query(
               _context,
               _expressions,
@@ -570,6 +576,9 @@ Spec _buildSubQueryExtension(int i) {
           ))
           ..body = Code('''
             final (handle, orderBy) = _build(expressionBuilder);
+            if (orderBy.isEmpty) {
+              return this;
+            }
             return SubQuery._(
               _expressions,
               (e) => OrderByClause._(_from(e), handle, orderBy),

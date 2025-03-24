@@ -292,7 +292,7 @@ final class _PostgresDialect extends SqlDialect {
               'ORDER BY '
               '${orderBy.map((key) {
             final (e, order) = key;
-            return '${expr(e, c)} ${order == Order.descending ? 'DESC' : 'ASC'}';
+            return '${expr(e, c)} ${order == Order.descending ? 'DESC' : 'ASC'} NULLS LAST';
           }).join(', ')}',
           columns,
         );
