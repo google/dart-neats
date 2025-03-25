@@ -26,6 +26,9 @@ extension Query1<A> on Query<(Expr<A>,)> {
   Query<(Expr<A>,)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a) expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return _Query(
       _context,
       _expressions,
@@ -164,6 +167,9 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
   SubQuery<(Expr<A>,)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a) expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
@@ -216,6 +222,9 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return _Query(
       _context,
       _expressions,
@@ -375,6 +384,9 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
@@ -429,6 +441,9 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return _Query(
       _context,
       _expressions,
@@ -607,6 +622,9 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
@@ -666,6 +684,9 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return _Query(
       _context,
       _expressions,
@@ -864,6 +885,9 @@ extension SubQuery4<A, B, C, D>
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
@@ -929,6 +953,9 @@ extension Query5<A, B, C, D, E>
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return _Query(
       _context,
       _expressions,
@@ -1141,6 +1168,9 @@ extension SubQuery5<A, B, C, D, E>
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
@@ -1212,6 +1242,9 @@ extension Query6<A, B, C, D, E, F>
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return _Query(
       _context,
       _expressions,
@@ -1447,6 +1480,9 @@ extension SubQuery6<A, B, C, D, E, F>
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
           expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
@@ -1524,6 +1560,9 @@ extension Query7<A, B, C, D, E, F, G>
                   Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
               expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return _Query(
       _context,
       _expressions,
@@ -1817,6 +1856,9 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
                   Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
               expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
@@ -1923,6 +1965,9 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
                   Expr<H> h)
               expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return _Query(
       _context,
       _expressions,
@@ -2395,6 +2440,9 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
                   Expr<H> h)
               expressionBuilder) {
     final (handle, orderBy) = _build(expressionBuilder);
+    if (orderBy.isEmpty) {
+      return this;
+    }
     return SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
