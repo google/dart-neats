@@ -25,11 +25,12 @@ import 'dialect/dialect.dart';
 
 part 'typed_sql.annotations.dart';
 part 'typed_sql.database.dart';
-part 'typed_sql.expression.dart';
-part 'typed_sql.extensions.dart';
+part 'typed_sql.expr.dart';
+part 'typed_sql.expr_ext.dart';
 part 'typed_sql.g.dart';
 part 'typed_sql.mutation.dart';
 part 'typed_sql.query.dart';
+part 'typed_sql.query_ext.dart';
 part 'typed_sql.statements.dart';
 
 abstract base class Schema {
