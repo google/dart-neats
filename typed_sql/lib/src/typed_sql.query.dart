@@ -27,8 +27,6 @@ part of 'typed_sql.dart';
 //       that to mean NULL.
 
 /// A [Query] on the database from which results can be fetched.
-///
-/// {@category Aggregate functions and group by}
 abstract final class Query<T extends Record> {
   final DatabaseContext _context;
 

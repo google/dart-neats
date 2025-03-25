@@ -87,7 +87,7 @@ Future<void> main() async {
   {
     final users = await db.users
         .where((user) => user.email.endsWithLiteral('@google.com'))
-        .orderBy((user) => user.email)
+        .orderBy((user) => [(user.email, Order.ascending)])
         .offset(5)
         .limit(10)
         .fetch();

@@ -21,6 +21,8 @@ import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart' as g;
 
+import 'code_builder_ext.dart';
+import 'docs.dart' as docs;
 import 'type_args.dart';
 
 /// A [Builder] that generates extension methods and classes for typed_sql.
@@ -150,6 +152,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'where'
+          ..documentation(docs.where('Query'))
           ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
@@ -168,9 +171,9 @@ Spec _buildQueryExtension(int i) {
       ),
 
       //   Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
-      //     List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c) expressionBuilder,
+      //     List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c) builder,
       //   ) {
-      //     final (handle, orderBy) = _build(expressionBuilder);
+      //     final (handle, orderBy) = _build(builder);
       //     if (orderBy.isEmpty) {
       //       return this;
       //     }
@@ -183,16 +186,17 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'orderBy'
+          ..documentation(docs.orderBy('Query'))
           ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
-              ..name = 'expressionBuilder'
+              ..name = 'builder'
               ..type = refer(
                 'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
               ),
           ))
           ..body = Code('''
-            final (handle, orderBy) = _build(expressionBuilder);
+            final (handle, orderBy) = _build(builder);
             if (orderBy.isEmpty) {
               return this;
             }
@@ -212,6 +216,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'limit'
+          ..documentation(docs.limit('Query'))
           ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
@@ -236,6 +241,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'offset'
+          ..documentation(docs.offset('Query'))
           ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
@@ -256,6 +262,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'first'
+          ..documentation(docs.firstQuery)
           ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
           ..type = MethodType.getter
           ..lambda = true
@@ -268,6 +275,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'count'
+          ..documentation(docs.countQuery)
           ..returns = refer('QuerySingle<(Expr<int>,)>')
           ..lambda = true
           ..body = Code('''
@@ -288,6 +296,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'select'
+          ..documentation(docs.select('Query'))
           ..types.add(refer('T extends Record'))
           ..returns = refer('Query<T>')
           ..requiredParameters.add(Parameter(
@@ -310,6 +319,8 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'join'
+          // TODO: Support left, right joins, inner outer (if this makes sense)
+          ..documentation(docs.joinQuery)
           ..types.add(refer('T extends Record'))
           ..returns = refer('Join<${typArgedExprTuple(i)}, T>')
           ..requiredParameters.add(Parameter(
@@ -324,6 +335,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'exists'
+          ..documentation(docs.existsQuery)
           ..returns = refer('QuerySingle<(Expr<bool>,)>')
           ..lambda = true
           ..body = Code('''
@@ -368,15 +380,16 @@ Spec _buildQueryExtension(int i) {
       //    Query<(Expr<A>, Expr<B>, Expr<C>)> $op(
       //      Query<(Expr<A>, Expr<B>, Expr<C>)> other,
       //    )
-      for (final (method, clause) in [
-        ('union', 'UnionClause'),
-        ('unionAll', 'UnionAllClause'),
-        ('intersect', 'IntersectClause'),
-        ('except', 'ExceptClause'),
+      for (final (method, clause, docs) in [
+        ('union', 'UnionClause', docs.union),
+        ('unionAll', 'UnionAllClause', docs.unionAll),
+        ('intersect', 'IntersectClause', docs.intersection),
+        ('except', 'ExceptClause', docs.except),
       ])
         Method(
           (b) => b
             ..name = method
+            ..documentation(docs('Query'))
             ..returns = refer('Query<${typArgedExprTuple(i)}>')
             ..requiredParameters.add(Parameter(
               (b) => b
@@ -387,10 +400,7 @@ Spec _buildQueryExtension(int i) {
             ..body = Code('''
             _Query(
               _context,
-              // What if this was implicitly cast from Query<(Expr<A>,)> to
-              // Query<(Expr<A?>,)> which doesn't require a cast!
-              // Now, it can't return null, but also I can't know this!
-              _expressions, // TODO: Unclear if this right!
+              _expressions,
               (e) => $clause._(
                 _from(_expressions.toList()),
                 other._castAs(this),
@@ -403,15 +413,16 @@ Spec _buildQueryExtension(int i) {
       //    Query<T> operator -(Query<T> other) => except(other);
       //    Query<T> operator &(Query<T> other) => intersect(other);
       //    Query<T> operator |(Query<T> other) => union(other);
-      for (final (op, method) in [
-        ('+', 'unionAll'),
-        ('-', 'except'),
-        ('&', 'intersect'),
-        ('|', 'union')
+      for (final (op, method, docs) in [
+        ('-', 'except', docs.union),
+        ('+', 'unionAll', docs.unionAll),
+        ('&', 'intersect', docs.intersection),
+        ('|', 'union', docs.except),
       ])
         Method(
           (b) => b
             ..name = 'operator $op'
+            ..documentation(docs('Query'))
             ..returns = refer('Query<${typArgedExprTuple(i)}>')
             ..requiredParameters.add(Parameter(
               (b) => b
@@ -433,6 +444,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'groupBy'
+          ..documentation(docs.groupBy)
           ..types.add(refer('T extends Record'))
           ..returns = refer('Group<T, ${typArgedExprTuple(i)}>')
           ..requiredParameters.add(Parameter(
@@ -469,6 +481,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'stream'
+          ..documentation(docs.streamQuery)
           ..returns = refer(
             // Query1 return A, while Query2 returns (A, B)
             'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
@@ -497,6 +510,7 @@ Spec _buildQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'fetch'
+          ..documentation(docs.fetchQuery)
           ..returns = refer(
             // Query1 return A, while Query2 returns (A, B)
             'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>',
@@ -547,6 +561,7 @@ Spec _buildSubQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'where'
+          ..documentation(docs.where('SubQuery'))
           ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
@@ -566,16 +581,17 @@ Spec _buildSubQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'orderBy'
+          ..documentation(docs.orderBy('SubQuery'))
           ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
-              ..name = 'expressionBuilder'
+              ..name = 'builder'
               ..type = refer(
                 'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
               ),
           ))
           ..body = Code('''
-            final (handle, orderBy) = _build(expressionBuilder);
+            final (handle, orderBy) = _build(builder);
             if (orderBy.isEmpty) {
               return this;
             }
@@ -589,6 +605,7 @@ Spec _buildSubQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'limit'
+          ..documentation(docs.limit('SubQuery'))
           ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
@@ -607,6 +624,7 @@ Spec _buildSubQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'offset'
+          ..documentation(docs.offset('SubQuery'))
           ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
@@ -627,6 +645,7 @@ Spec _buildSubQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'count'
+          ..documentation(docs.countSubQuery)
           ..returns = refer('Expr<int>')
           ..lambda = true
           ..body = Code('''
@@ -637,6 +656,7 @@ Spec _buildSubQueryExtension(int i) {
       Method(
         (b) => b
           ..name = 'select'
+          ..documentation(docs.select('SubQuery'))
           ..types.add(refer('T extends Record'))
           ..returns = refer('SubQuery<T>')
           ..requiredParameters.add(Parameter(
@@ -653,11 +673,14 @@ Spec _buildSubQueryExtension(int i) {
           '''),
       ),
 
+      // TODO: Consider introducing support for .union, .intersect, .except
+      // TODO: Consdier introducing support for .groupBy
       // TODO: Consider introducing SubJoin
 
       Method(
         (b) => b
           ..name = 'exists'
+          ..documentation(docs.existsSubQuery)
           ..returns = refer('Expr<bool>')
           ..lambda = true
           ..body = Code('''
@@ -697,6 +720,7 @@ Spec _buildSingleQueryExtension(int i) {
           Method(
             (b) => b
               ..name = 'asQuery'
+              ..documentation(docs.asQueryQuerySingle)
               ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
               ..type = MethodType.getter
               ..lambda = true
@@ -705,6 +729,7 @@ Spec _buildSingleQueryExtension(int i) {
           Method(
             (b) => b
               ..name = 'where'
+              ..documentation(docs.where('QuerySingle'))
               ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
               ..requiredParameters.add(Parameter(
                 (b) => b
@@ -719,6 +744,7 @@ Spec _buildSingleQueryExtension(int i) {
           Method(
             (b) => b
               ..name = 'select'
+              ..documentation(docs.select('QuerySingle'))
               ..types.add(refer('T extends Record'))
               ..returns = refer('QuerySingle<T>')
               ..requiredParameters.add(Parameter(
@@ -734,6 +760,9 @@ Spec _buildSingleQueryExtension(int i) {
           Method(
             (b) => b
               ..name = 'fetch'
+              ..documentation(i > 1
+                  ? docs.fetchQuerySingleWithFetchOrNullsTip
+                  : docs.fetchQuerySingle)
               ..returns = refer(
                 'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}?>',
               )
@@ -745,6 +774,7 @@ Spec _buildSingleQueryExtension(int i) {
             Method(
               (b) => b
                 ..name = 'fetchOrNulls'
+                ..documentation(docs.fetchOrNullsQuerySingle)
                 ..returns = refer(
                   'Future<(${List.generate(i, (i) => '${typeArg[i]}?').join(',')})>',
                 )

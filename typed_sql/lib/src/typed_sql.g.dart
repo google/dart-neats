@@ -14,6 +14,10 @@ extension Query1<A> on Query<(Expr<A>,)> {
     return (handle, builder(a));
   }
 
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>,)> where(Expr<bool> Function(Expr<A> a) conditionBuilder) {
     final (handle, where) = _build(conditionBuilder);
     return _Query(
@@ -23,9 +27,32 @@ extension Query1<A> on Query<(Expr<A>,)> {
     );
   }
 
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   Query<(Expr<A>,)> orderBy(
-      List<(Expr<Comparable?>, Order)> Function(Expr<A> a) expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -36,19 +63,50 @@ extension Query1<A> on Query<(Expr<A>,)> {
     );
   }
 
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>,)> limit(int limit) => _Query(
         _context,
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>,)> offset(int offset) => _Query(
         _context,
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
   QuerySingle<(Expr<A>,)> get first => QuerySingle._(limit(1));
+
+  /// Count number of rows in this [Query] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [QuerySingle] will have exactly one row, which is the
+  /// number of rows in the this query.
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   QuerySingle<(Expr<int>,)> count() =>
       select((a) => (CountAllExpression._(),)).first;
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(T Function(Expr<A> a) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
     return _Query(
@@ -58,8 +116,26 @@ extension Query1<A> on Query<(Expr<A>,)> {
     );
   }
 
+  /// Join this [Query] with another [Query] using `JOIN` clause.
+  ///
+  /// This method returns a [Join] object on which you must call either
+  ///  * `.all` to get the cartesian product of the two queries, or,
+  ///  * `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
   Join<(Expr<A>,), T> join<T extends Record>(Query<T> query) =>
       Join._(this, query);
+
+  /// Check for existance of rows in this [Query] using `EXISTS` operator.
+  ///
+  /// This returns a [QuerySingle] which contains exactly one row.
+  /// The value of this query will be `true`, if this [Query] contains
+  /// any rows, even if those rows are entirely `null`s.
+  ///
+  /// > [!TIP]
+  /// > If you wish to use `.exists()` in a subquery considering
+  /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
         _context,
         (ExistsExpression._(_from(_expressions.toList())),),
@@ -79,54 +155,96 @@ extension Query1<A> on Query<(Expr<A>,)> {
     );
   }
 
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>,)> union(Query<(Expr<A>,)> other) => _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
   Query<(Expr<A>,)> unionAll(Query<(Expr<A>,)> other) => _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>,)> intersect(Query<(Expr<A>,)> other) => _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => IntersectClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>,)> except(Query<(Expr<A>,)> other) => _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => ExceptClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
-  Query<(Expr<A>,)> operator +(Query<(Expr<A>,)> other) => unionAll(other);
+
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>,)> operator -(Query<(Expr<A>,)> other) => except(other);
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
+  Query<(Expr<A>,)> operator +(Query<(Expr<A>,)> other) => unionAll(other);
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>,)> operator &(Query<(Expr<A>,)> other) => intersect(other);
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>,)> operator |(Query<(Expr<A>,)> other) => union(other);
+
+  /// Create projection for `GROUP BY` clause.
+  ///
+  /// The [groupBuilder] must return a [Record] where all the values are [Expr]
+  /// objects. If something else is returned you will get a [Group] object which
+  /// doesn't have any methods!
+  ///
+  /// This returns a [Group] object which has an `.aggregate` method that returns
+  /// a query with a row for each distinct value of the projetion created by
+  /// [groupBuilder]. The `.aggregate` method is used to construct
+  /// _aggregate functions_ over rows of this [Query] for each group.
+  ///
+  /// {@category Aggregate functions and group by}
   Group<T, (Expr<A>,)> groupBy<T extends Record>(
       T Function(Expr<A> a) groupBuilder) {
     final (handle, (group, standins)) = _build((a) {
@@ -135,6 +253,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
     return Group._(this, handle, group, standins);
   }
 
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<A> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -145,6 +264,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
     }
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<List<A>> fetch() async => await stream().toList();
 }
 
@@ -156,6 +276,10 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
     return (handle, builder(a));
   }
 
+  /// Filter [SubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>,)> where(Expr<bool> Function(Expr<A> a) conditionBuilder) {
     final (handle, where) = _build(conditionBuilder);
     return SubQuery._(
@@ -164,9 +288,32 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
     );
   }
 
+  /// Order [SubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [SubQuery] with the same rows as this [SubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   SubQuery<(Expr<A>,)> orderBy(
-      List<(Expr<Comparable?>, Order)> Function(Expr<A> a) expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -176,16 +323,43 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
     );
   }
 
+  /// Limit [SubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>,)> limit(int limit) => SubQuery._(
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [SubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>,)> offset(int offset) => SubQuery._(
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [Expr<int>] will evaluate to the number of rows in this
+  /// [SubQuery].
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   Expr<int> count() =>
       select((a) => (CountAllExpression._(),)).first.assertNotNull();
+
+  /// Create a projection of this [SubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [SubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [SubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -195,6 +369,10 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
     );
   }
 
+  /// Check for existance of rows in this [SubQuery] using `EXISTS` operator.
+  ///
+  /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
+  /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
@@ -208,6 +386,10 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     return (handle, builder(a, b));
   }
 
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>)> where(
       Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) {
     final (handle, where) = _build(conditionBuilder);
@@ -218,10 +400,32 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     );
   }
 
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   Query<(Expr<A>, Expr<B>)> orderBy(
-      List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b) builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -232,19 +436,50 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     );
   }
 
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>)> limit(int limit) => _Query(
         _context,
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>)> offset(int offset) => _Query(
         _context,
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
   QuerySingle<(Expr<A>, Expr<B>)> get first => QuerySingle._(limit(1));
+
+  /// Count number of rows in this [Query] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [QuerySingle] will have exactly one row, which is the
+  /// number of rows in the this query.
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   QuerySingle<(Expr<int>,)> count() =>
       select((a, b) => (CountAllExpression._(),)).first;
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -255,8 +490,26 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     );
   }
 
+  /// Join this [Query] with another [Query] using `JOIN` clause.
+  ///
+  /// This method returns a [Join] object on which you must call either
+  ///  * `.all` to get the cartesian product of the two queries, or,
+  ///  * `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
   Join<(Expr<A>, Expr<B>), T> join<T extends Record>(Query<T> query) =>
       Join._(this, query);
+
+  /// Check for existance of rows in this [Query] using `EXISTS` operator.
+  ///
+  /// This returns a [QuerySingle] which contains exactly one row.
+  /// The value of this query will be `true`, if this [Query] contains
+  /// any rows, even if those rows are entirely `null`s.
+  ///
+  /// > [!TIP]
+  /// > If you wish to use `.exists()` in a subquery considering
+  /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
         _context,
         (ExistsExpression._(_from(_expressions.toList())),),
@@ -280,59 +533,101 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     );
   }
 
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>)> union(Query<(Expr<A>, Expr<B>)> other) => _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
   Query<(Expr<A>, Expr<B>)> unionAll(Query<(Expr<A>, Expr<B>)> other) => _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>)> intersect(Query<(Expr<A>, Expr<B>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => IntersectClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>)> except(Query<(Expr<A>, Expr<B>)> other) => _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => ExceptClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
-  Query<(Expr<A>, Expr<B>)> operator +(Query<(Expr<A>, Expr<B>)> other) =>
-      unionAll(other);
+
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>)> operator -(Query<(Expr<A>, Expr<B>)> other) =>
       except(other);
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
+  Query<(Expr<A>, Expr<B>)> operator +(Query<(Expr<A>, Expr<B>)> other) =>
+      unionAll(other);
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>)> operator &(Query<(Expr<A>, Expr<B>)> other) =>
       intersect(other);
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>)> operator |(Query<(Expr<A>, Expr<B>)> other) =>
       union(other);
+
+  /// Create projection for `GROUP BY` clause.
+  ///
+  /// The [groupBuilder] must return a [Record] where all the values are [Expr]
+  /// objects. If something else is returned you will get a [Group] object which
+  /// doesn't have any methods!
+  ///
+  /// This returns a [Group] object which has an `.aggregate` method that returns
+  /// a query with a row for each distinct value of the projetion created by
+  /// [groupBuilder]. The `.aggregate` method is used to construct
+  /// _aggregate functions_ over rows of this [Query] for each group.
+  ///
+  /// {@category Aggregate functions and group by}
   Group<T, (Expr<A>, Expr<B>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b) {
@@ -347,6 +642,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     return Group._(this, handle, group, standins);
   }
 
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<(A, B)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -358,6 +654,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     }
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B)>> fetch() async => await stream().toList();
 }
 
@@ -371,6 +668,10 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
     return (handle, builder(a, b));
   }
 
+  /// Filter [SubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>)> where(
       Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) {
     final (handle, where) = _build(conditionBuilder);
@@ -380,10 +681,32 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
     );
   }
 
+  /// Order [SubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [SubQuery] with the same rows as this [SubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   SubQuery<(Expr<A>, Expr<B>)> orderBy(
-      List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+      List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b) builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -393,16 +716,43 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
     );
   }
 
+  /// Limit [SubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>, Expr<B>)> limit(int limit) => SubQuery._(
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [SubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>)> offset(int offset) => SubQuery._(
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [Expr<int>] will evaluate to the number of rows in this
+  /// [SubQuery].
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   Expr<int> count() =>
       select((a, b) => (CountAllExpression._(),)).first.assertNotNull();
+
+  /// Create a projection of this [SubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [SubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [SubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -412,6 +762,10 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
     );
   }
 
+  /// Check for existance of rows in this [SubQuery] using `EXISTS` operator.
+  ///
+  /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
+  /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
@@ -427,6 +781,10 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     return (handle, builder(a, b, c));
   }
 
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>)> where(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
     final (handle, where) = _build(conditionBuilder);
@@ -437,10 +795,33 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+          builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -451,19 +832,50 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => _Query(
         _context,
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => _Query(
         _context,
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => QuerySingle._(limit(1));
+
+  /// Count number of rows in this [Query] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [QuerySingle] will have exactly one row, which is the
+  /// number of rows in the this query.
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   QuerySingle<(Expr<int>,)> count() =>
       select((a, b, c) => (CountAllExpression._(),)).first;
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -474,8 +886,26 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
+  /// Join this [Query] with another [Query] using `JOIN` clause.
+  ///
+  /// This method returns a [Join] object on which you must call either
+  ///  * `.all` to get the cartesian product of the two queries, or,
+  ///  * `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
   Join<(Expr<A>, Expr<B>, Expr<C>), T> join<T extends Record>(Query<T> query) =>
       Join._(this, query);
+
+  /// Check for existance of rows in this [Query] using `EXISTS` operator.
+  ///
+  /// This returns a [QuerySingle] which contains exactly one row.
+  /// The value of this query will be `true`, if this [Query] contains
+  /// any rows, even if those rows are entirely `null`s.
+  ///
+  /// > [!TIP]
+  /// > If you wish to use `.exists()` in a subquery considering
+  /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
         _context,
         (ExistsExpression._(_from(_expressions.toList())),),
@@ -503,70 +933,112 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
   Query<(Expr<A>, Expr<B>, Expr<C>)> unionAll(
           Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>)> intersect(
           Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => IntersectClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>, Expr<C>)> except(
           Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => ExceptClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
-  Query<(Expr<A>, Expr<B>, Expr<C>)> operator +(
-          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
-      unionAll(other);
+
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>)> operator -(
           Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
       except(other);
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
+  Query<(Expr<A>, Expr<B>, Expr<C>)> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
+      unionAll(other);
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>)> operator &(
           Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
       intersect(other);
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>, Expr<C>)> operator |(
           Query<(Expr<A>, Expr<B>, Expr<C>)> other) =>
       union(other);
+
+  /// Create projection for `GROUP BY` clause.
+  ///
+  /// The [groupBuilder] must return a [Record] where all the values are [Expr]
+  /// objects. If something else is returned you will get a [Group] object which
+  /// doesn't have any methods!
+  ///
+  /// This returns a [Group] object which has an `.aggregate` method that returns
+  /// a query with a row for each distinct value of the projetion created by
+  /// [groupBuilder]. The `.aggregate` method is used to construct
+  /// _aggregate functions_ over rows of this [Query] for each group.
+  ///
+  /// {@category Aggregate functions and group by}
   Group<T, (Expr<A>, Expr<B>, Expr<C>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b, c) {
@@ -582,6 +1054,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     return Group._(this, handle, group, standins);
   }
 
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<(A, B, C)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -594,6 +1067,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     }
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C)>> fetch() async => await stream().toList();
 }
 
@@ -609,6 +1083,10 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
     return (handle, builder(a, b, c));
   }
 
+  /// Filter [SubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>)> where(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
     final (handle, where) = _build(conditionBuilder);
@@ -618,10 +1096,33 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
+  /// Order [SubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [SubQuery] with the same rows as this [SubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   SubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+          builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -631,16 +1132,43 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
+  /// Limit [SubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => SubQuery._(
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [SubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => SubQuery._(
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [Expr<int>] will evaluate to the number of rows in this
+  /// [SubQuery].
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   Expr<int> count() =>
       select((a, b, c) => (CountAllExpression._(),)).first.assertNotNull();
+
+  /// Create a projection of this [SubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [SubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [SubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) {
     final (handle, projection) = _build(projectionBuilder);
@@ -650,6 +1178,10 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
+  /// Check for existance of rows in this [SubQuery] using `EXISTS` operator.
+  ///
+  /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
+  /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
@@ -668,6 +1200,10 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     return (handle, builder(a, b, c, d));
   }
 
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -679,11 +1215,34 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     );
   }
 
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+          builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -694,20 +1253,51 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     );
   }
 
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) => _Query(
         _context,
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(int offset) => _Query(
         _context,
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get first =>
       QuerySingle._(limit(1));
+
+  /// Count number of rows in this [Query] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [QuerySingle] will have exactly one row, which is the
+  /// number of rows in the this query.
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   QuerySingle<(Expr<int>,)> count() =>
       select((a, b, c, d) => (CountAllExpression._(),)).first;
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           projectionBuilder) {
@@ -719,9 +1309,27 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     );
   }
 
+  /// Join this [Query] with another [Query] using `JOIN` clause.
+  ///
+  /// This method returns a [Join] object on which you must call either
+  ///  * `.all` to get the cartesian product of the two queries, or,
+  ///  * `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), T> join<T extends Record>(
           Query<T> query) =>
       Join._(this, query);
+
+  /// Check for existance of rows in this [Query] using `EXISTS` operator.
+  ///
+  /// This returns a [QuerySingle] which contains exactly one row.
+  /// The value of this query will be `true`, if this [Query] contains
+  /// any rows, even if those rows are entirely `null`s.
+  ///
+  /// > [!TIP]
+  /// > If you wish to use `.exists()` in a subquery considering
+  /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
         _context,
         (ExistsExpression._(_from(_expressions.toList())),),
@@ -753,70 +1361,112 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     );
   }
 
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> unionAll(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> intersect(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => IntersectClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> except(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => ExceptClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator +(
-          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
-      unionAll(other);
+
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator -(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
       except(other);
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
+      unionAll(other);
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator &(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
       intersect(other);
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> operator |(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> other) =>
       union(other);
+
+  /// Create projection for `GROUP BY` clause.
+  ///
+  /// The [groupBuilder] must return a [Record] where all the values are [Expr]
+  /// objects. If something else is returned you will get a [Group] object which
+  /// doesn't have any methods!
+  ///
+  /// This returns a [Group] object which has an `.aggregate` method that returns
+  /// a query with a row for each distinct value of the projetion created by
+  /// [groupBuilder]. The `.aggregate` method is used to construct
+  /// _aggregate functions_ over rows of this [Query] for each group.
+  ///
+  /// {@category Aggregate functions and group by}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b, c, d) {
@@ -833,6 +1483,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     return Group._(this, handle, group, standins);
   }
 
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<(A, B, C, D)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -851,6 +1502,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     }
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D)>> fetch() async => await stream().toList();
 }
 
@@ -870,6 +1522,10 @@ extension SubQuery4<A, B, C, D>
     return (handle, builder(a, b, c, d));
   }
 
+  /// Filter [SubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -880,11 +1536,34 @@ extension SubQuery4<A, B, C, D>
     );
   }
 
+  /// Order [SubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [SubQuery] with the same rows as this [SubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+          builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -894,17 +1573,44 @@ extension SubQuery4<A, B, C, D>
     );
   }
 
+  /// Limit [SubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) => SubQuery._(
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [SubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(int offset) =>
       SubQuery._(
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [Expr<int>] will evaluate to the number of rows in this
+  /// [SubQuery].
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   Expr<int> count() =>
       select((a, b, c, d) => (CountAllExpression._(),)).first.assertNotNull();
+
+  /// Create a projection of this [SubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [SubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [SubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           projectionBuilder) {
@@ -915,6 +1621,10 @@ extension SubQuery4<A, B, C, D>
     );
   }
 
+  /// Check for existance of rows in this [SubQuery] using `EXISTS` operator.
+  ///
+  /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
+  /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
@@ -937,6 +1647,10 @@ extension Query5<A, B, C, D, E>
     return (handle, builder(a, b, c, d, e));
   }
 
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -948,11 +1662,34 @@ extension Query5<A, B, C, D, E>
     );
   }
 
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+          builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -963,22 +1700,53 @@ extension Query5<A, B, C, D, E>
     );
   }
 
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> limit(int limit) =>
       _Query(
         _context,
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> offset(int offset) =>
       _Query(
         _context,
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get first =>
       QuerySingle._(limit(1));
+
+  /// Count number of rows in this [Query] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [QuerySingle] will have exactly one row, which is the
+  /// number of rows in the this query.
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   QuerySingle<(Expr<int>,)> count() =>
       select((a, b, c, d, e) => (CountAllExpression._(),)).first;
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           projectionBuilder) {
@@ -990,9 +1758,27 @@ extension Query5<A, B, C, D, E>
     );
   }
 
+  /// Join this [Query] with another [Query] using `JOIN` clause.
+  ///
+  /// This method returns a [Join] object on which you must call either
+  ///  * `.all` to get the cartesian product of the two queries, or,
+  ///  * `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), T> join<T extends Record>(
           Query<T> query) =>
       Join._(this, query);
+
+  /// Check for existance of rows in this [Query] using `EXISTS` operator.
+  ///
+  /// This returns a [QuerySingle] which contains exactly one row.
+  /// The value of this query will be `true`, if this [Query] contains
+  /// any rows, even if those rows are entirely `null`s.
+  ///
+  /// > [!TIP]
+  /// > If you wish to use `.exists()` in a subquery considering
+  /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
         _context,
         (ExistsExpression._(_from(_expressions.toList())),),
@@ -1028,70 +1814,112 @@ extension Query5<A, B, C, D, E>
     );
   }
 
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> unionAll(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> intersect(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => IntersectClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> except(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => ExceptClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator +(
-          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
-      unionAll(other);
+
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator -(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
       except(other);
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
+      unionAll(other);
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator &(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
       intersect(other);
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> operator |(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> other) =>
       union(other);
+
+  /// Create projection for `GROUP BY` clause.
+  ///
+  /// The [groupBuilder] must return a [Record] where all the values are [Expr]
+  /// objects. If something else is returned you will get a [Group] object which
+  /// doesn't have any methods!
+  ///
+  /// This returns a [Group] object which has an `.aggregate` method that returns
+  /// a query with a row for each distinct value of the projetion created by
+  /// [groupBuilder]. The `.aggregate` method is used to construct
+  /// _aggregate functions_ over rows of this [Query] for each group.
+  ///
+  /// {@category Aggregate functions and group by}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
@@ -1111,6 +1939,7 @@ extension Query5<A, B, C, D, E>
     return Group._(this, handle, group, standins);
   }
 
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<(A, B, C, D, E)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -1131,6 +1960,7 @@ extension Query5<A, B, C, D, E>
     }
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D, E)>> fetch() async => await stream().toList();
 }
 
@@ -1153,6 +1983,10 @@ extension SubQuery5<A, B, C, D, E>
     return (handle, builder(a, b, c, d, e));
   }
 
+  /// Filter [SubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -1163,11 +1997,34 @@ extension SubQuery5<A, B, C, D, E>
     );
   }
 
+  /// Order [SubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [SubQuery] with the same rows as this [SubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+          builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -1177,19 +2034,46 @@ extension SubQuery5<A, B, C, D, E>
     );
   }
 
+  /// Limit [SubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> limit(int limit) =>
       SubQuery._(
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [SubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> offset(int offset) =>
       SubQuery._(
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [Expr<int>] will evaluate to the number of rows in this
+  /// [SubQuery].
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   Expr<int> count() => select((a, b, c, d, e) => (CountAllExpression._(),))
       .first
       .assertNotNull();
+
+  /// Create a projection of this [SubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [SubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [SubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           projectionBuilder) {
@@ -1200,6 +2084,10 @@ extension SubQuery5<A, B, C, D, E>
     );
   }
 
+  /// Check for existance of rows in this [SubQuery] using `EXISTS` operator.
+  ///
+  /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
+  /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
@@ -1225,6 +2113,10 @@ extension Query6<A, B, C, D, E, F>
     return (handle, builder(a, b, c, d, e, f));
   }
 
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -1237,11 +2129,34 @@ extension Query6<A, B, C, D, E, F>
     );
   }
 
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+          builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -1252,6 +2167,9 @@ extension Query6<A, B, C, D, E, F>
     );
   }
 
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> limit(
           int limit) =>
       _Query(
@@ -1259,6 +2177,10 @@ extension Query6<A, B, C, D, E, F>
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> offset(
           int offset) =>
       _Query(
@@ -1266,10 +2188,34 @@ extension Query6<A, B, C, D, E, F>
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
       get first => QuerySingle._(limit(1));
+
+  /// Count number of rows in this [Query] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [QuerySingle] will have exactly one row, which is the
+  /// number of rows in the this query.
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   QuerySingle<(Expr<int>,)> count() =>
       select((a, b, c, d, e, f) => (CountAllExpression._(),)).first;
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(
       T Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -1282,8 +2228,26 @@ extension Query6<A, B, C, D, E, F>
     );
   }
 
+  /// Join this [Query] with another [Query] using `JOIN` clause.
+  ///
+  /// This method returns a [Join] object on which you must call either
+  ///  * `.all` to get the cartesian product of the two queries, or,
+  ///  * `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), T>
       join<T extends Record>(Query<T> query) => Join._(this, query);
+
+  /// Check for existance of rows in this [Query] using `EXISTS` operator.
+  ///
+  /// This returns a [QuerySingle] which contains exactly one row.
+  /// The value of this query will be `true`, if this [Query] contains
+  /// any rows, even if those rows are entirely `null`s.
+  ///
+  /// > [!TIP]
+  /// > If you wish to use `.exists()` in a subquery considering
+  /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
         _context,
         (ExistsExpression._(_from(_expressions.toList())),),
@@ -1324,78 +2288,120 @@ extension Query6<A, B, C, D, E, F>
     );
   }
 
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> unionAll(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> intersect(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => IntersectClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> except(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => ExceptClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator +(
-          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
-              other) =>
-      unionAll(other);
+
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator -(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
               other) =>
       except(other);
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+              other) =>
+      unionAll(other);
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator &(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
               other) =>
       intersect(other);
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> operator |(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
               other) =>
       union(other);
+
+  /// Create projection for `GROUP BY` clause.
+  ///
+  /// The [groupBuilder] must return a [Record] where all the values are [Expr]
+  /// objects. If something else is returned you will get a [Group] object which
+  /// doesn't have any methods!
+  ///
+  /// This returns a [Group] object which has an `.aggregate` method that returns
+  /// a query with a row for each distinct value of the projetion created by
+  /// [groupBuilder]. The `.aggregate` method is used to construct
+  /// _aggregate functions_ over rows of this [Query] for each group.
+  ///
+  /// {@category Aggregate functions and group by}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
@@ -1417,6 +2423,7 @@ extension Query6<A, B, C, D, E, F>
     return Group._(this, handle, group, standins);
   }
 
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<(A, B, C, D, E, F)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -1439,6 +2446,7 @@ extension Query6<A, B, C, D, E, F>
     }
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D, E, F)>> fetch() async => await stream().toList();
 }
 
@@ -1464,6 +2472,10 @@ extension SubQuery6<A, B, C, D, E, F>
     return (handle, builder(a, b, c, d, e, f));
   }
 
+  /// Filter [SubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -1475,11 +2487,34 @@ extension SubQuery6<A, B, C, D, E, F>
     );
   }
 
+  /// Order [SubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [SubQuery] with the same rows as this [SubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
-          expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+          builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -1489,21 +2524,48 @@ extension SubQuery6<A, B, C, D, E, F>
     );
   }
 
+  /// Limit [SubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> limit(
           int limit) =>
       SubQuery._(
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [SubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> offset(
           int offset) =>
       SubQuery._(
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [Expr<int>] will evaluate to the number of rows in this
+  /// [SubQuery].
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   Expr<int> count() => select((a, b, c, d, e, f) => (CountAllExpression._(),))
       .first
       .assertNotNull();
+
+  /// Create a projection of this [SubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [SubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [SubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   SubQuery<T> select<T extends Record>(
       T Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -1515,6 +2577,10 @@ extension SubQuery6<A, B, C, D, E, F>
     );
   }
 
+  /// Check for existance of rows in this [SubQuery] using `EXISTS` operator.
+  ///
+  /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
+  /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
@@ -1542,6 +2608,10 @@ extension Query7<A, B, C, D, E, F, G>
     return (handle, builder(a, b, c, d, e, f, g));
   }
 
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> where(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -1554,12 +2624,35 @@ extension Query7<A, B, C, D, E, F, G>
     );
   }
 
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       orderBy(
           List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
                   Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
-              expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+              builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -1570,6 +2663,9 @@ extension Query7<A, B, C, D, E, F, G>
     );
   }
 
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
           int limit) =>
       _Query(
@@ -1577,6 +2673,10 @@ extension Query7<A, B, C, D, E, F, G>
         _expressions,
         (e) => LimitClause._(_from(e), limit),
       );
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
           int offset) =>
       _Query(
@@ -1584,10 +2684,34 @@ extension Query7<A, B, C, D, E, F, G>
         _expressions,
         (e) => OffsetClause._(_from(e), offset),
       );
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get first => QuerySingle._(limit(1));
+
+  /// Count number of rows in this [Query] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [QuerySingle] will have exactly one row, which is the
+  /// number of rows in the this query.
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   QuerySingle<(Expr<int>,)> count() =>
       select((a, b, c, d, e, f, g) => (CountAllExpression._(),)).first;
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -1600,8 +2724,26 @@ extension Query7<A, B, C, D, E, F, G>
     );
   }
 
+  /// Join this [Query] with another [Query] using `JOIN` clause.
+  ///
+  /// This method returns a [Join] object on which you must call either
+  ///  * `.all` to get the cartesian product of the two queries, or,
+  ///  * `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T>
       join<T extends Record>(Query<T> query) => Join._(this, query);
+
+  /// Check for existance of rows in this [Query] using `EXISTS` operator.
+  ///
+  /// This returns a [QuerySingle] which contains exactly one row.
+  /// The value of this query will be `true`, if this [Query] contains
+  /// any rows, even if those rows are entirely `null`s.
+  ///
+  /// > [!TIP]
+  /// > If you wish to use `.exists()` in a subquery considering
+  /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
         _context,
         (ExistsExpression._(_from(_expressions.toList())),),
@@ -1647,35 +2789,43 @@ extension Query7<A, B, C, D, E, F, G>
     );
   }
 
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> union(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
   Query<
       (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> unionAll(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<
       (
         Expr<A>,
@@ -1690,42 +2840,34 @@ extension Query7<A, B, C, D, E, F, G>
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => IntersectClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> except(
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => ExceptClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
-  Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>
-      )> operator +(
-          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-              other) =>
-      unionAll(other);
+
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<
       (
         Expr<A>,
@@ -1739,6 +2881,29 @@ extension Query7<A, B, C, D, E, F, G>
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
               other) =>
       except(other);
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>
+      )> operator +(
+          Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+              other) =>
+      unionAll(other);
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<
       (
         Expr<A>,
@@ -1752,6 +2917,12 @@ extension Query7<A, B, C, D, E, F, G>
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
               other) =>
       intersect(other);
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<
       (
         Expr<A>,
@@ -1765,6 +2936,19 @@ extension Query7<A, B, C, D, E, F, G>
           Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
               other) =>
       union(other);
+
+  /// Create projection for `GROUP BY` clause.
+  ///
+  /// The [groupBuilder] must return a [Record] where all the values are [Expr]
+  /// objects. If something else is returned you will get a [Group] object which
+  /// doesn't have any methods!
+  ///
+  /// This returns a [Group] object which has an `.aggregate` method that returns
+  /// a query with a row for each distinct value of the projetion created by
+  /// [groupBuilder]. The `.aggregate` method is used to construct
+  /// _aggregate functions_ over rows of this [Query] for each group.
+  ///
+  /// {@category Aggregate functions and group by}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
@@ -1787,6 +2971,7 @@ extension Query7<A, B, C, D, E, F, G>
     return Group._(this, handle, group, standins);
   }
 
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<(A, B, C, D, E, F, G)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -1811,6 +2996,7 @@ extension Query7<A, B, C, D, E, F, G>
     }
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D, E, F, G)>> fetch() async => await stream().toList();
 }
 
@@ -1838,6 +3024,10 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
     return (handle, builder(a, b, c, d, e, f, g));
   }
 
+  /// Filter [SubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       where(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
@@ -1850,12 +3040,35 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
     );
   }
 
+  /// Order [SubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [SubQuery] with the same rows as this [SubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       orderBy(
           List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
                   Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
-              expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+              builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -1865,20 +3078,47 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
     );
   }
 
+  /// Limit [SubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       limit(int limit) => SubQuery._(
             _expressions,
             (e) => LimitClause._(_from(e), limit),
           );
+
+  /// Offset [SubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       offset(int offset) => SubQuery._(
             _expressions,
             (e) => OffsetClause._(_from(e), offset),
           );
+
+  /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [Expr<int>] will evaluate to the number of rows in this
+  /// [SubQuery].
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   Expr<int> count() =>
       select((a, b, c, d, e, f, g) => (CountAllExpression._(),))
           .first
           .assertNotNull();
+
+  /// Create a projection of this [SubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [SubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [SubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -1890,6 +3130,10 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
     );
   }
 
+  /// Check for existance of rows in this [SubQuery] using `EXISTS` operator.
+  ///
+  /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
+  /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
@@ -1919,6 +3163,10 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     return (handle, builder(a, b, c, d, e, f, g, h));
   }
 
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<
           (
             Expr<A>,
@@ -1942,6 +3190,29 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     );
   }
 
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   Query<
           (
             Expr<A>,
@@ -1963,8 +3234,8 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
                   Expr<F> f,
                   Expr<G> g,
                   Expr<H> h)
-              expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+              builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -1975,18 +3246,29 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     );
   }
 
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       limit(int limit) => _Query(
             _context,
             _expressions,
             (e) => LimitClause._(_from(e), limit),
           );
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       offset(int offset) => _Query(
             _context,
             _expressions,
             (e) => OffsetClause._(_from(e), offset),
           );
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
   QuerySingle<
       (
         Expr<A>,
@@ -1998,8 +3280,28 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         Expr<G>,
         Expr<H>
       )> get first => QuerySingle._(limit(1));
+
+  /// Count number of rows in this [Query] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [QuerySingle] will have exactly one row, which is the
+  /// number of rows in the this query.
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   QuerySingle<(Expr<int>,)> count() =>
       select((a, b, c, d, e, f, g, h) => (CountAllExpression._(),)).first;
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g, Expr<H> h)
@@ -2012,8 +3314,26 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     );
   }
 
+  /// Join this [Query] with another [Query] using `JOIN` clause.
+  ///
+  /// This method returns a [Join] object on which you must call either
+  ///  * `.all` to get the cartesian product of the two queries, or,
+  ///  * `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
   Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
       T> join<T extends Record>(Query<T> query) => Join._(this, query);
+
+  /// Check for existance of rows in this [Query] using `EXISTS` operator.
+  ///
+  /// This returns a [QuerySingle] which contains exactly one row.
+  /// The value of this query will be `true`, if this [Query] contains
+  /// any rows, even if those rows are entirely `null`s.
+  ///
+  /// > [!TIP]
+  /// > If you wish to use `.exists()` in a subquery considering
+  /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(_Query(
         _context,
         (ExistsExpression._(_from(_expressions.toList())),),
@@ -2073,6 +3393,10 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     );
   }
 
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<
       (
         Expr<A>,
@@ -2098,15 +3422,17 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
   Query<
       (
         Expr<A>,
@@ -2132,15 +3458,17 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => UnionAllClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<
       (
         Expr<A>,
@@ -2166,15 +3494,18 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => IntersectClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<
       (
         Expr<A>,
@@ -2200,39 +3531,17 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
               other) =>
       _Query(
         _context,
-        // What if this was implicitly cast from Query<(Expr<A>,)> to
-        // Query<(Expr<A?>,)> which doesn't require a cast!
-        // Now, it can't return null, but also I can't know this!
-        _expressions, // TODO: Unclear if this right!
+        _expressions,
         (e) => ExceptClause._(
           _from(_expressions.toList()),
           other._castAs(this),
         ),
       );
-  Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> operator +(
-          Query<
-                  (
-                    Expr<A>,
-                    Expr<B>,
-                    Expr<C>,
-                    Expr<D>,
-                    Expr<E>,
-                    Expr<F>,
-                    Expr<G>,
-                    Expr<H>
-                  )>
-              other) =>
-      unionAll(other);
+
+  /// Combine this [Query] with [other] using `UNION` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query]
+  /// and [other] with duplicate rows appearing only once.
   Query<
       (
         Expr<A>,
@@ -2257,6 +3566,40 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
                   )>
               other) =>
       except(other);
+
+  /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows from this [Query] and
+  /// [other]. Unlike `.union` this retains duplicate rows.
+  Query<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> operator +(
+          Query<
+                  (
+                    Expr<A>,
+                    Expr<B>,
+                    Expr<C>,
+                    Expr<D>,
+                    Expr<E>,
+                    Expr<F>,
+                    Expr<G>,
+                    Expr<H>
+                  )>
+              other) =>
+      unionAll(other);
+
+  /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in both this
+  /// [Query] and [other], with duplicate rows appearing only once.
   Query<
       (
         Expr<A>,
@@ -2281,6 +3624,12 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
                   )>
               other) =>
       intersect(other);
+
+  /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
+  ///
+  /// This returns a [Query] containing all the rows that appear in this
+  /// [Query] and does not appear in [other], with duplicate rows appearing
+  /// only once.
   Query<
       (
         Expr<A>,
@@ -2305,6 +3654,19 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
                   )>
               other) =>
       union(other);
+
+  /// Create projection for `GROUP BY` clause.
+  ///
+  /// The [groupBuilder] must return a [Record] where all the values are [Expr]
+  /// objects. If something else is returned you will get a [Group] object which
+  /// doesn't have any methods!
+  ///
+  /// This returns a [Group] object which has an `.aggregate` method that returns
+  /// a query with a row for each distinct value of the projetion created by
+  /// [groupBuilder]. The `.aggregate` method is used to construct
+  /// _aggregate functions_ over rows of this [Query] for each group.
+  ///
+  /// {@category Aggregate functions and group by}
   Group<
           T,
           (
@@ -2339,6 +3701,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     return Group._(this, handle, group, standins);
   }
 
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<(A, B, C, D, E, F, G, H)> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
@@ -2365,6 +3728,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     }
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D, E, F, G, H)>> fetch() async =>
       await stream().toList();
 }
@@ -2395,6 +3759,10 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
     return (handle, builder(a, b, c, d, e, f, g, h));
   }
 
+  /// Filter [SubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<
           (
             Expr<A>,
@@ -2417,6 +3785,29 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
     );
   }
 
+  /// Order [SubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [SubQuery] with the same rows as this [SubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
   SubQuery<
           (
             Expr<A>,
@@ -2438,8 +3829,8 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
                   Expr<F> f,
                   Expr<G> g,
                   Expr<H> h)
-              expressionBuilder) {
-    final (handle, orderBy) = _build(expressionBuilder);
+              builder) {
+    final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
       return this;
     }
@@ -2449,22 +3840,49 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
     );
   }
 
+  /// Limit [SubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<
           (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       limit(int limit) => SubQuery._(
             _expressions,
             (e) => LimitClause._(_from(e), limit),
           );
+
+  /// Offset [SubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<
           (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       offset(int offset) => SubQuery._(
             _expressions,
             (e) => OffsetClause._(_from(e), offset),
           );
+
+  /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
+  /// function.
+  ///
+  /// The resulting [Expr<int>] will evaluate to the number of rows in this
+  /// [SubQuery].
+  ///
+  /// This will count all rows, including rows with `null` values. If you
+  /// don't wish to count `null` values, use [where] to filter out such
+  /// rows first.
   Expr<int> count() =>
       select((a, b, c, d, e, f, g, h) => (CountAllExpression._(),))
           .first
           .assertNotNull();
+
+  /// Create a projection of this [SubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [SubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [SubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   SubQuery<T> select<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g, Expr<H> h)
@@ -2476,6 +3894,10 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
     );
   }
 
+  /// Check for existance of rows in this [SubQuery] using `EXISTS` operator.
+  ///
+  /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
+  /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
@@ -5179,118 +6601,382 @@ extension Aggregate7Project1<A, B, C, D, E, F, G, H> on Aggregation<
 }
 
 extension QuerySingle1<A> on QuerySingle<(Expr<A>,)> {
+  /// Get [Query] with the same rows as this [QuerySingle].
+  ///
+  /// This returns a [Query] with at-most one row.
+  ///
+  /// > [!NOTE]
+  /// > This is method is only useful for converting a [QuerySingle]
+  /// > into a [Query] representation, which can be necessary if you wish to pass
+  /// > a [QuerySingle] into a function that only accepts [Query].
   Query<(Expr<A>,)> get asQuery => _query;
+
+  /// Filter [QuerySingle] using `WHERE` clause.
+  ///
+  /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>,)> where(
           Expr<bool> Function(Expr<A> a) conditionBuilder) =>
       asQuery.where(conditionBuilder).first;
+
+  /// Create a projection of this [QuerySingle] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [QuerySingle] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [QuerySingle<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a) projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// This returns at-most a single row because [QuerySingle] represents a [Query]
+  /// containing at-most one row.
   Future<A?> fetch() async => (await asQuery.fetch()).firstOrNull;
 }
 
 extension QuerySingle2<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
+  /// Get [Query] with the same rows as this [QuerySingle].
+  ///
+  /// This returns a [Query] with at-most one row.
+  ///
+  /// > [!NOTE]
+  /// > This is method is only useful for converting a [QuerySingle]
+  /// > into a [Query] representation, which can be necessary if you wish to pass
+  /// > a [QuerySingle] into a function that only accepts [Query].
   Query<(Expr<A>, Expr<B>)> get asQuery => _query;
+
+  /// Filter [QuerySingle] using `WHERE` clause.
+  ///
+  /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>)> where(
           Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) =>
       asQuery.where(conditionBuilder).first;
+
+  /// Create a projection of this [QuerySingle] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [QuerySingle] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [QuerySingle<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a, Expr<B> b) projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// This returns at-most a single row because [QuerySingle] represents a [Query]
+  /// containing at-most one row.
+  ///
+  /// > [!TIP]
+  /// > If you don't care about whether or not the row is `null` or not
+  /// > present, you can use the convinience method [fetchOrNulls] instead.
   Future<(A, B)?> fetch() async => (await asQuery.fetch()).firstOrNull;
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// > [!WARNING]
+  /// > When using this method it is impossible to distinguish between
+  /// > a result where all values are `null` and zero rows.
   Future<(A?, B?)> fetchOrNulls() async => await fetch() ?? (null, null);
 }
 
 extension QuerySingle3<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Get [Query] with the same rows as this [QuerySingle].
+  ///
+  /// This returns a [Query] with at-most one row.
+  ///
+  /// > [!NOTE]
+  /// > This is method is only useful for converting a [QuerySingle]
+  /// > into a [Query] representation, which can be necessary if you wish to pass
+  /// > a [QuerySingle] into a function that only accepts [Query].
   Query<(Expr<A>, Expr<B>, Expr<C>)> get asQuery => _query;
+
+  /// Filter [QuerySingle] using `WHERE` clause.
+  ///
+  /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> where(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c)
               conditionBuilder) =>
       asQuery.where(conditionBuilder).first;
+
+  /// Create a projection of this [QuerySingle] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [QuerySingle] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [QuerySingle<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// This returns at-most a single row because [QuerySingle] represents a [Query]
+  /// containing at-most one row.
+  ///
+  /// > [!TIP]
+  /// > If you don't care about whether or not the row is `null` or not
+  /// > present, you can use the convinience method [fetchOrNulls] instead.
   Future<(A, B, C)?> fetch() async => (await asQuery.fetch()).firstOrNull;
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// > [!WARNING]
+  /// > When using this method it is impossible to distinguish between
+  /// > a result where all values are `null` and zero rows.
   Future<(A?, B?, C?)> fetchOrNulls() async =>
       await fetch() ?? (null, null, null);
 }
 
 extension QuerySingle4<A, B, C, D>
     on QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Get [Query] with the same rows as this [QuerySingle].
+  ///
+  /// This returns a [Query] with at-most one row.
+  ///
+  /// > [!NOTE]
+  /// > This is method is only useful for converting a [QuerySingle]
+  /// > into a [Query] representation, which can be necessary if you wish to pass
+  /// > a [QuerySingle] into a function that only accepts [Query].
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get asQuery => _query;
+
+  /// Filter [QuerySingle] using `WHERE` clause.
+  ///
+  /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               conditionBuilder) =>
       asQuery.where(conditionBuilder).first;
+
+  /// Create a projection of this [QuerySingle] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [QuerySingle] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [QuerySingle<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// This returns at-most a single row because [QuerySingle] represents a [Query]
+  /// containing at-most one row.
+  ///
+  /// > [!TIP]
+  /// > If you don't care about whether or not the row is `null` or not
+  /// > present, you can use the convinience method [fetchOrNulls] instead.
   Future<(A, B, C, D)?> fetch() async => (await asQuery.fetch()).firstOrNull;
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// > [!WARNING]
+  /// > When using this method it is impossible to distinguish between
+  /// > a result where all values are `null` and zero rows.
   Future<(A?, B?, C?, D?)> fetchOrNulls() async =>
       await fetch() ?? (null, null, null, null);
 }
 
 extension QuerySingle5<A, B, C, D, E>
     on QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Get [Query] with the same rows as this [QuerySingle].
+  ///
+  /// This returns a [Query] with at-most one row.
+  ///
+  /// > [!NOTE]
+  /// > This is method is only useful for converting a [QuerySingle]
+  /// > into a [Query] representation, which can be necessary if you wish to pass
+  /// > a [QuerySingle] into a function that only accepts [Query].
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get asQuery => _query;
+
+  /// Filter [QuerySingle] using `WHERE` clause.
+  ///
+  /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
           Expr<bool> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               conditionBuilder) =>
       asQuery.where(conditionBuilder).first;
+
+  /// Create a projection of this [QuerySingle] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [QuerySingle] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [QuerySingle<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// This returns at-most a single row because [QuerySingle] represents a [Query]
+  /// containing at-most one row.
+  ///
+  /// > [!TIP]
+  /// > If you don't care about whether or not the row is `null` or not
+  /// > present, you can use the convinience method [fetchOrNulls] instead.
   Future<(A, B, C, D, E)?> fetch() async => (await asQuery.fetch()).firstOrNull;
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// > [!WARNING]
+  /// > When using this method it is impossible to distinguish between
+  /// > a result where all values are `null` and zero rows.
   Future<(A?, B?, C?, D?, E?)> fetchOrNulls() async =>
       await fetch() ?? (null, null, null, null, null);
 }
 
 extension QuerySingle6<A, B, C, D, E, F>
     on QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Get [Query] with the same rows as this [QuerySingle].
+  ///
+  /// This returns a [Query] with at-most one row.
+  ///
+  /// > [!NOTE]
+  /// > This is method is only useful for converting a [QuerySingle]
+  /// > into a [Query] representation, which can be necessary if you wish to pass
+  /// > a [QuerySingle] into a function that only accepts [Query].
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get asQuery =>
       _query;
+
+  /// Filter [QuerySingle] using `WHERE` clause.
+  ///
+  /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               conditionBuilder) =>
       asQuery.where(conditionBuilder).first;
+
+  /// Create a projection of this [QuerySingle] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [QuerySingle] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [QuerySingle<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
                   Expr<F> f)
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// This returns at-most a single row because [QuerySingle] represents a [Query]
+  /// containing at-most one row.
+  ///
+  /// > [!TIP]
+  /// > If you don't care about whether or not the row is `null` or not
+  /// > present, you can use the convinience method [fetchOrNulls] instead.
   Future<(A, B, C, D, E, F)?> fetch() async =>
       (await asQuery.fetch()).firstOrNull;
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// > [!WARNING]
+  /// > When using this method it is impossible to distinguish between
+  /// > a result where all values are `null` and zero rows.
   Future<(A?, B?, C?, D?, E?, F?)> fetchOrNulls() async =>
       await fetch() ?? (null, null, null, null, null, null);
 }
 
 extension QuerySingle7<A, B, C, D, E, F, G> on QuerySingle<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Get [Query] with the same rows as this [QuerySingle].
+  ///
+  /// This returns a [Query] with at-most one row.
+  ///
+  /// > [!NOTE]
+  /// > This is method is only useful for converting a [QuerySingle]
+  /// > into a [Query] representation, which can be necessary if you wish to pass
+  /// > a [QuerySingle] into a function that only accepts [Query].
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get asQuery => _query;
+
+  /// Filter [QuerySingle] using `WHERE` clause.
+  ///
+  /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       where(
               Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                       Expr<E> e, Expr<F> f, Expr<G> g)
                   conditionBuilder) =>
           asQuery.where(conditionBuilder).first;
+
+  /// Create a projection of this [QuerySingle] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [QuerySingle] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [QuerySingle<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
                   Expr<F> f, Expr<G> g)
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// This returns at-most a single row because [QuerySingle] represents a [Query]
+  /// containing at-most one row.
+  ///
+  /// > [!TIP]
+  /// > If you don't care about whether or not the row is `null` or not
+  /// > present, you can use the convinience method [fetchOrNulls] instead.
   Future<(A, B, C, D, E, F, G)?> fetch() async =>
       (await asQuery.fetch()).firstOrNull;
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// > [!WARNING]
+  /// > When using this method it is impossible to distinguish between
+  /// > a result where all values are `null` and zero rows.
   Future<(A?, B?, C?, D?, E?, F?, G?)> fetchOrNulls() async =>
       await fetch() ?? (null, null, null, null, null, null, null);
 }
 
 extension QuerySingle8<A, B, C, D, E, F, G, H> on QuerySingle<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Get [Query] with the same rows as this [QuerySingle].
+  ///
+  /// This returns a [Query] with at-most one row.
+  ///
+  /// > [!NOTE]
+  /// > This is method is only useful for converting a [QuerySingle]
+  /// > into a [Query] representation, which can be necessary if you wish to pass
+  /// > a [QuerySingle] into a function that only accepts [Query].
   Query<
       (
         Expr<A>,
@@ -5302,6 +6988,11 @@ extension QuerySingle8<A, B, C, D, E, F, G, H> on QuerySingle<
         Expr<G>,
         Expr<H>
       )> get asQuery => _query;
+
+  /// Filter [QuerySingle] using `WHERE` clause.
+  ///
+  /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<
       (
         Expr<A>,
@@ -5317,13 +7008,38 @@ extension QuerySingle8<A, B, C, D, E, F, G, H> on QuerySingle<
                   Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
               conditionBuilder) =>
       asQuery.where(conditionBuilder).first;
+
+  /// Create a projection of this [QuerySingle] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [QuerySingle] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [QuerySingle<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   QuerySingle<T> select<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
                   Expr<F> f, Expr<G> g, Expr<H> h)
               projectionBuilder) =>
       QuerySingle._(asQuery.select(projectionBuilder));
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// This returns at-most a single row because [QuerySingle] represents a [Query]
+  /// containing at-most one row.
+  ///
+  /// > [!TIP]
+  /// > If you don't care about whether or not the row is `null` or not
+  /// > present, you can use the convinience method [fetchOrNulls] instead.
   Future<(A, B, C, D, E, F, G, H)?> fetch() async =>
       (await asQuery.fetch()).firstOrNull;
+
+  /// Query the database for the row matching this [QuerySingle], if any.
+  ///
+  /// > [!WARNING]
+  /// > When using this method it is impossible to distinguish between
+  /// > a result where all values are `null` and zero rows.
   Future<(A?, B?, C?, D?, E?, F?, G?, H?)> fetchOrNulls() async =>
       await fetch() ?? (null, null, null, null, null, null, null, null);
 }
