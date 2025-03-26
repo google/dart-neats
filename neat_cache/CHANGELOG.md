@@ -1,3 +1,7 @@
+## v2.0.5
+ * Ignore undocumented errors from `Socket.close`.
+ * Add additional calls to `Socket.close` after all streams have consumed.
+
 ## v2.0.4
  * Reconnect when a redis command fails.
 
