@@ -244,8 +244,6 @@ extension Query1<A> on Query<(Expr<A>,)> {
   /// a query with a row for each distinct value of the projetion created by
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
-  ///
-  /// {@category Aggregate functions}
   Group<T, (Expr<A>,)> groupBy<T extends Record>(
       T Function(Expr<A> a) groupBuilder) {
     final (handle, (group, standins)) = _build((a) {
@@ -629,8 +627,6 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   /// a query with a row for each distinct value of the projetion created by
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
-  ///
-  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b) {
@@ -1042,8 +1038,6 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   /// a query with a row for each distinct value of the projetion created by
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
-  ///
-  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b, c) {
@@ -1472,8 +1466,6 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   /// a query with a row for each distinct value of the projetion created by
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
-  ///
-  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b, c, d) {
@@ -1927,8 +1919,6 @@ extension Query5<A, B, C, D, E>
   /// a query with a row for each distinct value of the projetion created by
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
-  ///
-  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
@@ -2411,8 +2401,6 @@ extension Query6<A, B, C, D, E, F>
   /// a query with a row for each distinct value of the projetion created by
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
-  ///
-  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
@@ -2960,8 +2948,6 @@ extension Query7<A, B, C, D, E, F, G>
   /// a query with a row for each distinct value of the projetion created by
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
-  ///
-  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
@@ -3680,8 +3666,6 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
   /// a query with a row for each distinct value of the projetion created by
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
-  ///
-  /// {@category Aggregate functions}
   Group<
           T,
           (
