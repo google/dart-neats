@@ -27,6 +27,18 @@ sealed class DatabaseContext<T extends Schema> {
       _executor.query(sql, params);
 }
 
+/// {@category Schema definition}
+/// {@category Inserting rows}
+/// {@category Writing queries}
+/// {@category Update and delete}
+/// {@category Foreign keys}
+/// {@category Joins}
+/// {@category Aggregate functions}
+/// {@category Transactions}
+/// {@category Exception handling}
+/// {@category Custom data types}
+/// {@category Migrations}
+/// {@category Testing}
 final class Database<T extends Schema> extends DatabaseContext<T> {
   Database(DatabaseAdaptor adaptor, super.dialect)
       : _adaptor = adaptor,

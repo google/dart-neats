@@ -50,6 +50,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   Query<(Expr<A>,)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) {
     final (handle, orderBy) = _build(builder);
@@ -244,7 +245,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
   ///
-  /// {@category Aggregate functions and group by}
+  /// {@category Aggregate functions}
   Group<T, (Expr<A>,)> groupBy<T extends Record>(
       T Function(Expr<A> a) groupBuilder) {
     final (handle, (group, standins)) = _build((a) {
@@ -311,6 +312,7 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   SubQuery<(Expr<A>,)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) {
     final (handle, orderBy) = _build(builder);
@@ -423,6 +425,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   Query<(Expr<A>, Expr<B>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b) builder) {
     final (handle, orderBy) = _build(builder);
@@ -627,7 +630,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
   ///
-  /// {@category Aggregate functions and group by}
+  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b) {
@@ -704,6 +707,7 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   SubQuery<(Expr<A>, Expr<B>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b) builder) {
     final (handle, orderBy) = _build(builder);
@@ -818,6 +822,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
           builder) {
@@ -1038,7 +1043,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
   ///
-  /// {@category Aggregate functions and group by}
+  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b, c) {
@@ -1119,6 +1124,7 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   SubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
           builder) {
@@ -1238,6 +1244,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
@@ -1466,7 +1473,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
   ///
-  /// {@category Aggregate functions and group by}
+  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>)> groupBy<T extends Record>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d) groupBuilder) {
     final (handle, (group, standins)) = _build((a, b, c, d) {
@@ -1559,6 +1566,7 @@ extension SubQuery4<A, B, C, D>
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
@@ -1685,6 +1693,7 @@ extension Query5<A, B, C, D, E>
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
@@ -1919,7 +1928,7 @@ extension Query5<A, B, C, D, E>
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
   ///
-  /// {@category Aggregate functions and group by}
+  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
@@ -2020,6 +2029,7 @@ extension SubQuery5<A, B, C, D, E>
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
@@ -2152,6 +2162,7 @@ extension Query6<A, B, C, D, E, F>
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -2401,7 +2412,7 @@ extension Query6<A, B, C, D, E, F>
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
   ///
-  /// {@category Aggregate functions and group by}
+  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
@@ -2510,6 +2521,7 @@ extension SubQuery6<A, B, C, D, E, F>
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -2647,6 +2659,7 @@ extension Query7<A, B, C, D, E, F, G>
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       orderBy(
           List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
@@ -2948,7 +2961,7 @@ extension Query7<A, B, C, D, E, F, G>
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
   ///
-  /// {@category Aggregate functions and group by}
+  /// {@category Aggregate functions}
   Group<T, (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       groupBy<T extends Record>(
           T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
@@ -3063,6 +3076,7 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       orderBy(
           List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
@@ -3213,6 +3227,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   Query<
           (
             Expr<A>,
@@ -3666,7 +3681,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
   /// [groupBuilder]. The `.aggregate` method is used to construct
   /// _aggregate functions_ over rows of this [Query] for each group.
   ///
-  /// {@category Aggregate functions and group by}
+  /// {@category Aggregate functions}
   Group<
           T,
           (
@@ -3808,6 +3823,7 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
   ///       (book.title, Order.ascending),
   ///     ])
   ///     .fetch();
+  /// ```
   SubQuery<
           (
             Expr<A>,

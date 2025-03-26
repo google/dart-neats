@@ -1,8 +1,52 @@
 dartdoc:
   categories:
-    'Aggregate functions and group by':
-      markdown: doc/aggregate_functions_and_group_by.md
-      name: aggregate_functions_and_group_by
+    'Schema definition':
+      markdown: doc/01_schema.md
+      name: 01_schema
+    'Inserting rows':
+      markdown: doc/02_inserting_rows.md
+      name: 02_inserting_rows
+    'Writing queries':
+      markdown: doc/03_writing_queries.md
+      name: 03_writing_queries
+    'Update and delete':
+      markdown: doc/04_update_and_delete.md
+      name: 04_update_and_delete
+    'Foreign keys':
+      markdown: doc/05_foreign_keys.md
+      name: 05_foreign_keys
+    'Joins':
+      markdown: doc/06_joins.md
+      name: 06_joins
+    'Aggregate functions':
+      markdown: doc/07_aggregate_functions.md
+      name: 07_aggregate_functions
+    'Transactions':
+      markdown: doc/08_transactions.md
+      name: 08_transactions
+    'Exception handling':
+      markdown: doc/09_exception_handling.md
+      name: 09_exception_handling
+    'Custom data types':
+      markdown: doc/10_custom_data_types.md
+      name: 10_custom_data_types
+    'Migrations':
+      markdown: doc/11_migrations.md
+      name: 11_migrations
+    'Testing':
+      markdown: doc/12_testing.md
+      name: 12_testing
   categoryOrder:
-    - aggregate_functions_and_group_by
+  - 'Schema definition'
+  - 'Inserting rows'
+  - 'Writing queries'
+  - 'Update and delete'
+  - 'Foreign keys'
+  - 'Joins'
+  - 'Aggregate functions'
+  - 'Transactions'
+  - 'Exception handling'
+  - 'Custom data types'
+  - 'Migrations'
+  - 'Testing'
   showUndocumentedCategories: true

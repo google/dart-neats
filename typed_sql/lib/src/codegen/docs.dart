@@ -21,7 +21,18 @@ library;
 ///
 /// The names must be synchronized with entries in `dartdoc_options.yaml`.
 enum Category {
-  aggregrateFunctions(name: 'Aggregate functions and group by');
+  schema(name: 'Schema definition'), // ref from annotations
+  insertingRows(name: 'Inserting rows'),
+  writingQueries(name: 'Writing queries'), // ref from Query
+  updateAndDelete(name: 'Update and delete'),
+  foreignKeys(name: 'Foreign keys'), // ref from annotation
+  joins(name: 'Joins'),
+  aggregateFunctions(name: 'Aggregate functions'), // min/max try this
+  transactions(name: 'Transactions'), // from transact
+  exceptionHandling(name: 'Exception handling'), // from exceptions
+  customDataTypes(name: 'Custom data types'), // CustomDataType
+  migrations(name: 'Migrations'),
+  testing(name: 'Testing'); // Test utils
 
   const Category({required this.name});
   final String name;
@@ -67,6 +78,7 @@ String orderBy(String target) => '''
           (book.title, Order.ascending),
         ])
         .fetch();
+    ```
 ''';
 
 /// Documentation for `.limit` on [Query] and [SubQuery].
@@ -262,8 +274,6 @@ final groupBy = '''
     a query with a row for each distinct value of the projetion created by
     [groupBuilder]. The `.aggregate` method is used to construct
     _aggregate functions_ over rows of this [Query] for each group.
-
-    ${Category.aggregrateFunctions}
 ''';
 
 final asQueryQuerySingle = '''
