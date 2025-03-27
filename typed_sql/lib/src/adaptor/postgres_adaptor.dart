@@ -12,24 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: unused_element, unused_field, prefer_final_fields
+
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data' show Uint8List;
 
 import 'package:postgres/postgres.dart';
 
+import '../utils/notifier.dart';
 import 'adaptor.dart';
 
 DatabaseAdaptor postgresAdaptor(Pool<void> pool) =>
     _PostgresDatabaseAdaptor(pool);
 
 final class _PostgresDatabaseAdaptor extends DatabaseAdaptor {
-  final Pool<void> _session;
-  var _closed = false;
-  // TODO: Support closing state where new transactions / queries can't be started!
-  //       existing transactions and queries may continue running.
+  final Pool<void> _pool;
+
+  bool _closing = false;
+  bool _forceClosing = false;
+  bool _closed = false;
+  int _pendingConnectionRequests = 0;
+  final _stateChanged = Notifier();
   int _savePointIndex = 0;
 
-  _PostgresDatabaseAdaptor(this._session);
+  _PostgresDatabaseAdaptor(this._pool);
+
+  void _throwIfClosing() {
+    _throwIfClosed();
+    if (_closing) {
+      throw StateError('DatabaseAdaptor is closing!');
+    }
+  }
 
   void _throwIfClosed() {
     if (_closed) {
@@ -37,95 +51,207 @@ final class _PostgresDatabaseAdaptor extends DatabaseAdaptor {
     }
   }
 
-  @override
-  Future<T> transact<T>(Future<T> Function(DatabaseTransaction tx) fn) async {
-    _throwIfClosed();
+  /// Throw a [DatabaseException] after [e] was thrown by `package:postgres`.
+  Never _throwDatabaseException(Exception e) {
+    // Unfortunately package:postgres does not document what exceptions it may
+    // throw, perhaps there are all subclasses of PgException, perhaps not.
+    // To be as defensive as possible we shall just catch all exceptions, and
+    // try to map them to something useful.
+    switch (e) {
+      case ForeignKeyViolationException _:
+        throw PostgresConstraintViolationException._();
 
-    try {
-      return await _session.withConnection((conn) async {
-        try {
-          await conn.execute('BEGIN');
-        } on PgException catch (e) {
-          _throwPostgresException(e);
-        }
-        try {
-          final tx = _DatabaseTransaction(conn, this);
-          final T value;
-          try {
-            value = await fn(tx);
-          } finally {
-            tx._closed = true;
-          }
-          await conn.execute('COMMIT');
-          return value;
-        } on PgException catch (e) {
-          // TODO: Find out what exception postgres might throw and only catch
-          //       those!
-          await conn.execute('ROLLBACK');
-          _throwPostgresException(e);
-        }
-      });
-    } on PgException catch (e) {
-      _throwPostgresException(e);
+      case UniqueViolationException _:
+        throw PostgresConstraintViolationException._();
+
+      case BadCertificateException _:
+        // TODO: we could probably define a better exception for this
+        throw PostgresDatabaseConnectionRefusedException._();
+
+      case PgException _:
+        throw PostgresUnspecifiedOperationException._();
+
+      case SocketException _:
+        // TODO: Find out if connection was refused, or it just broke!
+        throw PostgresDatabaseConnectionBrokenException._();
+
+      case IOException _:
+        throw PostgresDatabaseConnectionBrokenException._();
+
+      case TimeoutException _:
+        throw PostgresDatabaseConnectionTimeoutException._();
+
+      default:
+        throw PostgresUnspecifiedOperationException._();
     }
   }
 
-  @override
-  Future<QueryResult> execute(String sql, List<Object?> params) async {
-    _throwIfClosed();
-    try {
-      final rs = await _session.execute(
-        sql,
-        parameters: _paramsForPostgres(params),
-      );
-      return QueryResult(affectedRows: rs.affectedRows);
-    } on PgException catch (e) {
-      _throwPostgresException(e);
-    }
-  }
+  Future<T> _withConnection<T>(Future<T> Function(Connection conn) fn) async {
+    _throwIfClosing();
 
-  @override
-  Stream<RowReader> query(String sql, List<Object?> params) async* {
-    _throwIfClosed();
+    _pendingConnectionRequests++;
     try {
-      final rs = await _session.execute(
-        sql,
-        parameters: _paramsForPostgres(params),
-        queryMode: QueryMode.extended,
-      );
-      yield* Stream.fromIterable(rs.map(_PostgresRowReader.new));
-    } on PgException catch (e) {
-      _throwPostgresException(e);
-    }
-    // TODO: Explore why streaming mode doesn't work
-    // final ps = await _session.prepare(sql);
-    // yield* ps.bind(params).map(_PostgresRowReader.new);
-  }
-
-  @override
-  Future<void> script(String sql) async {
-    _throwIfClosed();
-    try {
-      await _session.execute(sql, queryMode: QueryMode.simple);
-    } on PgException catch (e) {
-      _throwPostgresException(e);
+      return await _pool.withConnection(fn);
+    } finally {
+      _pendingConnectionRequests--;
+      _stateChanged.notify();
     }
   }
 
   @override
   Future<void> close({bool force = false}) async {
-    await _session.close(force: force);
+    _closing = true;
+
+    if (force) {
+      if (!_forceClosing) {
+        await _pool.close(force: true);
+      }
+      _forceClosing = true;
+    }
+
+    // Gracefully wait for all connection requests to be closed
+    while (_pendingConnectionRequests > 0) {
+      await _stateChanged.wait;
+    }
+
+    await _pool.close();
+
     _closed = true;
+  }
+
+  @override
+  Stream<RowReader> query(String sql, List<Object?> params) async* {
+    try {
+      // We can't use _withConnection directly, because that would make it
+      // impossible to a streaming result.
+      final futureConn = Completer<Connection>();
+      final done = Completer<void>();
+      scheduleMicrotask(() async {
+        try {
+          await _withConnection((conn) {
+            futureConn.complete(conn);
+            return done.future;
+          });
+        } catch (e, st) {
+          futureConn.completeError(e, st);
+        }
+      });
+
+      try {
+        final conn = await futureConn.future;
+
+        // TODO: Explore why streaming mode doesn't work
+        // final ps = await _session.prepare(sql);
+        // yield* ps.bind(params).map(_PostgresRowReader.new);
+        final result = await conn.execute(
+          sql,
+          parameters: _paramsForPostgres(params),
+          queryMode: QueryMode.extended,
+        );
+        yield* Stream.fromIterable(result.map(_PostgresRowReader.new));
+      } finally {
+        done.complete();
+      }
+    } on Exception catch (e) {
+      _throwDatabaseException(e);
+    }
+  }
+
+  @override
+  Future<QueryResult> execute(String sql, List<Object?> params) async {
+    try {
+      return await _withConnection((conn) async {
+        final result = await conn.execute(
+          sql,
+          parameters: _paramsForPostgres(params),
+        );
+        return QueryResult(affectedRows: result.affectedRows);
+      });
+    } on Exception catch (e) {
+      _throwDatabaseException(e);
+    }
+  }
+
+  @override
+  Future<void> script(String sql) async {
+    try {
+      return await _withConnection((conn) async {
+        await conn.execute(sql, queryMode: QueryMode.simple);
+      });
+    } on Exception catch (e) {
+      _throwDatabaseException(e);
+    }
+  }
+
+  @override
+  Future<T> transact<T>(Future<T> Function(DatabaseTransaction tx) fn) async {
+    // We can't use _withConnection directly, because then we can't know where
+    // exceptions come from. We **must** know if an exception is from the
+    // database or application code, as these **must** be treated differently.
+    final futureConn = Completer<Connection>();
+    final done = Completer<void>();
+    scheduleMicrotask(() async {
+      try {
+        await _withConnection((conn) {
+          futureConn.complete(conn);
+          return done.future;
+        });
+      } catch (e, st) {
+        futureConn.completeError(e, st);
+      }
+    });
+
+    try {
+      final Connection conn;
+      try {
+        conn = await futureConn.future;
+        await conn.execute('BEGIN');
+      } on Exception catch (e) {
+        _throwDatabaseException(e);
+      }
+
+      try {
+        final tx = _DatabaseTransaction(conn, this);
+        final T value;
+        try {
+          value = await fn(tx);
+        } finally {
+          tx._closed = true;
+        }
+        try {
+          await conn.execute('COMMIT');
+        } on Exception catch (e) {
+          _throwDatabaseException(e);
+        }
+        return value;
+      } on Exception catch (e) {
+        try {
+          await conn.execute('ROLLBACK');
+        } on Exception catch (e) {
+          _throwDatabaseException(e);
+        }
+        throwTransactionAbortedException(e);
+      } catch (e) {
+        try {
+          await conn.execute('ROLLBACK');
+        } catch (e) {
+          // ignore, the error is worse, we should just rethrow that!
+        }
+        rethrow; // always rethrow the error
+      }
+    } finally {
+      done.complete();
+    }
   }
 }
 
 final class _DatabaseTransaction extends DatabaseTransaction {
   final _PostgresDatabaseAdaptor _adaptor;
-  final Session _session;
+  final Connection _conn;
   var _closed = false;
   var _activeSubtransaction = false;
 
-  _DatabaseTransaction(this._session, this._adaptor);
+  _DatabaseTransaction(this._conn, this._adaptor);
 
   void _throwIfBlocked() {
     _adaptor._throwIfClosed();
@@ -141,13 +267,13 @@ final class _DatabaseTransaction extends DatabaseTransaction {
   Future<QueryResult> execute(String sql, List<Object?> params) async {
     _throwIfBlocked();
     try {
-      final rs = await _session.execute(
+      final rs = await _conn.execute(
         sql,
         parameters: _paramsForPostgres(params),
       );
       return QueryResult(affectedRows: rs.affectedRows);
-    } on PgException catch (e) {
-      _throwPostgresException(e);
+    } on Exception catch (e) {
+      _adaptor._throwDatabaseException(e);
     }
   }
 
@@ -155,27 +281,28 @@ final class _DatabaseTransaction extends DatabaseTransaction {
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     _throwIfBlocked();
     try {
-      final rs = await _session.execute(
+      // Notice that in transaction query() MAY NOT block when there is
+      // back-pressure. The easiest way to do this is to fetch all the results
+      // at once.
+      final result = await _conn.execute(
         sql,
         parameters: _paramsForPostgres(params),
         queryMode: QueryMode.extended,
       );
-      yield* Stream.fromIterable(rs.map(_PostgresRowReader.new));
-    } on PgException catch (e) {
-      _throwPostgresException(e);
+      yield* Stream.fromIterable(result.map(_PostgresRowReader.new));
+    } on Exception catch (e) {
+      _adaptor._throwDatabaseException(e);
     }
-    // TODO: Explore why streaming mode doesn't work
-    // final ps = await _session.prepare(sql);
-    // yield* ps.bind(params).map(_PostgresRowReader.new);
   }
 
   @override
   Future<void> script(String sql) async {
     _throwIfBlocked();
+
     try {
-      await _session.execute(sql, queryMode: QueryMode.simple);
-    } on PgException catch (e) {
-      _throwPostgresException(e);
+      await _conn.execute(sql, queryMode: QueryMode.simple);
+    } on Exception catch (e) {
+      _adaptor._throwDatabaseException(e);
     }
   }
 
@@ -187,26 +314,36 @@ final class _DatabaseTransaction extends DatabaseTransaction {
     try {
       _activeSubtransaction = true;
       try {
-        await _session.execute('SAVEPOINT "$sp"');
-      } on PgException catch (e) {
-        _throwPostgresException(e);
+        await _conn.execute('SAVEPOINT "$sp"');
+      } on Exception catch (e) {
+        _adaptor._throwDatabaseException(e);
       }
       try {
-        final tx = _DatabaseTransaction(_session, _adaptor);
+        final tx = _DatabaseTransaction(_conn, _adaptor);
         final T value;
         try {
           value = await fn(tx);
         } finally {
           tx._closed = true;
         }
-        await _session.execute('RELEASE "$sp"');
-        return value;
-      } on Exception {
         try {
-          await _session.execute('ROLLBACK TO "$sp"');
-        } on PgException catch (e) {
-          // TODO: throw an exception that shouldn't be caught by the user!
-          _throwPostgresException(e);
+          await _conn.execute('RELEASE "$sp"');
+        } on Exception catch (e) {
+          _adaptor._throwDatabaseException(e);
+        }
+        return value;
+      } on Exception catch (e) {
+        try {
+          await _conn.execute('ROLLBACK TO "$sp"');
+        } on Exception catch (e) {
+          _adaptor._throwDatabaseException(e);
+        }
+        throwTransactionAbortedException(e);
+      } catch (e) {
+        try {
+          await _conn.execute('ROLLBACK');
+        } catch (e) {
+          // ignore, the error is worse, we should just rethrow that!
         }
         rethrow;
       }
@@ -224,31 +361,47 @@ final class _PostgresRowReader extends RowReader {
 
   @override
   bool? readBool() {
-    return _row[_i++] as bool?;
+    final value = _row[_i++];
+    if (value is! bool?) {
+      throw AssertionError('readBool() expected a bool, got "$value"');
+    }
+    return value;
   }
 
   @override
   DateTime? readDateTime() {
-    final value = _row[_i++];
+    var value = _row[_i++];
     if (value is String) {
       // No idea why postgres sometimes return dates as strings.
       // Maybe, it does this only for literal values, because it can't infer
       // the type as a date.
-      return DateTime.parse(value);
+      final parsed = DateTime.tryParse(value);
+      if (parsed != null) {
+        return parsed;
+      }
     }
-    return value as DateTime?;
+    if (value is! DateTime?) {
+      throw AssertionError('readDateTime() expected a timestamp, got "$value"');
+    }
+    return value;
   }
 
   @override
   double? readDouble() {
-    final value = _row[_i++];
+    var value = _row[_i++];
     if (value is String) {
       // No idea why postgres sometimes return doubles as strings.
       // Maybe, it does this only for literal values, because they could be more
       // than 64 bits!
-      return double.parse(value);
+      final parsed = double.tryParse(value);
+      if (parsed != null) {
+        return parsed;
+      }
     }
-    return value as double?;
+    if (value is! double?) {
+      throw AssertionError('readDouble() expected a float, got "$value"');
+    }
+    return value;
   }
 
   @override
@@ -258,23 +411,34 @@ final class _PostgresRowReader extends RowReader {
       // No idea why postgres sometimes return integers as strings.
       // Maybe, it does this only for literal values, because they could be more
       // than 64 bits!
-      return int.parse(value);
+      final parsed = int.tryParse(value);
+      if (parsed != null) {
+        return parsed;
+      }
     }
-    return value as int?;
+    if (value is! int?) {
+      throw AssertionError('readInt() expected a integer, got "$value"');
+    }
+    return value;
   }
 
   @override
   String? readString() {
-    return _row[_i++] as String?;
+    final value = _row[_i++];
+    if (value is! String?) {
+      throw AssertionError('readString() expected a String, got "$value"');
+    }
+    return value;
   }
 
   @override
   Uint8List? readUint8List() {
     final value = _row[_i++];
-    if (value == null) {
-      return null;
+    if (value is! Uint8List?) {
+      throw AssertionError(
+          'readUint8List() expected a Uint8List, got "$value"');
     }
-    return value as Uint8List;
+    return value;
   }
 
   @override
@@ -300,41 +464,39 @@ List<Object?> _paramsForPostgres(List<Object?> params) => params
         })
     .toList();
 
-// TODO: Fix all the places that calls this method, this was just thrown together!
-Never _throwPostgresException(PgException e) {
-  // TODO: Separate error code into:
-  //  - Temporary I/O error
-  //  - Permanent database connection error (configuration issue)
-  //  - Query issue
-  //  - Transaction conflict!
-  // NOTICE: that conflicts often happen as soon as offending statement is
-  //         executed, conflicts don't just happen on COMMIT. They can and often
-  //         do happen much sooner!
+mixin PostgresDatabaseException implements Exception {}
 
-  switch (e) {
-    case ServerException e:
-      throw PostgresQueryException._(e);
-
-    default:
-      throw UnsupportedError('exception handling is missing: $e');
-  }
+final class PostgresConstraintViolationException
+    extends ConstraintViolationException with PostgresDatabaseException {
+  PostgresConstraintViolationException._();
 }
 
-final class PostgresQueryException extends DatabaseQueryException {
-  final ServerException e;
-
-  PostgresQueryException._(this.e);
-
-  @override
-  String toString() => 'DatabaseQueryException(${e.toString()})';
+final class PostgresUnspecifiedOperationException
+    extends UnspecifiedOperationException with PostgresDatabaseException {
+  PostgresUnspecifiedOperationException._();
 }
 
-final class PostgresTransactionAbortedException
-    extends DatabaseTransactionAbortedException {
-  PostgresTransactionAbortedException._(this.e);
+final class PostgresDatabaseConnectionClosedException
+    extends DatabaseConnectionClosedException with PostgresDatabaseException {
+  PostgresDatabaseConnectionClosedException._();
+}
 
-  final ServerException e;
+final class PostgresAuthenticationException extends AuthenticationException
+    with PostgresDatabaseException {
+  PostgresAuthenticationException._();
+}
 
-  @override
-  String toString() => 'DatabaseTransactionAbortedException(${e.toString()})';
+final class PostgresDatabaseConnectionRefusedException
+    extends DatabaseConnectionRefusedException with PostgresDatabaseException {
+  PostgresDatabaseConnectionRefusedException._();
+}
+
+final class PostgresDatabaseConnectionBrokenException
+    extends DatabaseConnectionBrokenException with PostgresDatabaseException {
+  PostgresDatabaseConnectionBrokenException._();
+}
+
+final class PostgresDatabaseConnectionTimeoutException
+    extends DatabaseConnectionTimeoutException with PostgresDatabaseException {
+  PostgresDatabaseConnectionTimeoutException._();
 }

@@ -32,8 +32,8 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
   bool _closed = false;
   int _pendingConnectionRequests = 0;
   final _connections = <Database>[];
-  final _idleConnections = <Database>[];
   final _stateChanged = Notifier();
+  final _idleConnections = <Database>[];
   int _savePointIndex = 0;
 
   Database _createConnection() => sqlite3.open(
@@ -42,6 +42,14 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
         mutex: true, // playing it safe for now!
       );
 
+  void _throwIfClosing() {
+    _throwIfClosed();
+    if (_closing) {
+      // Do not allow new requests for connections while closing.
+      throw StateError('DatabaseAdaptor is closing!');
+    }
+  }
+
   void _throwIfClosed() {
     if (_closed) {
       throw StateError('DatabaseAdaptor is closed!');
@@ -49,11 +57,7 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
   }
 
   Future<Database> _getConnection() async {
-    _throwIfClosed();
-    if (_closing) {
-      // Do not allow new requests for connections while closing.
-      throw StateError('DatabaseAdaptor is closing!');
-    }
+    _throwIfClosing();
 
     _pendingConnectionRequests++;
     try {
@@ -136,7 +140,9 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
       try {
         final cursor = stmt.selectCursor(_paramsForSqlite(params));
         while (cursor.moveNext()) {
-          _throwIfClosed();
+          if (_closed) {
+            throw SqliteDatabaseConnectionClosedException._();
+          }
           yield _SqliteRowReader(cursor.current);
         }
       } finally {
@@ -166,7 +172,11 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
         }
       } finally {
         for (final statement in statements) {
-          statement.dispose();
+          try {
+            statement.dispose();
+          } catch (e) {
+            // ignore errors, we always have to dispose!
+          }
         }
       }
     } on SqliteException catch (e) {
@@ -203,7 +213,11 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
     final conn = await _getConnection();
     _throwIfClosed();
     try {
-      conn.execute('BEGIN');
+      try {
+        conn.execute('BEGIN');
+      } on SqliteException catch (e) {
+        _throwSqliteException(e);
+      }
       final tx = _SqliteDatabaseTransaction._(conn, this);
       final T value;
       try {
@@ -211,11 +225,26 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
       } finally {
         tx._closed = true;
       }
-      conn.execute('COMMIT');
+      try {
+        conn.execute('COMMIT');
+      } on SqliteException catch (e) {
+        _throwSqliteException(e);
+      }
       return value;
-    } on SqliteException catch (e) {
-      conn.execute('ROLLBACK');
-      _throwSqliteException(e);
+    } on Exception catch (e) {
+      try {
+        conn.execute('ROLLBACK');
+      } on SqliteException catch (e) {
+        _throwSqliteException(e);
+      }
+      throwTransactionAbortedException(e);
+    } catch (e) {
+      try {
+        conn.execute('ROLLBACK');
+      } catch (e) {
+        // ignore, if there was an error it's better to rethrow it!
+      }
+      rethrow;
     } finally {
       _releaseConnection(conn);
     }
@@ -269,23 +298,40 @@ final class _SqliteDatabaseTransaction extends DatabaseTransaction {
     _throwIfBlocked();
 
     final sp = 'sp_${_adaptor._savePointIndex++}';
+    _activeSubtransaction = true;
     try {
-      _activeSubtransaction = true;
       _conn.execute('SAVEPOINT "$sp"');
+    } on SqliteException catch (e) {
+      _throwSqliteException(e);
+    }
+    try {
+      final tx = _SqliteDatabaseTransaction._(_conn, _adaptor);
+      final T value;
       try {
-        final tx = _SqliteDatabaseTransaction._(_conn, _adaptor);
-        final T value;
-        try {
-          value = await fn(tx);
-        } finally {
-          tx._closed = true;
-        }
+        value = await fn(tx);
+      } finally {
+        tx._closed = true;
+      }
+      try {
         _conn.execute('RELEASE "$sp"');
-        return value;
       } on SqliteException catch (e) {
-        _conn.execute('ROLLBACK TO "$sp"');
         _throwSqliteException(e);
       }
+      return value;
+    } on Exception catch (e) {
+      try {
+        _conn.execute('ROLLBACK TO "$sp"');
+      } on SqliteException catch (e) {
+        _throwSqliteException(e);
+      }
+      throwTransactionAbortedException(e);
+    } catch (e) {
+      try {
+        _conn.execute('ROLLBACK TO "$sp"');
+      } catch (e) {
+        // ignore, if there was an error it's better to rethrow it!
+      }
+      rethrow;
     } finally {
       _activeSubtransaction = false;
     }
@@ -300,44 +346,79 @@ final class _SqliteRowReader extends RowReader {
 
   @override
   bool? readBool() {
-    final value = _row.values[_i++];
-    if (value == null) {
-      return null;
+    var value = _row.values[_i++];
+    if (value is int) {
+      value = value != 0;
     }
-    return value != 0;
+    if (value is! bool?) {
+      throw AssertionError('readBool() expected a bool, got "$value"');
+    }
+    return value;
   }
 
   @override
   DateTime? readDateTime() {
-    final value = _row.values[_i++] as String?;
-    if (value == null) {
-      return null;
+    var value = _row.values[_i++];
+    // When we insert timestamps as strings, sqlite will always return them as
+    // strings.
+    if (value is String) {
+      final parsed = DateTime.tryParse(value);
+      if (parsed != null) {
+        return parsed;
+      }
     }
-    return DateTime.parse(value);
+    if (value is! DateTime?) {
+      throw AssertionError('readDateTime() expected a timestamp, got "$value"');
+    }
+    return value;
   }
 
   @override
-  double? readDouble() => (_row.values[_i++] as num?)?.toDouble();
+  double? readDouble() {
+    var value = _row.values[_i++];
+    if (value is num) {
+      value = value.toDouble();
+    }
+    if (value is! double?) {
+      throw AssertionError('readDouble() expected a float, got "$value"');
+    }
+    return value;
+  }
 
   @override
-  int? readInt() => (_row.values[_i++] as num?)?.toInt();
+  int? readInt() {
+    var value = _row.values[_i++];
+    if (value is num) {
+      value = value.toInt();
+    }
+    if (value is! int?) {
+      throw AssertionError('readInt() expected a integer, got "$value"');
+    }
+    return value;
+  }
 
   @override
-  String? readString() => _row.values[_i++] as String?;
+  String? readString() {
+    final value = _row.values[_i++];
+    if (value is! String?) {
+      throw AssertionError('readString() expected a String, got "$value"');
+    }
+    return value;
+  }
 
   @override
   Uint8List? readUint8List() {
     final value = _row.values[_i++];
-    if (value == null) {
-      return null;
+    if (value is! Uint8List?) {
+      throw AssertionError(
+          'readUint8List() expected a Uint8List, got "$value"');
     }
-    return value as Uint8List;
+    return value;
   }
 
   @override
   bool tryReadNull() {
-    final value = _row.values[_i];
-    if (value == null) {
+    if (_row.values[_i] == null) {
       _i++;
       return true;
     }
@@ -359,40 +440,34 @@ List<Object?> _paramsForSqlite(List<Object?> params) => params
     .toList();
 
 Never _throwSqliteException(SqliteException e) {
-  // TODO: Separate error code into:
-  //  - Temporary I/O error
-  //  - Permanent database connection error (configuration issue)
-  //  - Query issue
-  //  - Transaction conflict!
-  // NOTICE: that conflicts often happen as soon as offending statement is
-  //         executed, conflicts don't just happen on COMMIT. They can and often
-  //         do happen much sooner!
-
   switch (e.resultCode) {
     case SqlError.SQLITE_BUSY:
     case SqlError.SQLITE_LOCKED:
-      throw SqliteTransactionAbortedException._(e);
+      throw SqliteUnspecifiedOperationException._();
 
     default:
-      throw SqliteQueryException(e);
+      throw SqliteUnspecifiedOperationException._();
   }
 }
 
-final class SqliteQueryException extends DatabaseQueryException {
-  final SqliteException e;
+mixin SqliteDatabaseException implements Exception {}
 
-  SqliteQueryException(this.e);
-
-  @override
-  String toString() => 'SqliteQueryException(${e.toString()})';
+final class SqliteConstraintViolationException
+    extends ConstraintViolationException with SqliteDatabaseException {
+  SqliteConstraintViolationException._();
 }
 
-final class SqliteTransactionAbortedException
-    extends DatabaseTransactionAbortedException {
-  SqliteTransactionAbortedException._(this.e);
+final class SqliteUnspecifiedOperationException
+    extends UnspecifiedOperationException with SqliteDatabaseException {
+  SqliteUnspecifiedOperationException._();
+}
 
-  final SqliteException e;
+final class SqliteDatabaseConnectionClosedException
+    extends DatabaseConnectionClosedException with SqliteDatabaseException {
+  SqliteDatabaseConnectionClosedException._();
+}
 
-  @override
-  String toString() => 'DatabaseTransactionConflictException(${e.toString()})';
+final class SqliteDatabaseConnectionRefusedException
+    extends DatabaseConnectionRefusedException with SqliteDatabaseException {
+  SqliteDatabaseConnectionRefusedException._();
 }

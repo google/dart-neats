@@ -14,6 +14,7 @@
 
 export 'src/adaptor/adaptor.dart' show DatabaseAdaptor, RowReader;
 export 'src/dialect/dialect.dart' show SqlDialect;
+export 'src/exceptions.dart';
 export 'src/typed_sql.dart'
     hide
         Aggregation,

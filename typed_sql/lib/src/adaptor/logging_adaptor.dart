@@ -51,7 +51,7 @@ final class _LoggingDatabaseAdaptor extends DatabaseAdaptor {
   }
 
   @override
-  Future<T> transact<T>(Future<T> Function(QueryExecutor tx) fn) async {
+  Future<T> transact<T>(Future<T> Function(Executor tx) fn) async {
     _log('db.transact()');
     return await _adaptor.transact((tx) async {
       return await fn(_LoggingDatabaseTransaction(tx, _log));
@@ -60,7 +60,7 @@ final class _LoggingDatabaseAdaptor extends DatabaseAdaptor {
 }
 
 final class _LoggingDatabaseTransaction extends DatabaseTransaction {
-  final QueryExecutor _tx;
+  final Executor _tx;
   final void Function(String message) _log;
 
   _LoggingDatabaseTransaction(this._tx, this._log);
@@ -84,7 +84,7 @@ final class _LoggingDatabaseTransaction extends DatabaseTransaction {
   }
 
   @override
-  Future<T> transact<T>(Future<T> Function(QueryExecutor tx) fn) async {
+  Future<T> transact<T>(Future<T> Function(DatabaseTransaction tx) fn) async {
     _log('tx.transact()');
     return await _tx.transact((sp) async {
       return await fn(_LoggingDatabaseTransaction(sp, _log));

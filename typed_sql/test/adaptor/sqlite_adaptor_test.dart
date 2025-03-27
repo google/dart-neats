@@ -126,7 +126,7 @@ void main() {
           });
         }(),
       ]),
-      throwsA(isA<DatabaseTransactionAbortedException>()),
+      throwsA(isA<TransactionAbortedException>()),
     );
   });
 
@@ -181,7 +181,7 @@ void main() {
           });
         }(),
       ]),
-      throwsA(isA<DatabaseTransactionAbortedException>()),
+      throwsA(isA<TransactionAbortedException>()),
     );
   });
 }

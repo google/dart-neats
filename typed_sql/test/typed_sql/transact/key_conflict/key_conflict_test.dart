@@ -47,7 +47,7 @@ void main() {
     await db.items.insertLiteral(id: 1, value: 'a').execute();
     await check(
       db.items.insertLiteral(id: 1, value: 'b').execute(),
-    ).throws((e) => e.isA<DatabaseQueryException>());
+    ).throws((e) => e.isA<OperationException>());
 
     final item = await db.items.byKey(id: 1).fetch();
     check(item).isNotNull().value.equals('a');
@@ -60,7 +60,7 @@ void main() {
         db.transact(() async {
           await db.items.insertLiteral(id: 1, value: 'b').execute();
         }),
-      ).throws((e) => e.isA<DatabaseQueryException>());
+      ).throws((e) => e.isA<TransactionAbortedException>());
     });
 
     final item = await db.items.byKey(id: 1).fetch();

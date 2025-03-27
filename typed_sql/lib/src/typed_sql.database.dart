@@ -21,7 +21,7 @@ sealed class DatabaseContext<T extends Schema> {
   DatabaseContext._(this._dialect);
 
   final SqlDialect _dialect;
-  QueryExecutor get _executor;
+  Executor get _executor;
 
   Stream<RowReader> _query(String sql, List<Object?> params) =>
       _executor.query(sql, params);
@@ -49,8 +49,7 @@ final class Database<T extends Schema> extends DatabaseContext<T> {
   late final _zoneKey = (this, #_transaction);
 
   @override
-  QueryExecutor get _executor =>
-      Zone.current[_zoneKey] as QueryExecutor? ?? _adaptor;
+  Executor get _executor => Zone.current[_zoneKey] as Executor? ?? _adaptor;
 
   Future<R> transact<R>(
     Future<R> Function() fn,
