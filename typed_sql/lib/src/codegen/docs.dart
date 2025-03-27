@@ -149,14 +149,36 @@ String select(String target) => '''
 ''';
 
 /// Documentation for `.join` on [Query].
-final joinQuery = '''
-    Join this [Query] with another [Query] using `JOIN` clause.
+final innerJoinQuery = '''
+    Join this [Query] with another [Query] using `INNER JOIN` clause.
 
-    This method returns a [Join] object on which you must call either
+    This method returns an [InnerJoin] object on which you must call either
      * `.all` to get the cartesian product of the two queries, or,
      * `.on` to specify how the two queries should be joined.
 
-    This always creates a `CROSS JOIN`, where the `.on` condition can be
+    This always creates a `INNER JOIN`, where the `.on` condition can be
+    used to control how the two queries are joined.
+''';
+
+/// Documentation for `.leftJoin` on [Query].
+final leftJoinQuery = '''
+    Join this [Query] with another [Query] using `LEFT JOIN` clause.
+
+    This method returns an [LeftJoin] object on which you must call
+    `.on` to specify how the two queries should be joined.
+
+    This always creates a `LEFT JOIN`, where the `.on` condition can be
+    used to control how the two queries are joined.
+''';
+
+/// Documentation for `.join` on [Query].
+final rightJoinQuery = '''
+    Join this [Query] with another [Query] using `RIGHT JOIN` clause.
+
+    This method returns an [RightJoin] object on which you must call
+    `.on` to specify how the two queries should be joined.
+
+    This always creates a `RIGHT JOIN`, where the `.on` condition can be
     used to control how the two queries are joined.
 ''';
 

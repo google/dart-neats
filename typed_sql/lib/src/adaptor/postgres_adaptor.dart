@@ -59,30 +59,30 @@ final class _PostgresDatabaseAdaptor extends DatabaseAdaptor {
     // try to map them to something useful.
     switch (e) {
       case ForeignKeyViolationException _:
-        throw PostgresConstraintViolationException._();
+        throw PostgresConstraintViolationException._('Exception: $e');
 
       case UniqueViolationException _:
-        throw PostgresConstraintViolationException._();
+        throw PostgresConstraintViolationException._('Exception: $e');
 
       case BadCertificateException _:
         // TODO: we could probably define a better exception for this
-        throw PostgresDatabaseConnectionRefusedException._();
+        throw PostgresDatabaseConnectionRefusedException._('Exception: $e');
 
       case PgException _:
-        throw PostgresUnspecifiedOperationException._();
+        throw PostgresUnspecifiedOperationException._('Exception: $e');
 
       case SocketException _:
         // TODO: Find out if connection was refused, or it just broke!
-        throw PostgresDatabaseConnectionBrokenException._();
+        throw PostgresDatabaseConnectionBrokenException._('Exception: $e');
 
       case IOException _:
-        throw PostgresDatabaseConnectionBrokenException._();
+        throw PostgresDatabaseConnectionBrokenException._('Exception: $e');
 
       case TimeoutException _:
-        throw PostgresDatabaseConnectionTimeoutException._();
+        throw PostgresDatabaseConnectionTimeoutException._('Exception: $e');
 
       default:
-        throw PostgresUnspecifiedOperationException._();
+        throw PostgresUnspecifiedOperationException._('Exception: $e');
     }
   }
 
@@ -464,39 +464,65 @@ List<Object?> _paramsForPostgres(List<Object?> params) => params
         })
     .toList();
 
-mixin PostgresDatabaseException implements Exception {}
+mixin PostgresDatabaseException implements Exception {
+  String get message;
+
+  @override
+  String toString() => message;
+}
 
 final class PostgresConstraintViolationException
     extends ConstraintViolationException with PostgresDatabaseException {
-  PostgresConstraintViolationException._();
+  @override
+  final String message;
+
+  PostgresConstraintViolationException._(this.message);
 }
 
 final class PostgresUnspecifiedOperationException
     extends UnspecifiedOperationException with PostgresDatabaseException {
-  PostgresUnspecifiedOperationException._();
+  @override
+  final String message;
+
+  PostgresUnspecifiedOperationException._(this.message);
 }
 
 final class PostgresDatabaseConnectionClosedException
     extends DatabaseConnectionClosedException with PostgresDatabaseException {
-  PostgresDatabaseConnectionClosedException._();
+  @override
+  final String message;
+
+  PostgresDatabaseConnectionClosedException._(this.message);
 }
 
 final class PostgresAuthenticationException extends AuthenticationException
     with PostgresDatabaseException {
-  PostgresAuthenticationException._();
+  @override
+  final String message;
+
+  PostgresAuthenticationException._(this.message);
 }
 
 final class PostgresDatabaseConnectionRefusedException
     extends DatabaseConnectionRefusedException with PostgresDatabaseException {
-  PostgresDatabaseConnectionRefusedException._();
+  @override
+  final String message;
+
+  PostgresDatabaseConnectionRefusedException._(this.message);
 }
 
 final class PostgresDatabaseConnectionBrokenException
     extends DatabaseConnectionBrokenException with PostgresDatabaseException {
-  PostgresDatabaseConnectionBrokenException._();
+  @override
+  final String message;
+
+  PostgresDatabaseConnectionBrokenException._(this.message);
 }
 
 final class PostgresDatabaseConnectionTimeoutException
     extends DatabaseConnectionTimeoutException with PostgresDatabaseException {
-  PostgresDatabaseConnectionTimeoutException._();
+  @override
+  final String message;
+
+  PostgresDatabaseConnectionTimeoutException._(this.message);
 }

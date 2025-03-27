@@ -292,9 +292,13 @@ final class _Sqlite extends SqlDialect {
           columns,
         );
 
-      case JoinClause(:final from, :final join):
+      case JoinClause(:final from, :final type, :final join, :final on):
         final (sql1, columns1) = clause(from, ctx);
         final (sql2, columns2) = clause(join, ctx);
+        final c = ctx.scope(q, [
+          ...columns1.mapIndexed((i, c) => 't1.${escape(c)}'),
+          ...columns2.mapIndexed((i, c) => 't2.${escape(c)}'),
+        ]);
         return (
           [
             'SELECT',
@@ -302,13 +306,14 @@ final class _Sqlite extends SqlDialect {
               ...columns1.mapIndexed((i, c) => 't1.${escape(c)} AS t1_$i'),
               ...columns2.mapIndexed((i, c) => 't2.${escape(c)} AS t2_$i'),
             ].join(', '),
-            'FROM ($sql1) as t1 JOIN ($sql2) as t2',
+            'FROM ($sql1) as t1 ${type.kind} JOIN ($sql2) as t2 ON ${expr(on, c)}',
           ].join(' '),
           [
             ...columns1.mapIndexed((i, c) => 't1_$i'),
             ...columns2.mapIndexed((i, c) => 't2_$i'),
           ]
         );
+
       case SelectClause(:final expressions):
         return (
           [
@@ -454,6 +459,14 @@ extension on ColumnType {
         ColumnType<Null> _ => throw UnsupportedError(
             'Null type cannot be used as column type',
           ),
+      };
+}
+
+extension on JoinType {
+  String get kind => switch (this) {
+        JoinType.inner => 'INNER',
+        JoinType.left => 'LEFT',
+        JoinType.right => 'RIGHT',
       };
 }
 

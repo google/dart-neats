@@ -49,11 +49,25 @@ final class _Query<T extends Record> extends Query<T> {
   _Query(super._context, this._expressions, this._from) : super._();
 }
 
-final class Join<T extends Record, S extends Record> {
+final class InnerJoin<T extends Record, S extends Record> {
   final Query<T> _from;
   final Query<S> _join;
 
-  Join._(this._from, this._join);
+  InnerJoin._(this._from, this._join);
+}
+
+final class LeftJoin<T extends Record, S extends Record> {
+  final Query<T> _from;
+  final Query<S> _join;
+
+  LeftJoin._(this._from, this._join);
+}
+
+final class RightJoin<T extends Record, S extends Record> {
+  final Query<T> _from;
+  final Query<S> _join;
+
+  RightJoin._(this._from, this._join);
 }
 
 /*
@@ -185,9 +199,39 @@ enum Order {
   descending,
 }
 
-final class JoinClause extends FromClause {
+final class JoinClause extends FromClause implements ExpressionContext {
+  @override
+  final Object _handle;
+  final JoinType type;
   final QueryClause join;
-  JoinClause._(super.from, this.join) : super._();
+  final Expr<bool> on;
+
+  JoinClause._(
+    this._handle,
+    this.type,
+    super.from,
+    this.join,
+    this.on,
+  ) : super._();
+}
+
+enum JoinType {
+  inner,
+  left,
+  right,
+  // Note: postgres can't do a FULL JOIN ON <arbitrary boolean expression>
+  // instead postgres will require that the expression uses '=' and is either
+  // merge-joinable or hash-joinable.
+  // Otherwise, postgres will return the following error:
+  //   0A000: FULL JOIN is only supported with merge-joinable or hash-joinable
+  //          join conditions
+  // We want queries that work when they are correctly typed, so instead we're
+  // opting not to support 'FULL JOIN'. It's better to have fewer features, but
+  // offer those features reliably.
+  // If users critically need a 'FULL JOIN', then this can be emulated with
+  //   (.. LEFT JOIN .. ON ..) UNION ALL (NULL, .. WHERE NOT EXISTS (..))
+  // It's not pretty or efficient, but possible, or users could simply opt to
+  // write such SQL queries manually as SQL.
 }
 
 final class LimitClause extends FromClause {

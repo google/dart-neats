@@ -65,7 +65,7 @@ Iterable<Spec> _buildExtensions() sync* {
       if (i + j > N) {
         continue;
       }
-      yield _buildJoinExtension(i, j);
+      yield* _buildJoinExtension(i, j);
     }
   }
 
@@ -315,21 +315,50 @@ Spec _buildQueryExtension(int i) {
       ),
 
       //   Join<(Expr<A>, Expr<B>, Expr<C>), T> join<T extends Record>(Query<T> query) =>
-      //       Join._(this, query);
+      //       InnerJoin._(this, query);
       Method(
         (b) => b
           ..name = 'join'
-          // TODO: Support left, right joins, inner outer (if this makes sense)
-          ..documentation(docs.joinQuery)
+          ..documentation(docs.innerJoinQuery)
           ..types.add(refer('T extends Record'))
-          ..returns = refer('Join<${typArgedExprTuple(i)}, T>')
+          ..returns = refer('InnerJoin<${typArgedExprTuple(i)}, T>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..name = 'query'
               ..type = refer('Query<T>'),
           ))
           ..lambda = true
-          ..body = Code('Join._(this, query)'),
+          ..body = Code('InnerJoin._(this, query)'),
+      ),
+
+      Method(
+        (b) => b
+          ..name = 'leftJoin'
+          ..documentation(docs.leftJoinQuery)
+          ..types.add(refer('T extends Record'))
+          ..returns = refer('LeftJoin<${typArgedExprTuple(i)}, T>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'query'
+              ..type = refer('Query<T>'),
+          ))
+          ..lambda = true
+          ..body = Code('LeftJoin._(this, query)'),
+      ),
+
+      Method(
+        (b) => b
+          ..name = 'rightJoin'
+          ..documentation(docs.rightJoinQuery)
+          ..types.add(refer('T extends Record'))
+          ..returns = refer('RightJoin<${typArgedExprTuple(i)}, T>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'query'
+              ..type = refer('Query<T>'),
+          ))
+          ..lambda = true
+          ..body = Code('RightJoin._(this, query)'),
       ),
 
       Method(
@@ -917,46 +946,79 @@ Spec _buildToListExtension(int i) => Extension(
 ///       all.where(conditionBuilder);
 /// }
 /// ```
-Spec _buildJoinExtension(int i, int j) {
-  return Extension((b) => b
-    ..name = 'Join${i}On$j'
-    ..types.addAll(typeArg.take(i + j).map(refer))
-    ..on = refer('Join<${typArgedExprTuple(i, 0)}, ${typArgedExprTuple(j, i)}>')
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'all'
-        ..returns = refer('Query<${typArgedExprTuple(i + j, 0)}>')
-        ..type = MethodType.getter
-        ..lambda = true
-        ..body = Code('''
-        _Query(
-          _from._context,
-          (
-            ${List.generate(i, (i) => '_from._expressions.\$${i + 1}').join(',')},
-            ${List.generate(j, (i) => '_join._expressions.\$${i + 1}').join(',')},
-          ),
-          (_) => JoinClause._(
-            _from._from(_from._expressions.toList()),
-            _join._from(_join._expressions.toList()),
-          ),
-        )
-        '''),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'on'
-        ..returns = refer('Query<${typArgedExprTuple(i + j, 0)}>')
-        ..lambda = true
-        ..requiredParameters.add(Parameter(
-          (b) => b
-            ..name = 'conditionBuilder'
-            ..type = refer(
-                'Expr<bool> Function(${typArgedExprArgumentList(i + j)})'),
-        ))
-        ..body = Code('''
-          all.where(conditionBuilder)
-      '''),
-    )));
+Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
+  final kinds = [
+    ('Inner', '', '', 'inner'),
+    ('Left', '', '?', 'left'),
+    ('Right', '?', '', 'right'),
+  ];
+  for (final (kind, ln, rn, type) in kinds) {
+    yield Extension((b) => b
+      ..name = '${kind}Join${i}On$j'
+      ..types.addAll(typeArg.take(i + j).map(refer))
+      ..on = refer(
+          '${kind}Join<${typArgedExprTuple(i, 0)}, ${typArgedExprTuple(j, i)}>')
+      ..methods.addAll([
+        // We only have `all` on INNER JOIN
+        if (type == 'inner')
+          Method((b) => b
+            ..name = 'all'
+            ..returns = refer('Query<${listToTuple(toArgedExprList([
+                  ...typeArg.take(i).map((v) => '$v$ln'),
+                  ...typeArg.skip(i).take(j).map((v) => '$v$rn'),
+                ]))}>')
+            ..type = MethodType.getter
+            ..lambda = true
+            ..body = Code('''
+              _Query(
+                _from._context,
+                (
+                  ${List.generate(i, (i) => '_from._expressions.\$${i + 1}').join(',')},
+                  ${List.generate(j, (i) => '_join._expressions.\$${i + 1}').join(',')},
+                ),
+                (_) => JoinClause._(
+                  Object(),
+                  JoinType.$type,
+                  _from._from(_from._expressions.toList()),
+                  _join._from(_join._expressions.toList()),
+                  Literal.true\$,
+                ),
+              )
+           ''')),
+        Method((b) => b
+          ..name = 'on'
+          ..returns = refer('Query<${listToTuple(toArgedExprList([
+                ...typeArg.take(i).map((v) => '$v$ln'),
+                ...typeArg.skip(i).take(j).map((v) => '$v$rn'),
+              ]))}>')
+          ..requiredParameters.add(Parameter(
+            (b) => b
+              ..name = 'conditionBuilder'
+              ..type = refer(
+                  'Expr<bool> Function(${typArgedExprArgumentList(i + j)})'),
+          ))
+          ..body = Code('''
+            late JoinClause join;
+            final q = _Query(
+              _from._context,
+              (
+                ${List.generate(i, (i) => '_from._expressions.\$${i + 1}').join(',')},
+                ${List.generate(j, (i) => '_join._expressions.\$${i + 1}').join(',')},
+              ),
+              (_) => join,
+            );
+            final (handle, on) = q._build(conditionBuilder);
+            join = JoinClause._(
+              handle,
+              JoinType.$type,
+              _from._from(_from._expressions.toList()),
+              _join._from(_join._expressions.toList()),
+              on,
+            );
+            return q;
+          '''))
+      ]));
+  }
 }
 
 /// Build extension for `Group`

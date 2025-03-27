@@ -117,16 +117,36 @@ extension Query1<A> on Query<(Expr<A>,)> {
     );
   }
 
-  /// Join this [Query] with another [Query] using `JOIN` clause.
+  /// Join this [Query] with another [Query] using `INNER JOIN` clause.
   ///
-  /// This method returns a [Join] object on which you must call either
+  /// This method returns an [InnerJoin] object on which you must call either
   ///  * `.all` to get the cartesian product of the two queries, or,
   ///  * `.on` to specify how the two queries should be joined.
   ///
-  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// This always creates a `INNER JOIN`, where the `.on` condition can be
   /// used to control how the two queries are joined.
-  Join<(Expr<A>,), T> join<T extends Record>(Query<T> query) =>
-      Join._(this, query);
+  InnerJoin<(Expr<A>,), T> join<T extends Record>(Query<T> query) =>
+      InnerJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `LEFT JOIN` clause.
+  ///
+  /// This method returns an [LeftJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `LEFT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  LeftJoin<(Expr<A>,), T> leftJoin<T extends Record>(Query<T> query) =>
+      LeftJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `RIGHT JOIN` clause.
+  ///
+  /// This method returns an [RightJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `RIGHT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  RightJoin<(Expr<A>,), T> rightJoin<T extends Record>(Query<T> query) =>
+      RightJoin._(this, query);
 
   /// Check for existance of rows in this [Query] using `EXISTS` operator.
   ///
@@ -491,16 +511,37 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     );
   }
 
-  /// Join this [Query] with another [Query] using `JOIN` clause.
+  /// Join this [Query] with another [Query] using `INNER JOIN` clause.
   ///
-  /// This method returns a [Join] object on which you must call either
+  /// This method returns an [InnerJoin] object on which you must call either
   ///  * `.all` to get the cartesian product of the two queries, or,
   ///  * `.on` to specify how the two queries should be joined.
   ///
-  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// This always creates a `INNER JOIN`, where the `.on` condition can be
   /// used to control how the two queries are joined.
-  Join<(Expr<A>, Expr<B>), T> join<T extends Record>(Query<T> query) =>
-      Join._(this, query);
+  InnerJoin<(Expr<A>, Expr<B>), T> join<T extends Record>(Query<T> query) =>
+      InnerJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `LEFT JOIN` clause.
+  ///
+  /// This method returns an [LeftJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `LEFT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  LeftJoin<(Expr<A>, Expr<B>), T> leftJoin<T extends Record>(Query<T> query) =>
+      LeftJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `RIGHT JOIN` clause.
+  ///
+  /// This method returns an [RightJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `RIGHT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  RightJoin<(Expr<A>, Expr<B>), T> rightJoin<T extends Record>(
+          Query<T> query) =>
+      RightJoin._(this, query);
 
   /// Check for existance of rows in this [Query] using `EXISTS` operator.
   ///
@@ -887,16 +928,39 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     );
   }
 
-  /// Join this [Query] with another [Query] using `JOIN` clause.
+  /// Join this [Query] with another [Query] using `INNER JOIN` clause.
   ///
-  /// This method returns a [Join] object on which you must call either
+  /// This method returns an [InnerJoin] object on which you must call either
   ///  * `.all` to get the cartesian product of the two queries, or,
   ///  * `.on` to specify how the two queries should be joined.
   ///
-  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// This always creates a `INNER JOIN`, where the `.on` condition can be
   /// used to control how the two queries are joined.
-  Join<(Expr<A>, Expr<B>, Expr<C>), T> join<T extends Record>(Query<T> query) =>
-      Join._(this, query);
+  InnerJoin<(Expr<A>, Expr<B>, Expr<C>), T> join<T extends Record>(
+          Query<T> query) =>
+      InnerJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `LEFT JOIN` clause.
+  ///
+  /// This method returns an [LeftJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `LEFT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  LeftJoin<(Expr<A>, Expr<B>, Expr<C>), T> leftJoin<T extends Record>(
+          Query<T> query) =>
+      LeftJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `RIGHT JOIN` clause.
+  ///
+  /// This method returns an [RightJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `RIGHT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  RightJoin<(Expr<A>, Expr<B>, Expr<C>), T> rightJoin<T extends Record>(
+          Query<T> query) =>
+      RightJoin._(this, query);
 
   /// Check for existance of rows in this [Query] using `EXISTS` operator.
   ///
@@ -1310,17 +1374,38 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     );
   }
 
-  /// Join this [Query] with another [Query] using `JOIN` clause.
+  /// Join this [Query] with another [Query] using `INNER JOIN` clause.
   ///
-  /// This method returns a [Join] object on which you must call either
+  /// This method returns an [InnerJoin] object on which you must call either
   ///  * `.all` to get the cartesian product of the two queries, or,
   ///  * `.on` to specify how the two queries should be joined.
   ///
-  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// This always creates a `INNER JOIN`, where the `.on` condition can be
   /// used to control how the two queries are joined.
-  Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), T> join<T extends Record>(
+  InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), T> join<T extends Record>(
           Query<T> query) =>
-      Join._(this, query);
+      InnerJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `LEFT JOIN` clause.
+  ///
+  /// This method returns an [LeftJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `LEFT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), T> leftJoin<T extends Record>(
+          Query<T> query) =>
+      LeftJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `RIGHT JOIN` clause.
+  ///
+  /// This method returns an [RightJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `RIGHT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), T>
+      rightJoin<T extends Record>(Query<T> query) => RightJoin._(this, query);
 
   /// Check for existance of rows in this [Query] using `EXISTS` operator.
   ///
@@ -1759,17 +1844,36 @@ extension Query5<A, B, C, D, E>
     );
   }
 
-  /// Join this [Query] with another [Query] using `JOIN` clause.
+  /// Join this [Query] with another [Query] using `INNER JOIN` clause.
   ///
-  /// This method returns a [Join] object on which you must call either
+  /// This method returns an [InnerJoin] object on which you must call either
   ///  * `.all` to get the cartesian product of the two queries, or,
   ///  * `.on` to specify how the two queries should be joined.
   ///
-  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// This always creates a `INNER JOIN`, where the `.on` condition can be
   /// used to control how the two queries are joined.
-  Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), T> join<T extends Record>(
-          Query<T> query) =>
-      Join._(this, query);
+  InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), T>
+      join<T extends Record>(Query<T> query) => InnerJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `LEFT JOIN` clause.
+  ///
+  /// This method returns an [LeftJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `LEFT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), T>
+      leftJoin<T extends Record>(Query<T> query) => LeftJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `RIGHT JOIN` clause.
+  ///
+  /// This method returns an [RightJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `RIGHT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), T>
+      rightJoin<T extends Record>(Query<T> query) => RightJoin._(this, query);
 
   /// Check for existance of rows in this [Query] using `EXISTS` operator.
   ///
@@ -2229,16 +2333,36 @@ extension Query6<A, B, C, D, E, F>
     );
   }
 
-  /// Join this [Query] with another [Query] using `JOIN` clause.
+  /// Join this [Query] with another [Query] using `INNER JOIN` clause.
   ///
-  /// This method returns a [Join] object on which you must call either
+  /// This method returns an [InnerJoin] object on which you must call either
   ///  * `.all` to get the cartesian product of the two queries, or,
   ///  * `.on` to specify how the two queries should be joined.
   ///
-  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// This always creates a `INNER JOIN`, where the `.on` condition can be
   /// used to control how the two queries are joined.
-  Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), T>
-      join<T extends Record>(Query<T> query) => Join._(this, query);
+  InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), T>
+      join<T extends Record>(Query<T> query) => InnerJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `LEFT JOIN` clause.
+  ///
+  /// This method returns an [LeftJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `LEFT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), T>
+      leftJoin<T extends Record>(Query<T> query) => LeftJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `RIGHT JOIN` clause.
+  ///
+  /// This method returns an [RightJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `RIGHT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), T>
+      rightJoin<T extends Record>(Query<T> query) => RightJoin._(this, query);
 
   /// Check for existance of rows in this [Query] using `EXISTS` operator.
   ///
@@ -2725,16 +2849,36 @@ extension Query7<A, B, C, D, E, F, G>
     );
   }
 
-  /// Join this [Query] with another [Query] using `JOIN` clause.
+  /// Join this [Query] with another [Query] using `INNER JOIN` clause.
   ///
-  /// This method returns a [Join] object on which you must call either
+  /// This method returns an [InnerJoin] object on which you must call either
   ///  * `.all` to get the cartesian product of the two queries, or,
   ///  * `.on` to specify how the two queries should be joined.
   ///
-  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// This always creates a `INNER JOIN`, where the `.on` condition can be
   /// used to control how the two queries are joined.
-  Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T>
-      join<T extends Record>(Query<T> query) => Join._(this, query);
+  InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T>
+      join<T extends Record>(Query<T> query) => InnerJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `LEFT JOIN` clause.
+  ///
+  /// This method returns an [LeftJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `LEFT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T>
+      leftJoin<T extends Record>(Query<T> query) => LeftJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `RIGHT JOIN` clause.
+  ///
+  /// This method returns an [RightJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `RIGHT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T>
+      rightJoin<T extends Record>(Query<T> query) => RightJoin._(this, query);
 
   /// Check for existance of rows in this [Query] using `EXISTS` operator.
   ///
@@ -3315,16 +3459,41 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
     );
   }
 
-  /// Join this [Query] with another [Query] using `JOIN` clause.
+  /// Join this [Query] with another [Query] using `INNER JOIN` clause.
   ///
-  /// This method returns a [Join] object on which you must call either
+  /// This method returns an [InnerJoin] object on which you must call either
   ///  * `.all` to get the cartesian product of the two queries, or,
   ///  * `.on` to specify how the two queries should be joined.
   ///
-  /// This always creates a `CROSS JOIN`, where the `.on` condition can be
+  /// This always creates a `INNER JOIN`, where the `.on` condition can be
   /// used to control how the two queries are joined.
-  Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
-      T> join<T extends Record>(Query<T> query) => Join._(this, query);
+  InnerJoin<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
+      T> join<T extends Record>(Query<T> query) => InnerJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `LEFT JOIN` clause.
+  ///
+  /// This method returns an [LeftJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `LEFT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  LeftJoin<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
+      T> leftJoin<T extends Record>(Query<T> query) => LeftJoin._(this, query);
+
+  /// Join this [Query] with another [Query] using `RIGHT JOIN` clause.
+  ///
+  /// This method returns an [RightJoin] object on which you must call
+  /// `.on` to specify how the two queries should be joined.
+  ///
+  /// This always creates a `RIGHT JOIN`, where the `.on` condition can be
+  /// used to control how the two queries are joined.
+  RightJoin<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
+      T> rightJoin<T extends Record>(
+          Query<T> query) =>
+      RightJoin._(this, query);
 
   /// Check for existance of rows in this [Query] using `EXISTS` operator.
   ///
@@ -3901,7 +4070,7 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
-extension Join1On1<A, B> on Join<(Expr<A>,), (Expr<B>,)> {
+extension InnerJoin1On1<A, B> on InnerJoin<(Expr<A>,), (Expr<B>,)> {
   Query<(Expr<A>, Expr<B>)> get all => _Query(
         _from._context,
         (
@@ -3909,16 +4078,85 @@ extension Join1On1<A, B> on Join<(Expr<A>,), (Expr<B>,)> {
           _join._expressions.$1,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join1On2<A, B, C> on Join<(Expr<A>,), (Expr<B>, Expr<C>)> {
+extension LeftJoin1On1<A, B> on LeftJoin<(Expr<A>,), (Expr<B>,)> {
+  Query<(Expr<A>, Expr<B?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin1On1<A, B> on RightJoin<(Expr<A>,), (Expr<B>,)> {
+  Query<(Expr<A?>, Expr<B>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin1On2<A, B, C> on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>)> get all => _Query(
         _from._context,
         (
@@ -3927,18 +4165,89 @@ extension Join1On2<A, B, C> on Join<(Expr<A>,), (Expr<B>, Expr<C>)> {
           _join._expressions.$2,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join1On3<A, B, C, D>
-    on Join<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
+extension LeftJoin1On2<A, B, C> on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
+  Query<(Expr<A>, Expr<B?>, Expr<C?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin1On2<A, B, C> on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
+  Query<(Expr<A?>, Expr<B>, Expr<C>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin1On3<A, B, C, D>
+    on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get all => _Query(
         _from._context,
         (
@@ -3948,18 +4257,97 @@ extension Join1On3<A, B, C, D>
           _join._expressions.$3,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join1On4<A, B, C, D, E>
-    on Join<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+extension LeftJoin1On3<A, B, C, D>
+    on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
+  Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin1On3<A, B, C, D>
+    on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
+  Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin1On4<A, B, C, D, E>
+    on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get all => _Query(
         _from._context,
         (
@@ -3970,19 +4358,100 @@ extension Join1On4<A, B, C, D, E>
           _join._expressions.$4,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
-          Expr<bool> Function(
-                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join1On5<A, B, C, D, E, F>
-    on Join<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+extension LeftJoin1On4<A, B, C, D, E>
+    on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin1On4<A, B, C, D, E>
+    on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin1On5<A, B, C, D, E, F>
+    on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       _Query(
         _from._context,
@@ -3995,18 +4464,105 @@ extension Join1On5<A, B, C, D, E, F>
           _join._expressions.$5,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join1On6<A, B, C, D, E, F, G> on Join<(Expr<A>,),
+extension LeftJoin1On5<A, B, C, D, E, F>
+    on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin1On5<A, B, C, D, E, F>
+    on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin1On6<A, B, C, D, E, F, G> on InnerJoin<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => _Query(
@@ -4021,18 +4577,109 @@ extension Join1On6<A, B, C, D, E, F, G> on Join<(Expr<A>,),
               _join._expressions.$6,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f, Expr<G> g)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+        _join._expressions.$6,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join1On7<A, B, C, D, E, F, G, H> on Join<(Expr<A>,),
+extension LeftJoin1On6<A, B, C, D, E, F, G> on LeftJoin<(Expr<A>,),
+    (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G?>)>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+        _join._expressions.$6,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin1On6<A, B, C, D, E, F, G> on RightJoin<(Expr<A>,),
+    (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+        _join._expressions.$6,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin1On7<A, B, C, D, E, F, G, H> on InnerJoin<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => _Query(
@@ -4048,28 +4695,144 @@ extension Join1On7<A, B, C, D, E, F, G, H> on Join<(Expr<A>,),
               _join._expressions.$7,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> on(
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+        _join._expressions.$6,
+        _join._expressions.$7,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join2On1<A, B, C> on Join<(Expr<A>, Expr<B>), (Expr<C>,)> {
+extension LeftJoin1On7<A, B, C, D, E, F, G, H> on LeftJoin<(Expr<A>,),
+    (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A>,
+            Expr<B?>,
+            Expr<C?>,
+            Expr<D?>,
+            Expr<E?>,
+            Expr<F?>,
+            Expr<G?>,
+            Expr<H?>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+        _join._expressions.$6,
+        _join._expressions.$7,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin1On7<A, B, C, D, E, F, G, H> on RightJoin<(Expr<A>,),
+    (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A?>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+        _join._expressions.$6,
+        _join._expressions.$7,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin2On1<A, B, C> on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
   Query<(Expr<A>, Expr<B>, Expr<C>)> get all => _Query(
         _from._context,
         (
@@ -4078,17 +4841,89 @@ extension Join2On1<A, B, C> on Join<(Expr<A>, Expr<B>), (Expr<C>,)> {
           _join._expressions.$1,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join2On2<A, B, C, D> on Join<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+extension LeftJoin2On1<A, B, C> on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
+  Query<(Expr<A>, Expr<B>, Expr<C?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin2On1<A, B, C> on RightJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin2On2<A, B, C, D>
+    on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get all => _Query(
         _from._context,
         (
@@ -4098,18 +4933,97 @@ extension Join2On2<A, B, C, D> on Join<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
           _join._expressions.$2,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join2On3<A, B, C, D, E>
-    on Join<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
+extension LeftJoin2On2<A, B, C, D>
+    on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin2On2<A, B, C, D>
+    on RightJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin2On3<A, B, C, D, E>
+    on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get all => _Query(
         _from._context,
         (
@@ -4120,19 +5034,100 @@ extension Join2On3<A, B, C, D, E>
           _join._expressions.$3,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
-          Expr<bool> Function(
-                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join2On4<A, B, C, D, E, F>
-    on Join<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+extension LeftJoin2On3<A, B, C, D, E>
+    on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>, Expr<E?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin2On3<A, B, C, D, E>
+    on RightJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin2On4<A, B, C, D, E, F>
+    on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       _Query(
         _from._context,
@@ -4145,19 +5140,106 @@ extension Join2On4<A, B, C, D, E, F>
           _join._expressions.$4,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join2On5<A, B, C, D, E, F, G>
-    on Join<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+extension LeftJoin2On4<A, B, C, D, E, F>
+    on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin2On4<A, B, C, D, E, F>
+    on RightJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin2On5<A, B, C, D, E, F, G> on InnerJoin<(Expr<A>, Expr<B>),
+    (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => _Query(
             _from._context,
@@ -4171,18 +5253,109 @@ extension Join2On5<A, B, C, D, E, F, G>
               _join._expressions.$5,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f, Expr<G> g)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join2On6<A, B, C, D, E, F, G, H> on Join<(Expr<A>, Expr<B>),
+extension LeftJoin2On5<A, B, C, D, E, F, G> on LeftJoin<(Expr<A>, Expr<B>),
+    (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G?>)>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin2On5<A, B, C, D, E, F, G> on RightJoin<(Expr<A>, Expr<B>),
+    (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin2On6<A, B, C, D, E, F, G, H> on InnerJoin<(Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => _Query(
@@ -4198,29 +5371,145 @@ extension Join2On6<A, B, C, D, E, F, G, H> on Join<(Expr<A>, Expr<B>),
               _join._expressions.$6,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> on(
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+        _join._expressions.$6,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join3On1<A, B, C, D>
-    on Join<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
+extension LeftJoin2On6<A, B, C, D, E, F, G, H> on LeftJoin<(Expr<A>, Expr<B>),
+    (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C?>,
+            Expr<D?>,
+            Expr<E?>,
+            Expr<F?>,
+            Expr<G?>,
+            Expr<H?>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+        _join._expressions.$6,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin2On6<A, B, C, D, E, F, G, H> on RightJoin<(Expr<A>, Expr<B>),
+    (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A?>,
+            Expr<B?>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+        _join._expressions.$6,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin3On1<A, B, C, D>
+    on InnerJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get all => _Query(
         _from._context,
         (
@@ -4230,18 +5519,97 @@ extension Join3On1<A, B, C, D>
           _join._expressions.$1,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join3On2<A, B, C, D, E>
-    on Join<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
+extension LeftJoin3On1<A, B, C, D>
+    on LeftJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin3On1<A, B, C, D>
+    on RightJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin3On2<A, B, C, D, E>
+    on InnerJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get all => _Query(
         _from._context,
         (
@@ -4252,19 +5620,100 @@ extension Join3On2<A, B, C, D, E>
           _join._expressions.$2,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
-          Expr<bool> Function(
-                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join3On3<A, B, C, D, E, F>
-    on Join<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
+extension LeftJoin3On2<A, B, C, D, E>
+    on LeftJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>, Expr<E?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin3On2<A, B, C, D, E>
+    on RightJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin3On3<A, B, C, D, E, F>
+    on InnerJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       _Query(
         _from._context,
@@ -4277,19 +5726,106 @@ extension Join3On3<A, B, C, D, E, F>
           _join._expressions.$3,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join3On4<A, B, C, D, E, F, G>
-    on Join<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+extension LeftJoin3On3<A, B, C, D, E, F>
+    on LeftJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>, Expr<E?>, Expr<F?>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin3On3<A, B, C, D, E, F>
+    on RightJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>, Expr<F>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin3On4<A, B, C, D, E, F, G> on InnerJoin<
+    (Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => _Query(
             _from._context,
@@ -4303,18 +5839,109 @@ extension Join3On4<A, B, C, D, E, F, G>
               _join._expressions.$4,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f, Expr<G> g)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join3On5<A, B, C, D, E, F, G, H> on Join<(Expr<A>, Expr<B>, Expr<C>),
+extension LeftJoin3On4<A, B, C, D, E, F, G> on LeftJoin<
+    (Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin3On4<A, B, C, D, E, F, G> on RightJoin<
+    (Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin3On5<A, B, C, D, E, F, G, H> on InnerJoin<
+    (Expr<A>, Expr<B>, Expr<C>),
     (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => _Query(
@@ -4330,29 +5957,147 @@ extension Join3On5<A, B, C, D, E, F, G, H> on Join<(Expr<A>, Expr<B>, Expr<C>),
               _join._expressions.$5,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> on(
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join4On1<A, B, C, D, E>
-    on Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
+extension LeftJoin3On5<A, B, C, D, E, F, G, H> on LeftJoin<
+    (Expr<A>, Expr<B>, Expr<C>),
+    (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D?>,
+            Expr<E?>,
+            Expr<F?>,
+            Expr<G?>,
+            Expr<H?>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin3On5<A, B, C, D, E, F, G, H> on RightJoin<
+    (Expr<A>, Expr<B>, Expr<C>),
+    (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A?>,
+            Expr<B?>,
+            Expr<C?>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+        _join._expressions.$5,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin4On1<A, B, C, D, E>
+    on InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get all => _Query(
         _from._context,
         (
@@ -4363,19 +6108,100 @@ extension Join4On1<A, B, C, D, E>
           _join._expressions.$1,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
-          Expr<bool> Function(
-                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join4On2<A, B, C, D, E, F>
-    on Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
+extension LeftJoin4On1<A, B, C, D, E>
+    on LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin4On1<A, B, C, D, E>
+    on RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin4On2<A, B, C, D, E, F>
+    on InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       _Query(
         _from._context,
@@ -4388,19 +6214,106 @@ extension Join4On2<A, B, C, D, E, F>
           _join._expressions.$2,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join4On3<A, B, C, D, E, F, G>
-    on Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
+extension LeftJoin4On2<A, B, C, D, E, F>
+    on LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>, Expr<F?>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin4On2<A, B, C, D, E, F>
+    on RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>, Expr<F>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin4On3<A, B, C, D, E, F, G> on InnerJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => _Query(
             _from._context,
@@ -4414,18 +6327,108 @@ extension Join4On3<A, B, C, D, E, F, G>
               _join._expressions.$3,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f, Expr<G> g)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join4On4<A, B, C, D, E, F, G, H> on Join<
+extension LeftJoin4On3<A, B, C, D, E, F, G> on LeftJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>, Expr<F?>, Expr<G?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin4On3<A, B, C, D, E, F, G> on RightJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>, Expr<F>, Expr<G>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin4On4<A, B, C, D, E, F, G, H> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
     (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
@@ -4442,29 +6445,147 @@ extension Join4On4<A, B, C, D, E, F, G, H> on Join<
               _join._expressions.$4,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> on(
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join5On1<A, B, C, D, E, F>
-    on Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
+extension LeftJoin4On4<A, B, C, D, E, F, G, H> on LeftJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+    (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E?>,
+            Expr<F?>,
+            Expr<G?>,
+            Expr<H?>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin4On4<A, B, C, D, E, F, G, H> on RightJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
+    (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A?>,
+            Expr<B?>,
+            Expr<C?>,
+            Expr<D?>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+        _join._expressions.$4,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin5On1<A, B, C, D, E, F>
+    on InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       _Query(
         _from._context,
@@ -4477,19 +6598,106 @@ extension Join5On1<A, B, C, D, E, F>
           _join._expressions.$1,
         ),
         (_) => JoinClause._(
+          Object(),
+          JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
+          Literal.true$,
         ),
       );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join5On2<A, B, C, D, E, F, G>
-    on Join<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
+extension LeftJoin5On1<A, B, C, D, E, F>
+    on LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin5On1<A, B, C, D, E, F>
+    on RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F>)> on(
+      Expr<bool> Function(
+              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin5On2<A, B, C, D, E, F, G> on InnerJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => _Query(
             _from._context,
@@ -4503,18 +6711,109 @@ extension Join5On2<A, B, C, D, E, F, G>
               _join._expressions.$2,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f, Expr<G> g)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join5On3<A, B, C, D, E, F, G, H> on Join<
+extension LeftJoin5On2<A, B, C, D, E, F, G> on LeftJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>, Expr<G?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin5On2<A, B, C, D, E, F, G> on RightJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F>, Expr<G>)>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin5On3<A, B, C, D, E, F, G, H> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
     (Expr<F>, Expr<G>, Expr<H>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
@@ -4531,28 +6830,146 @@ extension Join5On3<A, B, C, D, E, F, G, H> on Join<
               _join._expressions.$3,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> on(
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join6On1<A, B, C, D, E, F, G> on Join<
+extension LeftJoin5On3<A, B, C, D, E, F, G, H> on LeftJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+    (Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F?>,
+            Expr<G?>,
+            Expr<H?>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin5On3<A, B, C, D, E, F, G, H> on RightJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
+    (Expr<F>, Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A?>,
+            Expr<B?>,
+            Expr<C?>,
+            Expr<D?>,
+            Expr<E?>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _join._expressions.$1,
+        _join._expressions.$2,
+        _join._expressions.$3,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin6On1<A, B, C, D, E, F, G> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => _Query(
@@ -4567,18 +6984,109 @@ extension Join6On1<A, B, C, D, E, F, G> on Join<
               _join._expressions.$1,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
-                  Expr<E> e, Expr<F> f, Expr<G> g)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _from._expressions.$6,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join6On2<A, B, C, D, E, F, G, H> on Join<
+extension LeftJoin6On1<A, B, C, D, E, F, G> on LeftJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> on(
+      Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+              Expr<F> f, Expr<G> g)
+          conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _from._expressions.$6,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin6On1<A, B, C, D, E, F, G> on RightJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
+  Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G>)>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _from._expressions.$6,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin6On2<A, B, C, D, E, F, G, H> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
     (Expr<G>, Expr<H>)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
@@ -4595,28 +7103,146 @@ extension Join6On2<A, B, C, D, E, F, G, H> on Join<
               _join._expressions.$2,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> on(
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _from._expressions.$6,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
-extension Join7On1<A, B, C, D, E, F, G, H> on Join<
+extension LeftJoin6On2<A, B, C, D, E, F, G, H> on LeftJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+    (Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G?>,
+            Expr<H?>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _from._expressions.$6,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin6On2<A, B, C, D, E, F, G, H> on RightJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
+    (Expr<G>, Expr<H>)> {
+  Query<
+          (
+            Expr<A?>,
+            Expr<B?>,
+            Expr<C?>,
+            Expr<D?>,
+            Expr<E?>,
+            Expr<F?>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _from._expressions.$6,
+        _join._expressions.$1,
+        _join._expressions.$2,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension InnerJoin7On1<A, B, C, D, E, F, G, H> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
     (Expr<H>,)> {
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
@@ -4633,25 +7259,143 @@ extension Join7On1<A, B, C, D, E, F, G, H> on Join<
               _join._expressions.$1,
             ),
             (_) => JoinClause._(
+              Object(),
+              JoinType.inner,
               _from._from(_from._expressions.toList()),
               _join._from(_join._expressions.toList()),
+              Literal.true$,
             ),
           );
   Query<
-      (
-        Expr<A>,
-        Expr<B>,
-        Expr<C>,
-        Expr<D>,
-        Expr<E>,
-        Expr<F>,
-        Expr<G>,
-        Expr<H>
-      )> on(
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H>
+          )>
+      on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
-              conditionBuilder) =>
-      all.where(conditionBuilder);
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _from._expressions.$6,
+        _from._expressions.$7,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.inner,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension LeftJoin7On1<A, B, C, D, E, F, G, H> on LeftJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+    (Expr<H>,)> {
+  Query<
+          (
+            Expr<A>,
+            Expr<B>,
+            Expr<C>,
+            Expr<D>,
+            Expr<E>,
+            Expr<F>,
+            Expr<G>,
+            Expr<H?>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _from._expressions.$6,
+        _from._expressions.$7,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.left,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
+}
+
+extension RightJoin7On1<A, B, C, D, E, F, G, H> on RightJoin<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
+    (Expr<H>,)> {
+  Query<
+          (
+            Expr<A?>,
+            Expr<B?>,
+            Expr<C?>,
+            Expr<D?>,
+            Expr<E?>,
+            Expr<F?>,
+            Expr<G?>,
+            Expr<H>
+          )>
+      on(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) {
+    late JoinClause join;
+    final q = _Query(
+      _from._context,
+      (
+        _from._expressions.$1,
+        _from._expressions.$2,
+        _from._expressions.$3,
+        _from._expressions.$4,
+        _from._expressions.$5,
+        _from._expressions.$6,
+        _from._expressions.$7,
+        _join._expressions.$1,
+      ),
+      (_) => join,
+    );
+    final (handle, on) = q._build(conditionBuilder);
+    join = JoinClause._(
+      handle,
+      JoinType.right,
+      _from._from(_from._expressions.toList()),
+      _join._from(_join._expressions.toList()),
+      on,
+    );
+    return q;
+  }
 }
 
 extension Group1By1<A, B> on Group<(Expr<A>,), (Expr<B>,)> {

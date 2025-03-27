@@ -69,6 +69,7 @@ export '../typed_sql.dart'
         InsertStatement,
         IntersectClause,
         JoinClause,
+        JoinType,
         LimitClause,
         Literal,
         MaxExpression,
