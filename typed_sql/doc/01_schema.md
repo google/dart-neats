@@ -185,7 +185,7 @@ Creating empty tables from scratch is mostly useful for testing, it's rarely
 needed in production. Instead you can use the generated `create<Schema>Tables`,
 which outputs the [DDL] for creating the tables.
 
-```dart schema_test.dart#print-tables
+```dart schema_test.dart#get-ddl
 // Get the database schema
 final ddl = createBookstoreTables(SqlDialect.postgres());
 ```
@@ -215,7 +215,7 @@ final author = await db.authors
 // Insert a row into the "books" table
 await db.books
     .insert(
-      title: literal(''),
+      title: literal('How to hide eggs'),
       authorId: literal(author!.authorId),
     )
     .execute();

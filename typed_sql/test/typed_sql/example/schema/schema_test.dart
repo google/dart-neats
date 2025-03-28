@@ -62,7 +62,7 @@ abstract final class Book extends Model {
   @DefaultValue(0)
   int get stock;
 }
-// #region author-model
+// #endregion
 
 void main() {
   final r = TestRunner<Bookstore>();
@@ -73,7 +73,7 @@ void main() {
     await db.createTables();
     // #endregion
 
-    // #region print-schema
+    // #region get-ddl
     // Get the database schema
     final ddl = createBookstoreTables(SqlDialect.postgres());
     // #endregion
