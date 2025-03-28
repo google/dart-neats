@@ -39,29 +39,30 @@ abstract final class Book extends Model {
   @AutoIncrement()
   int get bookId;
 
-  String get title;
+  String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
   int get authorId;
 
+  @DefaultValue(0)
   int get stock;
 }
 // #endregion
 
 // #region initial-data
 final initialAuthors = [
-  (authorId: 1, name: 'Easter Bunny'),
-  (authorId: 2, name: 'Bucks Bunny'),
+  (name: 'Easter Bunny',),
+  (name: 'Bucks Bunny',),
 ];
 
 final initialBooks = [
   // By Easter Bunny
-  (bookId: 1, title: 'Are Bunnies Unhealthy?', authorId: 1, stock: 10),
-  (bookId: 2, title: 'Cooking with Chocolate Eggs', authorId: 1, stock: 0),
-  (bookId: 3, title: 'Hiding Eggs for dummies', authorId: 1, stock: 12),
+  (title: 'Are Bunnies Unhealthy?', authorId: 1, stock: 10),
+  (title: 'Cooking with Chocolate Eggs', authorId: 1, stock: 0),
+  (title: 'Hiding Eggs for dummies', authorId: 1, stock: 12),
   // By Bucks Bunny
-  (bookId: 4, title: 'Vegetarian Dining', authorId: 2, stock: 42),
-  (bookId: 5, title: 'Vegan Dining', authorId: 2, stock: 3),
+  (title: 'Vegetarian Dining', authorId: 2, stock: 42),
+  (title: 'Vegan Dining', authorId: 2, stock: 3),
 ];
 // #endregion
 
@@ -74,7 +75,6 @@ void main() {
       for (final v in initialAuthors) {
         await db.authors
             .insertLiteral(
-              authorId: v.authorId,
               name: v.name,
             )
             .execute();
@@ -82,7 +82,6 @@ void main() {
       for (final v in initialBooks) {
         await db.books
             .insertLiteral(
-              bookId: v.bookId,
               title: v.title,
               authorId: v.authorId,
               stock: v.stock,
@@ -91,6 +90,92 @@ void main() {
       }
     },
   );
+
+  r.addTest('authors.insert', (db) async {
+    // #region authors-insert
+    await db.authors
+        .insert(
+          name: literal('Roger Rabbit'),
+        )
+        .execute();
+    // #endregion
+  });
+
+  r.addTest('authors.insert w. authorId', (db) async {
+    // #region authors-insert-with-id
+    await db.authors
+        .insert(
+          authorId: literal(42),
+          name: literal('Roger Rabbit'),
+        )
+        .execute();
+    // #endregion
+  });
+
+  r.addTest('authors.insert().returnInserted', (db) async {
+    // #region authors-insert-returnInserted
+    final author = await db.authors
+        .insert(
+          name: literal('Roger Rabbit'),
+        )
+        .returnInserted()
+        .executeAndFetch();
+
+    // We can now access properties on author, like:
+    // author.authorId
+    check(author!.authorId).isA<int>();
+    // #endregion
+  });
+
+  r.addTest('authors.insert().returning', (db) async {
+    // #region authors-insert-returning-authorId
+    final authorId = await db.authors
+        .insert(
+          name: literal('Roger Rabbit'),
+        )
+        .returning((author) => (author.authorId,))
+        .executeAndFetch();
+
+    // We now have the authorId available as authorId
+    check(authorId).isA<int>();
+    // #endregion
+  });
+
+  r.addTest('books.insert(authorId: fromLookup)', (db) async {
+    // #region books-insert-w-lookup
+    final authorId = await db.authors
+        .where((author) => author.name.equals(literal('Easter Bunny')))
+        .select((author) => (author.authorId,))
+        .first
+        .fetch();
+
+    if (authorId == null) {
+      throw Exception('Could not find the author');
+    }
+
+    await db.books
+        .insert(
+          title: literal('How to hide eggs'),
+          authorId: literal(authorId),
+        )
+        .execute();
+    // #endregion
+  });
+
+  r.addTest('books.insert(authorId: subquery)', (db) async {
+    // #region books-insert-subquery
+    await db.books
+        .insert(
+          title: literal('How to hide eggs'),
+          authorId: db.authors.asSubQuery
+              .where((author) => author.name.equals(literal('Easter Bunny')))
+              .first
+              .authorId
+              .assertNotNull(),
+        )
+        .execute();
+    // #endregion
+  });
 
   r.addTest('books.select(title, book.author.name)', (db) async {
     final result = await db.books

@@ -262,7 +262,7 @@ final class _$Book extends Book {
   final int bookId;
 
   @override
-  final String title;
+  final String? title;
 
   @override
   final int authorId;
@@ -287,7 +287,7 @@ final class _$Book extends Book {
       ),
       (
         type: ExposedForCodeGen.text,
-        isNotNull: true,
+        isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
       ),
@@ -300,7 +300,7 @@ final class _$Book extends Book {
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
-        defaultValue: null,
+        defaultValue: 0,
         autoIncrement: false,
       )
     ],
@@ -330,7 +330,7 @@ final class _$Book extends Book {
     if (bookId == null && title == null && authorId == null && stock == null) {
       return null;
     }
-    return _$Book._(bookId!, title!, authorId!, stock!);
+    return _$Book._(bookId!, title, authorId!, stock!);
   }
 
   @override
@@ -342,26 +342,26 @@ extension TableBookExt on Table<Book> {
   /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
   InsertSingle<Book> insertLiteral({
     int? bookId,
-    required String title,
+    String? title,
     required int authorId,
-    required int stock,
+    int? stock,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
           bookId != null ? literal(bookId) : null,
-          literal(title),
+          title != null ? literal(title) : null,
           literal(authorId),
-          literal(stock),
+          stock != null ? literal(stock) : null,
         ],
       );
 
   /// TODO: document insert
   InsertSingle<Book> insert({
     Expr<int>? bookId,
-    required Expr<String> title,
+    Expr<String?>? title,
     required Expr<int> authorId,
-    required Expr<int> stock,
+    Expr<int>? stock,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
@@ -392,7 +392,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
             Expr<Book> book,
             UpdateSet<Book> Function({
               Expr<int> bookId,
-              Expr<String> title,
+              Expr<String?> title,
               Expr<int> authorId,
               Expr<int> stock,
             }) set,
@@ -404,7 +404,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
           book,
           ({
             Expr<int>? bookId,
-            Expr<String>? title,
+            Expr<String?>? title,
             Expr<int>? authorId,
             Expr<int>? stock,
           }) =>
@@ -447,7 +447,7 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
             Expr<Book> book,
             UpdateSet<Book> Function({
               Expr<int> bookId,
-              Expr<String> title,
+              Expr<String?> title,
               Expr<int> authorId,
               Expr<int> stock,
             }) set,
@@ -459,7 +459,7 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
           book,
           ({
             Expr<int>? bookId,
-            Expr<String>? title,
+            Expr<String?>? title,
             Expr<int>? authorId,
             Expr<int>? stock,
           }) =>
@@ -502,7 +502,7 @@ extension ExpressionBookExt on Expr<Book> {
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
   /// TODO: document title
-  Expr<String> get title =>
+  Expr<String?> get title =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
   /// TODO: document authorId
@@ -552,7 +552,7 @@ extension AuthorChecks on Subject<Author> {
 
 extension BookChecks on Subject<Book> {
   Subject<int> get bookId => has((m) => m.bookId, 'bookId');
-  Subject<String> get title => has((m) => m.title, 'title');
+  Subject<String?> get title => has((m) => m.title, 'title');
   Subject<int> get authorId => has((m) => m.authorId, 'authorId');
   Subject<int> get stock => has((m) => m.stock, 'stock');
 }
