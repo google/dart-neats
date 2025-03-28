@@ -9,7 +9,7 @@ with a single column, or using `.groupBy` to build complex aggregations.
 This document will show to use aggregate functions count books, and summarize
 inventory by author in a bookstore example with schema defined as follows:
 
-```dart bookstore_example_test.dart#bookstore-schema
+```dart bookstore_test.dart#bookstore-schema
 abstract final class Bookstore extends Schema {
   Table<Author> get authors;
   Table<Book> get books;
@@ -45,7 +45,7 @@ For the remainder of this document we shall assume that `db` is an instance of
 Through examples in this document we shall assume that the following test-data
 has been loaded into the database.
 
-```dart bookstore_example_test.dart#initial-data
+```dart bookstore_test.dart#initial-data
 final initialAuthors = [
   (authorId: 1, name: 'Easter Bunny'),
   (authorId: 2, name: 'Bucks Bunny'),
@@ -74,7 +74,7 @@ In Dart we can do the same thing by first doing a `.select` to project from
 `Query<(Expr<Book>,)>` to `Query<(Expr<int>,)>` for which `.sum()` extension
 method is available.
 
-```dart bookstore_example_test.dart#sum-books-in-inventory
+```dart bookstore_test.dart#sum-books-in-inventory
 final result = await db.books
     .select(
       (book) => (book.stock,),
@@ -94,7 +94,7 @@ SELECT SUM(stock), COUNT(*) FROM books;
 
 In Dart we can't really do the same thing, but we can make two subqueries in
 `db.select()` as follows:
-```dart bookstore_example_test.dart#sum-books-and-count-books-in-inventory
+```dart bookstore_test.dart#sum-books-and-count-books-in-inventory
 final (totalStock, countDifferntBooks) = await db.select(
   (
     db.books.asSubQuery.select((book) => (book.stock,)).sum(),
@@ -115,7 +115,7 @@ The same query could also be done with `.asExpr` to convert
 `QuerySingle<(Expr<T>,)>` into `Expr<T?>`. However, using `.asSubQuery` should
 be preferred as it doesn't make the result nullable.
 
-```dart bookstore_example_test.dart#sum-books-and-count-books-in-inventory-as-expr
+```dart bookstore_test.dart#sum-books-and-count-books-in-inventory-as-expr
 final (totalStock, countDifferntBooks) = await db.select(
   (
     db.books.select((book) => (book.stock,)).sum().asExpr,
@@ -145,7 +145,7 @@ SELECT authorId, SUM(stock) FROM books GROUP BY authorId;
 ```
 
 In Dart we can do the same thing using `.groupBy` and `.aggregate` as follows:
-```dart bookstore_example_test.dart#sum-books-group-by-author
+```dart bookstore_test.dart#sum-books-group-by-author
 final result = await db.books
     .groupBy((b) => (b.author,))
     .aggregate(
@@ -193,7 +193,7 @@ the `.groupBy` projection is actually a reference, which in turn makes the
 `author.name` in the final `.select` projection a subquery. We could avoided
 this by simply using `b.authorId` in the `.groupBy` projection, as illustrated
 below:
-```dart bookstore_example_test.dart#sum-books-group-by-authorId
+```dart bookstore_test.dart#sum-books-group-by-authorId
 final result = await db.books
     .groupBy((b) => (b.authorId,))
     .aggregate(
@@ -238,7 +238,7 @@ GROUP BY authors.name;
 
 In Dart we can do the same with `.join` which creates a `CROSS JOIN`, and `.on`
 which specifies which columns to join on.
-```dart bookstore_example_test.dart#sum-books-group-by-using-join
+```dart bookstore_test.dart#sum-books-group-by-using-join
 final result = await db.authors
     .join(db.books)
     .on((author, book) => author.authorId.equals(book.authorId))
@@ -272,7 +272,7 @@ mechanisms are not always the easiest to use. This is obviously a matter of
 personal preference and style, but aggregation by author can also be done using
 subqueries as follows:
 
-```dart bookstore_example_test.dart#sum-books-by-author-with-subquery
+```dart bookstore_test.dart#sum-books-by-author-with-subquery
 final result = await db.authors
     .select(
       (author) => (

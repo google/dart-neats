@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'bookstore_example_test.dart';
+part of 'bookstore_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder

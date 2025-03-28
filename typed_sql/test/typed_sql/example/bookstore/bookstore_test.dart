@@ -12,39 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Examples that are references in documentation files.
-///
-/// These examples are written as tests to ensure that they work as expected!
-/// A region of this file can be marked with:
-/// ```
-/// // #region <name>
-/// ...
-/// // #endregion`
-/// ```
-///
-/// Notice, that regions cannot be overlapping, they can perhaps in the future
-/// be nested. But this is not supported at the moment.
-///
-/// A region can be referenced in markdown using:
-///         ```dart bookstore_example_test.dart#initial-data
-///         <contents-of-region>
-///         ```
-///
-/// Running `tool/update_doc_examples.dart` will replaced content of the fenced
-/// code block with contents of the region.
-///
-/// Location of the test file is not important, to keep thing brief, the tool
-/// will find all files this name, and report an error if there is more than
-/// one. Similar, the tool will report errors, if region is missing.
-library;
-
 import 'dart:async';
 
 import 'package:typed_sql/typed_sql.dart';
 
-import '../testrunner.dart';
+import '../../testrunner.dart';
 
-part 'bookstore_example_test.g.dart';
+part 'bookstore_test.g.dart';
 
 // #region bookstore-schema
 abstract final class Bookstore extends Schema {
