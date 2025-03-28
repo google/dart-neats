@@ -20,11 +20,12 @@ abstract final class Book extends Model {
   @AutoIncrement()
   int get bookId;
 
-  String get title;
+  String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
   int get authorId;
 
+  @DefaultValue(0)
   int get stock;
 }
 ```
@@ -98,9 +99,9 @@ final author = await db.authors
     .returnInserted()
     .executeAndFetch();
 
-// We can now access properties on
-// author, like:
-author!.authorId;
+// We can now access properties on author, like:
+// author.authorId
+check(author!.authorId).isA<int>();
 ```
 
 While simple and easy to type, if we only want access to a subset of the

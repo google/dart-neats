@@ -28,11 +28,12 @@ abstract final class Book extends Model {
   @AutoIncrement()
   int get bookId;
 
-  String get title;
+  String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
   int get authorId;
 
+  @DefaultValue(0)
   int get stock;
 }
 ```
@@ -47,18 +48,18 @@ has been loaded into the database.
 
 ```dart bookstore_test.dart#initial-data
 final initialAuthors = [
-  (authorId: 1, name: 'Easter Bunny'),
-  (authorId: 2, name: 'Bucks Bunny'),
+  (name: 'Easter Bunny',),
+  (name: 'Bucks Bunny',),
 ];
 
 final initialBooks = [
   // By Easter Bunny
-  (bookId: 1, title: 'Are Bunnies Unhealthy?', authorId: 1, stock: 10),
-  (bookId: 2, title: 'Cooking with Chocolate Eggs', authorId: 1, stock: 0),
-  (bookId: 3, title: 'Hiding Eggs for dummies', authorId: 1, stock: 12),
+  (title: 'Are Bunnies Unhealthy?', authorId: 1, stock: 10),
+  (title: 'Cooking with Chocolate Eggs', authorId: 1, stock: 0),
+  (title: 'Hiding Eggs for dummies', authorId: 1, stock: 12),
   // By Bucks Bunny
-  (bookId: 4, title: 'Vegetarian Dining', authorId: 2, stock: 42),
-  (bookId: 5, title: 'Vegan Dining', authorId: 2, stock: 3),
+  (title: 'Vegetarian Dining', authorId: 2, stock: 42),
+  (title: 'Vegan Dining', authorId: 2, stock: 3),
 ];
 ```
 
