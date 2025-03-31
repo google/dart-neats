@@ -76,68 +76,80 @@ dart run build_runner build
 ```
 
 Once the `model.g.dart` file has been generated, you can create tables and
-insert rows as follows:
+insert/update/delete rows as follows:
 
 ```dart bookstore_test.dart#setup
-final db = Database<BookStore>(DatabaseAdaptor.sqlite(), SqlDialect.sqlite());
+// Connect to database
+final db = Database<Bookstore>(
+  DatabaseAdaptor.sqlite3(Uri.parse(file)),
+  SqlDialect.sqlite(),
+);
 
+// Create tables
 await db.createTables();
 
-await db.authors.insert(name: literal('Easter Bunny')).execute();
+// Insert an author and return the authorId!
+final authorId = await db.authors
+    .insert(
+      name: literal('Bucks Bunny'),
+    )
+    .returning((author) => (author.authorId,))
+    .executeAndFetch();
 
-final authorId = await db.authors.insert(
-  name: literal('Bucks Bunny'),
-).returning((author) => (author.authorId,))
-.executeAndFetch();
+// Insert a book, omitting stock since it has a default value!
+await db.books
+    .insert(
+      title: literal('Vegan Dining'),
+      authorId: literal(authorId!), // by Bucks Bunny
+    )
+    .execute();
 
-await db.books.insert(
-  title: literal('Vegan Dining'),
-  authorId: literal(authorId), // by Bucks Bunny
-  stock: literal(3),
-).execute();
+// Decrease stock for 'Vegan Dining', return update stock
+final updatedStock = await db.books
+    .where((b) => b.title.equals(literal('Vegan Dining')))
+    .updateAll((b, set) => set(
+          stock: b.stock - literal(1),
+        ))
+    .returning((b) => (b.stock,))
+    .executeAndFetch();
+check(updatedStock).deepEquals([2]);
+
+// Delete all books by Bucks Bunny
+await db.books
+    .where((b) => b.authorId.equals(literal(authorId)))
+    .delete()
+    .execute();
 ```
 
-Suppose we had the following books:
-```dart bookstore_test.dart#initial-data
-final initialAuthors = [
-  (name: 'Easter Bunny',),
-  (name: 'Bucks Bunny',),
-];
-
-final initialBooks = [
-  // By Easter Bunny
-  (title: 'Are Bunnies Unhealthy?', authorId: 1, stock: 10),
-  (title: 'Cooking with Chocolate Eggs', authorId: 1, stock: 0),
-  (title: 'Hiding Eggs for dummies', authorId: 1, stock: 12),
-  // By Bucks Bunny
-  (title: 'Vegetarian Dining', authorId: 2, stock: 42),
-  (title: 'Vegan Dining', authorId: 2, stock: 3),
-];
-```
-
-Then it's possible to query the database as follows:
-```dart
+We can also query the database in complex manners as follows:
+```dart bookstore_test.dart#README-query-example
 // Lookup author by id
-final author = db.authors.byKey(authorId).fetch();
-if (author == null) throw Exception('Author not found!');
+final author = await db.authors.byKey(authorId: authorId).fetch();
+if (author == null) {
+  throw Exception('Author not found!');
+}
 check(author.name).equals('Bucks Bunny');
 
 // Lookup book and associated author in one query
-final (book, author) = await db.books
-  .where((b) => b.title.equals(literal('Vegan Dining')))
-  .select((b) => (b, b.author))
-  .first // only get the first result
-  .fetchOrNulls();
-if (book == null || author == null) throw Exception('Book or author not found');
+final (book, authorOfBook) = await db.books
+    // Filtering using a .where clause with a typed expression
+    .where((b) => b.title.equals(literal('Vegan Dining')))
+    // Projection to select Expr<book> and Expr<Author> using a subquery
+    .select((b) => (b, b.author))
+    .first // only get the first result
+    .fetchOrNulls();
+if (book == null || authorOfBook == null) {
+  throw Exception('Book or author not found');
+}
 check(book.title).equals('Vegan Dining');
-check(author.name).equals('Bucks Bunny');
+check(authorOfBook.name).equals('Bucks Bunny');
 
-// We can also query for books with more than 5 in stock and get the title and
+// We can also query for books with more than 5 in stock and get the title
 // and stock of each book.
 final titleAndStock = await db.books
-  .where((b) => b.stock > literal(5))
-  .select((b) => (b.title, b.stock))
-  .fetch();
+    .where((Expr<Book> b) => b.stock > literal(5))
+    .select((b) => (b.title, b.stock))
+    .fetch();
 check(titleAndStock).unorderedEquals([
   // title, stock
   ('Are Bunnies Unhealthy?', 10),
@@ -147,7 +159,13 @@ check(titleAndStock).unorderedEquals([
 
 // We can also join books and authors, group by author sum how many books we
 // have in stock by author.
-final stockByAuthor = await db.books.join(author).on((b, a) => a.authorId.equals(b.authorId)).groupBy((b, a) => (a,)).aggregate((agg) => agg.sum((b, a) => b.stock)).select((a, totalStock) => (a.name, totalStock)).fetch();
+final stockByAuthor = await db.books
+    .join(db.authors)
+    .on((b, a) => a.authorId.equals(b.authorId))
+    .groupBy((b, a) => (a,))
+    .aggregate((agg) => agg.sum((b, a) => b.stock))
+    .select((a, totalStock) => (a.name, totalStock))
+    .fetch();
 check(stockByAuthor).unorderedEquals([
   // name, totalStock
   ('Easter Bunny', 22),
@@ -155,12 +173,12 @@ check(stockByAuthor).unorderedEquals([
 ]);
 
 // We can also compute this with subqueries using the @Reference annotation
-final stockByAuthorUsingSubquery = await db.authors.select((a) =>
-  (
-    a.name,
-    a.books.count(),
-  )
-).fetch();
+final stockByAuthorUsingSubquery = await db.authors
+    .select((a) => (
+          a.name,
+          a.books.select((b) => (b.stock,)).sum(),
+        ))
+    .fetch();
 check(stockByAuthorUsingSubquery).unorderedEquals([
   // name, totalStock
   ('Easter Bunny', 22),
@@ -182,6 +200,11 @@ columns (or expressions) that can't be `null`!
 `package:typed_sql` has many more features and tutorial style documentation
 that demonstrates most of the features by example. In practice, you'll hopefully
 find that most features are discoverable through auto-completion.
+
+## Status
+
+`package:typed_sql` is still under active development, breaking changes will
+occur going forward as features are both added and removed.
 
 [build_runner]: https://pub.dev/packages/build_runner
 

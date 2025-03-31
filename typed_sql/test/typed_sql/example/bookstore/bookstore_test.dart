@@ -71,15 +71,16 @@ void main() {
   test('setup test', () async {
     final file = 'file:inmemory?mode=memory&cache=shared';
     // #region setup
+    // Connect to database
     final db = Database<Bookstore>(
       DatabaseAdaptor.sqlite3(Uri.parse(file)),
       SqlDialect.sqlite(),
     );
 
+    // Create tables
     await db.createTables();
 
-    await db.authors.insert(name: literal('Easter Bunny')).execute();
-
+    // Insert an author and return the authorId!
     final authorId = await db.authors
         .insert(
           name: literal('Bucks Bunny'),
@@ -87,12 +88,29 @@ void main() {
         .returning((author) => (author.authorId,))
         .executeAndFetch();
 
+    // Insert a book, omitting stock since it has a default value!
     await db.books
         .insert(
           title: literal('Vegan Dining'),
           authorId: literal(authorId!), // by Bucks Bunny
           stock: literal(3),
         )
+        .execute();
+
+    // Decrease stock for 'Vegan Dining', return update stock
+    final updatedStock = await db.books
+        .where((b) => b.title.equals(literal('Vegan Dining')))
+        .updateAll((b, set) => set(
+              stock: b.stock - literal(1),
+            ))
+        .returning((b) => (b.stock,))
+        .executeAndFetch();
+    check(updatedStock).deepEquals([2]);
+
+    // Delete all books by Bucks Bunny
+    await db.books
+        .where((b) => b.authorId.equals(literal(authorId)))
+        .delete()
         .execute();
     // #endregion
   });
@@ -135,8 +153,7 @@ void main() {
     final (book, authorOfBook) = await db.books
         // Filtering using a .where clause with a typed expression
         .where((b) => b.title.equals(literal('Vegan Dining')))
-        // Projection to select Expr<book> and Expr<Author> using the subquery
-        // expression Expr<Book>.author introduced by the @References annotation
+        // Projection to select Expr<book> and Expr<Author> using a subquery
         .select((b) => (b, b.author))
         .first // only get the first result
         .fetchOrNulls();
@@ -149,17 +166,8 @@ void main() {
     // We can also query for books with more than 5 in stock and get the title
     // and stock of each book.
     final titleAndStock = await db.books
-        // This is how we filter using a .where clause, you can build complex
-        // expressions this way, Expr<Book>.stock returns Expr<int> which has
-        // comparison and arithmetic operators and methods.
         .where((Expr<Book> b) => b.stock > literal(5))
-        // This is how we build projections, again `b` is Expr<Book> and we can
-        // access properties, build and return multiple expressions.
-        // We must always return a positional record of Expr objects!
-        .select((b) => (
-              b.title,
-              b.stock,
-            ))
+        .select((b) => (b.title, b.stock))
         .fetch();
     check(titleAndStock).unorderedEquals([
       // title, stock
@@ -173,17 +181,9 @@ void main() {
     final stockByAuthor = await db.books
         .join(db.authors)
         .on((b, a) => a.authorId.equals(b.authorId))
-        // The .groupBy clause allows us to build a projection to GROUP BY, it
-        // works the same way as .select
         .groupBy((b, a) => (a,))
-        // After grouping we must always aggregate rows within each group
         .aggregate((agg) => agg.sum((b, a) => b.stock))
-        // The .select step is optional here, but if we don't want the entire
-        // Author row, we can project to only return the name.
-        .select((a, totalStock) => (
-              a.name,
-              totalStock,
-            ))
+        .select((a, totalStock) => (a.name, totalStock))
         .fetch();
     check(stockByAuthor).unorderedEquals([
       // name, totalStock
@@ -195,8 +195,6 @@ void main() {
     final stockByAuthorUsingSubquery = await db.authors
         .select((a) => (
               a.name,
-              // Expr<Author>.books is a subquery of all the books that
-              // reference this author in authorId!
               a.books.select((b) => (b.stock,)).sum(),
             ))
         .fetch();
