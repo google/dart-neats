@@ -14,6 +14,7 @@
 
 import 'dart:async';
 
+import 'package:test/test.dart' show test;
 import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';
@@ -67,6 +68,35 @@ final initialBooks = [
 // #endregion
 
 void main() {
+  test('setup test', () async {
+    final file = 'file:inmemory?mode=memory&cache=shared';
+    // #region setup
+    final db = Database<Bookstore>(
+      DatabaseAdaptor.sqlite3(Uri.parse(file)),
+      SqlDialect.sqlite(),
+    );
+
+    await db.createTables();
+
+    await db.authors.insert(name: literal('Easter Bunny')).execute();
+
+    final authorId = await db.authors
+        .insert(
+          name: literal('Bucks Bunny'),
+        )
+        .returning((author) => (author.authorId,))
+        .executeAndFetch();
+
+    await db.books
+        .insert(
+          title: literal('Vegan Dining'),
+          authorId: literal(authorId!), // by Bucks Bunny
+          stock: literal(3),
+        )
+        .execute();
+    // #endregion
+  });
+
   final r = TestRunner<Bookstore>(
     setup: (db) async {
       await db.createTables();
@@ -90,6 +120,93 @@ void main() {
       }
     },
   );
+
+  r.addTest('README-query-example', (db) async {
+    final authorId = 2;
+    // #region README-query-example
+    // Lookup author by id
+    final author = await db.authors.byKey(authorId: authorId).fetch();
+    if (author == null) {
+      throw Exception('Author not found!');
+    }
+    check(author.name).equals('Bucks Bunny');
+
+    // Lookup book and associated author in one query
+    final (book, authorOfBook) = await db.books
+        // Filtering using a .where clause with a typed expression
+        .where((b) => b.title.equals(literal('Vegan Dining')))
+        // Projection to select Expr<book> and Expr<Author> using the subquery
+        // expression Expr<Book>.author introduced by the @References annotation
+        .select((b) => (b, b.author))
+        .first // only get the first result
+        .fetchOrNulls();
+    if (book == null || authorOfBook == null) {
+      throw Exception('Book or author not found');
+    }
+    check(book.title).equals('Vegan Dining');
+    check(authorOfBook.name).equals('Bucks Bunny');
+
+    // We can also query for books with more than 5 in stock and get the title
+    // and stock of each book.
+    final titleAndStock = await db.books
+        // This is how we filter using a .where clause, you can build complex
+        // expressions this way, Expr<Book>.stock returns Expr<int> which has
+        // comparison and arithmetic operators and methods.
+        .where((Expr<Book> b) => b.stock > literal(5))
+        // This is how we build projections, again `b` is Expr<Book> and we can
+        // access properties, build and return multiple expressions.
+        // We must always return a positional record of Expr objects!
+        .select((b) => (
+              b.title,
+              b.stock,
+            ))
+        .fetch();
+    check(titleAndStock).unorderedEquals([
+      // title, stock
+      ('Are Bunnies Unhealthy?', 10),
+      ('Hiding Eggs for dummies', 12),
+      ('Vegetarian Dining', 42),
+    ]);
+
+    // We can also join books and authors, group by author sum how many books we
+    // have in stock by author.
+    final stockByAuthor = await db.books
+        .join(db.authors)
+        .on((b, a) => a.authorId.equals(b.authorId))
+        // The .groupBy clause allows us to build a projection to GROUP BY, it
+        // works the same way as .select
+        .groupBy((b, a) => (a,))
+        // After grouping we must always aggregate rows within each group
+        .aggregate((agg) => agg.sum((b, a) => b.stock))
+        // The .select step is optional here, but if we don't want the entire
+        // Author row, we can project to only return the name.
+        .select((a, totalStock) => (
+              a.name,
+              totalStock,
+            ))
+        .fetch();
+    check(stockByAuthor).unorderedEquals([
+      // name, totalStock
+      ('Easter Bunny', 22),
+      ('Bucks Bunny', 45),
+    ]);
+
+    // We can also compute this with subqueries using the @Reference annotation
+    final stockByAuthorUsingSubquery = await db.authors
+        .select((a) => (
+              a.name,
+              // Expr<Author>.books is a subquery of all the books that
+              // reference this author in authorId!
+              a.books.select((b) => (b.stock,)).sum(),
+            ))
+        .fetch();
+    check(stockByAuthorUsingSubquery).unorderedEquals([
+      // name, totalStock
+      ('Easter Bunny', 22),
+      ('Bucks Bunny', 45),
+    ]);
+    // #endregion
+  });
 
   r.addTest('authors.insert', (db) async {
     // #region authors-insert

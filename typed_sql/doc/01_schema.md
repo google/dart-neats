@@ -149,12 +149,12 @@ constraint in the database.
 Whenever the definition of the database schema is changed, it's important to
 run code generation. This is done using [build_runner]. If you don't have a
 dev-dependency on `build_runner` you may add this as follows:
-```console
+```sh
 dart pub add dev:build_runnner
 ```
 
 You can run code-generation by invoking [build_runner] as follows:
-```console
+```sh
 dart run build_runner build
 ```
 
