@@ -1,4 +1,4 @@
-For `package:typed_sql` to offer a convinient type-safe API for writing SQL
+For `package:typed_sql` to offer a convenient type-safe API for writing SQL
 queries we need to define the database schema and generate code from it.
 
 ## Database Schema
@@ -223,7 +223,7 @@ await db.books
 
 Now we can also write queries against the database. The following demonstrates
 how to write a query that filters on the book title and only returns `title`
-and `author` name.
+and `author.name`.
 
 ```dart schema_test.dart#query-data
 // Query for books where the title contains 'eggs'

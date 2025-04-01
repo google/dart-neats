@@ -1,5 +1,5 @@
 # Type-safe SQL in Dart
-This package aims to offer a _slightly oppiniated_ type-safe API for
+This package aims to offer a _slightly opinionated_ type-safe API for
 interacting with an SQL database from Dart. Thus, offering users the power
 of SQL, with the type-safety of Dart (including null-safety!).
 
@@ -20,7 +20,7 @@ of SQL, with the type-safety of Dart (including null-safety!).
      * Projections with SQL expressions,
      * Aggregations (sum, count, avg, min, max) and `GROUP BY`,
      * Joins
-     * Subqueries (including convinient lookups of foreign keys)
+     * Subqueries (including convenient lookups of foreign keys)
      * Ordering, limiting, and offsetting
      * Transactions (including nested transactions)
    * Schema definition with
@@ -28,7 +28,7 @@ of SQL, with the type-safety of Dart (including null-safety!).
      * Composite primary keys
      * Unique constraints
      * Not null constraints (linked to nullability in Dart!)
-     * default values
+     * Default values
      * Foreign keys
  * **Database agnostic:** This package already supports
    * **Sqlite**, and,

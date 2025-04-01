@@ -1,5 +1,5 @@
 In this document aims to show how to write queries with `package:typed_sql`.
-Examples through out this document shall assume a database schemas defined as
+Examples throughout this document assume a database schema defined as
 follows:
 
 ```dart bookstore_test.dart#bookstore-schema
@@ -100,8 +100,8 @@ inject Dart values into the SQL expressions as parameters.
 
 
 ## Projections with `.select`
-While we build expressions in `.where` to filter rows from a table
-(or subquery), we can use `.select` to return a set of expressions for each row
+While we can build expressions with `.where` to filter rows from a table
+(or subquery), we can use `.select` to evaluate a set of expressions for each row
 in a table (or subquery). In the simplest form this is useful if we want our
 query to only return some fields, instead of returning the entire row.
 But this can also be used to return any expression we can build, including
@@ -140,7 +140,7 @@ check(result).unorderedEquals([
 ]);
 ```
 
-The callback given to `.select` must return a _positional record_ where values
+The callback given to `.select` must return a _positional [record](https://dart.dev/language/records)_ where values
 are `Expr` objects. Even if you only wanted to return a single expression it is
 necessary to return a positional record, as illustrated below:
 
@@ -174,7 +174,7 @@ list of records.
 As all methods on `Query<T>` are extension methods, there is a limit to the
 number of expressions that can be returned from `.select`. However, if you're
 building a query that hits this limit you might need to consider if you can
-managed such a large number of positional values.
+manage such a large number of positional values.
 
 > [!NOTE]
 > The astute reader might realize that in Dart it's not possible to specify a
@@ -189,9 +189,9 @@ managed such a large number of positional values.
 > of `Expr` objects.
 
 It is worth noting that you can combine `.where` and `.select` as much as you
-like. But you do `.select` or `.where` on `Query<T>`, then the number of
-arguments given your callback depends on how many positional `Expr` objects
-there are in `T`. This principal illustrated below:
+like. But if you do `.select` or `.where` on `Query<T>`, then the number of
+arguments given to your callback depends on how many positional `Expr` objects
+there are in `T`. This principle is illustrated below:
 
 ```dart bookstore_test.dart#books-select-where-select
 final titles = await db.books
@@ -248,9 +248,9 @@ FROM (
 )
 ```
 
-However, most databases have a relational query optimizer that'll make most of
+However, most databases have a query optimizer that'll make most of
 the nested queries in the SQL above melt away. In practice, it's likely that,
-while above query looks scary, it's probably largely as efficient as:
+while above query looks scary, it's probably as efficient as:
 ```sql
 SELECT
   title
@@ -259,7 +259,7 @@ WHERE stock > 3
   AND title IS NOT NULL
 ```
 
-Ofcourse, you should take care when writing queries, but it's probably more
+Of course, you should take care when writing queries, but it's probably more
 important to worry about subqueries, complex expressions and inefficient joins
 rather than depth of the nesting structure.
 
@@ -292,11 +292,11 @@ await for (final (title, stock) in q.stream()) {
 ```
 
 While `.stream()` can alleviate the need to load all rows into memory, it's only
-really necessary if scanning through a large set of rows from the database.
+really necessary when scanning through a large set of rows from the database.
 
 > [!NOTE]
 > Within a transaction `Query.stream()` will not pause the stream when
-> encountering back-pressure, instead it'll buffer the result rows in-memory if
+> encountering back-pressure, instead it'll buffer the result-rows in-memory if
 > the database returns rows faster than the application code can process them.
 >
 > This aims to prevent deadlocks, because concurrent queries inside a
@@ -339,9 +339,11 @@ LIMIT 3;
 You must always provide `Order.ascending` or `Order.descending` for entries in
 the return value from the callback in `.orderBy`. You can sort by any
 `Expr<Comparable>`, typically `Expr<int>`, `Expr<double>`, `Expr<DateTime>`,
-`Expr<String>`, or, `Expr<bool>`. Again, you can sort by expressions other than
+`Expr<String>`, or, `Expr<bool>`.
+
+You can sort by arbitrary expressions not
 just fields, including subqueries, but you might want to consider the
-performance implications before using a subquery for ordering.
+performance implications before using a complex subquery for ordering.
 
 
 ## Limit and offset with `.limit` and `.offset`
@@ -388,9 +390,11 @@ each other. So `.limit(3).limit(4)` will at-most return 3 rows, and
 
 
 ## Point queries with `.byKey`, `.first` and `db.select()`
-If we want to lookup a row by _primary key_ `package:typed_sql` will generate
-a convenient `.byKey()` method. If we wanted to look up the row in books with
-`bookId = 1` we could simple write:
+`package:typed_sql` generates
+a `.byKey()` method convenient for looking up a row by _primary key_.
+
+To look up the row in `books` with
+`bookId = 1` write:
 
 ```dart bookstore_test.dart#books-bykey
 final book = await db.books.byKey(bookId: 1).fetch();
@@ -408,8 +412,8 @@ that the query returns _at-most one row_. Thus, `.fetch()` can simple return
 `Future<Book?>`.
 
 We can also get a `QuerySingle` using the `.first` extension method. This is
-useful if we want to query for rows by title, but we only one care about the
-first row. In practices, there are many scenarios where we know that there is
+useful if we only one care about the
+first row. In practice, there are many scenarios where we know that there is
 at-most one row, and using `.first` gives nicer typing.
 
 ```dart bookstore_test.dart#books-where-first
@@ -427,7 +431,7 @@ check(book.bookId).equals(1);
 Often you'll want to lookup multiple point queries at the same time, this can
 be easily done using `db.select`. This works the same as `.select` except, there
 is only one result row, all values are `Expr` objects. Hence, we can lookup
-a book and an author in a single query performing two point queries at once:
+a book and an author in a single query performing two point queries at once, saving a round-trip to the database:
 
 ```dart bookstore_test.dart#select-book-and-author
 final (book, author) = await db.select((
@@ -456,12 +460,12 @@ a `Query<T>` we can convert it to a `SubQuery<T>` using `.asSubQuery`.
 > [!TIP]
 > Whether you use `.asExpr` or `.asSubQuery` doesn't matter, unless you're
 > using _aggregate functions_ like `.count`, `.sum`, `.avg`, `.min`, and, `max`,
-> which on `SubQuery` returns `Expr<T>` as oppose to `.asExpr` which always
+> which on `SubQuery` returns `Expr<T>` as opposed to `.asExpr` which always
 > gives you a nullable `Expr<T?>`.
 >
 > See documentation for _aggregate functions_ for more details.
 
-In general, the `.asExpr` is only available on `QuerySingle<(Expr<T>,)>`, the
+In general, `.asExpr` is only available on `QuerySingle<(Expr<T>,)>`,
 `.asExpr` is not available on queries returning multiple values.
 
 
@@ -531,8 +535,8 @@ convinience functions.
 The following is a high-level overview of the most important extension methods
 for `Query` objects. In practice, you'll often discover these through
 auto-completion, but it can be useful to know that if you use `.select` to
-select a single integer fields (or expression) such that you have
-`Query<(Expr<int>,)>` then you can call `.sum()` and get an
+select a single integer field (or expression) such that you have
+`Query<(Expr<int>,)>` then you can call `.sum()` and get a
 `QuerySingle<(Expr<int>,)>`.
 
  * `Query<T>`, when `T` is `(Expr<A>, Expr<B>, ...)`, has:

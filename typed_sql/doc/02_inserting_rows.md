@@ -1,5 +1,7 @@
 This document aims to demonstrate how rows can be inserting into a database
-using `package:typed_sql`. We shall assume a database schema defined as follows:
+using `package:typed_sql`.
+
+In the examples below, assume a database schema defined as follows:
 
 ```dart bookstore_test.dart#bookstore-schema
 abstract final class Bookstore extends Schema {
@@ -30,12 +32,12 @@ abstract final class Book extends Model {
 }
 ```
 
-For the remainder of this document we shall assume that `db` is an instance of
+And assume that `db` is an instance of
 `Database<Bookstore>`.
 
 
 ## Insert a row in the `authors` table
-If we want to insert an author into our database we can do  that as follows:
+If we want to insert an author into our database we can do that as follows:
 
 ```dart bookstore_test.dart#authors-insert
 await db.authors
@@ -61,7 +63,7 @@ await db.authors
     .execute();
 ```
 
-The astute reader will notice that we cannot simply provide `name` or `id` as
+We cannot simply provide `name` or `id` as
 `String` or `int` respectively. Instead we have to give an `Expr<String>` or
 `Expr<int>`. We can create such expressions using the `literal` function.
 
@@ -75,19 +77,19 @@ The `literal<T>(T value)` function works for the following types:
  * `Null` (e.g. `literal(null)`).
 
 By wrapping values in `Expr<T>` it possible for `package:typed_sql` to
-distinguish between omitted value (default value), and intentional decision to
+distinguish between an omitted value (default value), and intentional decision to
 insert `NULL`. Because `NULL` is always represented as `literal(null)`.
-As we shall explore later, this also enables us to insert values from directly
+As we will explore later, this also enables us to insert values directly
 from a subquery.
 
 
 ## Insert with `RETURNING` clause
-Using `@AutoIncrement()` for _primary key_ fields is very convinient, but it can
+Using `@AutoIncrement()` for _primary key_ fields is very convinient, but it makes it
 hard to know what the `authorId` of the newly inserted row is. In SQL we can
 access the inserted row using a `RETURNING` clause, with `package:typed_sql` we
 also add a `.returning` clause.
 
-In the simplest form, we can add a `.returnInserted()` clause as follows, this
+In the simplest form, we can add a `.returnInserted()` clause, this
 will return an `Author` object representing the inserted row, as illustrated
 below:
 
@@ -122,15 +124,14 @@ final authorId = await db.authors
 check(authorId).isA<int>();
 ```
 
-In the example above the we create a record with one value `author.authorId`.
-Which means that the result from `.executeAndFetch()` will be the `authorId`
+In the example above the we create a record with one value `author.authorId`,
+which means that the result from `.executeAndFetch()` will be the `authorId`
 of the newly inserted row. This is useful if we want to insert books referencing
 the newly inserted author.
 
 It's worth noting that it is possible to write complex expressions and return
 multiple values in the `.returning` clause.
 See documentation on how to write queries for more information on projections.
-
 
 ## Insert from subquery
 If we want to insert a row in the `books` table, but we don't know the
