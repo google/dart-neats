@@ -73,7 +73,7 @@ The equivalent SQL would look something like:
 ```sql
 UPDATE books
 SET stock = stock - 1
-WHERE bookId = 1;
+WHERE bookId IS NOT DISTINCT FROM 1;
 ```
 
 The `.update` extension method takes an callback that gets `Expr<Book>` and
@@ -192,7 +192,7 @@ await db.books.byKey(bookId: 1).delete().execute();
 
 The equivalent SQL would look something like:
 ```sql
-DELETE FROM books WHERE bookId = 1
+DELETE FROM books WHERE bookId IS NOT DISTINCT FROM 1
 ```
 
 > [!NOTE]
