@@ -101,7 +101,7 @@ final author = await db.authors
 
 // We can now access properties on author, like:
 // author.authorId
-check(author!.authorId).isA<int>();
+check(author.authorId).isA<int>();
 ```
 
 While simple and easy to type, if we only want access to a subset of the

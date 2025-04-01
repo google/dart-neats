@@ -216,7 +216,7 @@ final author = await db.authors
 await db.books
     .insert(
       title: literal('How to hide eggs'),
-      authorId: literal(author!.authorId),
+      authorId: literal(author.authorId),
     )
     .execute();
 ```
