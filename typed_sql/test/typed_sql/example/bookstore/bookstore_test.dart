@@ -581,6 +581,81 @@ void main() {
     // #endregion
   });
 
+  r.addTest('books.byKey().select(book.author)', (db) async {
+    // #region books-follow-reference-by-name
+    final bookAndAuthor = await db.books
+        .byKey(bookId: 1)
+        .select((book) => (
+              book,
+              book.author, // <-- use the 'author' subquery property
+            ))
+        .fetch(); // return Future<(Book, Author)?>
+
+    if (bookAndAuthor == null) {
+      throw Exception('Book not found');
+    }
+    final (book, author) = bookAndAuthor;
+    check(book.title).equals('Are Bunnies Unhealthy?');
+    check(author.name).equals('Easter Bunny');
+    // #endregion
+  });
+
+  r.addTest('books.where(.author.name = ..).select(.title, .author.name)',
+      (db) async {
+    // #region books-use-reference-in-where
+    final titleAndAuthor = await db.books
+        .where((book) => book.author.name.equals(literal('Easter Bunny')))
+        .select((book) => (
+              book.title,
+              book.author.name,
+            ))
+        .fetch();
+
+    check(titleAndAuthor).unorderedEquals([
+      // title, author
+      ('Are Bunnies Unhealthy?', 'Easter Bunny'),
+      ('Cooking with Chocolate Eggs', 'Easter Bunny'),
+      ('Hiding Eggs for dummies', 'Easter Bunny'),
+    ]);
+    // #endregion
+  });
+
+  r.addTest('authors.byKey().select(author, author.books.count())', (db) async {
+    // #region authors-bykey-count-books
+    final authorAndCount = await db.authors
+        .byKey(authorId: 1)
+        .select((author) => (
+              author,
+              author.books.count(),
+            ))
+        .fetch();
+
+    if (authorAndCount == null) {
+      throw Exception('Author not found');
+    }
+    final (author, count) = authorAndCount;
+    check(author.name).equals('Easter Bunny');
+    check(count).equals(3);
+    // #endregion
+  });
+
+  r.addTest('authors.select(.name, .books.count())', (db) async {
+    // #region authors-count-books
+    final authorAndCount = await db.authors
+        .select((author) => (
+              author.name,
+              author.books.count(),
+            ))
+        .fetch();
+
+    check(authorAndCount).unorderedEquals([
+      // name, count
+      ('Easter Bunny', 3),
+      ('Bucks Bunny', 2),
+    ]);
+    // #endregion
+  });
+
   r.addTest('books.select(title, book.author.name)', (db) async {
     final result = await db.books
         .select(
