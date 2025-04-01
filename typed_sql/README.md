@@ -101,6 +101,7 @@ await db.books
     .insert(
       title: literal('Vegan Dining'),
       authorId: literal(authorId!), // by Bucks Bunny
+      stock: literal(3),
     )
     .execute();
 

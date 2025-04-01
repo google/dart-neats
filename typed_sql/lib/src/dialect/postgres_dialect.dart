@@ -215,7 +215,7 @@ final class _PostgresDialect extends SqlDialect {
 
       case OffsetClause(:final WhereClause from, :final offset):
         final (sql, columns) = clause(from, ctx);
-        return ('$sql LIMIT -1 OFFSET $offset', columns);
+        return ('$sql OFFSET $offset', columns);
 
       case OffsetClause(:final from, offset: 0):
         return clause(from, ctx);
@@ -225,7 +225,7 @@ final class _PostgresDialect extends SqlDialect {
         return (
           'SELECT ${columns.map(escape).join(', ')} '
               'FROM ($sql) '
-              'LIMIT -1 OFFSET $offset',
+              'OFFSET $offset',
           columns,
         );
 

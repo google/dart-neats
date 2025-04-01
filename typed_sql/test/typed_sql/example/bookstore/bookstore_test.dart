@@ -292,6 +292,199 @@ void main() {
     // #endregion
   });
 
+  r.addTest('books.where(stock > 3)', (db) async {
+    // #region books.where-stock-gt-3
+    final result = await db.books
+        .where(
+          (b) => b.stock > literal(3),
+        )
+        .fetch();
+
+    check(result).length.equals(3);
+    for (final book in result) {
+      check(book.stock > 3).isTrue();
+    }
+    // #endregion
+  });
+
+  r.addTest('books.select(.title, .stock, .stock > 3)', (db) async {
+    // #region books-select-title-stock
+    final result = await db.books
+        .select((b) => (
+              b.title,
+              b.stock,
+              b.stock > literal(3),
+            ))
+        // .select() returns Query<(Expr<String>, Expr<int>, Expr<bool>)>,
+        .fetch();
+
+    check(result).unorderedEquals([
+      // title, stock, stock > 3
+      ('Are Bunnies Unhealthy?', 10, true),
+      ('Cooking with Chocolate Eggs', 0, false),
+      ('Hiding Eggs for dummies', 12, true),
+      ('Vegetarian Dining', 42, true),
+      ('Vegan Dining', 3, false),
+    ]);
+    // #endregion
+  });
+
+  r.addTest('books.select(.title, .stock, .stock > 3)', (db) async {
+    // #region books-select-title
+    final result = await db.books
+        .select(
+          // The extra comma in the parathensis here `(b.title,)` is
+          // necessary to create a tuple with a single element!
+          (b) => (b.title,),
+          //             ▲
+          //             └───── This extra comma is important!
+        )
+        // .select() returns Query<(Expr<String>,)>
+        .fetch();
+
+    check(result).unorderedEquals([
+      'Are Bunnies Unhealthy?',
+      'Cooking with Chocolate Eggs',
+      'Hiding Eggs for dummies',
+      'Vegetarian Dining',
+      'Vegan Dining',
+    ]);
+    // #endregion
+  });
+
+  r.addTest('books.select().where().select()', (db) async {
+    // #region books-select-where-select
+    final titles = await db.books
+        .select((b) => (
+              b.title, // Expr<String?>, because Book.title is nullable
+              b.stock, // Expr<int>, because Book.stock is non-nullable
+            ))
+        // This .where extension method takes a callback with two arguments
+        // Expr<String?> and Expr<int>.
+        .where((title, stock) => stock > literal(3))
+        .select((title, stock) => (title,))
+        // Remove null rows, we cannot do type promotion so the result is still
+        // a Query<(Expr<String?>,)>
+        .where((title) => title.isNotNull())
+        // But we can use .orElse to callback to '', which gives us an
+        // Query<(Expr<String>,)>, not that there is anything wrong with
+        // returning a nullable expression.
+        .select((title) => (title.orElse(literal('')),))
+        .fetch();
+
+    check(titles).unorderedEquals([
+      'Are Bunnies Unhealthy?',
+      'Hiding Eggs for dummies',
+      'Vegetarian Dining',
+    ]);
+    // #endregion
+  });
+
+  r.addTest('Query.stream()', (db) async {
+    // #region query-stream
+    final q = db.books
+        .select((b) => (
+              b.title,
+              b.stock,
+            ))
+        .where((title, stock) => stock > literal(3));
+
+    // Use await-for to process the stream one row at the time.
+    await for (final (title, stock) in q.stream()) {
+      // Book.title is a nullable property, so the 'title' field does
+      // not have a 'NOT NULL' constraint, hence, title variable in the result
+      // here will be nullable!
+
+      check(title).isNotNull();
+
+      // Book.stock is a non-nullable property
+      check(stock).isGreaterThan(3);
+    }
+    // #endregion
+  });
+
+  r.addTest('Query.orderBy', (db) async {
+    // #region query-orderby
+    final result = await db.books
+        .orderBy((b) => [(b.stock, Order.descending)])
+        .select((b) => (b.title, b.stock))
+        .fetch();
+
+    check(result).deepEquals([
+      // title, stock
+      ('Vegetarian Dining', 42),
+      ('Hiding Eggs for dummies', 12),
+      ('Are Bunnies Unhealthy?', 10),
+      ('Vegan Dining', 3),
+      ('Cooking with Chocolate Eggs', 0),
+    ]);
+    // #endregion
+  });
+
+  r.addTest('Query.orderBy.offset.limit', (db) async {
+    // #region query-orderby-offset
+    final result = await db.books
+        .orderBy((b) => [(b.stock, Order.descending)])
+        .select((b) => (b.title, b.stock))
+        // The order in which .orderBy, .offset, .limit appears is significant.
+        .offset(2)
+        .limit(3)
+        .fetch();
+
+    check(result).deepEquals([
+      // title, stock
+      ('Are Bunnies Unhealthy?', 10),
+      ('Vegan Dining', 3),
+      ('Cooking with Chocolate Eggs', 0),
+    ]);
+    // #endregion
+  });
+
+  r.addTest('books.byKey()', (db) async {
+    // #region books-bykey
+    final book = await db.books.byKey(bookId: 1).fetch();
+    if (book == null) {
+      throw Exception('Book not found');
+    }
+
+    check(book.title).equals('Are Bunnies Unhealthy?');
+    // #endregion
+  });
+
+  r.addTest('books.where().first', (db) async {
+    // #region books-where-first
+    final book = await db.books
+        .where((b) => b.title.equals(literal('Are Bunnies Unhealthy?')))
+        .first
+        .fetch();
+
+    if (book == null) {
+      throw Exception('Book not found');
+    }
+    check(book.bookId).equals(1);
+    // #endregion
+  });
+
+  r.addTest('db.select(author, book)', (db) async {
+    // #region select-book-and-author
+    final (book, author) = await db.select((
+      db.books.asSubQuery
+          .where((b) => b.title.equals(literal('Are Bunnies Unhealthy?')))
+          .first,
+      db.authors.byKey(authorId: 1).asExpr,
+    )).fetchOrNulls();
+
+    if (book == null) {
+      throw Exception('Book not found');
+    }
+    check(book.bookId).equals(1);
+    if (author == null) {
+      throw Exception('Author not found');
+    }
+    check(author.name).equals('Easter Bunny');
+    // #endregion
+  });
+
   r.addTest('books.select(title, book.author.name)', (db) async {
     final result = await db.books
         .select(
