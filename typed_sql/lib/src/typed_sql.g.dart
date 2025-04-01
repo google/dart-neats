@@ -9805,6 +9805,10 @@ extension ReturnSingle1<A> on ReturnSingle<(Expr<A>,)> {
       (await _return.executeAndFetch()).firstOrNull;
 }
 
+extension ReturnOne1<A> on ReturnOne<(Expr<A>,)> {
+  Future<A> executeAndFetch() async => (await _return.executeAndFetch()).first;
+}
+
 extension Return2<A, B> on Return<(Expr<A>, Expr<B>)> {
   Stream<(A, B)> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
@@ -9822,6 +9826,11 @@ extension ReturnSingle2<A, B> on ReturnSingle<(Expr<A>, Expr<B>)> {
       (await _return.executeAndFetch()).firstOrNull;
   Future<(A?, B?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ?? (null, null);
+}
+
+extension ReturnOne2<A, B> on ReturnOne<(Expr<A>, Expr<B>)> {
+  Future<(A, B)> executeAndFetch() async =>
+      (await _return.executeAndFetch()).first;
 }
 
 extension Return3<A, B, C> on Return<(Expr<A>, Expr<B>, Expr<C>)> {
@@ -9847,6 +9856,11 @@ extension ReturnSingle3<A, B, C> on ReturnSingle<(Expr<A>, Expr<B>, Expr<C>)> {
       await executeAndFetch() ?? (null, null, null);
 }
 
+extension ReturnOne3<A, B, C> on ReturnOne<(Expr<A>, Expr<B>, Expr<C>)> {
+  Future<(A, B, C)> executeAndFetch() async =>
+      (await _return.executeAndFetch()).first;
+}
+
 extension Return4<A, B, C, D> on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   Stream<(A, B, C, D)> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
@@ -9870,6 +9884,12 @@ extension ReturnSingle4<A, B, C, D>
       (await _return.executeAndFetch()).firstOrNull;
   Future<(A?, B?, C?, D?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ?? (null, null, null, null);
+}
+
+extension ReturnOne4<A, B, C, D>
+    on ReturnOne<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  Future<(A, B, C, D)> executeAndFetch() async =>
+      (await _return.executeAndFetch()).first;
 }
 
 extension Return5<A, B, C, D, E>
@@ -9899,6 +9919,12 @@ extension ReturnSingle5<A, B, C, D, E>
       await executeAndFetch() ?? (null, null, null, null, null);
 }
 
+extension ReturnOne5<A, B, C, D, E>
+    on ReturnOne<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  Future<(A, B, C, D, E)> executeAndFetch() async =>
+      (await _return.executeAndFetch()).first;
+}
+
 extension Return6<A, B, C, D, E, F>
     on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   Stream<(A, B, C, D, E, F)> executeAndStream() async* {
@@ -9925,6 +9951,12 @@ extension ReturnSingle6<A, B, C, D, E, F>
       (await _return.executeAndFetch()).firstOrNull;
   Future<(A?, B?, C?, D?, E?, F?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ?? (null, null, null, null, null, null);
+}
+
+extension ReturnOne6<A, B, C, D, E, F>
+    on ReturnOne<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  Future<(A, B, C, D, E, F)> executeAndFetch() async =>
+      (await _return.executeAndFetch()).first;
 }
 
 extension Return7<A, B, C, D, E, F, G>
@@ -9956,6 +9988,12 @@ extension ReturnSingle7<A, B, C, D, E, F, G> on ReturnSingle<
       await executeAndFetch() ?? (null, null, null, null, null, null, null);
 }
 
+extension ReturnOne7<A, B, C, D, E, F, G> on ReturnOne<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  Future<(A, B, C, D, E, F, G)> executeAndFetch() async =>
+      (await _return.executeAndFetch()).first;
+}
+
 extension Return8<A, B, C, D, E, F, G, H> on Return<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
   Stream<(A, B, C, D, E, F, G, H)> executeAndStream() async* {
@@ -9985,6 +10023,12 @@ extension ReturnSingle8<A, B, C, D, E, F, G, H> on ReturnSingle<
   Future<(A?, B?, C?, D?, E?, F?, G?, H?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ??
       (null, null, null, null, null, null, null, null);
+}
+
+extension ReturnOne8<A, B, C, D, E, F, G, H> on ReturnOne<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  Future<(A, B, C, D, E, F, G, H)> executeAndFetch() async =>
+      (await _return.executeAndFetch()).first;
 }
 
 extension<A> on (Expr<A>,) {

@@ -92,7 +92,7 @@ void main() {
     await db.books
         .insert(
           title: literal('Vegan Dining'),
-          authorId: literal(authorId!), // by Bucks Bunny
+          authorId: literal(authorId), // by Bucks Bunny
           stock: literal(3),
         )
         .execute();
@@ -238,7 +238,7 @@ void main() {
 
     // We can now access properties on author, like:
     // author.authorId
-    check(author!.authorId).isA<int>();
+    check(author.authorId).isA<int>();
     // #endregion
   });
 

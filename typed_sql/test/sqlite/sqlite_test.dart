@@ -749,16 +749,16 @@ void main() {
         .returnInserted()
         .executeAndFetch();
     expect(result, isNotNull);
-    expect(result?.ownerId, equals(1));
+    expect(result.ownerId, equals(1));
   });
 
   _test('db.insert().returning()', (db) async {
     final (likes, owner) = await db.packages
         .insert(packageName: literal('foobar'), ownerId: literal(1))
         .returning((pkg) => (pkg.likes, pkg.owner))
-        .executeAndFetchOrNulls();
+        .executeAndFetch();
     expect(likes, equals(0));
-    expect(owner!.userId, equals(1));
+    expect(owner.userId, equals(1));
     expect(owner.name, equals('Alice'));
   });
 

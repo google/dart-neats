@@ -900,6 +900,23 @@ Iterable<Spec> _buildReturnExtension(int i) sync* {
             ),
         ),
     ]));
+
+  yield Extension((b) => b
+    ..name = 'ReturnOne$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('ReturnOne<${typArgedExprTuple(i, 0)}>')
+    ..methods.addAll([
+      Method(
+        (b) => b
+          ..name = 'executeAndFetch'
+          ..returns = refer(
+            'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
+          )
+          ..modifier = MethodModifier.async
+          ..lambda = true
+          ..body = Code('(await _return.executeAndFetch()).first'),
+      ),
+    ]));
 }
 
 /// Build extension for `toList` on tuple.

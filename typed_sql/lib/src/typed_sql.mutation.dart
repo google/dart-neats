@@ -140,7 +140,7 @@ final class InsertSingle<T extends Model> {
   ///
   /// The [projectionBuilder] must return a [Record] where values are [Expr]
   /// objects.
-  ReturnSingle<S> returning<S extends Record>(
+  ReturnOne<S> returning<S extends Record>(
     S Function(Expr<T> inserted) projectionBuilder,
   ) {
     final handle = Object();
@@ -148,7 +148,7 @@ final class InsertSingle<T extends Model> {
       _table._expressions.$1._standin(0, handle),
     );
 
-    return Return._(_table._context, projection, (e) {
+    return ReturnOne._(Return._(_table._context, projection, (e) {
       return _table._context._dialect.insertInto(InsertStatement._(
         _table._tableClause.name,
         _table._tableClause.columns
@@ -157,14 +157,14 @@ final class InsertSingle<T extends Model> {
         _values.nonNulls.toList(),
         ReturningClause._(handle, _table._tableClause.columns, e),
       ));
-    })._first;
+    }));
   }
 
   /// Create a `INSERT` statement that returns the inserted row, using the
   /// `RETURNING` clause.
   ///
   /// This is equivalent to the `RETURNING *` clause in SQL.
-  ReturnSingle<(Expr<T>,)> returnInserted() =>
+  ReturnOne<(Expr<T>,)> returnInserted() =>
       returning((inserted) => (inserted,));
 }
 
@@ -253,7 +253,7 @@ final class DeleteSingle<T extends Model> {
 /// This can be an `INSERT`, `UPDATE` or `DELETE` statement. This is not a
 /// `SELECT` query, these are represented with [QuerySingle] objects.
 ///
-/// Unlike a [QuerySingle] object which also returns values when evaluated, this
+/// Unlike a [QuerySingle] object which only returns values when evaluated, this
 /// statement may have side-effects, and this statement cannot be extended with
 /// additional clauses.
 final class ReturnSingle<T extends Record> {
@@ -261,12 +261,25 @@ final class ReturnSingle<T extends Record> {
   ReturnSingle._(this._return);
 }
 
+/// An SQL statement that returns exactly one row.
+///
+/// This can be an `INSERT` statement. This is not a
+/// `SELECT` query, these are represented with [QuerySingle] objects.
+///
+/// Unlike a [QuerySingle] object which only returns values when evaluated, this
+/// statement may have side-effects, and this statement cannot be extended with
+/// additional clauses.
+final class ReturnOne<T extends Record> {
+  final Return<T> _return;
+  ReturnOne._(this._return);
+}
+
 /// An SQL statement that returns zero or more rows.
 ///
 /// This can be an `INSERT`, `UPDATE` or `DELETE` statement. This is not a
 /// `SELECT` query, these are represented with [Query] objects.
 ///
-/// Unlike a [Query] object which also returns values when evaluated, this
+/// Unlike a [Query] object which also only values when evaluated, this
 /// statement may have side-effects, and this statement cannot be extended with
 /// additional clauses.
 final class Return<T extends Record> {
