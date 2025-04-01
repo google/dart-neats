@@ -14,39 +14,16 @@
 
 part of 'typed_sql.dart';
 
-// TODO: QuerySingle should be renamed QueryExpr and subclass Expr
-//       This means we need to support subqueries in ALL expressions!
-//       This isn't actually too hard in sqlite and postgres it's entirely
-//       possible to do:
-//         WHERE userId = (SELECT userId FROM ... WHERE ... LIMIT 1)
-//       So long as there is a LIMIT 1 clause (required for postgres), while
-//       sqlite will just compare to the first row in the subquery.
-//       Probably this should use CTEs, in case a QueryExpr is referenced more
-//       than once.
-//       If the subquery returns no rows, both sqlite and postgres will take
-//       that to mean NULL.
-
 /// A [Query] on the database from which results can be fetched.
-abstract final class Query<T extends Record> {
+final class Query<T extends Record> {
   final DatabaseContext _context;
 
-  T get _expressions;
-  QueryClause Function(List<Expr> expressions) get _from;
-
-  Query._(this._context);
-
-  // TODO: Consider a toString method!
-}
-
-// TODO: Consider making this an instance of Query
-final class _Query<T extends Record> extends Query<T> {
-  @override
   final T _expressions;
-
-  @override
   final QueryClause Function(List<Expr> expressions) _from;
 
-  _Query(super._context, this._expressions, this._from) : super._();
+  Query._(this._context, this._expressions, this._from);
+
+  // TODO: Consider a toString method!
 }
 
 final class InnerJoin<T extends Record, S extends Record> {
@@ -83,20 +60,17 @@ final class View<T extends Record> extends Query<T> {
 }*/
 
 final class Table<T extends Model> extends Query<(Expr<T>,)> {
-  final TableDefinition<T> _definition;
-
-  @override
-  late final (Expr<T>,) _expressions =
-      (ModelExpression._(0, _definition, Object()),);
-
-  @override
-  final QueryClause Function(List<Expr> expressions) _from;
-
   final TableClause _tableClause;
 
-  Table._(super.context, this._tableClause, this._definition)
-      : _from = ((_) => _tableClause),
-        super._();
+  Table._(
+    DatabaseContext context,
+    this._tableClause,
+    TableDefinition<T> definition,
+  ) : super._(
+          context,
+          (ModelExpression._(0, definition, Object()),),
+          (_) => _tableClause,
+        );
 }
 
 final class QuerySingle<T extends Record> {

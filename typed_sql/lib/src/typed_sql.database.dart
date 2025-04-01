@@ -62,5 +62,5 @@ final class Database<T extends Schema> extends DatabaseContext<T> {
   }
 
   QuerySingle<S> select<S extends Record>(S expressions) =>
-      QuerySingle._(_Query(this, expressions, SelectClause._));
+      QuerySingle._(Query._(this, expressions, SelectClause._));
 }

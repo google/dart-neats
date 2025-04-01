@@ -143,7 +143,7 @@ Spec _buildQueryExtension(int i) {
       //     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
       //   ) {
       //     final (handle, where) = _build(conditionBuilder);
-      //     return _Query(
+      //     return Query._(
       //       _context,
       //       _expressions,
       //       (e) => WhereClause._(_from(e), handle, where),
@@ -162,7 +162,7 @@ Spec _buildQueryExtension(int i) {
           ))
           ..body = Code('''
             final (handle, where) = _build(conditionBuilder);
-            return _Query(
+            return Query._(
               _context,
               _expressions,
               (e) => WhereClause._(_from(e), handle, where),
@@ -177,7 +177,7 @@ Spec _buildQueryExtension(int i) {
       //     if (orderBy.isEmpty) {
       //       return this;
       //     }
-      //     return _Query(
+      //     return Query._(
       //       _context,
       //       _expressions,
       //       (e) => OrderByClause._(_from(e), handle, orderBy, descending),
@@ -200,7 +200,7 @@ Spec _buildQueryExtension(int i) {
             if (orderBy.isEmpty) {
               return this;
             }
-            return _Query(
+            return Query._(
               _context,
               _expressions,
               (e) => OrderByClause._(_from(e), handle, orderBy),
@@ -208,7 +208,7 @@ Spec _buildQueryExtension(int i) {
           '''),
       ),
 
-      //   Query<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => _Query(
+      //   Query<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => Query._(
       //         _context,
       //         _expressions,
       //         (e) => LimitClause._(_from(e), limit),
@@ -225,7 +225,7 @@ Spec _buildQueryExtension(int i) {
           ))
           ..lambda = true
           ..body = Code('''
-            _Query(
+            Query._(
               _context,
               _expressions,
               (e) => LimitClause._(_from(e), limit),
@@ -233,7 +233,7 @@ Spec _buildQueryExtension(int i) {
           '''),
       ),
 
-      //   Query<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => _Query(
+      //   Query<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => Query._(
       //         _context,
       //         _expressions,
       //         (e) => OffsetClause._(_from(e), offset),
@@ -250,7 +250,7 @@ Spec _buildQueryExtension(int i) {
           ))
           ..lambda = true
           ..body = Code('''
-            _Query(
+            Query._(
               _context,
               _expressions,
               (e) => OffsetClause._(_from(e), offset),
@@ -287,7 +287,7 @@ Spec _buildQueryExtension(int i) {
       //     T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder,
       //   ) {
       //     final (handle, projection) = _build(projectionBuilder);
-      //     return _Query(
+      //     return Query._(
       //       _context,
       //       projection,
       //       (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
@@ -306,7 +306,7 @@ Spec _buildQueryExtension(int i) {
           ))
           ..body = Code('''
             final (handle, projection) = _build(projectionBuilder);
-            return _Query(
+            return Query._(
               _context,
               projection,
               (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
@@ -368,7 +368,7 @@ Spec _buildQueryExtension(int i) {
           ..returns = refer('QuerySingle<(Expr<bool>,)>')
           ..lambda = true
           ..body = Code('''
-            QuerySingle._(_Query(
+            QuerySingle._(Query._(
               _context,
               (
                 ExistsExpression._(_from(_expressions.toList())),
@@ -427,7 +427,7 @@ Spec _buildQueryExtension(int i) {
             ))
             ..lambda = true
             ..body = Code('''
-            _Query(
+            Query._(
               _context,
               _expressions,
               (e) => $clause._(
@@ -927,7 +927,7 @@ Spec _buildToListExtension(int i) => Extension(
 ///
 /// ```dart
 /// extension Join2On1<A, B, C> on Join<(Expr<A>, Expr<B>), (Expr<C>,)> {
-///   Query<(Expr<A>, Expr<B>, Expr<C>)> get all => _Query(
+///   Query<(Expr<A>, Expr<B>, Expr<C>)> get all => Query._(
 ///         _from._context,
 ///         (
 ///           _from._expressions.$1,
@@ -970,7 +970,7 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
             ..type = MethodType.getter
             ..lambda = true
             ..body = Code('''
-              _Query(
+              Query._(
                 _from._context,
                 (
                   ${List.generate(i, (i) => '_from._expressions.\$${i + 1}').join(',')},
@@ -999,7 +999,7 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
           ))
           ..body = Code('''
             late JoinClause join;
-            final q = _Query(
+            final q = Query._(
               _from._context,
               (
                 ${List.generate(i, (i) => '_from._expressions.\$${i + 1}').join(',')},
@@ -1032,7 +1032,7 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
 ///   ) {
 ///     final agg = aggregationBuilder(Aggregation._(_standins, _group));
 ///
-///     return _Query(
+///     return Query._(
 ///       _from._context,
 ///       agg._projection,
 ///       (e) => GroupByClause._(
@@ -1069,7 +1069,7 @@ Spec _buildGroupByExtension(int i, int j) {
         ..body = Code('''
           final agg = aggregationBuilder(Aggregation._(_standins, _group));
 
-          return _Query(
+          return Query._(
             _from._context,
             agg._projection,
             (e) => GroupByClause._(

@@ -202,7 +202,7 @@ final class ExposedForCodeGen {
     Query<T> query,
     S Function(T) fn,
   ) {
-    return _Query(
+    return Query._(
       query._context,
       fn(query._expressions),
       query._from,

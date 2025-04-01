@@ -178,7 +178,7 @@ extension QueryExt<T extends Record> on Query<T> {
   ///
   /// This is equivalent to `SELECT DISTINCT * FROM this` in SQL.
   Query<T> distinct() =>
-      _Query(_context, _expressions, (e) => DistinctClause._(_from(e)));
+      Query._(_context, _expressions, (e) => DistinctClause._(_from(e)));
 
   /// Use this [Query] as a [SubQuery].
   ///
