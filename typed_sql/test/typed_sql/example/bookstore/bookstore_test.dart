@@ -485,6 +485,102 @@ void main() {
     // #endregion
   });
 
+  r.addTest('books.byKey().update()', (db) async {
+    // #region update-book-bykey
+    await db.books
+        .byKey(bookId: 1)
+        .update((book, set) => set(
+              stock: book.stock - literal(1),
+            ))
+        .execute();
+    // #endregion
+  });
+
+  r.addTest('books.byKey().update(title: null)', (db) async {
+    // #region update-book-bykey-set-null
+    await db.books
+        .byKey(bookId: 1)
+        .update((book, set) => set(
+              title: literal(null),
+            ))
+        .execute();
+    // #endregion
+  });
+
+  r.addTest('books.where(.stock > 5).updateAll(stock = stock / 2)', (db) async {
+    // #region update-all-books-where-stock-gt-5
+    await db.books
+        .where((book) => book.stock > literal(5))
+        .updateAll((book, set) => set(
+              stock: (book.stock / literal(2)).asInt(),
+            ))
+        .execute();
+    // #endregion
+  });
+
+  r.addTest('books.byKey().update().returnUpdated', (db) async {
+    // #region update-book-bykey-returnUpdated
+    final updatedBook = await db.books
+        .byKey(bookId: 1)
+        .update((book, set) => set(
+              stock: book.stock - literal(1),
+            ))
+        .returnUpdated() // return the updated row
+        .executeAndFetch();
+
+    if (updatedBook == null) {
+      throw Exception('Book not found');
+    }
+    check(updatedBook.stock).equals(9);
+    // #endregion
+  });
+
+  r.addTest('books.where(.stock > 5).updateAll(stock = stock / 2).returning',
+      (db) async {
+    // #region update-all-books-where-returning
+    final updatedStock = await db.books
+        .where((book) => book.stock > literal(5))
+        .updateAll((book, set) => set(
+              stock: (book.stock / literal(2)).asInt(),
+            ))
+        .returning((book) => (book.stock,))
+        .executeAndFetch();
+
+    // We get 3 values because we updated 3 rows.
+    check(updatedStock).unorderedEquals([
+      21,
+      5,
+      6,
+    ]);
+    // #endregion
+  });
+
+  r.addTest('books.byKey().delete()', (db) async {
+    // #region books-byKey-delete
+    await db.books.byKey(bookId: 1).delete().execute();
+    // #endregion
+  });
+
+  r.addTest('books.where().delete().returnDeleted()', (db) async {
+    // #region books-where-delete-return
+    final deletedBooks = await db.books
+        .where((book) => book.authorId.equals(literal(1)))
+        .delete()
+        .returning((b) => (
+              b.title,
+              b.stock,
+            ))
+        .executeAndFetch();
+
+    check(deletedBooks).unorderedEquals([
+      // title, stock
+      ('Are Bunnies Unhealthy?', 10),
+      ('Cooking with Chocolate Eggs', 0),
+      ('Hiding Eggs for dummies', 12),
+    ]);
+    // #endregion
+  });
+
   r.addTest('books.select(title, book.author.name)', (db) async {
     final result = await db.books
         .select(

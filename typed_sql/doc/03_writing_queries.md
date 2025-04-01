@@ -363,6 +363,7 @@ check(result).deepEquals([
   // title, stock
   ('Are Bunnies Unhealthy?', 10),
   ('Vegan Dining', 3),
+  ('Cooking with Chocolate Eggs', 0),
 ]);
 ```
 
