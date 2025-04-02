@@ -24,9 +24,9 @@ dartdoc:
     'Transactions':
       markdown: doc/08_transactions.md
       name: 08_transactions
-    'Exception handling':
-      markdown: doc/09_exception_handling.md
-      name: 09_exception_handling
+    'Exceptions':
+      markdown: doc/09_exceptions.md
+      name: 09_exceptions
     'Custom data types':
       markdown: doc/10_custom_data_types.md
       name: 10_custom_data_types
@@ -45,7 +45,7 @@ dartdoc:
   - 'Joins'
   - 'Aggregate functions'
   - 'Transactions'
-  - 'Exception handling'
+  - 'Exceptions'
   - 'Custom data types'
   - 'Migrations'
   - 'Testing'

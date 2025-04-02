@@ -35,7 +35,7 @@ sealed class DatabaseContext<T extends Schema> {
 /// {@category Joins}
 /// {@category Aggregate functions}
 /// {@category Transactions}
-/// {@category Exception handling}
+/// {@category Exceptions}
 /// {@category Custom data types}
 /// {@category Migrations}
 /// {@category Testing}

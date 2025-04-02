@@ -487,12 +487,13 @@ final class PostgresUnspecifiedOperationException
   PostgresUnspecifiedOperationException._(this.message);
 }
 
-final class PostgresDatabaseConnectionClosedException
-    extends DatabaseConnectionClosedException with PostgresDatabaseException {
+final class PostgresDatabaseConnectionForceClosedException
+    extends DatabaseConnectionForceClosedException
+    with PostgresDatabaseException {
   @override
   final String message;
 
-  PostgresDatabaseConnectionClosedException._(this.message);
+  PostgresDatabaseConnectionForceClosedException._(this.message);
 }
 
 final class PostgresAuthenticationException extends AuthenticationException

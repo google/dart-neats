@@ -141,7 +141,7 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
         final cursor = stmt.selectCursor(_paramsForSqlite(params));
         while (cursor.moveNext()) {
           if (_closed) {
-            throw SqliteDatabaseConnectionClosedException._();
+            throw SqliteDatabaseConnectionForceClosedException._();
           }
           yield _SqliteRowReader(cursor.current);
         }
@@ -462,9 +462,10 @@ final class SqliteUnspecifiedOperationException
   SqliteUnspecifiedOperationException._();
 }
 
-final class SqliteDatabaseConnectionClosedException
-    extends DatabaseConnectionClosedException with SqliteDatabaseException {
-  SqliteDatabaseConnectionClosedException._();
+final class SqliteDatabaseConnectionForceClosedException
+    extends DatabaseConnectionForceClosedException
+    with SqliteDatabaseException {
+  SqliteDatabaseConnectionForceClosedException._();
 }
 
 final class SqliteDatabaseConnectionRefusedException

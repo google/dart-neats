@@ -105,11 +105,15 @@ abstract base class AuthenticationException
 abstract base class DatabaseConnectionRefusedException
     extends DatabaseConnectionException {}
 
-/// Thrown when the database connection is closed.
+/// Thrown when the database connection is _force closed_.
 ///
-/// This implies that [DatabaseAdaptor.close] was called, meaning that the
-/// underlying database connection or connection pool was closed.
-abstract base class DatabaseConnectionClosedException
+/// This implies that [DatabaseAdaptor.close] was called with `force: true`,
+/// meaning that the underlying database connection or connection pool was
+/// _force closed_ while an operation was in progress.
+///
+/// If the [DatabaseAdaptor] was closed gracefully (with `force: true`), then
+/// attempting any operation will throw a [StateError].
+abstract base class DatabaseConnectionForceClosedException
     extends DatabaseConnectionException {}
 
 /// Thrown when there is an intermittent issue with the database connection.
