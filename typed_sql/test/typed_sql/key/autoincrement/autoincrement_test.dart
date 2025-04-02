@@ -58,27 +58,6 @@ void main() {
       ..value.equals('hello');
   });
 
-  r.addTest('.insertLiteral() with explicit ID', (db) async {
-    await db.items
-        .insertLiteral(
-          id: 1,
-          value: 'hello',
-        )
-        .execute();
-
-    final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals('hello');
-
-    // Check that we can find it by value
-    final items = await db.items
-        .where((item) => item.value.equals(literal('hello')))
-        .fetch();
-    check(items).length.equals(1);
-    check(items).first
-      ..id.equals(1)
-      ..value.equals('hello');
-  });
-
   r.addTest('.insert() auto-incremented IDs', (db) async {
     await db.items
         .insert(
@@ -89,27 +68,6 @@ void main() {
     await db.items
         .insert(
           value: literal('world'),
-        )
-        .execute();
-
-    final items = await db.items.fetch();
-    check(items).length.equals(2);
-    // Note: Auto-increment won't necessarily start from 1 or 0, and may skip
-    //       values, in practice it probably won't but let's not rely on such
-    //       behavior in our tests.
-    check(items.map((i) => i.id).toSet()).length.equals(2);
-  });
-
-  r.addTest('.insertLiteral() auto-incremented IDs', (db) async {
-    await db.items
-        .insertLiteral(
-          value: 'hello',
-        )
-        .execute();
-
-    await db.items
-        .insertLiteral(
-          value: 'world',
         )
         .execute();
 

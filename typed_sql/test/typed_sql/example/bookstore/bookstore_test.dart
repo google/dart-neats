@@ -128,17 +128,17 @@ void main() {
       // Insert test Authors and books
       for (final v in initialAuthors) {
         await db.authors
-            .insertLiteral(
-              name: v.name,
+            .insert(
+              name: literal(v.name),
             )
             .execute();
       }
       for (final v in initialBooks) {
         await db.books
-            .insertLiteral(
-              title: v.title,
-              authorId: v.authorId,
-              stock: v.stock,
+            .insert(
+              title: literal(v.title),
+              authorId: literal(v.authorId),
+              stock: literal(v.stock),
             )
             .execute();
       }

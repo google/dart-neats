@@ -91,19 +91,6 @@ final class _$Author extends Author {
 }
 
 extension TableAuthorExt on Table<Author> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<Author> insertLiteral({
-    int? authorId,
-    required String name,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          authorId != null ? literal(authorId) : null,
-          literal(name),
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<Author> insert({
     Expr<int>? authorId,
@@ -324,23 +311,6 @@ final class _$Book extends Book {
 }
 
 extension TableBookExt on Table<Book> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<Book> insertLiteral({
-    int? bookId,
-    required String title,
-    required int authorId,
-    required int stock,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          bookId != null ? literal(bookId) : null,
-          literal(title),
-          literal(authorId),
-          literal(stock),
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<Book> insert({
     Expr<int>? bookId,

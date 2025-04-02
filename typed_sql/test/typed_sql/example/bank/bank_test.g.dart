@@ -99,21 +99,6 @@ final class _$Account extends Account {
 }
 
 extension TableAccountExt on Table<Account> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<Account> insertLiteral({
-    int? accountId,
-    required String accountNumber,
-    double? balance,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          accountId != null ? literal(accountId) : null,
-          literal(accountNumber),
-          balance != null ? literal(balance) : null,
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<Account> insert({
     Expr<int>? accountId,

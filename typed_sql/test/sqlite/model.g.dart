@@ -111,21 +111,6 @@ final class _$User extends User {
 }
 
 extension TableUserExt on Table<User> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<User> insertLiteral({
-    int? userId,
-    required String name,
-    required String email,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          userId != null ? literal(userId) : null,
-          literal(name),
-          literal(email),
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<User> insert({
     Expr<int>? userId,
@@ -371,23 +356,6 @@ final class _$Package extends Package {
 }
 
 extension TablePackageExt on Table<Package> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<Package> insertLiteral({
-    required String packageName,
-    int? likes,
-    required int ownerId,
-    String? publisher,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          literal(packageName),
-          likes != null ? literal(likes) : null,
-          literal(ownerId),
-          publisher != null ? literal(publisher) : null,
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<Package> insert({
     required Expr<String> packageName,
@@ -615,19 +583,6 @@ final class _$Like extends Like {
 }
 
 extension TableLikeExt on Table<Like> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<Like> insertLiteral({
-    required int userId,
-    required String packageName,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          literal(userId),
-          literal(packageName),
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<Like> insert({
     required Expr<int> userId,

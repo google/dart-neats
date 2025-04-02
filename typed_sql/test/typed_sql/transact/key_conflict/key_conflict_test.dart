@@ -38,14 +38,14 @@ void main() {
   );
 
   r.addTest('.insert()', (db) async {
-    await db.items.insertLiteral(id: 1, value: 'a').execute();
-    await db.items.insertLiteral(id: 2, value: 'b').execute();
+    await db.items.insert(id: literal(1), value: literal('a')).execute();
+    await db.items.insert(id: literal(2), value: literal('b')).execute();
   });
 
   r.addTest('.insert() conflicting keys', (db) async {
-    await db.items.insertLiteral(id: 1, value: 'a').execute();
+    await db.items.insert(id: literal(1), value: literal('a')).execute();
     await check(
-      db.items.insertLiteral(id: 1, value: 'b').execute(),
+      db.items.insert(id: literal(1), value: literal('b')).execute(),
     ).throws((e) => e.isA<OperationException>());
 
     final item = await db.items.byKey(id: 1).fetch();
@@ -54,10 +54,10 @@ void main() {
 
   r.addTest('.insert() recover from conflict', (db) async {
     await db.transact(() async {
-      await db.items.insertLiteral(id: 1, value: 'a').execute();
+      await db.items.insert(id: literal(1), value: literal('a')).execute();
       await check(
         db.transact(() async {
-          await db.items.insertLiteral(id: 1, value: 'b').execute();
+          await db.items.insert(id: literal(1), value: literal('b')).execute();
         }),
       ).throws((e) => e.isA<TransactionAbortedException>());
     });

@@ -78,20 +78,20 @@ void main() {
       // Insert test Authrs and books
       for (final v in _testAuthors) {
         await db.authors
-            .insertLiteral(
-              authorId: v.authorId,
-              firstname: v.firstname,
-              lastname: v.lastname,
+            .insert(
+              authorId: literal(v.authorId),
+              firstname: literal(v.firstname),
+              lastname: literal(v.lastname),
             )
             .execute();
       }
       for (final v in _testBooks) {
         await db.books
-            .insertLiteral(
-              bookId: v.bookId,
-              title: v.title,
-              authorId: v.authorId,
-              stock: v.stock,
+            .insert(
+              bookId: literal(v.bookId),
+              title: literal(v.title),
+              authorId: literal(v.authorId),
+              stock: literal(v.stock),
             )
             .execute();
       }

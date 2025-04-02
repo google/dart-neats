@@ -56,10 +56,10 @@ void main() {
 
       for (final v in _testData) {
         await db.employees
-            .insertLiteral(
-              surname: v.surname,
-              seniority: v.seniority,
-              salary: v.salary,
+            .insert(
+              surname: literal(v.surname),
+              seniority: literal(v.seniority),
+              salary: literal(v.salary),
             )
             .execute();
       }

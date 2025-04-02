@@ -103,21 +103,6 @@ final class _$Employee extends Employee {
 }
 
 extension TableEmployeeExt on Table<Employee> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<Employee> insertLiteral({
-    int? employeeId,
-    required String name,
-    int? departmentId,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          employeeId != null ? literal(employeeId) : null,
-          literal(name),
-          departmentId != null ? literal(departmentId) : null,
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<Employee> insert({
     Expr<int>? employeeId,
@@ -329,21 +314,6 @@ final class _$Department extends Department {
 }
 
 extension TableDepartmentExt on Table<Department> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<Department> insertLiteral({
-    int? departmentId,
-    required String name,
-    required String location,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          departmentId != null ? literal(departmentId) : null,
-          literal(name),
-          literal(location),
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<Department> insert({
     Expr<int>? departmentId,

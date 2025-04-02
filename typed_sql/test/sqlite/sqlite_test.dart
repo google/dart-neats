@@ -48,33 +48,47 @@ void _test(
 
     await db.createTables();
     await db.users
-        .insertLiteral(
-          userId: 1,
-          name: 'Alice',
-          email: 'alice@example.com',
+        .insert(
+          userId: literal(1),
+          name: literal('Alice'),
+          email: literal('alice@example.com'),
         )
         .execute();
     await db.users
-        .insertLiteral(userId: 2, name: 'Bob', email: 'bob@example.com')
-        .execute();
-    await db.packages
-        .insertLiteral(
-          packageName: 'foo',
-          likes: 2,
-          publisher: null,
-          ownerId: 1,
+        .insert(
+          userId: literal(2),
+          name: literal('Bob'),
+          email: literal('bob@example.com'),
         )
         .execute();
     await db.packages
-        .insertLiteral(
-          packageName: 'bar',
-          likes: 3,
-          publisher: null,
-          ownerId: 1,
+        .insert(
+          packageName: literal('foo'),
+          likes: literal(2),
+          publisher: literal(null),
+          ownerId: literal(1),
         )
         .execute();
-    await db.likes.insertLiteral(userId: 1, packageName: 'foo').execute();
-    await db.likes.insertLiteral(userId: 2, packageName: 'foo').execute();
+    await db.packages
+        .insert(
+          packageName: literal('bar'),
+          likes: literal(3),
+          publisher: literal(null),
+          ownerId: literal(1),
+        )
+        .execute();
+    await db.likes
+        .insert(
+          userId: literal(1),
+          packageName: literal('foo'),
+        )
+        .execute();
+    await db.likes
+        .insert(
+          userId: literal(2),
+          packageName: literal('foo'),
+        )
+        .execute();
 
     try {
       await fn(db);

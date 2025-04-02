@@ -25,37 +25,55 @@ Future<void> main() async {
 
   // Create 3 users
   await db.users
-      .insertLiteral(userId: 12, name: 'alice', email: 'alice@wonderland.com')
+      .insert(
+        userId: literal(12),
+        name: literal('alice'),
+        email: literal('alice@wonderland.com'),
+      )
       .execute();
   await db.users
-      .insertLiteral(userId: 13, name: 'trudy', email: 'trudy@evil.inc')
+      .insert(
+        userId: literal(13),
+        name: literal('trudy'),
+        email: literal('trudy@evil.inc'),
+      )
       .execute();
   await db.users
-      .insertLiteral(userId: 14, name: 'bob', email: 'bob@builders.com')
+      .insert(
+        userId: literal(14),
+        name: literal('bob'),
+        email: literal('bob@builders.com'),
+      )
       .execute();
 
   // Create two packages
   await db.packages
-      .insertLiteral(
-        packageName: 'try',
-        ownerId: 12,
-        likes: 0,
-        publisher: null,
+      .insert(
+        packageName: literal('try'),
+        ownerId: literal(12),
+        likes: literal(0),
+        publisher: literal(null),
       )
       .execute();
   await db.packages
-      .insertLiteral(
-        packageName: 'retry',
-        ownerId: 12,
-        likes: 0,
-        publisher: null,
+      .insert(
+        packageName: literal('retry'),
+        ownerId: literal(12),
+        likes: literal(0),
+        publisher: literal(null),
       )
       .execute();
 
   // Create some likes
-  await db.likes.insertLiteral(userId: 12, packageName: 'retry').execute();
-  await db.likes.insertLiteral(userId: 13, packageName: 'try').execute();
-  await db.likes.insertLiteral(userId: 14, packageName: 'retry').execute();
+  await db.likes
+      .insert(userId: literal(12), packageName: literal('retry'))
+      .execute();
+  await db.likes
+      .insert(userId: literal(13), packageName: literal('try'))
+      .execute();
+  await db.likes
+      .insert(userId: literal(14), packageName: literal('retry'))
+      .execute();
 
   // Try to fetch all users
   {
@@ -115,10 +133,10 @@ Future<void> main() async {
 
         await db.transact(() async {
           await db.users
-              .insertLiteral(
-                userId: 42,
-                name: 'user',
-                email: 'user@example.com',
+              .insert(
+                userId: literal(42),
+                name: literal('user'),
+                email: literal('user@example.com'),
               )
               .execute();
         });

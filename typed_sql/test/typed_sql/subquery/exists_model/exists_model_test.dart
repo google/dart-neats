@@ -34,11 +34,11 @@ void main() {
   final r = TestRunner<TestDatabase>(
     setup: (db) async {
       await db.createTables();
-      await db.items.insertLiteral(id: 1, value: 'a').execute();
-      await db.items.insertLiteral(id: 2, value: 'b').execute();
-      await db.items.insertLiteral(id: 3, value: 'c').execute();
-      await db.items.insertLiteral(id: 4, value: 'c').execute();
-      await db.items.insertLiteral(id: 5, value: 'c').execute();
+      await db.items.insert(id: literal(1), value: literal('a')).execute();
+      await db.items.insert(id: literal(2), value: literal('b')).execute();
+      await db.items.insert(id: literal(3), value: literal('c')).execute();
+      await db.items.insert(id: literal(4), value: literal('c')).execute();
+      await db.items.insert(id: literal(5), value: literal('c')).execute();
     },
   );
 

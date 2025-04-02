@@ -76,10 +76,10 @@ void main() {
       await db.createTables();
       for (final v in _testData) {
         await db.items
-            .insertLiteral(
-              text: v.text,
-              integer: v.integer,
-              real: v.real,
+            .insert(
+              text: literal(v.text),
+              integer: literal(v.integer),
+              real: literal(v.real),
             )
             .execute();
       }

@@ -55,33 +55,10 @@ void main() {
     check(item).isNotNull().value.equals(_value);
   });
 
-  r.addTest('.insertLiteral() non-null value', (db) async {
-    await db.items
-        .insertLiteral(
-          id: 1,
-          value: _value,
-        )
-        .execute();
-
-    final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(_value);
-  });
-
   r.addTest('.insert() null by default', (db) async {
     await db.items
         .insert(
           id: literal(1),
-        )
-        .execute();
-
-    final item = await db.items.first.fetch();
-    check(item).isNotNull().value.isNull();
-  });
-
-  r.addTest('.insertLiteral() null by default', (db) async {
-    await db.items
-        .insertLiteral(
-          id: 1,
         )
         .execute();
 

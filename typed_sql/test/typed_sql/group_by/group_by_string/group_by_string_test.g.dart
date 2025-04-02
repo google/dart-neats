@@ -108,23 +108,6 @@ final class _$Employee extends Employee {
 }
 
 extension TableEmployeeExt on Table<Employee> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<Employee> insertLiteral({
-    int? id,
-    required String surname,
-    required String seniority,
-    int? salary,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          id != null ? literal(id) : null,
-          literal(surname),
-          literal(seniority),
-          salary != null ? literal(salary) : null,
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<Employee> insert({
     Expr<int>? id,

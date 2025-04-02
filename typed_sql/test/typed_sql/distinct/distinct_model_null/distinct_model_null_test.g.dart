@@ -108,23 +108,6 @@ final class _$Item extends Item {
 }
 
 extension TableItemExt on Table<Item> {
-  /// TODO: document insertLiteral (this cannot explicitly insert NULL for nullable fields with a default value)
-  InsertSingle<Item> insertLiteral({
-    int? id,
-    String? text,
-    int? integer,
-    double? real,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          id != null ? literal(id) : null,
-          text != null ? literal(text) : null,
-          integer != null ? literal(integer) : null,
-          real != null ? literal(real) : null,
-        ],
-      );
-
   /// TODO: document insert
   InsertSingle<Item> insert({
     Expr<int>? id,
