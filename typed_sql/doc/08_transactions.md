@@ -39,6 +39,8 @@ following example:
 await db.transact(() async {
   // Withdraw 100 from account 0000-01
   await db.accounts
+      // We can use `.byAccountNumber()` because the `accountNumber` field
+      // is annotated with @Unique()
       .byAccountNumber('0001')
       .update((a, set) => set(balance: a.balance - literal(100)))
       .execute();
