@@ -18,6 +18,11 @@ import '../../testrunner.dart';
 
 part 'schema_test.g.dart';
 
+// Remark: please keep this schema in sync with ../bookstore/bookstore_test.dart
+//         Documentation will assume that both of them uses the same schema,
+//         we just have different clips of the regions, and schema_test.dart
+//         has more comments.
+
 // #region schema
 abstract final class Bookstore extends Schema {
   Table<Author> get authors;

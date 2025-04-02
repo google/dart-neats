@@ -391,11 +391,9 @@ each other. So `.limit(3).limit(4)` will at-most return 3 rows, and
 
 
 ## Point queries with `.byKey`, `.first` and `db.select()`
-`package:typed_sql` generates
-a `.byKey()` method convenient for looking up a row by _primary key_.
-
-To look up the row in `books` with
-`bookId = 1` write:
+`package:typed_sql` generates a `.byKey()` method convenient for looking up a
+row by _primary key_.
+To look up the row in `books` with `bookId = 1` write:
 
 ```dart bookstore_test.dart#books-bykey
 final book = await db.books.byKey(bookId: 1).fetch();
@@ -468,6 +466,44 @@ a `Query<T>` we can convert it to a `SubQuery<T>` using `.asSubQuery`.
 
 In general, `.asExpr` is only available on `QuerySingle<(Expr<T>,)>`,
 `.asExpr` is not available on queries returning multiple values.
+
+
+## Point queries with `.byName` using `@Unique` constraints
+Whenever a field is annotated `@Unique()` a `UNIQUE` constraint will be added
+to the table schema, and in the generated code `package:typed_sql` will
+introduce a convenient `.By<fieldName>` method to make _point queries_ using
+the unique field.
+
+Recall that `Author.name` is annotated with `@Unique()`. This means that the
+_name_ field in the database will have `UNIQUE` constraint. But also that
+`Query<(Expr<Author>,)>` will have a convenient `.byName` method.
+
+```dart schema_test.dart#author-model
+@PrimaryKey(['authorId'])
+abstract final class Author extends Model {
+  @AutoIncrement()
+  int get authorId;
+
+  @Unique()
+  String get name;
+}
+```
+
+The following example shows how to use the `.byName` extension method to
+create a point query.
+
+```dart bookstore_test.dart#authors.byName
+final author = await db.authors.byName('Easter Bunny').fetch();
+
+if (author == null) {
+  throw Exception('Author not found');
+}
+check(author.authorId).equals(1);
+```
+
+Since `package:typed_sql` knows that a lookup on the _name_ field at-most return
+a single row, the return value from `.byName` is `QuerySingle<(Expr<Author>,)>`.
+Thus, `.fetch()` returns `Future<Author?>`.
 
 
 ## Expression reference

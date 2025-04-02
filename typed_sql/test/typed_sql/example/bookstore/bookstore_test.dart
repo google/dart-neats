@@ -21,6 +21,11 @@ import '../../testrunner.dart';
 
 part 'bookstore_test.g.dart';
 
+// Remark: please keep this schema in sync with ../schema/schema_test.dart
+//         Documentation will assume that both of them uses the same schema,
+//         we just have different clips of the regions, and schema_test.dart
+//         has more comments.
+
 // #region bookstore-schema
 abstract final class Bookstore extends Schema {
   Table<Author> get authors;
@@ -483,6 +488,17 @@ void main() {
       throw Exception('Author not found');
     }
     check(author.name).equals('Easter Bunny');
+    // #endregion
+  });
+
+  r.addTest('authors.byName()', (db) async {
+    // #region authors.byName
+    final author = await db.authors.byName('Easter Bunny').fetch();
+
+    if (author == null) {
+      throw Exception('Author not found');
+    }
+    check(author.authorId).equals(1);
     // #endregion
   });
 
