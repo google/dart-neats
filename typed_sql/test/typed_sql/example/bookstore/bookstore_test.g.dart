@@ -206,21 +206,6 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
         ),
       );
 
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Author> updateLiteral({
-    int? authorId,
-    String? name,
-  }) =>
-      ExposedForCodeGen.updateSingle<Author>(
-        this,
-        _$Author._$table,
-        (author) => ExposedForCodeGen.buildUpdate<Author>([
-          authorId != null ? literal(authorId) : null,
-          name != null ? literal(name) : null,
-        ]),
-      );
-
   /// TODO: document delete()
   DeleteSingle<Author> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Author._$table);
@@ -476,25 +461,6 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
             stock,
           ]),
         ),
-      );
-
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Book> updateLiteral({
-    int? bookId,
-    String? title,
-    int? authorId,
-    int? stock,
-  }) =>
-      ExposedForCodeGen.updateSingle<Book>(
-        this,
-        _$Book._$table,
-        (book) => ExposedForCodeGen.buildUpdate<Book>([
-          bookId != null ? literal(bookId) : null,
-          title != null ? literal(title) : null,
-          authorId != null ? literal(authorId) : null,
-          stock != null ? literal(stock) : null,
-        ]),
       );
 
   /// TODO: document delete()

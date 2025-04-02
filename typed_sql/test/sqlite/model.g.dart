@@ -236,23 +236,6 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
         ),
       );
 
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<User> updateLiteral({
-    int? userId,
-    String? name,
-    String? email,
-  }) =>
-      ExposedForCodeGen.updateSingle<User>(
-        this,
-        _$User._$table,
-        (user) => ExposedForCodeGen.buildUpdate<User>([
-          userId != null ? literal(userId) : null,
-          name != null ? literal(name) : null,
-          email != null ? literal(email) : null,
-        ]),
-      );
-
   /// TODO: document delete()
   DeleteSingle<User> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$User._$table);
@@ -521,25 +504,6 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
         ),
       );
 
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Package> updateLiteral({
-    String? packageName,
-    int? likes,
-    int? ownerId,
-    String? publisher,
-  }) =>
-      ExposedForCodeGen.updateSingle<Package>(
-        this,
-        _$Package._$table,
-        (package) => ExposedForCodeGen.buildUpdate<Package>([
-          packageName != null ? literal(packageName) : null,
-          likes != null ? literal(likes) : null,
-          ownerId != null ? literal(ownerId) : null,
-          publisher != null ? literal(publisher) : null,
-        ]),
-      );
-
   /// TODO: document delete()
   DeleteSingle<Package> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Package._$table);
@@ -766,21 +730,6 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
             packageName,
           ]),
         ),
-      );
-
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Like> updateLiteral({
-    int? userId,
-    String? packageName,
-  }) =>
-      ExposedForCodeGen.updateSingle<Like>(
-        this,
-        _$Like._$table,
-        (like) => ExposedForCodeGen.buildUpdate<Like>([
-          userId != null ? literal(userId) : null,
-          packageName != null ? literal(packageName) : null,
-        ]),
       );
 
   /// TODO: document delete()

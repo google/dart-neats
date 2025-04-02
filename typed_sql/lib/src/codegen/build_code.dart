@@ -547,24 +547,6 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ))
       ..methods.add(Method(
         (b) => b
-          ..name = 'updateLiteral'
-          ..docs.add('/// TODO: document updateLiteral()')
-          ..docs.add('/// WARNING: This cannot set properties to `null`!')
-          ..returns = refer('UpdateSingle<$modelName>')
-          ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
-          ..lambda = true
-          ..body = Code('''
-            ExposedForCodeGen.updateSingle<$modelName>(
-              this,
-              _\$${model.name}._\$table,
-              ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
-                ${model.fields.map((field) => '${field.name} != null ? literal(${field.name}) : null').join(', ')},
-              ]),
-            )
-          '''),
-      ))
-      ..methods.add(Method(
-        (b) => b
           ..name = 'delete'
           ..docs.add('/// TODO: document delete()')
           ..returns = refer('DeleteSingle<$modelName>')

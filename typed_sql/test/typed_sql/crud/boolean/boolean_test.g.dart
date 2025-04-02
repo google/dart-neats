@@ -194,21 +194,6 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
         ),
       );
 
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Item> updateLiteral({
-    int? id,
-    bool? value,
-  }) =>
-      ExposedForCodeGen.updateSingle<Item>(
-        this,
-        _$Item._$table,
-        (item) => ExposedForCodeGen.buildUpdate<Item>([
-          id != null ? literal(id) : null,
-          value != null ? literal(value) : null,
-        ]),
-      );
-
   /// TODO: document delete()
   DeleteSingle<Item> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Item._$table);

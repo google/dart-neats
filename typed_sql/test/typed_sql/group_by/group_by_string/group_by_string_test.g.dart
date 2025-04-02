@@ -242,25 +242,6 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
         ),
       );
 
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Employee> updateLiteral({
-    int? id,
-    String? surname,
-    String? seniority,
-    int? salary,
-  }) =>
-      ExposedForCodeGen.updateSingle<Employee>(
-        this,
-        _$Employee._$table,
-        (employee) => ExposedForCodeGen.buildUpdate<Employee>([
-          id != null ? literal(id) : null,
-          surname != null ? literal(surname) : null,
-          seniority != null ? literal(seniority) : null,
-          salary != null ? literal(salary) : null,
-        ]),
-      );
-
   /// TODO: document delete()
   DeleteSingle<Employee> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Employee._$table);

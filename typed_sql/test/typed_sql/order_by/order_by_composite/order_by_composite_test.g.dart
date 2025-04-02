@@ -268,27 +268,6 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
         ),
       );
 
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Item> updateLiteral({
-    int? id,
-    String? text,
-    double? real,
-    DateTime? timestamp,
-    int? integer,
-  }) =>
-      ExposedForCodeGen.updateSingle<Item>(
-        this,
-        _$Item._$table,
-        (item) => ExposedForCodeGen.buildUpdate<Item>([
-          id != null ? literal(id) : null,
-          text != null ? literal(text) : null,
-          real != null ? literal(real) : null,
-          timestamp != null ? literal(timestamp) : null,
-          integer != null ? literal(integer) : null,
-        ]),
-      );
-
   /// TODO: document delete()
   DeleteSingle<Item> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Item._$table);

@@ -225,23 +225,6 @@ extension QuerySingleAccountExt on QuerySingle<(Expr<Account>,)> {
         ),
       );
 
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Account> updateLiteral({
-    int? accountId,
-    String? accountNumber,
-    double? balance,
-  }) =>
-      ExposedForCodeGen.updateSingle<Account>(
-        this,
-        _$Account._$table,
-        (account) => ExposedForCodeGen.buildUpdate<Account>([
-          accountId != null ? literal(accountId) : null,
-          accountNumber != null ? literal(accountNumber) : null,
-          balance != null ? literal(balance) : null,
-        ]),
-      );
-
   /// TODO: document delete()
   DeleteSingle<Account> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Account._$table);

@@ -225,23 +225,6 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
         ),
       );
 
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Employee> updateLiteral({
-    int? employeeId,
-    String? name,
-    int? departmentId,
-  }) =>
-      ExposedForCodeGen.updateSingle<Employee>(
-        this,
-        _$Employee._$table,
-        (employee) => ExposedForCodeGen.buildUpdate<Employee>([
-          employeeId != null ? literal(employeeId) : null,
-          name != null ? literal(name) : null,
-          departmentId != null ? literal(departmentId) : null,
-        ]),
-      );
-
   /// TODO: document delete()
   DeleteSingle<Employee> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Employee._$table);
@@ -467,23 +450,6 @@ extension QuerySingleDepartmentExt on QuerySingle<(Expr<Department>,)> {
             location,
           ]),
         ),
-      );
-
-  /// TODO: document updateLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  UpdateSingle<Department> updateLiteral({
-    int? departmentId,
-    String? name,
-    String? location,
-  }) =>
-      ExposedForCodeGen.updateSingle<Department>(
-        this,
-        _$Department._$table,
-        (department) => ExposedForCodeGen.buildUpdate<Department>([
-          departmentId != null ? literal(departmentId) : null,
-          name != null ? literal(name) : null,
-          location != null ? literal(location) : null,
-        ]),
       );
 
   /// TODO: document delete()

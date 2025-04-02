@@ -14,7 +14,6 @@
 
 import 'dart:async';
 
-import 'package:typed_sql/dialect.dart';
 import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';
