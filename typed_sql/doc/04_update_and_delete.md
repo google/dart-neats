@@ -13,6 +13,7 @@ abstract final class Author extends Model {
   @AutoIncrement()
   int get authorId;
 
+  @Unique()
   String get name;
 }
 

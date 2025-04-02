@@ -67,7 +67,9 @@ final class _$Author extends Author {
       )
     ],
     primaryKey: <String>['authorId'],
-    unique: <List<String>>[],
+    unique: <List<String>>[
+      ['name']
+    ],
     foreignKeys: <({
       String name,
       List<String> columns,
@@ -169,6 +171,10 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
           name != null ? literal(name) : null,
         ]),
       );
+
+  /// TODO: document byXXX()}
+  QuerySingle<(Expr<Author>,)> byName(String name) =>
+      where((author) => author.name.equalsLiteral(name)).first;
 
   /// TODO: document delete()}
   Delete<Author> delete() => ExposedForCodeGen.delete(this, _$Author._$table);
