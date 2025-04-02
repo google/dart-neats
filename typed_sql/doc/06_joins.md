@@ -1,4 +1,4 @@
-In this document aims to show how to use joins with `package:typed_sql`.
+This document shows how to use joins with `package:typed_sql`.
 Examples throughout this document assume a database schema defined as
 follows:
 
