@@ -107,12 +107,6 @@ final class ExposedForCodeGen {
     await context._executor.script(sql);
   }
 
-  static Future<void> execute({
-    required Database context,
-    required String sql,
-    required List<Object?> params,
-  }) async {}
-
   /// Create [Table] object.
   ///
   /// @nodoc
