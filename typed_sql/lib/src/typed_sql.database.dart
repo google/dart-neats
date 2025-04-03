@@ -14,19 +14,6 @@
 
 part of 'typed_sql.dart';
 
-sealed class DatabaseContext<T extends Schema> {
-  // TODO: Consider if DatabaseContext is necessary, perhaps using
-  //       the Database object directly is fine. We just need .fetch/.execute
-  //       to call _executor right when they are doing the actual queries!
-  DatabaseContext._(this._dialect);
-
-  final SqlDialect _dialect;
-  Executor get _executor;
-
-  Stream<RowReader> _query(String sql, List<Object?> params) =>
-      _executor.query(sql, params);
-}
-
 /// {@category Schema definition}
 /// {@category Inserting rows}
 /// {@category Writing queries}
@@ -39,16 +26,16 @@ sealed class DatabaseContext<T extends Schema> {
 /// {@category Custom data types}
 /// {@category Migrations}
 /// {@category Testing}
-final class Database<T extends Schema> extends DatabaseContext<T> {
-  Database(DatabaseAdaptor adaptor, super.dialect)
+final class Database<T extends Schema> {
+  Database(DatabaseAdaptor adaptor, SqlDialect dialect)
       : _adaptor = adaptor,
-        super._();
+        _dialect = dialect;
 
+  final SqlDialect _dialect;
   final DatabaseAdaptor _adaptor;
 
   late final _zoneKey = (this, #_transaction);
 
-  @override
   Executor get _executor => Zone.current[_zoneKey] as Executor? ?? _adaptor;
 
   Future<R> transact<R>(
@@ -60,6 +47,9 @@ final class Database<T extends Schema> extends DatabaseContext<T> {
       });
     });
   }
+
+  Stream<RowReader> _query(String sql, List<Object?> params) =>
+      _executor.query(sql, params);
 
   QuerySingle<S> select<S extends Record>(S expressions) =>
       QuerySingle._(Query._(this, expressions, SelectClause._));

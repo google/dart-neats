@@ -6,7 +6,7 @@ part of 'nullable_reference_test.dart';
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-extension TestDatabaseSchema on DatabaseContext<TestDatabase> {
+extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Author._$table, _$Book._$table];
 
   /// TODO: Propagate documentation for tables!

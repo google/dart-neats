@@ -6,7 +6,7 @@ part of 'bank_test.dart';
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-extension BankVaultSchema on DatabaseContext<BankVault> {
+extension BankVaultSchema on Database<BankVault> {
   static const _$tables = [_$Account._$table];
 
   /// TODO: Propagate documentation for tables!

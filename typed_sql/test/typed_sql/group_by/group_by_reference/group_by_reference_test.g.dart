@@ -6,7 +6,7 @@ part of 'group_by_reference_test.dart';
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-extension BookstoreSchema on DatabaseContext<Bookstore> {
+extension BookstoreSchema on Database<Bookstore> {
   static const _$tables = [_$Author._$table, _$Book._$table];
 
   /// TODO: Propagate documentation for tables!

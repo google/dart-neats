@@ -283,7 +283,7 @@ final class ReturnOne<T extends Record> {
 /// statement may have side-effects, and this statement cannot be extended with
 /// additional clauses.
 final class Return<T extends Record> {
-  final DatabaseContext _context;
+  final Database _context;
   final (String, List<Object?>) Function(List<Expr> e) _render;
   final T _expressions;
 

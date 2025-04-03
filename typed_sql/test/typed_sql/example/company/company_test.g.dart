@@ -6,7 +6,7 @@ part of 'company_test.dart';
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-extension CompanyDatabaseSchema on DatabaseContext<CompanyDatabase> {
+extension CompanyDatabaseSchema on Database<CompanyDatabase> {
   static const _$tables = [_$Employee._$table, _$Department._$table];
 
   /// TODO: Propagate documentation for tables!

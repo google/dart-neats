@@ -6,7 +6,7 @@ part of 'model.dart';
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {
+extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   static const _$tables = [_$User._$table, _$Package._$table, _$Like._$table];
 
   /// TODO: Propagate documentation for tables!

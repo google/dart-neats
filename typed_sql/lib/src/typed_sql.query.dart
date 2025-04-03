@@ -16,7 +16,7 @@ part of 'typed_sql.dart';
 
 /// A [Query] on the database from which results can be fetched.
 final class Query<T extends Record> {
-  final DatabaseContext _context;
+  final Database _context;
 
   final T _expressions;
   final QueryClause Function(List<Expr> expressions) _from;
@@ -63,7 +63,7 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
   final TableClause _tableClause;
 
   Table._(
-    DatabaseContext context,
+    Database context,
     this._tableClause,
     TableDefinition<T> definition,
   ) : super._(

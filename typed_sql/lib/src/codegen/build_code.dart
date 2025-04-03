@@ -65,13 +65,13 @@ Iterable<Spec> buildChecksForModel(ParsedModel model) sync* {
 /// Generate code for [Schema] subclass, parsed into [schema].
 Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
   // Create the extension for the `Schema` subclass, example:
-  // extension PrimaryDatabaseSchema on DatabaseContext<PrimaryDatabase> {...}
+  // extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {...}
   yield Extension(
     (b) => b
       ..name = '${schema.name}Schema'
       ..on = TypeReference(
         (b) => b
-          ..symbol = 'DatabaseContext'
+          ..symbol = 'Database'
           ..types.add(refer(schema.name)),
       )
       ..methods.addAll([

@@ -6,7 +6,7 @@ part of 'as_subquery_model_test.dart';
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-extension TestDatabaseSchema on DatabaseContext<TestDatabase> {
+extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Item._$table];
 
   /// TODO: Propagate documentation for tables!

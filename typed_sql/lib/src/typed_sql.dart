@@ -100,7 +100,7 @@ final class ExposedForCodeGen {
   }
 
   static Future<void> createTables({
-    required DatabaseContext context,
+    required Database context,
     required List<TableDefinition> tables,
   }) async {
     final sql = createTableSchema(dialect: context._dialect, tables: tables);
@@ -108,7 +108,7 @@ final class ExposedForCodeGen {
   }
 
   static Future<void> execute({
-    required DatabaseContext context,
+    required Database context,
     required String sql,
     required List<Object?> params,
   }) async {}
@@ -117,7 +117,7 @@ final class ExposedForCodeGen {
   ///
   /// @nodoc
   static Table<T> declareTable<T extends Model>(
-    DatabaseContext context,
+    Database context,
     TableDefinition<T> table,
   ) =>
       Table._(
