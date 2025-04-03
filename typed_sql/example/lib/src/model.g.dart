@@ -241,7 +241,7 @@ extension ExpressionUserExt on Expr<User> {
 
   /// TODO: document references
   SubQuery<(Expr<Package>,)> get packages =>
-      ExposedForCodeGen.subqueryTable(this, _$Package._$table)
+      ExposedForCodeGen.subqueryTable(_$Package._$table)
           .where((r) => r.ownerId.equals(userId));
 }
 
@@ -260,7 +260,7 @@ extension ExpressionNullableUserExt on Expr<User?> {
 
   /// TODO: document references
   SubQuery<(Expr<Package>,)> get packages =>
-      ExposedForCodeGen.subqueryTable(this, _$Package._$table)
+      ExposedForCodeGen.subqueryTable(_$Package._$table)
           .where((r) => userId.isNotNull() & r.ownerId.equals(userId));
 }
 
@@ -495,7 +495,7 @@ extension ExpressionPackageExt on Expr<Package> {
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
 
   /// TODO: document references
-  Expr<User> get owner => ExposedForCodeGen.subqueryTable(this, _$User._$table)
+  Expr<User> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
       .where((r) => r.userId.equals(ownerId))
       .first
       .assertNotNull();
@@ -519,7 +519,7 @@ extension ExpressionNullablePackageExt on Expr<Package?> {
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
 
   /// TODO: document references
-  Expr<User?> get owner => ExposedForCodeGen.subqueryTable(this, _$User._$table)
+  Expr<User?> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
       .where((r) => ownerId.isNotNull() & r.userId.equals(ownerId))
       .first;
 }

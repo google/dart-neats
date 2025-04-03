@@ -236,17 +236,17 @@ extension ExpressionAuthorExt on Expr<Author> {
 
   /// TODO: document references
   SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(this, _$Book._$table)
+      ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) => r.authorId.equals(authorId));
 
   /// TODO: document references
   SubQuery<(Expr<Book>,)> get booksEditedBy =>
-      ExposedForCodeGen.subqueryTable(this, _$Book._$table)
+      ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) => r.editorId.equals(authorId));
 
   /// TODO: document references
   Expr<Book?> get favoriteBook =>
-      ExposedForCodeGen.subqueryTable(this, _$Book._$table)
+      ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) => r.bookId.equals(favoriteBookId))
           .first;
 }
@@ -266,17 +266,17 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
 
   /// TODO: document references
   SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(this, _$Book._$table)
+      ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) => authorId.isNotNull() & r.authorId.equals(authorId));
 
   /// TODO: document references
   SubQuery<(Expr<Book>,)> get booksEditedBy =>
-      ExposedForCodeGen.subqueryTable(this, _$Book._$table)
+      ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) => authorId.isNotNull() & r.editorId.equals(authorId));
 
   /// TODO: document references
   Expr<Book?> get favoriteBook =>
-      ExposedForCodeGen.subqueryTable(this, _$Book._$table)
+      ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) =>
               favoriteBookId.isNotNull() & r.bookId.equals(favoriteBookId))
           .first;
@@ -546,21 +546,19 @@ extension ExpressionBookExt on Expr<Book> {
 
   /// TODO: document references
   SubQuery<(Expr<Author>,)> get favoritedBy =>
-      ExposedForCodeGen.subqueryTable(this, _$Author._$table)
+      ExposedForCodeGen.subqueryTable(_$Author._$table)
           .where((r) => r.favoriteBookId.equals(bookId));
 
   /// TODO: document references
-  Expr<Author> get author =>
-      ExposedForCodeGen.subqueryTable(this, _$Author._$table)
-          .where((r) => r.authorId.equals(authorId))
-          .first
-          .assertNotNull();
+  Expr<Author> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
+      .where((r) => r.authorId.equals(authorId))
+      .first
+      .assertNotNull();
 
   /// TODO: document references
-  Expr<Author?> get editor =>
-      ExposedForCodeGen.subqueryTable(this, _$Author._$table)
-          .where((r) => r.authorId.equals(editorId))
-          .first;
+  Expr<Author?> get editor => ExposedForCodeGen.subqueryTable(_$Author._$table)
+      .where((r) => r.authorId.equals(editorId))
+      .first;
 }
 
 extension ExpressionNullableBookExt on Expr<Book?> {
@@ -586,20 +584,18 @@ extension ExpressionNullableBookExt on Expr<Book?> {
 
   /// TODO: document references
   SubQuery<(Expr<Author>,)> get favoritedBy =>
-      ExposedForCodeGen.subqueryTable(this, _$Author._$table)
+      ExposedForCodeGen.subqueryTable(_$Author._$table)
           .where((r) => bookId.isNotNull() & r.favoriteBookId.equals(bookId));
 
   /// TODO: document references
-  Expr<Author?> get author =>
-      ExposedForCodeGen.subqueryTable(this, _$Author._$table)
-          .where((r) => authorId.isNotNull() & r.authorId.equals(authorId))
-          .first;
+  Expr<Author?> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
+      .where((r) => authorId.isNotNull() & r.authorId.equals(authorId))
+      .first;
 
   /// TODO: document references
-  Expr<Author?> get editor =>
-      ExposedForCodeGen.subqueryTable(this, _$Author._$table)
-          .where((r) => editorId.isNotNull() & r.authorId.equals(editorId))
-          .first;
+  Expr<Author?> get editor => ExposedForCodeGen.subqueryTable(_$Author._$table)
+      .where((r) => editorId.isNotNull() & r.authorId.equals(editorId))
+      .first;
 }
 
 extension AuthorChecks on Subject<Author> {

@@ -178,16 +178,6 @@ final class ExposedForCodeGen {
   ) =>
       DeleteSingle._(Delete._(query.asQuery, table));
 
-  // TODO: Design a solution for migrations using atlas creating dialect
-  //       specific migraiton files in a folder, such that we just have to
-  //       apply the migrations.
-  static Future<void> applyMigration(
-    DatabaseContext context,
-    String migration,
-  ) async {
-    await context._query(migration, const []).drain<void>();
-  }
-
   static UpdateSet<T> buildUpdate<T extends Model>(List<Expr?> values) =>
       UpdateSet._(values);
 
@@ -210,7 +200,6 @@ final class ExposedForCodeGen {
   }
 
   static SubQuery<(Expr<T>,)> subqueryTable<T extends Model, S extends Model?>(
-    Expr<S> reference, // TODO: Remove reference!
     TableDefinition<T> table,
   ) {
     return SubQuery._(

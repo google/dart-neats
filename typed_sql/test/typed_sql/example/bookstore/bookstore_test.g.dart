@@ -209,7 +209,7 @@ extension ExpressionAuthorExt on Expr<Author> {
 
   /// TODO: document references
   SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(this, _$Book._$table)
+      ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) => r.authorId.equals(authorId));
 }
 
@@ -224,7 +224,7 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
 
   /// TODO: document references
   SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(this, _$Book._$table)
+      ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) => authorId.isNotNull() & r.authorId.equals(authorId));
 }
 
@@ -456,11 +456,10 @@ extension ExpressionBookExt on Expr<Book> {
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
 
   /// TODO: document references
-  Expr<Author> get author =>
-      ExposedForCodeGen.subqueryTable(this, _$Author._$table)
-          .where((r) => r.authorId.equals(authorId))
-          .first
-          .assertNotNull();
+  Expr<Author> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
+      .where((r) => r.authorId.equals(authorId))
+      .first
+      .assertNotNull();
 }
 
 extension ExpressionNullableBookExt on Expr<Book?> {
@@ -481,10 +480,9 @@ extension ExpressionNullableBookExt on Expr<Book?> {
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
 
   /// TODO: document references
-  Expr<Author?> get author =>
-      ExposedForCodeGen.subqueryTable(this, _$Author._$table)
-          .where((r) => authorId.isNotNull() & r.authorId.equals(authorId))
-          .first;
+  Expr<Author?> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
+      .where((r) => authorId.isNotNull() & r.authorId.equals(authorId))
+      .first;
 }
 
 extension AuthorChecks on Subject<Author> {

@@ -545,7 +545,6 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..lambda = true
               ..body = Code('''
                 ExposedForCodeGen.subqueryTable(
-                  this,
                   _\$${ref.table.model.name}._\$table
                 ).where((r) => r.${ref.fk.key.name}.equals(${ref.fk.field}))
               '''),
@@ -566,7 +565,6 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..lambda = true
             ..body = Code('''
               ExposedForCodeGen.subqueryTable(
-                this,
                 _\$${fk.referencedTable.model.name}._\$table
               ).where(
                 (r) => r.${fk.field}.equals(${fk.key.name})
@@ -601,7 +599,6 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..lambda = true
               ..body = Code('''
                 ExposedForCodeGen.subqueryTable(
-                  this,
                   _\$${ref.table.model.name}._\$table
                 ).where((r) =>
                   ${ref.fk.field}.isNotNull() &
@@ -619,7 +616,6 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..lambda = true
             ..body = Code('''
               ExposedForCodeGen.subqueryTable(
-                this,
                 _\$${fk.referencedTable.model.name}._\$table
               ).where(
                 (r) =>
