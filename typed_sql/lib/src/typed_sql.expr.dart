@@ -224,6 +224,7 @@ final class ModelExpression<T extends Model> extends Expr<T> {
   @override
   int get _columns => _table.columns.length;
 
+  @override
   Expr<R> _field<R>(int index, _ExprType<R> type) {
     if (index < 0 || index >= _table.columns.length) {
       throw ArgumentError.value(
@@ -367,8 +368,11 @@ final class NullAssertionExpression<T> extends Expr<T> {
   @override
   Iterable<Expr<Object?>> _explode() => value._explode();
 
+  @override
   Expr<T> _standin(int index, Object handle) =>
       NullAssertionExpression._(value._standin(index, handle));
+
+  @override
   Expr<R> _field<R>(int index, FieldType<R> type) => value._field(index, type);
 
   NullAssertionExpression._(this.value) : super._();

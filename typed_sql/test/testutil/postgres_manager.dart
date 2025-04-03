@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io';
+//import 'dart:io';
 import 'dart:isolate';
 
 import 'package:postgres/postgres.dart';
@@ -32,10 +32,11 @@ final class PostgresManager {
   bool _closed = false;
 
   bool get isAvailable {
+    return true; /*
     if (_socketUri == null) {
       return false;
     }
-    return File.fromUri(_socketUri).existsSync();
+    return File.fromUri(_socketUri).existsSync();*/
   }
 
   Pool<Never> _getAdminPool() {
@@ -50,11 +51,17 @@ final class PostgresManager {
     }
     return _adminPool ??= Pool<Never>.withEndpoints([
       Endpoint(
+        host: '127.0.0.1',
+        database: 'postgres',
+        username: 'postgres',
+        password: 'postgres',
+      ),
+      /*Endpoint(
         host: _socketUri.toFilePath(),
         isUnixSocket: true,
         database: 'postgres',
         username: 'postgres',
-      ),
+      ),*/
     ], settings: const PoolSettings(sslMode: SslMode.disable));
   }
 
@@ -66,10 +73,10 @@ final class PostgresManager {
 
       final pool = Pool<Never>.withEndpoints([
         Endpoint(
-          host: _socketUri!.toFilePath(),
-          isUnixSocket: true,
+          host: '127.0.0.1',
           database: testdb,
           username: 'postgres',
+          password: 'postgres',
         ),
       ], settings: const PoolSettings(sslMode: SslMode.disable));
 

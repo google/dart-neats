@@ -1,3 +1,0 @@
-test_on: vm
-concurrency: 1
-reporter: expanded

@@ -19,6 +19,16 @@ set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ROOT="${SCRIPT_DIR}/.."
 
+docker run \
+  -ti --rm \
+  --name typed_sql_postgres \
+  -e POSTGRES_HOST_AUTH_METHOD=trust \
+  -p 5432:5432 \
+  postgres:17
+
+
+exit 0;
+
 # Create directory for exposing sockets
 SOCKET_DIR="${ROOT}/.dart_tool/run/postgresql/"
 mkdir -p "$SOCKET_DIR"
