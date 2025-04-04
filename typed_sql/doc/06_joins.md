@@ -103,7 +103,7 @@ INNER JOIN departments
 ```
 
 Instead of using the `.on` extension method on `InnerJoin` it's also possible to
-use `.all` which will return the catesian product (`CROSS JOIN`). The `.all`
+use `.all` which will return the cartesian product (`CROSS JOIN`). The `.all`
 extension method is not available for left and right joins.
 
 > [!NOTE]
@@ -142,7 +142,7 @@ check(result).unorderedEquals([
 ]);
 ```
 
-The equivalent SQL query for the above example would like:
+The equivalent SQL query for the above example would look like:
 ```sql
 SELECT
   employees.name,
@@ -191,7 +191,7 @@ check(result).unorderedEquals([
 ]);
 ```
 
-The equivalent SQL query for the above example would like:
+The equivalent SQL query for the above example would look like:
 ```sql
 SELECT
   employees.name,

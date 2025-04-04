@@ -1,6 +1,7 @@
 This document aims to demonstrate how to use foreign keys when writing queries
 in `package:typed_sql`.
-Examples through out this document shall assume a database schemas defined as
+
+Examples throughout this document assume a database schema defined as
 follows:
 
 ```dart bookstore_test.dart#bookstore-schema
@@ -33,8 +34,7 @@ abstract final class Book extends Model {
 }
 ```
 
-Similarly, examples in this document will assume that the database is loaded
-with the following examples:
+And that the database is loaded with the following examples:
 ```dart bookstore_test.dart#initial-data
 final initialAuthors = [
   (name: 'Easter Bunny',),
@@ -56,7 +56,7 @@ final initialBooks = [
 In the schema above `Book.authorId` is declared as a _foreign key_ using the
 `@References` annotation. The `table` and `field` parameters are required,
 these point to the _table_ and _field_ that is being referenced.
-The `name` and `as` properties are optional, if present they will be used
+The `name` and `as` properties are optional, if present they will be used to
 generate convenient subquery properties when building queries.
 
 ```dart schema_test.dart#book-model
@@ -151,8 +151,8 @@ would not have been generated. So you can decide whether or not you want the
 these helper methods.
 
 While subqueries are simple to use, and outright fantastic when writing
-point queries, as they make it easy to return a row and any referenced rows
-in a single database query. Subqueries can also lead to poor query
+point queries, as they make it easy to return a row along with any referenced rows
+in a single query. Subqueries can also lead to poor query
 performance, in which case joins _might_ be a better option.
 
 > [!WARNING]

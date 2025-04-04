@@ -114,7 +114,7 @@ Similar, to how we update a single row with `.update`, we can update multiple
 rows with `.updateAll`. The `.updateAll` extension method is present on any
 `Query<(Expr<T>,)>` object where `T extends Model`.
 
-The following example shows to reduce the stock by half for all books with
+The following example shows how to reduce the stock by half for all books with
 `stock > 5`. As division by two results in a `Expr<double>`, so we use
 `.asInt()` to truncate to an `Expr<int>` with a `CAST` in SQL.
 
@@ -232,4 +232,4 @@ check(deletedBooks).unorderedEquals([
 
 Similarly, to `.update`, you'll find that when you use `.delete().returning`
 on a `Query<(Expr<T>,)>` the `.executeAndFetch()` method returns a `List`.
-But if you use it on a `QuerySingle<(Expr<T>,)>`, you just a nullable row.
+But if you use it on a `QuerySingle<(Expr<T>,)>`, you just get a nullable row.

@@ -1,3 +1,5 @@
+# Aggregate functions
+
 With SQL it's possible to derive aggregates like `SUM`, `AVG`, `MIN`, `MAX` and
 `COUNT`, these aggregate functions are also available in `package:typed_sql`.
 However, inorder to prevent runtime errors due to malformed queries, you cannot
@@ -39,12 +41,7 @@ abstract final class Book extends Model {
 }
 ```
 
-For the remainder of this document we shall assume that `db` is an instance of
-`Database<Bookstore>`.
-
-
-## Example data
-Through examples in this document we shall assume that the following test-data
+and assume that the following test-data
 has been loaded into the database.
 
 ```dart bookstore_test.dart#initial-data
@@ -72,7 +69,7 @@ in inventory, in SQL this might look like:
 SELECT SUM(stock) FROM books;
 ```
 
-In Dart we can do the same thing by first doing a `.select` to project from
+In `package:typed_sql` we can do the same thing by first doing a `.select` to project from
 `Query<(Expr<Book>,)>` to `Query<(Expr<int>,)>` for which `.sum()` extension
 method is available.
 
@@ -88,7 +85,7 @@ check(result).equals(67);
 ```
 
 ## `SUM(stock)`, `COUNT(*)` for books in inventory
-Supposed you wanted to know how many books you have in inventory and how many
+Suppose you wanted to know how many books you have in inventory and how many
 different books, in SQL this might look like:
 ```sql
 SELECT SUM(stock), COUNT(*) FROM books;
@@ -138,7 +135,7 @@ check(countDifferntBooks).equals(5);
 
 
 ## `SUM(stock), COUNT(*)` for books `GROUP BY author`
-Supposed that in our example we wanted to do know how many books we have in
+Suppose you want to know how many books we have in
 stock for each author. In SQL this would typically be done using a `GROUP BY`
 query, as illustrated below:
 
@@ -192,7 +189,7 @@ The astute reader might have noticed that the SQL query given at the start of
 this section does in fact not return the _author name_, instead it's grouped by
 `authorId`, and would return the `authorId`. This is because the `b.author` in
 the `.groupBy` projection is actually a reference, which in turn makes the
-`author.name` in the final `.select` projection a subquery. We could avoided
+`author.name` in the final `.select` projection a subquery. We could avoid
 this by simply using `b.authorId` in the `.groupBy` projection, as illustrated
 below:
 ```dart bookstore_test.dart#sum-books-group-by-authorId

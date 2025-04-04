@@ -145,8 +145,8 @@ inconsistencies.
 ## Nested transactions
 While SQL doesn't have nested transactions, SQL does have `SAVEPOINT`s which can
 be used to facilitate nested transactions. Using `package:typed_sql` you can do
-nested invocations of `db.transact()`. The outer most invocation will create a
-and transaction, and the nested invocations will create a unique `SAVEPOINT`
+nested invocations of `db.transact()`. The outermost invocation will create a
+transaction, and the nested invocations will create a unique `SAVEPOINT`
 for each invocation.
 
 This makes it possible to recover from an aborted transaction which may occur if
@@ -194,8 +194,8 @@ operations and transactions, in particularly operations inside transactions.
 The `db.transact(cb)` method will start a transaction and execute the callback
 `cb` inside a [Zone], such that all operations using `db` happens inside the
 transaction. When the callback `cb` completes (or rather the future `cb`
-returns is completes), the transaction is committed (or rolledback if `cb`
-threw an `Exception`). So if we were to additional calls on `db` inside the
+returns completes), the transaction is committed (or rolled back if `cb`
+threw an `Exception`). So if we were to make additional calls on `db` inside the
 transaction zone, they would throw errors at runtime, example:
 
 ```dart
@@ -211,7 +211,7 @@ await db.transact(() async {
 ```
 
 Even if you don't care about whether or not the operation is successful,
-you must **always `await` operations in transactions**.
+you must **always `await` operations done inside transactions**.
 Similarly, you must also `await` nested transactions.
 
 Furthermore, to prevent deadlocks in transaction callbacks `Query<T>.stream()`
@@ -227,7 +227,7 @@ memory.
 > to lock up the database and make concurrent transactions / queries
 > problematic.
 
-Finally, you cannot initated queries or operations that don't run in the
+Finally, you cannot initate queries or operations that don't run in the
 transaction from inside the _transaction callback_. That's because `db` will
 lookup the current transaction (if any) from a zone variable. This is rarely a
 limitation, in practice you can just execute such queries before starting the
