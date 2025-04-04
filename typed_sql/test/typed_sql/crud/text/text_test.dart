@@ -76,7 +76,7 @@ void main() {
         .execute();
 
     await db.items
-        .updateAll((item, set) => set(
+        .update((item, set) => set(
               value: literal(updatedValue),
             ))
         .execute();
@@ -94,7 +94,7 @@ void main() {
         .execute();
 
     final updatedItems = await db.items
-        .updateAll((item, set) => set(
+        .update((item, set) => set(
               value: literal(updatedValue),
             ))
         .returnUpdated()
@@ -117,7 +117,7 @@ void main() {
         .execute();
 
     final values = await db.items
-        .updateAll((item, set) => set(
+        .update((item, set) => set(
               value: literal(updatedValue),
             ))
         .returning((item) => (item.value,))

@@ -139,8 +139,8 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   QuerySingle<(Expr<User>,)> byKey({required int userId}) =>
       where((user) => user.userId.equalsLiteral(userId)).first;
 
-  /// TODO: document updateAll()
-  Update<User> updateAll(
+  /// TODO: document update()
+  Update<User> update(
           UpdateSet<User> Function(
             Expr<User> user,
             UpdateSet<User> Function({
@@ -369,8 +369,8 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
   QuerySingle<(Expr<Package>,)> byKey({required String packageName}) =>
       where((package) => package.packageName.equalsLiteral(packageName)).first;
 
-  /// TODO: document updateAll()
-  Update<Package> updateAll(
+  /// TODO: document update()
+  Update<Package> update(
           UpdateSet<Package> Function(
             Expr<Package> package,
             UpdateSet<Package> Function({
@@ -581,8 +581,8 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
           .equalsLiteral(userId)
           .and(like.packageName.equalsLiteral(packageName))).first;
 
-  /// TODO: document updateAll()
-  Update<Like> updateAll(
+  /// TODO: document update()
+  Update<Like> update(
           UpdateSet<Like> Function(
             Expr<Like> like,
             UpdateSet<Like> Function({

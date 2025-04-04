@@ -109,19 +109,19 @@ await db.books
     .execute();
 ```
 
-## Update multiple rows with `.updateAll`
-Similar, to how we update a single row with `.update`, we can update multiple
-rows with `.updateAll`. The `.updateAll` extension method is present on any
-`Query<(Expr<T>,)>` object where `T extends Model`.
+## Update multiple rows with `.update`
+In `package:typed_sql` a `Query<(Expr<T>,)>` where `T extends Model` will
+always have a `.update` method. We can use this `.update` method to update all
+rows that match the query.
 
 The following example shows how to reduce the stock by half for all books with
 `stock > 5`. As division by two results in a `Expr<double>`, so we use
 `.asInt()` to truncate to an `Expr<int>` with a `CAST` in SQL.
 
-```dart bookstore_test.dart#update-all-books-where-stock-gt-5
+```dart bookstore_test.dart#update-books-where-stock-gt-5
 await db.books
     .where((book) => book.stock > literal(5))
-    .updateAll((book, set) => set(
+    .update((book, set) => set(
           stock: (book.stock / literal(2)).asInt(),
         ))
     .execute();
@@ -131,8 +131,8 @@ await db.books
 ## Returning the updated values with `.returning`
 When updating a row in SQL we can use a `RETURNING` clause to return the
 updated rows. We can do the same thing in `package:typed_sql`.
-The following example shows, how to use `.returnUpdated()` in the `.update`
-example from earlier.
+The following example shows, how to use `.returnUpdated()` in the
+`QuerySingle<(Expr<Model>,)>.update` example from earlier.
 
 ```dart bookstore_test.dart#update-book-bykey-returnUpdated
 final updatedBook = await db.books
@@ -149,15 +149,15 @@ if (updatedBook == null) {
 check(updatedBook.stock).equals(9);
 ```
 
-The `.returnUpdated()` extension method can also be used with `.updateAll`, it
-will just return a list of the updated rows instead. More generally, it's also
-possible to return a custom projection, similar to the ones you can make with
-`.select`, as illustrated below:
+The `.returnUpdated()` extension method can also be used with
+`Query<(Expr<Model>,)>.update`, it will just return a list of the updated rows
+instead. More generally, it's also possible to return a custom projection,
+similar to the ones you can make with `.select`, as illustrated below:
 
-```dart bookstore_test.dart#update-all-books-where-returning
+```dart bookstore_test.dart#update-books-where-returning
 final updatedStock = await db.books
     .where((book) => book.stock > literal(5))
-    .updateAll((book, set) => set(
+    .update((book, set) => set(
           stock: (book.stock / literal(2)).asInt(),
         ))
     .returning((book) => (book.stock,))

@@ -391,8 +391,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ))
       ..methods.add(Method(
         (b) => b
-          ..name = 'updateAll'
-          ..docs.add('/// TODO: document updateAll()')
+          ..name = 'update'
+          ..docs.add('/// TODO: document update()')
           ..returns = refer('Update<$modelName>')
           ..requiredParameters.add(Parameter(
             (b) => b

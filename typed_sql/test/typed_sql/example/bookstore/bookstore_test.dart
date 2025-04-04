@@ -106,7 +106,7 @@ void main() {
     // Decrease stock for 'Vegan Dining', return update stock
     final updatedStock = await db.books
         .where((b) => b.title.equals(literal('Vegan Dining')))
-        .updateAll((b, set) => set(
+        .update((b, set) => set(
               stock: b.stock - literal(1),
             ))
         .returning((b) => (b.stock,))
@@ -524,11 +524,11 @@ void main() {
     // #endregion
   });
 
-  r.addTest('books.where(.stock > 5).updateAll(stock = stock / 2)', (db) async {
-    // #region update-all-books-where-stock-gt-5
+  r.addTest('books.where(.stock > 5).update(stock = stock / 2)', (db) async {
+    // #region update-books-where-stock-gt-5
     await db.books
         .where((book) => book.stock > literal(5))
-        .updateAll((book, set) => set(
+        .update((book, set) => set(
               stock: (book.stock / literal(2)).asInt(),
             ))
         .execute();
@@ -552,12 +552,12 @@ void main() {
     // #endregion
   });
 
-  r.addTest('books.where(.stock > 5).updateAll(stock = stock / 2).returning',
+  r.addTest('books.where(.stock > 5).update(stock = stock / 2).returning',
       (db) async {
-    // #region update-all-books-where-returning
+    // #region update-books-where-returning
     final updatedStock = await db.books
         .where((book) => book.stock > literal(5))
-        .updateAll((book, set) => set(
+        .update((book, set) => set(
               stock: (book.stock / literal(2)).asInt(),
             ))
         .returning((book) => (book.stock,))

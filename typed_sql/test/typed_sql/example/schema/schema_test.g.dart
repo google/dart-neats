@@ -119,8 +119,8 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   QuerySingle<(Expr<Author>,)> byKey({required int authorId}) =>
       where((author) => author.authorId.equalsLiteral(authorId)).first;
 
-  /// TODO: document updateAll()
-  Update<Author> updateAll(
+  /// TODO: document update()
+  Update<Author> update(
           UpdateSet<Author> Function(
             Expr<Author> author,
             UpdateSet<Author> Function({
@@ -332,8 +332,8 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   QuerySingle<(Expr<Book>,)> byKey({required int bookId}) =>
       where((book) => book.bookId.equalsLiteral(bookId)).first;
 
-  /// TODO: document updateAll()
-  Update<Book> updateAll(
+  /// TODO: document update()
+  Update<Book> update(
           UpdateSet<Book> Function(
             Expr<Book> book,
             UpdateSet<Book> Function({

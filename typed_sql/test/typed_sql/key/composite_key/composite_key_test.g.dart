@@ -118,8 +118,8 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
       where((item) =>
           item.id.equalsLiteral(id).and(item.name.equalsLiteral(name))).first;
 
-  /// TODO: document updateAll()
-  Update<Item> updateAll(
+  /// TODO: document update()
+  Update<Item> update(
           UpdateSet<Item> Function(
             Expr<Item> item,
             UpdateSet<Item> Function({

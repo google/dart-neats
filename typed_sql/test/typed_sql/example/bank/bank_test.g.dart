@@ -127,8 +127,8 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
   QuerySingle<(Expr<Account>,)> byKey({required int accountId}) =>
       where((account) => account.accountId.equalsLiteral(accountId)).first;
 
-  /// TODO: document updateAll()
-  Update<Account> updateAll(
+  /// TODO: document update()
+  Update<Account> update(
           UpdateSet<Account> Function(
             Expr<Account> account,
             UpdateSet<Account> Function({

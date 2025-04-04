@@ -84,7 +84,7 @@ void main() {
         .execute();
 
     await db.items
-        .updateAll((item, set) => set(
+        .update((item, set) => set(
               value: Literal.custom(updatedValue, JsonValue.fromDatabase),
             ))
         .execute();

@@ -138,8 +138,8 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   QuerySingle<(Expr<Employee>,)> byKey({required int id}) =>
       where((employee) => employee.id.equalsLiteral(id)).first;
 
-  /// TODO: document updateAll()
-  Update<Employee> updateAll(
+  /// TODO: document update()
+  Update<Employee> update(
           UpdateSet<Employee> Function(
             Expr<Employee> employee,
             UpdateSet<Employee> Function({

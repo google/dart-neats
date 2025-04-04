@@ -138,8 +138,8 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   QuerySingle<(Expr<Item>,)> byKey({required int id}) =>
       where((item) => item.id.equalsLiteral(id)).first;
 
-  /// TODO: document updateAll()
-  Update<Item> updateAll(
+  /// TODO: document update()
+  Update<Item> update(
           UpdateSet<Item> Function(
             Expr<Item> item,
             UpdateSet<Item> Function({

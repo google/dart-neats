@@ -109,7 +109,7 @@ await db.books
 // Decrease stock for 'Vegan Dining', return update stock
 final updatedStock = await db.books
     .where((b) => b.title.equals(literal('Vegan Dining')))
-    .updateAll((b, set) => set(
+    .update((b, set) => set(
           stock: b.stock - literal(1),
         ))
     .returning((b) => (b.stock,))
