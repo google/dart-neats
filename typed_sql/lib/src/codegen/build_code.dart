@@ -448,7 +448,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ..requiredParameters.add(Parameter(
                   (b) => b
                     ..name = field.name
-                    ..type = refer(field.type),
+                    ..type = refer(field.typeName),
                 ))
                 ..lambda = true
                 ..body = Code('''
