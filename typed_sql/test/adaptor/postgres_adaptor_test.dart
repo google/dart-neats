@@ -15,8 +15,6 @@
 import 'package:test/test.dart';
 import 'package:typed_sql/adaptor.dart';
 
-import '../testutil/postgres_manager.dart';
-
 extension on Stream<RowReader> {
   Future<List<(int, String)>> toTupleList() async => (await toList())
       .map((row) => (
@@ -28,10 +26,7 @@ extension on Stream<RowReader> {
 
 void main() async {
   test('create table / insert / select', () async {
-    final pg = PostgresManager();
-    final pool = await pg.getPool();
-
-    final db = DatabaseAdaptor.postgres(pool);
+    final db = DatabaseAdaptor.postgresTestDatabase();
 
     await db.execute('CREATE TABLE users (id INT, name TEXT)', []);
 
@@ -51,7 +46,5 @@ void main() async {
     expect(users.firstWhere((u) => u.$1 == 2), (2, 'Bob'));
 
     await db.close();
-
-    pg.close();
   });
 }

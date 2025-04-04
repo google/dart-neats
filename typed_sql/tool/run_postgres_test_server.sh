@@ -16,27 +16,17 @@
 
 set -e
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-ROOT="${SCRIPT_DIR}/.."
-
 docker run \
   -ti --rm \
   --name typed_sql_postgres \
-  -e POSTGRES_HOST_AUTH_METHOD=trust \
+  -e POSTGRES_PASSWORD=postgres \
   -p 5432:5432 \
-  postgres:17
-
-
-exit 0;
-
-# Create directory for exposing sockets
-SOCKET_DIR="${ROOT}/.dart_tool/run/postgresql/"
-mkdir -p "$SOCKET_DIR"
-
-# Run postgres
-docker run \
-  -ti --rm \
-  --name typed_sql_postgres \
-  -e POSTGRES_HOST_AUTH_METHOD=trust \
-  -v "$SOCKET_DIR":/var/run/postgresql/ \
-  postgres:17
+  --mount type=tmpfs,destination=/var/lib/postgresql/data \
+  postgres:17 \
+  postgres \
+    -c fsync=off \
+    -c synchronous_commit=off \
+    -c full_page_writes=off \
+    -c wal_level=minimal \
+    -c max_wal_senders=0 \
+    -c archive_mode=off

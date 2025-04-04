@@ -12,4 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// API for implementation of custom [DatabaseAdaptor] for `package:typed_sql`.
+///
+/// You should only ever need to import this library, if you are implementing
+/// a custom [DatabaseAdaptor].
+///
+/// > [!WARNING]
+/// > This interface is NOT stable yet, while subclasses of [DatabaseAdaptor]
+/// > is possible outside `package:typed_sql`, newer versions of this package
+/// > may add new methods (remove existing) without a major version bump!
+///
+/// @docImport 'package:typed_sql/typed_sql.dart';
+@experimental
+library;
+
+import 'package:meta/meta.dart';
+
 export 'src/adaptor/adaptor.dart';

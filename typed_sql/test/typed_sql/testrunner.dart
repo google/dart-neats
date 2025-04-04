@@ -18,14 +18,9 @@ import 'package:meta/meta.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
 
-import '../testutil/postgres_manager.dart';
-
 export 'package:checks/checks.dart';
 
-var _testFileCounter = 0;
-
 final class TestRunner<T extends Schema> {
-  final _pg = PostgresManager();
   final bool _resetDatabaseForEachTest;
 
   final _tests = <({
@@ -60,44 +55,23 @@ final class TestRunner<T extends Schema> {
         skipPostgres: skipPostgres,
       ));
 
-  Future<DatabaseAdaptor> _getSqlite() async {
-    _testFileCounter++;
-    final filename = [
-      DateTime.now().microsecondsSinceEpoch,
-      _testFileCounter,
-    ].join('-');
-    final u = Uri.parse('file:inmemory-$filename?mode=memory&cache=shared');
-    final adaptor = DatabaseAdaptor.withLogging(
-      DatabaseAdaptor.sqlite3(u),
-      printOnFailure,
-    );
-    return adaptor;
-  }
-
-  Future<DatabaseAdaptor> _getPostgres() async {
-    return DatabaseAdaptor.withLogging(
-      DatabaseAdaptor.postgres(await _pg.getPool()),
-      printOnFailure,
-    );
-  }
-
   void run() {
-    Future<DatabaseAdaptor> Function() getSqlite;
-    Future<DatabaseAdaptor> Function() getPostgres;
+    DatabaseAdaptor Function() getSqlite;
+    DatabaseAdaptor Function() getPostgres;
 
     if (_resetDatabaseForEachTest) {
-      getSqlite = _getSqlite;
-      getPostgres = _getPostgres;
+      getSqlite = DatabaseAdaptor.sqlite3TestDatabase;
+      getPostgres = DatabaseAdaptor.postgresTestDatabase;
     } else {
       late DatabaseAdaptor sqlite;
-      getSqlite = () async => sqlite;
+      getSqlite = () => DatabaseAdaptor.withNopClose(sqlite);
 
       late DatabaseAdaptor postgres;
-      getPostgres = () async => postgres;
+      getPostgres = () => DatabaseAdaptor.withNopClose(postgres);
 
       setUpAll(() async {
-        sqlite = await _getSqlite();
-        postgres = await _getPostgres();
+        sqlite = DatabaseAdaptor.sqlite3TestDatabase();
+        postgres = DatabaseAdaptor.postgresTestDatabase();
       });
       tearDownAll(() async {
         await sqlite.close();
@@ -112,7 +86,8 @@ final class TestRunner<T extends Schema> {
           return;
         }
 
-        final adaptor = await getSqlite();
+        final adaptor =
+            DatabaseAdaptor.withLogging(getSqlite(), printOnFailure);
         final db = Database<T>(adaptor, SqlDialect.sqlite());
 
         try {
@@ -126,20 +101,10 @@ final class TestRunner<T extends Schema> {
             await _validate(db);
           }
         } finally {
-          try {
-            if (_resetDatabaseForEachTest) {
-              await adaptor.close();
-            }
-          } catch (e) {
-            // ignore
-          }
+          await adaptor.close();
         }
       });
     }
-
-    final skipPg = !_pg.isAvailable
-        ? 'postgres unavailable, try ./tool/run_postgres_test_server.sh'
-        : null;
 
     for (final testcase in _tests) {
       test('${testcase.name} (variant: postgres)', () async {
@@ -148,7 +113,8 @@ final class TestRunner<T extends Schema> {
           return;
         }
 
-        final adaptor = await getPostgres();
+        final adaptor =
+            DatabaseAdaptor.withLogging(getPostgres(), printOnFailure);
         final db = Database<T>(adaptor, SqlDialect.postgres());
 
         try {
@@ -162,15 +128,9 @@ final class TestRunner<T extends Schema> {
             await _validate(db);
           }
         } finally {
-          try {
-            if (_resetDatabaseForEachTest) {
-              await adaptor.close(force: true);
-            }
-          } catch (e) {
-            // ignore
-          }
+          await adaptor.close(force: true);
         }
-      }, skip: skipPg);
+      });
     }
   }
 }

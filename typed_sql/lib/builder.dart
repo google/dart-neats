@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// This library providers the [Builder] implementation for `build_runner`.
+///
+/// > [!NOTE]
+/// > You should generally never need to import or use this library, it is
+/// > exposed for use by `build_runner` **only**.
+///
 /// @nodoc
 library;
 

@@ -12,19 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// @docImport 'package:test/test.dart';
+library;
+
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' show Pool;
 
 import '../exceptions.dart';
+import 'future_adaptor.dart';
 import 'logging_adaptor.dart';
 import 'postgres_adaptor.dart';
 import 'sqlite_adaptor.dart';
+import 'testing_adaptor.dart';
+import 'wrapclose_adaptor.dart';
 
 export '../exceptions.dart';
 
 /// Interface that a database adaptor must implement.
+///
+/// > [!WARNING]
+/// > This interface is NOT stable yet, while subclasses of [DatabaseAdaptor]
+/// > is possible outside `package:typed_sql`, newer versions of this package
+/// > may add new methods (remove existing) without a major version bump!
 abstract base class DatabaseAdaptor extends Executor {
+  DatabaseAdaptor();
+
   /// Close the database connection pool.
   ///
   /// If called without [force] this must wait for all ongoing calls to
@@ -39,15 +53,139 @@ abstract base class DatabaseAdaptor extends Executor {
   /// [DatabaseConnectionException].
   Future<void> close({bool force = false});
 
-  static DatabaseAdaptor sqlite3(Uri uri) => sqlite3Adaptor(uri);
+  /// Create an SQLite3 [DatabaseAdaptor] from [uri].
+  ///
+  /// The [uri] must be given in [SQLite3 URI format][1].
+  ///
+  /// {@template sqlite-dependency}
+  /// The [DatabaseAdaptor] for SQLite3 relies on [`package:sqlite3`][2], this
+  /// requires the dynamic library to available on the system, or manually
+  /// specified, see [manually providing sqlite3 libraries][3].
+  /// {@endtemplate}
+  ///
+  /// > [!WARNING]
+  /// > Do not use `:memory:`, the [DatabaseAdaptor] **must** be able to open
+  /// > concurrent connections. For testing consider using
+  /// > [DatabaseAdaptor.sqlite3TestDatabase]. If you want an in-memory
+  /// > database, use _shared-cache_ with [URI filename][1], such as:
+  /// > `file:memdb1?mode=memory&cache=shared`.
+  /// >
+  /// > See also SQLite3 documentation on [In-Memory Databases][4].
+  ///
+  /// [1]: https://www.sqlite.org/uri.html
+  /// [2]: https://pub.dev/packages/sqlite3
+  /// [3]: https://pub.dev/packages/sqlite3#manually-providing-sqlite3-libraries
+  /// [4]: https://www.sqlite.org/inmemorydb.html
+  factory DatabaseAdaptor.sqlite3(Uri uri) => sqlite3Adaptor(uri);
 
-  static DatabaseAdaptor postgres(Pool<void> pool) => postgresAdaptor(pool);
+  /// Create a Postgres [DatabaseAdaptor] using [pool].
+  ///
+  /// Calling [close] on the returned [DatabaseAdaptor] will close [pool].
+  factory DatabaseAdaptor.postgres(Pool<void> pool) => postgresAdaptor(pool);
 
-  static DatabaseAdaptor withLogging(
+  /// Wrap [adaptor] as [DatabaseAdaptor].
+  ///
+  /// This returns a [DatabaseAdaptor] that awaits the future before
+  /// calling forwarding the requested operation.
+  factory DatabaseAdaptor.fromFuture(Future<DatabaseAdaptor> adaptor) =>
+      futureDatabaseAdaptor(adaptor);
+
+  /// Create an SQLite in-memory database for testing.
+  ///
+  /// This will create an SQLite3 database that runs entirely in-memory and is
+  /// suitable for testing. You can create multiple databases at the same time,
+  /// and they will not interfere with each other.
+  ///
+  /// When [close] is called the memory will be released, and
+  /// any data stored in the database will be gone.
+  ///
+  /// {@macro sqlite-dependency}
+  @visibleForTesting
+  factory DatabaseAdaptor.sqlite3TestDatabase() =>
+      futureDatabaseAdaptor(sqlite3TestingDatabaseAdaptor());
+
+  /// Create an ephemeral postgres database for testing.
+  ///
+  /// This assumes that a postgres server is running and admin priviledges are
+  /// available when connecting with:
+  ///  * `PGHOST`, defaults to `'127.0.0.1'`,
+  ///  * `PGPORT`, defaults to `5432`,
+  ///  * `PGDATABASE`, defaults to `'postgres'`,
+  ///  * `PGUSER`, defaults to `'postgres'`, and,
+  ///  * `PGPASSWORD`, defaults to `'postgres'`.
+  ///
+  /// This will connect to postgres, use `CREATE DATABASE "testdb-<uuid>"` to
+  /// create an empty database for testing, and return a [DatabaseAdaptor] for
+  /// that database. When [close] is called the test database will be deleted.
+  ///
+  /// You can launch a postgres database for local testing with:
+  /// ```sh
+  /// docker run \
+  ///   -ti --rm \
+  ///   -e POSTGRES_PASSWORD=postgres \
+  ///   -p 127.0.0.1:5432:5432 \
+  ///   postgres:17
+  /// ```
+  ///
+  /// If running tests on Github Actions you can add a postgres service to your
+  /// workflows jobs with:
+  /// ```yaml
+  /// runs-on: ubuntu-latest
+  /// services:
+  ///   postgres:
+  ///     image: postgres:17
+  ///     env:
+  ///       POSTGRES_PASSWORD: postgres
+  ///     options: >-
+  ///       --health-cmd pg_isready
+  ///       --health-interval 10s
+  ///       --health-timeout 5s
+  ///       --health-retries 5
+  ///     ports:
+  ///       - 5432:5432
+  /// steps:
+  ///  - ...
+  /// ```
+  /// See Github Actions documentation on
+  /// [creating PostgreSQL service containers](https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers)
+  /// for details.
+  @visibleForTesting
+  factory DatabaseAdaptor.postgresTestDatabase() =>
+      futureDatabaseAdaptor(postgresTestingDatabaseAdaptor());
+
+  /// Wrap [adaptor] such that [close] calls [onClosed] instead of
+  /// `adaptor.close`.
+  ///
+  /// > [!NOTE]
+  /// > [adaptor] will not be closed when [close] is called on the returned
+  /// > [DatabaseAdaptor].
+  factory DatabaseAdaptor.withOnClose(
     DatabaseAdaptor adaptor,
-    void Function(String message) logDrain,
+    Future<void> Function({required bool force}) onClosed,
   ) =>
-      loggingAdaptor(adaptor, logDrain);
+      withOnCloseDatabaseAdaptor(adaptor, onClosed);
+
+  /// Wrap [adaptor] such that [close] is a no-op!
+  ///
+  /// > [!NOTE]
+  /// > [adaptor] will not be closed when [close] is called on the returned
+  /// > [DatabaseAdaptor].
+  factory DatabaseAdaptor.withNopClose(DatabaseAdaptor adaptor) =>
+      withOnCloseDatabaseAdaptor(adaptor, ({required bool force}) async {});
+
+  /// Wrap [adaptor] such that all queries are written to [log].
+  ///
+  /// > [!WARNING]
+  /// > The format of log messages written are not covered by version
+  /// > compatibility guarantees.
+  ///
+  /// This is intended for debugging purposes, and pairs nicely with
+  /// [printOnFailure] from `package:test/test.dart`.
+  factory DatabaseAdaptor.withLogging(
+    DatabaseAdaptor adaptor,
+    void Function(String message) log,
+  ) =>
+      loggingAdaptor(adaptor, log);
 }
 
 /// Interface for executing database operations in a transaction.
