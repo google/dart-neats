@@ -129,7 +129,8 @@ await db.books
 
 
 ## Returning the updated values with `.returning`
-When updating a row we can also use `.returning` to return the updated rows.
+When updating a row in SQL we can use a `RETURNING` clause to return the
+updated rows. We can do the same thing in `package:typed_sql`.
 The following example shows, how to use `.returnUpdated()` in the `.update`
 example from earlier.
 
@@ -178,8 +179,9 @@ just an short-hand for `.returning((row) => (row,))`.
 
 > [!NOTE]
 > The return value of the `.returning` extension method is **not** a `Query`
-> object. Thus, it is not possible to combine it with other extension methods
-> for `Query` objects. The only thing you can do is `.executeAndFetch()`.
+> object, because SQL does not support using results from an `UPDATE` statement
+> in a subquery. Thus, it is not possible to combine it with other extension
+> methods for `Query` objects. The only thing you can do is `.executeAndFetch()`.
 
 
 ## Deleting rows with `.delete`

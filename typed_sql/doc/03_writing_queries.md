@@ -52,8 +52,10 @@ final initialBooks = [
 ```
 
 ## Filtering with `.where`
-Similarly, to SQL we can use a `WHERE` clause to filter rows from a table
-(or subquery). If we want get all books with more than 3 in stock, we can write
+We can use the query builder `.where` to filter rows from a table
+(or subquery). It corresponds to SQL `WHERE`.
+
+If we want get all books with more than 3 in stock, we can write
 the query as follows:
 
 ```dart bookstore_test.dart#books.where-stock-gt-3
