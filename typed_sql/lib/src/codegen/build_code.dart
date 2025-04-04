@@ -421,24 +421,6 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             )
           '''),
       ))
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'updateAllLiteral'
-          ..docs.add('/// TODO: document updateAllLiteral()')
-          ..docs.add('/// WARNING: This cannot set properties to `null`!')
-          ..returns = refer('Update<$modelName>')
-          ..optionalParameters.addAll(model.fields.asOptionalNamedParameters)
-          ..lambda = true
-          ..body = Code('''
-            ExposedForCodeGen.update<$modelName>(
-              this,
-              _\$${model.name}._\$table,
-              ($modelInstanceName) => ExposedForCodeGen.buildUpdate<$modelName>([
-                ${model.fields.map((field) => '${field.name} != null ? literal(${field.name}) : null').join(', ')},
-              ]),
-            )
-          '''),
-      ))
       ..methods.addAll(model.fields.where((field) => field.unique).map(
             (field) => Method(
               (b) => b
@@ -806,17 +788,8 @@ extension on List<ParsedField> {
           ..required = true
           ..type = refer(field.type),
       ));
-
-  Iterable<Parameter> get asOptionalNamedParameters => map((field) => Parameter(
-        (b) => b
-          ..name = field.name
-          ..type = refer(field.nullable)
-          ..named = true,
-      ));
 }
 
 extension on ParsedField {
   String get type => isNullable ? '$typeName?' : typeName;
-
-  String get nullable => '$typeName?';
 }

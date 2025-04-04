@@ -268,35 +268,6 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
         ),
       );
 
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Item> updateAllLiteral({
-    int? id,
-    String? text,
-    double? real,
-    int? integer,
-    DateTime? timestamp,
-    String? optText,
-    double? optReal,
-    int? optInteger,
-    DateTime? optTimestamp,
-  }) =>
-      ExposedForCodeGen.update<Item>(
-        this,
-        _$Item._$table,
-        (item) => ExposedForCodeGen.buildUpdate<Item>([
-          id != null ? literal(id) : null,
-          text != null ? literal(text) : null,
-          real != null ? literal(real) : null,
-          integer != null ? literal(integer) : null,
-          timestamp != null ? literal(timestamp) : null,
-          optText != null ? literal(optText) : null,
-          optReal != null ? literal(optReal) : null,
-          optInteger != null ? literal(optInteger) : null,
-          optTimestamp != null ? literal(optTimestamp) : null,
-        ]),
-      );
-
   /// TODO: document delete()}
   Delete<Item> delete() => ExposedForCodeGen.delete(this, _$Item._$table);
 }

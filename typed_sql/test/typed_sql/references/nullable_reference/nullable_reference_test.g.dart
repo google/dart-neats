@@ -166,23 +166,6 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
         ),
       );
 
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Author> updateAllLiteral({
-    int? authorId,
-    String? name,
-    int? favoriteBookId,
-  }) =>
-      ExposedForCodeGen.update<Author>(
-        this,
-        _$Author._$table,
-        (author) => ExposedForCodeGen.buildUpdate<Author>([
-          authorId != null ? literal(authorId) : null,
-          name != null ? literal(name) : null,
-          favoriteBookId != null ? literal(favoriteBookId) : null,
-        ]),
-      );
-
   /// TODO: document delete()}
   Delete<Author> delete() => ExposedForCodeGen.delete(this, _$Author._$table);
 }
@@ -456,27 +439,6 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
             stock,
           ]),
         ),
-      );
-
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Book> updateAllLiteral({
-    int? bookId,
-    String? title,
-    int? authorId,
-    int? editorId,
-    int? stock,
-  }) =>
-      ExposedForCodeGen.update<Book>(
-        this,
-        _$Book._$table,
-        (book) => ExposedForCodeGen.buildUpdate<Book>([
-          bookId != null ? literal(bookId) : null,
-          title != null ? literal(title) : null,
-          authorId != null ? literal(authorId) : null,
-          editorId != null ? literal(editorId) : null,
-          stock != null ? literal(stock) : null,
-        ]),
       );
 
   /// TODO: document delete()}

@@ -136,21 +136,6 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
         ),
       );
 
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Item> updateAllLiteral({
-    int? id,
-    int? value,
-  }) =>
-      ExposedForCodeGen.update<Item>(
-        this,
-        _$Item._$table,
-        (item) => ExposedForCodeGen.buildUpdate<Item>([
-          id != null ? literal(id) : null,
-          value != null ? literal(value) : null,
-        ]),
-      );
-
   /// TODO: document delete()}
   Delete<Item> delete() => ExposedForCodeGen.delete(this, _$Item._$table);
 }

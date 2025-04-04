@@ -159,23 +159,6 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
         ),
       );
 
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Employee> updateAllLiteral({
-    int? employeeId,
-    String? name,
-    int? departmentId,
-  }) =>
-      ExposedForCodeGen.update<Employee>(
-        this,
-        _$Employee._$table,
-        (employee) => ExposedForCodeGen.buildUpdate<Employee>([
-          employeeId != null ? literal(employeeId) : null,
-          name != null ? literal(name) : null,
-          departmentId != null ? literal(departmentId) : null,
-        ]),
-      );
-
   /// TODO: document delete()}
   Delete<Employee> delete() =>
       ExposedForCodeGen.delete(this, _$Employee._$table);
@@ -369,23 +352,6 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
             location,
           ]),
         ),
-      );
-
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Department> updateAllLiteral({
-    int? departmentId,
-    String? name,
-    String? location,
-  }) =>
-      ExposedForCodeGen.update<Department>(
-        this,
-        _$Department._$table,
-        (department) => ExposedForCodeGen.buildUpdate<Department>([
-          departmentId != null ? literal(departmentId) : null,
-          name != null ? literal(name) : null,
-          location != null ? literal(location) : null,
-        ]),
       );
 
   /// TODO: document delete()}

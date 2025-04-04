@@ -167,23 +167,6 @@ extension QueryUserExt on Query<(Expr<User>,)> {
         ),
       );
 
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<User> updateAllLiteral({
-    int? userId,
-    String? name,
-    String? email,
-  }) =>
-      ExposedForCodeGen.update<User>(
-        this,
-        _$User._$table,
-        (user) => ExposedForCodeGen.buildUpdate<User>([
-          userId != null ? literal(userId) : null,
-          name != null ? literal(name) : null,
-          email != null ? literal(email) : null,
-        ]),
-      );
-
   /// TODO: document byXXX()}
   QuerySingle<(Expr<User>,)> byEmail(String email) =>
       where((user) => user.email.equalsLiteral(email)).first;
@@ -417,25 +400,6 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
         ),
       );
 
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Package> updateAllLiteral({
-    String? packageName,
-    int? likes,
-    int? ownerId,
-    String? publisher,
-  }) =>
-      ExposedForCodeGen.update<Package>(
-        this,
-        _$Package._$table,
-        (package) => ExposedForCodeGen.buildUpdate<Package>([
-          packageName != null ? literal(packageName) : null,
-          likes != null ? literal(likes) : null,
-          ownerId != null ? literal(ownerId) : null,
-          publisher != null ? literal(publisher) : null,
-        ]),
-      );
-
   /// TODO: document delete()}
   Delete<Package> delete() => ExposedForCodeGen.delete(this, _$Package._$table);
 }
@@ -640,21 +604,6 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
             packageName,
           ]),
         ),
-      );
-
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Like> updateAllLiteral({
-    int? userId,
-    String? packageName,
-  }) =>
-      ExposedForCodeGen.update<Like>(
-        this,
-        _$Like._$table,
-        (like) => ExposedForCodeGen.buildUpdate<Like>([
-          userId != null ? literal(userId) : null,
-          packageName != null ? literal(packageName) : null,
-        ]),
       );
 
   /// TODO: document delete()}

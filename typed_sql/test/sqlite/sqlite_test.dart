@@ -133,16 +133,16 @@ void main() {
     expect(users, hasLength(1));
   });
 
-  _test('db.packages.where().updateAllLiteral()', (db) async {
+  _test('db.packages.where().updateAll()', (db) async {
     {
       final p = await db.packages.byKey(packageName: 'foo').fetch();
       expect(p!.ownerId, equals(1));
     }
     await db.packages
         .where((p) => p.packageName.equalsLiteral('foo'))
-        .updateAllLiteral(
-          ownerId: 2,
-        )
+        .updateAll((p, set) => set(
+              ownerId: literal(2),
+            ))
         .execute();
     {
       final p = await db.packages.byKey(packageName: 'foo').fetch();

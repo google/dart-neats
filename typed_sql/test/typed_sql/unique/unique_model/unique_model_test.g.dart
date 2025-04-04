@@ -155,23 +155,6 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
         ),
       );
 
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Account> updateAllLiteral({
-    int? accountId,
-    String? accountNumber,
-    double? balance,
-  }) =>
-      ExposedForCodeGen.update<Account>(
-        this,
-        _$Account._$table,
-        (account) => ExposedForCodeGen.buildUpdate<Account>([
-          accountId != null ? literal(accountId) : null,
-          accountNumber != null ? literal(accountNumber) : null,
-          balance != null ? literal(balance) : null,
-        ]),
-      );
-
   /// TODO: document byXXX()}
   QuerySingle<(Expr<Account>,)> byAccountNumber(String accountNumber) =>
       where((account) => account.accountNumber.equalsLiteral(accountNumber))

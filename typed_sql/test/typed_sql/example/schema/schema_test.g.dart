@@ -144,21 +144,6 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
         ),
       );
 
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Author> updateAllLiteral({
-    int? authorId,
-    String? name,
-  }) =>
-      ExposedForCodeGen.update<Author>(
-        this,
-        _$Author._$table,
-        (author) => ExposedForCodeGen.buildUpdate<Author>([
-          authorId != null ? literal(authorId) : null,
-          name != null ? literal(name) : null,
-        ]),
-      );
-
   /// TODO: document byXXX()}
   QuerySingle<(Expr<Author>,)> byName(String name) =>
       where((author) => author.name.equalsLiteral(name)).first;
@@ -376,25 +361,6 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
             stock,
           ]),
         ),
-      );
-
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Book> updateAllLiteral({
-    int? bookId,
-    String? title,
-    int? authorId,
-    int? stock,
-  }) =>
-      ExposedForCodeGen.update<Book>(
-        this,
-        _$Book._$table,
-        (book) => ExposedForCodeGen.buildUpdate<Book>([
-          bookId != null ? literal(bookId) : null,
-          title != null ? literal(title) : null,
-          authorId != null ? literal(authorId) : null,
-          stock != null ? literal(stock) : null,
-        ]),
       );
 
   /// TODO: document delete()}

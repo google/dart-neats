@@ -169,25 +169,6 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
         ),
       );
 
-  /// TODO: document updateAllLiteral()
-  /// WARNING: This cannot set properties to `null`!
-  Update<Employee> updateAllLiteral({
-    int? id,
-    String? surname,
-    String? seniority,
-    int? salary,
-  }) =>
-      ExposedForCodeGen.update<Employee>(
-        this,
-        _$Employee._$table,
-        (employee) => ExposedForCodeGen.buildUpdate<Employee>([
-          id != null ? literal(id) : null,
-          surname != null ? literal(surname) : null,
-          seniority != null ? literal(seniority) : null,
-          salary != null ? literal(salary) : null,
-        ]),
-      );
-
   /// TODO: document delete()}
   Delete<Employee> delete() =>
       ExposedForCodeGen.delete(this, _$Employee._$table);
