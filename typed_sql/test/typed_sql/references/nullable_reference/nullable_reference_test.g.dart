@@ -263,6 +263,12 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
           .where((r) =>
               favoriteBookId.isNotNull() & r.bookId.equals(favoriteBookId))
           .first;
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => authorId.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 final class _$Book extends Book {
@@ -558,6 +564,12 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   Expr<Author?> get editor => ExposedForCodeGen.subqueryTable(_$Author._$table)
       .where((r) => editorId.isNotNull() & r.authorId.equals(editorId))
       .first;
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => bookId.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 extension AuthorChecks on Subject<Author> {

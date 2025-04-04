@@ -202,6 +202,12 @@ extension ExpressionNullableItemExt on Expr<Item?> {
         ExposedForCodeGen.blob,
         MyJsonValue.fromDatabase,
       ));
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => id.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 extension ItemChecks on Subject<Item> {

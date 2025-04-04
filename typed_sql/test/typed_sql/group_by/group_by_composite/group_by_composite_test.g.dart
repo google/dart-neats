@@ -398,6 +398,12 @@ extension ExpressionNullableItemExt on Expr<Item?> {
   /// TODO: document optTimestamp
   Expr<DateTime?> get optTimestamp =>
       ExposedForCodeGen.field(this, 8, ExposedForCodeGen.dateTime);
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => id.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 extension ItemChecks on Subject<Item> {

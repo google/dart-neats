@@ -224,6 +224,12 @@ extension ExpressionNullableEmployeeExt on Expr<Employee?> {
   /// TODO: document departmentId
   Expr<int?> get departmentId =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => employeeId.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 final class _$Department extends Department {
@@ -419,6 +425,12 @@ extension ExpressionNullableDepartmentExt on Expr<Department?> {
   /// TODO: document location
   Expr<String?> get location =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => departmentId.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 extension DepartmentChecks on Subject<Department> {

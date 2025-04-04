@@ -224,6 +224,12 @@ extension ExpressionNullableAccountExt on Expr<Account?> {
   /// TODO: document balance
   Expr<double?> get balance =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.real);
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => accountId.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 extension AccountChecks on Subject<Account> {

@@ -302,5 +302,25 @@ void main() {
     });
   });
 
+  r.addTest('author.select(.name, .favoriteBook.isNull', (db) async {
+    final result = await db.authors
+        .select((author) => (
+              author.name,
+              // This isn't super efficient, because we actually tell the
+              // database to do the query. So it'd have to be pretty smart
+              // to figure it out.
+              author.favoriteBook.isNull(),
+              author.favoriteBook.isNotNull(),
+              // This is faster:
+              author.favoriteBookId.isNull(),
+              author.favoriteBookId.isNotNull(),
+            ))
+        .fetch();
+    check(result).unorderedEquals({
+      ('Easter Bunny', true, false, true, false),
+      ('Bucks Bunny', false, true, false, true),
+    });
+  });
+
   r.run();
 }

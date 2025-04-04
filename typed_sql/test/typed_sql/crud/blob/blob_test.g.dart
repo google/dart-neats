@@ -189,6 +189,12 @@ extension ExpressionNullableItemExt on Expr<Item?> {
   /// TODO: document value
   Expr<Uint8List?> get value =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.blob);
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => id.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 extension ItemChecks on Subject<Item> {

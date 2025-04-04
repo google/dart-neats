@@ -245,6 +245,12 @@ extension ExpressionNullableEmployeeExt on Expr<Employee?> {
   /// TODO: document salary
   Expr<int?> get salary =>
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => id.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 extension EmployeeChecks on Subject<Employee> {

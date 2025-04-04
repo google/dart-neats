@@ -211,6 +211,12 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   SubQuery<(Expr<Book>,)> get books =>
       ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) => authorId.isNotNull() & r.authorId.equals(authorId));
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => authorId.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 final class _$Book extends Book {
@@ -449,6 +455,12 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   Expr<Author?> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
       .where((r) => authorId.isNotNull() & r.authorId.equals(authorId))
       .first;
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => bookId.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 extension AuthorChecks on Subject<Author> {

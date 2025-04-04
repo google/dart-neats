@@ -245,6 +245,12 @@ extension ExpressionNullableUserExt on Expr<User?> {
   SubQuery<(Expr<Package>,)> get packages =>
       ExposedForCodeGen.subqueryTable(_$Package._$table)
           .where((r) => userId.isNotNull() & r.ownerId.equals(userId));
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => userId.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 final class _$Package extends Package {
@@ -486,6 +492,12 @@ extension ExpressionNullablePackageExt on Expr<Package?> {
   Expr<User?> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
       .where((r) => ownerId.isNotNull() & r.userId.equals(ownerId))
       .first;
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => packageName.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 final class _$Like extends Like {
@@ -659,4 +671,10 @@ extension ExpressionNullableLikeExt on Expr<Like?> {
   /// TODO: document packageName
   Expr<String?> get packageName =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => userId.isNotNull() & packageName.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }

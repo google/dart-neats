@@ -196,6 +196,12 @@ extension ExpressionNullableItemExt on Expr<Item?> {
   /// TODO: document name
   Expr<String?> get name =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  /// TODO: Document isNotNull
+  Expr<bool> isNotNull() => id.isNotNull() & name.isNotNull();
+
+  /// TODO: Document isNull
+  Expr<bool> isNull() => isNotNull().not();
 }
 
 extension ItemChecks on Subject<Item> {

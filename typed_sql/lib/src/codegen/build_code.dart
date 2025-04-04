@@ -607,6 +607,24 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             '''),
         );
       }),
+      Method(
+        (b) => b
+          ..name = 'isNotNull'
+          ..docs.add('/// TODO: Document isNotNull')
+          ..returns = refer('Expr<bool>')
+          ..lambda = true
+          ..body = Code(
+            model.primaryKey.map((pk) => '${pk.name}.isNotNull()').join(' & '),
+          ),
+      ),
+      Method(
+        (b) => b
+          ..name = 'isNull'
+          ..docs.add('/// TODO: Document isNull')
+          ..returns = refer('Expr<bool>')
+          ..lambda = true
+          ..body = Code('isNotNull().not()'),
+      ),
     ]));
 }
 
