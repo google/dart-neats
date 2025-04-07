@@ -65,7 +65,8 @@ Future<ParsedLibrary> parseLibrary(
   // At this point we only support one schema per library.
   if (schemas.length > 1) {
     throw InvalidGenerationSource(
-      'Only one Schema per library is a allowed!',
+      'Only one Schema per library is allowed! '
+      'Consider splitting into one library per schema.',
       element: schemaToElement[schemas[1]],
     );
   }
@@ -110,7 +111,10 @@ Future<ParsedLibrary> parseLibrary(
         );
         if (referencedField == null) {
           throw InvalidGenerationSource(
-            'Foreign key references unknown field "${fk.field}"',
+            'Foreign key references unknown field "${fk.field}", '
+            'no such field on table "${fk.table}".\n'
+            'Available fields: '
+            '${referencedTable.model.fields.map((f) => f.name).join(', ')}.',
             element: foreignKeyToElement[fk],
           );
         }

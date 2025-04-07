@@ -128,6 +128,3 @@ abstract base class SqlDialect {
     SelectStatement statement,
   );
 }
-
-// NOTE: All Expression subclasses are sealed, so we can do exhaustive switching
-//       over them.
