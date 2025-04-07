@@ -12,6 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// API for defining database schema and writing queries against generated code.
+///
+/// This library should be imported in the `model.dart` file where you define
+/// you database schema, which is then augmented with generated code in a
+/// `model.g.dart` file. For convenience, you may also wish to export this
+/// library from your `model.dart` file.
+///
+/// See topic on _schema defintion_ for how to get started.
+library;
+
 export 'src/adaptor/adaptor.dart' show DatabaseAdaptor, RowReader;
 export 'src/dialect/dialect.dart' show SqlDialect;
 export 'src/exceptions.dart';

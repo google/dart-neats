@@ -44,7 +44,7 @@ abstract base class DatabaseAdaptor extends Executor {
   /// If called without [force] this must wait for all ongoing calls to
   /// [script], [query], [execute] or [transact] to finish.
   ///
-  /// Once this has been called all calls to [script], [query], [execute] or
+  /// Once this has been called further calls to [script], [query], [execute] or
   /// [transact] shall throw [StateError]. Unless, these calls are taking place
   /// inside a transaction started before [close] was called.
   ///
