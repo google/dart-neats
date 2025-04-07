@@ -73,7 +73,7 @@ extension ExpressionNullable<T> on Expr<T?> {
   /// > This is a no-op in SQL, there is no enforcement. This merely casts the
   /// > current expression to a non-nullable expression and does not cause an
   /// > error if the assertion is violated.
-  Expr<T> asNotNull() => NullAssertionExpression._(this);
+  Expr<T> asNotNull() => NotNullExpression._(this);
 }
 
 extension ExpressionNullableNum<T extends num> on Expr<T?> {

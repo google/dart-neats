@@ -366,8 +366,7 @@ final class OrElseExpression<T> extends SingleValueExpr<T> {
   }
 }
 
-// TODO: Do we even need this, or can we simply cast?
-final class NullAssertionExpression<T> extends Expr<T> {
+final class NotNullExpression<T> extends Expr<T> {
   final Expr<T?> value;
 
   @override
@@ -382,12 +381,12 @@ final class NullAssertionExpression<T> extends Expr<T> {
 
   @override
   Expr<T> _standin(int index, Object handle) =>
-      NullAssertionExpression._(value._standin(index, handle));
+      NotNullExpression._(value._standin(index, handle));
 
   @override
   Expr<R> _field<R>(int index, FieldType<R> type) => value._field(index, type);
 
-  NullAssertionExpression._(this.value) : super._();
+  NotNullExpression._(this.value) : super._();
 }
 
 final class CastExpression<T, R> extends SingleValueExpr<R> {

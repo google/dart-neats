@@ -76,7 +76,7 @@ export '../typed_sql.dart'
         MinExpression,
         Model,
         ModelExpression,
-        NullAssertionExpression,
+        NotNullExpression,
         OffsetClause,
         OrElseExpression,
         Order,

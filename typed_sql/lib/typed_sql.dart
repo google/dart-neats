@@ -85,7 +85,7 @@ export 'src/typed_sql.dart'
         MaxExpression,
         MinExpression,
         ModelExpression,
-        NullAssertionExpression,
+        NotNullExpression,
         OffsetClause,
         OrElseExpression,
         OrderByClause,
