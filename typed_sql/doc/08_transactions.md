@@ -206,7 +206,7 @@ await db.transact(() async {
 
   /***/ db.byAccountNumber('0002').delete().execute();
   //▲
-  //└─────── Missing await here is VERY BAD, may cause a runtime error!
+  //└─────── Missing `await` here is VERY BAD, and may cause a runtime error!
 });
 ```
 
