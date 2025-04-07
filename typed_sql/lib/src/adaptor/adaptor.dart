@@ -110,11 +110,13 @@ abstract base class DatabaseAdaptor extends Executor {
   ///
   /// This assumes that a postgres server is running and admin priviledges are
   /// available when connecting with:
-  ///  * `PGHOST`, defaults to `'127.0.0.1'`,
-  ///  * `PGPORT`, defaults to `5432`,
-  ///  * `PGDATABASE`, defaults to `'postgres'`,
-  ///  * `PGUSER`, defaults to `'postgres'`, and,
-  ///  * `PGPASSWORD`, defaults to `'postgres'`.
+  ///  * [host], read from `$PGHOST` if `null`, and defaults to `'127.0.0.1'`,
+  ///  * [port], read from `$PGPORT` if `null`, and defaults to `5432`,
+  ///  * [database], read from `$PGDATABASE` if `null`, and defaults to
+  ///    `'postgres'`,
+  ///  * [user], read from `$PGUSER` if `null`, and defaults to `'postgres'`,
+  ///  * [password], read from `$PGPASSWORD` if `null`, and defaults to
+  ///    `'postgres'`.
   ///
   /// This will connect to postgres, use `CREATE DATABASE "testdb-<uuid>"` to
   /// create an empty database for testing, and return a [DatabaseAdaptor] for
@@ -152,8 +154,20 @@ abstract base class DatabaseAdaptor extends Executor {
   /// [creating PostgreSQL service containers](https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers)
   /// for details.
   @visibleForTesting
-  factory DatabaseAdaptor.postgresTestDatabase() =>
-      futureDatabaseAdaptor(postgresTestingDatabaseAdaptor());
+  factory DatabaseAdaptor.postgresTestDatabase({
+    String? host,
+    int? port,
+    String? database,
+    String? user,
+    String? password,
+  }) =>
+      futureDatabaseAdaptor(postgresTestingDatabaseAdaptor(
+        host: host,
+        port: port,
+        database: database,
+        user: user,
+        password: password,
+      ));
 
   /// Wrap [adaptor] such that [close] calls [onClosed] instead of
   /// `adaptor.close`.

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:test/test.dart';
@@ -56,13 +57,25 @@ final class TestRunner<T extends Schema> {
         skipPostgres: skipPostgres,
       ));
 
+  late final String? _getPostgresSocket = () {
+    final socketFile = File('.dart_tool/run/postgresql/.s.PGSQL.5432');
+    if (socketFile.existsSync()) {
+      return socketFile.absolute.path;
+    }
+    return null;
+  }();
+
+  DatabaseAdaptor _getPostgres() {
+    return DatabaseAdaptor.postgresTestDatabase(host: _getPostgresSocket);
+  }
+
   void run() {
     DatabaseAdaptor Function() getSqlite;
     DatabaseAdaptor Function() getPostgres;
 
     if (_resetDatabaseForEachTest) {
       getSqlite = DatabaseAdaptor.sqlite3TestDatabase;
-      getPostgres = DatabaseAdaptor.postgresTestDatabase;
+      getPostgres = _getPostgres;
     } else {
       late DatabaseAdaptor sqlite;
       getSqlite = () => DatabaseAdaptor.withNopClose(sqlite);
@@ -72,7 +85,7 @@ final class TestRunner<T extends Schema> {
 
       setUpAll(() async {
         sqlite = DatabaseAdaptor.sqlite3TestDatabase();
-        postgres = DatabaseAdaptor.postgresTestDatabase();
+        postgres = _getPostgres();
       });
       tearDownAll(() async {
         await sqlite.close();

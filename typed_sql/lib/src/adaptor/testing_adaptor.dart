@@ -26,12 +26,18 @@ Future<DatabaseAdaptor> sqlite3TestingDatabaseAdaptor() async {
   return DatabaseAdaptor.sqlite3(u);
 }
 
-Future<DatabaseAdaptor> postgresTestingDatabaseAdaptor() async {
-  final host = Platform.environment['PGHOST'] ?? '127.0.0.1';
-  final port = int.tryParse(Platform.environment['PGPORT'] ?? '') ?? 5432;
-  final database = Platform.environment['PGDATABASE'] ?? 'postgres';
-  final user = Platform.environment['PGUSER'] ?? 'postgres';
-  final password = Platform.environment['PGPASSWORD'] ?? 'postgres';
+Future<DatabaseAdaptor> postgresTestingDatabaseAdaptor({
+  String? host,
+  int? port,
+  String? database,
+  String? user,
+  String? password,
+}) async {
+  host ??= Platform.environment['PGHOST'] ?? '127.0.0.1';
+  port ??= int.tryParse(Platform.environment['PGPORT'] ?? '') ?? 5432;
+  database ??= Platform.environment['PGDATABASE'] ?? 'postgres';
+  user ??= Platform.environment['PGUSER'] ?? 'postgres';
+  password ??= Platform.environment['PGPASSWORD'] ?? 'postgres';
 
   final admin = Pool<Never>.withEndpoints([
     Endpoint(
@@ -40,6 +46,9 @@ Future<DatabaseAdaptor> postgresTestingDatabaseAdaptor() async {
       database: database,
       username: user,
       password: password,
+      isUnixSocket: Platform.isWindows
+          ? host.startsWith(RegExp(r'[a-zA-Z]+:\\'))
+          : host.startsWith('/'),
     ),
   ], settings: const PoolSettings(sslMode: SslMode.disable));
 
@@ -54,6 +63,9 @@ Future<DatabaseAdaptor> postgresTestingDatabaseAdaptor() async {
       database: testdb,
       username: user,
       password: password,
+      isUnixSocket: Platform.isWindows
+          ? host.startsWith(RegExp(r'[a-zA-Z]+:\\'))
+          : host.startsWith('/'),
     ),
   ], settings: const PoolSettings(sslMode: SslMode.disable));
 
