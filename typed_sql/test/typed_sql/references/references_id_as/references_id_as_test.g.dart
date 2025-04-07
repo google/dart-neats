@@ -649,7 +649,7 @@ extension ExpressionBookExt on Expr<Book> {
   Expr<Author> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
       .where((r) => r.authorId.equals(authorId))
       .first
-      .assertNotNull();
+      .asNotNull();
 }
 
 extension ExpressionNullableBookExt on Expr<Book?> {

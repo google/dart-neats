@@ -524,7 +524,7 @@ _extension methods_:
     * `.isNull() -> Expr<bool>`
     * `.isNotNull() -> Expr<bool>`
     * `.orElse(Expr<T> other) -> Expr<T>`
-    * `.assertNotNull() -> Expr<T>`
+    * `.asNotNull() -> Expr<T>`
  * `Expr<bool>`, has:
     * `.not() -> Expr<bool>` (also available as operator `~`)
     * `.and(Expr<bool> other) -> Expr<bool>` (also available as operator `&`)

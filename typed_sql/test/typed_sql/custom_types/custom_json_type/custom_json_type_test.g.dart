@@ -321,7 +321,7 @@ extension JsonValueExt on JsonValue {
   Expr<JsonValue> get asExpr => ExposedForCodeGen.literalCustomDataType(
         this,
         _exprType,
-      ).assertNotNull();
+      ).asNotNull();
 }
 
 /// Wrap this [JsonValue] as [Expr<JsonValue>] for use queries with

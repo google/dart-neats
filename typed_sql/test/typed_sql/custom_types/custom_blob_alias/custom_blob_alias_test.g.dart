@@ -321,7 +321,7 @@ extension MyCustomTypeAliasExt on MyCustomTypeAlias {
   Expr<MyCustomTypeAlias> get asExpr => ExposedForCodeGen.literalCustomDataType(
         this,
         _exprType,
-      ).assertNotNull();
+      ).asNotNull();
 }
 
 /// Wrap this [MyCustomTypeAlias] as [Expr<MyCustomTypeAlias>] for use queries with

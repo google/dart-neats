@@ -292,7 +292,7 @@ void main() {
               .where((author) => author.name.equals(literal('Easter Bunny')))
               .first
               .authorId
-              .assertNotNull(),
+              .asNotNull(),
         )
         .execute();
     // #endregion

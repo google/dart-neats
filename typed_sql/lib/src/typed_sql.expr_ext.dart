@@ -61,17 +61,19 @@ extension ExpressionNull on Expr<Null> {
 }
 
 extension ExpressionNullable<T> on Expr<T?> {
-  // TODO: Consider renaming assertNotNull -> asNotNull()
-
-  /// Assert that the value is not `NULL`.
+  /// Cast as [Expr<T>] without doing anything in SQL.
   ///
-  /// This is a no-op in SQL!
+  /// As SQL has no concept of nullability this is a no-op in SQL! This merely
+  /// allows you to use an expression as if it is cannot be `NULL`. Hence, if
+  /// you use this on an expression that can be null, you may be
+  /// _null assertion errors_ in Dart at runtime, or unexpected behavior from
+  /// your SQL queries.
   ///
   /// > [!WARNING]
   /// > This is a no-op in SQL, there is no enforcement. This merely casts the
   /// > current expression to a non-nullable expression and does not cause an
   /// > error if the assertion is violated.
-  Expr<T> assertNotNull() => NullAssertionExpression._(this);
+  Expr<T> asNotNull() => NullAssertionExpression._(this);
 }
 
 extension ExpressionNullableNum<T extends num> on Expr<T?> {

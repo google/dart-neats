@@ -522,7 +522,7 @@ void main() {
 
   _test('db.packages.exists().asExpr.not()', (db) async {
     final result = await db
-        .select((db.packages.exists().asExpr.assertNotNull().not(),)).fetch();
+        .select((db.packages.exists().asExpr.asNotNull().not(),)).fetch();
     expect(result, isFalse);
   });
 
@@ -556,7 +556,7 @@ void main() {
                 .where((p) => p.ownerId.equals(u.userId))
                 .exists()
                 .asExpr
-                .assertNotNull()
+                .asNotNull()
                 .not(),
           ),
         )
@@ -577,7 +577,7 @@ void main() {
               .where((p) => p.ownerId.equals(u.userId))
               .exists()
               .asExpr
-              .assertNotNull()
+              .asNotNull()
               .not(),
         )
         .select((u) => (u.name,))
@@ -593,7 +593,7 @@ void main() {
               .where((p) => p.ownerId.equals(u.userId))
               .exists()
               .asExpr
-              .assertNotNull(),
+              .asNotNull(),
         )
         .select((u) => (u.name,))
         .fetch();

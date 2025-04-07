@@ -95,7 +95,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
               ExposedForCodeGen.literalCustomDataType(
                 this,
                 _exprType,
-              ).assertNotNull()
+              ).asNotNull()
             '''),
         )),
     );
@@ -748,11 +748,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ...model.foreignKeys.where((fk) => fk.name != null).map((fk) {
         var nullable = '?';
         var ifAnyDocs = ', if any';
-        var firstAssertNotNull = 'first';
+        var firstAsNotNull = 'first';
         if (!fk.key.isNullable) {
           nullable = '';
           ifAnyDocs = '';
-          firstAssertNotNull = 'first.assertNotNull()';
+          firstAsNotNull = 'first.asNotNull()';
         }
         return Method(
           (b) => b
@@ -773,7 +773,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 _\$${fk.referencedTable.model.name}._\$table
               ).where(
                 (r) => r.${fk.field}.equals(${fk.key.name})
-              ).$firstAssertNotNull
+              ).$firstAsNotNull
             '''),
         );
       }),

@@ -372,7 +372,7 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
   /// don't wish to count `null` values, use [where] to filter out such
   /// rows first.
   Expr<int> count() =>
-      select((a) => (CountAllExpression._(),)).first.assertNotNull();
+      select((a) => (CountAllExpression._(),)).first.asNotNull();
 
   /// Create a projection of this [SubQuery] using `SELECT` clause.
   ///
@@ -790,7 +790,7 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
   /// don't wish to count `null` values, use [where] to filter out such
   /// rows first.
   Expr<int> count() =>
-      select((a, b) => (CountAllExpression._(),)).first.assertNotNull();
+      select((a, b) => (CountAllExpression._(),)).first.asNotNull();
 
   /// Create a projection of this [SubQuery] using `SELECT` clause.
   ///
@@ -1232,7 +1232,7 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
   /// don't wish to count `null` values, use [where] to filter out such
   /// rows first.
   Expr<int> count() =>
-      select((a, b, c) => (CountAllExpression._(),)).first.assertNotNull();
+      select((a, b, c) => (CountAllExpression._(),)).first.asNotNull();
 
   /// Create a projection of this [SubQuery] using `SELECT` clause.
   ///
@@ -1698,7 +1698,7 @@ extension SubQuery4<A, B, C, D>
   /// don't wish to count `null` values, use [where] to filter out such
   /// rows first.
   Expr<int> count() =>
-      select((a, b, c, d) => (CountAllExpression._(),)).first.assertNotNull();
+      select((a, b, c, d) => (CountAllExpression._(),)).first.asNotNull();
 
   /// Create a projection of this [SubQuery] using `SELECT` clause.
   ///
@@ -2181,9 +2181,8 @@ extension SubQuery5<A, B, C, D, E>
   /// This will count all rows, including rows with `null` values. If you
   /// don't wish to count `null` values, use [where] to filter out such
   /// rows first.
-  Expr<int> count() => select((a, b, c, d, e) => (CountAllExpression._(),))
-      .first
-      .assertNotNull();
+  Expr<int> count() =>
+      select((a, b, c, d, e) => (CountAllExpression._(),)).first.asNotNull();
 
   /// Create a projection of this [SubQuery] using `SELECT` clause.
   ///
@@ -2696,9 +2695,8 @@ extension SubQuery6<A, B, C, D, E, F>
   /// This will count all rows, including rows with `null` values. If you
   /// don't wish to count `null` values, use [where] to filter out such
   /// rows first.
-  Expr<int> count() => select((a, b, c, d, e, f) => (CountAllExpression._(),))
-      .first
-      .assertNotNull();
+  Expr<int> count() =>
+      select((a, b, c, d, e, f) => (CountAllExpression._(),)).first.asNotNull();
 
   /// Create a projection of this [SubQuery] using `SELECT` clause.
   ///
@@ -3274,7 +3272,7 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
   Expr<int> count() =>
       select((a, b, c, d, e, f, g) => (CountAllExpression._(),))
           .first
-          .assertNotNull();
+          .asNotNull();
 
   /// Create a projection of this [SubQuery] using `SELECT` clause.
   ///
@@ -4066,7 +4064,7 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
   Expr<int> count() =>
       select((a, b, c, d, e, f, g, h) => (CountAllExpression._(),))
           .first
-          .assertNotNull();
+          .asNotNull();
 
   /// Create a projection of this [SubQuery] using `SELECT` clause.
   ///

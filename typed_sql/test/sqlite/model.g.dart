@@ -680,7 +680,7 @@ extension ExpressionPackageExt on Expr<Package> {
   Expr<User> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
       .where((r) => r.userId.equals(ownerId))
       .first
-      .assertNotNull();
+      .asNotNull();
 }
 
 extension ExpressionNullablePackageExt on Expr<Package?> {

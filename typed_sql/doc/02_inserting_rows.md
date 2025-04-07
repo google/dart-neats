@@ -179,22 +179,22 @@ await db.books
           .where((author) => author.name.equals(literal('Easter Bunny')))
           .first
           .authorId
-          .assertNotNull(),
+          .asNotNull(),
     )
     .execute();
 ```
 
 The `.asSubQuery` converts the `Query<(Expr<Author>,)>` to a
 `SubQuery<(Expr<Author>,)>` such that `.first` returns an `Expr<Author?>`.
-The `.assertNotNull()` is only safe because we know that the Easter Bunny
+The `.asNotNull()` is only safe because we know that the Easter Bunny
 exists, if the subquery turns out to be empty, then `.authorId` may indeed by
 `NULL` and the insertion will fail because `authorId` has a `NOT NULL`
 constraint.
 
 > [!WARNING]
-> The `.assertNotNull()` is a no-op that simply casts the value to a
+> The `.asNotNull()` is a no-op that simply casts the value to a
 > non-nullable `Expr<T>` in Dart. If the expression actually turns out to be
-> `NULL` at runtime, `.assertNotNull()` will not necessarily cause an error.
+> `NULL` at runtime, `.asNotNull()` will not necessarily cause an error.
 > Instead it'll allow the `NULL` value propagate, so if the `Book.authorId`
 > property was nullable such insertion would have been allowed.
 
