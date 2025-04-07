@@ -14,32 +14,8 @@
 
 /// This library provides documentation strings for generated extension methods.
 ///
-/// @docImport 'package:typed_sql/typed_sql.dart';
+/// @docImport 'package:typed_sql/src/typed_sql.dart';
 library;
-
-/// Documentation categories.
-///
-/// The names must be synchronized with entries in `dartdoc_options.yaml`.
-enum Category {
-  schema(name: 'Schema definition'), // ref from annotations
-  insertingRows(name: 'Inserting rows'),
-  writingQueries(name: 'Writing queries'), // ref from Query
-  updateAndDelete(name: 'Update and delete'),
-  foreignKeys(name: 'Foreign keys'), // ref from annotation
-  joins(name: 'Joins'),
-  aggregateFunctions(name: 'Aggregate functions'), // min/max try this
-  transactions(name: 'Transactions'), // from transact
-  exceptionHandling(name: 'Exception handling'), // from exceptions
-  customDataTypes(name: 'Custom data types'), // CustomDataType
-  migrations(name: 'Migrations'),
-  testing(name: 'Testing'); // Test utils
-
-  const Category({required this.name});
-  final String name;
-
-  @override
-  String toString() => '{@category $name}';
-}
 
 /// Documentation for `.where` on [Query], [SubQuery], [QuerySingle].
 ///
@@ -307,4 +283,123 @@ final asQueryQuerySingle = '''
     > This is method is only useful for converting a [QuerySingle]
     > into a [Query] representation, which can be necessary if you wish to pass
     > a [QuerySingle] into a function that only accepts [Query].
+''';
+
+/// Documentation for `.executeAndStream` on [Return].
+final returnExecuteAndStream = '''
+    Execute this statement and return the output as a [Stream].
+''';
+
+/// Documentation for `.executeAndFetch` on [Return].
+final returnExecuteAndFetch = '''
+    Execute this statement and return the output as a [List].
+''';
+
+/// Documentation for `.executeAndFetch` on [ReturnSingle].
+final returnSingleExecuteAndFetch = '''
+    Execute this statement and return the output.
+''';
+
+/// Documentation for `.executeAndFetchOrNulls` on [ReturnSingle].
+final returnSingleExecuteAndFetchOrNulls = '''
+    Execute this statement and return the output.
+''';
+
+/// Documentation for `.executeAndFetch` on [ReturnOne].
+final returnOneExecuteAndFetch = '''
+    Execute this statement and return the output.
+''';
+
+/// Documentation for `.all` on [InnerJoin].
+final innerJoinAll = '''
+    Create query containing the cartesian product using a `CROSS JOIN`.
+
+    This is equivalent to `... INNER JOIN ... ON TRUE`.
+''';
+
+/// Documentation for `.on` on [InnerJoin], [LeftJoin], [RightJoin].
+///
+/// [kind] must be either 'INNER', 'LEFT' or 'RIGHT'.
+String joinOn(String kind) => '''
+    Create `$kind JOIN` using [conditionBuilder] in the `ON` clause.
+''';
+
+/// Documentation for `.aggregate` on [Group].
+final groupByAggregate = '''
+    Finish `GROUP BY` clause by specifying _aggregate functions_.
+
+    Groups are determined by the projection created with the `.groupBy`
+    projection. Aggregate functions over rows within each group are specified
+    using the [aggregationBuilder] callback.
+
+    The resulting query will have a row for each distinct value of the
+    projection created with `.groupBy`. Each row will contain the `.groupBy`
+    projection and any aggregate functions built with [aggregationBuilder].
+''';
+
+/// Documetation for `.sum` on [Aggregation].
+final aggregationSum = '''
+    Add a `SUM` aggregate function to this [Aggregation].
+
+    Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+    in each group. The `SUM` aggregate is applied to the `Expr<num>`
+    created with [aggregateBuilder].
+
+    If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+    to `NULL` it will coalesced to zero.
+''';
+
+/// Documetation for `.avg` on [Aggregation].
+final aggregationAvg = '''
+    Add a `AVG` aggregate function to this [Aggregation].
+
+    Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+    in each group. The `AVG` aggregate is applied to the `Expr<num>`
+    created with [aggregateBuilder].
+
+    If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+    to `NULL` it will not be included in the average. If all rows in a group
+    evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+
+    > [!WARNING]
+    > If you want `NULL` values to count in denominator of the average, use
+    > `.orElseLiteral(0)` to force a non-nullable expression.
+''';
+
+/// Documetation for `.min` on [Aggregation].
+final aggregationMin = '''
+    Add a `MIN` aggregate function to this [Aggregation].
+
+    Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+    in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+    created with [aggregateBuilder].
+
+    If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+    to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+    the `MIN` aggregate function will return `NULL`.
+''';
+
+/// Documetation for `.max` on [Aggregation].
+final aggregationMax = '''
+    Add a `MAX` aggregate function to this [Aggregation].
+
+    Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+    in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+    created with [aggregateBuilder].
+
+    If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+    to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+    the `MAX` aggregate function will return `NULL`.
+''';
+
+/// Documetation for `.count` on [Aggregation].
+final aggregationCount = '''
+    Add a `COUNT(*)` aggregate function to this [Aggregation].
+
+    Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+    in each group. This count the number of rows in the group, using a
+    `COUNT(*)` expression.
+
+    This will count the number of rows in the group, including rows consisting
+    entirely of `NULL` values.
 ''';

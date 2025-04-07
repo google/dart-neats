@@ -6,6 +6,8 @@ part of 'typed_sql.dart';
 // Generator: _TypedSqlExtensionBuilder
 // **************************************************************************
 
+/// Extension methods for a query returning zero or more rows with
+/// 1 expression.
 extension Query1<A> on Query<(Expr<A>,)> {
   (Object, T) _build<T>(T Function(Expr<A> a) builder) {
     final handle = Object();
@@ -287,6 +289,8 @@ extension Query1<A> on Query<(Expr<A>,)> {
   Future<List<A>> fetch() async => await stream().toList();
 }
 
+/// Extension methods for a subquery returning zero or more rows with
+/// 1 expression.
 extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
   (Object, T) _build<T>(T Function(Expr<A> a) builder) {
     final handle = Object();
@@ -396,6 +400,8 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
+/// Extension methods for a query returning zero or more rows with
+/// 2 expressions.
 extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b) builder) {
     final handle = Object();
@@ -699,6 +705,8 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   Future<List<(A, B)>> fetch() async => await stream().toList();
 }
 
+/// Extension methods for a subquery returning zero or more rows with
+/// 2 expressions.
 extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b) builder) {
     final handle = Object();
@@ -811,6 +819,8 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
+/// Extension methods for a query returning zero or more rows with
+/// 3 expressions.
 extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b, Expr<C> c) builder) {
     final handle = Object();
@@ -1135,6 +1145,8 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   Future<List<(A, B, C)>> fetch() async => await stream().toList();
 }
 
+/// Extension methods for a subquery returning zero or more rows with
+/// 3 expressions.
 extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b, Expr<C> c) builder) {
     final handle = Object();
@@ -1250,6 +1262,8 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
+/// Extension methods for a query returning zero or more rows with
+/// 4 expressions.
 extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   (Object, T) _build<T>(
       T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d) builder) {
@@ -1591,6 +1605,8 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   Future<List<(A, B, C, D)>> fetch() async => await stream().toList();
 }
 
+/// Extension methods for a subquery returning zero or more rows with
+/// 4 expressions.
 extension SubQuery4<A, B, C, D>
     on SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   (Object, T) _build<T>(
@@ -1714,6 +1730,8 @@ extension SubQuery4<A, B, C, D>
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
+/// Extension methods for a query returning zero or more rows with
+/// 5 expressions.
 extension Query5<A, B, C, D, E>
     on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
   (Object, T) _build<T>(
@@ -2068,6 +2086,8 @@ extension Query5<A, B, C, D, E>
   Future<List<(A, B, C, D, E)>> fetch() async => await stream().toList();
 }
 
+/// Extension methods for a subquery returning zero or more rows with
+/// 5 expressions.
 extension SubQuery5<A, B, C, D, E>
     on SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
   (Object, T) _build<T>(
@@ -2196,6 +2216,8 @@ extension SubQuery5<A, B, C, D, E>
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
+/// Extension methods for a query returning zero or more rows with
+/// 6 expressions.
 extension Query6<A, B, C, D, E, F>
     on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   (Object, T) _build<T>(
@@ -2574,6 +2596,8 @@ extension Query6<A, B, C, D, E, F>
   Future<List<(A, B, C, D, E, F)>> fetch() async => await stream().toList();
 }
 
+/// Extension methods for a subquery returning zero or more rows with
+/// 6 expressions.
 extension SubQuery6<A, B, C, D, E, F>
     on SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   (Object, T) _build<T>(
@@ -2709,6 +2733,8 @@ extension SubQuery6<A, B, C, D, E, F>
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
+/// Extension methods for a query returning zero or more rows with
+/// 7 expressions.
 extension Query7<A, B, C, D, E, F, G>
     on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   (Object, T) _build<T>(
@@ -3144,6 +3170,8 @@ extension Query7<A, B, C, D, E, F, G>
   Future<List<(A, B, C, D, E, F, G)>> fetch() async => await stream().toList();
 }
 
+/// Extension methods for a subquery returning zero or more rows with
+/// 7 expressions.
 extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   (Object, T) _build<T>(
@@ -3282,6 +3310,8 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
+/// Extension methods for a query returning zero or more rows with
+/// 8 expressions.
 extension Query8<A, B, C, D, E, F, G, H> on Query<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
   (Object, T) _build<T>(
@@ -3902,6 +3932,8 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
       await stream().toList();
 }
 
+/// Extension methods for a subquery returning zero or more rows with
+/// 8 expressions.
 extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
   (Object, T) _build<T>(
@@ -4071,7 +4103,11 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin1On1<A, B> on InnerJoin<(Expr<A>,), (Expr<B>,)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>)> get all => Query._(
         _from._context,
         (
@@ -4086,6 +4122,8 @@ extension InnerJoin1On1<A, B> on InnerJoin<(Expr<A>,), (Expr<B>,)> {
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) {
     late JoinClause join;
@@ -4109,7 +4147,9 @@ extension InnerJoin1On1<A, B> on InnerJoin<(Expr<A>,), (Expr<B>,)> {
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin1On1<A, B> on LeftJoin<(Expr<A>,), (Expr<B>,)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) {
     late JoinClause join;
@@ -4133,7 +4173,9 @@ extension LeftJoin1On1<A, B> on LeftJoin<(Expr<A>,), (Expr<B>,)> {
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin1On1<A, B> on RightJoin<(Expr<A>,), (Expr<B>,)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) {
     late JoinClause join;
@@ -4157,7 +4199,11 @@ extension RightJoin1On1<A, B> on RightJoin<(Expr<A>,), (Expr<B>,)> {
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin1On2<A, B, C> on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>)> get all => Query._(
         _from._context,
         (
@@ -4173,6 +4219,8 @@ extension InnerJoin1On2<A, B, C> on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
     late JoinClause join;
@@ -4197,7 +4245,9 @@ extension InnerJoin1On2<A, B, C> on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin1On2<A, B, C> on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
     late JoinClause join;
@@ -4222,7 +4272,9 @@ extension LeftJoin1On2<A, B, C> on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin1On2<A, B, C> on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
     late JoinClause join;
@@ -4247,8 +4299,12 @@ extension RightJoin1On2<A, B, C> on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin1On3<A, B, C, D>
     on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get all => Query._(
         _from._context,
         (
@@ -4265,6 +4321,8 @@ extension InnerJoin1On3<A, B, C, D>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -4291,8 +4349,10 @@ extension InnerJoin1On3<A, B, C, D>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin1On3<A, B, C, D>
     on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -4319,8 +4379,10 @@ extension LeftJoin1On3<A, B, C, D>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin1On3<A, B, C, D>
     on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -4347,8 +4409,12 @@ extension RightJoin1On3<A, B, C, D>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin1On4<A, B, C, D, E>
     on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get all => Query._(
         _from._context,
         (
@@ -4366,6 +4432,8 @@ extension InnerJoin1On4<A, B, C, D, E>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -4393,8 +4461,10 @@ extension InnerJoin1On4<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin1On4<A, B, C, D, E>
     on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -4422,8 +4492,10 @@ extension LeftJoin1On4<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin1On4<A, B, C, D, E>
     on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -4451,8 +4523,12 @@ extension RightJoin1On4<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin1On5<A, B, C, D, E, F>
     on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       Query._(
         _from._context,
@@ -4472,6 +4548,8 @@ extension InnerJoin1On5<A, B, C, D, E, F>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -4501,8 +4579,10 @@ extension InnerJoin1On5<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin1On5<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -4532,8 +4612,10 @@ extension LeftJoin1On5<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin1On5<A, B, C, D, E, F>
     on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -4563,8 +4645,12 @@ extension RightJoin1On5<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin1On6<A, B, C, D, E, F, G> on InnerJoin<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => Query._(
             _from._context,
@@ -4585,6 +4671,8 @@ extension InnerJoin1On6<A, B, C, D, E, F, G> on InnerJoin<(Expr<A>,),
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -4615,8 +4703,10 @@ extension InnerJoin1On6<A, B, C, D, E, F, G> on InnerJoin<(Expr<A>,),
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin1On6<A, B, C, D, E, F, G> on LeftJoin<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G?>)>
       on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
@@ -4648,8 +4738,10 @@ extension LeftJoin1On6<A, B, C, D, E, F, G> on LeftJoin<(Expr<A>,),
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin1On6<A, B, C, D, E, F, G> on RightJoin<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -4680,8 +4772,12 @@ extension RightJoin1On6<A, B, C, D, E, F, G> on RightJoin<(Expr<A>,),
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin1On7<A, B, C, D, E, F, G, H> on InnerJoin<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => Query._(
             _from._context,
@@ -4703,6 +4799,8 @@ extension InnerJoin1On7<A, B, C, D, E, F, G, H> on InnerJoin<(Expr<A>,),
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -4745,8 +4843,10 @@ extension InnerJoin1On7<A, B, C, D, E, F, G, H> on InnerJoin<(Expr<A>,),
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin1On7<A, B, C, D, E, F, G, H> on LeftJoin<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -4789,8 +4889,10 @@ extension LeftJoin1On7<A, B, C, D, E, F, G, H> on LeftJoin<(Expr<A>,),
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin1On7<A, B, C, D, E, F, G, H> on RightJoin<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A?>,
@@ -4833,7 +4935,11 @@ extension RightJoin1On7<A, B, C, D, E, F, G, H> on RightJoin<(Expr<A>,),
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin2On1<A, B, C> on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>)> get all => Query._(
         _from._context,
         (
@@ -4849,6 +4955,8 @@ extension InnerJoin2On1<A, B, C> on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
     late JoinClause join;
@@ -4873,7 +4981,9 @@ extension InnerJoin2On1<A, B, C> on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin2On1<A, B, C> on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
     late JoinClause join;
@@ -4898,7 +5008,9 @@ extension LeftJoin2On1<A, B, C> on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin2On1<A, B, C> on RightJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder) {
     late JoinClause join;
@@ -4923,8 +5035,12 @@ extension RightJoin2On1<A, B, C> on RightJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin2On2<A, B, C, D>
     on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get all => Query._(
         _from._context,
         (
@@ -4941,6 +5057,8 @@ extension InnerJoin2On2<A, B, C, D>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -4967,8 +5085,10 @@ extension InnerJoin2On2<A, B, C, D>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin2On2<A, B, C, D>
     on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -4995,8 +5115,10 @@ extension LeftJoin2On2<A, B, C, D>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin2On2<A, B, C, D>
     on RightJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -5023,8 +5145,12 @@ extension RightJoin2On2<A, B, C, D>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin2On3<A, B, C, D, E>
     on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get all => Query._(
         _from._context,
         (
@@ -5042,6 +5168,8 @@ extension InnerJoin2On3<A, B, C, D, E>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -5069,8 +5197,10 @@ extension InnerJoin2On3<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin2On3<A, B, C, D, E>
     on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>, Expr<E?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -5098,8 +5228,10 @@ extension LeftJoin2On3<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin2On3<A, B, C, D, E>
     on RightJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -5127,8 +5259,12 @@ extension RightJoin2On3<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin2On4<A, B, C, D, E, F>
     on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       Query._(
         _from._context,
@@ -5148,6 +5284,8 @@ extension InnerJoin2On4<A, B, C, D, E, F>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -5177,8 +5315,10 @@ extension InnerJoin2On4<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin2On4<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -5208,8 +5348,10 @@ extension LeftJoin2On4<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin2On4<A, B, C, D, E, F>
     on RightJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -5239,8 +5381,12 @@ extension RightJoin2On4<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin2On5<A, B, C, D, E, F, G> on InnerJoin<(Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => Query._(
             _from._context,
@@ -5261,6 +5407,8 @@ extension InnerJoin2On5<A, B, C, D, E, F, G> on InnerJoin<(Expr<A>, Expr<B>),
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -5291,8 +5439,10 @@ extension InnerJoin2On5<A, B, C, D, E, F, G> on InnerJoin<(Expr<A>, Expr<B>),
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin2On5<A, B, C, D, E, F, G> on LeftJoin<(Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G?>)>
       on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
@@ -5324,8 +5474,10 @@ extension LeftJoin2On5<A, B, C, D, E, F, G> on LeftJoin<(Expr<A>, Expr<B>),
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin2On5<A, B, C, D, E, F, G> on RightJoin<(Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -5356,8 +5508,12 @@ extension RightJoin2On5<A, B, C, D, E, F, G> on RightJoin<(Expr<A>, Expr<B>),
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin2On6<A, B, C, D, E, F, G, H> on InnerJoin<(Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => Query._(
             _from._context,
@@ -5379,6 +5535,8 @@ extension InnerJoin2On6<A, B, C, D, E, F, G, H> on InnerJoin<(Expr<A>, Expr<B>),
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -5421,8 +5579,10 @@ extension InnerJoin2On6<A, B, C, D, E, F, G, H> on InnerJoin<(Expr<A>, Expr<B>),
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin2On6<A, B, C, D, E, F, G, H> on LeftJoin<(Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -5465,8 +5625,10 @@ extension LeftJoin2On6<A, B, C, D, E, F, G, H> on LeftJoin<(Expr<A>, Expr<B>),
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin2On6<A, B, C, D, E, F, G, H> on RightJoin<(Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A?>,
@@ -5509,8 +5671,12 @@ extension RightJoin2On6<A, B, C, D, E, F, G, H> on RightJoin<(Expr<A>, Expr<B>),
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin3On1<A, B, C, D>
     on InnerJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get all => Query._(
         _from._context,
         (
@@ -5527,6 +5693,8 @@ extension InnerJoin3On1<A, B, C, D>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -5553,8 +5721,10 @@ extension InnerJoin3On1<A, B, C, D>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin3On1<A, B, C, D>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -5581,8 +5751,10 @@ extension LeftJoin3On1<A, B, C, D>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin3On1<A, B, C, D>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           conditionBuilder) {
@@ -5609,8 +5781,12 @@ extension RightJoin3On1<A, B, C, D>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin3On2<A, B, C, D, E>
     on InnerJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get all => Query._(
         _from._context,
         (
@@ -5628,6 +5804,8 @@ extension InnerJoin3On2<A, B, C, D, E>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -5655,8 +5833,10 @@ extension InnerJoin3On2<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin3On2<A, B, C, D, E>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>, Expr<E?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -5684,8 +5864,10 @@ extension LeftJoin3On2<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin3On2<A, B, C, D, E>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -5713,8 +5895,12 @@ extension RightJoin3On2<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin3On3<A, B, C, D, E, F>
     on InnerJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       Query._(
         _from._context,
@@ -5734,6 +5920,8 @@ extension InnerJoin3On3<A, B, C, D, E, F>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -5763,8 +5951,10 @@ extension InnerJoin3On3<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin3On3<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>, Expr<E?>, Expr<F?>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -5794,8 +5984,10 @@ extension LeftJoin3On3<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin3On3<A, B, C, D, E, F>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -5825,8 +6017,12 @@ extension RightJoin3On3<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin3On4<A, B, C, D, E, F, G> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => Query._(
             _from._context,
@@ -5847,6 +6043,8 @@ extension InnerJoin3On4<A, B, C, D, E, F, G> on InnerJoin<
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -5877,8 +6075,10 @@ extension InnerJoin3On4<A, B, C, D, E, F, G> on InnerJoin<
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin3On4<A, B, C, D, E, F, G> on LeftJoin<
     (Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -5909,8 +6109,10 @@ extension LeftJoin3On4<A, B, C, D, E, F, G> on LeftJoin<
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin3On4<A, B, C, D, E, F, G> on RightJoin<
     (Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -5941,9 +6143,13 @@ extension RightJoin3On4<A, B, C, D, E, F, G> on RightJoin<
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin3On5<A, B, C, D, E, F, G, H> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>),
     (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => Query._(
             _from._context,
@@ -5965,6 +6171,8 @@ extension InnerJoin3On5<A, B, C, D, E, F, G, H> on InnerJoin<
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -6007,9 +6215,11 @@ extension InnerJoin3On5<A, B, C, D, E, F, G, H> on InnerJoin<
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin3On5<A, B, C, D, E, F, G, H> on LeftJoin<
     (Expr<A>, Expr<B>, Expr<C>),
     (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -6052,9 +6262,11 @@ extension LeftJoin3On5<A, B, C, D, E, F, G, H> on LeftJoin<
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin3On5<A, B, C, D, E, F, G, H> on RightJoin<
     (Expr<A>, Expr<B>, Expr<C>),
     (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A?>,
@@ -6097,8 +6309,12 @@ extension RightJoin3On5<A, B, C, D, E, F, G, H> on RightJoin<
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin4On1<A, B, C, D, E>
     on InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get all => Query._(
         _from._context,
         (
@@ -6116,6 +6332,8 @@ extension InnerJoin4On1<A, B, C, D, E>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -6143,8 +6361,10 @@ extension InnerJoin4On1<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin4On1<A, B, C, D, E>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -6172,8 +6392,10 @@ extension LeftJoin4On1<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin4On1<A, B, C, D, E>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           conditionBuilder) {
@@ -6201,8 +6423,12 @@ extension RightJoin4On1<A, B, C, D, E>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin4On2<A, B, C, D, E, F>
     on InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       Query._(
         _from._context,
@@ -6222,6 +6448,8 @@ extension InnerJoin4On2<A, B, C, D, E, F>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -6251,8 +6479,10 @@ extension InnerJoin4On2<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin4On2<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>, Expr<F?>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -6282,8 +6512,10 @@ extension LeftJoin4On2<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin4On2<A, B, C, D, E, F>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -6313,8 +6545,12 @@ extension RightJoin4On2<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin4On3<A, B, C, D, E, F, G> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => Query._(
             _from._context,
@@ -6335,6 +6571,8 @@ extension InnerJoin4On3<A, B, C, D, E, F, G> on InnerJoin<
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -6365,8 +6603,10 @@ extension InnerJoin4On3<A, B, C, D, E, F, G> on InnerJoin<
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin4On3<A, B, C, D, E, F, G> on LeftJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>, Expr<F?>, Expr<G?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -6397,8 +6637,10 @@ extension LeftJoin4On3<A, B, C, D, E, F, G> on LeftJoin<
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin4On3<A, B, C, D, E, F, G> on RightJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -6429,9 +6671,13 @@ extension RightJoin4On3<A, B, C, D, E, F, G> on RightJoin<
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin4On4<A, B, C, D, E, F, G, H> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
     (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => Query._(
             _from._context,
@@ -6453,6 +6699,8 @@ extension InnerJoin4On4<A, B, C, D, E, F, G, H> on InnerJoin<
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -6495,9 +6743,11 @@ extension InnerJoin4On4<A, B, C, D, E, F, G, H> on InnerJoin<
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin4On4<A, B, C, D, E, F, G, H> on LeftJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
     (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -6540,9 +6790,11 @@ extension LeftJoin4On4<A, B, C, D, E, F, G, H> on LeftJoin<
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin4On4<A, B, C, D, E, F, G, H> on RightJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
     (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A?>,
@@ -6585,8 +6837,12 @@ extension RightJoin4On4<A, B, C, D, E, F, G, H> on RightJoin<
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin5On1<A, B, C, D, E, F>
     on InnerJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> get all =>
       Query._(
         _from._context,
@@ -6606,6 +6862,8 @@ extension InnerJoin5On1<A, B, C, D, E, F>
           Literal.true$,
         ),
       );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -6635,8 +6893,10 @@ extension InnerJoin5On1<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin5On1<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -6666,8 +6926,10 @@ extension LeftJoin5On1<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin5On1<A, B, C, D, E, F>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F>)> on(
       Expr<bool> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
@@ -6697,8 +6959,12 @@ extension RightJoin5On1<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin5On2<A, B, C, D, E, F, G> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => Query._(
             _from._context,
@@ -6719,6 +6985,8 @@ extension InnerJoin5On2<A, B, C, D, E, F, G> on InnerJoin<
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -6749,8 +7017,10 @@ extension InnerJoin5On2<A, B, C, D, E, F, G> on InnerJoin<
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin5On2<A, B, C, D, E, F, G> on LeftJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>, Expr<G?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -6781,8 +7051,10 @@ extension LeftJoin5On2<A, B, C, D, E, F, G> on LeftJoin<
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin5On2<A, B, C, D, E, F, G> on RightJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F>, Expr<G>)>
       on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
@@ -6814,9 +7086,13 @@ extension RightJoin5On2<A, B, C, D, E, F, G> on RightJoin<
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin5On3<A, B, C, D, E, F, G, H> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
     (Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => Query._(
             _from._context,
@@ -6838,6 +7114,8 @@ extension InnerJoin5On3<A, B, C, D, E, F, G, H> on InnerJoin<
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -6880,9 +7158,11 @@ extension InnerJoin5On3<A, B, C, D, E, F, G, H> on InnerJoin<
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin5On3<A, B, C, D, E, F, G, H> on LeftJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
     (Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -6925,9 +7205,11 @@ extension LeftJoin5On3<A, B, C, D, E, F, G, H> on LeftJoin<
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin5On3<A, B, C, D, E, F, G, H> on RightJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
     (Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A?>,
@@ -6970,8 +7252,12 @@ extension RightJoin5On3<A, B, C, D, E, F, G, H> on RightJoin<
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin6On1<A, B, C, D, E, F, G> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       get all => Query._(
             _from._context,
@@ -6992,6 +7278,8 @@ extension InnerJoin6On1<A, B, C, D, E, F, G> on InnerJoin<
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -7022,8 +7310,10 @@ extension InnerJoin6On1<A, B, C, D, E, F, G> on InnerJoin<
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin6On1<A, B, C, D, E, F, G> on LeftJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> on(
       Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
               Expr<F> f, Expr<G> g)
@@ -7054,8 +7344,10 @@ extension LeftJoin6On1<A, B, C, D, E, F, G> on LeftJoin<
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin6On1<A, B, C, D, E, F, G> on RightJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G>)>
       on(
           Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
@@ -7087,9 +7379,13 @@ extension RightJoin6On1<A, B, C, D, E, F, G> on RightJoin<
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin6On2<A, B, C, D, E, F, G, H> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
     (Expr<G>, Expr<H>)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => Query._(
             _from._context,
@@ -7111,6 +7407,8 @@ extension InnerJoin6On2<A, B, C, D, E, F, G, H> on InnerJoin<
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -7153,9 +7451,11 @@ extension InnerJoin6On2<A, B, C, D, E, F, G, H> on InnerJoin<
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin6On2<A, B, C, D, E, F, G, H> on LeftJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
     (Expr<G>, Expr<H>)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -7198,9 +7498,11 @@ extension LeftJoin6On2<A, B, C, D, E, F, G, H> on LeftJoin<
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin6On2<A, B, C, D, E, F, G, H> on RightJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
     (Expr<G>, Expr<H>)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A?>,
@@ -7243,9 +7545,13 @@ extension RightJoin6On2<A, B, C, D, E, F, G, H> on RightJoin<
   }
 }
 
+/// Extension methods for completing an `INNER JOIN`.
 extension InnerJoin7On1<A, B, C, D, E, F, G, H> on InnerJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
     (Expr<H>,)> {
+  /// Create query containing the cartesian product using a `CROSS JOIN`.
+  ///
+  /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       get all => Query._(
             _from._context,
@@ -7267,6 +7573,8 @@ extension InnerJoin7On1<A, B, C, D, E, F, G, H> on InnerJoin<
               Literal.true$,
             ),
           );
+
+  /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -7309,9 +7617,11 @@ extension InnerJoin7On1<A, B, C, D, E, F, G, H> on InnerJoin<
   }
 }
 
+/// Extension methods for completing an `LEFT JOIN`.
 extension LeftJoin7On1<A, B, C, D, E, F, G, H> on LeftJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
     (Expr<H>,)> {
+  /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A>,
@@ -7354,9 +7664,11 @@ extension LeftJoin7On1<A, B, C, D, E, F, G, H> on LeftJoin<
   }
 }
 
+/// Extension methods for completing an `RIGHT JOIN`.
 extension RightJoin7On1<A, B, C, D, E, F, G, H> on RightJoin<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
     (Expr<H>,)> {
+  /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<
           (
             Expr<A?>,
@@ -7399,7 +7711,17 @@ extension RightJoin7On1<A, B, C, D, E, F, G, H> on RightJoin<
   }
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group1By1<A, B> on Group<(Expr<A>,), (Expr<B>,)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<B>,), T> Function(
               Aggregation<(Expr<B>,), (Expr<A>,)> agg)
@@ -7419,6 +7741,7 @@ extension Group1By1<A, B> on Group<(Expr<A>,), (Expr<B>,)> {
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate1Project1<A, B> on Aggregation<(Expr<A>,), (Expr<B>,)> {
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> _build<C, T>(
     Expr<T> Function(Expr<A> a) aggregateBuilder,
@@ -7433,23 +7756,85 @@ extension Aggregate1Project1<A, B> on Aggregation<(Expr<A>,), (Expr<B>,)> {
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> sum<C extends num>(
           Expr<C?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<double?>)> avg<C extends num>(
           Expr<C?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C?>)> min<C extends Comparable>(
           Expr<C?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C?>)> max<C extends Comparable>(
           Expr<C?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<int>)> count() =>
       _build((a) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group2By1<A, B, C> on Group<(Expr<A>,), (Expr<B>, Expr<C>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<B>, Expr<C>), T> Function(
               Aggregation<(Expr<B>, Expr<C>), (Expr<A>,)> agg)
@@ -7469,6 +7854,7 @@ extension Group2By1<A, B, C> on Group<(Expr<A>,), (Expr<B>, Expr<C>)> {
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate1Project2<A, B, C>
     on Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> {
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> _build<D, T>(
@@ -7485,26 +7871,88 @@ extension Aggregate1Project2<A, B, C>
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> sum<D extends num>(
           Expr<D?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<double?>)> avg<D extends num>(
           Expr<D?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D?>)>
       min<D extends Comparable>(
               Expr<D?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D?>)>
       max<D extends Comparable>(
               Expr<D?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<int>)> count() =>
       _build((a) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group3By1<A, B, C, D>
     on Group<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<B>, Expr<C>, Expr<D>), T> Function(
               Aggregation<(Expr<B>, Expr<C>, Expr<D>), (Expr<A>,)> agg)
@@ -7524,6 +7972,7 @@ extension Group3By1<A, B, C, D>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate1Project3<A, B, C, D>
     on Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> _build<E, T>(
@@ -7541,26 +7990,88 @@ extension Aggregate1Project3<A, B, C, D>
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
       sum<E extends num>(Expr<E?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<double?>)>
       avg<E extends num>(Expr<E?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E?>)>
       min<E extends Comparable>(
               Expr<E?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E?>)>
       max<E extends Comparable>(
               Expr<E?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<int>)> count() =>
       _build((a) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group4By1<A, B, C, D, E>
     on Group<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>), T> Function(
               Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<A>,)> agg)
@@ -7580,6 +8091,7 @@ extension Group4By1<A, B, C, D, E>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate1Project4<A, B, C, D, E>
     on Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
@@ -7599,26 +8111,88 @@ extension Aggregate1Project4<A, B, C, D, E>
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
       sum<F extends num>(Expr<F?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<double?>)>
       avg<F extends num>(Expr<F?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>)>
       min<F extends Comparable>(
               Expr<F?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>)>
       max<F extends Comparable>(
               Expr<F?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<int>)>
       count() => _build((a) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group5By1<A, B, C, D, E, F>
     on Group<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), T> Function(
               Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
@@ -7640,6 +8214,7 @@ extension Group5By1<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate1Project5<A, B, C, D, E, F>
     on Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   Aggregation<(Expr<A>,),
@@ -7660,31 +8235,93 @@ extension Aggregate1Project5<A, B, C, D, E, F>
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       sum<G extends num>(Expr<G?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double?>)>
       avg<G extends num>(Expr<G?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)>
       min<G extends Comparable>(
               Expr<G?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)>
       max<G extends Comparable>(
               Expr<G?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<int>)>
       count() => _build((a) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group6By1<A, B, C, D, E, F, G> on Group<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T> Function(
               Aggregation<
@@ -7707,6 +8344,7 @@ extension Group6By1<A, B, C, D, E, F, G> on Group<(Expr<A>,),
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate1Project6<A, B, C, D, E, F, G> on Aggregation<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   Aggregation<(Expr<A>,),
@@ -7729,31 +8367,93 @@ extension Aggregate1Project6<A, B, C, D, E, F, G> on Aggregation<(Expr<A>,),
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       sum<H extends num>(Expr<H?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double?>)>
       avg<H extends num>(Expr<H?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)>
       min<H extends Comparable>(
               Expr<H?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)>
       max<H extends Comparable>(
               Expr<H?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
       count() => _build((a) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group7By1<A, B, C, D, E, F, G, H> on Group<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>), T> Function(
               Aggregation<
@@ -7784,6 +8484,7 @@ extension Group7By1<A, B, C, D, E, F, G, H> on Group<(Expr<A>,),
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
     (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
   Aggregation<
@@ -7816,6 +8517,15 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<
       (Expr<A>,),
       (
@@ -7830,6 +8540,20 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
       )> sum<I extends num>(
           Expr<I?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<
       (Expr<A>,),
       (
@@ -7844,6 +8568,16 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
       )> avg<I extends num>(
           Expr<I?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<
       (Expr<A>,),
       (
@@ -7858,6 +8592,16 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
       )> min<I extends Comparable>(
           Expr<I?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<
       (Expr<A>,),
       (
@@ -7872,6 +8616,15 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
       )> max<I extends Comparable>(
           Expr<I?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<
       (Expr<A>,),
       (
@@ -7886,7 +8639,17 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
       )> count() => _build((a) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group1By2<A, B, C> on Group<(Expr<A>, Expr<B>), (Expr<C>,)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<C>,), T> Function(
               Aggregation<(Expr<C>,), (Expr<A>, Expr<B>)> agg)
@@ -7906,6 +8669,7 @@ extension Group1By2<A, B, C> on Group<(Expr<A>, Expr<B>), (Expr<C>,)> {
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate2Project1<A, B, C>
     on Aggregation<(Expr<A>, Expr<B>), (Expr<C>,)> {
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> _build<D, T>(
@@ -7922,26 +8686,88 @@ extension Aggregate2Project1<A, B, C>
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> sum<D extends num>(
           Expr<D?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<double?>)> avg<D extends num>(
           Expr<D?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D?>)>
       min<D extends Comparable>(
               Expr<D?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D?>)>
       max<D extends Comparable>(
               Expr<D?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<int>)> count() =>
       _build((a, b) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group2By2<A, B, C, D>
     on Group<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<C>, Expr<D>), T> Function(
               Aggregation<(Expr<C>, Expr<D>), (Expr<A>, Expr<B>)> agg)
@@ -7961,6 +8787,7 @@ extension Group2By2<A, B, C, D>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate2Project2<A, B, C, D>
     on Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> _build<E, T>(
@@ -7978,28 +8805,90 @@ extension Aggregate2Project2<A, B, C, D>
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)>
       sum<E extends num>(
               Expr<E?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<double?>)>
       avg<E extends num>(
               Expr<E?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E?>)>
       min<E extends Comparable>(
               Expr<E?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E?>)>
       max<E extends Comparable>(
               Expr<E?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<int>)> count() =>
       _build((a, b) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group3By2<A, B, C, D, E>
     on Group<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<C>, Expr<D>, Expr<E>), T> Function(
               Aggregation<(Expr<C>, Expr<D>, Expr<E>), (Expr<A>, Expr<B>)> agg)
@@ -8019,6 +8908,7 @@ extension Group3By2<A, B, C, D, E>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate2Project3<A, B, C, D, E>
     on Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
@@ -8038,28 +8928,90 @@ extension Aggregate2Project3<A, B, C, D, E>
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
       sum<F extends num>(
               Expr<F?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<double?>)>
       avg<F extends num>(
               Expr<F?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F?>)>
       min<F extends Comparable>(
               Expr<F?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F?>)>
       max<F extends Comparable>(
               Expr<F?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<int>)>
       count() => _build((a, b) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group4By2<A, B, C, D, E, F>
     on Group<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>), T> Function(
               Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>),
@@ -8081,6 +9033,7 @@ extension Group4By2<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate2Project4<A, B, C, D, E, F>
     on Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
@@ -8101,29 +9054,91 @@ extension Aggregate2Project4<A, B, C, D, E, F>
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       sum<G extends num>(
               Expr<G?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>),
       (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double?>)> avg<G extends num>(
           Expr<G?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>),
       (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> min<G extends Comparable>(
           Expr<G?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>),
       (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> max<G extends Comparable>(
           Expr<G?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<int>)>
       count() => _build((a, b) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group5By2<A, B, C, D, E, F, G> on Group<(Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>), T> Function(
               Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
@@ -8145,6 +9160,7 @@ extension Group5By2<A, B, C, D, E, F, G> on Group<(Expr<A>, Expr<B>),
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate2Project5<A, B, C, D, E, F, G> on Aggregation<
     (Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   Aggregation<(Expr<A>, Expr<B>),
@@ -8166,33 +9182,95 @@ extension Aggregate2Project5<A, B, C, D, E, F, G> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)>
       sum<H extends num>(
               Expr<H?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double?>)>
       avg<H extends num>(
               Expr<H?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)>
       min<H extends Comparable>(
               Expr<H?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)>
       max<H extends Comparable>(
               Expr<H?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
       count() => _build((a, b) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group6By2<A, B, C, D, E, F, G, H> on Group<(Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>), T> Function(
               Aggregation<
@@ -8215,6 +9293,7 @@ extension Group6By2<A, B, C, D, E, F, G, H> on Group<(Expr<A>, Expr<B>),
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate2Project6<A, B, C, D, E, F, G, H> on Aggregation<
     (Expr<A>, Expr<B>),
     (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
@@ -8239,33 +9318,95 @@ extension Aggregate2Project6<A, B, C, D, E, F, G, H> on Aggregation<
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
       sum<I extends num>(
               Expr<I?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double?>)>
       avg<I extends num>(
               Expr<I?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)>
       min<I extends Comparable>(
               Expr<I?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)>
       max<I extends Comparable>(
               Expr<I?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
       count() => _build((a, b) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group1By3<A, B, C, D>
     on Group<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<D>,), T> Function(
               Aggregation<(Expr<D>,), (Expr<A>, Expr<B>, Expr<C>)> agg)
@@ -8285,6 +9426,7 @@ extension Group1By3<A, B, C, D>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate3Project1<A, B, C, D>
     on Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> _build<E, T>(
@@ -8302,32 +9444,94 @@ extension Aggregate3Project1<A, B, C, D>
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)>
       sum<E extends num>(
               Expr<E?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<double?>)>
       avg<E extends num>(
               Expr<E?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E?>)>
       min<E extends Comparable>(
               Expr<E?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E?>)>
       max<E extends Comparable>(
               Expr<E?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<int>)> count() =>
       _build((a, b, c) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group2By3<A, B, C, D, E>
     on Group<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<D>, Expr<E>), T> Function(
               Aggregation<(Expr<D>, Expr<E>), (Expr<A>, Expr<B>, Expr<C>)> agg)
@@ -8347,6 +9551,7 @@ extension Group2By3<A, B, C, D, E>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate3Project2<A, B, C, D, E>
     on Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)>
@@ -8366,32 +9571,94 @@ extension Aggregate3Project2<A, B, C, D, E>
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)>
       sum<F extends num>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<double?>)>
       avg<F extends num>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F?>)>
       min<F extends Comparable>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F?>)>
       max<F extends Comparable>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<int>)>
       count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group3By3<A, B, C, D, E, F>
     on Group<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<D>, Expr<E>, Expr<F>), T> Function(
               Aggregation<(Expr<D>, Expr<E>, Expr<F>),
@@ -8413,6 +9680,7 @@ extension Group3By3<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate3Project3<A, B, C, D, E, F>
     on Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
@@ -8433,33 +9701,95 @@ extension Aggregate3Project3<A, B, C, D, E, F>
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       sum<G extends num>(
               Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<double?>)> avg<G extends num>(
           Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> min<G extends Comparable>(
           Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> max<G extends Comparable>(
           Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<int>)>
       count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group4By3<A, B, C, D, E, F, G> on Group<(Expr<A>, Expr<B>, Expr<C>),
     (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<D>, Expr<E>, Expr<F>, Expr<G>), T> Function(
               Aggregation<(Expr<D>, Expr<E>, Expr<F>, Expr<G>),
@@ -8481,6 +9811,7 @@ extension Group4By3<A, B, C, D, E, F, G> on Group<(Expr<A>, Expr<B>, Expr<C>),
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate3Project4<A, B, C, D, E, F, G> on Aggregation<
     (Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
@@ -8502,34 +9833,96 @@ extension Aggregate3Project4<A, B, C, D, E, F, G> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> sum<H extends num>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double?>)> avg<H extends num>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)> min<H extends Comparable>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)> max<H extends Comparable>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
       count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group5By3<A, B, C, D, E, F, G, H> on Group<
     (Expr<A>, Expr<B>, Expr<C>),
     (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>), T> Function(
               Aggregation<(Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>),
@@ -8551,6 +9944,7 @@ extension Group5By3<A, B, C, D, E, F, G, H> on Group<
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate3Project5<A, B, C, D, E, F, G, H> on Aggregation<
     (Expr<A>, Expr<B>, Expr<C>),
     (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
@@ -8574,37 +9968,99 @@ extension Aggregate3Project5<A, B, C, D, E, F, G, H> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)>
       sum<I extends num>(
               Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double?>)>
       avg<I extends num>(
               Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)>
       min<I extends Comparable>(
               Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)>
       max<I extends Comparable>(
               Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
       count() => _build((a, b, c) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group1By4<A, B, C, D, E>
     on Group<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<E>,), T> Function(
               Aggregation<(Expr<E>,), (Expr<A>, Expr<B>, Expr<C>, Expr<D>)> agg)
@@ -8624,6 +10080,7 @@ extension Group1By4<A, B, C, D, E>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate4Project1<A, B, C, D, E>
     on Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)>
@@ -8644,32 +10101,94 @@ extension Aggregate4Project1<A, B, C, D, E>
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)>
       sum<F extends num>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<double?>)>
       avg<F extends num>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F?>)>
       min<F extends Comparable>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F?>)>
       max<F extends Comparable>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<int>)>
       count() => _build((a, b, c, d) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group2By4<A, B, C, D, E, F>
     on Group<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<E>, Expr<F>), T> Function(
               Aggregation<(Expr<E>, Expr<F>),
@@ -8691,6 +10210,7 @@ extension Group2By4<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate4Project2<A, B, C, D, E, F>
     on Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)>
@@ -8712,33 +10232,95 @@ extension Aggregate4Project2<A, B, C, D, E, F>
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)>
       sum<G extends num>(
               Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<double?>)> avg<G extends num>(
           Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G?>)> min<G extends Comparable>(
           Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G?>)> max<G extends Comparable>(
           Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
           (Expr<E>, Expr<F>, Expr<int>)>
       count() => _build((a, b, c, d) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group3By4<A, B, C, D, E, F, G> on Group<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<E>, Expr<F>, Expr<G>), T> Function(
               Aggregation<(Expr<E>, Expr<F>, Expr<G>),
@@ -8760,6 +10342,7 @@ extension Group3By4<A, B, C, D, E, F, G> on Group<
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate4Project3<A, B, C, D, E, F, G> on Aggregation<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>, Expr<G>)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
@@ -8782,34 +10365,96 @@ extension Aggregate4Project3<A, B, C, D, E, F, G> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> sum<H extends num>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<double?>)> avg<H extends num>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H?>)> min<H extends Comparable>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H?>)> max<H extends Comparable>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
           (Expr<E>, Expr<F>, Expr<G>, Expr<int>)>
       count() => _build((a, b, c, d) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group4By4<A, B, C, D, E, F, G, H> on Group<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
     (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<E>, Expr<F>, Expr<G>, Expr<H>), T> Function(
               Aggregation<(Expr<E>, Expr<F>, Expr<G>, Expr<H>),
@@ -8831,6 +10476,7 @@ extension Group4By4<A, B, C, D, E, F, G, H> on Group<
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate4Project4<A, B, C, D, E, F, G, H> on Aggregation<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>),
     (Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
@@ -8855,33 +10501,95 @@ extension Aggregate4Project4<A, B, C, D, E, F, G, H> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I>)> sum<I extends num>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double?>)> avg<I extends num>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)> min<I extends Comparable>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<I?>)> max<I extends Comparable>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
           (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
       count() => _build((a, b, c, d) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group1By5<A, B, C, D, E, F>
     on Group<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<F>,), T> Function(
               Aggregation<(Expr<F>,),
@@ -8903,6 +10611,7 @@ extension Group1By5<A, B, C, D, E, F>
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate5Project1<A, B, C, D, E, F>
     on Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)>
@@ -8924,37 +10633,99 @@ extension Aggregate5Project1<A, B, C, D, E, F>
               )),
             ),
           );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)>
       sum<G extends num>(
               Expr<G?> Function(
                       Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
                   aggregateBuilder) =>
           _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<double?>)> avg<G extends num>(
           Expr<G?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G?>)> min<G extends Comparable>(
           Expr<G?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G?>)> max<G extends Comparable>(
           Expr<G?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
           (Expr<F>, Expr<int>)>
       count() => _build((a, b, c, d, e) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group2By5<A, B, C, D, E, F, G> on Group<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<F>, Expr<G>), T> Function(
               Aggregation<(Expr<F>, Expr<G>),
@@ -8976,6 +10747,7 @@ extension Group2By5<A, B, C, D, E, F, G> on Group<
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate5Project2<A, B, C, D, E, F, G> on Aggregation<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>, Expr<G>)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
@@ -8998,38 +10770,100 @@ extension Aggregate5Project2<A, B, C, D, E, F, G> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H>)> sum<H extends num>(
           Expr<H?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<double?>)> avg<H extends num>(
           Expr<H?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H?>)> min<H extends Comparable>(
           Expr<H?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H?>)> max<H extends Comparable>(
           Expr<H?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
           (Expr<F>, Expr<G>, Expr<int>)>
       count() => _build((a, b, c, d, e) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group3By5<A, B, C, D, E, F, G, H> on Group<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
     (Expr<F>, Expr<G>, Expr<H>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<F>, Expr<G>, Expr<H>), T> Function(
               Aggregation<(Expr<F>, Expr<G>, Expr<H>),
@@ -9051,6 +10885,7 @@ extension Group3By5<A, B, C, D, E, F, G, H> on Group<
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate5Project3<A, B, C, D, E, F, G, H> on Aggregation<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
     (Expr<F>, Expr<G>, Expr<H>)> {
@@ -9075,37 +10910,99 @@ extension Aggregate5Project3<A, B, C, D, E, F, G, H> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H>, Expr<I>)> sum<I extends num>(
           Expr<I?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H>, Expr<double?>)> avg<I extends num>(
           Expr<I?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H>, Expr<I?>)> min<I extends Comparable>(
           Expr<I?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H>, Expr<I?>)> max<I extends Comparable>(
           Expr<I?> Function(
                   Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
           (Expr<F>, Expr<G>, Expr<H>, Expr<int>)>
       count() => _build((a, b, c, d, e) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group1By6<A, B, C, D, E, F, G> on Group<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<G>,), T> Function(
               Aggregation<(Expr<G>,),
@@ -9127,6 +11024,7 @@ extension Group1By6<A, B, C, D, E, F, G> on Group<
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate6Project1<A, B, C, D, E, F, G> on Aggregation<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>), (Expr<G>,)> {
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
@@ -9150,38 +11048,100 @@ extension Aggregate6Project1<A, B, C, D, E, F, G> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H>)> sum<H extends num>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<double?>)> avg<H extends num>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H?>)> min<H extends Comparable>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H?>)> max<H extends Comparable>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
           (Expr<G>, Expr<int>)>
       count() => _build((a, b, c, d, e, f) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group2By6<A, B, C, D, E, F, G, H> on Group<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
     (Expr<G>, Expr<H>)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<G>, Expr<H>), T> Function(
               Aggregation<(Expr<G>, Expr<H>),
@@ -9203,6 +11163,7 @@ extension Group2By6<A, B, C, D, E, F, G, H> on Group<
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate6Project2<A, B, C, D, E, F, G, H> on Aggregation<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
     (Expr<G>, Expr<H>)> {
@@ -9228,38 +11189,100 @@ extension Aggregate6Project2<A, B, C, D, E, F, G, H> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H>, Expr<I>)> sum<I extends num>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H>, Expr<double?>)> avg<I extends num>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H>, Expr<I?>)> min<I extends Comparable>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H>, Expr<I?>)> max<I extends Comparable>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
           (Expr<G>, Expr<H>, Expr<int>)>
       count() => _build((a, b, c, d, e, f) => CountAllExpression._(), (a) => a);
 }
 
+/// Extension methods for completing a `GROUP BY`.
 extension Group1By7<A, B, C, D, E, F, G, H> on Group<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
     (Expr<H>,)> {
+  /// Finish `GROUP BY` clause by specifying _aggregate functions_.
+  ///
+  /// Groups are determined by the projection created with the `.groupBy`
+  /// projection. Aggregate functions over rows within each group are specified
+  /// using the [aggregationBuilder] callback.
+  ///
+  /// The resulting query will have a row for each distinct value of the
+  /// projection created with `.groupBy`. Each row will contain the `.groupBy`
+  /// projection and any aggregate functions built with [aggregationBuilder].
   Query<T> aggregate<T extends Record>(
       Aggregation<(Expr<H>,), T> Function(
               Aggregation<
@@ -9290,6 +11313,7 @@ extension Group1By7<A, B, C, D, E, F, G, H> on Group<
   }
 }
 
+/// Extension methods for specifying aggregate functions over rows in a group.
 extension Aggregate7Project1<A, B, C, D, E, F, G, H> on Aggregation<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
     (Expr<H>,)> {
@@ -9315,36 +11339,90 @@ extension Aggregate7Project1<A, B, C, D, E, F, G, H> on Aggregation<
           )),
         ),
       );
+
+  /// Add a `SUM` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `SUM` aggregate over the rows
+  /// in each group. The `SUM` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will coalesced to zero.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
       (Expr<H>, Expr<I>)> sum<I extends num>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g)
               aggregateBuilder) =>
       _build(aggregateBuilder, SumExpression._);
+
+  /// Add a `AVG` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes an `AVG` aggregate over the rows
+  /// in each group. The `AVG` aggregate is applied to the `Expr<num>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<num>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it will not be included in the average. If all rows in a group
+  /// evaluate to `NULL`, the `AVG` aggregate function will return `NULL`.
+  ///
+  /// > [!WARNING]
+  /// > If you want `NULL` values to count in denominator of the average, use
+  /// > `.orElseLiteral(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
       (Expr<H>, Expr<double?>)> avg<I extends num>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g)
               aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
+
+  /// Add a `MIN` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MIN` aggregate over the rows
+  /// in each group. The `MIN` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MIN` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
       (Expr<H>, Expr<I?>)> min<I extends Comparable>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g)
               aggregateBuilder) =>
       _build(aggregateBuilder, MinExpression._);
+
+  /// Add a `MAX` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `MAX` aggregate over the rows
+  /// in each group. The `MAX` aggregate is applied to the `Expr<Comparable>`
+  /// created with [aggregateBuilder].
+  ///
+  /// If the expression `Expr<Comparable>` built by [aggregateBuilder] evaluates
+  /// to `NULL` it is not considered. If all rows in a group evaluate to `NULL`,
+  /// the `MAX` aggregate function will return `NULL`.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
       (Expr<H>, Expr<I?>)> max<I extends Comparable>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
                   Expr<E> e, Expr<F> f, Expr<G> g)
               aggregateBuilder) =>
       _build(aggregateBuilder, MaxExpression._);
+
+  /// Add a `COUNT(*)` aggregate function to this [Aggregation].
+  ///
+  /// Returns an [Aggregation] that includes a `COUNT(*)` aggregate over the rows
+  /// in each group. This count the number of rows in the group, using a
+  /// `COUNT(*)` expression.
+  ///
+  /// This will count the number of rows in the group, including rows consisting
+  /// entirely of `NULL` values.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
           (Expr<H>, Expr<int>)>
       count() =>
           _build((a, b, c, d, e, f, g) => CountAllExpression._(), (a) => a);
 }
 
+/// Extensions for a query returning at-most one row with
+/// 1 expression.
 extension QuerySingle1<A> on QuerySingle<(Expr<A>,)> {
   /// Get [Query] with the same rows as this [QuerySingle].
   ///
@@ -9384,6 +11462,8 @@ extension QuerySingle1<A> on QuerySingle<(Expr<A>,)> {
   Future<A?> fetch() async => (await asQuery.fetch()).firstOrNull;
 }
 
+/// Extensions for a query returning at-most one row with
+/// 2 expressions.
 extension QuerySingle2<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
   /// Get [Query] with the same rows as this [QuerySingle].
   ///
@@ -9434,6 +11514,8 @@ extension QuerySingle2<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
   Future<(A?, B?)> fetchOrNulls() async => await fetch() ?? (null, null);
 }
 
+/// Extensions for a query returning at-most one row with
+/// 3 expressions.
 extension QuerySingle3<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
   /// Get [Query] with the same rows as this [QuerySingle].
   ///
@@ -9486,6 +11568,8 @@ extension QuerySingle3<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
       await fetch() ?? (null, null, null);
 }
 
+/// Extensions for a query returning at-most one row with
+/// 4 expressions.
 extension QuerySingle4<A, B, C, D>
     on QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   /// Get [Query] with the same rows as this [QuerySingle].
@@ -9540,6 +11624,8 @@ extension QuerySingle4<A, B, C, D>
       await fetch() ?? (null, null, null, null);
 }
 
+/// Extensions for a query returning at-most one row with
+/// 5 expressions.
 extension QuerySingle5<A, B, C, D, E>
     on QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
   /// Get [Query] with the same rows as this [QuerySingle].
@@ -9595,6 +11681,8 @@ extension QuerySingle5<A, B, C, D, E>
       await fetch() ?? (null, null, null, null, null);
 }
 
+/// Extensions for a query returning at-most one row with
+/// 6 expressions.
 extension QuerySingle6<A, B, C, D, E, F>
     on QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   /// Get [Query] with the same rows as this [QuerySingle].
@@ -9653,6 +11741,8 @@ extension QuerySingle6<A, B, C, D, E, F>
       await fetch() ?? (null, null, null, null, null, null);
 }
 
+/// Extensions for a query returning at-most one row with
+/// 7 expressions.
 extension QuerySingle7<A, B, C, D, E, F, G> on QuerySingle<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   /// Get [Query] with the same rows as this [QuerySingle].
@@ -9712,6 +11802,8 @@ extension QuerySingle7<A, B, C, D, E, F, G> on QuerySingle<
       await fetch() ?? (null, null, null, null, null, null, null);
 }
 
+/// Extensions for a query returning at-most one row with
+/// 8 expressions.
 extension QuerySingle8<A, B, C, D, E, F, G, H> on QuerySingle<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
   /// Get [Query] with the same rows as this [QuerySingle].
@@ -9789,7 +11881,10 @@ extension QuerySingle8<A, B, C, D, E, F, G, H> on QuerySingle<
       await fetch() ?? (null, null, null, null, null, null, null, null);
 }
 
+/// Extension methods for a statement returning zero or more rows with
+/// 1 expression.
 extension Return1<A> on Return<(Expr<A>,)> {
+  /// Execute this statement and return the output as a [Stream].
   Stream<A> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
     await for (final r in _context._query(sql, params)) {
@@ -9797,19 +11892,29 @@ extension Return1<A> on Return<(Expr<A>,)> {
     }
   }
 
+  /// Execute this statement and return the output as a [List].
   Future<List<A>> executeAndFetch() async => await executeAndStream().toList();
 }
 
+/// Extension methods for a statement returning at-most one row with
+/// 1 expression.
 extension ReturnSingle1<A> on ReturnSingle<(Expr<A>,)> {
+  /// Execute this statement and return the output.
   Future<A?> executeAndFetch() async =>
       (await _return.executeAndFetch()).firstOrNull;
 }
 
+/// Extension methods for a statement returning exactly one row with
+/// 1 expression.
 extension ReturnOne1<A> on ReturnOne<(Expr<A>,)> {
+  /// Execute this statement and return the output.
   Future<A> executeAndFetch() async => (await _return.executeAndFetch()).first;
 }
 
+/// Extension methods for a statement returning zero or more rows with
+/// 2 expressions.
 extension Return2<A, B> on Return<(Expr<A>, Expr<B>)> {
+  /// Execute this statement and return the output as a [Stream].
   Stream<(A, B)> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
     await for (final r in _context._query(sql, params)) {
@@ -9817,23 +11922,35 @@ extension Return2<A, B> on Return<(Expr<A>, Expr<B>)> {
     }
   }
 
+  /// Execute this statement and return the output as a [List].
   Future<List<(A, B)>> executeAndFetch() async =>
       await executeAndStream().toList();
 }
 
+/// Extension methods for a statement returning at-most one row with
+/// 2 expressions.
 extension ReturnSingle2<A, B> on ReturnSingle<(Expr<A>, Expr<B>)> {
+  /// Execute this statement and return the output.
   Future<(A, B)?> executeAndFetch() async =>
       (await _return.executeAndFetch()).firstOrNull;
+
+  /// Execute this statement and return the output.
   Future<(A?, B?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ?? (null, null);
 }
 
+/// Extension methods for a statement returning exactly one row with
+/// 2 expressions.
 extension ReturnOne2<A, B> on ReturnOne<(Expr<A>, Expr<B>)> {
+  /// Execute this statement and return the output.
   Future<(A, B)> executeAndFetch() async =>
       (await _return.executeAndFetch()).first;
 }
 
+/// Extension methods for a statement returning zero or more rows with
+/// 3 expressions.
 extension Return3<A, B, C> on Return<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C)> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
     await for (final r in _context._query(sql, params)) {
@@ -9845,23 +11962,35 @@ extension Return3<A, B, C> on Return<(Expr<A>, Expr<B>, Expr<C>)> {
     }
   }
 
+  /// Execute this statement and return the output as a [List].
   Future<List<(A, B, C)>> executeAndFetch() async =>
       await executeAndStream().toList();
 }
 
+/// Extension methods for a statement returning at-most one row with
+/// 3 expressions.
 extension ReturnSingle3<A, B, C> on ReturnSingle<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C)?> executeAndFetch() async =>
       (await _return.executeAndFetch()).firstOrNull;
+
+  /// Execute this statement and return the output.
   Future<(A?, B?, C?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ?? (null, null, null);
 }
 
+/// Extension methods for a statement returning exactly one row with
+/// 3 expressions.
 extension ReturnOne3<A, B, C> on ReturnOne<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C)> executeAndFetch() async =>
       (await _return.executeAndFetch()).first;
 }
 
+/// Extension methods for a statement returning zero or more rows with
+/// 4 expressions.
 extension Return4<A, B, C, D> on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D)> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
     await for (final r in _context._query(sql, params)) {
@@ -9874,26 +12003,38 @@ extension Return4<A, B, C, D> on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     }
   }
 
+  /// Execute this statement and return the output as a [List].
   Future<List<(A, B, C, D)>> executeAndFetch() async =>
       await executeAndStream().toList();
 }
 
+/// Extension methods for a statement returning at-most one row with
+/// 4 expressions.
 extension ReturnSingle4<A, B, C, D>
     on ReturnSingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D)?> executeAndFetch() async =>
       (await _return.executeAndFetch()).firstOrNull;
+
+  /// Execute this statement and return the output.
   Future<(A?, B?, C?, D?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ?? (null, null, null, null);
 }
 
+/// Extension methods for a statement returning exactly one row with
+/// 4 expressions.
 extension ReturnOne4<A, B, C, D>
     on ReturnOne<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D)> executeAndFetch() async =>
       (await _return.executeAndFetch()).first;
 }
 
+/// Extension methods for a statement returning zero or more rows with
+/// 5 expressions.
 extension Return5<A, B, C, D, E>
     on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D, E)> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
     await for (final r in _context._query(sql, params)) {
@@ -9907,26 +12048,38 @@ extension Return5<A, B, C, D, E>
     }
   }
 
+  /// Execute this statement and return the output as a [List].
   Future<List<(A, B, C, D, E)>> executeAndFetch() async =>
       await executeAndStream().toList();
 }
 
+/// Extension methods for a statement returning at-most one row with
+/// 5 expressions.
 extension ReturnSingle5<A, B, C, D, E>
     on ReturnSingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D, E)?> executeAndFetch() async =>
       (await _return.executeAndFetch()).firstOrNull;
+
+  /// Execute this statement and return the output.
   Future<(A?, B?, C?, D?, E?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ?? (null, null, null, null, null);
 }
 
+/// Extension methods for a statement returning exactly one row with
+/// 5 expressions.
 extension ReturnOne5<A, B, C, D, E>
     on ReturnOne<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D, E)> executeAndFetch() async =>
       (await _return.executeAndFetch()).first;
 }
 
+/// Extension methods for a statement returning zero or more rows with
+/// 6 expressions.
 extension Return6<A, B, C, D, E, F>
     on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D, E, F)> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
     await for (final r in _context._query(sql, params)) {
@@ -9941,26 +12094,38 @@ extension Return6<A, B, C, D, E, F>
     }
   }
 
+  /// Execute this statement and return the output as a [List].
   Future<List<(A, B, C, D, E, F)>> executeAndFetch() async =>
       await executeAndStream().toList();
 }
 
+/// Extension methods for a statement returning at-most one row with
+/// 6 expressions.
 extension ReturnSingle6<A, B, C, D, E, F>
     on ReturnSingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D, E, F)?> executeAndFetch() async =>
       (await _return.executeAndFetch()).firstOrNull;
+
+  /// Execute this statement and return the output.
   Future<(A?, B?, C?, D?, E?, F?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ?? (null, null, null, null, null, null);
 }
 
+/// Extension methods for a statement returning exactly one row with
+/// 6 expressions.
 extension ReturnOne6<A, B, C, D, E, F>
     on ReturnOne<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D, E, F)> executeAndFetch() async =>
       (await _return.executeAndFetch()).first;
 }
 
+/// Extension methods for a statement returning zero or more rows with
+/// 7 expressions.
 extension Return7<A, B, C, D, E, F, G>
     on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D, E, F, G)> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
     await for (final r in _context._query(sql, params)) {
@@ -9976,26 +12141,38 @@ extension Return7<A, B, C, D, E, F, G>
     }
   }
 
+  /// Execute this statement and return the output as a [List].
   Future<List<(A, B, C, D, E, F, G)>> executeAndFetch() async =>
       await executeAndStream().toList();
 }
 
+/// Extension methods for a statement returning at-most one row with
+/// 7 expressions.
 extension ReturnSingle7<A, B, C, D, E, F, G> on ReturnSingle<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D, E, F, G)?> executeAndFetch() async =>
       (await _return.executeAndFetch()).firstOrNull;
+
+  /// Execute this statement and return the output.
   Future<(A?, B?, C?, D?, E?, F?, G?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ?? (null, null, null, null, null, null, null);
 }
 
+/// Extension methods for a statement returning exactly one row with
+/// 7 expressions.
 extension ReturnOne7<A, B, C, D, E, F, G> on ReturnOne<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D, E, F, G)> executeAndFetch() async =>
       (await _return.executeAndFetch()).first;
 }
 
+/// Extension methods for a statement returning zero or more rows with
+/// 8 expressions.
 extension Return8<A, B, C, D, E, F, G, H> on Return<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D, E, F, G, H)> executeAndStream() async* {
     final (sql, params) = _render(_expressions.toList());
     await for (final r in _context._query(sql, params)) {
@@ -10012,21 +12189,30 @@ extension Return8<A, B, C, D, E, F, G, H> on Return<
     }
   }
 
+  /// Execute this statement and return the output as a [List].
   Future<List<(A, B, C, D, E, F, G, H)>> executeAndFetch() async =>
       await executeAndStream().toList();
 }
 
+/// Extension methods for a statement returning at-most one row with
+/// 8 expressions.
 extension ReturnSingle8<A, B, C, D, E, F, G, H> on ReturnSingle<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D, E, F, G, H)?> executeAndFetch() async =>
       (await _return.executeAndFetch()).firstOrNull;
+
+  /// Execute this statement and return the output.
   Future<(A?, B?, C?, D?, E?, F?, G?, H?)> executeAndFetchOrNulls() async =>
       await executeAndFetch() ??
       (null, null, null, null, null, null, null, null);
 }
 
+/// Extension methods for a statement returning exactly one row with
+/// 8 expressions.
 extension ReturnOne8<A, B, C, D, E, F, G, H> on ReturnOne<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Execute this statement and return the output.
   Future<(A, B, C, D, E, F, G, H)> executeAndFetch() async =>
       (await _return.executeAndFetch()).first;
 }

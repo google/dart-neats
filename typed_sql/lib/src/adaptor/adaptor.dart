@@ -55,12 +55,16 @@ abstract base class DatabaseAdaptor extends Executor {
 
   /// Create an SQLite3 [DatabaseAdaptor] from [uri].
   ///
-  /// The [uri] must be given in [SQLite3 URI format][1].
+  /// The [uri] must be given in [SQLite3 URI format][1], such as
+  /// `file://path/to/database.db`.
   ///
   /// {@template sqlite-dependency}
-  /// The [DatabaseAdaptor] for SQLite3 relies on [`package:sqlite3`][2], this
-  /// requires the dynamic library to available on the system, or manually
-  /// specified, see [manually providing sqlite3 libraries][3].
+  /// The [DatabaseAdaptor] for SQLite3 relies on [`package:sqlite3`][sd-1],
+  /// this requires the dynamic library to available on the system, or manually
+  /// specified, see [manually providing sqlite3 libraries][sd-2].
+  ///
+  /// [sd-1]: https://pub.dev/packages/sqlite3
+  /// [sd-2]: https://pub.dev/packages/sqlite3#manually-providing-sqlite3-libraries
   /// {@endtemplate}
   ///
   /// > [!WARNING]
@@ -70,12 +74,10 @@ abstract base class DatabaseAdaptor extends Executor {
   /// > database, use _shared-cache_ with [URI filename][1], such as:
   /// > `file:memdb1?mode=memory&cache=shared`.
   /// >
-  /// > See also SQLite3 documentation on [In-Memory Databases][4].
+  /// > See also SQLite3 documentation on [In-Memory Databases][2].
   ///
   /// [1]: https://www.sqlite.org/uri.html
-  /// [2]: https://pub.dev/packages/sqlite3
-  /// [3]: https://pub.dev/packages/sqlite3#manually-providing-sqlite3-libraries
-  /// [4]: https://www.sqlite.org/inmemorydb.html
+  /// [2]: https://www.sqlite.org/inmemorydb.html
   factory DatabaseAdaptor.sqlite3(Uri uri) => sqlite3Adaptor(uri);
 
   /// Create a Postgres [DatabaseAdaptor] using [pool].

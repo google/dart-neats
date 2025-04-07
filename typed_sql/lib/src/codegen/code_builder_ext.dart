@@ -21,6 +21,12 @@ extension MethodBuilderExt on MethodBuilder {
   }
 }
 
+extension ExtensionBuilderExt on ExtensionBuilder {
+  void documentation(String content) {
+    docs.addAll(_documentationCommentLines(content));
+  }
+}
+
 Iterable<String> _documentationCommentLines(String content) =>
     _trimLines(content)
         .split('\n')

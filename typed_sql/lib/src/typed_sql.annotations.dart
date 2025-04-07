@@ -21,12 +21,14 @@ final class PrimaryKey {
   const PrimaryKey(this.fields);
 }
 
+/// Annotation for field that has a default value, specified by [value].
 final class DefaultValue<T> {
   final T value;
 
   const DefaultValue(this.value);
 }
 
+/// Annotation for field that should be auto-incremented by default.
 final class AutoIncrement {
   const AutoIncrement();
 }

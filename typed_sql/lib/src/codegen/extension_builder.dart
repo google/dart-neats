@@ -100,8 +100,12 @@ Iterable<Spec> _buildExtensions() sync* {
 Spec _buildQueryExtension(int i) {
   return Extension((b) => b
     ..name = 'Query$i'
-    ..on = refer('Query<${typArgedExprTuple(i, 0)}>')
     ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('Query<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a query returning zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
 
     //   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b, Expr<C> c) builder) {
     //     final handle = Object();
@@ -561,6 +565,10 @@ Spec _buildSubQueryExtension(int i) {
     ..name = 'SubQuery$i'
     ..on = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
     ..types.addAll(typeArg.take(i).map(refer))
+    ..documentation('''
+      Extension methods for a subquery returning zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
     ..methods.addAll([
       Method(
         (b) => b
@@ -744,6 +752,10 @@ Spec _buildSingleQueryExtension(int i) {
       ..name = 'QuerySingle$i'
       ..types.addAll(typeArg.take(i).map(refer))
       ..on = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
+        Extensions for a query returning at-most one row with
+        $i expression${i > 1 ? 's' : ''}.
+      ''')
       ..methods.addAll(
         [
           Method(
@@ -846,10 +858,15 @@ Iterable<Spec> _buildReturnExtension(int i) sync* {
     ..name = 'Return$i'
     ..types.addAll(typeArg.take(i).map(refer))
     ..on = refer('Return<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a statement returning zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
     ..methods.addAll([
       Method(
         (b) => b
           ..name = 'executeAndStream'
+          ..documentation(docs.returnExecuteAndStream)
           ..returns = refer(
               'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>')
           ..modifier = MethodModifier.asyncStar
@@ -863,6 +880,7 @@ Iterable<Spec> _buildReturnExtension(int i) sync* {
       Method(
         (b) => b
           ..name = 'executeAndFetch'
+          ..documentation(docs.returnExecuteAndFetch)
           ..returns = refer(
               'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>')
           ..modifier = MethodModifier.async
@@ -875,10 +893,15 @@ Iterable<Spec> _buildReturnExtension(int i) sync* {
     ..name = 'ReturnSingle$i'
     ..types.addAll(typeArg.take(i).map(refer))
     ..on = refer('ReturnSingle<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a statement returning at-most one row with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
     ..methods.addAll([
       Method(
         (b) => b
           ..name = 'executeAndFetch'
+          ..documentation(docs.returnSingleExecuteAndFetch)
           ..returns = refer(
             'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}?>',
           )
@@ -890,6 +913,7 @@ Iterable<Spec> _buildReturnExtension(int i) sync* {
         Method(
           (b) => b
             ..name = 'executeAndFetchOrNulls'
+            ..documentation(docs.returnSingleExecuteAndFetchOrNulls)
             ..returns = refer(
               'Future<(${List.generate(i, (i) => '${typeArg[i]}?').join(',')})>',
             )
@@ -905,10 +929,15 @@ Iterable<Spec> _buildReturnExtension(int i) sync* {
     ..name = 'ReturnOne$i'
     ..types.addAll(typeArg.take(i).map(refer))
     ..on = refer('ReturnOne<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a statement returning exactly one row with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
     ..methods.addAll([
       Method(
         (b) => b
           ..name = 'executeAndFetch'
+          ..documentation(docs.returnOneExecuteAndFetch)
           ..returns = refer(
             'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
           )
@@ -975,11 +1004,15 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
       ..types.addAll(typeArg.take(i + j).map(refer))
       ..on = refer(
           '${kind}Join<${typArgedExprTuple(i, 0)}, ${typArgedExprTuple(j, i)}>')
+      ..documentation('''
+        Extension methods for completing an `${kind.toUpperCase()} JOIN`.
+      ''')
       ..methods.addAll([
         // We only have `all` on INNER JOIN
         if (type == 'inner')
           Method((b) => b
             ..name = 'all'
+            ..documentation(docs.innerJoinAll)
             ..returns = refer('Query<${listToTuple(toArgedExprList([
                   ...typeArg.take(i).map((v) => '$v$ln'),
                   ...typeArg.skip(i).take(j).map((v) => '$v$rn'),
@@ -1004,6 +1037,7 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
            ''')),
         Method((b) => b
           ..name = 'on'
+          ..documentation(docs.joinOn(kind.toLowerCase()))
           ..returns = refer('Query<${listToTuple(toArgedExprList([
                 ...typeArg.take(i).map((v) => '$v$ln'),
                 ...typeArg.skip(i).take(j).map((v) => '$v$rn'),
@@ -1070,11 +1104,15 @@ Spec _buildGroupByExtension(int i, int j) {
     ..name = 'Group${j}By$i'
     ..types.addAll(typeArg.take(i + j).map(refer))
     ..on = refer('Group<$S, $T>')
+    ..documentation('''
+      Extension methods for completing a `GROUP BY`.
+    ''')
     // Note. There is no need for a .having clause, it's functionally equivalent
     //       use .where on the resulting Query<R>.
     ..methods.add(Method(
       (b) => b
         ..name = 'aggregate'
+        ..documentation(docs.groupByAggregate)
         ..returns = refer('Query<T>')
         ..types.add(refer('T extends Record'))
         ..requiredParameters.add(Parameter(
@@ -1125,6 +1163,9 @@ Spec _buildAggregationExtension(int i, int j) {
     ..name = 'Aggregate${i}Project$j'
     ..types.addAll(typeArg.take(i + j).map(refer))
     ..on = refer('Aggregation<$S, $t1>')
+    ..documentation('''
+      Extension methods for specifying aggregate functions over rows in a group.
+    ''')
     ..methods.addAll([
       //  Aggregation<
       //      (
@@ -1189,6 +1230,7 @@ Spec _buildAggregationExtension(int i, int j) {
       //      _build(aggregateBuilder, SumExpression._);
       Method((b) => b
         ..name = 'sum'
+        ..documentation(docs.aggregationSum)
         ..returns = refer('Aggregation<$S, $t2>')
         ..types.add(refer('$T extends num'))
         ..requiredParameters.add(Parameter(
@@ -1202,6 +1244,7 @@ Spec _buildAggregationExtension(int i, int j) {
 
       Method((b) => b
         ..name = 'avg'
+        ..documentation(docs.aggregationAvg)
         ..returns = refer(
             'Aggregation<$S, ${listToTuple(typArgedExprAsList(j, i) + [
                   'Expr<double?>'
@@ -1218,6 +1261,7 @@ Spec _buildAggregationExtension(int i, int j) {
 
       Method((b) => b
         ..name = 'min'
+        ..documentation(docs.aggregationMin)
         ..returns = refer('Aggregation<$S, $t2nullable>')
         ..types.add(refer('$T extends Comparable'))
         ..requiredParameters.add(Parameter(
@@ -1231,6 +1275,7 @@ Spec _buildAggregationExtension(int i, int j) {
 
       Method((b) => b
         ..name = 'max'
+        ..documentation(docs.aggregationMax)
         ..returns = refer('Aggregation<$S, $t2nullable>')
         ..types.add(refer('$T extends Comparable'))
         ..requiredParameters.add(Parameter(
@@ -1244,6 +1289,7 @@ Spec _buildAggregationExtension(int i, int j) {
 
       Method((b) => b
         ..name = 'count'
+        ..documentation(docs.aggregationCount)
         ..returns = refer(
             'Aggregation<$S, ${listToTuple(typArgedExprAsList(j, i) + [
                   'Expr<int>'
