@@ -36,7 +36,7 @@ sealed class DatabaseException implements Exception {}
 /// [TransactionAbortedException].
 abstract final class OperationException extends DatabaseException {
   // TODO: Make this class `sealed` when we are confident we don't need
-  //       additional subclasses. This need not happen anytime soone, we can do
+  //       additional subclasses. This need not happen anytime soon, we can do
   //       this long after 1.0.0, when we have a number of reliable adaptors.
 }
 

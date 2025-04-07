@@ -14,26 +14,26 @@
 
 part of 'typed_sql.dart';
 
-/// Annotation for a table specifying it's primary key.
+/// Annotation for a table specifying its primary key.
 final class PrimaryKey {
   final List<String> fields;
 
   const PrimaryKey(this.fields);
 }
 
-/// Annotation for field that has a default value, specified by [value].
+/// Annotation for a field that has a default value, specified by [value].
 final class DefaultValue<T> {
   final T value;
 
   const DefaultValue(this.value);
 }
 
-/// Annotation for field that should be auto-incremented by default.
+/// Annotation for a field that should be auto-incremented (by default).
 final class AutoIncrement {
   const AutoIncrement();
 }
 
-/// Annotation for references within a table.
+/// Annotation for fields that references fields from another table.
 final class References {
   final String table;
   final String field;
@@ -48,7 +48,7 @@ final class References {
   });
 }
 
-/// Annotation for a property that are unique.
+/// Annotation for a unique field.
 final class Unique {
   // TODO: Consider allowing a `given: ['foo', 'bar']` argument for fields
   //       that are unique given fields 'foo' and 'bar'.

@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Some comment
-library;
-
 import 'dart:async';
 import 'dart:typed_data' show Uint8List;
 
@@ -43,9 +40,7 @@ abstract base class Schema {
   }
 }
 
-//final class View<T> extends Query<T> {}
-
-/// Class from which all model classes must implement.
+/// Marker class which all model classes must extend.
 abstract base class Model {}
 
 typedef TableDefinition<T extends Model> = ({
