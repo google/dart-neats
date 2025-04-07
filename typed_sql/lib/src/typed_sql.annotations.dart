@@ -55,10 +55,11 @@ final class Unique {
   const Unique();
 }
 
-/// Interface to be implemented by custom types that can be stored in a [Model].
+/// Interface to be implemented by custom types that can be stored in a [Model]
+/// for automatic (de)-serialization.
 ///
 /// Subclasses must:
-///  * specify a concrete `T` as one of:
+///  * specify a concrete `T` that will be the serialized representation type. As one of:
 ///    - String
 ///    - Uint8List
 ///    - bool
@@ -67,7 +68,7 @@ final class Unique {
 ///    - DateTime
 ///  * have a `fromDatabase(T value)` constructor.
 ///
-/// If a subclass implements [Comparable] then the encoded values returns from
+/// If a subclass implements [Comparable] then the encoded values returned by
 /// [toDatabase] **must** also be comparable and have the same ordering!
 abstract interface class CustomDataType<T extends Object?> {
   T toDatabase();

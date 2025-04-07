@@ -47,18 +47,6 @@ final class RightJoin<T extends Record, S extends Record> {
   RightJoin._(this._from, this._join);
 }
 
-/*
-final class View<T extends Record> extends Query<T> {
-  @override
-  T get _expressions => throw UnimplementedError();
-
-  @override
-  QueryClause Function(List<Expr<Object?>> expressions) get _from =>
-      throw UnimplementedError();
-
-  View._(super._context) : super._();
-}*/
-
 final class Table<T extends Model> extends Query<(Expr<T>,)> {
   final TableClause _tableClause;
 
@@ -110,14 +98,6 @@ final class SelectClause extends QueryClause {
   SelectClause._(this._expressions);
 }
 
-/*
-final class ViewClause extends QueryClause {
-  /// Name of view
-  final String name;
-  final List<String> columns;
-  ViewClause(this.name, this.columns);
-}*/
-
 sealed class FromClause extends QueryClause {
   final QueryClause from;
   FromClause._(this.from);
@@ -125,8 +105,8 @@ sealed class FromClause extends QueryClause {
 
 /// Interface implemented by object with-in which expressions may exist.
 ///
-/// Expressions can be bound to context, that is the context from which they
-/// are referencing fields.
+/// Expressions can be bound to this context, that is the context from which
+/// they are referencing fields.
 abstract final class ExpressionContext {
   Object get _handle;
 }

@@ -18,7 +18,7 @@ import 'dart:async';
 /// [notify].
 ///
 /// [Notifier] is a concurrency primitive that allows one micro-task to
-/// wait for notification from another micro-task. The [Future] return from
+/// wait for notification from another micro-task. The [Future] returned from
 /// [wait] will be completed the next time [notify] is called.
 ///
 /// ```dart

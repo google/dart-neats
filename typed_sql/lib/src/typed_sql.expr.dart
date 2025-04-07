@@ -15,7 +15,6 @@
 part of 'typed_sql.dart';
 
 sealed class _ExprType<T extends Object?> {
-  // TODO: This should probably be private!
   T? _read(RowReader r);
 
   const _ExprType._();
@@ -138,7 +137,7 @@ abstract final class _ExprTyped<T extends Object?> {
   _ExprType<T> get _type;
 }
 
-/// A representation of an SQL expression for `T`.
+/// A representation of an SQL expression with type `T`.
 sealed class Expr<T extends Object?> implements _ExprTyped<T> {
   factory Expr(T value) => literal(value);
 
@@ -210,6 +209,19 @@ base mixin _ExprBlob implements _ExprTyped<Uint8List> {
   final _type = ColumnType.blob;
 }
 
+/// Create an [Expr<T>] wrapping [value].
+///
+/// The type of [value] must be one of:
+///  * [String],
+///  * [int],
+///  * [double],
+///  * [bool],
+///  * [DateTime],
+///  * [Uint8List],
+///  * `null`
+///
+/// > [!NOTE]
+/// > If you want to use a [CustomDataType], use [Literal.custom] instead.
 Literal<T> literal<T extends Object?>(T value) => Literal(value);
 
 final class ModelExpression<T extends Model> extends Expr<T> {
@@ -309,8 +321,8 @@ final class SumExpression<T extends num> extends SingleValueExpr<T> {
   _ExprType<T> get _type => value._type as _ExprType<T>;
 }
 
-// AVG returns NULL, if applied to the empty set of values, also it ignores
-// NULL and will return NULL if applied to set of NULLs
+// NOTE: AVG returns NULL, if applied to the empty set of values, also it
+//       ignores NULL and will return NULL if applied to set of NULLs.
 final class AvgExpression extends SingleValueExpr<double?> {
   final Expr<num?> value;
   AvgExpression._(this.value) : super._();
@@ -396,10 +408,10 @@ final class Literal<T> extends SingleValueExpr<T> {
 
   // TODO: Consider supporting a Constant expression subclass, currently we
   //       always encode literals as ? and attach them as parameters.
-  //       This is fine, but if we ever use this query builders to created
+  //       This is fine, but if we ever use these query builders to create
   //       prepared statements that are executed more than once, then it matters
-  //       whether a literal is encoded as value or constant
-  //       If we do this, we might have rename Literal to Value!
+  //       whether a literal is encoded as value or a constant.
+  //       If we do this, we might have to rename Literal to Value!
 
   static const null$ = Literal<Null>._(null, ColumnType.nullType);
   static const true$ = Literal._(true, ColumnType.boolean);

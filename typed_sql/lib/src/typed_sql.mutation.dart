@@ -29,7 +29,7 @@ final class UpdateSingle<T extends Model> {
   /// Execute this `UPDATE` statement in the database.
   Future<void> execute() async => await _update.execute();
 
-  /// Create a `UPDATE` statement that returns a projection of the update row,
+  /// Create a `UPDATE` statement that returns a projection of the updated row,
   /// using the `RETURNING` clause.
   ///
   /// This is equivalent to the `RETURNING` clause in SQL.
@@ -48,7 +48,7 @@ final class UpdateSingle<T extends Model> {
   ReturnSingle<(Expr<T>,)> returnUpdated() => _update.returnUpdated()._first;
 }
 
-/// A `UPDATE` statement to update one or more rows.
+/// A `UPDATE` statement to update multiple rows.
 final class Update<T extends Model> {
   final Query<(Expr<T>,)> _query;
   final TableDefinition<T> _table;
@@ -168,7 +168,7 @@ final class InsertSingle<T extends Model> {
       returning((inserted) => (inserted,));
 }
 
-/// A `DELETE` statement to delete one or more rows.
+/// A `DELETE` statement deleting multiple rows.
 final class Delete<T extends Model> {
   final Query<(Expr<T>,)> _query;
   final TableDefinition<T> _table;
@@ -221,7 +221,7 @@ final class Delete<T extends Model> {
   Return<(Expr<T>,)> returnDeleted() => returning((deleted) => (deleted,));
 }
 
-/// A `DELETE` statement to delete at-most one row.
+/// A `DELETE` statement deleting at-most one row.
 final class DeleteSingle<T extends Model> {
   final Delete<T> _delete;
   DeleteSingle._(this._delete);
