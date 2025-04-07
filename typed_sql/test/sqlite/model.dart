@@ -27,8 +27,12 @@ abstract final class User extends Model {
   @AutoIncrement()
   int get userId;
 
+  /// Name of the user
+  ///
+  /// This is the fullname.
   String get name;
 
+  /// The users email address, not verified, by provided from OIDC.
   @Unique()
   String get email;
 }

@@ -17,7 +17,8 @@
 /// @docImport 'package:typed_sql/src/typed_sql.dart';
 library;
 
-/// Documentation for `.where` on [Query], [SubQuery], [QuerySingle].
+/// Documentation for `.where` on [Query], [SubQuery], [QuerySingle] with
+/// positional and named records.
 ///
 /// [target] must be either 'Query', 'SubQuery' or 'QuerySingle'.
 String where(String target) => '''
@@ -27,7 +28,8 @@ String where(String target) => '''
     returned by [conditionBuilder] evaluates to `true`.
 ''';
 
-/// Documentation for `.orderBy` on [Query] and [SubQuery].
+/// Documentation for `.orderBy` on [Query] and [SubQuery] with positional and
+/// named records.
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
 String orderBy(String target) => '''
@@ -57,7 +59,8 @@ String orderBy(String target) => '''
     ```
 ''';
 
-/// Documentation for `.limit` on [Query] and [SubQuery].
+/// Documentation for `.limit` on [Query] and [SubQuery] with positional and
+/// named records.
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
 String limit(String target) => '''
@@ -66,7 +69,8 @@ String limit(String target) => '''
     The resulting [$target] will only return the first [limit] rows.
 ''';
 
-/// Documentation for `.offset` on [Query] and [SubQuery].
+/// Documentation for `.offset` on [Query] and [SubQuery] with positional and
+/// named records.
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
 String offset(String target) => '''
@@ -108,7 +112,8 @@ final countSubQuery = '''
     rows first.
 ''';
 
-/// Documentation for `.select` on [Query], [SubQuery] and [QuerySingle].
+/// Documentation for `.select` on [Query], [SubQuery] and [QuerySingle] with
+/// positional and named records.
 ///
 /// [target] must be either 'Query', 'SubQuery' or 'QuerySingle'.
 // TODO: Select documentation needs an example!
@@ -179,12 +184,12 @@ final existsSubQuery = '''
     contains any rows, even if those rows are entirely `null`s.
 ''';
 
-/// Documentation for `.stream` on [Query].
+/// Documentation for `.stream` on [Query] with positional and named records.
 final streamQuery = '''
     Query the database for rows in this [Query] as a [Stream].
 ''';
 
-/// Documentation for `.fetch` on [Query].
+/// Documentation for `.fetch` on [Query] with positional and named records.
 final fetchQuery = '''
     Query the database for rows in this [Query] as a [List].
 ''';

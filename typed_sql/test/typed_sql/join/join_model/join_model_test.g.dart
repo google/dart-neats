@@ -6,26 +6,49 @@ part of 'join_model_test.dart';
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
+/// Extension methods for a [Database] operating on [CompanyDatabase].
 extension CompanyDatabaseSchema on Database<CompanyDatabase> {
   static const _$tables = [_$Employee._$table, _$Department._$table];
 
-  /// TODO: Propagate documentation for tables!
   Table<Employee> get employees => ExposedForCodeGen.declareTable(
         this,
         _$Employee._$table,
       );
 
-  /// TODO: Propagate documentation for tables!
   Table<Department> get departments => ExposedForCodeGen.declareTable(
         this,
         _$Department._$table,
       );
+
+  /// Create tables defined in [CompanyDatabase].
+  ///
+  /// Calling this on an empty database will create the tables
+  /// defined in [CompanyDatabase]. In production it's often better to
+  /// use [createCompanyDatabaseTables] and manage migrations using
+  /// external tools.
+  ///
+  /// This method is mostly useful for testing.
+  ///
+  /// > [!WARNING]
+  /// > If the database is **not empty** behavior is undefined, most
+  /// > likely this operation will fail.
   Future<void> createTables() async => ExposedForCodeGen.createTables(
         context: this,
         tables: _$tables,
       );
 }
 
+/// Get SQL [DDL statements][1] for tables defined in [CompanyDatabase].
+///
+/// This returns a SQL script with multiple DDL statements separated by `;`
+/// using the specified [dialect].
+///
+/// Executing these statements in an empty database will create the tables
+/// defined in [CompanyDatabase]. In practice, this method is often used for
+/// printing the DDL statements, such that migrations can be managed by
+/// external tools.
+///
+/// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createCompanyDatabaseTables(SqlDialect dialect) =>
     ExposedForCodeGen.createTableSchema(
       dialect: dialect,
@@ -102,8 +125,12 @@ final class _$Employee extends Employee {
       'Employee(employeeId: "$employeeId", name: "$name", departmentId: "$departmentId")';
 }
 
+/// Extension methods for table defined in [Employee].
 extension TableEmployeeExt on Table<Employee> {
-  /// TODO: document insert
+  /// Insert row into the `employees` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
   InsertSingle<Employee> insert({
     Expr<int>? employeeId,
     required Expr<String> name,
@@ -118,7 +145,15 @@ extension TableEmployeeExt on Table<Employee> {
         ],
       );
 
-  /// TODO: document delete
+  /// Delete a single row from the `employees` table, specified by
+  /// _primary key_.
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be
+  /// called for the row to be deleted.
+  ///
+  /// To delete multiple rows, using `.where()` to filter which rows
+  /// should be deleted. If you wish to delete all rows, use
+  /// `.where((_) => literal(true)).delete()`.
   DeleteSingle<Employee> delete(int employeeId) =>
       ExposedForCodeGen.deleteSingle(
         byKey(employeeId),
@@ -126,12 +161,42 @@ extension TableEmployeeExt on Table<Employee> {
       );
 }
 
+/// Extension methods for building queries against the `employees` table.
 extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
-  /// TODO: document lookup by PrimaryKey
+  /// Lookup a single row in `employees` table using the _primary key_.
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
   QuerySingle<(Expr<Employee>,)> byKey(int employeeId) =>
       where((employee) => employee.employeeId.equalsLiteral(employeeId)).first;
 
-  /// TODO: document update()
+  /// Update all rows in the `employees` table matching this [Query].
+  ///
+  /// The changes to be applied to each row matching this [Query] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [Update] statement on which `.execute()` must be called
+  /// for the rows to be updated.
+  ///
+  /// **Example:** decrementing `1` from the `value` field for each row
+  /// where `value > 0`.
+  /// ```dart
+  /// await db.mytable
+  ///   .where((row) => row.value > literal(0))
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   Update<Employee> update(
           UpdateSet<Employee> Function(
             Expr<Employee> employee,
@@ -159,13 +224,45 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
         ),
       );
 
-  /// TODO: document delete()}
+  /// Delete all rows in the `employees` table matching this [Query].
+  ///
+  /// Returns a [Delete] statement on which `.execute()` must be called
+  /// for the rows to be deleted.
   Delete<Employee> delete() =>
       ExposedForCodeGen.delete(this, _$Employee._$table);
 }
 
+/// Extension methods for building point queries against the `employees` table.
 extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
-  /// TODO: document update()
+  /// Update the row (if any) in the `employees` table matching this
+  /// [QuerySingle].
+  ///
+  /// The changes to be applied to the row matching this [QuerySingle] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [UpdateSingle] statement on which `.execute()` must be
+  /// called for the row to be updated. The resulting statement will
+  /// **not** fail, if there are no rows matching this query exists.
+  ///
+  /// **Example:** decrementing `1` from the `value` field the row with
+  /// `id = 1`.
+  /// ```dart
+  /// await db.mytable
+  ///   .byKey(1)
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   UpdateSingle<Employee> update(
           UpdateSet<Employee> Function(
             Expr<Employee> employee,
@@ -193,42 +290,51 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
         ),
       );
 
-  /// TODO: document delete()
+  /// Delete the row (if any) in the `employees` table matching this [QuerySingle].
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be called
+  /// for the row to be deleted. The resulting statement will **not**
+  /// fail, if there are no rows matching this query exists.
   DeleteSingle<Employee> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Employee._$table);
 }
 
+/// Extension methods for expressions on a row in the `employees` table.
 extension ExpressionEmployeeExt on Expr<Employee> {
-  /// TODO: document employeeId
   Expr<int> get employeeId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  /// TODO: document name
   Expr<String> get name =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  /// TODO: document departmentId
   Expr<int?> get departmentId =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
 }
 
 extension ExpressionNullableEmployeeExt on Expr<Employee?> {
-  /// TODO: document employeeId
   Expr<int?> get employeeId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  /// TODO: document name
   Expr<String?> get name =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  /// TODO: document departmentId
   Expr<int?> get departmentId =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
 
-  /// TODO: Document isNotNull
+  /// Check if the row is not `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNotNull() => employeeId.isNotNull();
 
-  /// TODO: Document isNull
+  /// Check if the row is `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
 }
 
@@ -302,8 +408,12 @@ final class _$Department extends Department {
       'Department(departmentId: "$departmentId", name: "$name", location: "$location")';
 }
 
+/// Extension methods for table defined in [Department].
 extension TableDepartmentExt on Table<Department> {
-  /// TODO: document insert
+  /// Insert row into the `departments` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
   InsertSingle<Department> insert({
     Expr<int>? departmentId,
     required Expr<String> name,
@@ -318,7 +428,15 @@ extension TableDepartmentExt on Table<Department> {
         ],
       );
 
-  /// TODO: document delete
+  /// Delete a single row from the `departments` table, specified by
+  /// _primary key_.
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be
+  /// called for the row to be deleted.
+  ///
+  /// To delete multiple rows, using `.where()` to filter which rows
+  /// should be deleted. If you wish to delete all rows, use
+  /// `.where((_) => literal(true)).delete()`.
   DeleteSingle<Department> delete(int departmentId) =>
       ExposedForCodeGen.deleteSingle(
         byKey(departmentId),
@@ -326,13 +444,43 @@ extension TableDepartmentExt on Table<Department> {
       );
 }
 
+/// Extension methods for building queries against the `departments` table.
 extension QueryDepartmentExt on Query<(Expr<Department>,)> {
-  /// TODO: document lookup by PrimaryKey
+  /// Lookup a single row in `departments` table using the _primary key_.
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
   QuerySingle<(Expr<Department>,)> byKey(int departmentId) =>
       where((department) => department.departmentId.equalsLiteral(departmentId))
           .first;
 
-  /// TODO: document update()
+  /// Update all rows in the `departments` table matching this [Query].
+  ///
+  /// The changes to be applied to each row matching this [Query] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [Update] statement on which `.execute()` must be called
+  /// for the rows to be updated.
+  ///
+  /// **Example:** decrementing `1` from the `value` field for each row
+  /// where `value > 0`.
+  /// ```dart
+  /// await db.mytable
+  ///   .where((row) => row.value > literal(0))
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   Update<Department> update(
           UpdateSet<Department> Function(
             Expr<Department> department,
@@ -360,13 +508,45 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
         ),
       );
 
-  /// TODO: document delete()}
+  /// Delete all rows in the `departments` table matching this [Query].
+  ///
+  /// Returns a [Delete] statement on which `.execute()` must be called
+  /// for the rows to be deleted.
   Delete<Department> delete() =>
       ExposedForCodeGen.delete(this, _$Department._$table);
 }
 
+/// Extension methods for building point queries against the `departments` table.
 extension QuerySingleDepartmentExt on QuerySingle<(Expr<Department>,)> {
-  /// TODO: document update()
+  /// Update the row (if any) in the `departments` table matching this
+  /// [QuerySingle].
+  ///
+  /// The changes to be applied to the row matching this [QuerySingle] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [UpdateSingle] statement on which `.execute()` must be
+  /// called for the row to be updated. The resulting statement will
+  /// **not** fail, if there are no rows matching this query exists.
+  ///
+  /// **Example:** decrementing `1` from the `value` field the row with
+  /// `id = 1`.
+  /// ```dart
+  /// await db.mytable
+  ///   .byKey(1)
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   UpdateSingle<Department> update(
           UpdateSet<Department> Function(
             Expr<Department> department,
@@ -394,53 +574,80 @@ extension QuerySingleDepartmentExt on QuerySingle<(Expr<Department>,)> {
         ),
       );
 
-  /// TODO: document delete()
+  /// Delete the row (if any) in the `departments` table matching this [QuerySingle].
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be called
+  /// for the row to be deleted. The resulting statement will **not**
+  /// fail, if there are no rows matching this query exists.
   DeleteSingle<Department> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Department._$table);
 }
 
+/// Extension methods for expressions on a row in the `departments` table.
 extension ExpressionDepartmentExt on Expr<Department> {
-  /// TODO: document departmentId
   Expr<int> get departmentId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  /// TODO: document name
   Expr<String> get name =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  /// TODO: document location
   Expr<String> get location =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
 }
 
 extension ExpressionNullableDepartmentExt on Expr<Department?> {
-  /// TODO: document departmentId
   Expr<int?> get departmentId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  /// TODO: document name
   Expr<String?> get name =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  /// TODO: document location
   Expr<String?> get location =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
 
-  /// TODO: Document isNotNull
+  /// Check if the row is not `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNotNull() => departmentId.isNotNull();
 
-  /// TODO: Document isNull
+  /// Check if the row is `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
 }
 
+/// Extension methods for assertions on [Department] using
+/// [`package:checks`][1].
+///
+/// [1]: https://pub.dev/packages/checks
 extension DepartmentChecks on Subject<Department> {
+  /// Create assertions on [Department.departmentId].
   Subject<int> get departmentId => has((m) => m.departmentId, 'departmentId');
+
+  /// Create assertions on [Department.name].
   Subject<String> get name => has((m) => m.name, 'name');
+
+  /// Create assertions on [Department.location].
   Subject<String> get location => has((m) => m.location, 'location');
 }
 
+/// Extension methods for assertions on [Employee] using
+/// [`package:checks`][1].
+///
+/// [1]: https://pub.dev/packages/checks
 extension EmployeeChecks on Subject<Employee> {
+  /// Create assertions on [Employee.employeeId].
   Subject<int> get employeeId => has((m) => m.employeeId, 'employeeId');
+
+  /// Create assertions on [Employee.name].
   Subject<String> get name => has((m) => m.name, 'name');
+
+  /// Create assertions on [Employee.departmentId].
   Subject<int?> get departmentId => has((m) => m.departmentId, 'departmentId');
 }

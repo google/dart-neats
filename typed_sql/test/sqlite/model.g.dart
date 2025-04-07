@@ -6,32 +6,54 @@ part of 'model.dart';
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
+/// Extension methods for a [Database] operating on [PrimaryDatabase].
 extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   static const _$tables = [_$User._$table, _$Package._$table, _$Like._$table];
 
-  /// TODO: Propagate documentation for tables!
   Table<User> get users => ExposedForCodeGen.declareTable(
         this,
         _$User._$table,
       );
 
-  /// TODO: Propagate documentation for tables!
   Table<Package> get packages => ExposedForCodeGen.declareTable(
         this,
         _$Package._$table,
       );
 
-  /// TODO: Propagate documentation for tables!
   Table<Like> get likes => ExposedForCodeGen.declareTable(
         this,
         _$Like._$table,
       );
+
+  /// Create tables defined in [PrimaryDatabase].
+  ///
+  /// Calling this on an empty database will create the tables
+  /// defined in [PrimaryDatabase]. In production it's often better to
+  /// use [createPrimaryDatabaseTables] and manage migrations using
+  /// external tools.
+  ///
+  /// This method is mostly useful for testing.
+  ///
+  /// > [!WARNING]
+  /// > If the database is **not empty** behavior is undefined, most
+  /// > likely this operation will fail.
   Future<void> createTables() async => ExposedForCodeGen.createTables(
         context: this,
         tables: _$tables,
       );
 }
 
+/// Get SQL [DDL statements][1] for tables defined in [PrimaryDatabase].
+///
+/// This returns a SQL script with multiple DDL statements separated by `;`
+/// using the specified [dialect].
+///
+/// Executing these statements in an empty database will create the tables
+/// defined in [PrimaryDatabase]. In practice, this method is often used for
+/// printing the DDL statements, such that migrations can be managed by
+/// external tools.
+///
+/// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createPrimaryDatabaseTables(SqlDialect dialect) =>
     ExposedForCodeGen.createTableSchema(
       dialect: dialect,
@@ -110,8 +132,12 @@ final class _$User extends User {
       'User(userId: "$userId", name: "$name", email: "$email")';
 }
 
+/// Extension methods for table defined in [User].
 extension TableUserExt on Table<User> {
-  /// TODO: document insert
+  /// Insert row into the `users` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
   InsertSingle<User> insert({
     Expr<int>? userId,
     required Expr<String> name,
@@ -126,19 +152,57 @@ extension TableUserExt on Table<User> {
         ],
       );
 
-  /// TODO: document delete
+  /// Delete a single row from the `users` table, specified by
+  /// _primary key_.
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be
+  /// called for the row to be deleted.
+  ///
+  /// To delete multiple rows, using `.where()` to filter which rows
+  /// should be deleted. If you wish to delete all rows, use
+  /// `.where((_) => literal(true)).delete()`.
   DeleteSingle<User> delete(int userId) => ExposedForCodeGen.deleteSingle(
         byKey(userId),
         _$User._$table,
       );
 }
 
+/// Extension methods for building queries against the `users` table.
 extension QueryUserExt on Query<(Expr<User>,)> {
-  /// TODO: document lookup by PrimaryKey
+  /// Lookup a single row in `users` table using the _primary key_.
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
   QuerySingle<(Expr<User>,)> byKey(int userId) =>
       where((user) => user.userId.equalsLiteral(userId)).first;
 
-  /// TODO: document update()
+  /// Update all rows in the `users` table matching this [Query].
+  ///
+  /// The changes to be applied to each row matching this [Query] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [Update] statement on which `.execute()` must be called
+  /// for the rows to be updated.
+  ///
+  /// **Example:** decrementing `1` from the `value` field for each row
+  /// where `value > 0`.
+  /// ```dart
+  /// await db.mytable
+  ///   .where((row) => row.value > literal(0))
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   Update<User> update(
           UpdateSet<User> Function(
             Expr<User> user,
@@ -166,16 +230,56 @@ extension QueryUserExt on Query<(Expr<User>,)> {
         ),
       );
 
-  /// TODO: document byXXX()}
+  /// Lookup a single row in `users` table using the
+  /// `email` field.
+  ///
+  /// We know that lookup by the `email` field returns
+  /// at-most one row because the `email` has an [Unique]
+  /// annotation in [User].
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
   QuerySingle<(Expr<User>,)> byEmail(String email) =>
       where((user) => user.email.equalsLiteral(email)).first;
 
-  /// TODO: document delete()}
+  /// Delete all rows in the `users` table matching this [Query].
+  ///
+  /// Returns a [Delete] statement on which `.execute()` must be called
+  /// for the rows to be deleted.
   Delete<User> delete() => ExposedForCodeGen.delete(this, _$User._$table);
 }
 
+/// Extension methods for building point queries against the `users` table.
 extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
-  /// TODO: document update()
+  /// Update the row (if any) in the `users` table matching this
+  /// [QuerySingle].
+  ///
+  /// The changes to be applied to the row matching this [QuerySingle] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [UpdateSingle] statement on which `.execute()` must be
+  /// called for the row to be updated. The resulting statement will
+  /// **not** fail, if there are no rows matching this query exists.
+  ///
+  /// **Example:** decrementing `1` from the `value` field the row with
+  /// `id = 1`.
+  /// ```dart
+  /// await db.mytable
+  ///   .byKey(1)
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   UpdateSingle<User> update(
           UpdateSet<User> Function(
             Expr<User> user,
@@ -203,52 +307,81 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
         ),
       );
 
-  /// TODO: document delete()
+  /// Delete the row (if any) in the `users` table matching this [QuerySingle].
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be called
+  /// for the row to be deleted. The resulting statement will **not**
+  /// fail, if there are no rows matching this query exists.
   DeleteSingle<User> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$User._$table);
 }
 
+/// Extension methods for expressions on a row in the `users` table.
 extension ExpressionUserExt on Expr<User> {
-  /// TODO: document userId
   Expr<int> get userId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  /// TODO: document name
+  /// Name of the user
+  ///
+  /// This is the fullname.
   Expr<String> get name =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  /// TODO: document email
+  /// The users email address, not verified, by provided from OIDC.
   Expr<String> get email =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
 
-  /// TODO: document references
+  /// Get [SubQuery] of rows from the `packages` table which
+  /// reference [userId] in the `ownerId` field.
+  ///
+  /// This returns a [SubQuery] of [Package] rows,
+  /// where [Package.ownerId] is references
+  /// [User.userId] in this row.
   SubQuery<(Expr<Package>,)> get packages =>
       ExposedForCodeGen.subqueryTable(_$Package._$table)
           .where((r) => r.ownerId.equals(userId));
 }
 
 extension ExpressionNullableUserExt on Expr<User?> {
-  /// TODO: document userId
   Expr<int?> get userId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  /// TODO: document name
+  /// Name of the user
+  ///
+  /// This is the fullname.
   Expr<String?> get name =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  /// TODO: document email
+  /// The users email address, not verified, by provided from OIDC.
   Expr<String?> get email =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
 
-  /// TODO: document references
+  /// Get [SubQuery] of rows from the `packages` table which
+  /// reference [userId] in the `ownerId` field.
+  ///
+  /// This returns a [SubQuery] of [Package] rows,
+  /// where [Package.ownerId] is references
+  /// [User.userId] in this row, if any.
+  ///
+  /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Package>,)> get packages =>
       ExposedForCodeGen.subqueryTable(_$Package._$table)
           .where((r) => userId.isNotNull() & r.ownerId.equals(userId));
 
-  /// TODO: Document isNotNull
+  /// Check if the row is not `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNotNull() => userId.isNotNull();
 
-  /// TODO: Document isNull
+  /// Check if the row is `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
 }
 
@@ -343,8 +476,12 @@ final class _$Package extends Package {
       'Package(packageName: "$packageName", likes: "$likes", ownerId: "$ownerId", publisher: "$publisher")';
 }
 
+/// Extension methods for table defined in [Package].
 extension TablePackageExt on Table<Package> {
-  /// TODO: document insert
+  /// Insert row into the `packages` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
   InsertSingle<Package> insert({
     required Expr<String> packageName,
     Expr<int>? likes,
@@ -361,7 +498,15 @@ extension TablePackageExt on Table<Package> {
         ],
       );
 
-  /// TODO: document delete
+  /// Delete a single row from the `packages` table, specified by
+  /// _primary key_.
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be
+  /// called for the row to be deleted.
+  ///
+  /// To delete multiple rows, using `.where()` to filter which rows
+  /// should be deleted. If you wish to delete all rows, use
+  /// `.where((_) => literal(true)).delete()`.
   DeleteSingle<Package> delete(String packageName) =>
       ExposedForCodeGen.deleteSingle(
         byKey(packageName),
@@ -369,12 +514,42 @@ extension TablePackageExt on Table<Package> {
       );
 }
 
+/// Extension methods for building queries against the `packages` table.
 extension QueryPackageExt on Query<(Expr<Package>,)> {
-  /// TODO: document lookup by PrimaryKey
+  /// Lookup a single row in `packages` table using the _primary key_.
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
   QuerySingle<(Expr<Package>,)> byKey(String packageName) =>
       where((package) => package.packageName.equalsLiteral(packageName)).first;
 
-  /// TODO: document update()
+  /// Update all rows in the `packages` table matching this [Query].
+  ///
+  /// The changes to be applied to each row matching this [Query] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [Update] statement on which `.execute()` must be called
+  /// for the rows to be updated.
+  ///
+  /// **Example:** decrementing `1` from the `value` field for each row
+  /// where `value > 0`.
+  /// ```dart
+  /// await db.mytable
+  ///   .where((row) => row.value > literal(0))
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   Update<Package> update(
           UpdateSet<Package> Function(
             Expr<Package> package,
@@ -405,12 +580,44 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
         ),
       );
 
-  /// TODO: document delete()}
+  /// Delete all rows in the `packages` table matching this [Query].
+  ///
+  /// Returns a [Delete] statement on which `.execute()` must be called
+  /// for the rows to be deleted.
   Delete<Package> delete() => ExposedForCodeGen.delete(this, _$Package._$table);
 }
 
+/// Extension methods for building point queries against the `packages` table.
 extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
-  /// TODO: document update()
+  /// Update the row (if any) in the `packages` table matching this
+  /// [QuerySingle].
+  ///
+  /// The changes to be applied to the row matching this [QuerySingle] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [UpdateSingle] statement on which `.execute()` must be
+  /// called for the row to be updated. The resulting statement will
+  /// **not** fail, if there are no rows matching this query exists.
+  ///
+  /// **Example:** decrementing `1` from the `value` field the row with
+  /// `id = 1`.
+  /// ```dart
+  /// await db.mytable
+  ///   .byKey(1)
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   UpdateSingle<Package> update(
           UpdateSet<Package> Function(
             Expr<Package> package,
@@ -441,29 +648,35 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
         ),
       );
 
-  /// TODO: document delete()
+  /// Delete the row (if any) in the `packages` table matching this [QuerySingle].
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be called
+  /// for the row to be deleted. The resulting statement will **not**
+  /// fail, if there are no rows matching this query exists.
   DeleteSingle<Package> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Package._$table);
 }
 
+/// Extension methods for expressions on a row in the `packages` table.
 extension ExpressionPackageExt on Expr<Package> {
-  /// TODO: document packageName
   Expr<String> get packageName =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
 
-  /// TODO: document likes
   Expr<int> get likes =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.integer);
 
-  /// TODO: document ownerId
   Expr<int> get ownerId =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
 
-  /// TODO: document publisher
   Expr<String?> get publisher =>
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
 
-  /// TODO: document references
+  /// Do a subquery lookup of the row from table
+  /// `users` referenced in [ownerId].
+  ///
+  /// The gets the row from table `users` where
+  /// [User.userId] is equal to
+  /// [ownerId].
   Expr<User> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
       .where((r) => r.userId.equals(ownerId))
       .first
@@ -471,31 +684,44 @@ extension ExpressionPackageExt on Expr<Package> {
 }
 
 extension ExpressionNullablePackageExt on Expr<Package?> {
-  /// TODO: document packageName
   Expr<String?> get packageName =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
 
-  /// TODO: document likes
   Expr<int?> get likes =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.integer);
 
-  /// TODO: document ownerId
   Expr<int?> get ownerId =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
 
-  /// TODO: document publisher
   Expr<String?> get publisher =>
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
 
-  /// TODO: document references
+  /// Do a subquery lookup of the row from table
+  /// `users` referenced in [ownerId].
+  ///
+  /// The gets the row from table `users` where
+  /// [User.userId] is equal to
+  /// [ownerId], if any.
+  ///
+  /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<User?> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
       .where((r) => ownerId.isNotNull() & r.userId.equals(ownerId))
       .first;
 
-  /// TODO: Document isNotNull
+  /// Check if the row is not `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNotNull() => packageName.isNotNull();
 
-  /// TODO: Document isNull
+  /// Check if the row is `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
 }
 
@@ -557,8 +783,12 @@ final class _$Like extends Like {
   String toString() => 'Like(userId: "$userId", packageName: "$packageName")';
 }
 
+/// Extension methods for table defined in [Like].
 extension TableLikeExt on Table<Like> {
-  /// TODO: document insert
+  /// Insert row into the `likes` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
   InsertSingle<Like> insert({
     required Expr<int> userId,
     required Expr<String> packageName,
@@ -571,7 +801,15 @@ extension TableLikeExt on Table<Like> {
         ],
       );
 
-  /// TODO: document delete
+  /// Delete a single row from the `likes` table, specified by
+  /// _primary key_.
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be
+  /// called for the row to be deleted.
+  ///
+  /// To delete multiple rows, using `.where()` to filter which rows
+  /// should be deleted. If you wish to delete all rows, use
+  /// `.where((_) => literal(true)).delete()`.
   DeleteSingle<Like> delete(
     int userId,
     String packageName,
@@ -582,8 +820,12 @@ extension TableLikeExt on Table<Like> {
       );
 }
 
+/// Extension methods for building queries against the `likes` table.
 extension QueryLikeExt on Query<(Expr<Like>,)> {
-  /// TODO: document lookup by PrimaryKey
+  /// Lookup a single row in `likes` table using the _primary key_.
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
   QuerySingle<(Expr<Like>,)> byKey(
     int userId,
     String packageName,
@@ -592,7 +834,33 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
           like.userId.equalsLiteral(userId) &
           like.packageName.equalsLiteral(packageName)).first;
 
-  /// TODO: document update()
+  /// Update all rows in the `likes` table matching this [Query].
+  ///
+  /// The changes to be applied to each row matching this [Query] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [Update] statement on which `.execute()` must be called
+  /// for the rows to be updated.
+  ///
+  /// **Example:** decrementing `1` from the `value` field for each row
+  /// where `value > 0`.
+  /// ```dart
+  /// await db.mytable
+  ///   .where((row) => row.value > literal(0))
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   Update<Like> update(
           UpdateSet<Like> Function(
             Expr<Like> like,
@@ -617,12 +885,44 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
         ),
       );
 
-  /// TODO: document delete()}
+  /// Delete all rows in the `likes` table matching this [Query].
+  ///
+  /// Returns a [Delete] statement on which `.execute()` must be called
+  /// for the rows to be deleted.
   Delete<Like> delete() => ExposedForCodeGen.delete(this, _$Like._$table);
 }
 
+/// Extension methods for building point queries against the `likes` table.
 extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
-  /// TODO: document update()
+  /// Update the row (if any) in the `likes` table matching this
+  /// [QuerySingle].
+  ///
+  /// The changes to be applied to the row matching this [QuerySingle] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [UpdateSingle] statement on which `.execute()` must be
+  /// called for the row to be updated. The resulting statement will
+  /// **not** fail, if there are no rows matching this query exists.
+  ///
+  /// **Example:** decrementing `1` from the `value` field the row with
+  /// `id = 1`.
+  /// ```dart
+  /// await db.mytable
+  ///   .byKey(1)
+  ///   .update((row, set) => set(
+  ///     value: row.value - literal(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
   UpdateSingle<Like> update(
           UpdateSet<Like> Function(
             Expr<Like> like,
@@ -647,37 +947,49 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
         ),
       );
 
-  /// TODO: document delete()
+  /// Delete the row (if any) in the `likes` table matching this [QuerySingle].
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be called
+  /// for the row to be deleted. The resulting statement will **not**
+  /// fail, if there are no rows matching this query exists.
   DeleteSingle<Like> delete() =>
       ExposedForCodeGen.deleteSingle(this, _$Like._$table);
 }
 
+/// Extension methods for expressions on a row in the `likes` table.
 extension ExpressionLikeExt on Expr<Like> {
-  /// TODO: document userId
   Expr<int> get userId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  /// TODO: document packageName
   Expr<String> get packageName =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 }
 
 extension ExpressionNullableLikeExt on Expr<Like?> {
-  /// TODO: document userId
   Expr<int?> get userId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  /// TODO: document packageName
   Expr<String?> get packageName =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  /// TODO: Document isNotNull
+  /// Check if the row is not `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNotNull() => userId.isNotNull() & packageName.isNotNull();
 
-  /// TODO: Document isNull
+  /// Check if the row is `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
 }
 
+/// Extension methods for building queries projected to a named record.
 extension QueryOwnerPackageNamed<A, B> on Query<
     ({
       Expr<A> owner,
@@ -713,6 +1025,8 @@ extension QueryOwnerPackageNamed<A, B> on Query<
             owner: a,
             package: b,
           ));
+
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<
       ({
         A owner,
@@ -724,12 +1038,17 @@ extension QueryOwnerPackageNamed<A, B> on Query<
         ));
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<
       List<
           ({
             A owner,
             B package,
           })>> fetch() async => await stream().toList();
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<
       ({
         Expr<A> owner,
@@ -737,6 +1056,10 @@ extension QueryOwnerPackageNamed<A, B> on Query<
       })> offset(
           int offset) =>
       _fromPositionalQuery(_asPositionalQuery.offset(offset));
+
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<
       ({
         Expr<A> owner,
@@ -744,6 +1067,16 @@ extension QueryOwnerPackageNamed<A, B> on Query<
       })> limit(
           int limit) =>
       _fromPositionalQuery(_asPositionalQuery.limit(limit));
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(
           T Function(
                   ({
@@ -752,6 +1085,11 @@ extension QueryOwnerPackageNamed<A, B> on Query<
                   }) expr)
               projectionBuilder) =>
       _asPositionalQuery.select(_wrapBuilder(projectionBuilder));
+
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<
       ({
         Expr<A> owner,
@@ -765,6 +1103,31 @@ extension QueryOwnerPackageNamed<A, B> on Query<
               conditionBuilder) =>
       _fromPositionalQuery(
           _asPositionalQuery.where(_wrapBuilder(conditionBuilder)));
+
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
   Query<
       ({
         Expr<A> owner,
@@ -775,12 +1138,13 @@ extension QueryOwnerPackageNamed<A, B> on Query<
                     Expr<A> owner,
                     Expr<B> package,
                   }) expr)
-              expressionBuilder) =>
+              builder) =>
       _fromPositionalQuery(_asPositionalQuery.orderBy(
-        _wrapBuilder(expressionBuilder),
+        _wrapBuilder(builder),
       ));
 }
 
+/// Extension methods for building queries projected to a named record.
 extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
     ({
       Expr<A> packages,
@@ -822,6 +1186,8 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
             totalLikes: b,
             userName: c,
           ));
+
+  /// Query the database for rows in this [Query] as a [Stream].
   Stream<
       ({
         A packages,
@@ -835,6 +1201,7 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
         ));
   }
 
+  /// Query the database for rows in this [Query] as a [List].
   Future<
       List<
           ({
@@ -842,6 +1209,10 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
             B totalLikes,
             C userName,
           })>> fetch() async => await stream().toList();
+
+  /// Offset [Query] using `OFFSET` clause.
+  ///
+  /// The resulting [Query] will skip the first [offset] rows.
   Query<
       ({
         Expr<A> packages,
@@ -850,6 +1221,10 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
       })> offset(
           int offset) =>
       _fromPositionalQuery(_asPositionalQuery.offset(offset));
+
+  /// Limit [Query] using `LIMIT` clause.
+  ///
+  /// The resulting [Query] will only return the first [limit] rows.
   Query<
       ({
         Expr<A> packages,
@@ -858,6 +1233,16 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
       })> limit(
           int limit) =>
       _fromPositionalQuery(_asPositionalQuery.limit(limit));
+
+  /// Create a projection of this [Query] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [Query] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [Query<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
   Query<T> select<T extends Record>(
           T Function(
                   ({
@@ -867,6 +1252,11 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
                   }) expr)
               projectionBuilder) =>
       _asPositionalQuery.select(_wrapBuilder(projectionBuilder));
+
+  /// Filter [Query] using `WHERE` clause.
+  ///
+  /// Returns a [Query] retaining rows from this [Query] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
   Query<
       ({
         Expr<A> packages,
@@ -882,6 +1272,31 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
               conditionBuilder) =>
       _fromPositionalQuery(
           _asPositionalQuery.where(_wrapBuilder(conditionBuilder)));
+
+  /// Order [Query] using `ORDER BY` clause.
+  ///
+  /// Returns a [Query] with the same rows as this [Query], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
   Query<
       ({
         Expr<A> packages,
@@ -894,8 +1309,8 @@ extension QueryPackagesTotalLikesUserNameNamed<A, B, C> on Query<
                     Expr<B> totalLikes,
                     Expr<C> userName,
                   }) expr)
-              expressionBuilder) =>
+              builder) =>
       _fromPositionalQuery(_asPositionalQuery.orderBy(
-        _wrapBuilder(expressionBuilder),
+        _wrapBuilder(builder),
       ));
 }

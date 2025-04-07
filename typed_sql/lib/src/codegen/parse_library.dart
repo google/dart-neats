@@ -195,6 +195,7 @@ ParsedSchema _parseSchema(
 
     tables.add(ParsedTable(
       name: a.name,
+      documentation: a.documentationComment,
       model: modelCache.putIfAbsent(
         typeArgElement,
         () => _parseModel(ctx, typeArgElement, foreignKeyToElement),
@@ -315,6 +316,7 @@ ParsedModel _parseModel(
 
     final field = ParsedField(
       name: a.name,
+      documentation: a.documentationComment,
       typeName: type,
       isNullable: a.returnType.nullabilitySuffix != NullabilitySuffix.none,
       backingType: backingType,

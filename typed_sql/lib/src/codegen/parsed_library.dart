@@ -48,10 +48,12 @@ final class ParsedSchema {
 
 final class ParsedTable {
   final String name;
+  final String? documentation;
   final ParsedModel model;
 
   ParsedTable({
     required this.name,
+    required this.documentation,
     required this.model,
   });
 
@@ -113,6 +115,7 @@ final class ParsedForeignKey {
 
 final class ParsedField {
   final String name;
+  final String? documentation;
   final String typeName;
   final bool isNullable;
   final String backingType;
@@ -122,6 +125,7 @@ final class ParsedField {
 
   ParsedField({
     required this.name,
+    required this.documentation,
     required this.typeName,
     required this.isNullable,
     required this.backingType,
