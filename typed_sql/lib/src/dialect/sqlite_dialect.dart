@@ -36,7 +36,7 @@ final class _Sqlite extends SqlDialect {
   String createTables(List<CreateTableStatement> statements) {
     return statements.map((table) {
       return [
-        'CREATE TABLE ${escape(table.tableName)} (',
+        'CREATE TABLE ${_escape(table.tableName)} (',
         [
           // Columns
           ...table.columns.map((c) {
@@ -47,12 +47,12 @@ final class _Sqlite extends SqlDialect {
                 table.primaryKey.contains(c.name) &&
                 table.primaryKey.length > 1) {
               throw UnsupportedError(
-                'sqlite does not support AUTOINCREMENT in composite primary keys',
+                'Sqlite does not support AUTOINCREMENT in composite primary keys',
               );
             }
 
             return [
-              escape(c.name),
+              _escape(c.name),
               c.type.sqlType,
               c.isNotNull ? 'NOT NULL' : '',
               if (isPrimaryKey) 'PRIMARY KEY',
@@ -64,15 +64,15 @@ final class _Sqlite extends SqlDialect {
           }),
           // Primary key
           if (table.primaryKey.length > 1)
-            'PRIMARY KEY (${table.primaryKey.map(escape).join(', ')})',
+            'PRIMARY KEY (${table.primaryKey.map(_escape).join(', ')})',
           // Unique constraints
-          ...table.unique.map((u) => 'UNIQUE (${u.map(escape).join(', ')})'),
+          ...table.unique.map((u) => 'UNIQUE (${u.map(_escape).join(', ')})'),
           // Foreign keys
           ...table.foreignKeys.map(
             (fk) => [
-              'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
-              'REFERENCES ${escape(fk.referencedTable)}',
-              '(${fk.referencedColumns.map(escape).join(', ')})',
+              'FOREIGN KEY (${fk.columns.map(_escape).join(', ')})',
+              'REFERENCES ${_escape(fk.referencedTable)}',
+              '(${fk.referencedColumns.map(_escape).join(', ')})',
             ].join(' '),
           ),
         ].map((l) => '  $l').join(',\n'),
@@ -85,7 +85,7 @@ final class _Sqlite extends SqlDialect {
   (String, List<Object?>) insertInto(InsertStatement statement) {
     final (params, ctx) = QueryContext.create();
 
-    var returnProjection = '';
+    String? returnProjection;
     final returning = statement.returning;
     if (returning != null) {
       final c = ctx.scope(returning, returning.columns);
@@ -96,10 +96,10 @@ final class _Sqlite extends SqlDialect {
     //       It probably is, if copying a row from one table to another!
     return (
       [
-        'INSERT INTO ${escape(statement.table)}',
-        '(${statement.columns.map(escape).join(', ')})',
+        'INSERT INTO ${_escape(statement.table)}',
+        '(${statement.columns.map(_escape).join(', ')})',
         'VALUES (${statement.values.map((e) => expr(e, ctx)).join(', ')})',
-        if (returnProjection.isNotEmpty) 'RETURNING $returnProjection',
+        if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
       params,
     );
@@ -111,7 +111,7 @@ final class _Sqlite extends SqlDialect {
     final (alias, c) = ctx.alias(statement, statement.table.columns);
     final (sql, _) = clause(statement.where, ctx);
 
-    var returnProjection = '';
+    String? returnProjection;
     final returning = statement.returning;
     if (returning != null) {
       final c = ctx.scope(returning, returning.columns);
@@ -120,7 +120,7 @@ final class _Sqlite extends SqlDialect {
 
     return (
       [
-        'UPDATE ${escape(statement.table.name)} AS $alias',
+        'UPDATE ${_escape(statement.table.name)} AS $alias',
         'SET',
         statement.columns
             .mapIndexed(
@@ -129,10 +129,10 @@ final class _Sqlite extends SqlDialect {
             .join(', '),
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS _subq WHERE',
         statement.table.primaryKey
-            .map((f) => '$alias.${escape(f)} = _subq.${escape(f)}')
+            .map((f) => '$alias.${_escape(f)} = _subq.${_escape(f)}')
             .join(', '),
         ')',
-        if (returnProjection.isNotEmpty) 'RETURNING $returnProjection',
+        if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
       params,
     );
@@ -143,7 +143,7 @@ final class _Sqlite extends SqlDialect {
     final (params, ctx) = QueryContext.create();
     final (sql, _) = clause(statement.where, ctx);
 
-    var returnProjection = '';
+    String? returnProjection;
     final returning = statement.returning;
     if (returning != null) {
       final c = ctx.scope(returning, returning.columns);
@@ -152,13 +152,13 @@ final class _Sqlite extends SqlDialect {
 
     return (
       [
-        'DELETE FROM ${escape(statement.table.name)} as _topq',
+        'DELETE FROM ${_escape(statement.table.name)} as _topq',
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS _subq WHERE',
         statement.table.primaryKey
-            .map((f) => '_topq.${escape(f)} = _subq.${escape(f)}')
+            .map((f) => '_topq.${_escape(f)} = _subq.${_escape(f)}')
             .join(', '),
         ')',
-        if (returnProjection.isNotEmpty) 'RETURNING $returnProjection',
+        if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
       params,
     );
@@ -169,7 +169,7 @@ final class _Sqlite extends SqlDialect {
   /// Example: 'my string' -> '"my string"'
   ///
   /// Throws if [name] cannot be safely escaped.
-  String escape(String name) {
+  String _escape(String name) {
     // TODO: Escaping is not exactly super consistent, some things that comes
     //       out of QueryContext.field() are not escaped further.
     //       We can debate what is sane, perhaps we should just not support
@@ -199,8 +199,8 @@ final class _Sqlite extends SqlDialect {
     switch (q) {
       case TableClause(:var name, :var columns):
         return (
-          'SELECT ${columns.map(escape).join(', ')} '
-              'FROM ${escape(name)}',
+          'SELECT ${columns.map(_escape).join(', ')} '
+              'FROM ${_escape(name)}',
           columns,
         );
 
@@ -218,7 +218,7 @@ final class _Sqlite extends SqlDialect {
       case OffsetClause(:final from, :final offset):
         final (sql, columns) = clause(from, ctx);
         return (
-          'SELECT ${columns.map(escape).join(', ')} '
+          'SELECT ${columns.map(_escape).join(', ')} '
               'FROM ($sql) '
               'LIMIT -1 OFFSET $offset',
           columns,
@@ -231,7 +231,7 @@ final class _Sqlite extends SqlDialect {
       case LimitClause(:final from, :final limit):
         final (sql, columns) = clause(from, ctx);
         return (
-          'SELECT ${columns.map(escape).join(', ')} '
+          'SELECT ${columns.map(_escape).join(', ')} '
               'FROM ($sql) '
               'LIMIT $limit',
           columns,
@@ -240,7 +240,7 @@ final class _Sqlite extends SqlDialect {
       case DistinctClause(:final from):
         final (sql, columns) = clause(from, ctx);
         return (
-          'SELECT DISTINCT ${columns.map(escape).join(', ')} '
+          'SELECT DISTINCT ${columns.map(_escape).join(', ')} '
               'FROM ($sql) ',
           columns,
         );
@@ -262,7 +262,7 @@ final class _Sqlite extends SqlDialect {
         ):
         final (a, c) = ctx.alias(q, columns);
         return (
-          'SELECT ${columns.map(escape).join(', ')} '
+          'SELECT ${columns.map(_escape).join(', ')} '
               'FROM $name AS $a '
               'WHERE ${expr(where, c)}',
           columns,
@@ -272,7 +272,7 @@ final class _Sqlite extends SqlDialect {
         final (sql, columns) = clause(from, ctx);
         final (a, c) = ctx.alias(q, columns);
         return (
-          'SELECT ${columns.map(escape).join(', ')} '
+          'SELECT ${columns.map(_escape).join(', ')} '
               'FROM ($sql) AS $a '
               'WHERE ${expr(where, c)}',
           columns,
@@ -282,7 +282,7 @@ final class _Sqlite extends SqlDialect {
         final (sql, columns) = clause(from, ctx);
         final (a, c) = ctx.alias(q, columns);
         return (
-          'SELECT ${columns.map(escape).join(', ')} '
+          'SELECT ${columns.map(_escape).join(', ')} '
               'FROM ($sql) AS $a '
               'ORDER BY '
               '${orderBy.map((key) {
@@ -296,15 +296,15 @@ final class _Sqlite extends SqlDialect {
         final (sql1, columns1) = clause(from, ctx);
         final (sql2, columns2) = clause(join, ctx);
         final c = ctx.scope(q, [
-          ...columns1.mapIndexed((i, c) => 't1.${escape(c)}'),
-          ...columns2.mapIndexed((i, c) => 't2.${escape(c)}'),
+          ...columns1.mapIndexed((i, c) => 't1.${_escape(c)}'),
+          ...columns2.mapIndexed((i, c) => 't2.${_escape(c)}'),
         ]);
         return (
           [
             'SELECT',
             [
-              ...columns1.mapIndexed((i, c) => 't1.${escape(c)} AS t1_$i'),
-              ...columns2.mapIndexed((i, c) => 't2.${escape(c)} AS t2_$i'),
+              ...columns1.mapIndexed((i, c) => 't1.${_escape(c)} AS t1_$i'),
+              ...columns2.mapIndexed((i, c) => 't2.${_escape(c)} AS t2_$i'),
             ].join(', '),
             'FROM ($sql1) as t1 ${type.kind} JOIN ($sql2) as t2 ON ${expr(on, c)}',
           ].join(' '),
