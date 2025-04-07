@@ -325,14 +325,6 @@ ParsedModel _parseModel(
     );
     fields.add(field);
   }
-  // Check number of fields, as we're using a 64 bit integer as (bitfield) to
-  // track fields are fetched, we can't have more than 64 fields in a row!
-  if (fields.length > 64) {
-    throw InvalidGenerationSource(
-      'subclasses of `Model` can at-most have 64 fields',
-      element: cls,
-    );
-  }
 
   // Extract @References annotations
   final foreignKeys = <ParsedForeignKey>[];
