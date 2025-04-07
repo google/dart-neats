@@ -55,12 +55,6 @@ final class Unique {
   const Unique();
 }
 
-final class Sql {
-  final String sql;
-
-  const Sql(this.sql);
-}
-
 /// Interface to be implemented by custom types that can be stored in a [Model].
 ///
 /// Subclasses must:
