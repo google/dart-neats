@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io';
+
 import 'package:test/test.dart';
 import 'package:typed_sql/adaptor.dart';
 
@@ -24,9 +26,17 @@ extension on Stream<RowReader> {
       .toList();
 }
 
+final String? _getPostgresSocket = () {
+  final socketFile = File('.dart_tool/run/postgresql/.s.PGSQL.5432');
+  if (socketFile.existsSync()) {
+    return socketFile.absolute.path;
+  }
+  return null;
+}();
+
 void main() async {
   test('create table / insert / select', () async {
-    final db = DatabaseAdaptor.postgresTestDatabase();
+    final db = DatabaseAdaptor.postgresTestDatabase(host: _getPostgresSocket);
 
     await db.execute('CREATE TABLE users (id INT, name TEXT)', []);
 
