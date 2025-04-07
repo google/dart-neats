@@ -48,7 +48,7 @@ void main() {
       db.items.insert(id: literal(1), value: literal('b')).execute(),
     ).throws((e) => e.isA<OperationException>());
 
-    final item = await db.items.byKey(id: 1).fetch();
+    final item = await db.items.byKey(1).fetch();
     check(item).isNotNull().value.equals('a');
   });
 
@@ -62,7 +62,7 @@ void main() {
       ).throws((e) => e.isA<TransactionAbortedException>());
     });
 
-    final item = await db.items.byKey(id: 1).fetch();
+    final item = await db.items.byKey(1).fetch();
     check(item).isNotNull().value.equals('a');
   });
 

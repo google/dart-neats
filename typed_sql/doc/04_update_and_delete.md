@@ -63,7 +63,7 @@ we can do this as follows:
 
 ```dart bookstore_test.dart#update-book-bykey
 await db.books
-    .byKey(bookId: 1)
+    .byKey(1)
     .update((book, set) => set(
           stock: book.stock - literal(1),
         ))
@@ -102,7 +102,7 @@ following example.
 
 ```dart bookstore_test.dart#update-book-bykey-set-null
 await db.books
-    .byKey(bookId: 1)
+    .byKey(1)
     .update((book, set) => set(
           title: literal(null),
         ))
@@ -136,7 +136,7 @@ The following example shows, how to use `.returnUpdated()` in the
 
 ```dart bookstore_test.dart#update-book-bykey-returnUpdated
 final updatedBook = await db.books
-    .byKey(bookId: 1)
+    .byKey(1)
     .update((book, set) => set(
           stock: book.stock - literal(1),
         ))
@@ -190,7 +190,7 @@ If you have a `QuerySingle<(Expr<T>,)>` or `Query<(Expr<T>,)>` where
 The following example shows how to delete the book with `bookId = 1`.
 
 ```dart bookstore_test.dart#books-byKey-delete
-await db.books.byKey(bookId: 1).delete().execute();
+await db.books.byKey(1).delete().execute();
 ```
 
 The equivalent SQL would look something like:

@@ -105,7 +105,7 @@ void main() {
       }
       for (final v in _testAuthors) {
         await db.authors
-            .byKey(authorId: v.authorId)
+            .byKey(v.authorId)
             .update((author, set) => set(
                   favoriteBookId: literal(v.favoriteBookId),
                 ))
@@ -126,7 +126,7 @@ void main() {
 
   r.addTest('books.byKey().select(book, .editor)', (db) async {
     final (book, editor) = await db.books
-        .byKey(bookId: 3)
+        .byKey(3)
         .select((book) => (book, book.editor))
         .fetchOrNulls();
     check(book).isNotNull().title.equals('Eggs for dummies');
@@ -135,7 +135,7 @@ void main() {
 
   r.addTest('books.byKey().select(book, .editor) -> (book, null)', (db) async {
     final (book, editor) = await db.books
-        .byKey(bookId: 1)
+        .byKey(1)
         .select((book) => (book, book.editor))
         .fetchOrNulls();
     check(book).isNotNull().title.equals('Bunny-free?');

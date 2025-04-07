@@ -126,7 +126,7 @@ await db.books
 We can also query the database in complex manners as follows:
 ```dart bookstore_test.dart#README-query-example
 // Lookup author by id
-final author = await db.authors.byKey(authorId: authorId).fetch();
+final author = await db.authors.byKey(authorId).fetch();
 if (author == null) {
   throw Exception('Author not found!');
 }

@@ -126,16 +126,15 @@ extension TableEmployeeExt on Table<Employee> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Employee> delete({required int id}) =>
-      ExposedForCodeGen.deleteSingle(
-        byKey(id: id),
+  DeleteSingle<Employee> delete(int id) => ExposedForCodeGen.deleteSingle(
+        byKey(id),
         _$Employee._$table,
       );
 }
 
 extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Employee>,)> byKey({required int id}) =>
+  QuerySingle<(Expr<Employee>,)> byKey(int id) =>
       where((employee) => employee.id.equalsLiteral(id)).first;
 
   /// TODO: document update()

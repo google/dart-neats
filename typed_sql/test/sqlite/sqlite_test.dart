@@ -135,7 +135,7 @@ void main() {
 
   _test('db.packages.where().update()', (db) async {
     {
-      final p = await db.packages.byKey(packageName: 'foo').fetch();
+      final p = await db.packages.byKey('foo').fetch();
       expect(p!.ownerId, equals(1));
     }
     await db.packages
@@ -145,81 +145,69 @@ void main() {
             ))
         .execute();
     {
-      final p = await db.packages.byKey(packageName: 'foo').fetch();
+      final p = await db.packages.byKey('foo').fetch();
       expect(p!.ownerId, equals(2));
     }
   });
 
   _test('db.packages.byKey().update(.add / .subtract)', (db) async {
     expect(
-      await db.packages
-          .byKey(packageName: 'foo')
-          .select((p) => (p.likes,))
-          .fetch(),
+      await db.packages.byKey('foo').select((p) => (p.likes,)).fetch(),
       equals(2),
     );
 
     await db.packages
-        .byKey(packageName: 'foo')
+        .byKey('foo')
         .update((u, set) => set(
               likes: u.likes + literal(1),
             ))
         .execute();
 
     expect(
-      await db.packages
-          .byKey(packageName: 'foo')
-          .select((p) => (p.likes,))
-          .fetch(),
+      await db.packages.byKey('foo').select((p) => (p.likes,)).fetch(),
       equals(3),
     );
 
     await db.packages
-        .byKey(packageName: 'foo')
+        .byKey('foo')
         .update((u, set) => set(
               likes: u.likes.addLiteral(1),
             ))
         .execute();
 
     expect(
-      await db.packages
-          .byKey(packageName: 'foo')
-          .select((p) => (p.likes,))
-          .fetch(),
+      await db.packages.byKey('foo').select((p) => (p.likes,)).fetch(),
       equals(4),
     );
 
     await db.packages
-        .byKey(packageName: 'foo')
+        .byKey('foo')
         .update((u, set) => set(
               likes: u.likes.subtractLiteral(1),
             ))
         .execute();
 
     await db.packages
-        .byKey(packageName: 'foo')
+        .byKey('foo')
         .update((u, set) => set(
               likes: u.likes - literal(1),
             ))
         .execute();
 
     expect(
-      await db.packages
-          .byKey(packageName: 'foo')
-          .select((p) => (p.likes,))
-          .fetch(),
+      await db.packages.byKey('foo').select((p) => (p.likes,)).fetch(),
       equals(2),
     );
   });
 
   _test('db.packages.byKey().delete()', (db) async {
     {
-      final p = await db.packages.byKey(packageName: 'foo').fetch();
+      final p = await db.packages.byKey('foo').fetch();
       expect(p, isNotNull);
     }
-    await db.packages.byKey(packageName: 'foo').delete().execute();
+    await db.packages.byKey('foo').delete().execute();
     {
-      final p = await db.packages.byKey(packageName: 'foo').fetch();
+      final p = await db.packages.byKey('foo').fetch();
       expect(p, isNull);
     }
   });
@@ -346,7 +334,7 @@ void main() {
 
   _test('db.users.byKey().asQuery.join(db.packages).on().select()', (db) async {
     final result = await db.users
-        .byKey(userId: 1)
+        .byKey(1)
         .asQuery
         .join(db.packages)
         .on((u, p) => u.userId.equals(p.ownerId))
@@ -358,7 +346,7 @@ void main() {
 
   _test('db.users.byKey().asQuery.join(db.packages).on() (empty)', (db) async {
     final result = await db.users
-        .byKey(userId: 2)
+        .byKey(2)
         .asQuery
         .join(db.packages)
         .on((u, p) => u.userId.equals(p.ownerId))
@@ -778,7 +766,7 @@ void main() {
 
   _test('db.update().returning()', (db) async {
     final (likes, owner) = await db.packages
-        .byKey(packageName: 'foo')
+        .byKey('foo')
         .update((pkg, set) => set(likes: pkg.likes + literal(1)))
         .returning((pkg) => (pkg.likes, pkg.owner))
         .executeAndFetchOrNulls();
@@ -789,7 +777,7 @@ void main() {
 
   _test('db.update().returnUpdated()', (db) async {
     final result = await db.packages
-        .byKey(packageName: 'foo')
+        .byKey('foo')
         .update((pkg, set) => set(likes: pkg.likes + literal(1)))
         .returnUpdated()
         .executeAndFetch();
@@ -799,7 +787,7 @@ void main() {
 
   _test('db.delete().returning()', (db) async {
     final (likes, owner) = await db.packages
-        .byKey(packageName: 'foo')
+        .byKey('foo')
         .delete()
         .returning((pkg) => (pkg.likes, pkg.owner))
         .executeAndFetchOrNulls();
@@ -810,7 +798,7 @@ void main() {
 
   _test('db.delete().returnDeleted()', (db) async {
     final result = await db.packages
-        .byKey(packageName: 'foo')
+        .byKey('foo')
         .delete()
         .returnDeleted()
         .executeAndFetch();

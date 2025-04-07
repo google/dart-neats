@@ -115,16 +115,15 @@ extension TableAccountExt on Table<Account> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Account> delete({required int accountId}) =>
-      ExposedForCodeGen.deleteSingle(
-        byKey(accountId: accountId),
+  DeleteSingle<Account> delete(int accountId) => ExposedForCodeGen.deleteSingle(
+        byKey(accountId),
         _$Account._$table,
       );
 }
 
 extension QueryAccountExt on Query<(Expr<Account>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Account>,)> byKey({required int accountId}) =>
+  QuerySingle<(Expr<Account>,)> byKey(int accountId) =>
       where((account) => account.accountId.equalsLiteral(accountId)).first;
 
   /// TODO: document update()

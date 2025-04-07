@@ -99,24 +99,24 @@ extension TableItemExt on Table<Item> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Item> delete({
-    required int id,
-    required String name,
-  }) =>
+  DeleteSingle<Item> delete(
+    int id,
+    String name,
+  ) =>
       ExposedForCodeGen.deleteSingle(
-        byKey(id: id, name: name),
+        byKey(id, name),
         _$Item._$table,
       );
 }
 
 extension QueryItemExt on Query<(Expr<Item>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Item>,)> byKey({
-    required int id,
-    required String name,
-  }) =>
-      where((item) =>
-          item.id.equalsLiteral(id).and(item.name.equalsLiteral(name))).first;
+  QuerySingle<(Expr<Item>,)> byKey(
+    int id,
+    String name,
+  ) =>
+      where((item) => item.id.equalsLiteral(id) & item.name.equalsLiteral(name))
+          .first;
 
   /// TODO: document update()
   Update<Item> update(

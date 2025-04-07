@@ -398,7 +398,7 @@ row by _primary key_.
 To look up the row in `books` with `bookId = 1` write:
 
 ```dart bookstore_test.dart#books-bykey
-final book = await db.books.byKey(bookId: 1).fetch();
+final book = await db.books.byKey(1).fetch();
 if (book == null) {
   throw Exception('Book not found');
 }
@@ -439,7 +439,7 @@ final (book, author) = await db.select((
   db.books.asSubQuery
       .where((b) => b.title.equals(literal('Are Bunnies Unhealthy?')))
       .first,
-  db.authors.byKey(authorId: 1).asExpr,
+  db.authors.byKey(1).asExpr,
 )).fetchOrNulls();
 
 if (book == null) {

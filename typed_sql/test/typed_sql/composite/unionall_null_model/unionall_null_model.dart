@@ -42,7 +42,7 @@ void main() {
   // Expr<Model>
 
   r.addTest('.unionAll(NULL)', (db) async {
-    final q1 = db.select((db.items.byKey(id: 42).asExpr,)).asQuery;
+    final q1 = db.select((db.items.byKey(42).asExpr,)).asQuery;
     final q2 = db.select((literal(null),)).asQuery;
 
     final result = await q1.unionAll(q2).fetch();
@@ -51,7 +51,7 @@ void main() {
 
   r.addTest('.unionAll((NULL, 42))', (db) async {
     final q1 =
-        db.select((db.items.byKey(id: 42).asExpr,)).asQuery.select((item) => (
+        db.select((db.items.byKey(42).asExpr,)).asQuery.select((item) => (
               item,
               literal(42),
             ));
@@ -65,7 +65,7 @@ void main() {
   r.addTest('.insert + .unionAll((NULL, 42))', (db) async {
     await db.items.insert(id: literal(42), value: literal('hello')).execute();
     final q1 =
-        db.select((db.items.byKey(id: 42).asExpr,)).asQuery.select((item) => (
+        db.select((db.items.byKey(42).asExpr,)).asQuery.select((item) => (
               item,
               literal(42),
             ));
@@ -79,7 +79,7 @@ void main() {
   });
 
   r.addTest('.unionAll(select(NULL).where(42 > 21)).select()', (db) async {
-    final q1 = db.select((db.items.byKey(id: 42).asExpr,)).asQuery;
+    final q1 = db.select((db.items.byKey(42).asExpr,)).asQuery;
     // This tests that .where doesn't change the expression in a manner that
     // breaks our cast!
     final q2 = db

@@ -89,7 +89,7 @@ void main() {
     check(item).isNotNull().value.isNull();
 
     await db.items
-        .byKey(id: 1)
+        .byKey(1)
         .update((item, set) => set(
               value: literal(_value),
             ))
@@ -111,7 +111,7 @@ void main() {
     check(item).isNotNull().value.isNull();
 
     await db.items
-        .byKey(id: 1)
+        .byKey(1)
         .update((item, set) => set(
               value: literal(_value),
             ))

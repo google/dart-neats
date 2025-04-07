@@ -127,16 +127,15 @@ extension TableUserExt on Table<User> {
       );
 
   /// TODO: document delete
-  DeleteSingle<User> delete({required int userId}) =>
-      ExposedForCodeGen.deleteSingle(
-        byKey(userId: userId),
+  DeleteSingle<User> delete(int userId) => ExposedForCodeGen.deleteSingle(
+        byKey(userId),
         _$User._$table,
       );
 }
 
 extension QueryUserExt on Query<(Expr<User>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<User>,)> byKey({required int userId}) =>
+  QuerySingle<(Expr<User>,)> byKey(int userId) =>
       where((user) => user.userId.equalsLiteral(userId)).first;
 
   /// TODO: document update()
@@ -363,16 +362,16 @@ extension TablePackageExt on Table<Package> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Package> delete({required String packageName}) =>
+  DeleteSingle<Package> delete(String packageName) =>
       ExposedForCodeGen.deleteSingle(
-        byKey(packageName: packageName),
+        byKey(packageName),
         _$Package._$table,
       );
 }
 
 extension QueryPackageExt on Query<(Expr<Package>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Package>,)> byKey({required String packageName}) =>
+  QuerySingle<(Expr<Package>,)> byKey(String packageName) =>
       where((package) => package.packageName.equalsLiteral(packageName)).first;
 
   /// TODO: document update()
@@ -573,25 +572,25 @@ extension TableLikeExt on Table<Like> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Like> delete({
-    required int userId,
-    required String packageName,
-  }) =>
+  DeleteSingle<Like> delete(
+    int userId,
+    String packageName,
+  ) =>
       ExposedForCodeGen.deleteSingle(
-        byKey(userId: userId, packageName: packageName),
+        byKey(userId, packageName),
         _$Like._$table,
       );
 }
 
 extension QueryLikeExt on Query<(Expr<Like>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Like>,)> byKey({
-    required int userId,
-    required String packageName,
-  }) =>
-      where((like) => like.userId
-          .equalsLiteral(userId)
-          .and(like.packageName.equalsLiteral(packageName))).first;
+  QuerySingle<(Expr<Like>,)> byKey(
+    int userId,
+    String packageName,
+  ) =>
+      where((like) =>
+          like.userId.equalsLiteral(userId) &
+          like.packageName.equalsLiteral(packageName)).first;
 
   /// TODO: document update()
   Update<Like> update(

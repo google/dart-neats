@@ -99,16 +99,15 @@ extension TableItemExt on Table<Item> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Item> delete({required String key}) =>
-      ExposedForCodeGen.deleteSingle(
-        byKey(key: key),
+  DeleteSingle<Item> delete(String key) => ExposedForCodeGen.deleteSingle(
+        byKey(key),
         _$Item._$table,
       );
 }
 
 extension QueryItemExt on Query<(Expr<Item>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Item>,)> byKey({required String key}) =>
+  QuerySingle<(Expr<Item>,)> byKey(String key) =>
       where((item) => item.key.equalsLiteral(key)).first;
 
   /// TODO: document update()

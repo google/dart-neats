@@ -83,7 +83,7 @@ void main() {
         )
         .execute();
 
-    final item = await db.items.byKey(key: 'A').fetch();
+    final item = await db.items.byKey('A').fetch();
     check(item).isNotNull().value.equals('hello');
   });
 

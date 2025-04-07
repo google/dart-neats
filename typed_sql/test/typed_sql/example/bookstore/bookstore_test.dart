@@ -149,7 +149,7 @@ void main() {
     final authorId = 2;
     // #region README-query-example
     // Lookup author by id
-    final author = await db.authors.byKey(authorId: authorId).fetch();
+    final author = await db.authors.byKey(authorId).fetch();
     if (author == null) {
       throw Exception('Author not found!');
     }
@@ -448,7 +448,7 @@ void main() {
 
   r.addTest('books.byKey()', (db) async {
     // #region books-bykey
-    final book = await db.books.byKey(bookId: 1).fetch();
+    final book = await db.books.byKey(1).fetch();
     if (book == null) {
       throw Exception('Book not found');
     }
@@ -477,7 +477,7 @@ void main() {
       db.books.asSubQuery
           .where((b) => b.title.equals(literal('Are Bunnies Unhealthy?')))
           .first,
-      db.authors.byKey(authorId: 1).asExpr,
+      db.authors.byKey(1).asExpr,
     )).fetchOrNulls();
 
     if (book == null) {
@@ -505,7 +505,7 @@ void main() {
   r.addTest('books.byKey().update()', (db) async {
     // #region update-book-bykey
     await db.books
-        .byKey(bookId: 1)
+        .byKey(1)
         .update((book, set) => set(
               stock: book.stock - literal(1),
             ))
@@ -516,7 +516,7 @@ void main() {
   r.addTest('books.byKey().update(title: null)', (db) async {
     // #region update-book-bykey-set-null
     await db.books
-        .byKey(bookId: 1)
+        .byKey(1)
         .update((book, set) => set(
               title: literal(null),
             ))
@@ -538,7 +538,7 @@ void main() {
   r.addTest('books.byKey().update().returnUpdated', (db) async {
     // #region update-book-bykey-returnUpdated
     final updatedBook = await db.books
-        .byKey(bookId: 1)
+        .byKey(1)
         .update((book, set) => set(
               stock: book.stock - literal(1),
             ))
@@ -574,7 +574,7 @@ void main() {
 
   r.addTest('books.byKey().delete()', (db) async {
     // #region books-byKey-delete
-    await db.books.byKey(bookId: 1).delete().execute();
+    await db.books.byKey(1).delete().execute();
     // #endregion
   });
 
@@ -601,7 +601,7 @@ void main() {
   r.addTest('books.byKey().select(book.author)', (db) async {
     // #region books-follow-reference-by-name
     final bookAndAuthor = await db.books
-        .byKey(bookId: 1)
+        .byKey(1)
         .select((book) => (
               book,
               book.author, // <-- use the 'author' subquery property
@@ -640,7 +640,7 @@ void main() {
   r.addTest('authors.byKey().select(author, author.books.count())', (db) async {
     // #region authors-bykey-count-books
     final authorAndCount = await db.authors
-        .byKey(authorId: 1)
+        .byKey(1)
         .select((author) => (
               author,
               author.books.count(),

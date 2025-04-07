@@ -351,14 +351,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..name = 'delete'
           ..docs.add('/// TODO: document delete')
           ..returns = refer('DeleteSingle<$modelName>')
-          ..optionalParameters.addAll(
-            model.primaryKey.asRequiredNamedParameters,
-          )
+          ..requiredParameters.addAll(model.primaryKey.map((pk) => Parameter(
+                (b) => b
+                  ..name = pk.name
+                  ..type = refer(pk.type),
+              )))
           ..lambda = true
           ..body = Code('''
             ExposedForCodeGen.deleteSingle(
               byKey(
-                ${model.primaryKey.map((f) => '${f.name}: ${f.name}').join(', ')}
+                ${model.primaryKey.map((f) => f.name).join(', ')}
               ),
               _\$${model.name}._\$table,
             )
@@ -376,9 +378,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..name = 'byKey'
           ..docs.add('/// TODO: document lookup by PrimaryKey')
           ..returns = refer('QuerySingle<(Expr<$modelName>,)>')
-          ..optionalParameters.addAll(
-            model.primaryKey.asRequiredNamedParameters,
-          )
+          ..requiredParameters.addAll(model.primaryKey.map((pk) => Parameter(
+                (b) => b
+                  ..name = pk.name
+                  ..type = refer(pk.type),
+              )))
           ..lambda = true
           ..body = Code(
             // TODO: Consider an auxiliary method on ExposedForCodeGen to make
@@ -386,7 +390,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             'where(($modelInstanceName) => ${model.primaryKey.map(
                   (f) =>
                       '$modelInstanceName.${f.name}.equalsLiteral(${f.name})',
-                ).reduce((a, b) => '$a.and($b)')}).first',
+                ).join(' & ')}).first',
           ),
       ))
       ..methods.add(Method(
@@ -796,16 +800,6 @@ extension on ParsedRecord {
   String get returnType => '({${fields.mapIndexed(
         (i, f) => '${typeArg[i]} $f',
       ).join(', ')},})';
-}
-
-extension on List<ParsedField> {
-  Iterable<Parameter> get asRequiredNamedParameters => map((field) => Parameter(
-        (b) => b
-          ..name = field.name
-          ..named = true
-          ..required = true
-          ..type = refer(field.type),
-      ));
 }
 
 extension on ParsedField {

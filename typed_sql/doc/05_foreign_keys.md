@@ -105,7 +105,7 @@ a book and its author in a single query.
 
 ```dart bookstore_test.dart#books-follow-reference-by-name
 final bookAndAuthor = await db.books
-    .byKey(bookId: 1)
+    .byKey(1)
     .select((book) => (
           book,
           book.author, // <-- use the 'author' subquery property
@@ -175,7 +175,7 @@ with the count of books referencing said row the authors table.
 
 ```dart bookstore_test.dart#authors-bykey-count-books
 final authorAndCount = await db.authors
-    .byKey(authorId: 1)
+    .byKey(1)
     .select((author) => (
           author,
           author.books.count(),

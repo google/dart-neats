@@ -119,16 +119,16 @@ extension TableEmployeeExt on Table<Employee> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Employee> delete({required int employeeId}) =>
+  DeleteSingle<Employee> delete(int employeeId) =>
       ExposedForCodeGen.deleteSingle(
-        byKey(employeeId: employeeId),
+        byKey(employeeId),
         _$Employee._$table,
       );
 }
 
 extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Employee>,)> byKey({required int employeeId}) =>
+  QuerySingle<(Expr<Employee>,)> byKey(int employeeId) =>
       where((employee) => employee.employeeId.equalsLiteral(employeeId)).first;
 
   /// TODO: document update()
@@ -319,16 +319,16 @@ extension TableDepartmentExt on Table<Department> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Department> delete({required int departmentId}) =>
+  DeleteSingle<Department> delete(int departmentId) =>
       ExposedForCodeGen.deleteSingle(
-        byKey(departmentId: departmentId),
+        byKey(departmentId),
         _$Department._$table,
       );
 }
 
 extension QueryDepartmentExt on Query<(Expr<Department>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Department>,)> byKey({required int departmentId}) =>
+  QuerySingle<(Expr<Department>,)> byKey(int departmentId) =>
       where((department) => department.departmentId.equalsLiteral(departmentId))
           .first;
 

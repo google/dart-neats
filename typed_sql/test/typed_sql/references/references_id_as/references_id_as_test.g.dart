@@ -119,16 +119,15 @@ extension TableAuthorExt on Table<Author> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Author> delete({required int authorId}) =>
-      ExposedForCodeGen.deleteSingle(
-        byKey(authorId: authorId),
+  DeleteSingle<Author> delete(int authorId) => ExposedForCodeGen.deleteSingle(
+        byKey(authorId),
         _$Author._$table,
       );
 }
 
 extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Author>,)> byKey({required int authorId}) =>
+  QuerySingle<(Expr<Author>,)> byKey(int authorId) =>
       where((author) => author.authorId.equalsLiteral(authorId)).first;
 
   /// TODO: document update()
@@ -348,16 +347,15 @@ extension TableBookExt on Table<Book> {
       );
 
   /// TODO: document delete
-  DeleteSingle<Book> delete({required int bookId}) =>
-      ExposedForCodeGen.deleteSingle(
-        byKey(bookId: bookId),
+  DeleteSingle<Book> delete(int bookId) => ExposedForCodeGen.deleteSingle(
+        byKey(bookId),
         _$Book._$table,
       );
 }
 
 extension QueryBookExt on Query<(Expr<Book>,)> {
   /// TODO: document lookup by PrimaryKey
-  QuerySingle<(Expr<Book>,)> byKey({required int bookId}) =>
+  QuerySingle<(Expr<Book>,)> byKey(int bookId) =>
       where((book) => book.bookId.equalsLiteral(bookId)).first;
 
   /// TODO: document update()
