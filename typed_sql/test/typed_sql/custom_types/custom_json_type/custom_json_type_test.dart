@@ -19,7 +19,7 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';
 
-part 'custom_blob_test.g.dart';
+part 'custom_json_type_test.g.dart';
 
 abstract final class TestDatabase extends Schema {
   Table<Item> get items;
@@ -30,12 +30,10 @@ abstract final class Item extends Model {
   @AutoIncrement()
   int get id;
 
-  MyJsonValue get value;
+  JsonValue get value;
 }
 
-typedef MyJsonValue = JsonValue<Uint8List>;
-
-final class JsonValue<T extends Uint8List> implements CustomDataType<T> {
+final class JsonValue implements CustomDataType<Uint8List> {
   final Object? jsonValue;
 
   JsonValue(this.jsonValue);
@@ -44,11 +42,11 @@ final class JsonValue<T extends Uint8List> implements CustomDataType<T> {
       JsonValue(json.fuse(utf8).decode(bytes));
 
   @override
-  T toDatabase() => json.fuse(utf8).encode(jsonValue) as T;
+  Uint8List toDatabase() => json.fuse(utf8).encode(jsonValue) as Uint8List;
 }
 
-extension on Subject<MyJsonValue> {
-  void equals(MyJsonValue other) =>
+extension on Subject<JsonValue> {
+  void equals(JsonValue other) =>
       has((e) => json.encode(e.jsonValue), 'jsonValue')
           .equals(json.encode(other.jsonValue));
 }
@@ -60,14 +58,14 @@ void main() {
     },
   );
 
-  final initialValue = MyJsonValue(['a', 'b', 'c']);
-  final updatedValue = MyJsonValue(['a', 'b', 'c', 'd']);
+  final initialValue = JsonValue(['a', 'b', 'c']);
+  final updatedValue = JsonValue(['a', 'b', 'c', 'd']);
 
   r.addTest('insert', (db) async {
     await db.items
         .insert(
           id: literal(1),
-          value: Literal.custom(initialValue, JsonValue.fromDatabase),
+          value: initialValue.asExpr,
         )
         .execute();
 
@@ -79,13 +77,13 @@ void main() {
     await db.items
         .insert(
           id: literal(1),
-          value: Literal.custom(initialValue, JsonValue.fromDatabase),
+          value: initialValue.asExpr,
         )
         .execute();
 
     await db.items
         .update((item, set) => set(
-              value: Literal.custom(updatedValue, JsonValue.fromDatabase),
+              value: updatedValue.asExpr,
             ))
         .execute();
 
@@ -97,7 +95,7 @@ void main() {
     await db.items
         .insert(
           id: literal(1),
-          value: Literal.custom(initialValue, JsonValue.fromDatabase),
+          value: initialValue.asExpr,
         )
         .execute();
 
@@ -108,6 +106,11 @@ void main() {
 
     final item2 = await db.items.first.fetch();
     check(item2).isNull();
+  });
+
+  r.addTest('db.select', (db) async {
+    final value = await db.select((initialValue.asExpr,)).fetch();
+    check(value).isNotNull().equals(initialValue);
   });
 
   r.run();

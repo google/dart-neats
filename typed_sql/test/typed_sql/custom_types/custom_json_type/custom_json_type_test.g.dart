@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'custom_blob_test.dart';
+part of 'custom_json_type_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
@@ -60,7 +60,7 @@ final class _$Item extends Item {
   final int id;
 
   @override
-  final MyJsonValue value;
+  final JsonValue value;
 
   static const _$table = (
     tableName: 'items',
@@ -99,7 +99,7 @@ final class _$Item extends Item {
     final id = row.readInt();
     final value = ExposedForCodeGen.customDataTypeOrNull(
       row.readUint8List(),
-      MyJsonValue.fromDatabase,
+      JsonValue.fromDatabase,
     );
     if (id == null && value == null) {
       return null;
@@ -119,7 +119,7 @@ extension TableItemExt on Table<Item> {
   /// called for the row to be inserted.
   InsertSingle<Item> insert({
     Expr<int>? id,
-    required Expr<MyJsonValue> value,
+    required Expr<JsonValue> value,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
@@ -185,7 +185,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             Expr<Item> item,
             UpdateSet<Item> Function({
               Expr<int> id,
-              Expr<MyJsonValue> value,
+              Expr<JsonValue> value,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Item>(
@@ -195,7 +195,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<MyJsonValue>? value,
+            Expr<JsonValue>? value,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
@@ -247,7 +247,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             Expr<Item> item,
             UpdateSet<Item> Function({
               Expr<int> id,
-              Expr<MyJsonValue> value,
+              Expr<JsonValue> value,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.updateSingle<Item>(
@@ -257,7 +257,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<MyJsonValue>? value,
+            Expr<JsonValue>? value,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
@@ -280,26 +280,16 @@ extension ExpressionItemExt on Expr<Item> {
   Expr<int> get id =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  Expr<MyJsonValue> get value => ExposedForCodeGen.field(
-      this,
-      1,
-      ExposedForCodeGen.customDataType(
-        ExposedForCodeGen.blob,
-        MyJsonValue.fromDatabase,
-      ));
+  Expr<JsonValue> get value =>
+      ExposedForCodeGen.field(this, 1, JsonValueExt._exprType);
 }
 
 extension ExpressionNullableItemExt on Expr<Item?> {
   Expr<int?> get id =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  Expr<MyJsonValue?> get value => ExposedForCodeGen.field(
-      this,
-      1,
-      ExposedForCodeGen.customDataType(
-        ExposedForCodeGen.blob,
-        MyJsonValue.fromDatabase,
-      ));
+  Expr<JsonValue?> get value =>
+      ExposedForCodeGen.field(this, 1, JsonValueExt._exprType);
 
   /// Check if the row is not `NULL`.
   ///
@@ -318,6 +308,33 @@ extension ExpressionNullableItemExt on Expr<Item?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+/// Wrap this [JsonValue] as [Expr<JsonValue>] for use queries with
+/// `package:typed_sql`.
+extension JsonValueExt on JsonValue {
+  static final _exprType = ExposedForCodeGen.customDataType(
+    ExposedForCodeGen.blob,
+    JsonValue.fromDatabase,
+  );
+
+  /// Wrap this [JsonValue] as [Expr<JsonValue>] for use queries with
+  /// `package:typed_sql`.
+  Expr<JsonValue> get asExpr => ExposedForCodeGen.literalCustomDataType(
+        this,
+        _exprType,
+      ).assertNotNull();
+}
+
+/// Wrap this [JsonValue] as [Expr<JsonValue>] for use queries with
+/// `package:typed_sql`.
+extension JsonValueNullableExt on JsonValue? {
+  /// Wrap this [JsonValue] as [Expr<JsonValue?>] for use queries with
+  /// `package:typed_sql`.
+  Expr<JsonValue?> get asExpr => ExposedForCodeGen.literalCustomDataType(
+        this,
+        JsonValueExt._exprType,
+      );
+}
+
 /// Extension methods for assertions on [Item] using
 /// [`package:checks`][1].
 ///
@@ -327,5 +344,5 @@ extension ItemChecks on Subject<Item> {
   Subject<int> get id => has((m) => m.id, 'id');
 
   /// Create assertions on [Item.value].
-  Subject<MyJsonValue> get value => has((m) => m.value, 'value');
+  Subject<JsonValue> get value => has((m) => m.value, 'value');
 }

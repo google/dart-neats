@@ -213,6 +213,12 @@ final class ExposedForCodeGen {
   ) =>
       CustomExprType<S, T>._(backingType, fromDatabase);
 
+  static Expr<T?> literalCustomDataType<S, T extends CustomDataType<S>>(
+    T? value,
+    CustomExprType<S, T> type,
+  ) =>
+      Literal<T?>._(value, type);
+
   static const ColumnType<Uint8List> blob = ColumnType.blob;
   static const ColumnType<bool> boolean = ColumnType.boolean;
   static const ColumnType<DateTime> dateTime = ColumnType.dateTime;

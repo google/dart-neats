@@ -34,6 +34,8 @@ Iterable<Spec> buildCode(
   yield* library.schemas.expand(buildSchema);
   yield* records.expand(buildRecord);
 
+  yield* _buildCustomTypeExtensions(library);
+
   if (createChecksExtensions) {
     yield* library.schemas
         .expand((s) => s.tables)
@@ -41,6 +43,88 @@ Iterable<Spec> buildCode(
         .toSet()
         .sortedBy((m) => m.name)
         .expand(buildChecksForModel);
+  }
+}
+
+/// Generate extensions for `CustomDataType<T>` subclasses used in fields.
+Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
+  // Find the unique set of CustomDataType classes used
+  final customTypes = library.models
+      .expand((model) => model.fields)
+      .where((field) => field.typeName != field.backingType)
+      .map((field) => (
+            typeName: field.typeName,
+            backingTypeExpr: backingExprType(field.backingType)
+          ))
+      .toSet()
+      .sortedBy((e) => e.typeName);
+
+  for (final (:typeName, :backingTypeExpr) in customTypes) {
+    // Extension for creating an literal Expr<T> from T, when
+    // T extends CustomDataType<T>
+    yield Extension(
+      (b) => b
+        ..name = '${typeName}Ext'
+        ..on = refer(typeName)
+        ..documentation('''
+          Wrap this [$typeName] as [Expr<$typeName>] for use queries with
+          `package:typed_sql`.
+        ''')
+        // We define a static exprType here, and use it in other parts of the
+        // generated code!
+        ..fields.add(Field(
+          (b) => b
+            ..name = '_exprType'
+            ..modifier = FieldModifier.final$
+            ..static = true
+            ..assignment = Code('''
+              ExposedForCodeGen.customDataType(
+                $backingTypeExpr,
+                $typeName.fromDatabase,
+              )
+            '''),
+        ))
+        ..methods.add(Method(
+          (b) => b
+            ..name = 'asExpr'
+            ..documentation(docs.customDataTypeAsExpr(typeName, ''))
+            ..returns = refer('Expr<$typeName>')
+            ..type = MethodType.getter
+            ..lambda = true
+            ..body = Code('''
+              ExposedForCodeGen.literalCustomDataType(
+                this,
+                _exprType,
+              ).assertNotNull()
+            '''),
+        )),
+    );
+
+    // Extension for creating an literal Expr<T?> from T, when
+    // T extends CustomDataType<T>
+    yield Extension(
+      (b) => b
+        ..name = '${typeName}NullableExt'
+        ..on = refer('$typeName?')
+        ..documentation('''
+          Wrap this [$typeName] as [Expr<$typeName>] for use queries with
+          `package:typed_sql`.
+        ''')
+        ..methods.add(Method(
+          (b) => b
+            ..name = 'asExpr'
+            ..documentation(docs.customDataTypeAsExpr(typeName, '?'))
+            ..returns = refer('Expr<$typeName?>')
+            ..type = MethodType.getter
+            ..lambda = true
+            ..body = Code('''
+              ExposedForCodeGen.literalCustomDataType(
+                this,
+                ${typeName}Ext._exprType,
+              )
+            '''),
+        )),
+    );
   }
 }
 
@@ -219,33 +303,6 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
     ''';
   }
 
-  String fieldBackingType(ParsedField field) {
-    return switch (field.backingType) {
-      'String' => 'ExposedForCodeGen.text',
-      'int' => 'ExposedForCodeGen.integer',
-      'double' => 'ExposedForCodeGen.real',
-      'bool' => 'ExposedForCodeGen.boolean',
-      'DateTime' => 'ExposedForCodeGen.dateTime',
-      'Uint8List' => 'ExposedForCodeGen.blob',
-      _ => throw UnsupportedError(
-          'Unsupported type "${field.typeName}"',
-        ),
-    };
-  }
-
-  String fieldType(ParsedField field) {
-    var backingTypeName = fieldBackingType(field);
-    if (field.backingType == field.typeName) {
-      return backingTypeName;
-    }
-    return '''
-      ExposedForCodeGen.customDataType(
-        $backingTypeName,
-        ${field.typeName}.fromDatabase,
-      )
-    ''';
-  }
-
   // Create implementation class for model
   yield Class(
     (b) => b
@@ -285,7 +342,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   })>[
                 ${model.fields.map((f) => '''
                   (
-                    type: ${fieldBackingType(f)},
+                    type: ${backingExprType(f.backingType)},
                     isNotNull: ${!f.isNullable},
                     defaultValue: ${literal(f.defaultValue)},
                     autoIncrement: ${f.autoIncrement},
@@ -1008,4 +1065,26 @@ extension on ParsedRecord {
 
 extension on ParsedField {
   String get type => isNullable ? '$typeName?' : typeName;
+}
+
+String backingExprType(String backingType) {
+  return switch (backingType) {
+    'String' => 'ExposedForCodeGen.text',
+    'int' => 'ExposedForCodeGen.integer',
+    'double' => 'ExposedForCodeGen.real',
+    'bool' => 'ExposedForCodeGen.boolean',
+    'DateTime' => 'ExposedForCodeGen.dateTime',
+    'Uint8List' => 'ExposedForCodeGen.blob',
+    _ => throw UnsupportedError(
+        'Unsupported backingType: "$backingType"',
+      ),
+  };
+}
+
+String fieldType(ParsedField field) {
+  var backingTypeName = backingExprType(field.backingType);
+  if (field.backingType == field.typeName) {
+    return backingTypeName;
+  }
+  return '${field.typeName}Ext._exprType';
 }

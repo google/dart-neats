@@ -277,7 +277,35 @@ ParsedModel _parseModel(
             element: a,
           );
         }
+
         var returnType = a.returnType as InterfaceType;
+
+        // Check that there is a fromDatabase constructor
+        final constructor = returnType.constructors
+            .firstWhereOrNull((c) => c.name == 'fromDatabase');
+        if (constructor == null) {
+          throw InvalidGenerationSource(
+            'CustomDataType<T> subclasses must have a `fromDatabase` constructor!',
+            element: a,
+          );
+        }
+        if (constructor.parameters.length != 1) {
+          throw InvalidGenerationSource(
+            'CustomDataType<T> subclasses must have a `fromDatabase` '
+            'constructor must take a single argument!',
+            element: a,
+          );
+        }
+        final constructorArgType =
+            _tryGetColumnType(constructor.parameters.first.type);
+        if (constructorArgType != backingType) {
+          throw throw InvalidGenerationSource(
+            'CustomDataType<T> subclasses must have a `fromDatabase` '
+            'constructor whose argument type matches the backing type `T`!',
+            element: a,
+          );
+        }
+
         final alias = returnType.alias;
         if (alias != null) {
           if (alias.typeArguments.isNotEmpty) {

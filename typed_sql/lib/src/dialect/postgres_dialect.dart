@@ -387,8 +387,8 @@ final class _PostgresDialect extends SqlDialect {
         Literal.false$ => 'FALSE',
         Literal.true$ => 'TRUE',
         Literal.null$ => '(NULL)::unknown',
-        Literal<CustomDataType>(value: final value) =>
-          ctx.parameter(value.toDatabase()),
+        Literal<CustomDataType?>(value: final value) =>
+          ctx.parameter(value?.toDatabase()),
         Literal<T>(value: final value) => ctx.parameter(value),
         final ExpressionNumDivide e =>
           '( CAST(${expr(e.left, ctx)} AS NUMERIC) ${e.operator} ${expr(e.right, ctx)} )',

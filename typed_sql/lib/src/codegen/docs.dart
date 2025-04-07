@@ -408,3 +408,11 @@ final aggregationCount = '''
     This will count the number of rows in the group, including rows consisting
     entirely of `NULL` values.
 ''';
+
+/// Documentation for  `.asExpr` on subclasses of [CustomDataType].
+///
+/// [nullable] must be `''` or `'?'`.
+String customDataTypeAsExpr(String typeName, String nullable) => '''
+    Wrap this [$typeName] as [Expr<$typeName$nullable>] for use queries with
+    `package:typed_sql`.
+''';
