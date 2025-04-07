@@ -48,6 +48,10 @@ final class _TypedSqlExtensionBuilder extends g.Generator {
   }
 }
 
+/// Maximum number of expressions we generate extension methods for.
+///
+/// If  `N = 3` we support `Query<(Expr<A>, Expr<B>, Expr<C>)>`, but not
+/// `Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)>`.
 const N = 8; // max = 24
 
 Iterable<Spec> _buildExtensions() sync* {
@@ -711,7 +715,7 @@ Spec _buildSubQueryExtension(int i) {
       ),
 
       // TODO: Consider introducing support for .union, .intersect, .except
-      // TODO: Consdier introducing support for .groupBy
+      // TODO: Consider introducing support for .groupBy
       // TODO: Consider introducing SubJoin
 
       Method(
