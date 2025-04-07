@@ -436,6 +436,9 @@ final class _PostgresDialect extends SqlDialect {
 extension on QueryContext {
   String parameter(Object? value) {
     switch (value) {
+      case bool _:
+        final index = param(value);
+        return '\$$index::BOOLEAN';
       case int _:
         final index = param(value);
         return '\$$index::BIGINT';

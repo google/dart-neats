@@ -81,6 +81,7 @@ export 'src/typed_sql.dart'
         JoinType,
         LeftJoin,
         LimitClause,
+        Literal,
         MaxExpression,
         MinExpression,
         ModelExpression,
