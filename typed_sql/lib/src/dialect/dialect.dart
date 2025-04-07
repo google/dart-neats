@@ -95,11 +95,25 @@ export '../typed_sql.dart'
         UpdateStatement,
         WhereClause;
 
+/// Interface for implementation of custom SQL dialects for `package:typed_sql`.
+///
+/// > [!WARNING]
+/// > This interface is NOT stable yet, while subclasses of [SqlDialect]
+/// > is possible outside `package:typed_sql`, newer versions of this package
+/// > may add new methods (remove existing) without a major version bump!
 abstract base class SqlDialect {
+  /// [SqlDialect] for talking to an SQLite3 database.
   static SqlDialect sqlite() => sqliteDialect();
+
+  /// [SqlDialect] for talking to a PostgreSQL database.
   static SqlDialect postgres() => postgresDialect();
 
-  String createTables(List<CreateTableStatement> statement);
+  /// Create an SQL DDL script from [statements] separated by `;`.
+  ///
+  /// ```sql
+  /// CREATE TABLE [table] ([columns])
+  /// ```
+  String createTables(List<CreateTableStatement> statements);
 
   /// Insert [InsertStatement.columns] into [InsertStatement.table] returning
   /// columns from [InsertStatement.returning].
@@ -123,8 +137,8 @@ abstract base class SqlDialect {
   /// all return values are read but ignored.
   (String, List<Object?>) delete(DeleteStatement statement);
 
-  // TODO: Document rendering method!
-  (String sql, List<String> columns, List<Object?> params) select(
+  /// Create select statment from [statement].
+  (String sql, List<Object?> params) select(
     SelectStatement statement,
   );
 }

@@ -187,12 +187,12 @@ final class _Sqlite extends SqlDialect {
   }
 
   @override
-  (String sql, List<String> columns, List<Object?> params) select(
+  (String sql, List<Object?> params) select(
     SelectStatement statement,
   ) {
     final (params, ctx) = QueryContext.create();
     final (sql, columns) = clause(statement.query, ctx);
-    return (sql, columns, params);
+    return (sql, params);
   }
 
   (String sql, List<String> columns) clause(QueryClause q, QueryContext ctx) {
