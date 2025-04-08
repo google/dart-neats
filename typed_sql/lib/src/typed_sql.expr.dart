@@ -389,6 +389,19 @@ final class NotNullExpression<T> extends Expr<T> {
   NotNullExpression._(this.value) : super._();
 }
 
+final class EncodedCustomDataTypeExpression<S, T extends CustomDataType<S>>
+    extends SingleValueExpr<S?> {
+  final Expr<T?> value;
+
+  @override
+  int get _columns => value._columns;
+
+  @override
+  _ExprType<S> get _type => (value._type as CustomExprType<S, T>)._backingType;
+
+  EncodedCustomDataTypeExpression._(this.value) : super._();
+}
+
 final class CastExpression<T, R> extends SingleValueExpr<R> {
   final Expr<T> value;
   final ColumnType<R> type;

@@ -429,6 +429,7 @@ final class _PostgresDialect extends SqlDialect {
           'CAST(CAST(${expr(value, ctx)} AS INTEGER) AS ${e.type.sqlType})',
         final CastExpression e =>
           'CAST(${expr(e.value, ctx)} AS ${e.type.sqlType})',
+        EncodedCustomDataTypeExpression(:final value) => expr(value, ctx),
       };
 }
 

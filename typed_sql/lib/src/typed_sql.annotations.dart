@@ -70,6 +70,13 @@ final class Unique {
 ///
 /// If a subclass implements [Comparable] then the encoded values returned by
 /// [toDatabase] **must** also be comparable and have the same ordering!
+///
+/// > [!TIP]
+/// > Custom types are not required to be _immutable_ but using an immutable
+/// > type is recommended. The analyzer can help with you this if you use the
+/// > `@immutable` annotation from [`package:meta`][1].
+///
+/// [1]: https://pub.dev/packages/meta
 abstract interface class CustomDataType<T extends Object?> {
   T toDatabase();
 }

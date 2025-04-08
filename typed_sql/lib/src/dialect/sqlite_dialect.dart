@@ -398,6 +398,7 @@ final class _Sqlite extends SqlDialect {
         NotNullExpression<T>(:final value) => expr(value, ctx),
         final CastExpression e =>
           'CAST(${expr(e.value, ctx)} AS ${e.type.sqlType})',
+        EncodedCustomDataTypeExpression(:final value) => expr(value, ctx),
       };
 }
 

@@ -14,6 +14,23 @@
 
 part of 'typed_sql.dart';
 
+/// Extension methods for accessing the encoded value of a custom data type
+/// expression.
+extension CustomTypeExt<S> on Expr<CustomDataType<S>> {
+  /// Get an expression containing the encoded value of the [CustomDataType]
+  /// implementation.
+  Expr<S> asEncoded() =>
+      EncodedCustomDataTypeExpression<S, CustomDataType<S>>._(this).asNotNull();
+}
+
+/// Extension methods for accessing the encoded value of a custom data type
+/// expression.
+extension CustomTypeNullableExt<S> on Expr<CustomDataType<S>?> {
+  /// Get an expression containing the encoded value of the [CustomDataType]
+  /// implementation.
+  Expr<S?> asEncoded() => EncodedCustomDataTypeExpression._(this);
+}
+
 /// Extension methods for casting `NULL` to other types.
 extension ExpressionNull on Expr<Null> {
   /// Cast as [Expr<int?>] using `CAST(NULL AS BIGINT)`.

@@ -125,6 +125,8 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
             '''),
         )),
     );
+
+    //yield Extension();
   }
 }
 

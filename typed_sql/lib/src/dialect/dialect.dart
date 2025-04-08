@@ -29,6 +29,7 @@ export '../typed_sql.dart'
         CustomDataType,
         DeleteStatement,
         DistinctClause,
+        EncodedCustomDataTypeExpression,
         ExceptClause,
         ExistsExpression,
         Expr,
