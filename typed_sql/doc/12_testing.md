@@ -12,18 +12,21 @@ temporary database will be deleted.
 The following example shows how to create an in-memory database for testing
 with SQLite3:
 
-```dart
-import 'package:typed_sql/typed_sql.dart';
+```dart sqlite_test.dart#testing
 import 'package:test/test.dart' show addTearDown, test;
+import 'package:typed_sql/typed_sql.dart';
+
+import 'model.dart';
 
 void main() {
-  test('test sqlite database', () async {
+  test('test with sqlite database', () async {
     final adaptor = DatabaseAdaptor.sqlite3TestDatabase();
+    // Always remember to close the adaptor. This will delete the test database!
     addTearDown(adaptor.close);
 
-    final db = Database<Bookstore>(adaptor, SqlDialect.sqlite3());
+    final db = Database<Bookstore>(adaptor, SqlDialect.sqlite());
 
-    // Create empty tables
+    // Create tables in the empty test database
     await db.createTables();
 
     // ...
@@ -49,18 +52,21 @@ See reference documentation for `DatabaseAdaptor.sqlite3` for details.
 The following example shows how to create a temporary database for testing
 with PostgreSQL:
 
-```dart
-import 'package:typed_sql/typed_sql.dart';
+```dart postgres_test.dart#testing
 import 'package:test/test.dart' show addTearDown, test;
+import 'package:typed_sql/typed_sql.dart';
+
+import 'model.dart';
 
 void main() {
-  test('test postgres database', () async {
-    final adaptor = await DatabaseAdaptor.postgresTestDatabase();
+  test('test with postgres database', () async {
+    final adaptor = DatabaseAdaptor.postgresTestDatabase();
+    // Always remember to close the adaptor. This will delete the test database!
     addTearDown(adaptor.close);
 
     final db = Database<Bookstore>(adaptor, SqlDialect.postgres());
 
-    // Create empty tables
+    // Create tables in the empty test database
     await db.createTables();
 
     // ...
