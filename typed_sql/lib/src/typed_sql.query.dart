@@ -47,6 +47,14 @@ final class RightJoin<T extends Record, S extends Record> {
   RightJoin._(this._from, this._join);
 }
 
+/// A table of rows of type [T].
+///
+/// [Table] objects also implement [Query<(Expr<T>,)>], thus, they can be used
+/// to query all rows in the table, in addition there will always be generated
+/// _extension methods_ for:
+///  * `.insert`,
+///  * `.update`, and,
+///  * `.delete`.
 final class Table<T extends Model> extends Query<(Expr<T>,)> {
   final TableClause _tableClause;
 
@@ -61,6 +69,9 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
         );
 }
 
+/// A [Query] which can return at-most a single row.
+///
+/// A [QuerySingle] object may return zero or one row.
 final class QuerySingle<T extends Record> {
   final Query<T> _query;
 

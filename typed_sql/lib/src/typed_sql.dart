@@ -30,6 +30,7 @@ part 'typed_sql.query.dart';
 part 'typed_sql.query_ext.dart';
 part 'typed_sql.statements.dart';
 
+/// Marker class which all schema definitions must extend.
 abstract base class Schema {
   Schema() {
     throw UnsupportedError(

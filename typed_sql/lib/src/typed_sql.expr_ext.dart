@@ -14,6 +14,7 @@
 
 part of 'typed_sql.dart';
 
+/// Extension methods for casting `NULL` to other types.
 extension ExpressionNull on Expr<Null> {
   /// Cast as [Expr<int?>] using `CAST(NULL AS BIGINT)`.
   ///
@@ -60,6 +61,7 @@ extension ExpressionNull on Expr<Null> {
   // TODO: Generate cast for CustomDataType!
 }
 
+/// Extension methods for casting a nullable [Expr] to a non-nullable Expr.
 extension ExpressionNullable<T> on Expr<T?> {
   /// Cast as [Expr<T>] without doing anything in SQL.
   ///
@@ -76,6 +78,7 @@ extension ExpressionNullable<T> on Expr<T?> {
   Expr<T> asNotNull() => NotNullExpression._(this);
 }
 
+/// Extension methods for nullable [int] and [double] expressions.
 extension ExpressionNullableNum<T extends num> on Expr<T?> {
   /// {@template orElse}
   /// If this expression is `NULL`, use [value] instead.
@@ -125,6 +128,7 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   Expr<bool> isNotNull() => isNull().not();
 }
 
+/// Extension methods for nullable [String] expressions.
 extension ExpressionNullableString on Expr<String?> {
   /// {@macro orElse}
   Expr<String> orElse(Expr<String> value) => OrElseExpression._(this, value);
@@ -151,6 +155,7 @@ extension ExpressionNullableString on Expr<String?> {
   Expr<bool> isNotNull() => isNull().not();
 }
 
+/// Extension methods for nullable [bool] expressions.
 extension ExpressionNullableBool on Expr<bool?> {
   /// {@macro orElse}
   Expr<bool> orElse(Expr<bool> value) => OrElseExpression._(this, value);
@@ -161,6 +166,7 @@ extension ExpressionNullableBool on Expr<bool?> {
   // TODO: Add boolean equality, so that we can do isNull() / isNotNull()!
 }
 
+/// Extension methods for nullable [DateTime] expressions.
 extension ExpressionNullableDateTime on Expr<DateTime?> {
   /// {@macro orElse}
   Expr<DateTime> orElse(Expr<DateTime> value) =>
@@ -190,6 +196,7 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
   Expr<bool> isNotNull() => isNull().not();
 }
 
+/// Extension methods for [bool] expressions.
 extension ExpressionBool on Expr<bool> {
   /// Negate this expression.
   ///
@@ -260,6 +267,7 @@ extension ExpressionBool on Expr<bool> {
   // Notice, that `.asInt()´ can be useful for multiplication with boolean.
 }
 
+/// Extension methods for [String] expressions.
 extension ExpressionString on Expr<String> {
   /// {@macro equals}
   Expr<bool> equals(Expr<String?> value) => ExpressionStringEquals(this, value);
@@ -466,6 +474,7 @@ extension ExpressionString on Expr<String> {
   Expr<double> asDouble() => CastExpression._(this, ColumnType.real);
 }
 
+/// Extension methods for [int] expressions.
 extension ExpressionInt on Expr<int> {
   /// {@template add}
   /// Add this expression to [other].
@@ -568,6 +577,7 @@ extension ExpressionInt on Expr<int> {
   Expr<double> asDouble() => CastExpression._(this, ColumnType.real);
 }
 
+/// Extension methods for [double] expressions.
 extension ExpressionDouble on Expr<double> {
   /// {@macro add}
   Expr<double> operator +(Expr<double> other) => ExpressionNumAdd(this, other);
@@ -644,6 +654,7 @@ extension ExpressionDouble on Expr<double> {
   Expr<int> asInt() => CastExpression._(this, ColumnType.integer);
 }
 
+/// Extension methods for [int] and [double] expressions.
 extension ExpressionNum<T extends num> on Expr<T> {
   /// {@macro equals}
   Expr<bool> equals(Expr<T?> value) => ExpressionNumEquals(this, value);
@@ -704,6 +715,7 @@ extension ExpressionNum<T extends num> on Expr<T> {
   // TODO: integerDivide!
 }
 
+/// Extension methods for [DateTime] expressions.
 extension ExpressionDateTime on Expr<DateTime> {
   /// {@macro equals}
   Expr<bool> equals(Expr<DateTime?> value) =>

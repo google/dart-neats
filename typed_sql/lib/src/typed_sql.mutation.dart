@@ -14,6 +14,21 @@
 
 part of 'typed_sql.dart';
 
+/// A set of mutations to be applied when updating rows.
+///
+/// Instances of this object are always created using the `set` callback passed
+/// to the `updateBuilder` callback in `.update` _extension methods_. These
+/// objects should always be passed back immediately. Meaning, `.update` should
+/// always be called as `.update((row, set) => set(...`, as illustrated below:
+///
+/// ```dart
+/// await db.myTable
+///     .update((row, set) => set(column: literal(value)))
+///     .execute();
+/// ```
+///
+/// This is always an opaque object that serves to make the signatures in
+/// `.update` easy to use.
 final class UpdateSet<T extends Model> {
   final List<Expr?> _values;
 

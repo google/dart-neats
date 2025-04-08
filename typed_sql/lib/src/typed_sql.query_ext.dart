@@ -14,6 +14,7 @@
 
 part of 'typed_sql.dart';
 
+/// Extension methods for queries projected to a single expression.
 extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
   /// Use this [QuerySingle] as subquery expression.
   ///
@@ -24,6 +25,7 @@ extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
       );
 }
 
+/// Extension methods for subqueries projected to a single expression.
 extension SubQuery1First<T> on SubQuery<(Expr<T>,)> {
   /// Use the first row of this [SubQuery] as subquery expression.
   ///
@@ -34,6 +36,7 @@ extension SubQuery1First<T> on SubQuery<(Expr<T>,)> {
       );
 }
 
+/// Extension methods for queries projected to an [int] expression.
 extension QueryInteger on Query<(Expr<int?>,)> {
   /// {@template sum-query}
   /// Take the sum of the rows in this query using the `SUM`
@@ -89,6 +92,7 @@ extension QueryInteger on Query<(Expr<int?>,)> {
       select((a) => (MaxExpression._(a),)).first;
 }
 
+/// Extension methods for queries projected to a [double] expression.
 extension QueryReal on Query<(Expr<double?>,)> {
   /// {@macro sum-query}
   QuerySingle<(Expr<double>,)> sum() =>
@@ -107,6 +111,7 @@ extension QueryReal on Query<(Expr<double?>,)> {
       select((a) => (MaxExpression._(a),)).first;
 }
 
+/// Extension methods for queries projected to a [DateTime] expression.
 extension QueryDateTime on Query<(Expr<DateTime?>,)> {
   /// {@macro min-query}
   QuerySingle<(Expr<DateTime?>,)> min() =>
@@ -117,6 +122,7 @@ extension QueryDateTime on Query<(Expr<DateTime?>,)> {
       select((a) => (MaxExpression._(a),)).first;
 }
 
+/// Extension methods for queries projected to a [String] expression.
 extension QueryString on Query<(Expr<String?>,)> {
   /// {@macro min-query}
   QuerySingle<(Expr<String?>,)> min() =>
@@ -127,6 +133,7 @@ extension QueryString on Query<(Expr<String?>,)> {
       select((a) => (MaxExpression._(a),)).first;
 }
 
+/// Extension methods for subqueries projected to an [int] expression.
 extension SubQueryInteger on SubQuery<(Expr<int?>,)> {
   /// {@macro sum-query}
   Expr<int> sum() => select((a) => (SumExpression._(a),)).first.asNotNull();
@@ -141,6 +148,7 @@ extension SubQueryInteger on SubQuery<(Expr<int?>,)> {
   Expr<int?> max() => select((a) => (MaxExpression._(a),)).first;
 }
 
+/// Extension methods for subqueries projected to a [double] expression.
 extension SubQueryReal on SubQuery<(Expr<double?>,)> {
   /// {@macro sum-query}
   Expr<double> sum() => select((a) => (SumExpression._(a),)).first.asNotNull();
@@ -155,6 +163,7 @@ extension SubQueryReal on SubQuery<(Expr<double?>,)> {
   Expr<double?> max() => select((a) => (MaxExpression._(a),)).first;
 }
 
+/// Extension methods for subqueries projected to a [DateTime] expression.
 extension SubQueryDateTime on SubQuery<(Expr<DateTime?>,)> {
   /// {@macro min-query}
   Expr<DateTime?> min() => select((a) => (MinExpression._(a),)).first;
@@ -163,6 +172,7 @@ extension SubQueryDateTime on SubQuery<(Expr<DateTime?>,)> {
   Expr<DateTime?> max() => select((a) => (MaxExpression._(a),)).first;
 }
 
+/// Extension methods for subqueries projected to a [String] expression.
 extension SubQueryString on SubQuery<(Expr<String?>,)> {
   /// {@macro min-query}
   Expr<String?> min() => select((a) => (MinExpression._(a),)).first;
@@ -171,6 +181,7 @@ extension SubQueryString on SubQuery<(Expr<String?>,)> {
   Expr<String?> max() => select((a) => (MaxExpression._(a),)).first;
 }
 
+/// Extension methods for all queries.
 extension QueryExt<T extends Record> on Query<T> {
   /// Create a query with distinct rows from this query using the `DISTINCT`
   /// _keyword_.
