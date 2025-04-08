@@ -143,8 +143,7 @@ extension SubQueryInteger on SubQuery<(Expr<int?>,)> {
 
 extension SubQueryReal on SubQuery<(Expr<double?>,)> {
   /// {@macro sum-query}
-  Expr<double> sum() =>
-      select((a) => (SumExpression._(a),)).first.asNotNull();
+  Expr<double> sum() => select((a) => (SumExpression._(a),)).first.asNotNull();
 
   /// {@macro avg-query}
   Expr<double?> avg() => select((a) => (AvgExpression._(a),)).first;
