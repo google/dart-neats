@@ -12,36 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// #region schema-imports
+// When `package:checks` is imported, code-generator will create extension
+// methods for assertions on rows.
+import 'package:checks/checks.dart';
 import 'package:typed_sql/typed_sql.dart';
-
-import '../../testrunner.dart';
 
 part 'model.g.dart';
 
-abstract final class Bookstore extends Schema {
-  Table<Author> get authors;
-  Table<Book> get books;
+abstract final class BankVault extends Schema {
+  Table<Account> get accounts;
 }
 
-@PrimaryKey(['authorId'])
-abstract final class Author extends Model {
+@PrimaryKey(['accountId'])
+abstract final class Account extends Model {
   @AutoIncrement()
-  int get authorId;
+  int get accountId;
 
   @Unique()
-  String get name;
+  String get accountNumber;
+
+  @DefaultValue(0.0)
+  double get balance;
 }
-
-@PrimaryKey(['bookId'])
-abstract final class Book extends Model {
-  @AutoIncrement()
-  int get bookId;
-
-  String? get title;
-
-  @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
-  int get authorId;
-
-  @DefaultValue(0)
-  int get stock;
-}
+// #endregion

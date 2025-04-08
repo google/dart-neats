@@ -29,7 +29,7 @@ void main() {
     // Always remember to close the adaptor. This will delete the test database!
     addTearDown(adaptor.close);
 
-    final db = Database<Bookstore>(adaptor, SqlDialect.postgres());
+    final db = Database<BankVault>(adaptor, SqlDialect.postgres());
 
     // Create tables in the empty test database
     await db.createTables();

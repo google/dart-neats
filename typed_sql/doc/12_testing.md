@@ -24,7 +24,7 @@ void main() {
     // Always remember to close the adaptor. This will delete the test database!
     addTearDown(adaptor.close);
 
-    final db = Database<Bookstore>(adaptor, SqlDialect.sqlite());
+    final db = Database<BankVault>(adaptor, SqlDialect.sqlite());
 
     // Create tables in the empty test database
     await db.createTables();
@@ -64,7 +64,7 @@ void main() {
     // Always remember to close the adaptor. This will delete the test database!
     addTearDown(adaptor.close);
 
-    final db = Database<Bookstore>(adaptor, SqlDialect.postgres());
+    final db = Database<BankVault>(adaptor, SqlDialect.postgres());
 
     // Create tables in the empty test database
     await db.createTables();
@@ -129,3 +129,68 @@ steps:
 
 [gh-1]: https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
 
+
+## Assertions with `package:checks`
+When writing tests we often need to check if the _actual value_ of some variable
+matches the _expected value_. [`package:checks`][checks] offers a convenient
+mechanism for writing assertions. In the common case, you can do
+`check(actual).equals(expected)`, but where `package:checks` excels is when you
+want to check a more complicated condition. `check(actual)` has a
+number _extension methods_ depending on the type of `actual`. Similarly, to how
+`Expr<T>` works in `package:typed_sql`.
+
+These extension methods will let you do things like
+`check('hello').length.lessThan(10)`. The various extension methods available
+are easy to discover with auto-completion once you've typed `check(actual)`.
+
+When making assertions on custom types with `package:checks` it's often
+necessary to extract the property you want to check, or write custom extension
+methods for `package:checks`. However, if you import `package:checks` when
+defining your database schema (typically in `model.dart`), the code-generator
+for `package:typed_sql` will automatically generate extension methods
+for your _model classes_.
+
+The following example defines the database schema for a simple bank vault.
+Importing `package:checks/checks.dart` will cause the code-generator to output
+additional extension methods for `package:checks`.
+
+```dart testing/model.dart#schema-imports
+// When `package:checks` is imported, code-generator will create extension
+// methods for assertions on rows.
+import 'package:checks/checks.dart';
+import 'package:typed_sql/typed_sql.dart';
+
+part 'model.g.dart';
+
+abstract final class BankVault extends Schema {
+  Table<Account> get accounts;
+}
+
+@PrimaryKey(['accountId'])
+abstract final class Account extends Model {
+  @AutoIncrement()
+  int get accountId;
+
+  @Unique()
+  String get accountNumber;
+
+  @DefaultValue(0.0)
+  double get balance;
+}
+```
+
+When we have an instance of `Account` we can now use `check(account)` to make
+assertions on said instance. The following example demonstrates how a lookup
+by `accountNumber`, which returns `Account?` can be checked.
+
+```dart checks_test.dart#check-account
+// Create a new account
+await db.accounts.insert(accountNumber: literal('0000-001')).execute();
+
+// Fetch the created account
+final account = await db.accounts.byAccountNumber('0000-001').fetch();
+// Check that the default balance is not positive
+check(account).isNotNull().balance.isLessOrEqual(0);
+```
+
+[checks]: https://pub.dev/packages/checks

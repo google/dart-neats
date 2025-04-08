@@ -12,24 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// #region testing
+import 'package:checks/checks.dart';
 import 'package:test/test.dart' show addTearDown, test;
 import 'package:typed_sql/typed_sql.dart';
 
 import 'model.dart';
 
 void main() {
-  test('test with sqlite database', () async {
+  test('assertions with check()', () async {
     final adaptor = DatabaseAdaptor.sqlite3TestDatabase();
-    // Always remember to close the adaptor. This will delete the test database!
     addTearDown(adaptor.close);
 
     final db = Database<BankVault>(adaptor, SqlDialect.sqlite());
 
-    // Create tables in the empty test database
     await db.createTables();
 
-    // ...
+    // #region check-account
+    // Create a new account
+    await db.accounts.insert(accountNumber: literal('0000-001')).execute();
+
+    // Fetch the created account
+    final account = await db.accounts.byAccountNumber('0000-001').fetch();
+    // Check that the default balance is not positive
+    check(account).isNotNull().balance.isLessOrEqual(0);
+    // #endregion
   });
 }
-// #endregion

@@ -148,7 +148,7 @@ String trimLines(String content) {
 }
 
 final referencePattern = RegExp(
-  r'^(```dart[ \t]+([a-zA-Z0-9_.-]+\.dart)#([a-zA-Z0-9_.-]+))$(?:.(?!^```$))*\n^```$',
+  r'^(```dart[ \t]+([a-zA-Z0-9_./-]+\.dart)#([a-zA-Z0-9_.-]+))$(?:.(?!^```$))*\n^```$',
   multiLine: true,
   dotAll: true,
 );

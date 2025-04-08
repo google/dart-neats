@@ -6,25 +6,20 @@ part of 'model.dart';
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-/// Extension methods for a [Database] operating on [Bookstore].
-extension BookstoreSchema on Database<Bookstore> {
-  static const _$tables = [_$Author._$table, _$Book._$table];
+/// Extension methods for a [Database] operating on [BankVault].
+extension BankVaultSchema on Database<BankVault> {
+  static const _$tables = [_$Account._$table];
 
-  Table<Author> get authors => ExposedForCodeGen.declareTable(
+  Table<Account> get accounts => ExposedForCodeGen.declareTable(
         this,
-        _$Author._$table,
+        _$Account._$table,
       );
 
-  Table<Book> get books => ExposedForCodeGen.declareTable(
-        this,
-        _$Book._$table,
-      );
-
-  /// Create tables defined in [Bookstore].
+  /// Create tables defined in [BankVault].
   ///
   /// Calling this on an empty database will create the tables
-  /// defined in [Bookstore]. In production it's often better to
-  /// use [createBookstoreTables] and manage migrations using
+  /// defined in [BankVault]. In production it's often better to
+  /// use [createBankVaultTables] and manage migrations using
   /// external tools.
   ///
   /// This method is mostly useful for testing.
@@ -38,38 +33,42 @@ extension BookstoreSchema on Database<Bookstore> {
       );
 }
 
-/// Get SQL [DDL statements][1] for tables defined in [Bookstore].
+/// Get SQL [DDL statements][1] for tables defined in [BankVault].
 ///
 /// This returns a SQL script with multiple DDL statements separated by `;`
 /// using the specified [dialect].
 ///
 /// Executing these statements in an empty database will create the tables
-/// defined in [Bookstore]. In practice, this method is often used for
+/// defined in [BankVault]. In practice, this method is often used for
 /// printing the DDL statements, such that migrations can be managed by
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBookstoreTables(SqlDialect dialect) =>
+String createBankVaultTables(SqlDialect dialect) =>
     ExposedForCodeGen.createTableSchema(
       dialect: dialect,
-      tables: BookstoreSchema._$tables,
+      tables: BankVaultSchema._$tables,
     );
 
-final class _$Author extends Author {
-  _$Author._(
-    this.authorId,
-    this.name,
+final class _$Account extends Account {
+  _$Account._(
+    this.accountId,
+    this.accountNumber,
+    this.balance,
   );
 
   @override
-  final int authorId;
+  final int accountId;
 
   @override
-  final String name;
+  final String accountNumber;
+
+  @override
+  final double balance;
 
   static const _$table = (
-    tableName: 'authors',
-    columns: <String>['authorId', 'name'],
+    tableName: 'accounts',
+    columns: <String>['accountId', 'accountNumber', 'balance'],
     columnInfo: <({
       ColumnType type,
       bool isNotNull,
@@ -87,11 +86,17 @@ final class _$Author extends Author {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+      ),
+      (
+        type: ExposedForCodeGen.real,
+        isNotNull: true,
+        defaultValue: 0.0,
+        autoIncrement: false,
       )
     ],
-    primaryKey: <String>['authorId'],
+    primaryKey: <String>['accountId'],
     unique: <List<String>>[
-      ['name']
+      ['accountNumber']
     ],
     foreignKeys: <({
       String name,
@@ -99,364 +104,45 @@ final class _$Author extends Author {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Author._$fromDatabase,
+    readModel: _$Account._$fromDatabase,
   );
 
-  static Author? _$fromDatabase(RowReader row) {
-    final authorId = row.readInt();
-    final name = row.readString();
-    if (authorId == null && name == null) {
+  static Account? _$fromDatabase(RowReader row) {
+    final accountId = row.readInt();
+    final accountNumber = row.readString();
+    final balance = row.readDouble();
+    if (accountId == null && accountNumber == null && balance == null) {
       return null;
     }
-    return _$Author._(authorId!, name!);
-  }
-
-  @override
-  String toString() => 'Author(authorId: "$authorId", name: "$name")';
-}
-
-/// Extension methods for table defined in [Author].
-extension TableAuthorExt on Table<Author> {
-  /// Insert row into the `authors` table.
-  ///
-  /// Returns a [InsertSingle] statement on which `.execute` must be
-  /// called for the row to be inserted.
-  InsertSingle<Author> insert({
-    Expr<int>? authorId,
-    required Expr<String> name,
-  }) =>
-      ExposedForCodeGen.insertInto(
-        table: this,
-        values: [
-          authorId,
-          name,
-        ],
-      );
-
-  /// Delete a single row from the `authors` table, specified by
-  /// _primary key_.
-  ///
-  /// Returns a [DeleteSingle] statement on which `.execute()` must be
-  /// called for the row to be deleted.
-  ///
-  /// To delete multiple rows, using `.where()` to filter which rows
-  /// should be deleted. If you wish to delete all rows, use
-  /// `.where((_) => literal(true)).delete()`.
-  DeleteSingle<Author> delete(int authorId) => ExposedForCodeGen.deleteSingle(
-        byKey(authorId),
-        _$Author._$table,
-      );
-}
-
-/// Extension methods for building queries against the `authors` table.
-extension QueryAuthorExt on Query<(Expr<Author>,)> {
-  /// Lookup a single row in `authors` table using the _primary key_.
-  ///
-  /// Returns a [QuerySingle] object, which returns at-most one row,
-  /// when `.fetch()` is called.
-  QuerySingle<(Expr<Author>,)> byKey(int authorId) =>
-      where((author) => author.authorId.equalsLiteral(authorId)).first;
-
-  /// Update all rows in the `authors` table matching this [Query].
-  ///
-  /// The changes to be applied to each row matching this [Query] are
-  /// defined using the [updateBuilder], which is given an [Expr]
-  /// representation of the row being updated and a `set` function to
-  /// specify which fields should be updated. The result of the `set`
-  /// function should always be returned from the `updateBuilder`.
-  ///
-  /// Returns an [Update] statement on which `.execute()` must be called
-  /// for the rows to be updated.
-  ///
-  /// **Example:** decrementing `1` from the `value` field for each row
-  /// where `value > 0`.
-  /// ```dart
-  /// await db.mytable
-  ///   .where((row) => row.value > literal(0))
-  ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
-  ///   ))
-  ///   .execute();
-  /// ```
-  ///
-  /// > [!WARNING]
-  /// > The `updateBuilder` callback does not make the update, it builds
-  /// > the expressions for updating the rows. You should **never** invoke
-  /// > the `set` function more than once, and the result should always
-  /// > be returned immediately.
-  Update<Author> update(
-          UpdateSet<Author> Function(
-            Expr<Author> author,
-            UpdateSet<Author> Function({
-              Expr<int> authorId,
-              Expr<String> name,
-            }) set,
-          ) updateBuilder) =>
-      ExposedForCodeGen.update<Author>(
-        this,
-        _$Author._$table,
-        (author) => updateBuilder(
-          author,
-          ({
-            Expr<int>? authorId,
-            Expr<String>? name,
-          }) =>
-              ExposedForCodeGen.buildUpdate<Author>([
-            authorId,
-            name,
-          ]),
-        ),
-      );
-
-  /// Lookup a single row in `authors` table using the
-  /// `name` field.
-  ///
-  /// We know that lookup by the `name` field returns
-  /// at-most one row because the `name` has an [Unique]
-  /// annotation in [Author].
-  ///
-  /// Returns a [QuerySingle] object, which returns at-most one row,
-  /// when `.fetch()` is called.
-  QuerySingle<(Expr<Author>,)> byName(String name) =>
-      where((author) => author.name.equalsLiteral(name)).first;
-
-  /// Delete all rows in the `authors` table matching this [Query].
-  ///
-  /// Returns a [Delete] statement on which `.execute()` must be called
-  /// for the rows to be deleted.
-  Delete<Author> delete() => ExposedForCodeGen.delete(this, _$Author._$table);
-}
-
-/// Extension methods for building point queries against the `authors` table.
-extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
-  /// Update the row (if any) in the `authors` table matching this
-  /// [QuerySingle].
-  ///
-  /// The changes to be applied to the row matching this [QuerySingle] are
-  /// defined using the [updateBuilder], which is given an [Expr]
-  /// representation of the row being updated and a `set` function to
-  /// specify which fields should be updated. The result of the `set`
-  /// function should always be returned from the `updateBuilder`.
-  ///
-  /// Returns an [UpdateSingle] statement on which `.execute()` must be
-  /// called for the row to be updated. The resulting statement will
-  /// **not** fail, if there are no rows matching this query exists.
-  ///
-  /// **Example:** decrementing `1` from the `value` field the row with
-  /// `id = 1`.
-  /// ```dart
-  /// await db.mytable
-  ///   .byKey(1)
-  ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
-  ///   ))
-  ///   .execute();
-  /// ```
-  ///
-  /// > [!WARNING]
-  /// > The `updateBuilder` callback does not make the update, it builds
-  /// > the expressions for updating the rows. You should **never** invoke
-  /// > the `set` function more than once, and the result should always
-  /// > be returned immediately.
-  UpdateSingle<Author> update(
-          UpdateSet<Author> Function(
-            Expr<Author> author,
-            UpdateSet<Author> Function({
-              Expr<int> authorId,
-              Expr<String> name,
-            }) set,
-          ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Author>(
-        this,
-        _$Author._$table,
-        (author) => updateBuilder(
-          author,
-          ({
-            Expr<int>? authorId,
-            Expr<String>? name,
-          }) =>
-              ExposedForCodeGen.buildUpdate<Author>([
-            authorId,
-            name,
-          ]),
-        ),
-      );
-
-  /// Delete the row (if any) in the `authors` table matching this [QuerySingle].
-  ///
-  /// Returns a [DeleteSingle] statement on which `.execute()` must be called
-  /// for the row to be deleted. The resulting statement will **not**
-  /// fail, if there are no rows matching this query exists.
-  DeleteSingle<Author> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Author._$table);
-}
-
-/// Extension methods for expressions on a row in the `authors` table.
-extension ExpressionAuthorExt on Expr<Author> {
-  Expr<int> get authorId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
-
-  Expr<String> get name =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
-
-  /// Get [SubQuery] of rows from the `books` table which
-  /// reference [authorId] in the `authorId` field.
-  ///
-  /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId] is references
-  /// [Author.authorId] in this row.
-  SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(_$Book._$table)
-          .where((r) => r.authorId.equals(authorId));
-}
-
-extension ExpressionNullableAuthorExt on Expr<Author?> {
-  Expr<int?> get authorId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
-
-  Expr<String?> get name =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
-
-  /// Get [SubQuery] of rows from the `books` table which
-  /// reference [authorId] in the `authorId` field.
-  ///
-  /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId] is references
-  /// [Author.authorId] in this row, if any.
-  ///
-  /// If this row is `NULL` the subquery is always be empty.
-  SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(_$Book._$table)
-          .where((r) => authorId.isNotNull() & r.authorId.equals(authorId));
-
-  /// Check if the row is not `NULL`.
-  ///
-  /// This will check if _primary key_ fields in this row are `NULL`.
-  ///
-  /// If this is a reference lookup by subquery it might be more efficient
-  /// to check if the referencing field is `NULL`.
-  Expr<bool> isNotNull() => authorId.isNotNull();
-
-  /// Check if the row is `NULL`.
-  ///
-  /// This will check if _primary key_ fields in this row are `NULL`.
-  ///
-  /// If this is a reference lookup by subquery it might be more efficient
-  /// to check if the referencing field is `NULL`.
-  Expr<bool> isNull() => isNotNull().not();
-}
-
-final class _$Book extends Book {
-  _$Book._(
-    this.bookId,
-    this.title,
-    this.authorId,
-    this.stock,
-  );
-
-  @override
-  final int bookId;
-
-  @override
-  final String? title;
-
-  @override
-  final int authorId;
-
-  @override
-  final int stock;
-
-  static const _$table = (
-    tableName: 'books',
-    columns: <String>['bookId', 'title', 'authorId', 'stock'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-    })>[
-      (
-        type: ExposedForCodeGen.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-      ),
-      (
-        type: ExposedForCodeGen.text,
-        isNotNull: false,
-        defaultValue: null,
-        autoIncrement: false,
-      ),
-      (
-        type: ExposedForCodeGen.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-      ),
-      (
-        type: ExposedForCodeGen.integer,
-        isNotNull: true,
-        defaultValue: 0,
-        autoIncrement: false,
-      )
-    ],
-    primaryKey: <String>['bookId'],
-    unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[
-      (
-        name: 'author',
-        columns: ['authorId'],
-        referencedTable: 'authors',
-        referencedColumns: ['authorId'],
-      )
-    ],
-    readModel: _$Book._$fromDatabase,
-  );
-
-  static Book? _$fromDatabase(RowReader row) {
-    final bookId = row.readInt();
-    final title = row.readString();
-    final authorId = row.readInt();
-    final stock = row.readInt();
-    if (bookId == null && title == null && authorId == null && stock == null) {
-      return null;
-    }
-    return _$Book._(bookId!, title, authorId!, stock!);
+    return _$Account._(accountId!, accountNumber!, balance!);
   }
 
   @override
   String toString() =>
-      'Book(bookId: "$bookId", title: "$title", authorId: "$authorId", stock: "$stock")';
+      'Account(accountId: "$accountId", accountNumber: "$accountNumber", balance: "$balance")';
 }
 
-/// Extension methods for table defined in [Book].
-extension TableBookExt on Table<Book> {
-  /// Insert row into the `books` table.
+/// Extension methods for table defined in [Account].
+extension TableAccountExt on Table<Account> {
+  /// Insert row into the `accounts` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Book> insert({
-    Expr<int>? bookId,
-    Expr<String?>? title,
-    required Expr<int> authorId,
-    Expr<int>? stock,
+  InsertSingle<Account> insert({
+    Expr<int>? accountId,
+    required Expr<String> accountNumber,
+    Expr<double>? balance,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
-          bookId,
-          title,
-          authorId,
-          stock,
+          accountId,
+          accountNumber,
+          balance,
         ],
       );
 
-  /// Delete a single row from the `books` table, specified by
+  /// Delete a single row from the `accounts` table, specified by
   /// _primary key_.
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be
@@ -465,22 +151,22 @@ extension TableBookExt on Table<Book> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => literal(true)).delete()`.
-  DeleteSingle<Book> delete(int bookId) => ExposedForCodeGen.deleteSingle(
-        byKey(bookId),
-        _$Book._$table,
+  DeleteSingle<Account> delete(int accountId) => ExposedForCodeGen.deleteSingle(
+        byKey(accountId),
+        _$Account._$table,
       );
 }
 
-/// Extension methods for building queries against the `books` table.
-extension QueryBookExt on Query<(Expr<Book>,)> {
-  /// Lookup a single row in `books` table using the _primary key_.
+/// Extension methods for building queries against the `accounts` table.
+extension QueryAccountExt on Query<(Expr<Account>,)> {
+  /// Lookup a single row in `accounts` table using the _primary key_.
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Book>,)> byKey(int bookId) =>
-      where((book) => book.bookId.equalsLiteral(bookId)).first;
+  QuerySingle<(Expr<Account>,)> byKey(int accountId) =>
+      where((account) => account.accountId.equalsLiteral(accountId)).first;
 
-  /// Update all rows in the `books` table matching this [Query].
+  /// Update all rows in the `accounts` table matching this [Query].
   ///
   /// The changes to be applied to each row matching this [Query] are
   /// defined using the [updateBuilder], which is given an [Expr]
@@ -507,46 +193,56 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Book> update(
-          UpdateSet<Book> Function(
-            Expr<Book> book,
-            UpdateSet<Book> Function({
-              Expr<int> bookId,
-              Expr<String?> title,
-              Expr<int> authorId,
-              Expr<int> stock,
+  Update<Account> update(
+          UpdateSet<Account> Function(
+            Expr<Account> account,
+            UpdateSet<Account> Function({
+              Expr<int> accountId,
+              Expr<String> accountNumber,
+              Expr<double> balance,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Book>(
+      ExposedForCodeGen.update<Account>(
         this,
-        _$Book._$table,
-        (book) => updateBuilder(
-          book,
+        _$Account._$table,
+        (account) => updateBuilder(
+          account,
           ({
-            Expr<int>? bookId,
-            Expr<String?>? title,
-            Expr<int>? authorId,
-            Expr<int>? stock,
+            Expr<int>? accountId,
+            Expr<String>? accountNumber,
+            Expr<double>? balance,
           }) =>
-              ExposedForCodeGen.buildUpdate<Book>([
-            bookId,
-            title,
-            authorId,
-            stock,
+              ExposedForCodeGen.buildUpdate<Account>([
+            accountId,
+            accountNumber,
+            balance,
           ]),
         ),
       );
 
-  /// Delete all rows in the `books` table matching this [Query].
+  /// Lookup a single row in `accounts` table using the
+  /// `accountNumber` field.
+  ///
+  /// We know that lookup by the `accountNumber` field returns
+  /// at-most one row because the `accountNumber` has an [Unique]
+  /// annotation in [Account].
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
+  QuerySingle<(Expr<Account>,)> byAccountNumber(String accountNumber) =>
+      where((account) => account.accountNumber.equalsLiteral(accountNumber))
+          .first;
+
+  /// Delete all rows in the `accounts` table matching this [Query].
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Book> delete() => ExposedForCodeGen.delete(this, _$Book._$table);
+  Delete<Account> delete() => ExposedForCodeGen.delete(this, _$Account._$table);
 }
 
-/// Extension methods for building point queries against the `books` table.
-extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
-  /// Update the row (if any) in the `books` table matching this
+/// Extension methods for building point queries against the `accounts` table.
+extension QuerySingleAccountExt on QuerySingle<(Expr<Account>,)> {
+  /// Update the row (if any) in the `accounts` table matching this
   /// [QuerySingle].
   ///
   /// The changes to be applied to the row matching this [QuerySingle] are
@@ -575,95 +271,63 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  UpdateSingle<Book> update(
-          UpdateSet<Book> Function(
-            Expr<Book> book,
-            UpdateSet<Book> Function({
-              Expr<int> bookId,
-              Expr<String?> title,
-              Expr<int> authorId,
-              Expr<int> stock,
+  UpdateSingle<Account> update(
+          UpdateSet<Account> Function(
+            Expr<Account> account,
+            UpdateSet<Account> Function({
+              Expr<int> accountId,
+              Expr<String> accountNumber,
+              Expr<double> balance,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Book>(
+      ExposedForCodeGen.updateSingle<Account>(
         this,
-        _$Book._$table,
-        (book) => updateBuilder(
-          book,
+        _$Account._$table,
+        (account) => updateBuilder(
+          account,
           ({
-            Expr<int>? bookId,
-            Expr<String?>? title,
-            Expr<int>? authorId,
-            Expr<int>? stock,
+            Expr<int>? accountId,
+            Expr<String>? accountNumber,
+            Expr<double>? balance,
           }) =>
-              ExposedForCodeGen.buildUpdate<Book>([
-            bookId,
-            title,
-            authorId,
-            stock,
+              ExposedForCodeGen.buildUpdate<Account>([
+            accountId,
+            accountNumber,
+            balance,
           ]),
         ),
       );
 
-  /// Delete the row (if any) in the `books` table matching this [QuerySingle].
+  /// Delete the row (if any) in the `accounts` table matching this [QuerySingle].
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be called
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
-  DeleteSingle<Book> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Book._$table);
+  DeleteSingle<Account> delete() =>
+      ExposedForCodeGen.deleteSingle(this, _$Account._$table);
 }
 
-/// Extension methods for expressions on a row in the `books` table.
-extension ExpressionBookExt on Expr<Book> {
-  Expr<int> get bookId =>
+/// Extension methods for expressions on a row in the `accounts` table.
+extension ExpressionAccountExt on Expr<Account> {
+  Expr<int> get accountId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  Expr<String?> get title =>
+  Expr<String> get accountNumber =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  Expr<int> get authorId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
-
-  Expr<int> get stock =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
-
-  /// Do a subquery lookup of the row from table
-  /// `authors` referenced in [authorId].
-  ///
-  /// The gets the row from table `authors` where
-  /// [Author.authorId] is equal to
-  /// [authorId].
-  Expr<Author> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equals(authorId))
-      .first
-      .asNotNull();
+  Expr<double> get balance =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.real);
 }
 
-extension ExpressionNullableBookExt on Expr<Book?> {
-  Expr<int?> get bookId =>
+extension ExpressionNullableAccountExt on Expr<Account?> {
+  Expr<int?> get accountId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  Expr<String?> get title =>
+  Expr<String?> get accountNumber =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  Expr<int?> get authorId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
-
-  Expr<int?> get stock =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
-
-  /// Do a subquery lookup of the row from table
-  /// `authors` referenced in [authorId].
-  ///
-  /// The gets the row from table `authors` where
-  /// [Author.authorId] is equal to
-  /// [authorId], if any.
-  ///
-  /// If this row is `NULL` the subquery is always return `NULL`.
-  Expr<Author?> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
-      .where((r) => authorId.isNotNull() & r.authorId.equals(authorId))
-      .first;
+  Expr<double?> get balance =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.real);
 
   /// Check if the row is not `NULL`.
   ///
@@ -671,7 +335,7 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   ///
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
-  Expr<bool> isNotNull() => bookId.isNotNull();
+  Expr<bool> isNotNull() => accountId.isNotNull();
 
   /// Check if the row is `NULL`.
   ///
@@ -682,32 +346,18 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
-/// Extension methods for assertions on [Author] using
+/// Extension methods for assertions on [Account] using
 /// [`package:checks`][1].
 ///
 /// [1]: https://pub.dev/packages/checks
-extension AuthorChecks on Subject<Author> {
-  /// Create assertions on [Author.authorId].
-  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
+extension AccountChecks on Subject<Account> {
+  /// Create assertions on [Account.accountId].
+  Subject<int> get accountId => has((m) => m.accountId, 'accountId');
 
-  /// Create assertions on [Author.name].
-  Subject<String> get name => has((m) => m.name, 'name');
-}
+  /// Create assertions on [Account.accountNumber].
+  Subject<String> get accountNumber =>
+      has((m) => m.accountNumber, 'accountNumber');
 
-/// Extension methods for assertions on [Book] using
-/// [`package:checks`][1].
-///
-/// [1]: https://pub.dev/packages/checks
-extension BookChecks on Subject<Book> {
-  /// Create assertions on [Book.bookId].
-  Subject<int> get bookId => has((m) => m.bookId, 'bookId');
-
-  /// Create assertions on [Book.title].
-  Subject<String?> get title => has((m) => m.title, 'title');
-
-  /// Create assertions on [Book.authorId].
-  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
-
-  /// Create assertions on [Book.stock].
-  Subject<int> get stock => has((m) => m.stock, 'stock');
+  /// Create assertions on [Account.balance].
+  Subject<double> get balance => has((m) => m.balance, 'balance');
 }
