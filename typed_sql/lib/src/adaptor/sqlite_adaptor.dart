@@ -165,6 +165,7 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
 
   Future<void> _script(Database conn, String sql) async {
     try {
+      _throwIfClosed();
       final statements = conn.prepareMultiple(sql);
       try {
         for (final statement in statements) {
