@@ -24,6 +24,7 @@ Below we have an example of how to implement a `Color` as a custom type that
 can be stored in a table with `package:typed_sql`.
 
 ```dart dealership_test.dart#custom-color
+@immutable
 final class Color implements CustomDataType<int> {
   final int red;
   final int green;
@@ -171,15 +172,30 @@ extension ColorExprExt on Expr<Color> {
 
 These _extension methods_ operate on the serialized `Color`, as serialized by
 `Color.toDatabase`. Implementing a `.equals` might not make sense, if your
-custom type doesn't have a canonical encoding.
+custom type doesn't have a canonical encoding. When writing queries we can use
+these extension methods in methods like
 
-When writing queries we can use these extension methods, suppose we have loaded
-the following rows into the database:
-```dart dealership_test.dart#initial
+If we loaded the following rows into the database:
+```dart dealership_test.dart#initial-data
+final initialCars = [
+  (model: 'Beetle', licensePlate: 'ABC-123', color: Color.red()),
+  (model: 'Cooper', licensePlate: 'DEF-456', color: Color.blue()),
+  (model: 'Beetle', licensePlate: 'GHI-789', color: Color.blue()),
+];
 ```
 
 Then we could query for blue cars as follows:
-
 ```dart dealership_test.dart#where-blue-cars
-```
+final modelsAndLicense = await db.cars
+    .where((car) => car.color.isBlue)
+    .select((car) => (
+          car.model,
+          car.licensePlate,
+        ))
+    .fetch();
 
+check(modelsAndLicense).unorderedEquals([
+  ('Beetle', 'GHI-789'),
+  ('Cooper', 'DEF-456'),
+]);
+```
