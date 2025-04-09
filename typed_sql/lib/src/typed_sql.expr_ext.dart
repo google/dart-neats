@@ -31,6 +31,42 @@ extension CustomTypeNullableExt<S> on Expr<CustomDataType<S>?> {
   Expr<S?> asEncoded() => EncodedCustomDataTypeExpression._(this);
 }
 
+/// Extension methods for wrapping an [int] as an expression.
+extension IntExt<T extends int?> on T {
+  /// Wrap [int] as an [Expr] expression for use with `package:typed_sql`.
+  Expr<T> get asExpr => literal(this);
+}
+
+/// Extension methods for wrapping a [double] as an expression.
+extension DoubleExt<T extends double?> on T {
+  /// Wrap [double] as an [Expr] expression for use with `package:typed_sql`.
+  Expr<T> get asExpr => literal(this);
+}
+
+/// Extension methods for wrapping a [String] as an expression.
+extension StringExt<T extends String?> on T {
+  /// Wrap [String] as an [Expr] expression for use with `package:typed_sql`.
+  Expr<T> get asExpr => literal(this);
+}
+
+/// Extension methods for wrapping a [DateTime] as an expression.
+extension DateTimeExt<T extends DateTime?> on T {
+  /// Wrap [DateTime] as an [Expr] expression for use with `package:typed_sql`.
+  Expr<T> get asExpr => literal(this);
+}
+
+/// Extension methods for wrapping a [bool] as an expression.
+extension BoolExt<T extends bool?> on T {
+  /// Wrap [bool] as an [Expr] expression for use with `package:typed_sql`.
+  Expr<T> get asExpr => literal(this);
+}
+
+/// Extension methods for wrapping an [Uint8List] as an expression.
+extension Uint8ListExt<T extends Uint8List?> on T {
+  /// Wrap [Uint8List] as an [Expr] expression for use with `package:typed_sql`.
+  Expr<T> get asExpr => literal(this);
+}
+
 /// Extension methods for casting `NULL` to other types.
 extension ExpressionNull on Expr<Null> {
   /// Cast as [Expr<int?>] using `CAST(NULL AS BIGINT)`.
