@@ -15,6 +15,8 @@
 part of 'typed_sql.dart';
 
 /// A [Query] on the database from which results can be fetched.
+///
+/// {@category writing_queries}
 final class Query<T extends Record> {
   final Database _context;
 
@@ -26,6 +28,7 @@ final class Query<T extends Record> {
   // TODO: Consider a toString method!
 }
 
+/// {@category joins}
 final class InnerJoin<T extends Record, S extends Record> {
   final Query<T> _from;
   final Query<S> _join;
@@ -33,6 +36,7 @@ final class InnerJoin<T extends Record, S extends Record> {
   InnerJoin._(this._from, this._join);
 }
 
+/// {@category joins}
 final class LeftJoin<T extends Record, S extends Record> {
   final Query<T> _from;
   final Query<S> _join;
@@ -40,6 +44,7 @@ final class LeftJoin<T extends Record, S extends Record> {
   LeftJoin._(this._from, this._join);
 }
 
+/// {@category joins}
 final class RightJoin<T extends Record, S extends Record> {
   final Query<T> _from;
   final Query<S> _join;
@@ -55,6 +60,10 @@ final class RightJoin<T extends Record, S extends Record> {
 ///  * `.insert`,
 ///  * `.update`, and,
 ///  * `.delete`.
+///
+/// {@category inserting_rows}
+/// {@category writing_queries}
+/// {@category update_and_delete}
 final class Table<T extends Model> extends Query<(Expr<T>,)> {
   final TableClause _tableClause;
 
@@ -72,6 +81,8 @@ final class Table<T extends Model> extends Query<(Expr<T>,)> {
 /// A [Query] which can return at-most a single row.
 ///
 /// A [QuerySingle] object may return zero or one row.
+///
+/// {@category writing_queries}
 final class QuerySingle<T extends Record> {
   final Query<T> _query;
 
@@ -79,6 +90,8 @@ final class QuerySingle<T extends Record> {
 }
 
 /// A [Query] which can only be used as a subquery.
+///
+/// {@category writing_queries}
 final class SubQuery<T extends Record> {
   final T _expressions;
   final QueryClause Function(List<Expr> expressions) _from;
@@ -159,6 +172,7 @@ final class OrderByClause extends FromClause implements ExpressionContext {
   }
 }
 
+/// {@category writing_queries}
 enum Order {
   ascending,
   descending,
@@ -366,6 +380,7 @@ final class _RootQueryContext extends QueryContext {
 
 /* --------------------- GroupBy / Aggregation ------------------- */
 
+/// {@category aggregate_functions}
 final class Group<S extends Record, T extends Record> {
   final Query<T> _from;
   final Object _handle;
@@ -375,6 +390,7 @@ final class Group<S extends Record, T extends Record> {
   Group._(this._from, this._handle, this._group, this._standins);
 }
 
+/// {@category aggregate_functions}
 final class Aggregation<T extends Record, S extends Record> {
   /// Expressions that can be used in the aggregations.
   final T _standins;

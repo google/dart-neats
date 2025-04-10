@@ -25,6 +25,8 @@ sealed class FieldType<T extends Object?> extends _ExprType<T> {
 }
 
 /// A type that can appear in a database column.
+///
+/// @nodoc
 sealed class ColumnType<T extends Object?> extends FieldType<T> {
   const ColumnType._() : super._();
 
@@ -138,6 +140,10 @@ abstract final class _ExprTyped<T extends Object?> {
 }
 
 /// A representation of an SQL expression with type `T`.
+///
+/// {@category inserting_rows}
+/// {@category writing_queries}
+/// {@category update_and_delete}
 sealed class Expr<T extends Object?> implements _ExprTyped<T> {
   factory Expr(T value) => literal(value);
 
@@ -222,6 +228,10 @@ base mixin _ExprBlob implements _ExprTyped<Uint8List> {
 ///
 /// > [!NOTE]
 /// > If you want to use a [CustomDataType], use [Literal.custom] instead.
+///
+/// {@category inserting_rows}
+/// {@category writing_queries}
+/// {@category update_and_delete}
 Literal<T> literal<T extends Object?>(T value) => Literal(value);
 
 final class ModelExpression<T extends Model> extends Expr<T> {

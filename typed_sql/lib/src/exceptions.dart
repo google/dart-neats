@@ -19,6 +19,8 @@
 library;
 
 /// Base class for all exceptions thrown by `package:typed_sql`.
+///
+/// {@category exceptions}
 sealed class DatabaseException implements Exception {}
 
 /// Thrown when the database reports an error while executing an operation.
@@ -34,6 +36,8 @@ sealed class DatabaseException implements Exception {}
 /// to let it propagate up to [Database.transact], such that the transaction is
 /// rolled back, this will in turn cause [Database.transact] to throw a
 /// [TransactionAbortedException].
+///
+/// {@category exceptions}
 abstract final class OperationException extends DatabaseException {
   // TODO: Make this class `sealed` when we are confident we don't need
   //       additional subclasses. This need not happen anytime soon, we can do
@@ -42,16 +46,22 @@ abstract final class OperationException extends DatabaseException {
 
 /// Thrown when an operation was aborted because a constraint violation in the
 /// database.
+///
+/// {@category exceptions}
 abstract base class ConstraintViolationException extends OperationException {}
 
 /// Thrown when a division by zero happened in the database.
 ///
 /// Example: `SELECT 1 / 0`.
+///
+/// {@category exceptions}
 abstract base class DivisionByZeroException extends OperationException {}
 
 /// Thrown when an SQL type cast fail in the database.
 ///
 /// Example: `SELECT CAST('NaN' AS INT)`.
+///
+/// {@category exceptions}
 abstract base class TypeCastException extends OperationException {}
 
 /// An unspecified [OperationException].
@@ -63,6 +73,8 @@ abstract base class TypeCastException extends OperationException {}
 /// An [UnspecifiedOperationException] may be caused by an error that should
 /// have been an instance of [DivisionByZeroException], [TypeCastException],
 /// [ConstraintViolationException], etc.
+///
+/// {@category exceptions}
 abstract base class UnspecifiedOperationException extends OperationException {}
 
 /// Thrown when a transaction was rolled back.
@@ -75,6 +87,8 @@ abstract base class UnspecifiedOperationException extends OperationException {}
 /// If the transaction was rolled back because the `COMMIT` operation failed,
 /// then the underlying [OperationException] from the database driver will be
 /// given as [reason].
+///
+/// {@category exceptions}
 final class TransactionAbortedException extends DatabaseException {
   /// Exception that caused the transaction to be rolled back.
   ///
@@ -91,6 +105,8 @@ Never throwTransactionAbortedException(Exception reason) =>
     throw TransactionAbortedException._(reason);
 
 /// Thrown when there is an issue with the database connection.
+///
+/// {@category exceptions}
 abstract final class DatabaseConnectionException extends DatabaseException {
   // TODO: Make this class `sealed` when we are confident we don't need
   //       additional subclasses. This need not happen anytime soone, we can do
@@ -98,10 +114,14 @@ abstract final class DatabaseConnectionException extends DatabaseException {
 }
 
 /// Thrown when authentication with the database failed.
+///
+/// {@category exceptions}
 abstract base class AuthenticationException
     extends DatabaseConnectionException {}
 
 /// Thrown when the database connection was refused.
+///
+/// {@category exceptions}
 abstract base class DatabaseConnectionRefusedException
     extends DatabaseConnectionException {}
 
@@ -113,6 +133,8 @@ abstract base class DatabaseConnectionRefusedException
 ///
 /// If the [DatabaseAdaptor] was closed gracefully (with `force: true`), then
 /// attempting any operation will throw a [StateError].
+///
+/// {@category exceptions}
 abstract base class DatabaseConnectionForceClosedException
     extends DatabaseConnectionException {}
 
@@ -129,6 +151,8 @@ abstract base class DatabaseConnectionForceClosedException
 ///
 /// Instead the issue _may_ be resolved by retrying the transaction or
 /// operation, though this is never assured.
+///
+/// {@category exceptions}
 abstract final class IntermittentConnectionException
     extends DatabaseConnectionException {
   // TODO: Make this class `sealed` when we are confident we don't need
@@ -139,9 +163,13 @@ abstract final class IntermittentConnectionException
 /// Thrown when the database connection was broken.
 ///
 /// This is typically caused by an underlying TCP connection being broken.
+///
+/// {@category exceptions}
 abstract base class DatabaseConnectionBrokenException
     extends IntermittentConnectionException {}
 
 /// Thrown when a connection timeout happened.
+///
+/// {@category exceptions}
 abstract base class DatabaseConnectionTimeoutException
     extends IntermittentConnectionException {}

@@ -24,18 +24,19 @@ library;
 
 export 'src/adaptor/adaptor.dart' show DatabaseAdaptor, RowReader;
 export 'src/dialect/dialect.dart' show SqlDialect;
-export 'src/exceptions.dart';
+export 'src/exceptions.dart' hide throwTransactionAbortedException;
 export 'src/typed_sql.dart'
     hide
-        Aggregation,
         AvgExpression,
         BinaryOperationExpression,
+        CastExpression,
         CompositeQueryClause,
         CountAllExpression,
         CreateTableStatement,
         CustomExprType,
         DeleteStatement,
         DistinctClause,
+        EncodedCustomDataTypeExpression,
         ExceptClause,
         ExistsExpression,
         ExpressionBoolAnd,
@@ -72,14 +73,11 @@ export 'src/typed_sql.dart'
         FieldExpression,
         FieldType,
         FromClause,
-        Group,
         GroupByClause,
-        InnerJoin,
         InsertStatement,
         IntersectClause,
         JoinClause,
         JoinType,
-        LeftJoin,
         LimitClause,
         Literal,
         MaxExpression,
@@ -91,7 +89,7 @@ export 'src/typed_sql.dart'
         OrderByClause,
         QueryClause,
         QueryContext,
-        RightJoin,
+        ReturningClause,
         SelectClause,
         SelectFromClause,
         SelectStatement,

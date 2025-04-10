@@ -18,7 +18,6 @@ import 'sqlite_dialect.dart';
 
 export '../typed_sql.dart'
     show
-        Aggregation,
         AvgExpression,
         BinaryOperationExpression,
         CastExpression,

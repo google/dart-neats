@@ -31,6 +31,9 @@ part 'typed_sql.query_ext.dart';
 part 'typed_sql.statements.dart';
 
 /// Marker class which all schema definitions must extend.
+///
+/// {@category schema}
+/// {@category migrations}
 abstract base class Schema {
   Schema() {
     throw UnsupportedError(
@@ -42,6 +45,8 @@ abstract base class Schema {
 }
 
 /// Marker class which all model classes must extend.
+///
+/// {@category schema}
 abstract base class Model {}
 
 typedef TableDefinition<T extends Model> = ({

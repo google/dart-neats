@@ -36,6 +36,8 @@ export '../exceptions.dart';
 /// > This interface is NOT stable yet, while subclasses of [DatabaseAdaptor]
 /// > is possible outside `package:typed_sql`, newer versions of this package
 /// > may add new methods (remove existing) without a major version bump!
+///
+/// {@category testing}
 abstract base class DatabaseAdaptor extends Executor {
   DatabaseAdaptor();
 

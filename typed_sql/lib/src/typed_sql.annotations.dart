@@ -15,6 +15,8 @@
 part of 'typed_sql.dart';
 
 /// Annotation for a table specifying its primary key.
+///
+/// {@category schema}
 final class PrimaryKey {
   final List<String> fields;
 
@@ -22,6 +24,8 @@ final class PrimaryKey {
 }
 
 /// Annotation for a field that has a default value, specified by [value].
+///
+/// {@category schema}
 final class DefaultValue<T> {
   final T value;
 
@@ -29,11 +33,16 @@ final class DefaultValue<T> {
 }
 
 /// Annotation for a field that should be auto-incremented (by default).
+///
+/// {@category schema}
 final class AutoIncrement {
   const AutoIncrement();
 }
 
 /// Annotation for fields that references fields from another table.
+///
+/// {@category schema}
+/// {@category foreign_keys}
 final class References {
   final String table;
   final String field;
@@ -49,6 +58,8 @@ final class References {
 }
 
 /// Annotation for a unique field.
+///
+/// {@category schema}
 final class Unique {
   // TODO: Consider allowing a `given: ['foo', 'bar']` argument for fields
   //       that are unique given fields 'foo' and 'bar'.
@@ -77,6 +88,9 @@ final class Unique {
 /// > `@immutable` annotation from [`package:meta`][1].
 ///
 /// [1]: https://pub.dev/packages/meta
+///
+/// {@category schema}
+/// {@category custom_data_types}
 abstract interface class CustomDataType<T extends Object?> {
   T toDatabase();
 }
