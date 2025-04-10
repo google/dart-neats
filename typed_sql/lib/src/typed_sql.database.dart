@@ -14,18 +14,18 @@
 
 part of 'typed_sql.dart';
 
-/// {@category Schema definition}
-/// {@category Inserting rows}
-/// {@category Writing queries}
-/// {@category Update and delete}
-/// {@category Foreign keys}
-/// {@category Joins}
-/// {@category Aggregate functions}
-/// {@category Transactions}
-/// {@category Exceptions}
-/// {@category Custom data types}
-/// {@category Migrations}
-/// {@category Testing}
+/// {@category schema}
+/// {@category foreign_keys}
+/// {@category inserting_rows}
+/// {@category writing_queries}
+/// {@category update_and_delete}
+/// {@category joins}
+/// {@category aggregate_functions}
+/// {@category transactions}
+/// {@category exceptions}
+/// {@category custom_data_types}
+/// {@category migrations}
+/// {@category testing}
 final class Database<T extends Schema> {
   Database(DatabaseAdaptor adaptor, SqlDialect dialect)
       : _adaptor = adaptor,
