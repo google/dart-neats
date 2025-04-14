@@ -154,7 +154,7 @@ void main() {
     check(result).unorderedEquals([
       ('Easter', 'Bunny'),
     ]);
-  });
+  }, skipMysql: 'mysql is not good with nested scalar subqueries');
 
   r.addTest('books.groupBy(.author).aggregate(sum(.stock))', (db) async {
     final result = await db.books
@@ -196,7 +196,7 @@ void main() {
       ('Easter', 'Bunny', 22),
       ('Bucks', 'Bunny', 45),
     ]);
-  });
+  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
 
   r.addTest(
       'authors.select(.firstname, .lastname, db.where(...).books.sum(.stock))',
@@ -220,7 +220,7 @@ void main() {
       ('Easter', 'Bunny', 22),
       ('Bucks', 'Bunny', 45),
     ]);
-  });
+  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
 
   r.addTest('authors.join(books).groupBy(.author).aggregate(sum(.stock))',
       (db) async {

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ignore_for_file: unused_element, unused_field, prefer_final_fields
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data' show Uint8List;

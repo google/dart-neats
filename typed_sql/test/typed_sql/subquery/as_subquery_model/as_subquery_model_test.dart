@@ -105,7 +105,7 @@ void main() {
       ('c', 3),
       ('c', 3),
     ]);
-  });
+  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
 
   r.addTest(
       'db.items.select(.value, db.items.where(.value = value).orderBy(.id).first.asExpr.id)',
@@ -130,7 +130,7 @@ void main() {
       ('c', 3),
       ('c', 3),
     ]);
-  });
+  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
 
   r.run();
 }

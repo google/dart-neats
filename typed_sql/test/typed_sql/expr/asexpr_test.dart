@@ -86,7 +86,12 @@ void main() {
   });
 
   r.addTest('DateTime.asExpr', (db) async {
-    final value = DateTime.now().toUtc();
+    final value = DateTime.now()
+        .copyWith(
+          microsecond: 0,
+          millisecond: 0,
+        )
+        .toUtc();
     final result = await db.select(
       (value.asExpr,),
     ).fetch();
@@ -94,12 +99,33 @@ void main() {
   });
 
   r.addTest('DateTime?.asExpr', (db) async {
-    final value = DateTime.now().toUtc() as DateTime?;
+    final value = DateTime.now()
+        .copyWith(
+          microsecond: 0,
+          millisecond: 0,
+        )
+        .toUtc() as DateTime?;
     final result = await db.select(
       (value.asExpr,),
     ).fetch();
     check(result).equals(value);
   });
+
+  r.addTest('DateTime.asExpr (with microseconds)', (db) async {
+    final value = DateTime.now().toUtc();
+    final result = await db.select(
+      (value.asExpr,),
+    ).fetch();
+    check(result).equals(value);
+  }, skipMysql: 'MySQL driver does not support microseconds');
+
+  r.addTest('DateTime?.asExpr (with microseconds)', (db) async {
+    final value = DateTime.now().toUtc() as DateTime?;
+    final result = await db.select(
+      (value.asExpr,),
+    ).fetch();
+    check(result).equals(value);
+  }, skipMysql: 'MySQL driver does not support microseconds');
 
   r.addTest('Uint8List.asExpr', (db) async {
     final value = Uint8List.fromList([1, 2, 3]);

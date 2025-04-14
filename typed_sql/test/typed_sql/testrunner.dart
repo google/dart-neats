@@ -30,6 +30,7 @@ final class TestRunner<T extends Schema> {
     FutureOr<void> Function(Database<T> db) fn,
     String? skipSqlite,
     String? skipPostgres,
+    String? skipMysql,
   })>[];
 
   final FutureOr<void> Function(Database<T> db)? _setup;
@@ -49,12 +50,14 @@ final class TestRunner<T extends Schema> {
     FutureOr<void> Function(Database<T> db) fn, {
     String? skipSqlite,
     String? skipPostgres,
+    String? skipMysql,
   }) =>
       _tests.add((
         name: name,
         fn: fn,
         skipSqlite: skipSqlite,
         skipPostgres: skipPostgres,
+        skipMysql: skipMysql,
       ));
 
   late final String? _getPostgresSocket = () {

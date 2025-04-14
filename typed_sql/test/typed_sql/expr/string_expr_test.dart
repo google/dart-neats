@@ -20,9 +20,6 @@ import '../testrunner.dart';
 // TODO: Consider tests with *, ? and _ which will cause issue for sqlite
 //       given how we've currently implemented .endsWith and .startsWith
 
-final epoch = DateTime.fromMicrosecondsSinceEpoch(0).toUtc();
-final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
-
 final _cases = [
   // Test for .length
   (

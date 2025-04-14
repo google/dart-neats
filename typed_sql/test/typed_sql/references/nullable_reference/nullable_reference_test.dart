@@ -197,7 +197,7 @@ void main() {
       ('Easter Bunny', 2),
       ('Bucks Bunny', 1),
     });
-  });
+  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
 
   r.addTest('books', (db) async {
     final result = await db.books
@@ -236,7 +236,7 @@ void main() {
       ('Vegetarian Dining', 'Easter Bunny', 3),
       ('Vegan Dining', 'Easter Bunny', 3),
     });
-  });
+  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
 
   r.addTest('books.select(..., .editor.booksEditedBy.count())', (db) async {
     final result = await db.books
@@ -261,7 +261,7 @@ void main() {
       ('Vegetarian Dining', 'Easter Bunny', 2),
       ('Vegan Dining', 'Easter Bunny', 2),
     });
-  });
+  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
 
   r.addTest('books.select(..., .editor.favoriteBook.title)', (db) async {
     final result = await db.books

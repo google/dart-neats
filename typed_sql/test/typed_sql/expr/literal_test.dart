@@ -37,7 +37,7 @@ final _values = <Object?>[
 ];
 
 final epoch = DateTime.fromMicrosecondsSinceEpoch(0).toUtc();
-final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
+final today = DateTime.parse('2025-03-10T11:34:36.000000Z');
 final yearNoUtc = DateTime(2025);
 
 void main() {
@@ -59,6 +59,12 @@ void main() {
     final result = await db.select((literal(today),)).fetch();
     check(result).equals(today);
   });
+
+  r.addTest('literal(today) with microseconds', (db) async {
+    final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
+    final result = await db.select((literal(today),)).fetch();
+    check(result).equals(today);
+  }, skipMysql: 'MySQL driver does not support microseconds');
 
   r.addTest('literal(yearNoUtc) (allow for conversion to UTC)', (db) async {
     final result = await db.select((literal(yearNoUtc),)).fetch();

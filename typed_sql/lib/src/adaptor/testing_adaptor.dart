@@ -77,24 +77,25 @@ Future<DatabaseAdaptor> postgresTestingDatabaseAdaptor({
   }) async {
     try {
       await adaptor.close(force: force);
-    } finally {}
-    if (!closing) {
-      closing = true;
-      closed.complete(() async {
-        try {
-          await admin.execute('DROP DATABASE "$testdb" WITH (FORCE)');
-        } finally {
+    } finally {
+      if (!closing) {
+        closing = true;
+        closed.complete(() async {
           try {
-            await admin.close(force: true);
+            await admin.execute('DROP DATABASE "$testdb" WITH (FORCE)');
           } finally {
             try {
-              await pool.close(force: true);
-            } catch (e) {
-              // ignore
+              await admin.close(force: true);
+            } finally {
+              try {
+                await pool.close(force: true);
+              } catch (e) {
+                // ignore
+              }
             }
           }
-        }
-      }());
+        }());
+      }
     }
 
     return await closed.future;

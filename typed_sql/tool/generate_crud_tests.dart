@@ -192,7 +192,7 @@ void main() {
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.{{equality}}(updatedValue);
-  });
+  }, skipMysql: 'UPDATE RETURNING not supported');
 
   r.addTest('.update().returning(.value)', (db) async {
     await db.items
@@ -215,7 +215,7 @@ void main() {
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.{{equality}}(updatedValue);
-  });
+  }, skipMysql: 'UPDATE RETURNING not supported');
 
   r.addTest('.delete()', (db) async {
     await db.items

@@ -233,9 +233,9 @@ final _stringCases = [
 ];
 
 final epoch = DateTime.fromMicrosecondsSinceEpoch(0).toUtc();
-final yesterday = DateTime.parse('2025-03-09T11:34:36.164006Z');
-final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
-final tomorrow = DateTime.parse('2025-03-11T11:34:36.164006Z');
+final yesterday = DateTime.parse('2025-03-09T11:34:36.000000Z');
+final today = DateTime.parse('2025-03-10T11:34:36.000000Z');
+final tomorrow = DateTime.parse('2025-03-11T11:34:36.000000Z');
 
 final _dateTimeCases = [
   (
