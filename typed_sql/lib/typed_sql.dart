@@ -57,6 +57,7 @@ export 'src/typed_sql.dart'
         ExpressionNumLessThanOrEqual,
         ExpressionNumMultiply,
         ExpressionNumSubtract,
+        ExpressionResolver,
         ExpressionStringContains,
         ExpressionStringEndsWith,
         ExpressionStringEquals,

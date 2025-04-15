@@ -13,15 +13,17 @@
 // limitations under the License.
 
 import 'package:test/test.dart';
-import '../bin/schema.dart' as schema;
+// ignore: avoid_relative_lib_imports
+import '../lib/model.dart';
 
 void main() {
-  test('', () {
-    expect(prints(schema.main), equalsIgnoringWhitespace('''
-CREATE TABLE accounts (
-  accountId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  accountNumber TEXT NOT NULL,
-  UNIQUE (accountNumber)
+  test('bin/schema.dart', () {
+    expect(
+        createBankVaultTables(SqlDialect.sqlite()), equalsIgnoringWhitespace('''
+CREATE TABLE "accounts" (
+  "accountId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "accountNumber" TEXT NOT NULL,
+  UNIQUE ("accountNumber")
 );
 '''));
   });

@@ -36,7 +36,7 @@ final class _Sqlite extends SqlDialect {
   String createTables(List<CreateTableStatement> statements) {
     return statements.map((table) {
       return [
-        'CREATE TABLE ${_escape(table.tableName)} (',
+        'CREATE TABLE ${escape(table.tableName)} (',
         [
           // Columns
           ...table.columns.map((c) {
@@ -52,7 +52,7 @@ final class _Sqlite extends SqlDialect {
             }
 
             return [
-              _escape(c.name),
+              escape(c.name),
               c.type.sqlType,
               c.isNotNull ? 'NOT NULL' : '',
               if (isPrimaryKey) 'PRIMARY KEY',
@@ -64,15 +64,15 @@ final class _Sqlite extends SqlDialect {
           }),
           // Primary key
           if (table.primaryKey.length > 1)
-            'PRIMARY KEY (${table.primaryKey.map(_escape).join(', ')})',
+            'PRIMARY KEY (${table.primaryKey.map(escape).join(', ')})',
           // Unique constraints
-          ...table.unique.map((u) => 'UNIQUE (${u.map(_escape).join(', ')})'),
+          ...table.unique.map((u) => 'UNIQUE (${u.map(escape).join(', ')})'),
           // Foreign keys
           ...table.foreignKeys.map(
             (fk) => [
-              'FOREIGN KEY (${fk.columns.map(_escape).join(', ')})',
-              'REFERENCES ${_escape(fk.referencedTable)}',
-              '(${fk.referencedColumns.map(_escape).join(', ')})',
+              'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
+              'REFERENCES ${escape(fk.referencedTable)}',
+              '(${fk.referencedColumns.map(escape).join(', ')})',
             ].join(' '),
           ),
         ].map((l) => '  $l').join(',\n'),
@@ -83,333 +83,435 @@ final class _Sqlite extends SqlDialect {
 
   @override
   (String, List<Object?>) insertInto(InsertStatement statement) {
-    final (params, ctx) = QueryContext.create();
+    final resolver = ExpressionResolver(StatmentContext());
 
     String? returnProjection;
     final returning = statement.returning;
     if (returning != null) {
-      final c = ctx.scope(returning, returning.columns);
-      returnProjection = returning.projection.map((e) => expr(e, c)).join(', ');
+      final r = resolver.withScope(
+        returning,
+        returning.columns.map((c) => (null, c)).toList(),
+      );
+      returnProjection = returning.projection.map(r.expr).join(', ');
     }
 
-    // TODO: Is it possible to insert a ModelExpression
-    //       It probably is, if copying a row from one table to another!
     return (
       [
-        'INSERT INTO ${_escape(statement.table)}',
-        '(${statement.columns.map(_escape).join(', ')})',
-        'VALUES (${statement.values.map((e) => expr(e, ctx)).join(', ')})',
+        'INSERT INTO ${escape(statement.table)}',
+        '(${statement.columns.map(escape).join(', ')})',
+        'VALUES (${statement.values.map(resolver.expr).join(', ')})',
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
-      params,
+      resolver.context.parameters,
     );
   }
 
   @override
   (String, List<Object?>) update(UpdateStatement statement) {
-    final (params, ctx) = QueryContext.create();
-    final (alias, c) = ctx.alias(statement, statement.table.columns);
-    final (sql, _) = clause(statement.where, ctx);
+    final resolver = ExpressionResolver(StatmentContext());
+    final a1 = resolver.context.newTableAlias();
+    final a2 = resolver.context.newTableAlias();
+
+    final (sql, _) = resolver.selectExpression(statement.where);
 
     String? returnProjection;
     final returning = statement.returning;
     if (returning != null) {
-      final c = ctx.scope(returning, returning.columns);
-      returnProjection = returning.projection.map((e) => expr(e, c)).join(', ');
+      final r = resolver.withScope(
+        returning,
+        returning.columns.map((c) => (null, c)).toList(),
+      );
+      returnProjection = returning.projection.map(r.expr).join(', ');
     }
+
+    final r = resolver.withScope(
+      statement,
+      statement.table.columns.map((c) => (a1, c)).toList(),
+    );
 
     return (
       [
-        'UPDATE ${_escape(statement.table.name)} AS $alias',
+        'UPDATE ${escape(statement.table.name)} AS $a1',
         'SET',
         statement.columns
             .mapIndexed(
-              (i, column) => '$column = (${expr(statement.values[i], c)})',
+              (i, column) => '$column = (${r.expr(statement.values[i])})',
             )
             .join(', '),
-        'WHERE EXISTS (SELECT TRUE FROM ($sql) AS _subq WHERE',
+        'WHERE EXISTS (SELECT TRUE FROM ($sql) AS $a2 WHERE',
         statement.table.primaryKey
-            .map((f) => '$alias.${_escape(f)} = _subq.${_escape(f)}')
+            .map((f) => '$a1.${escape(f)} = $a2.${escape(f)}')
             .join(', '),
         ')',
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
-      params,
+      resolver.context.parameters,
     );
   }
 
   @override
   (String, List<Object?>) delete(DeleteStatement statement) {
-    final (params, ctx) = QueryContext.create();
-    final (sql, _) = clause(statement.where, ctx);
+    final resolver = ExpressionResolver(StatmentContext());
+    final a1 = resolver.context.newTableAlias();
+    final a2 = resolver.context.newTableAlias();
+
+    final (sql, _) = resolver.selectExpression(statement.where);
 
     String? returnProjection;
     final returning = statement.returning;
     if (returning != null) {
-      final c = ctx.scope(returning, returning.columns);
-      returnProjection = returning.projection.map((e) => expr(e, c)).join(', ');
+      final r = resolver.withScope(
+        returning,
+        returning.columns.map((c) => (null, c)).toList(),
+      );
+      returnProjection = returning.projection.map(r.expr).join(', ');
     }
 
     return (
       [
-        'DELETE FROM ${_escape(statement.table.name)} as _topq',
-        'WHERE EXISTS (SELECT TRUE FROM ($sql) AS _subq WHERE',
+        'DELETE FROM ${escape(statement.table.name)} AS $a1',
+        'WHERE EXISTS (SELECT TRUE FROM ($sql) AS $a2 WHERE',
         statement.table.primaryKey
-            .map((f) => '_topq.${_escape(f)} = _subq.${_escape(f)}')
+            .map((f) => '$a1.${escape(f)} = $a2.${escape(f)}')
             .join(', '),
         ')',
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
-      params,
+      resolver.context.parameters,
     );
-  }
-
-  /// Escape [name] for use as identifier in SQL.
-  ///
-  /// Example: 'my string' -> '"my string"'
-  ///
-  /// Throws if [name] cannot be safely escaped.
-  String _escape(String name) {
-    // TODO: Escaping is not exactly super consistent, some things that comes
-    //       out of QueryContext.field() are not escaped further.
-    //       We can debate what is sane, perhaps we should just not support
-    //       field names that require escaping!
-    //       Or pass an escape method to QueryContext when creating an instance!
-    if (_sqlSafe.hasMatch(name) &&
-        !_sqliteReservedKeywords.contains(name.toUpperCase())) {
-      return name;
-    }
-    // TODO: Add support for escaping " and backslashes
-    if (name.contains('"') || name.contains(r'\')) {
-      throw UnsupportedError('Names with " are not supported');
-    }
-    return '"$name"';
   }
 
   @override
   (String sql, List<Object?> params) select(
     SelectStatement statement,
   ) {
-    final (params, ctx) = QueryContext.create();
-    final (sql, columns) = clause(statement.query, ctx);
-    return (sql, params);
+    final resolver = ExpressionResolver(StatmentContext());
+    final (sql, columns) = resolver.selectExpression(statement.query);
+    return (sql, resolver.context.parameters);
   }
-
-  (String sql, List<String> columns) clause(QueryClause q, QueryContext ctx) {
-    switch (q) {
-      case TableClause(:var name, :var columns):
-        return (
-          'SELECT ${columns.map(_escape).join(', ')} '
-              'FROM ${_escape(name)}',
-          columns,
-        );
-
-      case OffsetClause(:final LimitClause from, :final offset):
-        final (sql, columns) = clause(from, ctx);
-        return ('$sql OFFSET $offset', columns);
-
-      case OffsetClause(:final WhereClause from, :final offset):
-        final (sql, columns) = clause(from, ctx);
-        return ('$sql LIMIT -1 OFFSET $offset', columns);
-
-      case OffsetClause(:final from, offset: 0):
-        return clause(from, ctx);
-
-      case OffsetClause(:final from, :final offset):
-        final (sql, columns) = clause(from, ctx);
-        return (
-          'SELECT ${columns.map(_escape).join(', ')} '
-              'FROM ($sql) '
-              'LIMIT -1 OFFSET $offset',
-          columns,
-        );
-
-      case LimitClause(:final WhereClause from, :final limit):
-        final (sql, columns) = clause(from, ctx);
-        return ('$sql LIMIT $limit', columns);
-
-      case LimitClause(:final from, :final limit):
-        final (sql, columns) = clause(from, ctx);
-        return (
-          'SELECT ${columns.map(_escape).join(', ')} '
-              'FROM ($sql) '
-              'LIMIT $limit',
-          columns,
-        );
-
-      case DistinctClause(:final from):
-        final (sql, columns) = clause(from, ctx);
-        return (
-          'SELECT DISTINCT ${columns.map(_escape).join(', ')} '
-              'FROM ($sql) ',
-          columns,
-        );
-
-      case SelectFromClause(:final from, :final projection):
-        final (sql, columns) = clause(from, ctx);
-        final (alias, c) = ctx.alias(q, columns);
-        return (
-          'SELECT ${projection.mapIndexed(
-                    (i, e) => '(${expr(e, c)}) AS c_$i',
-                  ).join(', ')} '
-              'FROM ($sql) AS $alias',
-          projection.mapIndexed((i, e) => 'c_$i').toList(),
-        );
-
-      case WhereClause(
-          from: TableClause(:var name, :var columns),
-          :final where
-        ):
-        final (a, c) = ctx.alias(q, columns);
-        return (
-          'SELECT ${columns.map(_escape).join(', ')} '
-              'FROM $name AS $a '
-              'WHERE ${expr(where, c)}',
-          columns,
-        );
-
-      case WhereClause(:final from, :final where):
-        final (sql, columns) = clause(from, ctx);
-        final (a, c) = ctx.alias(q, columns);
-        return (
-          'SELECT ${columns.map(_escape).join(', ')} '
-              'FROM ($sql) AS $a '
-              'WHERE ${expr(where, c)}',
-          columns,
-        );
-
-      case OrderByClause(:final from, :final orderBy):
-        final (sql, columns) = clause(from, ctx);
-        final (a, c) = ctx.alias(q, columns);
-        return (
-          'SELECT ${columns.map(_escape).join(', ')} '
-              'FROM ($sql) AS $a '
-              'ORDER BY '
-              '${orderBy.map((key) {
-            final (e, order) = key;
-            return '${expr(e, c)} ${order == Order.descending ? 'DESC' : 'ASC'} NULLS LAST';
-          }).join(', ')}',
-          columns,
-        );
-
-      case JoinClause(:final from, :final type, :final join, :final on):
-        final (sql1, columns1) = clause(from, ctx);
-        final (sql2, columns2) = clause(join, ctx);
-        final c = ctx.scope(q, [
-          ...columns1.mapIndexed((i, c) => 't1.${_escape(c)}'),
-          ...columns2.mapIndexed((i, c) => 't2.${_escape(c)}'),
-        ]);
-        return (
-          [
-            'SELECT',
-            [
-              ...columns1.mapIndexed((i, c) => 't1.${_escape(c)} AS t1_$i'),
-              ...columns2.mapIndexed((i, c) => 't2.${_escape(c)} AS t2_$i'),
-            ].join(', '),
-            'FROM ($sql1) as t1 ${type.kind} JOIN ($sql2) as t2 ON ${expr(on, c)}',
-          ].join(' '),
-          [
-            ...columns1.mapIndexed((i, c) => 't1_$i'),
-            ...columns2.mapIndexed((i, c) => 't2_$i'),
-          ]
-        );
-
-      case SelectClause(:final expressions):
-        return (
-          [
-            'SELECT',
-            expressions
-                .mapIndexed((i, e) => '( ${expr(e, ctx)} ) AS c_$i')
-                .join(','),
-          ].join(' '),
-          expressions.mapIndexed((i, e) => 'c_$i').toList(),
-        );
-
-      case CompositeQueryClause(:final left, :final right):
-        final (sql1, columns1) = clause(left, ctx);
-        final (sql2, columns2) = clause(right, ctx);
-        return (
-          'SELECT ${columns1.join(', ')} FROM ($sql1) '
-              '${q.operator} '
-              'SELECT ${columns2.join(', ')} FROM ($sql2)',
-          columns1
-        );
-
-      case GroupByClause(:final projection, :final from, :final groupBy):
-        final (sql, columns) = clause(from, ctx);
-        final (alias, c) = ctx.alias(q, columns);
-        return (
-          'SELECT ${projection.mapIndexed(
-                    (i, e) => '(${expr(e, c)}) AS c_$i',
-                  ).join(', ')} '
-              'FROM ($sql) AS $alias '
-              'GROUP BY ${groupBy.map((e) => expr(e, c)).join(', ')}',
-          projection.mapIndexed((i, e) => 'c_$i').toList(),
-        );
-    }
-  }
-
-  String expr<T>(
-    Expr<T> e,
-    QueryContext ctx,
-  ) =>
-      switch (e) {
-        FieldExpression<T>() => ctx.field(e),
-        SubQueryExpression<T>(:final query) => '(${clause(query, ctx).$1})',
-        Literal.false$ => 'FALSE',
-        Literal.true$ => 'TRUE',
-        Literal.null$ => 'NULL',
-        Literal<CustomDataType?>(value: final value) =>
-          ctx.parameter(value?.toDatabase()),
-        Literal<T>(value: final value) => ctx.parameter(value),
-        final ExpressionNumDivide e =>
-          '( CAST(${expr(e.left, ctx)} AS REAL) ${e.operator} ${expr(e.right, ctx)} )',
-        final BinaryOperationExpression e =>
-          '( ${expr(e.left, ctx)} ${e.operator} ${expr(e.right, ctx)} )',
-        ExpressionBoolNot(value: final value) => '( NOT ${expr(value, ctx)} )',
-        ExpressionStringIsEmpty(value: final value) =>
-          '( ${expr(value, ctx)} = \'\' )',
-        ExpressionStringLength(value: final value) =>
-          'LENGTH( ${expr(value, ctx)} )',
-        ExpressionStringStartsWith(value: final value, prefix: final prefix) =>
-          '( ${expr(value, ctx)} GLOB ${expr(prefix, ctx)} || \'*\' )',
-        ExpressionStringEndsWith(value: final value, suffix: final suffix) =>
-          '( ${expr(value, ctx)} GLOB \'*\' || ${expr(suffix, ctx)} )',
-        ExpressionStringLike(value: final value, pattern: final pattern) =>
-          '( ${expr(value, ctx)} LIKE ${ctx.parameter(pattern)} )',
-        ExpressionStringContains(value: final value, needle: final needle) =>
-          '( INSTR( ${expr(value, ctx)} , ${expr(needle, ctx)} ) > 0 )',
-        ExpressionStringToUpperCase(value: final value) =>
-          'UPPER( ${expr(value, ctx)} )',
-        ExpressionStringToLowerCase(value: final value) =>
-          'LOWER( ${expr(value, ctx)} )',
-        ModelExpression<Model>() => throw AssertionError(
-            'ModelExpression exist in a context where they are rendered',
-          ),
-        ExistsExpression(:final query) => 'EXISTS (${clause(query, ctx).$1})',
-        SumExpression<num>(:final value) =>
-          'TOTAL(${expr(value, ctx)})', // We'll need to use COALESCE(SUM(a), 0.0) in postgres!
-        AvgExpression(:final value) => 'AVG(${expr(value, ctx)})',
-        MinExpression<Comparable>(:final value) => 'MIN(${expr(value, ctx)})',
-        MaxExpression<Comparable>(:final value) => 'MAX(${expr(value, ctx)})',
-        CountAllExpression() => 'COUNT(*)',
-        OrElseExpression<T>(:final value, :final orElse) =>
-          'COALESCE(${expr(value, ctx)}, ${expr(orElse, ctx)})',
-        NotNullExpression<T>(:final value) => expr(value, ctx),
-        final CastExpression e =>
-          'CAST(${expr(e.value, ctx)} AS ${e.type.sqlType})',
-        EncodedCustomDataTypeExpression(:final value) => expr(value, ctx),
-      };
 }
 
-extension on QueryContext {
-  String parameter(Object? value) {
-    final index = param(value);
+/// Escape [name] for use as identifier in SQL.
+///
+/// Example: 'my string' -> '"my string"'
+///
+/// Throws if [name] cannot be safely escaped.
+String escape(String name) => '"${name.replaceAll('"', '""')}"';
+
+final class StatmentContext {
+  final parameters = <Object?>[];
+  var _columnAliasCount = 0;
+  var _tableAliasCount = 0;
+
+  List<String> newColumnAliases(int count) =>
+      List.generate(count, (i) => newColumnAlias());
+  String newColumnAlias() => 'c${_columnAliasCount++}';
+  String newTableAlias() => 't${_tableAliasCount++}';
+  String addParameter(Object? value) {
+    parameters.add(value);
+    final index = parameters.length;
     return '?$index';
   }
 }
 
-final _sqlSafe = RegExp(r'^[a-zA-Z][a-zA-Z0-9_]*$');
+extension on ExpressionResolver<StatmentContext> {
+  /// Return someting you can use in `SELECT ... FROM <sql>`
+  (String sql, List<String> columns) tableExpression(QueryClause q) {
+    if (q is TableClause) {
+      return (q.name, q.columns);
+    }
+    if (q is CompositeQueryClause) {
+      final (sql1, columns) = tableExpression(q.left);
+      final (sql2, _) = tableExpression(q.right);
+      return (
+        '(SELECT * FROM ($sql1) ${q.operator} SELECT * FROM ($sql2))',
+        columns
+      );
+    }
+    if (q is JoinClause) {
+      final (sql1, columns1) = tableExpression(q.from);
+      final (sql2, columns2) = tableExpression(q.join);
+
+      final a1 = context.newTableAlias();
+      final a2 = context.newTableAlias();
+
+      final ctx = withScope(q, [
+        ...columns1.map((c) => (a1, c)),
+        ...columns2.map((c) => (a2, c)),
+      ]);
+      final columns = context.newColumnAliases(
+        columns1.length + columns2.length,
+      );
+      return (
+        [
+          '(SELECT',
+          [
+            ...columns1.mapIndexed((i, c) => '$a1.${escape(c)}'),
+            ...columns2.mapIndexed((i, c) => '$a2.${escape(c)}'),
+          ].mapIndexed((i, e) => '$e AS ${columns[i]}').join(', '),
+          'FROM $sql1 AS $a1',
+          q.type.kind,
+          'JOIN $sql2 AS $a2',
+          'ON ${ctx.expr(q.on)})',
+        ].join(' '),
+        columns,
+      );
+    }
+
+    final (sql, columns) = selectExpression(q);
+    return ('($sql)', columns);
+  }
+
+  /// Return something on the form `SELECT ...`
+  (String sql, List<String> columns) selectExpression(QueryClause q) {
+    if (q is TableClause || q is CompositeQueryClause || q is JoinClause) {
+      final (sql, columns) = tableExpression(q);
+      return (
+        'SELECT ${columns.map(escape).join(', ')} FROM $sql',
+        columns,
+      );
+    }
+
+    if (q is SelectClause) {
+      final columns = context.newColumnAliases(q.expressions.length);
+      return (
+        [
+          'SELECT',
+          q.expressions
+              .mapIndexed((i, e) => '${expr(e)} AS ${columns[i]}')
+              .join(', '),
+        ].join(' '),
+        columns,
+      );
+    }
+
+    final alias = context.newTableAlias();
+    final ranging = <QueryClause>[];
+
+    loop:
+    while (true) {
+      switch (q) {
+        case LimitClause():
+          ranging.add(q);
+          q = q.from;
+
+        case OffsetClause():
+          ranging.add(q);
+          q = q.from;
+
+        default:
+          break loop;
+      }
+    }
+
+    var distinct = false;
+    while (q is DistinctClause) {
+      distinct = true;
+      q = q.from;
+    }
+
+    QueryClause? projection;
+
+    loop:
+    while (true) {
+      switch (q) {
+        case SelectFromClause() when projection == null:
+          projection = q;
+          q = q.from;
+
+        case GroupByClause() when projection == null:
+          projection = q;
+          q = q.from;
+
+        case LimitClause() when !distinct:
+          ranging.add(q);
+          q = q.from;
+
+        case OffsetClause() when !distinct:
+          ranging.add(q);
+          q = q.from;
+
+        default:
+          break loop;
+      }
+    }
+
+    final range = _RangeTracker();
+    for (final q in ranging.reversed) {
+      switch (q) {
+        case LimitClause(:final limit):
+          range.applyLimit(limit);
+        case OffsetClause(:final offset):
+          range.applyOffset(offset);
+        default:
+          AssertionError('unreachable');
+      }
+    }
+
+    OrderByClause? order;
+    final filters = <WhereClause>[];
+
+    loop:
+    while (true) {
+      switch (q) {
+        case WhereClause():
+          filters.add(q);
+          q = q.from;
+
+        case OrderByClause():
+          // Only the last orderBy clause as any effect
+          order ??= q;
+          q = q.from;
+
+        default:
+          break loop;
+      }
+    }
+
+    final (sql, columns) = tableExpression(q);
+    final columnsAndAlias = columns.map((c) => (alias, c)).toList();
+
+    final List<String> resultColumns;
+    final String selection;
+    String? grouping;
+    if (projection == null) {
+      resultColumns = columns;
+      selection = columns.map((c) => '$alias.${escape(c)}').join(', ');
+    } else if (projection case SelectFromClause p) {
+      resultColumns = context.newColumnAliases(p.projection.length);
+      final ctx = withScope(p, columnsAndAlias);
+      selection = p.projection
+          .mapIndexed((i, e) => '(${ctx.expr(e)}) AS ${resultColumns[i]}')
+          .join(', ');
+    } else if (projection case GroupByClause g) {
+      resultColumns = context.newColumnAliases(g.projection.length);
+      final ctx = withScope(g, columnsAndAlias);
+      selection = g.projection
+          .mapIndexed((i, e) => '(${ctx.expr(e)}) AS ${resultColumns[i]}')
+          .join(', ');
+      grouping = g.groupBy.map(ctx.expr).join(', ');
+    } else {
+      throw AssertionError('unreachable');
+    }
+
+    String? ordering;
+    if (order != null) {
+      final ctx = withScope(order, columnsAndAlias);
+      ordering = order.orderBy.map((key) {
+        final (e, order) = key;
+        return '${ctx.expr(e)} ${order == Order.descending ? 'DESC' : 'ASC'} NULLS LAST';
+      }).join(', ');
+    }
+
+    String? where;
+    if (filters.isNotEmpty) {
+      where = filters.map((w) {
+        final ctx = withScope(w, columnsAndAlias);
+        return '( ${ctx.expr(w.where)} )';
+      }).join(' AND ');
+    }
+
+    return (
+      [
+        'SELECT',
+        if (distinct) 'DISTINCT',
+        selection,
+        'FROM',
+        '($sql) AS $alias',
+        if (where != null) 'WHERE $where',
+        if (grouping != null) 'GROUP BY $grouping',
+        if (ordering != null) 'ORDER BY $ordering',
+        if (range.hasRange) 'LIMIT ${range.limit ?? -1} OFFSET ${range.offset}',
+      ].join(' '),
+      resultColumns,
+    );
+  }
+
+  String resolveField<T>(FieldExpression<T> field) {
+    final (alias, column) = resolve(field);
+    if (alias == null) {
+      return escape(column);
+    }
+    return '$alias.${escape(column)}';
+  }
+
+  String expr<T>(Expr<T> e) => switch (e) {
+        FieldExpression<T>() => resolveField(e),
+        SubQueryExpression<T>(:final query) =>
+          '(${selectExpression(query).$1})',
+        Literal.false$ => 'FALSE',
+        Literal.true$ => 'TRUE',
+        Literal.null$ => 'NULL',
+        Literal<CustomDataType?>(value: final value) =>
+          context.addParameter(value?.toDatabase()),
+        Literal<T>(value: final value) => context.addParameter(value),
+        final ExpressionNumDivide e =>
+          '( CAST(${expr(e.left)} AS REAL) ${e.operator} ${expr(e.right)} )',
+        final BinaryOperationExpression e =>
+          '( ${expr(e.left)} ${e.operator} ${expr(e.right)} )',
+        ExpressionBoolNot(value: final value) => '( NOT ${expr(value)} )',
+        ExpressionStringIsEmpty(value: final value) =>
+          '( ${expr(value)} = \'\' )',
+        ExpressionStringLength(value: final value) =>
+          'LENGTH( ${expr(value)} )',
+        ExpressionStringStartsWith(value: final value, prefix: final prefix) =>
+          '( ${expr(value)} GLOB ${expr(prefix)} || \'*\' )',
+        ExpressionStringEndsWith(value: final value, suffix: final suffix) =>
+          '( ${expr(value)} GLOB \'*\' || ${expr(suffix)} )',
+        ExpressionStringLike(value: final value, pattern: final pattern) =>
+          '( ${expr(value)} LIKE ${context.addParameter(pattern)} )',
+        ExpressionStringContains(value: final value, needle: final needle) =>
+          '( INSTR( ${expr(value)} , ${expr(needle)} ) > 0 )',
+        ExpressionStringToUpperCase(value: final value) =>
+          'UPPER( ${expr(value)} )',
+        ExpressionStringToLowerCase(value: final value) =>
+          'LOWER( ${expr(value)} )',
+        ModelExpression<Model>() => throw AssertionError(
+            'ModelExpression exist in a context where they are rendered',
+          ),
+        ExistsExpression(:final query) =>
+          'EXISTS (${selectExpression(query).$1})',
+        SumExpression<num>(:final value) =>
+          'TOTAL(${expr(value)})', // We'll need to use COALESCE(SUM(a), 0.0) in postgres!
+        AvgExpression(:final value) => 'AVG(${expr(value)})',
+        MinExpression<Comparable>(:final value) => 'MIN(${expr(value)})',
+        MaxExpression<Comparable>(:final value) => 'MAX(${expr(value)})',
+        CountAllExpression() => 'COUNT(*)',
+        OrElseExpression<T>(:final value, :final orElse) =>
+          'COALESCE(${expr(value)}, ${expr(orElse)})',
+        NotNullExpression<T>(:final value) => expr(value),
+        final CastExpression e => 'CAST(${expr(e.value)} AS ${e.type.sqlType})',
+        EncodedCustomDataTypeExpression(:final value) => expr(value),
+      };
+}
+
+final class _RangeTracker {
+  int offset = 0;
+  int? limit;
+
+  _RangeTracker();
+
+  bool get hasRange => offset > 0 || limit != null;
+
+  void applyLimit(int value) {
+    final l = limit;
+    if (l == null || l > value) {
+      limit = value;
+    }
+  }
+
+  void applyOffset(int value) {
+    offset += value;
+    var l = limit;
+    if (l != null) {
+      l = l - value;
+      if (l < 0) {
+        l = 0;
+      }
+      limit = l;
+    }
+  }
+}
 
 extension on CompositeQueryClause {
   String get operator => switch (this) {
@@ -469,156 +571,3 @@ extension on JoinType {
         JoinType.right => 'RIGHT',
       };
 }
-
-/// Reserved keywords in sqlite
-///
-/// See: https://sqlite.org/lang_keywords.html
-final _sqliteReservedKeywords = [
-  'ABORT',
-  'ACTION',
-  'ADD',
-  'AFTER',
-  'ALL',
-  'ALTER',
-  'ALWAYS',
-  'ANALYZE',
-  'AND',
-  'AS',
-  'ASC',
-  'ATTACH',
-  'AUTOINCREMENT',
-  'BEFORE',
-  'BEGIN',
-  'BETWEEN',
-  'BY',
-  'CASCADE',
-  'CASE',
-  'CAST',
-  'CHECK',
-  'COLLATE',
-  'COLUMN',
-  'COMMIT',
-  'CONFLICT',
-  'CONSTRAINT',
-  'CREATE',
-  'CROSS',
-  'CURRENT',
-  'CURRENT_DATE',
-  'CURRENT_TIME',
-  'CURRENT_TIMESTAMP',
-  'DATABASE',
-  'DEFAULT',
-  'DEFERRABLE',
-  'DEFERRED',
-  'DELETE',
-  'DESC',
-  'DETACH',
-  'DISTINCT',
-  'DO',
-  'DROP',
-  'EACH',
-  'ELSE',
-  'END',
-  'ESCAPE',
-  'EXCEPT',
-  'EXCLUDE',
-  'EXCLUSIVE',
-  'EXISTS',
-  'EXPLAIN',
-  'FAIL',
-  'FILTER',
-  'FIRST',
-  'FOLLOWING',
-  'FOR',
-  'FOREIGN',
-  'FROM',
-  'FULL',
-  'GENERATED',
-  'GLOB',
-  'GROUP',
-  'GROUPS',
-  'HAVING',
-  'IF',
-  'IGNORE',
-  'IMMEDIATE',
-  'IN',
-  'INDEX',
-  'INDEXED',
-  'INITIALLY',
-  'INNER',
-  'INSERT',
-  'INSTEAD',
-  'INTERSECT',
-  'INTO',
-  'IS',
-  'ISNULL',
-  'JOIN',
-  'KEY',
-  'LAST',
-  'LEFT',
-  'LIKE',
-  'LIMIT',
-  'MATCH',
-  'MATERIALIZED',
-  'NATURAL',
-  'NO',
-  'NOT',
-  'NOTHING',
-  'NOTNULL',
-  'NULL',
-  'NULLS',
-  'OF',
-  'OFFSET',
-  'ON',
-  'OR',
-  'ORDER',
-  'OTHERS',
-  'OUTER',
-  'OVER',
-  'PARTITION',
-  'PLAN',
-  'PRAGMA',
-  'PRECEDING',
-  'PRIMARY',
-  'QUERY',
-  'RAISE',
-  'RANGE',
-  'RECURSIVE',
-  'REFERENCES',
-  'REGEXP',
-  'REINDEX',
-  'RELEASE',
-  'RENAME',
-  'REPLACE',
-  'RESTRICT',
-  'RETURNING',
-  'RIGHT',
-  'ROLLBACK',
-  'ROW',
-  'ROWS',
-  'SAVEPOINT',
-  'SELECT',
-  'SET',
-  'TABLE',
-  'TEMP',
-  'TEMPORARY',
-  'THEN',
-  'TIES',
-  'TO',
-  'TRANSACTION',
-  'TRIGGER',
-  'UNBOUNDED',
-  'UNION',
-  'UNIQUE',
-  'UPDATE',
-  'USING',
-  'VACUUM',
-  'VALUES',
-  'VIEW',
-  'VIRTUAL',
-  'WHEN',
-  'WHERE',
-  'WINDOW',
-  'WITH',
-  'WITHOUT',
-];

@@ -270,6 +270,47 @@ final class ExceptClause extends CompositeQueryClause {
 
 /* --------------------- Auxiliary utils for SQL rendering------------------- */
 
+final class ExpressionResolver<T> {
+  final ExpressionResolver? _parent;
+  final Object _handle;
+  final List<(String?, String)> _columns;
+  final T context;
+
+  ExpressionResolver._(
+    this.context,
+    this._parent,
+    this._handle,
+    this._columns,
+  );
+
+  ExpressionResolver(T context) : this._(context, null, Object(), []);
+
+  ExpressionResolver<T> withScope(
+    ExpressionContext ctx,
+    List<(String?, String)> columns,
+  ) =>
+      ExpressionResolver._(
+        context,
+        this,
+        ctx._handle,
+        columns,
+      );
+
+  (String?, String) resolve(FieldExpression field) {
+    if (_handle == field._handle) {
+      return _columns[field._index];
+    }
+    if (_parent != null) {
+      return _parent.resolve(field);
+    }
+    throw ArgumentError.value(
+      field,
+      'field',
+      'cannot be resolved in the given context',
+    );
+  }
+}
+
 // TODO: Rename this to ExpressionContext / Scope / SqlContext and move it to a
 //       separate part file!
 // TODO: Consider moving parameter logic out of this context!

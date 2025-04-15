@@ -62,10 +62,10 @@ void main() {
 This will print the following `CREATE TABLE` statments:
 
 ```sql
-CREATE TABLE accounts (
-  accountId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  accountNumber TEXT NOT NULL,
-  UNIQUE (accountNumber)
+CREATE TABLE "accounts" (
+  "accountId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "accountNumber" TEXT NOT NULL,
+  UNIQUE ("accountNumber")
 );
 ```
 
