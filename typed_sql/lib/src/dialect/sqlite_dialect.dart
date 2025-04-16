@@ -109,8 +109,8 @@ final class _Sqlite extends SqlDialect {
   @override
   (String, List<Object?>) update(UpdateStatement statement) {
     final resolver = ExpressionResolver(StatmentContext());
-    final a1 = resolver.context.newTableAlias();
-    final a2 = resolver.context.newTableAlias();
+    final a1 = resolver.tableAlias1;
+    final a2 = resolver.tableAlias2;
 
     final (sql, _) = resolver.selectExpression(statement.where);
 
@@ -153,8 +153,8 @@ final class _Sqlite extends SqlDialect {
   @override
   (String, List<Object?>) delete(DeleteStatement statement) {
     final resolver = ExpressionResolver(StatmentContext());
-    final a1 = resolver.context.newTableAlias();
-    final a2 = resolver.context.newTableAlias();
+    final a1 = resolver.tableAlias1;
+    final a2 = resolver.tableAlias2;
 
     final (sql, _) = resolver.selectExpression(statement.where);
 
@@ -201,13 +201,7 @@ String escape(String name) => '"${name.replaceAll('"', '""')}"';
 
 final class StatmentContext {
   final parameters = <Object?>[];
-  var _columnAliasCount = 0;
-  var _tableAliasCount = 0;
 
-  List<String> newColumnAliases(int count) =>
-      List.generate(count, (i) => newColumnAlias());
-  String newColumnAlias() => 'c${_columnAliasCount++}';
-  String newTableAlias() => 't${_tableAliasCount++}';
   String addParameter(Object? value) {
     parameters.add(value);
     final index = parameters.length;
@@ -216,6 +210,12 @@ final class StatmentContext {
 }
 
 extension on ExpressionResolver<StatmentContext> {
+  String get tableAlias => 't$depth';
+  String get tableAlias1 => 't${depth}_1';
+  String get tableAlias2 => 't${depth}_2';
+
+  List<String> columnAliases(int N) => List.generate(N, (i) => 'c$i');
+
   /// Return someting you can use in `SELECT ... FROM <sql>`
   (String sql, List<String> columns) tableExpression(QueryClause q) {
     if (q is TableClause) {
@@ -233,14 +233,14 @@ extension on ExpressionResolver<StatmentContext> {
       final (sql1, columns1) = tableExpression(q.from);
       final (sql2, columns2) = tableExpression(q.join);
 
-      final a1 = context.newTableAlias();
-      final a2 = context.newTableAlias();
+      final a1 = tableAlias1;
+      final a2 = tableAlias2;
 
       final ctx = withScope(q, [
         ...columns1.map((c) => (a1, c)),
         ...columns2.map((c) => (a2, c)),
       ]);
-      final columns = context.newColumnAliases(
+      final columns = columnAliases(
         columns1.length + columns2.length,
       );
       return (
@@ -274,7 +274,7 @@ extension on ExpressionResolver<StatmentContext> {
     }
 
     if (q is SelectClause) {
-      final columns = context.newColumnAliases(q.expressions.length);
+      final columns = columnAliases(q.expressions.length);
       return (
         [
           'SELECT',
@@ -286,7 +286,7 @@ extension on ExpressionResolver<StatmentContext> {
       );
     }
 
-    final alias = context.newTableAlias();
+    final alias = tableAlias;
     final ranging = <QueryClause>[];
 
     loop:
@@ -379,13 +379,13 @@ extension on ExpressionResolver<StatmentContext> {
       resultColumns = columns;
       selection = columns.map((c) => '$alias.${escape(c)}').join(', ');
     } else if (projection case SelectFromClause p) {
-      resultColumns = context.newColumnAliases(p.projection.length);
+      resultColumns = columnAliases(p.projection.length);
       final ctx = withScope(p, columnsAndAlias);
       selection = p.projection
           .mapIndexed((i, e) => '(${ctx.expr(e)}) AS ${resultColumns[i]}')
           .join(', ');
     } else if (projection case GroupByClause g) {
-      resultColumns = context.newColumnAliases(g.projection.length);
+      resultColumns = columnAliases(g.projection.length);
       final ctx = withScope(g, columnsAndAlias);
       selection = g.projection
           .mapIndexed((i, e) => '(${ctx.expr(e)}) AS ${resultColumns[i]}')
