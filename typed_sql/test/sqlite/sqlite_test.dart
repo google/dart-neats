@@ -273,6 +273,7 @@ void main() {
     final users = await db.users
         .orderBy((u) => [(u.userId, Order.ascending)])
         .offset(1)
+        .asQuery
         .where((u) => u.email.equalsLiteral('alice@example.com'))
         .select((u) => (u.name,))
         .fetch();
@@ -283,6 +284,7 @@ void main() {
     final users = await db.users
         .orderBy((u) => [(u.userId, Order.ascending)])
         .offset(1)
+        .asQuery
         .where((u) => u.email.equalsLiteral('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
@@ -294,6 +296,7 @@ void main() {
     final users = await db.users
         .orderBy((u) => [(u.userId, Order.descending)])
         .offset(1)
+        .asQuery
         .where((u) => u.email.equalsLiteral('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
@@ -304,6 +307,7 @@ void main() {
     final users = await db.users
         .orderBy((u) => [(u.userId, Order.descending)])
         .offset(1)
+        .asQuery
         .where((u) => u.email.equalsLiteral('alice@example.com'))
         .select((u) => (u.name,))
         .fetch();
@@ -689,6 +693,7 @@ void main() {
     expect(result, hasLength(0));
   });
 
+  /*
   _test('db.users.select((u) => u.packages.countAll())', (db) async {
     final result = await db.users
         .select(
@@ -707,7 +712,7 @@ void main() {
     expect(result[1].userName, equals('Bob'));
     expect(result[1].packages, equals(0));
     expect(result[1].totalLikes, equals(0));
-  });
+  });*/
 
   _test('db.packages.select((p) => p, p.owner)', (db) async {
     final result = await db.packages

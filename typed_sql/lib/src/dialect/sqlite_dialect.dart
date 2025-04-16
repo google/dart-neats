@@ -312,28 +312,28 @@ extension on ExpressionResolver<StatmentContext> {
 
     QueryClause? projection;
 
-    loop:
-    while (true) {
-      switch (q) {
-        case SelectFromClause() when projection == null:
-          projection = q;
-          q = q.from;
+    if (q is SelectFromClause) {
+      projection = q;
+      q = q.from;
 
-        case GroupByClause() when projection == null:
-          projection = q;
-          q = q.from;
+      loop:
+      while (!distinct) {
+        switch (q) {
+          case LimitClause():
+            ranging.add(q);
+            q = q.from;
 
-        case LimitClause() when !distinct:
-          ranging.add(q);
-          q = q.from;
+          case OffsetClause():
+            ranging.add(q);
+            q = q.from;
 
-        case OffsetClause() when !distinct:
-          ranging.add(q);
-          q = q.from;
-
-        default:
-          break loop;
+          default:
+            break loop;
+        }
       }
+    } else if (q is GroupByClause) {
+      projection = q;
+      q = q.from;
     }
 
     final range = _RangeTracker();
@@ -358,7 +358,7 @@ extension on ExpressionResolver<StatmentContext> {
           filters.add(q);
           q = q.from;
 
-        case OrderByClause():
+        case OrderByClause() when projection is! GroupByClause:
           // Only the last orderBy clause as any effect
           order ??= q;
           q = q.from;

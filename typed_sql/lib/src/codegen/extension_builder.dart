@@ -60,8 +60,9 @@ Iterable<Spec> _buildExtensions() sync* {
   }
 
   for (var i = 1; i < N + 1; i++) {
-    yield _buildQueryExtension(i);
+    yield* _buildQueryExtension(i);
     yield _buildSubQueryExtension(i);
+    yield* _buildOrderedQueryExtensions(i);
   }
 
   for (var i = 1; i < N; i++) {
@@ -101,8 +102,8 @@ Iterable<Spec> _buildExtensions() sync* {
 /// ```dart
 /// extension QueryABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {...}
 /// ```
-Spec _buildQueryExtension(int i) {
-  return Extension((b) => b
+Iterable<Spec> _buildQueryExtension(int i) sync* {
+  yield Extension((b) => b
     ..name = 'Query$i'
     ..types.addAll(typeArg.take(i).map(refer))
     ..on = refer('Query<${typArgedExprTuple(i, 0)}>')
@@ -195,7 +196,7 @@ Spec _buildQueryExtension(int i) {
         (b) => b
           ..name = 'orderBy'
           ..documentation(docs.orderBy('Query'))
-          ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
+          ..returns = refer('OrderedQuery<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..name = 'builder'
@@ -206,13 +207,13 @@ Spec _buildQueryExtension(int i) {
           ..body = Code('''
             final (handle, orderBy) = _build(builder);
             if (orderBy.isEmpty) {
-              return this;
+              return OrderedQuery._(this);
             }
-            return Query._(
+            return OrderedQuery._(Query._(
               _context,
               _expressions,
               (e) => OrderByClause._(_from(e), handle, orderBy),
-            );
+            ));
           '''),
       ),
 
@@ -559,6 +560,229 @@ Spec _buildQueryExtension(int i) {
     ]));
 }
 
+Iterable<Spec> _buildOrderedQueryExtensions(int i) sync* {
+  Method where(String targetType, String returnType) => Method((b) => b
+    ..name = 'where'
+    ..documentation(docs.where(targetType))
+    ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
+    ..requiredParameters.add(Parameter(
+      (b) => b
+        ..name = 'conditionBuilder'
+        ..type = refer('Expr<bool> Function(${typArgedExprArgumentList(i)})'),
+    ))
+    ..lambda = true
+    ..body = Code('$returnType._(_query.where(conditionBuilder))'));
+
+  Method select(String targetType, String returnType) => Method((b) => b
+    ..name = 'select'
+    ..documentation(docs.select(targetType))
+    ..types.add(refer('T extends Record'))
+    ..returns = refer('$returnType<T>')
+    ..requiredParameters.add(Parameter(
+      (b) => b
+        ..name = 'projectionBuilder'
+        ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+    ))
+    ..lambda = true
+    ..body = Code('$returnType._(_query.select(projectionBuilder))'));
+
+  Method orderBy(String targetType, String returnType) => Method((b) => b
+    ..name = 'orderBy'
+    ..documentation(docs.orderBy(targetType))
+    ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
+    ..requiredParameters.add(Parameter(
+      (b) => b
+        ..name = 'builder'
+        ..type = refer(
+          'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
+        ),
+    ))
+    ..lambda = true
+    ..body = Code('_query.orderBy(builder)'));
+
+  Method limit(String targetType, String returnType) => Method((b) => b
+    ..name = 'limit'
+    ..documentation(docs.limit(targetType))
+    ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
+    ..requiredParameters.add(Parameter(
+      (b) => b
+        ..name = 'limit'
+        ..type = refer('int'),
+    ))
+    ..lambda = true
+    ..body = Code('$returnType._(_query.limit(limit))'));
+
+  Method offset(String targetType, String returnType) => Method((b) => b
+    ..name = 'offset'
+    ..documentation(docs.offset(targetType))
+    ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
+    ..requiredParameters.add(Parameter(
+      (b) => b
+        ..name = 'offset'
+        ..type = refer('int'),
+    ))
+    ..lambda = true
+    ..body = Code('$returnType._(_query.offset(offset))'));
+
+  Method fetch() => Method((b) => b
+    ..name = 'fetch'
+    ..documentation(docs.fetchQuery)
+    ..returns = refer(
+      'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>',
+    )
+    ..lambda = true
+    ..body = Code('_query.fetch()'));
+
+  Method stream() => Method((b) => b
+    ..name = 'stream'
+    ..documentation(docs.streamQuery)
+    ..returns = refer(
+      'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
+    )
+    ..lambda = true
+    ..body = Code('_query.stream()'));
+
+  Method first() => Method((b) => b
+    ..name = 'first'
+    ..documentation(docs.firstQuery)
+    ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
+    ..type = MethodType.getter
+    ..lambda = true
+    ..body = Code('_query.first'));
+
+  yield Extension((b) => b
+    ..name = 'OrderedQuery$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('OrderedQuery<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a query returning zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
+    ..methods.addAll([
+      where('OrderedQuery', 'OrderedQuery'),
+      select('OrderedQuery', 'ProjectedOrderedQuery'),
+      limit('OrderedQuery', 'OrderedQueryRange'),
+      offset('OrderedQuery', 'OrderedQueryRange'),
+      orderBy('OrderedQuery', 'OrderedQuery'),
+      fetch(),
+      stream(),
+      first(),
+    ]));
+
+  yield Extension((b) => b
+    ..name = 'OrderedQueryRange$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('OrderedQueryRange<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a query returning zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
+    ..methods.addAll([
+      select('OrderedQueryRange', 'ProjectedOrderedQueryRange'),
+      limit('OrderedQueryRange', 'OrderedQueryRange'),
+      offset('OrderedQueryRange', 'OrderedQueryRange'),
+      orderBy('OrderedQueryRange', 'OrderedQuery'),
+      fetch(),
+      stream(),
+      first(),
+    ]));
+
+  yield Extension((b) => b
+    ..name = 'ProjectedOrderedQuery$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('ProjectedOrderedQuery<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a query returning zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
+    ..methods.addAll([
+      limit('ProjectedOrderedQuery', 'ProjectedOrderedQueryRange'),
+      offset('ProjectedOrderedQuery', 'ProjectedOrderedQueryRange'),
+      orderBy('ProjectedOrderedQuery', 'OrderedQuery'),
+      fetch(),
+      stream(),
+      first(),
+    ]));
+
+  yield Extension((b) => b
+    ..name = 'ProjectedOrderedQueryRange$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('ProjectedOrderedQueryRange<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a query returning zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
+    ..methods.addAll([
+      limit('ProjectedOrderedQueryRange', 'ProjectedOrderedQueryRange'),
+      offset('ProjectedOrderedQueryRange', 'ProjectedOrderedQueryRange'),
+      orderBy('ProjectedOrderedQueryRange', 'OrderedQuery'),
+      fetch(),
+      stream(),
+      first(),
+    ]));
+
+  // OrderedSubQuery
+
+  yield Extension((b) => b
+    ..name = 'OrderedSubQuery$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('OrderedSubQuery<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a ordered subquery of zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
+    ..methods.addAll([
+      where('OrderedSubQuery', 'OrderedSubQuery'),
+      select('OrderedSubQuery', 'ProjectedOrderedSubQuery'),
+      limit('OrderedSubQuery', 'OrderedSubQueryRange'),
+      offset('OrderedSubQuery', 'OrderedSubQueryRange'),
+      orderBy('OrderedSubQuery', 'OrderedSubQuery'),
+    ]));
+
+  yield Extension((b) => b
+    ..name = 'OrderedSubQueryRange$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('OrderedSubQueryRange<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a ordered subquery of zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
+    ..methods.addAll([
+      select('OrderedSubQueryRange', 'ProjectedOrderedSubQueryRange'),
+      limit('OrderedSubQueryRange', 'OrderedSubQueryRange'),
+      offset('OrderedSubQueryRange', 'OrderedSubQueryRange'),
+      orderBy('OrderedSubQueryRange', 'OrderedSubQuery'),
+    ]));
+
+  yield Extension((b) => b
+    ..name = 'ProjectedOrderedSubQuery$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('ProjectedOrderedSubQuery<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a ordered subquery of zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
+    ..methods.addAll([
+      limit('ProjectedOrderedSubQuery', 'ProjectedOrderedSubQueryRange'),
+      offset('ProjectedOrderedSubQuery', 'ProjectedOrderedSubQueryRange'),
+      orderBy('ProjectedOrderedSubQuery', 'OrderedSubQuery'),
+    ]));
+
+  yield Extension((b) => b
+    ..name = 'ProjectedOrderedSubQueryRange$i'
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer('ProjectedOrderedSubQueryRange<${typArgedExprTuple(i, 0)}>')
+    ..documentation('''
+      Extension methods for a ordered subquery of zero or more rows with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
+    ..methods.addAll([
+      limit('ProjectedOrderedSubQueryRange', 'ProjectedOrderedSubQueryRange'),
+      offset('ProjectedOrderedSubQueryRange', 'ProjectedOrderedSubQueryRange'),
+      orderBy('ProjectedOrderedSubQueryRange', 'OrderedSubQuery'),
+    ]));
+}
+
 /// Extension for Query
 ///
 /// ```dart
@@ -623,7 +847,7 @@ Spec _buildSubQueryExtension(int i) {
         (b) => b
           ..name = 'orderBy'
           ..documentation(docs.orderBy('SubQuery'))
-          ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+          ..returns = refer('OrderedSubQuery<${typArgedExprTuple(i, 0)}>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..name = 'builder'
@@ -634,12 +858,12 @@ Spec _buildSubQueryExtension(int i) {
           ..body = Code('''
             final (handle, orderBy) = _build(builder);
             if (orderBy.isEmpty) {
-              return this;
+              return OrderedSubQuery._(this);
             }
-            return SubQuery._(
+            return OrderedSubQuery._(SubQuery._(
               _expressions,
               (e) => OrderByClause._(_from(e), handle, orderBy),
-            );
+            ));
           '''),
       ),
 

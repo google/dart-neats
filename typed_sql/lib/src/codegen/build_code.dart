@@ -1032,8 +1032,10 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
               _wrapBuilder(conditionBuilder)
             ))
           '''),
-    ))
-    ..methods.add(Method(
+    )));
+  // TODO: Add first when QuerySingle is supported!
+  // TODO: Add orderBy as below, when we have named tuple support for OrderedQuery...
+  /*..methods.add(Method(
       (b) => b
         ..name = 'orderBy'
         ..documentation(docs.orderBy('Query'))
@@ -1051,8 +1053,7 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
               _wrapBuilder(builder),
             ))
           '''),
-      // TODO: Add first when QuerySingle is supported!
-    )));
+    ))*/
 }
 
 extension on ParsedRecord {

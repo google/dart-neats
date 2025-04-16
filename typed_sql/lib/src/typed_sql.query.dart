@@ -89,6 +89,98 @@ final class QuerySingle<T extends Record> {
   QuerySingle._(this._query);
 }
 
+/// A [Query] which has an order imposed by `.orderBy`.
+///
+/// An [OrderedQuery] has the following _extension methods_ that preserve the
+/// ordering:
+///  * `.where`,
+///  * `.limit`,
+///  * `.offset`,
+///  * `.select`, and,
+///  * `.distinct`.
+///
+/// {@template advertize:OrderedQuery.asQuery}
+/// > [!TIP]
+/// > If you wish to use an _ordered query_ in manner that disregards the
+/// > ordering you can convert to an _unordered_ [Query] using [asQuery].
+/// > This is necessary for certain operations (like `JOIN`, `UNION`, etc.)
+/// > becauses SQL disregards the order of rows in subqueries.
+/// {@endtemplate}
+///
+/// As an example, SQL disregards the ordering when using a query in a `UNION`
+/// or `JOIN`, thus, you must use [asQuery], if you wish to do such operations.
+///
+/// {@category writing_queries}
+final class OrderedQuery<T extends Record> {
+  final Query<T> _query;
+
+  OrderedQuery._(this._query);
+}
+
+/// A [Query] which has an order imposed by `.orderBy` and is limited to a
+/// range by `.limit` or `.offset`.
+///
+/// An [OrderedQueryRange] has the following _extension methods_ that preserve
+/// the ordering:
+///  * `.limit`,
+///  * `.offset`, and,
+///  * `.select`.
+///
+/// {@macro advertize:OrderedQuery.asQuery}
+///
+/// To use `.where` after imposing a range with `.limit` or `.offset` you must
+/// use [asQuery], because `.where` will create a subquery which discards the
+/// ordering.
+///
+/// {@category writing_queries}
+final class OrderedQueryRange<T extends Record> {
+  final Query<T> _query;
+
+  OrderedQueryRange._(this._query);
+}
+
+/// A [Query] which has an order imposed by `.orderBy` and is projected to a
+/// new set of columns using `.select` (or `.distinct`).
+///
+/// A [ProjectedOrderedQuery] has the following _extension methods_ that
+/// preserve the ordering:
+///  * `.limit`,
+///  * `.offset`, and,
+///  * `.distinct`.
+///
+/// {@macro advertize:OrderedQuery.asQuery}
+///
+/// To use `.where` or `.select` after imposing a projection you must use
+/// [asQuery], because these must create subqueries which discards the ordering.
+///
+/// {@category writing_queries}
+final class ProjectedOrderedQuery<T extends Record> {
+  final Query<T> _query;
+
+  ProjectedOrderedQuery._(this._query);
+}
+
+/// A [Query] which has an order imposed by `.orderBy`, is projected to a
+/// new set of columns using `.select` (or `.distinct`), and is limited to a
+/// range by `.limit` or `.offset`.
+///
+/// A [ProjectedOrderedQuery] has the following _extension methods_ that
+/// preserve the ordering:
+///  * `.limit`, and,
+///  * `.offset`.
+///
+/// {@macro advertize:OrderedQuery.asQuery}
+///
+/// To use other _extension methods_ such as`.where` or `.select` you must use
+/// [asQuery], because these must create subqueries which discards the ordering.
+///
+/// {@category writing_queries}
+final class ProjectedOrderedQueryRange<T extends Record> {
+  final Query<T> _query;
+
+  ProjectedOrderedQueryRange._(this._query);
+}
+
 /// A [Query] which can only be used as a subquery.
 ///
 /// {@category writing_queries}
@@ -97,6 +189,101 @@ final class SubQuery<T extends Record> {
   final QueryClause Function(List<Expr> expressions) _from;
 
   SubQuery._(this._expressions, this._from);
+}
+
+/// A [SubQuery] which has an order imposed by `.orderBy`.
+///
+/// An [OrderedSubQuery] has the following _extension methods_ that preserve the
+/// ordering:
+///  * `.where`,
+///  * `.limit`,
+///  * `.offset`,
+///  * `.select`, and,
+///  * `.distinct`.
+///
+/// {@template advertize:OrderedSubQuery.asSubQuery}
+/// > [!TIP]
+/// > If you wish to use an _ordered query_ in manner that disregards the
+/// > ordering you can convert to an _unordered_ [SubQuery] using [asSubQuery].
+/// > This is necessary for certain operations (like `JOIN`, `UNION`, etc.)
+/// > becauses SQL disregards the order of rows in subqueries.
+/// {@endtemplate}
+///
+/// As an example, SQL disregards the ordering when using a query in a `UNION`
+/// or `JOIN`, thus, you must use [asSubQuery], if you wish to do such
+/// operations.
+///
+/// {@category writing_queries}
+final class OrderedSubQuery<T extends Record> {
+  final SubQuery<T> _query;
+
+  OrderedSubQuery._(this._query);
+}
+
+/// A [SubQuery] which has an order imposed by `.orderBy` and is limited to a
+/// range by `.limit` or `.offset`.
+///
+/// An [OrderedSubQueryRange] has the following _extension methods_ that preserve
+/// the ordering:
+///  * `.limit`,
+///  * `.offset`, and,
+///  * `.select`.
+///
+/// {@macro advertize:OrderedSubQuery.asSubQuery}
+///
+/// To use `.where` after imposing a range with `.limit` or `.offset` you must
+/// use [asSubQuery], because `.where` will create a subquery which discards the
+/// ordering.
+///
+/// {@category writing_queries}
+final class OrderedSubQueryRange<T extends Record> {
+  final SubQuery<T> _query;
+
+  OrderedSubQueryRange._(this._query);
+}
+
+/// A [SubQuery] which has an order imposed by `.orderBy` and is projected to a
+/// new set of columns using `.select` (or `.distinct`).
+///
+/// A [ProjectedOrderedSubQuery] has the following _extension methods_ that
+/// preserve the ordering:
+///  * `.limit`,
+///  * `.offset`, and,
+///  * `.distinct`.
+///
+/// {@macro advertize:OrderedSubQuery.asSubQuery}
+///
+/// To use `.where` or `.select` after imposing a projection you must use
+/// [asSubQuery], because these must create subqueries which discards the
+/// ordering.
+///
+/// {@category writing_queries}
+final class ProjectedOrderedSubQuery<T extends Record> {
+  final SubQuery<T> _query;
+
+  ProjectedOrderedSubQuery._(this._query);
+}
+
+/// A [SubQuery] which has an order imposed by `.orderBy`, is projected to a
+/// new set of columns using `.select` (or `.distinct`), and is limited to a
+/// range by `.limit` or `.offset`.
+///
+/// A [ProjectedOrderedSubQuery] has the following _extension methods_ that
+/// preserve the ordering:
+///  * `.limit`, and,
+///  * `.offset`.
+///
+/// {@macro advertize:OrderedSubQuery.asSubQuery}
+///
+/// To use other _extension methods_ such as`.where` or `.select` you must use
+/// [asSubQuery], because these must create subqueries which discards the
+/// ordering.
+///
+/// {@category writing_queries}
+final class ProjectedOrderedSubQueryRange<T extends Record> {
+  final SubQuery<T> _query;
+
+  ProjectedOrderedSubQueryRange._(this._query);
 }
 
 /* --------------------- Query clauses ---------------------- */

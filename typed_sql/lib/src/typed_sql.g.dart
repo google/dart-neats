@@ -53,17 +53,17 @@ extension Query1<A> on Query<(Expr<A>,)> {
   ///     ])
   ///     .fetch();
   /// ```
-  Query<(Expr<A>,)> orderBy(
+  OrderedQuery<(Expr<A>,)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedQuery._(this);
     }
-    return Query._(
+    return OrderedQuery._(Query._(
       _context,
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [Query] using `LIMIT` clause.
@@ -334,16 +334,16 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
   ///     ])
   ///     .fetch();
   /// ```
-  SubQuery<(Expr<A>,)> orderBy(
+  OrderedSubQuery<(Expr<A>,)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedSubQuery._(this);
     }
-    return SubQuery._(
+    return OrderedSubQuery._(SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [SubQuery] using `LIMIT` clause.
@@ -400,6 +400,472 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
 }
 
 /// Extension methods for a query returning zero or more rows with
+/// 1 expression.
+extension OrderedQuery1<A> on OrderedQuery<(Expr<A>,)> {
+  /// Filter [OrderedQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedQuery<(Expr<A>,)> where(
+          Expr<bool> Function(Expr<A> a) conditionBuilder) =>
+      OrderedQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQuery<T> select<T extends Record>(
+          T Function(Expr<A> a) projectionBuilder) =>
+      ProjectedOrderedQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQuery] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>,)> limit(int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQuery] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>,)> offset(int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQuery] with the same rows as this [OrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>,)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<A>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<A> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>,)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 1 expression.
+extension OrderedQueryRange1<A> on OrderedQueryRange<(Expr<A>,)> {
+  /// Create a projection of this [OrderedQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a) projectionBuilder) =>
+      ProjectedOrderedQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>,)> limit(int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>,)> offset(int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQueryRange] with the same rows as this [OrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>,)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<A>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<A> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>,)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 1 expression.
+extension ProjectedOrderedQuery1<A> on ProjectedOrderedQuery<(Expr<A>,)> {
+  /// Limit [ProjectedOrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>,)> limit(int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>,)> offset(int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQuery] with the same rows as this [ProjectedOrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>,)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<A>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<A> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>,)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 1 expression.
+extension ProjectedOrderedQueryRange1<A>
+    on ProjectedOrderedQueryRange<(Expr<A>,)> {
+  /// Limit [ProjectedOrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>,)> limit(int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>,)> offset(int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQueryRange] with the same rows as this [ProjectedOrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>,)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<A>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<A> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>,)> get first => _query.first;
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 1 expression.
+extension OrderedSubQuery1<A> on OrderedSubQuery<(Expr<A>,)> {
+  /// Filter [OrderedSubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedSubQuery<(Expr<A>,)> where(
+          Expr<bool> Function(Expr<A> a) conditionBuilder) =>
+      OrderedSubQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQuery<T> select<T extends Record>(
+          T Function(Expr<A> a) projectionBuilder) =>
+      ProjectedOrderedSubQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>,)> limit(int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>,)> offset(int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQuery] with the same rows as this [OrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>,)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 1 expression.
+extension OrderedSubQueryRange1<A> on OrderedSubQueryRange<(Expr<A>,)> {
+  /// Create a projection of this [OrderedSubQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a) projectionBuilder) =>
+      ProjectedOrderedSubQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>,)> limit(int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>,)> offset(int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQueryRange] with the same rows as this [OrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>,)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 1 expression.
+extension ProjectedOrderedSubQuery1<A> on ProjectedOrderedSubQuery<(Expr<A>,)> {
+  /// Limit [ProjectedOrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>,)> limit(int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>,)> offset(int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQuery] with the same rows as this [ProjectedOrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>,)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 1 expression.
+extension ProjectedOrderedSubQueryRange1<A>
+    on ProjectedOrderedSubQueryRange<(Expr<A>,)> {
+  /// Limit [ProjectedOrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>,)> limit(int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>,)> offset(int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQueryRange] with the same rows as this [ProjectedOrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>,)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a) builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a query returning zero or more rows with
 /// 2 expressions.
 extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b) builder) {
@@ -449,17 +915,17 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   ///     ])
   ///     .fetch();
   /// ```
-  Query<(Expr<A>, Expr<B>)> orderBy(
+  OrderedQuery<(Expr<A>, Expr<B>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b) builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedQuery._(this);
     }
-    return Query._(
+    return OrderedQuery._(Query._(
       _context,
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [Query] using `LIMIT` clause.
@@ -752,16 +1218,16 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
   ///     ])
   ///     .fetch();
   /// ```
-  SubQuery<(Expr<A>, Expr<B>)> orderBy(
+  OrderedSubQuery<(Expr<A>, Expr<B>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b) builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedSubQuery._(this);
     }
-    return SubQuery._(
+    return OrderedSubQuery._(SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [SubQuery] using `LIMIT` clause.
@@ -818,6 +1284,483 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
 }
 
 /// Extension methods for a query returning zero or more rows with
+/// 2 expressions.
+extension OrderedQuery2<A, B> on OrderedQuery<(Expr<A>, Expr<B>)> {
+  /// Filter [OrderedQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedQuery<(Expr<A>, Expr<B>)> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) =>
+      OrderedQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b) projectionBuilder) =>
+      ProjectedOrderedQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQuery] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>)> limit(int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQuery] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>)> offset(int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQuery] with the same rows as this [OrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 2 expressions.
+extension OrderedQueryRange2<A, B> on OrderedQueryRange<(Expr<A>, Expr<B>)> {
+  /// Create a projection of this [OrderedQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b) projectionBuilder) =>
+      ProjectedOrderedQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>)> limit(int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>)> offset(int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQueryRange] with the same rows as this [OrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 2 expressions.
+extension ProjectedOrderedQuery2<A, B>
+    on ProjectedOrderedQuery<(Expr<A>, Expr<B>)> {
+  /// Limit [ProjectedOrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>)> limit(int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>)> offset(int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQuery] with the same rows as this [ProjectedOrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 2 expressions.
+extension ProjectedOrderedQueryRange2<A, B>
+    on ProjectedOrderedQueryRange<(Expr<A>, Expr<B>)> {
+  /// Limit [ProjectedOrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>)> limit(int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>)> offset(int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQueryRange] with the same rows as this [ProjectedOrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>)> get first => _query.first;
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 2 expressions.
+extension OrderedSubQuery2<A, B> on OrderedSubQuery<(Expr<A>, Expr<B>)> {
+  /// Filter [OrderedSubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedSubQuery<(Expr<A>, Expr<B>)> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder) =>
+      OrderedSubQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b) projectionBuilder) =>
+      ProjectedOrderedSubQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>)> limit(int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>)> offset(int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQuery] with the same rows as this [OrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 2 expressions.
+extension OrderedSubQueryRange2<A, B>
+    on OrderedSubQueryRange<(Expr<A>, Expr<B>)> {
+  /// Create a projection of this [OrderedSubQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b) projectionBuilder) =>
+      ProjectedOrderedSubQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>)> limit(int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>)> offset(int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQueryRange] with the same rows as this [OrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 2 expressions.
+extension ProjectedOrderedSubQuery2<A, B>
+    on ProjectedOrderedSubQuery<(Expr<A>, Expr<B>)> {
+  /// Limit [ProjectedOrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>)> limit(int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>)> offset(int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQuery] with the same rows as this [ProjectedOrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 2 expressions.
+extension ProjectedOrderedSubQueryRange2<A, B>
+    on ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>)> {
+  /// Limit [ProjectedOrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>)> limit(int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>)> offset(int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQueryRange] with the same rows as this [ProjectedOrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a query returning zero or more rows with
 /// 3 expressions.
 extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b, Expr<C> c) builder) {
@@ -869,18 +1812,18 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   ///     ])
   ///     .fetch();
   /// ```
-  Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
           builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedQuery._(this);
     }
-    return Query._(
+    return OrderedQuery._(Query._(
       _context,
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [Query] using `LIMIT` clause.
@@ -1193,17 +2136,17 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
   ///     ])
   ///     .fetch();
   /// ```
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
           builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedSubQuery._(this);
     }
-    return SubQuery._(
+    return OrderedSubQuery._(SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [SubQuery] using `LIMIT` clause.
@@ -1257,6 +2200,497 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
   /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
   /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 3 expressions.
+extension OrderedQuery3<A, B, C> on OrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Filter [OrderedQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+              conditionBuilder) =>
+      OrderedQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) =>
+      ProjectedOrderedQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQuery] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQuery] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQuery] with the same rows as this [OrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 3 expressions.
+extension OrderedQueryRange3<A, B, C>
+    on OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Create a projection of this [OrderedQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) =>
+      ProjectedOrderedQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQueryRange] with the same rows as this [OrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 3 expressions.
+extension ProjectedOrderedQuery3<A, B, C>
+    on ProjectedOrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Limit [ProjectedOrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQuery] with the same rows as this [ProjectedOrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 3 expressions.
+extension ProjectedOrderedQueryRange3<A, B, C>
+    on ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Limit [ProjectedOrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQueryRange] with the same rows as this [ProjectedOrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => _query.first;
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 3 expressions.
+extension OrderedSubQuery3<A, B, C>
+    on OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Filter [OrderedSubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>)> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+              conditionBuilder) =>
+      OrderedSubQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) =>
+      ProjectedOrderedSubQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQuery] with the same rows as this [OrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 3 expressions.
+extension OrderedSubQueryRange3<A, B, C>
+    on OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Create a projection of this [OrderedSubQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder) =>
+      ProjectedOrderedSubQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQueryRange] with the same rows as this [OrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 3 expressions.
+extension ProjectedOrderedSubQuery3<A, B, C>
+    on ProjectedOrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Limit [ProjectedOrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQuery] with the same rows as this [ProjectedOrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 3 expressions.
+extension ProjectedOrderedSubQueryRange3<A, B, C>
+    on ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> {
+  /// Limit [ProjectedOrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>)> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQueryRange] with the same rows as this [ProjectedOrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c)
+              builder) =>
+      _query.orderBy(builder);
 }
 
 /// Extension methods for a query returning zero or more rows with
@@ -1315,19 +2749,19 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   ///     ])
   ///     .fetch();
   /// ```
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedQuery._(this);
     }
-    return Query._(
+    return OrderedQuery._(Query._(
       _context,
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [Query] using `LIMIT` clause.
@@ -1657,18 +3091,18 @@ extension SubQuery4<A, B, C, D>
   ///     ])
   ///     .fetch();
   /// ```
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
           builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedSubQuery._(this);
     }
-    return SubQuery._(
+    return OrderedSubQuery._(SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [SubQuery] using `LIMIT` clause.
@@ -1724,6 +3158,510 @@ extension SubQuery4<A, B, C, D>
   /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
   /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 4 expressions.
+extension OrderedQuery4<A, B, C, D>
+    on OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Filter [OrderedQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              conditionBuilder) =>
+      OrderedQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              projectionBuilder) =>
+      ProjectedOrderedQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQuery] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQuery] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQuery] with the same rows as this [OrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 4 expressions.
+extension OrderedQueryRange4<A, B, C, D>
+    on OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Create a projection of this [OrderedQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              projectionBuilder) =>
+      ProjectedOrderedQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQueryRange] with the same rows as this [OrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 4 expressions.
+extension ProjectedOrderedQuery4<A, B, C, D>
+    on ProjectedOrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Limit [ProjectedOrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(
+          int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(
+          int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQuery] with the same rows as this [ProjectedOrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 4 expressions.
+extension ProjectedOrderedQueryRange4<A, B, C, D>
+    on ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Limit [ProjectedOrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(
+          int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(
+          int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQueryRange] with the same rows as this [ProjectedOrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> get first => _query.first;
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 4 expressions.
+extension OrderedSubQuery4<A, B, C, D>
+    on OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Filter [OrderedSubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              conditionBuilder) =>
+      OrderedSubQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              projectionBuilder) =>
+      ProjectedOrderedSubQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(
+          int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQuery] with the same rows as this [OrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 4 expressions.
+extension OrderedSubQueryRange4<A, B, C, D>
+    on OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Create a projection of this [OrderedSubQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              projectionBuilder) =>
+      ProjectedOrderedSubQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(
+          int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQueryRange] with the same rows as this [OrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 4 expressions.
+extension ProjectedOrderedSubQuery4<A, B, C, D>
+    on ProjectedOrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Limit [ProjectedOrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(
+          int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQuery] with the same rows as this [ProjectedOrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 4 expressions.
+extension ProjectedOrderedSubQueryRange4<A, B, C, D>
+    on ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
+  /// Limit [ProjectedOrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(
+          int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQueryRange] with the same rows as this [ProjectedOrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+              builder) =>
+      _query.orderBy(builder);
 }
 
 /// Extension methods for a query returning zero or more rows with
@@ -1786,19 +3724,19 @@ extension Query5<A, B, C, D, E>
   ///     ])
   ///     .fetch();
   /// ```
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedQuery._(this);
     }
-    return Query._(
+    return OrderedQuery._(Query._(
       _context,
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [Query] using `LIMIT` clause.
@@ -2140,18 +4078,18 @@ extension SubQuery5<A, B, C, D, E>
   ///     ])
   ///     .fetch();
   /// ```
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
           builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedSubQuery._(this);
     }
-    return SubQuery._(
+    return OrderedSubQuery._(SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [SubQuery] using `LIMIT` clause.
@@ -2208,6 +4146,518 @@ extension SubQuery5<A, B, C, D, E>
   /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
   /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 5 expressions.
+extension OrderedQuery5<A, B, C, D, E>
+    on OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Filter [OrderedQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
+          Expr<bool> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              conditionBuilder) =>
+      OrderedQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              projectionBuilder) =>
+      ProjectedOrderedQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQuery] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> limit(
+          int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQuery] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> offset(
+          int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQuery] with the same rows as this [OrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get first =>
+      _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 5 expressions.
+extension OrderedQueryRange5<A, B, C, D, E>
+    on OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Create a projection of this [OrderedQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              projectionBuilder) =>
+      ProjectedOrderedQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> limit(
+          int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> offset(
+          int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQueryRange] with the same rows as this [OrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get first =>
+      _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 5 expressions.
+extension ProjectedOrderedQuery5<A, B, C, D, E>
+    on ProjectedOrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Limit [ProjectedOrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      limit(int limit) => ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      offset(int offset) => ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQuery] with the same rows as this [ProjectedOrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get first =>
+      _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 5 expressions.
+extension ProjectedOrderedQueryRange5<A, B, C, D, E>
+    on ProjectedOrderedQueryRange<
+        (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Limit [ProjectedOrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      limit(int limit) => ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      offset(int offset) => ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQueryRange] with the same rows as this [ProjectedOrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> get first =>
+      _query.first;
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 5 expressions.
+extension OrderedSubQuery5<A, B, C, D, E>
+    on OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Filter [OrderedSubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
+          Expr<bool> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              conditionBuilder) =>
+      OrderedSubQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              projectionBuilder) =>
+      ProjectedOrderedSubQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> limit(
+          int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> offset(
+          int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQuery] with the same rows as this [OrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 5 expressions.
+extension OrderedSubQueryRange5<A, B, C, D, E>
+    on OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Create a projection of this [OrderedSubQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              projectionBuilder) =>
+      ProjectedOrderedSubQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> limit(
+          int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> offset(
+          int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQueryRange] with the same rows as this [OrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 5 expressions.
+extension ProjectedOrderedSubQuery5<A, B, C, D, E>
+    on ProjectedOrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Limit [ProjectedOrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      limit(int limit) => ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      offset(int offset) =>
+          ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQuery] with the same rows as this [ProjectedOrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 5 expressions.
+extension ProjectedOrderedSubQueryRange5<A, B, C, D, E>
+    on ProjectedOrderedSubQueryRange<
+        (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
+  /// Limit [ProjectedOrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      limit(int limit) => ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)>
+      offset(int offset) =>
+          ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQueryRange] with the same rows as this [ProjectedOrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+              builder) =>
+      _query.orderBy(builder);
 }
 
 /// Extension methods for a query returning zero or more rows with
@@ -2274,19 +4724,19 @@ extension Query6<A, B, C, D, E, F>
   ///     ])
   ///     .fetch();
   /// ```
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
       List<(Expr<Comparable?>, Order)> Function(
               Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
           builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedQuery._(this);
     }
-    return Query._(
+    return OrderedQuery._(Query._(
       _context,
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [Query] using `LIMIT` clause.
@@ -2652,18 +5102,19 @@ extension SubQuery6<A, B, C, D, E, F>
   ///     ])
   ///     .fetch();
   /// ```
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
-      List<(Expr<Comparable?>, Order)> Function(
-              Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
-          builder) {
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+              builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedSubQuery._(this);
     }
-    return SubQuery._(
+    return OrderedSubQuery._(SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [SubQuery] using `LIMIT` clause.
@@ -2723,6 +5174,533 @@ extension SubQuery6<A, B, C, D, E, F>
   /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
   /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 6 expressions.
+extension OrderedQuery6<A, B, C, D, E, F>
+    on OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Filter [OrderedQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              conditionBuilder) =>
+      OrderedQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f)
+              projectionBuilder) =>
+      ProjectedOrderedQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQuery] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      limit(int limit) => OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQuery] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      offset(int offset) => OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQuery] with the same rows as this [OrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 6 expressions.
+extension OrderedQueryRange6<A, B, C, D, E, F> on OrderedQueryRange<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create a projection of this [OrderedQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f)
+              projectionBuilder) =>
+      ProjectedOrderedQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will only return the first [limit] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      limit(int limit) => OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will skip the first [offset] rows.
+  OrderedQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      offset(int offset) => OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQueryRange] with the same rows as this [OrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 6 expressions.
+extension ProjectedOrderedQuery6<A, B, C, D, E, F> on ProjectedOrderedQuery<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Limit [ProjectedOrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> limit(
+          int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> offset(
+          int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQuery] with the same rows as this [ProjectedOrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 6 expressions.
+extension ProjectedOrderedQueryRange6<A, B, C, D, E, F>
+    on ProjectedOrderedQueryRange<
+        (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Limit [ProjectedOrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> limit(
+          int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> offset(
+          int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQueryRange] with the same rows as this [ProjectedOrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      get first => _query.first;
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 6 expressions.
+extension OrderedSubQuery6<A, B, C, D, E, F>
+    on OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Filter [OrderedSubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f)
+              conditionBuilder) =>
+      OrderedSubQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f)
+              projectionBuilder) =>
+      ProjectedOrderedSubQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      limit(int limit) => OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      offset(int offset) => OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQuery] with the same rows as this [OrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      orderBy(
+              List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                      Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+                  builder) =>
+          _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 6 expressions.
+extension OrderedSubQueryRange6<A, B, C, D, E, F> on OrderedSubQueryRange<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Create a projection of this [OrderedSubQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f)
+              projectionBuilder) =>
+      ProjectedOrderedSubQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will only return the first [limit] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      limit(int limit) => OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will skip the first [offset] rows.
+  OrderedSubQueryRange<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      offset(int offset) => OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQueryRange] with the same rows as this [OrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      orderBy(
+              List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                      Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+                  builder) =>
+          _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 6 expressions.
+extension ProjectedOrderedSubQuery6<A, B, C, D, E, F>
+    on ProjectedOrderedSubQuery<
+        (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Limit [ProjectedOrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> limit(
+          int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQuery] with the same rows as this [ProjectedOrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      orderBy(
+              List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                      Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+                  builder) =>
+          _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 6 expressions.
+extension ProjectedOrderedSubQueryRange6<A, B, C, D, E, F>
+    on ProjectedOrderedSubQueryRange<
+        (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
+  /// Limit [ProjectedOrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> limit(
+          int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQueryRange] with the same rows as this [ProjectedOrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)>
+      orderBy(
+              List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                      Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f)
+                  builder) =>
+          _query.orderBy(builder);
 }
 
 /// Extension methods for a query returning zero or more rows with
@@ -2791,20 +5769,20 @@ extension Query7<A, B, C, D, E, F, G>
   ///     ])
   ///     .fetch();
   /// ```
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       orderBy(
           List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
                   Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
               builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedQuery._(this);
     }
-    return Query._(
+    return OrderedQuery._(Query._(
       _context,
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [Query] using `LIMIT` clause.
@@ -3227,19 +6205,20 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
   ///     ])
   ///     .fetch();
   /// ```
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+  OrderedSubQuery<
+          (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
       orderBy(
           List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
                   Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
               builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedSubQuery._(this);
     }
-    return SubQuery._(
+    return OrderedSubQuery._(SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [SubQuery] using `LIMIT` clause.
@@ -3299,6 +6278,555 @@ extension SubQuery7<A, B, C, D, E, F, G> on SubQuery<
   /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
   /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 7 expressions.
+extension OrderedQuery7<A, B, C, D, E, F, G> on OrderedQuery<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Filter [OrderedQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      where(
+              Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                      Expr<E> e, Expr<F> f, Expr<G> g)
+                  conditionBuilder) =>
+          OrderedQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g)
+              projectionBuilder) =>
+      ProjectedOrderedQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQuery] will only return the first [limit] rows.
+  OrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
+          int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQuery] will skip the first [offset] rows.
+  OrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
+          int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQuery] with the same rows as this [OrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      orderBy(
+              List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                      Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+                  builder) =>
+          _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F, G)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F, G)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 7 expressions.
+extension OrderedQueryRange7<A, B, C, D, E, F, G> on OrderedQueryRange<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create a projection of this [OrderedQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g)
+              projectionBuilder) =>
+      ProjectedOrderedQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will only return the first [limit] rows.
+  OrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
+          int limit) =>
+      OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will skip the first [offset] rows.
+  OrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
+          int offset) =>
+      OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQueryRange] with the same rows as this [OrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      orderBy(
+              List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                      Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+                  builder) =>
+          _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F, G)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F, G)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 7 expressions.
+extension ProjectedOrderedQuery7<A, B, C, D, E, F, G> on ProjectedOrderedQuery<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Limit [ProjectedOrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
+          int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
+          int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQuery] with the same rows as this [ProjectedOrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      orderBy(
+              List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                      Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+                  builder) =>
+          _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F, G)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F, G)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 7 expressions.
+extension ProjectedOrderedQueryRange7<A, B, C, D, E, F, G>
+    on ProjectedOrderedQueryRange<
+        (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Limit [ProjectedOrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
+          int limit) =>
+      ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
+          int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQueryRange] with the same rows as this [ProjectedOrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      orderBy(
+              List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                      Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+                  builder) =>
+          _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F, G)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F, G)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
+      get first => _query.first;
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 7 expressions.
+extension OrderedSubQuery7<A, B, C, D, E, F, G> on OrderedSubQuery<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Filter [OrderedSubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedSubQuery<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g)
+              conditionBuilder) =>
+      OrderedSubQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g)
+              projectionBuilder) =>
+      ProjectedOrderedSubQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will only return the first [limit] rows.
+  OrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
+          int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will skip the first [offset] rows.
+  OrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
+          int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQuery] with the same rows as this [OrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 7 expressions.
+extension OrderedSubQueryRange7<A, B, C, D, E, F, G> on OrderedSubQueryRange<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Create a projection of this [OrderedSubQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g)
+              projectionBuilder) =>
+      ProjectedOrderedSubQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will only return the first [limit] rows.
+  OrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
+          int limit) =>
+      OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will skip the first [offset] rows.
+  OrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
+          int offset) =>
+      OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQueryRange] with the same rows as this [OrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 7 expressions.
+extension ProjectedOrderedSubQuery7<A, B, C, D, E, F, G>
+    on ProjectedOrderedSubQuery<
+        (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Limit [ProjectedOrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
+          int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQuery] with the same rows as this [ProjectedOrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 7 expressions.
+extension ProjectedOrderedSubQueryRange7<A, B, C, D, E, F, G>
+    on ProjectedOrderedSubQueryRange<
+        (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
+  /// Limit [ProjectedOrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
+          int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQueryRange] with the same rows as this [ProjectedOrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<
+      (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b,
+                  Expr<C> c, Expr<D> d, Expr<E> e, Expr<F> f, Expr<G> g)
+              builder) =>
+      _query.orderBy(builder);
 }
 
 /// Extension methods for a query returning zero or more rows with
@@ -3380,7 +6908,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
   ///     ])
   ///     .fetch();
   /// ```
-  Query<
+  OrderedQuery<
           (
             Expr<A>,
             Expr<B>,
@@ -3404,13 +6932,13 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
               builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedQuery._(this);
     }
-    return Query._(
+    return OrderedQuery._(Query._(
       _context,
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [Query] using `LIMIT` clause.
@@ -4000,7 +7528,7 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
   ///     ])
   ///     .fetch();
   /// ```
-  SubQuery<
+  OrderedSubQuery<
           (
             Expr<A>,
             Expr<B>,
@@ -4024,12 +7552,12 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
               builder) {
     final (handle, orderBy) = _build(builder);
     if (orderBy.isEmpty) {
-      return this;
+      return OrderedSubQuery._(this);
     }
-    return SubQuery._(
+    return OrderedSubQuery._(SubQuery._(
       _expressions,
       (e) => OrderByClause._(_from(e), handle, orderBy),
-    );
+    ));
   }
 
   /// Limit [SubQuery] using `LIMIT` clause.
@@ -4091,6 +7619,898 @@ extension SubQuery8<A, B, C, D, E, F, G, H> on SubQuery<
   /// This returns an [Expr<bool>] that evaluates to `true`, if this [SubQuery]
   /// contains any rows, even if those rows are entirely `null`s.
   Expr<bool> exists() => ExistsExpression._(_from(_expressions.toList()));
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 8 expressions.
+extension OrderedQuery8<A, B, C, D, E, F, G, H> on OrderedQuery<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Filter [OrderedQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) =>
+      OrderedQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g, Expr<H> h)
+              projectionBuilder) =>
+      ProjectedOrderedQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQuery] will only return the first [limit] rows.
+  OrderedQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> limit(int limit) => OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQuery] will skip the first [offset] rows.
+  OrderedQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> offset(int offset) => OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQuery] with the same rows as this [OrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F, G, H)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F, G, H)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 8 expressions.
+extension OrderedQueryRange8<A, B, C, D, E, F, G, H> on OrderedQueryRange<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create a projection of this [OrderedQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g, Expr<H> h)
+              projectionBuilder) =>
+      ProjectedOrderedQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will only return the first [limit] rows.
+  OrderedQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> limit(int limit) => OrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedQueryRange] will skip the first [offset] rows.
+  OrderedQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> offset(int offset) => OrderedQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedQueryRange] with the same rows as this [OrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F, G, H)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F, G, H)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 8 expressions.
+extension ProjectedOrderedQuery8<A, B, C, D, E, F, G, H>
+    on ProjectedOrderedQuery<
+        (
+          Expr<A>,
+          Expr<B>,
+          Expr<C>,
+          Expr<D>,
+          Expr<E>,
+          Expr<F>,
+          Expr<G>,
+          Expr<H>
+        )> {
+  /// Limit [ProjectedOrderedQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> limit(int limit) => ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQuery] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> offset(
+          int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQuery] with the same rows as this [ProjectedOrderedQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F, G, H)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F, G, H)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> get first => _query.first;
+}
+
+/// Extension methods for a query returning zero or more rows with
+/// 8 expressions.
+extension ProjectedOrderedQueryRange8<A, B, C, D, E, F, G, H>
+    on ProjectedOrderedQueryRange<
+        (
+          Expr<A>,
+          Expr<B>,
+          Expr<C>,
+          Expr<D>,
+          Expr<E>,
+          Expr<F>,
+          Expr<G>,
+          Expr<H>
+        )> {
+  /// Limit [ProjectedOrderedQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> limit(int limit) => ProjectedOrderedQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> offset(
+          int offset) =>
+      ProjectedOrderedQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedQueryRange] with the same rows as this [ProjectedOrderedQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              builder) =>
+      _query.orderBy(builder);
+
+  /// Query the database for rows in this [Query] as a [List].
+  Future<List<(A, B, C, D, E, F, G, H)>> fetch() => _query.fetch();
+
+  /// Query the database for rows in this [Query] as a [Stream].
+  Stream<(A, B, C, D, E, F, G, H)> stream() => _query.stream();
+
+  /// Limit [Query] to the first row using `LIMIT` clause.
+  ///
+  /// This returns a [QuerySingle] which contains at-most one row.
+  QuerySingle<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> get first => _query.first;
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 8 expressions.
+extension OrderedSubQuery8<A, B, C, D, E, F, G, H> on OrderedSubQuery<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Filter [OrderedSubQuery] using `WHERE` clause.
+  ///
+  /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
+  /// returned by [conditionBuilder] evaluates to `true`.
+  OrderedSubQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> where(
+          Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
+                  Expr<E> e, Expr<F> f, Expr<G> g, Expr<H> h)
+              conditionBuilder) =>
+      OrderedSubQuery._(_query.where(conditionBuilder));
+
+  /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQuery] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQuery<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQuery<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g, Expr<H> h)
+              projectionBuilder) =>
+      ProjectedOrderedSubQuery._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will only return the first [limit] rows.
+  OrderedSubQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> limit(int limit) => OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQuery] will skip the first [offset] rows.
+  OrderedSubQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> offset(int offset) => OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQuery] with the same rows as this [OrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 8 expressions.
+extension OrderedSubQueryRange8<A, B, C, D, E, F, G, H> on OrderedSubQueryRange<
+    (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)> {
+  /// Create a projection of this [OrderedSubQueryRange] using `SELECT` clause.
+  ///
+  /// The [projectionBuilder] **must** return a [Record] where all the
+  /// values are [Expr] objects. If something else is returned you will
+  /// get a [OrderedSubQueryRange] object which doesn't have any methods!
+  ///
+  /// All methods and properties on [OrderedSubQueryRange<T>] are extension methods and
+  /// they are only defined for records `T` where all the values are
+  /// [Expr] objects.
+  ProjectedOrderedSubQueryRange<T> select<T extends Record>(
+          T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e,
+                  Expr<F> f, Expr<G> g, Expr<H> h)
+              projectionBuilder) =>
+      ProjectedOrderedSubQueryRange._(_query.select(projectionBuilder));
+
+  /// Limit [OrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will only return the first [limit] rows.
+  OrderedSubQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> limit(int limit) => OrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [OrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [OrderedSubQueryRange] will skip the first [offset] rows.
+  OrderedSubQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> offset(int offset) => OrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [OrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [OrderedSubQueryRange] with the same rows as this [OrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 8 expressions.
+extension ProjectedOrderedSubQuery8<A, B, C, D, E, F, G, H>
+    on ProjectedOrderedSubQuery<
+        (
+          Expr<A>,
+          Expr<B>,
+          Expr<C>,
+          Expr<D>,
+          Expr<E>,
+          Expr<F>,
+          Expr<G>,
+          Expr<H>
+        )> {
+  /// Limit [ProjectedOrderedSubQuery] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> limit(
+          int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQuery] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQuery] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQuery] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQuery] with the same rows as this [ProjectedOrderedSubQuery], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              builder) =>
+      _query.orderBy(builder);
+}
+
+/// Extension methods for a ordered subquery of zero or more rows with
+/// 8 expressions.
+extension ProjectedOrderedSubQueryRange8<A, B, C, D, E, F, G, H>
+    on ProjectedOrderedSubQueryRange<
+        (
+          Expr<A>,
+          Expr<B>,
+          Expr<C>,
+          Expr<D>,
+          Expr<E>,
+          Expr<F>,
+          Expr<G>,
+          Expr<H>
+        )> {
+  /// Limit [ProjectedOrderedSubQueryRange] using `LIMIT` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will only return the first [limit] rows.
+  ProjectedOrderedSubQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> limit(
+          int limit) =>
+      ProjectedOrderedSubQueryRange._(_query.limit(limit));
+
+  /// Offset [ProjectedOrderedSubQueryRange] using `OFFSET` clause.
+  ///
+  /// The resulting [ProjectedOrderedSubQueryRange] will skip the first [offset] rows.
+  ProjectedOrderedSubQueryRange<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> offset(
+          int offset) =>
+      ProjectedOrderedSubQueryRange._(_query.offset(offset));
+
+  /// Order [ProjectedOrderedSubQueryRange] using `ORDER BY` clause.
+  ///
+  /// Returns a [ProjectedOrderedSubQueryRange] with the same rows as this [ProjectedOrderedSubQueryRange], but ordered by
+  /// the expressions returned by [builder].
+  ///
+  /// The [builder] callback must return a list of
+  /// `(Expr<Comparable?>, Order)` records, where the [Order] specifies
+  /// whether results should be sorted in [Order.ascending] or
+  /// [Order.descending] order.
+  ///
+  /// Regardless of the [Order] given, `null` values are always sorted
+  /// last. If you want `null` values sorted first, you can get this
+  /// behavior using an extra `.isNull()` expression.
+  ///
+  /// For example:
+  /// ```dart
+  /// final result = await db.books
+  ///     .orderBy((book) => [
+  ///       // books where title == null will be sorted first now!
+  ///       (book.title.isNull(), Order.descending),
+  ///       (book.title, Order.ascending),
+  ///     ])
+  ///     .fetch();
+  /// ```
+  OrderedSubQuery<
+      (
+        Expr<A>,
+        Expr<B>,
+        Expr<C>,
+        Expr<D>,
+        Expr<E>,
+        Expr<F>,
+        Expr<G>,
+        Expr<H>
+      )> orderBy(
+          List<(Expr<Comparable?>, Order)> Function(
+                  Expr<A> a,
+                  Expr<B> b,
+                  Expr<C> c,
+                  Expr<D> d,
+                  Expr<E> e,
+                  Expr<F> f,
+                  Expr<G> g,
+                  Expr<H> h)
+              builder) =>
+      _query.orderBy(builder);
 }
 
 /// Extension methods for completing an `INNER JOIN`.

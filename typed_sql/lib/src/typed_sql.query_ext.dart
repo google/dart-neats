@@ -25,16 +25,45 @@ extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
       );
 }
 
+/// {@template SubQuery1Ext}
 /// Extension methods for subqueries projected to a single expression.
-extension SubQuery1First<T> on SubQuery<(Expr<T>,)> {
-  /// Use the first row of this [SubQuery] as subquery expression.
+/// {@endtemplate}
+extension SubQuery1Ext<T> on SubQuery<(Expr<T>,)> {
+  /// {@template first-subquery}
+  /// Use the first row of this query as subquery expression.
   ///
   /// This is equivalent to `(SELECT * FROM this LIMIT 1)` in SQL.
+  /// {@endtemplate}
   Expr<T?> get first => SubQueryExpression._(
         LimitClause._(_from(_expressions.toList()), 1),
         _expressions.$1,
       );
 }
+
+/// {@macro SubQuery1Ext}
+extension OrderedSubQuery1Ext<T> on OrderedSubQuery<(Expr<T>,)> {
+  /// {@macro first-subquery}
+  Expr<T?> get first => _query.first;
+}
+
+/// {@macro SubQuery1Ext}
+extension OrderedSubQueryRange1Ext<T> on OrderedSubQueryRange<(Expr<T>,)> {
+  /// {@macro first-subquery}
+  Expr<T?> get first => _query.first;
+}
+
+/// {@macro SubQuery1Ext}
+extension ProjectedOrderedSubQuery1Ext<T> on ProjectedOrderedSubQuery<(Expr<T>,)> {
+  /// {@macro first-subquery}
+  Expr<T?> get first => _query.first;
+}
+
+/// {@macro SubQuery1Ext}
+extension ProjectedOrderedSubQueryRange1Ext<T> on ProjectedOrderedSubQueryRange<(Expr<T>,)> {
+  /// {@macro first-subquery}
+  Expr<T?> get first => _query.first;
+}
+
 
 /// Extension methods for queries projected to an [int] expression.
 extension QueryInteger on Query<(Expr<int?>,)> {
@@ -183,10 +212,12 @@ extension SubQueryString on SubQuery<(Expr<String?>,)> {
 
 /// Extension methods for all queries.
 extension QueryExt<T extends Record> on Query<T> {
+  /// {@template distinct-query}
   /// Create a query with distinct rows from this query using the `DISTINCT`
   /// _keyword_.
   ///
   /// This is equivalent to `SELECT DISTINCT * FROM this` in SQL.
+  /// {@endtemplate}
   Query<T> distinct() =>
       Query._(_context, _expressions, (e) => DistinctClause._(_from(e)));
 
@@ -198,4 +229,101 @@ extension QueryExt<T extends Record> on Query<T> {
   /// > `.min`, `.max`, `.exists` and `.count` on a [SubQuery] returns [Expr]
   /// > instead of [QuerySingle].
   SubQuery<T> get asSubQuery => SubQuery._(_expressions, _from);
+}
+
+/// {@template OrderedQueryExt}
+/// Extension methods for all _ordered queries_.
+/// {@endtemplate}
+extension OrderedQueryExt<T extends Record> on OrderedQuery<T> {
+  /// {@macro distinct-query}
+  ProjectedOrderedQuery<T> distinct() =>
+      ProjectedOrderedQuery._(asQuery.distinct());
+
+  /// {@template OrderedQuery.asQuery}
+  /// Wrap this as **unordered** [Query].
+  ///
+  /// This will allow you to use this query in places where the ordering cannot
+  /// not be preserved in the result. This can necessary as SQL disregards
+  /// ordering from subqueries (after imposing `LIMIT` and `OFFSET`, if present).
+  ///
+  /// > [!WARNING]
+  /// > This will discard the ordering imposed by `.orderBy`.
+  /// {@endtemplate}
+  Query<T> get asQuery => _query;
+}
+
+/// {@macro OrderedQueryExt}
+extension OrderedQueryRangeExt<T extends Record> on OrderedQueryRange<T> {
+  /// {@macro OrderedQuery.asQuery}
+  Query<T> get asQuery => _query;
+}
+
+/// {@macro OrderedQueryExt}
+extension ProjectedOrderedQueryExt<T extends Record>
+    on ProjectedOrderedQuery<T> {
+  /// {@macro distinct-query}
+  ProjectedOrderedQuery<T> distinct() =>
+      ProjectedOrderedQuery._(asQuery.distinct());
+
+  /// {@macro OrderedQuery.asQuery}
+  Query<T> get asQuery => _query;
+}
+
+/// {@macro OrderedQueryExt}
+extension ProjectedOrderedQueryRangeExt<T extends Record>
+    on ProjectedOrderedQueryRange<T> {
+  /// {@macro OrderedQuery.asQuery}
+  Query<T> get asQuery => _query;
+}
+
+/// Extension methods for all subqueries.
+extension QuerySubExt<T extends Record> on SubQuery<T> {
+  /// {@macro distinct-query}
+  SubQuery<T> distinct() =>
+      SubQuery._(_expressions, (e) => DistinctClause._(_from(e)));
+}
+
+/// {@template OrderedSubQueryExt}
+/// Extension methods for all _ordered_ subqueries.
+/// {@endtemplate}
+extension OrderedSubQueryExt<T extends Record> on OrderedSubQuery<T> {
+  /// {@macro distinct-query}
+  ProjectedOrderedSubQuery<T> distinct() =>
+      ProjectedOrderedSubQuery._(_query.distinct());
+
+  /// {@template OrderedSubQuery.asSubQuery}
+  /// Wrap this as **unordered** [SubQuery].
+  ///
+  /// This will allow you to use this query in places where the ordering cannot
+  /// not be preserved in the result. This can necessary as SQL disregards
+  /// ordering from subqueries (after imposing `LIMIT` and `OFFSET`, if present).
+  ///
+  /// > [!WARNING]
+  /// > This will discard the ordering imposed by `.orderBy`.
+  /// {@endtemplate}
+  SubQuery<T> get asSubQuery => _query;
+}
+
+/// {@macro OrderedSubQueryExt}
+extension OrderedSubQueryRangeExt<T extends Record> on OrderedSubQueryRange<T> {
+  /// {@macro OrderedSubQuery.asSubQuery}
+  SubQuery<T> get asSubQuery => _query;
+}
+
+/// {@macro OrderedSubQueryExt}
+extension ProjectedOrderedSubQueryExt<T extends Record>
+    on ProjectedOrderedSubQuery<T> {
+  /// {@macro distinct-query}
+  ProjectedOrderedSubQuery<T> distinct() =>
+      ProjectedOrderedSubQuery._(_query.distinct());
+
+  /// {@macro OrderedSubQuery.asSubQuery}
+  SubQuery<T> get asSubQuery => _query;
+}
+
+/// {@macro OrderedSubQueryExt}
+extension ProjectedOrderedSubQueryRangeExt<T extends Record>
+    on ProjectedOrderedSubQueryRange<T> {
+  /// {@macro OrderedSubQuery.asSubQuery}
+  SubQuery<T> get asSubQuery => _query;
 }

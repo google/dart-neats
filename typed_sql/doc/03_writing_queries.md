@@ -584,8 +584,8 @@ select a single integer field (or expression) such that you have
    * `.first -> QuerySingle<T>`
    * `.limit(int limit) -> Query<T>`
    * `.offset(int offset) -> Query<T>`
-   * `.count() -> Expr<int>`
-   * `.exists() -> Expr<bool>`
+   * `.count() -> QuerySingle<(Expr<int>,)>`
+   * `.exists() -> QuerySingle<(Expr<bool>,)>`
    * `.select<S>(S Function(Expr<A>, Expr<B>, ...) projection) -> Query<S>`
    * `.groupBy<S>(S Function(Expr<A>, Expr<B>, ...) groupBy) -> Group<S, T>`
    * `.fetch() -> Future<List<(A, B, ...)>>`
