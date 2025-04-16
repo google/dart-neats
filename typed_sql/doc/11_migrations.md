@@ -29,6 +29,7 @@ the code-generator for `package:typed_sql` will generate a top-level
 
 ```dart migration/lib/model.dart#schema
 import 'package:typed_sql/typed_sql.dart';
+export 'package:typed_sql/typed_sql.dart';
 
 part 'model.g.dart';
 

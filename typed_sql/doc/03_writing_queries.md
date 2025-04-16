@@ -336,7 +336,6 @@ SELECT
   stock
 FROM books
 ORDER BY stock DESC
-LIMIT 3;
 ```
 
 You must always provide `Order.ascending` or `Order.descending` for entries in
@@ -344,9 +343,48 @@ the return value from the callback in `.orderBy`. You can sort by any
 `Expr<Comparable>`, typically `Expr<int>`, `Expr<double>`, `Expr<DateTime>`,
 `Expr<String>`, or, `Expr<bool>`.
 
-You can sort by arbitrary expressions not
-just fields, including subqueries, but you might want to consider the
-performance implications before using a complex subquery for ordering.
+You can sort by arbitrary expressions not just fields, including subqueries,
+but you might want to consider the performance implications before using a
+complex subquery for ordering.
+
+### Understanding `OrderedQuery<T>`
+Unlike other _extension methods_ on `Query<T>` the `.orderBy` method returns
+an `OrderedQuery<T>`, and not a `Query<T>`. This is because SQL disregards
+ordering of rows in a subquery when used as _derived table_. Meaning that any
+operation which needs to use the current query as a _derived table_ will
+disgard the ordering established by a preceeding `.orderBy`.
+
+To avoid the ordering from being accidentally discarded, the `.orderBy` method
+returns an `OrderedQuery` object. The `OrderedQuery` object only has
+_extension methods_ for which the ordering is preserved, unless explicitly
+specified. Specifically, an `OrderedQuery` has a `.asQuery` extension method
+that returns a `Query<T>`, which will allows the ordering to be disgarded.
+Thus, if you have an `OrderedQuery` and wish to use it with `.union` or other
+operation that disgards the ordering, you simply need to use `.asQuery`.
+
+> [!NOTE]
+> Technically, speaking the ordered query also has a `.orderBy`
+> _extension method_ which returns an `OrderedQuery` wuth a new ordering,
+> thus, discarding the existing ordering. But this should not come as a surprise
+> to anyone, as the purpose of `.orderBy` is to specify an order.
+
+When working on an `OrderedQuery` object, you will also find that some
+_extension methods_ don't return an `OrderedQuery`, but instead a
+`ProjectedOrderedQuery`, an `OrderedQueryRange` or a
+`ProjectedOrderedQueryRange`. This is because once you have used `.limit` or
+`.offset` on an `OrderedQuery`, it is no longer possible to apply `.where`
+without using `.asQuery` (and discarding the establish order). Similar,
+limitations occur when using `.distinct` or `.select`.
+
+For the most part you can resolve these issues by applying `.orderBy` as late
+as possible. Obviously, if you apply `.limit` or `.offset` before specifying an
+order, you will get an arbitrary subset of the rows. But you can often specify
+joins, filters, etc. before using `.orderBy`. If you can't, you can discard the
+ordering with `.asQuery`, and either have unordered results, or specify the
+ordering again using `.orderBy`.
+
+> [!WARNING]
+> Using `.asQuery` following `.orderBy` may cause the ordering to be discarded.
 
 
 ## Limit and offset with `.limit` and `.offset`
@@ -390,6 +428,93 @@ LIMIT 3;
 You may apply `.limit` and `.offset` more than once, but they do stack on-top of
 each other. So `.limit(3).limit(4)` will at-most return 3 rows, and
 `.offset(2).offset(1)` will skip the first 3 rows.
+
+As previously mentioned, `.orderBy` returns an `OrderedQuery`, and while it's
+still possible to use `.select` and `.limit` following `.orderBy`. It is not
+possible to apply `.where` after `.limit`. Because `.where` would need to use
+the query as a _derived table_ in SQL, where the ordering would be discarded.
+We can allow `.where` to be used after `.limit` by using `.asQuery`, which
+allows the ordering to be discarded.
+
+Suppose we did want to books by a specific author that also appear in the top 3
+of _all books_ with most stock. To do this we need to apply `.where` after
+`.orderBy`, thus, we must use `.asQuery` to signal our intend to discard the
+ordering, before we can use `.where`. If we wish to impose the ordering, we can
+do so with an additional `.orderBy` as illustrated below.
+
+```dart bookstore_test.dart#query-orderby-limit-where
+final result = await db.books
+    .orderBy((b) => [(b.stock, Order.descending)])
+    .limit(3)
+    .asQuery // allow the ordering to be discarded!
+    .where((b) => b.author.name.equalsLiteral('Bucks Bunny'))
+    .orderBy((b) => [(b.stock, Order.descending)])
+    .select((b) => (b.title, b.stock))
+    .fetch();
+
+check(result).deepEquals([
+  // title, stock
+  ('Vegetarian Dining', 42),
+]);
+```
+
+Notice that in the equivalent SQL below, the query before `.asQuery` is used
+as a subquery in a _derived table_. While the `LIMIT 3` is used to limit the
+rows from the subquery, the ordering of rows in the subquery does not affect
+the order of the rows in the outer query. This has to be re-imposed with
+another `ORDER BY` clause.
+
+```sql
+SELECT title, stock
+FROM (
+  SELECT bookId, title, authorId, stock
+  FROM books
+  ORDER BY stock DESC NULLS LAST
+  LIMIT 3
+)
+WHERE authorId = 2
+ORDER BY stock DESC NULLS LAST
+```
+
+Had we applied `.where` before imposing an order and limit of 3, we wouldn't
+get the same result. We would instead get top 3 books of a specific author by
+stock, as illustrated in the example below:
+
+```dart bookstore_test.dart#query-where-orderby-limit
+final result = await db.books
+    .where((b) => b.author.name.equalsLiteral('Bucks Bunny'))
+    .orderBy((b) => [(b.stock, Order.descending)])
+    .limit(3)
+    .select((b) => (b.title, b.stock))
+    .fetch();
+
+check(result).deepEquals([
+  // title, stock
+  ('Vegetarian Dining', 42),
+  ('Vegan Dining', 3),
+]);
+```
+
+For which the equivalent SQL looks something like:
+
+```sql
+SELECT title, stock
+FROM books
+WHERE authorId = 2
+ORDER BY stock DESC NULLS LAST
+LIMIT 3
+```
+
+To the extend possible, it is often possible to apply `.orderBy` as late as
+possible, ideally right before `.limit` and `.offset`. But as can be seen in the
+example above, this is not always possible.
+
+> [!NOTE]
+> After applying `.orderBy` the available extension methods are restricted to
+> those that _preserved ordering_. You can use `.asQuery` to discard the
+> ordering and use all the _extension methods_ available on `Query`.
+> If you wanted the results of your query to be ordered, you must either avoid
+> `.asQuery` or re-impose the ordering with another `.orderBy`.
 
 
 ## Point queries with `.byKey`, `.first` and `db.select()`
