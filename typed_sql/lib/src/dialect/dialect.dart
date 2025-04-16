@@ -83,7 +83,6 @@ export '../typed_sql.dart'
         Order,
         OrderByClause,
         QueryClause,
-        QueryContext,
         SelectClause,
         SelectFromClause,
         SelectStatement,

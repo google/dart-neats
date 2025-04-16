@@ -89,7 +89,6 @@ export 'src/typed_sql.dart'
         OrElseExpression,
         OrderByClause,
         QueryClause,
-        QueryContext,
         ReturningClause,
         SelectClause,
         SelectFromClause,
