@@ -704,7 +704,7 @@ select a single integer field (or expression) such that you have
 `QuerySingle<(Expr<int>,)>`.
 
  * `Query<T>`, when `T` is `(Expr<A>, Expr<B>, ...)`, has:
-   * `.orderBy(List<(Expr<Comparable>, Order)> Function(Expr<A>, Expr<B>, ...) orderBy) -> Query<T>`
+   * `.orderBy(List<(Expr<Comparable>, Order)> Function(Expr<A>, Expr<B>, ...) orderBy) -> OrderedQuery<T>`
    * `.where(Expr<bool> Function(Expr<A>, Expr<B>, ...) filter) -> Query<T>`
    * `.first -> QuerySingle<T>`
    * `.limit(int limit) -> Query<T>`
@@ -739,6 +739,39 @@ select a single integer field (or expression) such that you have
    * `.where(Expr<bool> Function(Expr<A>, Expr<B>, ...) filter) -> QuerySingle<T>`
    * `.select<S>(S Function(Expr<A>, Expr<B>, ...) projection) -> QuerySingle<S>`
    * `.asQuery -> Query<T>`
+ * `OrderedQuery<T>`, when `T` is `(Expr<A>, Expr<B>, ...)`, has:
+   * `.where(Expr<bool> Function(Expr<A>, Expr<B>, ...) filter) -> OrderQuery<T>`
+   * `.limit(int limit) -> OrderedQueryRange<T>`
+   * `.offset(int offset) -> OrderedQueryRange<T>`
+   * `.select<S>(S Function(Expr<A>, Expr<B>, ...) projection) -> ProjectedOrderedQuery<S>`
+   * `.distinct() -> ProjectedOrderedQuery<T>`
+   * `.orderBy(List<(Expr<Comparable>, Order)> Function(Expr<A>, Expr<B>, ...) orderBy) -> OrderedQuery<T>`
+   * `.asQuery -> Query<T>`
+   * `.fetch() -> Future<List<(A, B, ...)>>`
+   * `.stream() -> Stream<(A, B, ...)>`
+ * `OrderedQueryRange<T>`, when `T` is `(Expr<A>, Expr<B>, ...)`, has:
+   * `.limit(int limit) -> OrderedQueryRange<T>`
+   * `.offset(int offset) -> OrderedQueryRange<T>`
+   * `.select<S>(S Function(Expr<A>, Expr<B>, ...) projection) -> ProjectedOrderedQueryRange<S>`
+   * `.orderBy(List<(Expr<Comparable>, Order)> Function(Expr<A>, Expr<B>, ...) orderBy) -> OrderedQuery<T>`
+   * `.asQuery -> Query<T>`
+   * `.fetch() -> Future<List<(A, B, ...)>>`
+   * `.stream() -> Stream<(A, B, ...)>`
+ * `ProjectedOrderedQuery<T>`, when `T` is `(Expr<A>, Expr<B>, ...)`, has:
+   * `.limit(int limit) -> ProjectedOrderedQueryRange<T>`
+   * `.offset(int offset) -> ProjectedOrderedQueryRange<T>`
+   * `.distinct() -> ProjectedOrderedQuery<T>`
+   * `.orderBy(List<(Expr<Comparable>, Order)> Function(Expr<A>, Expr<B>, ...) orderBy) -> OrderedQuery<T>`
+   * `.asQuery -> Query<T>`
+   * `.fetch() -> Future<List<(A, B, ...)>>`
+   * `.stream() -> Stream<(A, B, ...)>`
+ * `ProjectedOrderedQueryRange<T>`, when `T` is `(Expr<A>, Expr<B>, ...)`, has:
+   * `.limit(int limit) -> ProjectedOrderedQueryRange<T>`
+   * `.offset(int offset) -> ProjectedOrderedQueryRange<T>`
+   * `.orderBy(List<(Expr<Comparable>, Order)> Function(Expr<A>, Expr<B>, ...) orderBy) -> OrderedQuery<T>`
+   * `.asQuery -> Query<T>`
+   * `.fetch() -> Future<List<(A, B, ...)>>`
+   * `.stream() -> Stream<(A, B, ...)>`
  * `SubQuery<(Expr<T>,)>`, has:
    * `.first -> Expr<T?>`
  * `SubQuery<(Expr<T>,)>`, when `T` is one of `int`, `double`, `String`, `DateTime`, has:
@@ -748,6 +781,7 @@ select a single integer field (or expression) such that you have
    * `.sum() -> Expr<T>`
    * `.avg() -> Expr<double>`
  * `SubQuery` also has many of the same methods as `Query`.
+ * `OrderedSubQuery`, etc, has many of the same methods as `OrderedQuery`.
 
 > [!NOTE]
 > The reference above is not exhaustive, this is a quick reference, it'll not be
