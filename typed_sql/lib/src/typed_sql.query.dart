@@ -463,14 +463,18 @@ final class ExpressionResolver<T> {
   final List<(String?, String)> _columns;
   final T context;
 
+  /// Depth of the scope in the query tree.
+  final int depth;
+
   ExpressionResolver._(
     this.context,
     this._parent,
     this._handle,
     this._columns,
+    this.depth,
   );
 
-  ExpressionResolver(T context) : this._(context, null, Object(), []);
+  ExpressionResolver(T context) : this._(context, null, Object(), [], 0);
 
   ExpressionResolver<T> withScope(
     ExpressionContext ctx,
@@ -481,6 +485,7 @@ final class ExpressionResolver<T> {
         this,
         ctx._handle,
         columns,
+        depth + 1,
       );
 
   (String?, String) resolve(FieldExpression field) {

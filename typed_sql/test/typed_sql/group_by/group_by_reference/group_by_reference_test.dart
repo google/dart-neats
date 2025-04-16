@@ -276,5 +276,57 @@ void main() {
     check(result[1].$2).isNotNull().equals(1);
   }, skipMysql: 'TODO: Fix nested subqueries in mysql');
 
+  r.addTest('books.groupBy(.author).aggregate(sum(.stock)).select(subquery...)',
+      (db) async {
+    final result = await db.books
+        .groupBy((b) => (b.author,))
+        .aggregate(
+          (agg) => agg
+              // aggregates:
+              .sum((book) => book.stock)
+              .count(),
+        )
+        .select(
+          (author, stock, countBooksByAuthor) => (
+            author.books.count(),
+            stock,
+            countBooksByAuthor,
+          ),
+        )
+        .fetch();
+
+    check(result).unorderedEquals([
+      // AuthorId, total stock, count of books
+      (3, 22, 3),
+      (2, 45, 2),
+    ]);
+  });
+
+  r.addTest('books.groupBy(.author).aggregate(min(subquery))', (db) async {
+    final result = await db.books
+        .groupBy((b) => (b.author,))
+        .aggregate(
+          (agg) => agg
+              // aggregates:
+              // This doesn't make sense, but we test nested subqueries in here
+              .min((book) => book.author.books.count())
+              .count(),
+        )
+        .select(
+          (author, minBooksCountByAuthor, countBooksByAuthor) => (
+            author.name,
+            minBooksCountByAuthor,
+            countBooksByAuthor,
+          ),
+        )
+        .fetch();
+
+    check(result).unorderedEquals([
+      // AuthorId, total stock, count of books
+      ('Easter Bunny', 3, 3),
+      ('Bucks Bunny', 2, 2),
+    ]);
+  });
+
   r.run();
 }

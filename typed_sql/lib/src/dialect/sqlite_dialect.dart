@@ -135,7 +135,8 @@ final class _Sqlite extends SqlDialect {
         'SET',
         statement.columns
             .mapIndexed(
-              (i, column) => '$column = (${r.expr(statement.values[i])})',
+              (i, column) =>
+                  '${escape(column)} = (${r.expr(statement.values[i])})',
             )
             .join(', '),
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS $a2 WHERE',
