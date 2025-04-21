@@ -115,8 +115,8 @@ void main() {
   r.addTest('.insert() non-null value', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(_value),
+          id: toExpr(1),
+          value: toExpr(_value),
         )
         .execute();
 
@@ -127,7 +127,7 @@ void main() {
   r.addTest('.insert() null by default', (db) async {
     await db.items
         .insert(
-          id: literal(1),
+          id: toExpr(1),
         )
         .execute();
 
@@ -138,8 +138,8 @@ void main() {
   r.addTest('.insert() null explicitly', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(null),
+          id: toExpr(1),
+          value: toExpr(null),
         )
         .execute();
 
@@ -150,7 +150,7 @@ void main() {
   r.addTest('.update() null by default', (db) async {
     await db.items
         .insert(
-          id: literal(1),
+          id: toExpr(1),
         )
         .execute();
 
@@ -160,7 +160,7 @@ void main() {
     await db.items
         .byKey(1)
         .update((item, set) => set(
-              value: literal(_value),
+              value: toExpr(_value),
             ))
         .execute();
 
@@ -171,8 +171,8 @@ void main() {
   r.addTest('.update() null explicitly', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(null),
+          id: toExpr(1),
+          value: toExpr(null),
         )
         .execute();
 
@@ -182,7 +182,7 @@ void main() {
     await db.items
         .byKey(1)
         .update((item, set) => set(
-              value: literal(_value),
+              value: toExpr(_value),
             ))
         .execute();
 

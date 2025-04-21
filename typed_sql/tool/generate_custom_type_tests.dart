@@ -138,7 +138,7 @@ void main() {
   r.addTest('insert', (db) async {
     await db.items
         .insert(
-          id: literal(1),
+          id: toExpr(1),
           value: initialValue.asExpr,
         )
         .execute();
@@ -150,7 +150,7 @@ void main() {
   r.addTest('update', (db) async {
     await db.items
         .insert(
-          id: literal(1),
+          id: toExpr(1),
           value: initialValue.asExpr,
         )
         .execute();
@@ -168,7 +168,7 @@ void main() {
   r.addTest('delete', (db) async {
     await db.items
         .insert(
-          id: literal(1),
+          id: toExpr(1),
           value: initialValue.asExpr,
         )
         .execute();

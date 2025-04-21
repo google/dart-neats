@@ -122,8 +122,8 @@ void main() {
   r.addTest('.insert()', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(initialValue),
+          id: toExpr(1),
+          value: toExpr(initialValue),
         )
         .execute();
 
@@ -134,8 +134,8 @@ void main() {
   r.addTest('.insert().returnInserted()', (db) async {
     final item = await db.items
         .insert(
-          id: literal(1),
-          value: literal(initialValue),
+          id: toExpr(1),
+          value: toExpr(initialValue),
         )
         .returnInserted()
         .executeAndFetch();
@@ -145,8 +145,8 @@ void main() {
   r.addTest('.insert().returning(.value)', (db) async {
     final value = await db.items
         .insert(
-          id: literal(1),
-          value: literal(initialValue),
+          id: toExpr(1),
+          value: toExpr(initialValue),
         )
         .returning((item) => (item.value,))
         .executeAndFetch();
@@ -156,14 +156,14 @@ void main() {
   r.addTest('.update()', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(initialValue),
+          id: toExpr(1),
+          value: toExpr(initialValue),
         )
         .execute();
 
     await db.items
         .update((item, set) => set(
-              value: literal(updatedValue),
+              value: toExpr(updatedValue),
             ))
         .execute();
 
@@ -174,14 +174,14 @@ void main() {
   r.addTest('.update().returnUpdated()', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(initialValue),
+          id: toExpr(1),
+          value: toExpr(initialValue),
         )
         .execute();
 
     final updatedItems = await db.items
         .update((item, set) => set(
-              value: literal(updatedValue),
+              value: toExpr(updatedValue),
             ))
         .returnUpdated()
         .executeAndFetch();
@@ -197,14 +197,14 @@ void main() {
   r.addTest('.update().returning(.value)', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(initialValue),
+          id: toExpr(1),
+          value: toExpr(initialValue),
         )
         .execute();
 
     final values = await db.items
         .update((item, set) => set(
-              value: literal(updatedValue),
+              value: toExpr(updatedValue),
             ))
         .returning((item) => (item.value,))
         .executeAndFetch();
@@ -220,8 +220,8 @@ void main() {
   r.addTest('.delete()', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(initialValue),
+          id: toExpr(1),
+          value: toExpr(initialValue),
         )
         .execute();
 
@@ -237,8 +237,8 @@ void main() {
   r.addTest('.delete().returnDeleted()', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(initialValue),
+          id: toExpr(1),
+          value: toExpr(initialValue),
         )
         .execute();
 
@@ -261,8 +261,8 @@ void main() {
   r.addTest('.delete().returning(.value)', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(initialValue),
+          id: toExpr(1),
+          value: toExpr(initialValue),
         )
         .execute();
 

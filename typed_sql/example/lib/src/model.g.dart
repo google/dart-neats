@@ -160,7 +160,7 @@ extension TableUserExt on Table<User> {
   ///
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
-  /// `.where((_) => literal(true)).delete()`.
+  /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<User> delete(int userId) => ExposedForCodeGen.deleteSingle(
         byKey(userId),
         _$User._$table,
@@ -191,9 +191,9 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// where `value > 0`.
   /// ```dart
   /// await db.mytable
-  ///   .where((row) => row.value > literal(0))
+  ///   .where((row) => row.value > toExpr(0))
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
@@ -270,7 +270,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   /// await db.mytable
   ///   .byKey(1)
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
@@ -498,7 +498,7 @@ extension TablePackageExt on Table<Package> {
   ///
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
-  /// `.where((_) => literal(true)).delete()`.
+  /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Package> delete(String packageName) =>
       ExposedForCodeGen.deleteSingle(
         byKey(packageName),
@@ -530,9 +530,9 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
   /// where `value > 0`.
   /// ```dart
   /// await db.mytable
-  ///   .where((row) => row.value > literal(0))
+  ///   .where((row) => row.value > toExpr(0))
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
@@ -600,7 +600,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
   /// await db.mytable
   ///   .byKey(1)
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
@@ -801,7 +801,7 @@ extension TableLikeExt on Table<Like> {
   ///
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
-  /// `.where((_) => literal(true)).delete()`.
+  /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Like> delete(
     int userId,
     String packageName,
@@ -841,9 +841,9 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
   /// where `value > 0`.
   /// ```dart
   /// await db.mytable
-  ///   .where((row) => row.value > literal(0))
+  ///   .where((row) => row.value > toExpr(0))
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
@@ -905,7 +905,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
   /// await db.mytable
   ///   .byKey(1)
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```

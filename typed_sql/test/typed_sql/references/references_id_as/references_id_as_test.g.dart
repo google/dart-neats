@@ -153,7 +153,7 @@ extension TableAuthorExt on Table<Author> {
   ///
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
-  /// `.where((_) => literal(true)).delete()`.
+  /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Author> delete(int authorId) => ExposedForCodeGen.deleteSingle(
         byKey(authorId),
         _$Author._$table,
@@ -184,9 +184,9 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// where `value > 0`.
   /// ```dart
   /// await db.mytable
-  ///   .where((row) => row.value > literal(0))
+  ///   .where((row) => row.value > toExpr(0))
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
@@ -251,7 +251,7 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
   /// await db.mytable
   ///   .byKey(1)
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
@@ -476,7 +476,7 @@ extension TableBookExt on Table<Book> {
   ///
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
-  /// `.where((_) => literal(true)).delete()`.
+  /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Book> delete(int bookId) => ExposedForCodeGen.deleteSingle(
         byKey(bookId),
         _$Book._$table,
@@ -507,9 +507,9 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// where `value > 0`.
   /// ```dart
   /// await db.mytable
-  ///   .where((row) => row.value > literal(0))
+  ///   .where((row) => row.value > toExpr(0))
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
@@ -577,7 +577,7 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
   /// await db.mytable
   ///   .byKey(1)
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```

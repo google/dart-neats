@@ -161,7 +161,7 @@ extension TableEmployeeExt on Table<Employee> {
   ///
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
-  /// `.where((_) => literal(true)).delete()`.
+  /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Employee> delete(int id) => ExposedForCodeGen.deleteSingle(
         byKey(id),
         _$Employee._$table,
@@ -192,9 +192,9 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// where `value > 0`.
   /// ```dart
   /// await db.mytable
-  ///   .where((row) => row.value > literal(0))
+  ///   .where((row) => row.value > toExpr(0))
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
@@ -263,7 +263,7 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
   /// await db.mytable
   ///   .byKey(1)
   ///   .update((row, set) => set(
-  ///     value: row.value - literal(1),
+  ///     value: row.value - toExpr(1),
   ///   ))
   ///   .execute();
   /// ```
