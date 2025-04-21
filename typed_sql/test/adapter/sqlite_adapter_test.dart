@@ -15,7 +15,7 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:typed_sql/adaptor.dart';
+import 'package:typed_sql/adapter.dart';
 
 void _test(String name, Future<void> Function(DatabaseAdaptor db) fn) async {
   test(name, () async {

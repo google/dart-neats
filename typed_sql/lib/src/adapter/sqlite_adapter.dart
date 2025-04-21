@@ -18,7 +18,7 @@ import 'dart:typed_data' show Uint8List;
 import 'package:sqlite3/sqlite3.dart';
 
 import '../utils/notifier.dart';
-import 'adaptor.dart';
+import 'adapter.dart';
 
 DatabaseAdaptor sqlite3Adaptor(Uri uri) => _SqliteDatabaseAdaptor(uri);
 

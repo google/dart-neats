@@ -17,7 +17,7 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:collection/collection.dart';
 
-import 'adaptor/adaptor.dart';
+import 'adapter/adapter.dart';
 import 'dialect/dialect.dart';
 
 part 'typed_sql.annotations.dart';

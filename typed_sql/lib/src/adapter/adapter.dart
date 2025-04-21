@@ -21,12 +21,12 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' show Pool;
 
 import '../exceptions.dart';
-import 'future_adaptor.dart';
-import 'logging_adaptor.dart';
-import 'postgres_adaptor.dart';
-import 'sqlite_adaptor.dart';
-import 'testing_adaptor.dart';
-import 'wrapclose_adaptor.dart';
+import 'future_adapter.dart';
+import 'logging_adapter.dart';
+import 'postgres_adapter.dart';
+import 'sqlite_adapter.dart';
+import 'testing_adapter.dart';
+import 'wrapclose_adapter.dart';
 
 export '../exceptions.dart';
 

@@ -14,7 +14,7 @@
 
 import 'dart:async';
 
-import 'adaptor.dart';
+import 'adapter.dart';
 
 /// Wrap [adaptor] as [DatabaseAdaptor].
 ///

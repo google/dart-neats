@@ -18,8 +18,8 @@ import 'dart:io';
 import 'package:postgres/postgres.dart';
 
 import '../utils/uuid.dart';
-import 'adaptor.dart';
-import 'wrapclose_adaptor.dart';
+import 'adapter.dart';
+import 'wrapclose_adapter.dart';
 
 Future<DatabaseAdaptor> sqlite3TestingDatabaseAdaptor() async {
   final u = Uri.parse('file:inmemory-${uuid()}?mode=memory&cache=shared');

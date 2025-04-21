@@ -15,7 +15,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:typed_sql/adaptor.dart';
+import 'package:typed_sql/adapter.dart';
 
 extension on Stream<RowReader> {
   Future<List<(int, String)>> toTupleList() async => (await toList())

@@ -28,4 +28,4 @@ library;
 
 import 'package:meta/meta.dart';
 
-export 'src/adaptor/adaptor.dart';
+export 'src/adapter/adapter.dart';

@@ -19,7 +19,7 @@ import 'dart:typed_data' show Uint8List;
 import 'package:postgres/postgres.dart';
 
 import '../utils/notifier.dart';
-import 'adaptor.dart';
+import 'adapter.dart';
 
 DatabaseAdaptor postgresAdaptor(Pool<void> pool) =>
     _PostgresDatabaseAdaptor(pool);
