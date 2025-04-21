@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// API for implementation of custom [DatabaseAdaptor] for `package:typed_sql`.
+/// API for implementation of custom [DatabaseAdapter] for `package:typed_sql`.
 ///
 /// You should only ever need to import this library, if you are implementing
-/// a custom [DatabaseAdaptor].
+/// a custom [DatabaseAdapter].
 ///
 /// > [!WARNING]
-/// > This interface is NOT stable yet, while subclasses of [DatabaseAdaptor]
+/// > This interface is NOT stable yet, while subclasses of [DatabaseAdapter]
 /// > is possible outside `package:typed_sql`, newer versions of this package
 /// > may add new methods (remove existing) without a major version bump!
 ///

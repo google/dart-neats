@@ -20,11 +20,11 @@ import 'model.dart';
 
 void main() {
   test('test with sqlite database', () async {
-    final adaptor = DatabaseAdaptor.sqlite3TestDatabase();
-    // Always remember to close the adaptor. This will delete the test database!
-    addTearDown(adaptor.close);
+    final adapter = DatabaseAdapter.sqlite3TestDatabase();
+    // Always remember to close the adapter. This will delete the test database!
+    addTearDown(adapter.close);
 
-    final db = Database<BankVault>(adaptor, SqlDialect.sqlite());
+    final db = Database<BankVault>(adapter, SqlDialect.sqlite());
 
     // Create tables in the empty test database
     await db.createTables();

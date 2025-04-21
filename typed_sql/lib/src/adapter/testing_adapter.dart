@@ -21,12 +21,12 @@ import '../utils/uuid.dart';
 import 'adapter.dart';
 import 'wrapclose_adapter.dart';
 
-Future<DatabaseAdaptor> sqlite3TestingDatabaseAdaptor() async {
+Future<DatabaseAdapter> sqlite3TestingDatabaseAdapter() async {
   final u = Uri.parse('file:inmemory-${uuid()}?mode=memory&cache=shared');
-  return DatabaseAdaptor.sqlite3(u);
+  return DatabaseAdapter.sqlite3(u);
 }
 
-Future<DatabaseAdaptor> postgresTestingDatabaseAdaptor({
+Future<DatabaseAdapter> postgresTestingDatabaseAdapter({
   String? host,
   int? port,
   String? database,
@@ -71,12 +71,12 @@ Future<DatabaseAdaptor> postgresTestingDatabaseAdaptor({
 
   var closing = false;
   final closed = Completer<void>();
-  final adaptor = DatabaseAdaptor.postgres(pool);
-  return withOnCloseDatabaseAdaptor(adaptor, ({
+  final adapter = DatabaseAdapter.postgres(pool);
+  return withOnCloseDatabaseAdapter(adapter, ({
     required bool force,
   }) async {
     try {
-      await adaptor.close(force: force);
+      await adapter.close(force: force);
     } finally {
       if (!closing) {
         closing = true;

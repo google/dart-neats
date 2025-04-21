@@ -79,7 +79,7 @@ void main() {
     // #region setup
     // Connect to database
     final db = Database<Bookstore>(
-      DatabaseAdaptor.sqlite3(Uri.parse(file)),
+      DatabaseAdapter.sqlite3(Uri.parse(file)),
       SqlDialect.sqlite(),
     );
 

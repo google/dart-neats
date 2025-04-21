@@ -17,10 +17,10 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:typed_sql/adapter.dart';
 
-void _test(String name, Future<void> Function(DatabaseAdaptor db) fn) async {
+void _test(String name, Future<void> Function(DatabaseAdapter db) fn) async {
   test(name, () async {
     final u = Uri.parse('file:shared-inmemory?mode=memory&cache=shared');
-    final db = DatabaseAdaptor.sqlite3(u);
+    final db = DatabaseAdapter.sqlite3(u);
     try {
       await db
           .query('CREATE TABLE users (id INT, name TEXT)', []).drain<void>();
@@ -31,7 +31,7 @@ void _test(String name, Future<void> Function(DatabaseAdaptor db) fn) async {
   });
 }
 
-Future<void> insertAliceBob(DatabaseAdaptor db) async {
+Future<void> insertAliceBob(DatabaseAdapter db) async {
   await db.query(
     'INSERT INTO users (id, name) VALUES (?, ?)',
     [1, 'Alice'],

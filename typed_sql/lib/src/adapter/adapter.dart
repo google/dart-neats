@@ -30,16 +30,16 @@ import 'wrapclose_adapter.dart';
 
 export '../exceptions.dart';
 
-/// Interface that a database adaptor must implement.
+/// Interface that a database adapter must implement.
 ///
 /// > [!WARNING]
-/// > This interface is NOT stable yet, while subclasses of [DatabaseAdaptor]
+/// > This interface is NOT stable yet, while subclasses of [DatabaseAdapter]
 /// > is possible outside `package:typed_sql`, newer versions of this package
 /// > may add new methods (remove existing) without a major version bump!
 ///
 /// {@category testing}
-abstract base class DatabaseAdaptor extends Executor {
-  DatabaseAdaptor();
+abstract base class DatabaseAdapter extends Executor {
+  DatabaseAdapter();
 
   /// Close the database connection pool.
   ///
@@ -55,13 +55,13 @@ abstract base class DatabaseAdaptor extends Executor {
   /// [DatabaseConnectionException].
   Future<void> close({bool force = false});
 
-  /// Create an SQLite3 [DatabaseAdaptor] from [uri].
+  /// Create an SQLite3 [DatabaseAdapter] from [uri].
   ///
   /// The [uri] must be given in [SQLite3 URI format][1], such as
   /// `file://path/to/database.db`.
   ///
   /// {@template sqlite-dependency}
-  /// The [DatabaseAdaptor] for SQLite3 relies on [`package:sqlite3`][sd-1],
+  /// The [DatabaseAdapter] for SQLite3 relies on [`package:sqlite3`][sd-1],
   /// this requires the dynamic library to available on the system, or manually
   /// specified, see [manually providing sqlite3 libraries][sd-2].
   ///
@@ -70,9 +70,9 @@ abstract base class DatabaseAdaptor extends Executor {
   /// {@endtemplate}
   ///
   /// > [!WARNING]
-  /// > Do not use `:memory:`, the [DatabaseAdaptor] **must** be able to open
+  /// > Do not use `:memory:`, the [DatabaseAdapter] **must** be able to open
   /// > concurrent connections. For testing consider using
-  /// > [DatabaseAdaptor.sqlite3TestDatabase]. If you want an in-memory
+  /// > [DatabaseAdapter.sqlite3TestDatabase]. If you want an in-memory
   /// > database, use _shared-cache_ with [URI filename][1], such as:
   /// > `file:memdb1?mode=memory&cache=shared`.
   /// >
@@ -80,19 +80,19 @@ abstract base class DatabaseAdaptor extends Executor {
   ///
   /// [1]: https://www.sqlite.org/uri.html
   /// [2]: https://www.sqlite.org/inmemorydb.html
-  factory DatabaseAdaptor.sqlite3(Uri uri) => sqlite3Adaptor(uri);
+  factory DatabaseAdapter.sqlite3(Uri uri) => sqlite3Adapter(uri);
 
-  /// Create a Postgres [DatabaseAdaptor] using [pool].
+  /// Create a Postgres [DatabaseAdapter] using [pool].
   ///
-  /// Calling [close] on the returned [DatabaseAdaptor] will close [pool].
-  factory DatabaseAdaptor.postgres(Pool<void> pool) => postgresAdaptor(pool);
+  /// Calling [close] on the returned [DatabaseAdapter] will close [pool].
+  factory DatabaseAdapter.postgres(Pool<void> pool) => postgresAdapter(pool);
 
-  /// Wrap [adaptor] as [DatabaseAdaptor].
+  /// Wrap [adapter] as [DatabaseAdapter].
   ///
-  /// This returns a [DatabaseAdaptor] that awaits the future before
+  /// This returns a [DatabaseAdapter] that awaits the future before
   /// calling forwarding the requested operation.
-  factory DatabaseAdaptor.fromFuture(Future<DatabaseAdaptor> adaptor) =>
-      futureDatabaseAdaptor(adaptor);
+  factory DatabaseAdapter.fromFuture(Future<DatabaseAdapter> adapter) =>
+      futureDatabaseAdapter(adapter);
 
   /// Create an SQLite in-memory database for testing.
   ///
@@ -105,8 +105,8 @@ abstract base class DatabaseAdaptor extends Executor {
   ///
   /// {@macro sqlite-dependency}
   @visibleForTesting
-  factory DatabaseAdaptor.sqlite3TestDatabase() =>
-      futureDatabaseAdaptor(sqlite3TestingDatabaseAdaptor());
+  factory DatabaseAdapter.sqlite3TestDatabase() =>
+      futureDatabaseAdapter(sqlite3TestingDatabaseAdapter());
 
   /// Create an ephemeral postgres database for testing.
   ///
@@ -121,7 +121,7 @@ abstract base class DatabaseAdaptor extends Executor {
   ///    `'postgres'`.
   ///
   /// This will connect to postgres, use `CREATE DATABASE "testdb-<uuid>"` to
-  /// create an empty database for testing, and return a [DatabaseAdaptor] for
+  /// create an empty database for testing, and return a [DatabaseAdapter] for
   /// that database. When [close] is called the test database will be deleted.
   ///
   /// You can launch a postgres database for local testing with:
@@ -156,14 +156,14 @@ abstract base class DatabaseAdaptor extends Executor {
   /// [creating PostgreSQL service containers](https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers)
   /// for details.
   @visibleForTesting
-  factory DatabaseAdaptor.postgresTestDatabase({
+  factory DatabaseAdapter.postgresTestDatabase({
     String? host,
     int? port,
     String? database,
     String? user,
     String? password,
   }) =>
-      futureDatabaseAdaptor(postgresTestingDatabaseAdaptor(
+      futureDatabaseAdapter(postgresTestingDatabaseAdapter(
         host: host,
         port: port,
         database: database,
@@ -171,27 +171,27 @@ abstract base class DatabaseAdaptor extends Executor {
         password: password,
       ));
 
-  /// Wrap [adaptor] such that [close] calls [onClosed] instead of
-  /// `adaptor.close`.
+  /// Wrap [adapter] such that [close] calls [onClosed] instead of
+  /// `adapter.close`.
   ///
   /// > [!NOTE]
-  /// > [adaptor] will not be closed when [close] is called on the returned
-  /// > [DatabaseAdaptor].
-  factory DatabaseAdaptor.withOnClose(
-    DatabaseAdaptor adaptor,
+  /// > [adapter] will not be closed when [close] is called on the returned
+  /// > [DatabaseAdapter].
+  factory DatabaseAdapter.withOnClose(
+    DatabaseAdapter adapter,
     Future<void> Function({required bool force}) onClosed,
   ) =>
-      withOnCloseDatabaseAdaptor(adaptor, onClosed);
+      withOnCloseDatabaseAdapter(adapter, onClosed);
 
-  /// Wrap [adaptor] such that [close] is a no-op!
+  /// Wrap [adapter] such that [close] is a no-op!
   ///
   /// > [!NOTE]
-  /// > [adaptor] will not be closed when [close] is called on the returned
-  /// > [DatabaseAdaptor].
-  factory DatabaseAdaptor.withNopClose(DatabaseAdaptor adaptor) =>
-      withOnCloseDatabaseAdaptor(adaptor, ({required bool force}) async {});
+  /// > [adapter] will not be closed when [close] is called on the returned
+  /// > [DatabaseAdapter].
+  factory DatabaseAdapter.withNopClose(DatabaseAdapter adapter) =>
+      withOnCloseDatabaseAdapter(adapter, ({required bool force}) async {});
 
-  /// Wrap [adaptor] such that all queries are written to [log].
+  /// Wrap [adapter] such that all queries are written to [log].
   ///
   /// > [!WARNING]
   /// > The format of log messages written are not covered by version
@@ -199,11 +199,11 @@ abstract base class DatabaseAdaptor extends Executor {
   ///
   /// This is intended for debugging purposes, and pairs nicely with
   /// [printOnFailure] from `package:test/test.dart`.
-  factory DatabaseAdaptor.withLogging(
-    DatabaseAdaptor adaptor,
+  factory DatabaseAdapter.withLogging(
+    DatabaseAdapter adapter,
     void Function(String message) log,
   ) =>
-      loggingAdaptor(adaptor, log);
+      loggingAdapter(adapter, log);
 }
 
 /// Interface for executing database operations in a transaction.

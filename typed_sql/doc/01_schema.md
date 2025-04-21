@@ -164,14 +164,14 @@ library.
 
 ## Using the database
 When we've defined a schema and generated code we can start using the database.
-We must first create a `Database` instance using a `DatabaseAdaptor` and
+We must first create a `Database` instance using a `DatabaseAdapter` and
 `SqlDialect` as follows:
 
 ```dart
-final db = Database<Bookstore>(adaptor, dialect);
+final db = Database<Bookstore>(adapter, dialect);
 ```
 
-How you obtain a `DatabaseAdaptor` and which `SqlDialect` to use depends on
+How you obtain a `DatabaseAdapter` and which `SqlDialect` to use depends on
 your database, as well as how you are connecting.
 
 Once you have `Database<Bookstore>` instance you can create empty tables for

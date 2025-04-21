@@ -22,7 +22,7 @@ import 'model.dart';
 
 var _testFileCounter = 0;
 
-Future<DatabaseAdaptor> _createSqliteAdaptor(String name) async {
+Future<DatabaseAdapter> _createSqliteAdapter(String name) async {
   _testFileCounter++;
   final filename = [
     name.hashCode.abs(),
@@ -30,7 +30,7 @@ Future<DatabaseAdaptor> _createSqliteAdaptor(String name) async {
     _testFileCounter,
   ].join('-');
   final u = Uri.parse('file:inmemory-$filename?mode=memory&cache=shared');
-  return DatabaseAdaptor.sqlite3(u);
+  return DatabaseAdapter.sqlite3(u);
 }
 
 @isTest
@@ -39,12 +39,12 @@ void _test(
   FutureOr<void> Function(Database<PrimaryDatabase> db) fn,
 ) async {
   test(name, () async {
-    final adaptor = DatabaseAdaptor.withLogging(
-      await _createSqliteAdaptor(name),
+    final adapter = DatabaseAdapter.withLogging(
+      await _createSqliteAdapter(name),
       printOnFailure,
       //print,
     );
-    final db = Database<PrimaryDatabase>(adaptor, SqlDialect.sqlite());
+    final db = Database<PrimaryDatabase>(adapter, SqlDialect.sqlite());
 
     await db.createTables();
     await db.users
@@ -93,7 +93,7 @@ void _test(
     try {
       await fn(db);
     } finally {
-      await adaptor.close(force: true);
+      await adapter.close(force: true);
     }
   });
 }

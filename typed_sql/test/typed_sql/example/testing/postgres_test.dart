@@ -25,11 +25,11 @@ import 'model.dart';
 
 void main() {
   test('test with postgres database', () async {
-    final adaptor = DatabaseAdaptor.postgresTestDatabase();
-    // Always remember to close the adaptor. This will delete the test database!
-    addTearDown(adaptor.close);
+    final adapter = DatabaseAdapter.postgresTestDatabase();
+    // Always remember to close the adapter. This will delete the test database!
+    addTearDown(adapter.close);
 
-    final db = Database<BankVault>(adaptor, SqlDialect.postgres());
+    final db = Database<BankVault>(adapter, SqlDialect.postgres());
 
     // Create tables in the empty test database
     await db.createTables();

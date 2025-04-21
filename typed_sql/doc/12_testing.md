@@ -1,11 +1,11 @@
 `package:typed_sql` ships with support for connecting to SQLite3 and PostgreSQL.
 A database connection consists of two parts:
  * An `SqlDialect`, which knows how to render SQL queries, and,
- * A `DatabaseAdaptor`, which manages connections to the database.
+ * A `DatabaseAdapter`, which manages connections to the database.
 
-For convenience, the `DatabaseAdaptor` provides constructors for connecting
+For convenience, the `DatabaseAdapter` provides constructors for connecting
 test database. When using one of these constructors a temporary database will
-be created, and when `close()` called on the `DatabaseAdaptor` the
+be created, and when `close()` called on the `DatabaseAdapter` the
 temporary database will be deleted.
 
 ## Testing with SQLite3
@@ -20,11 +20,11 @@ import 'model.dart';
 
 void main() {
   test('test with sqlite database', () async {
-    final adaptor = DatabaseAdaptor.sqlite3TestDatabase();
-    // Always remember to close the adaptor. This will delete the test database!
-    addTearDown(adaptor.close);
+    final adapter = DatabaseAdapter.sqlite3TestDatabase();
+    // Always remember to close the adapter. This will delete the test database!
+    addTearDown(adapter.close);
 
-    final db = Database<BankVault>(adaptor, SqlDialect.sqlite());
+    final db = Database<BankVault>(adapter, SqlDialect.sqlite());
 
     // Create tables in the empty test database
     await db.createTables();
@@ -35,17 +35,17 @@ void main() {
 ```
 
 > [!NOTE]
-> The [DatabaseAdaptor] for SQLite3 relies on [`package:sqlite3`][sd-1],
+> The [DatabaseAdapter] for SQLite3 relies on [`package:sqlite3`][sd-1],
 > this requires the dynamic library to available on the system, or manually
 > specified, see [manually providing sqlite3 libraries][sd-2].
 
 [sd-1]: https://pub.dev/packages/sqlite3
 [sd-2]: https://pub.dev/packages/sqlite3#manually-providing-sqlite3-libraries
 
-You can also create an in-memory database using the `DatabaseAdaptor.sqlite3`
+You can also create an in-memory database using the `DatabaseAdapter.sqlite3`
 constructor, but beware that the `:memory:` URI does not work well, because
 `package:typed_sql` may need to create multiple concurrent connections.
-See reference documentation for `DatabaseAdaptor.sqlite3` for details.
+See reference documentation for `DatabaseAdapter.sqlite3` for details.
 
 
 ## Testing with PostgreSQL
@@ -60,11 +60,11 @@ import 'model.dart';
 
 void main() {
   test('test with postgres database', () async {
-    final adaptor = DatabaseAdaptor.postgresTestDatabase();
-    // Always remember to close the adaptor. This will delete the test database!
-    addTearDown(adaptor.close);
+    final adapter = DatabaseAdapter.postgresTestDatabase();
+    // Always remember to close the adapter. This will delete the test database!
+    addTearDown(adapter.close);
 
-    final db = Database<BankVault>(adaptor, SqlDialect.postgres());
+    final db = Database<BankVault>(adapter, SqlDialect.postgres());
 
     // Create tables in the empty test database
     await db.createTables();
@@ -74,11 +74,11 @@ void main() {
 }
 ```
 
-The `DatabaseAdaptor.postgresTestDatabase` will connect to a postgres database,
-create a new database, return a `DatabaseAdaptor` connected to the new database,
-and delete the database when `close()` is called on the `DatabaseAdaptor`.
+The `DatabaseAdapter.postgresTestDatabase` will connect to a postgres database,
+create a new database, return a `DatabaseAdapter` connected to the new database,
+and delete the database when `close()` is called on the `DatabaseAdapter`.
 
-For this to work `DatabaseAdaptor.postgresTestDatabase` constructor **must**
+For this to work `DatabaseAdapter.postgresTestDatabase` constructor **must**
 connect a postgres database as _administrator_, you can specify connection
 parameters directly, but if you don't it assumes a database is accessible using:
  * `$PGHOST`, defaults to `'127.0.0.1'`,

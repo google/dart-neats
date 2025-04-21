@@ -20,13 +20,13 @@ import 'package:sqlite3/sqlite3.dart';
 import '../utils/notifier.dart';
 import 'adapter.dart';
 
-DatabaseAdaptor sqlite3Adaptor(Uri uri) => _SqliteDatabaseAdaptor(uri);
+DatabaseAdapter sqlite3Adapter(Uri uri) => _SqliteDatabaseAdapter(uri);
 
-final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
+final class _SqliteDatabaseAdapter extends DatabaseAdapter {
   final Uri _uri;
   final int _maxConnections = 10;
 
-  _SqliteDatabaseAdaptor(this._uri);
+  _SqliteDatabaseAdapter(this._uri);
 
   bool _closing = false;
   bool _closed = false;
@@ -46,13 +46,13 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
     _throwIfClosed();
     if (_closing) {
       // Do not allow new requests for connections while closing.
-      throw StateError('DatabaseAdaptor is closing!');
+      throw StateError('DatabaseAdapter is closing!');
     }
   }
 
   void _throwIfClosed() {
     if (_closed) {
-      throw StateError('DatabaseAdaptor is closed!');
+      throw StateError('DatabaseAdapter is closed!');
     }
   }
 
@@ -254,14 +254,14 @@ final class _SqliteDatabaseAdaptor extends DatabaseAdaptor {
 
 final class _SqliteDatabaseTransaction extends DatabaseTransaction {
   final Database _conn;
-  final _SqliteDatabaseAdaptor _adaptor;
+  final _SqliteDatabaseAdapter _adapter;
   var _closed = false;
   var _activeSubtransaction = false;
 
-  _SqliteDatabaseTransaction._(this._conn, this._adaptor);
+  _SqliteDatabaseTransaction._(this._conn, this._adapter);
 
   void _throwIfBlocked() {
-    _adaptor._throwIfClosed();
+    _adapter._throwIfClosed();
     if (_closed) {
       throw StateError('Transaction is closed!');
     }
@@ -276,7 +276,7 @@ final class _SqliteDatabaseTransaction extends DatabaseTransaction {
 
     // Ensure we're never offering a stream that can be blocked by back-pressure
     yield* Stream.fromIterable(
-      await _adaptor._query(_conn, sql, params).toList(),
+      await _adapter._query(_conn, sql, params).toList(),
     );
   }
 
@@ -284,21 +284,21 @@ final class _SqliteDatabaseTransaction extends DatabaseTransaction {
   Future<void> script(String sql) async {
     _throwIfBlocked();
 
-    await _adaptor._script(_conn, sql);
+    await _adapter._script(_conn, sql);
   }
 
   @override
   Future<QueryResult> execute(String sql, List<Object?> params) async {
     _throwIfBlocked();
 
-    return await _adaptor._execute(_conn, sql, params);
+    return await _adapter._execute(_conn, sql, params);
   }
 
   @override
   Future<T> transact<T>(Future<T> Function(DatabaseTransaction sp) fn) async {
     _throwIfBlocked();
 
-    final sp = 'sp_${_adaptor._savePointIndex++}';
+    final sp = 'sp_${_adapter._savePointIndex++}';
     _activeSubtransaction = true;
     try {
       _conn.execute('SAVEPOINT "$sp"');
@@ -306,7 +306,7 @@ final class _SqliteDatabaseTransaction extends DatabaseTransaction {
       _throwSqliteException(e);
     }
     try {
-      final tx = _SqliteDatabaseTransaction._(_conn, _adaptor);
+      final tx = _SqliteDatabaseTransaction._(_conn, _adapter);
       final T value;
       try {
         value = await fn(tx);

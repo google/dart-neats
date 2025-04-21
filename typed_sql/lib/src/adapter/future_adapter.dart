@@ -16,40 +16,40 @@ import 'dart:async';
 
 import 'adapter.dart';
 
-/// Wrap [adaptor] as [DatabaseAdaptor].
+/// Wrap [adapter] as [DatabaseAdapter].
 ///
-/// This returns a [DatabaseAdaptor] that awaits the future [adaptor] before
+/// This returns a [DatabaseAdapter] that awaits the future [adapter] before
 /// calling doing whatever operation was requested.
-DatabaseAdaptor futureDatabaseAdaptor(
-  Future<DatabaseAdaptor> adaptor,
+DatabaseAdapter futureDatabaseAdapter(
+  Future<DatabaseAdapter> adapter,
 ) =>
-    _DatabaseAdaptorFromFuture(adaptor);
+    _DatabaseAdapterFromFuture(adapter);
 
-final class _DatabaseAdaptorFromFuture extends DatabaseAdaptor {
-  final Future<DatabaseAdaptor> _adaptor;
+final class _DatabaseAdapterFromFuture extends DatabaseAdapter {
+  final Future<DatabaseAdapter> _adapter;
 
-  _DatabaseAdaptorFromFuture(this._adaptor);
+  _DatabaseAdapterFromFuture(this._adapter);
 
   @override
   Future<void> close({bool force = false}) async {
-    final adaptor = await _adaptor;
-    await adaptor.close(force: force);
+    final adapter = await _adapter;
+    await adapter.close(force: force);
   }
 
   @override
   Future<QueryResult> execute(String sql, List<Object?> params) async =>
-      (await _adaptor).execute(sql, params);
+      (await _adapter).execute(sql, params);
 
   @override
   Stream<RowReader> query(String sql, List<Object?> params) async* {
-    final adaptor = await _adaptor;
-    yield* adaptor.query(sql, params);
+    final adapter = await _adapter;
+    yield* adapter.query(sql, params);
   }
 
   @override
-  Future<void> script(String sql) async => (await _adaptor).script(sql);
+  Future<void> script(String sql) async => (await _adapter).script(sql);
 
   @override
   Future<T> transact<T>(Future<T> Function(Executor tx) fn) async =>
-      (await _adaptor).transact(fn);
+      (await _adapter).transact(fn);
 }

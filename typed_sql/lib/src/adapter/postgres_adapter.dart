@@ -21,10 +21,10 @@ import 'package:postgres/postgres.dart';
 import '../utils/notifier.dart';
 import 'adapter.dart';
 
-DatabaseAdaptor postgresAdaptor(Pool<void> pool) =>
-    _PostgresDatabaseAdaptor(pool);
+DatabaseAdapter postgresAdapter(Pool<void> pool) =>
+    _PostgresDatabaseAdapter(pool);
 
-final class _PostgresDatabaseAdaptor extends DatabaseAdaptor {
+final class _PostgresDatabaseAdapter extends DatabaseAdapter {
   final Pool<void> _pool;
 
   bool _closing = false;
@@ -34,18 +34,18 @@ final class _PostgresDatabaseAdaptor extends DatabaseAdaptor {
   final _stateChanged = Notifier();
   int _savePointIndex = 0;
 
-  _PostgresDatabaseAdaptor(this._pool);
+  _PostgresDatabaseAdapter(this._pool);
 
   void _throwIfClosing() {
     _throwIfClosed();
     if (_closing) {
-      throw StateError('DatabaseAdaptor is closing!');
+      throw StateError('DatabaseAdapter is closing!');
     }
   }
 
   void _throwIfClosed() {
     if (_closed) {
-      throw StateError('DatabaseAdaptor is closed!');
+      throw StateError('DatabaseAdapter is closed!');
     }
   }
 
@@ -244,15 +244,15 @@ final class _PostgresDatabaseAdaptor extends DatabaseAdaptor {
 }
 
 final class _DatabaseTransaction extends DatabaseTransaction {
-  final _PostgresDatabaseAdaptor _adaptor;
+  final _PostgresDatabaseAdapter _adapter;
   final Connection _conn;
   var _closed = false;
   var _activeSubtransaction = false;
 
-  _DatabaseTransaction(this._conn, this._adaptor);
+  _DatabaseTransaction(this._conn, this._adapter);
 
   void _throwIfBlocked() {
-    _adaptor._throwIfClosed();
+    _adapter._throwIfClosed();
     if (_closed) {
       throw StateError('Transaction is closed!');
     }
@@ -271,7 +271,7 @@ final class _DatabaseTransaction extends DatabaseTransaction {
       );
       return QueryResult(affectedRows: rs.affectedRows);
     } on Exception catch (e) {
-      _adaptor._throwDatabaseException(e);
+      _adapter._throwDatabaseException(e);
     }
   }
 
@@ -289,7 +289,7 @@ final class _DatabaseTransaction extends DatabaseTransaction {
       );
       yield* Stream.fromIterable(result.map(_PostgresRowReader.new));
     } on Exception catch (e) {
-      _adaptor._throwDatabaseException(e);
+      _adapter._throwDatabaseException(e);
     }
   }
 
@@ -300,7 +300,7 @@ final class _DatabaseTransaction extends DatabaseTransaction {
     try {
       await _conn.execute(sql, queryMode: QueryMode.simple);
     } on Exception catch (e) {
-      _adaptor._throwDatabaseException(e);
+      _adapter._throwDatabaseException(e);
     }
   }
 
@@ -308,16 +308,16 @@ final class _DatabaseTransaction extends DatabaseTransaction {
   Future<T> transact<T>(Future<T> Function(_DatabaseTransaction sp) fn) async {
     _throwIfBlocked();
 
-    final sp = 'sp_${_adaptor._savePointIndex++}';
+    final sp = 'sp_${_adapter._savePointIndex++}';
     try {
       _activeSubtransaction = true;
       try {
         await _conn.execute('SAVEPOINT "$sp"');
       } on Exception catch (e) {
-        _adaptor._throwDatabaseException(e);
+        _adapter._throwDatabaseException(e);
       }
       try {
-        final tx = _DatabaseTransaction(_conn, _adaptor);
+        final tx = _DatabaseTransaction(_conn, _adapter);
         final T value;
         try {
           value = await fn(tx);
@@ -327,14 +327,14 @@ final class _DatabaseTransaction extends DatabaseTransaction {
         try {
           await _conn.execute('RELEASE "$sp"');
         } on Exception catch (e) {
-          _adaptor._throwDatabaseException(e);
+          _adapter._throwDatabaseException(e);
         }
         return value;
       } on Exception catch (e) {
         try {
           await _conn.execute('ROLLBACK TO "$sp"');
         } on Exception catch (e) {
-          _adaptor._throwDatabaseException(e);
+          _adapter._throwDatabaseException(e);
         }
         throwTransactionAbortedException(e);
       } catch (e) {

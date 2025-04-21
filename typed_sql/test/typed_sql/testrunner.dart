@@ -68,26 +68,26 @@ final class TestRunner<T extends Schema> {
     return null;
   }();
 
-  DatabaseAdaptor _getPostgres() {
-    return DatabaseAdaptor.postgresTestDatabase(host: _getPostgresSocket);
+  DatabaseAdapter _getPostgres() {
+    return DatabaseAdapter.postgresTestDatabase(host: _getPostgresSocket);
   }
 
   void run() {
-    DatabaseAdaptor Function() getSqlite;
-    DatabaseAdaptor Function() getPostgres;
+    DatabaseAdapter Function() getSqlite;
+    DatabaseAdapter Function() getPostgres;
 
     if (_resetDatabaseForEachTest) {
-      getSqlite = DatabaseAdaptor.sqlite3TestDatabase;
+      getSqlite = DatabaseAdapter.sqlite3TestDatabase;
       getPostgres = _getPostgres;
     } else {
-      late DatabaseAdaptor sqlite;
-      getSqlite = () => DatabaseAdaptor.withNopClose(sqlite);
+      late DatabaseAdapter sqlite;
+      getSqlite = () => DatabaseAdapter.withNopClose(sqlite);
 
-      late DatabaseAdaptor postgres;
-      getPostgres = () => DatabaseAdaptor.withNopClose(postgres);
+      late DatabaseAdapter postgres;
+      getPostgres = () => DatabaseAdapter.withNopClose(postgres);
 
       setUpAll(() async {
-        sqlite = DatabaseAdaptor.sqlite3TestDatabase();
+        sqlite = DatabaseAdapter.sqlite3TestDatabase();
         postgres = _getPostgres();
       });
       tearDownAll(() async {
@@ -103,9 +103,9 @@ final class TestRunner<T extends Schema> {
           return;
         }
 
-        final adaptor =
-            DatabaseAdaptor.withLogging(getSqlite(), printOnFailure);
-        final db = Database<T>(adaptor, SqlDialect.sqlite());
+        final adapter =
+            DatabaseAdapter.withLogging(getSqlite(), printOnFailure);
+        final db = Database<T>(adapter, SqlDialect.sqlite());
 
         try {
           if (_setup != null) {
@@ -118,7 +118,7 @@ final class TestRunner<T extends Schema> {
             await _validate(db);
           }
         } finally {
-          await adaptor.close();
+          await adapter.close();
         }
       });
     }
@@ -130,9 +130,9 @@ final class TestRunner<T extends Schema> {
           return;
         }
 
-        final adaptor =
-            DatabaseAdaptor.withLogging(getPostgres(), printOnFailure);
-        final db = Database<T>(adaptor, SqlDialect.postgres());
+        final adapter =
+            DatabaseAdapter.withLogging(getPostgres(), printOnFailure);
+        final db = Database<T>(adapter, SqlDialect.postgres());
 
         try {
           if (_setup != null) {
@@ -145,7 +145,7 @@ final class TestRunner<T extends Schema> {
             await _validate(db);
           }
         } finally {
-          await adaptor.close(force: true);
+          await adapter.close(force: true);
         }
       });
     }

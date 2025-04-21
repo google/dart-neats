@@ -15,7 +15,7 @@
 /// This library defines base classes for all exceptions thrown by this package.
 ///
 /// @docImport 'package:typed_sql/typed_sql.dart';
-/// @docImport 'adaptor/adaptor.dart';
+/// @docImport 'adapter/adapter.dart';
 library;
 
 /// Base class for all exceptions thrown by `package:typed_sql`.
@@ -41,7 +41,7 @@ sealed class DatabaseException implements Exception {}
 abstract final class OperationException extends DatabaseException {
   // TODO: Make this class `sealed` when we are confident we don't need
   //       additional subclasses. This need not happen anytime soon, we can do
-  //       this long after 1.0.0, when we have a number of reliable adaptors.
+  //       this long after 1.0.0, when we have a number of reliable adapters.
 }
 
 /// Thrown when an operation was aborted because a constraint violation in the
@@ -110,7 +110,7 @@ Never throwTransactionAbortedException(Exception reason) =>
 abstract final class DatabaseConnectionException extends DatabaseException {
   // TODO: Make this class `sealed` when we are confident we don't need
   //       additional subclasses. This need not happen anytime soone, we can do
-  //       this long after 1.0.0, when we have a number of reliable adaptors.
+  //       this long after 1.0.0, when we have a number of reliable adapters.
 }
 
 /// Thrown when authentication with the database failed.
@@ -127,11 +127,11 @@ abstract base class DatabaseConnectionRefusedException
 
 /// Thrown when the database connection is _force closed_.
 ///
-/// This implies that [DatabaseAdaptor.close] was called with `force: true`,
+/// This implies that [DatabaseAdapter.close] was called with `force: true`,
 /// meaning that the underlying database connection or connection pool was
 /// _force closed_ while an operation was in progress.
 ///
-/// If the [DatabaseAdaptor] was closed gracefully (with `force: true`), then
+/// If the [DatabaseAdapter] was closed gracefully (with `force: true`), then
 /// attempting any operation will throw a [StateError].
 ///
 /// {@category exceptions}
@@ -157,7 +157,7 @@ abstract final class IntermittentConnectionException
     extends DatabaseConnectionException {
   // TODO: Make this class `sealed` when we are confident we don't need
   //       additional subclasses. This need not happen anytime soone, we can do
-  //       this long after 1.0.0, when we have a number of reliable adaptors.
+  //       this long after 1.0.0, when we have a number of reliable adapters.
 }
 
 /// Thrown when the database connection was broken.

@@ -28,13 +28,13 @@ invalid cast or some other runtime issue that couldn't be detected before the
 query (or operation) was executed.
 
 > [!WARNING]
-> Database adaptors may throw `UnspecifiedOperationException` for any error,
+> Database adapters may throw `UnspecifiedOperationException` for any error,
 > even when a more specific exception is exists. This means that if you catch a
 > `DivisionByZeroException` then you know the problem was division by zero.
 > But if you catch a `UnspecifiedOperationException` then the problem could be
 > division by zero, or some other problem.
 >
-> Database adaptors may throw `UnspecifiedOperationException` when a query fails
+> Database adapters may throw `UnspecifiedOperationException` when a query fails
 > due to _division by zero_, even if `DivisionByZeroException` is more specific.
 
 The `TransactionAbortedException` is thrown by `db.transact()` when a

@@ -22,7 +22,7 @@
 /// See topic on _schema defintion_ for how to get started.
 library;
 
-export 'src/adapter/adapter.dart' show DatabaseAdaptor, RowReader;
+export 'src/adapter/adapter.dart' show DatabaseAdapter, RowReader;
 export 'src/dialect/dialect.dart' show SqlDialect;
 export 'src/exceptions.dart' hide throwTransactionAbortedException;
 export 'src/typed_sql.dart'

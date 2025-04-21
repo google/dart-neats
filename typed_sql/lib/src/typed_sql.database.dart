@@ -16,16 +16,16 @@ part of 'typed_sql.dart';
 
 /// {@category transactions}
 final class Database<T extends Schema> {
-  Database(DatabaseAdaptor adaptor, SqlDialect dialect)
-      : _adaptor = adaptor,
+  Database(DatabaseAdapter adapter, SqlDialect dialect)
+      : _adapter = adapter,
         _dialect = dialect;
 
   final SqlDialect _dialect;
-  final DatabaseAdaptor _adaptor;
+  final DatabaseAdapter _adapter;
 
   late final _zoneKey = (this, #_transaction);
 
-  Executor get _executor => Zone.current[_zoneKey] as Executor? ?? _adaptor;
+  Executor get _executor => Zone.current[_zoneKey] as Executor? ?? _adapter;
 
   /// Start a transaction an execute [fn] in a [Zone] where all operations on
   /// this [Database] happens in the transaction.

@@ -14,46 +14,46 @@
 
 import 'adapter.dart';
 
-DatabaseAdaptor loggingAdaptor(
-  DatabaseAdaptor adaptor,
+DatabaseAdapter loggingAdapter(
+  DatabaseAdapter adapter,
   void Function(String message) logDrain,
 ) =>
-    _LoggingDatabaseAdaptor(adaptor, logDrain);
+    _LoggingDatabaseAdapter(adapter, logDrain);
 
-final class _LoggingDatabaseAdaptor extends DatabaseAdaptor {
-  final DatabaseAdaptor _adaptor;
+final class _LoggingDatabaseAdapter extends DatabaseAdapter {
+  final DatabaseAdapter _adapter;
   final void Function(String message) _log;
 
-  _LoggingDatabaseAdaptor(this._adaptor, this._log);
+  _LoggingDatabaseAdapter(this._adapter, this._log);
 
   @override
   Future<void> close({bool force = false}) async {
     _log('db.close(force: $force)');
-    await _adaptor.close(force: force);
+    await _adapter.close(force: force);
   }
 
   @override
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     _log('db.query("$sql", [${params.join(', ')}])');
-    yield* _adaptor.query(sql, params);
+    yield* _adapter.query(sql, params);
   }
 
   @override
   Future<QueryResult> execute(String sql, List<Object?> params) async {
     _log('db.execute("$sql", [${params.join(', ')}])');
-    return await _adaptor.execute(sql, params);
+    return await _adapter.execute(sql, params);
   }
 
   @override
   Future<void> script(String sql) {
     _log('db.script("$sql")');
-    return _adaptor.script(sql);
+    return _adapter.script(sql);
   }
 
   @override
   Future<T> transact<T>(Future<T> Function(Executor tx) fn) async {
     _log('db.transact()');
-    return await _adaptor.transact((tx) async {
+    return await _adapter.transact((tx) async {
       return await fn(_LoggingDatabaseTransaction(tx, _log));
     });
   }

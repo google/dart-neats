@@ -20,10 +20,10 @@ import 'model.dart';
 
 void main() {
   test('assertions with check()', () async {
-    final adaptor = DatabaseAdaptor.sqlite3TestDatabase();
-    addTearDown(adaptor.close);
+    final adapter = DatabaseAdapter.sqlite3TestDatabase();
+    addTearDown(adapter.close);
 
-    final db = Database<BankVault>(adaptor, SqlDialect.sqlite());
+    final db = Database<BankVault>(adapter, SqlDialect.sqlite());
 
     await db.createTables();
 

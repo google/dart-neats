@@ -36,7 +36,7 @@ final String? _getPostgresSocket = () {
 
 void main() async {
   test('create table / insert / select', () async {
-    final db = DatabaseAdaptor.postgresTestDatabase(host: _getPostgresSocket);
+    final db = DatabaseAdapter.postgresTestDatabase(host: _getPostgresSocket);
 
     await db.execute('CREATE TABLE users (id INT, name TEXT)', []);
 
