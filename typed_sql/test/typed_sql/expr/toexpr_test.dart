@@ -44,35 +44,35 @@ void main() {
   final r = TestRunner<Schema>(resetDatabaseForEachTest: false);
 
   for (final value in _values) {
-    r.addTest('literal(${'$value'.replaceAll('\n', '\\n')})', (db) async {
+    r.addTest('toExpr(${'$value'.replaceAll('\n', '\\n')})', (db) async {
       final result = await db.select((toExpr(value),)).fetch();
       check(result).equals(value);
     });
   }
 
-  r.addTest('literal(epoch)', (db) async {
+  r.addTest('toExpr(epoch)', (db) async {
     final result = await db.select((toExpr(epoch),)).fetch();
     check(result).equals(epoch);
   });
 
-  r.addTest('literal(today)', (db) async {
+  r.addTest('toExpr(today)', (db) async {
     final result = await db.select((toExpr(today),)).fetch();
     check(result).equals(today);
   });
 
-  r.addTest('literal(today) with microseconds', (db) async {
+  r.addTest('toExpr(today) with microseconds', (db) async {
     final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
     final result = await db.select((toExpr(today),)).fetch();
     check(result).equals(today);
   }, skipMysql: 'MySQL driver does not support microseconds');
 
-  r.addTest('literal(yearNoUtc) (allow for conversion to UTC)', (db) async {
+  r.addTest('toExpr(yearNoUtc) (allow for conversion to UTC)', (db) async {
     final result = await db.select((toExpr(yearNoUtc),)).fetch();
     // We allow for conversion to UTC
     check(result!.isAtSameMomentAs(yearNoUtc)).isTrue();
   });
 
-  r.addTest('literal(UintList)', (db) async {
+  r.addTest('toExpr(UintList)', (db) async {
     final result = await db.select(
       (toExpr(Uint8List.fromList([1, 2, 3])),),
     ).fetch();

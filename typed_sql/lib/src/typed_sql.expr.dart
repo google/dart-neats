@@ -465,7 +465,7 @@ final class Literal<T> extends SingleValueExpr<T> {
   factory Literal(T value) {
     // TODO: Consider asking Lasse how to actually switch over T, because null is not a type!
     // TODO: We need to switch over T or use an extension method! If someone does
-    //       select(literal(null as bool?)).union(select(literal(true)))
+    //       select(toExpr(null as bool?)).union(select(toExpr(true)))
     //       We'll have a expression that can't actually decode bools!
     switch (value) {
       case true:

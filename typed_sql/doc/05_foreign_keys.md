@@ -126,7 +126,7 @@ demonstrated in the following example:
 
 ```dart bookstore_test.dart#books-use-reference-in-where
 final titleAndAuthor = await db.books
-    .where((book) => book.author.name.equals(literal('Easter Bunny')))
+    .where((book) => book.author.name.equals(toExpr('Easter Bunny')))
     .select((book) => (
           book.title,
           book.author.name,

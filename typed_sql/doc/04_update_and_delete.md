@@ -65,7 +65,7 @@ we can do this as follows:
 await db.books
     .byKey(1)
     .update((book, set) => set(
-          stock: book.stock - literal(1),
+          stock: book.stock - toExpr(1),
         ))
     .execute();
 ```
@@ -104,7 +104,7 @@ following example.
 await db.books
     .byKey(1)
     .update((book, set) => set(
-          title: literal(null),
+          title: toExpr(null),
         ))
     .execute();
 ```
@@ -120,9 +120,9 @@ The following example shows how to reduce the stock by half for all books with
 
 ```dart bookstore_test.dart#update-books-where-stock-gt-5
 await db.books
-    .where((book) => book.stock > literal(5))
+    .where((book) => book.stock > toExpr(5))
     .update((book, set) => set(
-          stock: (book.stock / literal(2)).asInt(),
+          stock: (book.stock / toExpr(2)).asInt(),
         ))
     .execute();
 ```
@@ -138,7 +138,7 @@ The following example shows, how to use `.returnUpdated()` in the
 final updatedBook = await db.books
     .byKey(1)
     .update((book, set) => set(
-          stock: book.stock - literal(1),
+          stock: book.stock - toExpr(1),
         ))
     .returnUpdated() // return the updated row
     .executeAndFetch();
@@ -156,9 +156,9 @@ similar to the ones you can make with `.select`, as illustrated below:
 
 ```dart bookstore_test.dart#update-books-where-returning
 final updatedStock = await db.books
-    .where((book) => book.stock > literal(5))
+    .where((book) => book.stock > toExpr(5))
     .update((book, set) => set(
-          stock: (book.stock / literal(2)).asInt(),
+          stock: (book.stock / toExpr(2)).asInt(),
         ))
     .returning((book) => (book.stock,))
     .executeAndFetch();
@@ -216,7 +216,7 @@ the book.
 
 ```dart bookstore_test.dart#books-where-delete-return
 final deletedBooks = await db.books
-    .where((book) => book.authorId.equals(literal(1)))
+    .where((book) => book.authorId.equals(toExpr(1)))
     .delete()
     .returning((b) => (
           b.title,

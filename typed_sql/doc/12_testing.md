@@ -185,7 +185,7 @@ by `accountNumber`, which returns `Account?` can be checked.
 
 ```dart checks_test.dart#check-account
 // Create a new account
-await db.accounts.insert(accountNumber: literal('0000-001')).execute();
+await db.accounts.insert(accountNumber: toExpr('0000-001')).execute();
 
 // Fetch the created account
 final account = await db.accounts.byAccountNumber('0000-001').fetch();

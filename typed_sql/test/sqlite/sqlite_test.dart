@@ -14,7 +14,7 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' hide literal;
+import 'package:meta/meta.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
 

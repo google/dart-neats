@@ -43,7 +43,7 @@ If we want to insert an author into our database we can do that as follows:
 ```dart bookstore_test.dart#authors-insert
 await db.authors
     .insert(
-      name: literal('Roger Rabbit'),
+      name: toExpr('Roger Rabbit'),
     )
     .execute();
 ```
@@ -58,8 +58,8 @@ as illustrated below:
 ```dart bookstore_test.dart#authors-insert-with-id
 await db.authors
     .insert(
-      authorId: literal(42),
-      name: literal('Roger Rabbit'),
+      authorId: toExpr(42),
+      name: toExpr('Roger Rabbit'),
     )
     .execute();
 ```
@@ -97,7 +97,7 @@ below:
 ```dart bookstore_test.dart#authors-insert-returnInserted
 final author = await db.authors
     .insert(
-      name: literal('Roger Rabbit'),
+      name: toExpr('Roger Rabbit'),
     )
     .returnInserted()
     .executeAndFetch();
@@ -116,7 +116,7 @@ a record where values are `Expr` objects.
 ```dart bookstore_test.dart#authors-insert-returning-authorId
 final authorId = await db.authors
     .insert(
-      name: literal('Roger Rabbit'),
+      name: toExpr('Roger Rabbit'),
     )
     .returning((author) => (author.authorId,))
     .executeAndFetch();
@@ -142,7 +142,7 @@ insert a book referencing said author.
 
 ```dart bookstore_test.dart#books-insert-w-lookup
 final authorId = await db.authors
-    .where((author) => author.name.equals(literal('Easter Bunny')))
+    .where((author) => author.name.equals(toExpr('Easter Bunny')))
     .select((author) => (author.authorId,))
     .first
     .fetch();
@@ -153,8 +153,8 @@ if (authorId == null) {
 
 await db.books
     .insert(
-      title: literal('How to hide eggs'),
-      authorId: literal(authorId),
+      title: toExpr('How to hide eggs'),
+      authorId: toExpr(authorId),
     )
     .execute();
 ```
@@ -174,9 +174,9 @@ subquery.
 ```dart bookstore_test.dart#books-insert-subquery
 await db.books
     .insert(
-      title: literal('How to hide eggs'),
+      title: toExpr('How to hide eggs'),
       authorId: db.authors.asSubQuery
-          .where((author) => author.name.equals(literal('Easter Bunny')))
+          .where((author) => author.name.equals(toExpr('Easter Bunny')))
           .first
           .authorId
           .asNotNull(),

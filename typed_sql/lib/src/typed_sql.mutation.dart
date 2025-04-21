@@ -23,7 +23,7 @@ part of 'typed_sql.dart';
 ///
 /// ```dart
 /// await db.myTable
-///     .update((row, set) => set(column: literal(value)))
+///     .update((row, set) => set(column: toExpr(value)))
 ///     .execute();
 /// ```
 ///

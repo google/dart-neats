@@ -106,8 +106,8 @@ We can insert a row into the `cars` table with a `Color` as follows:
 ```dart dealership_test.dart#insert-car
 await db.cars
     .insert(
-      model: literal('Beetle'),
-      licensePlate: literal('ABC-001'),
+      model: toExpr('Beetle'),
+      licensePlate: toExpr('ABC-001'),
       color: Color.red().asExpr,
     )
     .execute();

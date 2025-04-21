@@ -61,7 +61,7 @@ the query as follows:
 ```dart bookstore_test.dart#books.where-stock-gt-3
 final result = await db.books
     .where(
-      (b) => b.stock > literal(3),
+      (b) => b.stock > toExpr(3),
     )
     .fetch();
 
@@ -128,7 +128,7 @@ final result = await db.books
     .select((b) => (
           b.title,
           b.stock,
-          b.stock > literal(3),
+          b.stock > toExpr(3),
         ))
     // .select() returns Query<(Expr<String>, Expr<int>, Expr<bool>)>,
     .fetch();
@@ -204,7 +204,7 @@ final titles = await db.books
         ))
     // This .where extension method takes a callback with two arguments
     // Expr<String?> and Expr<int>.
-    .where((title, stock) => stock > literal(3))
+    .where((title, stock) => stock > toExpr(3))
     .select((title, stock) => (title,))
     // Remove null rows, we cannot do type promotion so the result is still
     // a Query<(Expr<String?>,)>
@@ -212,7 +212,7 @@ final titles = await db.books
     // But we can use .orElse to callback to '', which gives us an
     // Query<(Expr<String>,)>, not that there is anything wrong with
     // returning a nullable expression.
-    .select((title) => (title.orElse(literal('')),))
+    .select((title) => (title.orElse(toExpr('')),))
     .fetch();
 
 check(titles).unorderedEquals([
@@ -279,7 +279,7 @@ final q = db.books
           b.title,
           b.stock,
         ))
-    .where((title, stock) => stock > literal(3));
+    .where((title, stock) => stock > toExpr(3));
 
 // Use await-for to process the stream one row at the time.
 await for (final (title, stock) in q.stream()) {
@@ -544,7 +544,7 @@ at-most one row, and using `.first` gives nicer typing.
 
 ```dart bookstore_test.dart#books-where-first
 final book = await db.books
-    .where((b) => b.title.equals(literal('Are Bunnies Unhealthy?')))
+    .where((b) => b.title.equals(toExpr('Are Bunnies Unhealthy?')))
     .first
     .fetch();
 
@@ -562,7 +562,7 @@ a book and an author in a single query performing two point queries at once, sav
 ```dart bookstore_test.dart#select-book-and-author
 final (book, author) = await db.select((
   db.books.asSubQuery
-      .where((b) => b.title.equals(literal('Are Bunnies Unhealthy?')))
+      .where((b) => b.title.equals(toExpr('Are Bunnies Unhealthy?')))
       .first,
   db.authors.byKey(1).asExpr,
 )).fetchOrNulls();

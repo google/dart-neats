@@ -71,42 +71,42 @@ extension Uint8ListExt<T extends Uint8List?> on T {
 extension ExpressionNull on Expr<Null> {
   /// Cast as [Expr<int?>] using `CAST(NULL AS BIGINT)`.
   ///
-  /// This method is rarely necessary, as you can generally pass `literal(null)`
+  /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<int?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
   Expr<int?> asInt() => CastExpression._(this, ColumnType.integer);
 
   /// Cast as [Expr<String?>] using `CAST(NULL AS TEXT)`.
   ///
-  /// This method is rarely necessary, as you can generally pass `literal(null)`
+  /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<String?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
   Expr<String?> asString() => CastExpression._(this, ColumnType.text);
 
   /// Cast as [Expr<double?>] using `CAST(NULL AS DOUBLE PRECISION)`.
   ///
-  /// This method is rarely necessary, as you can generally pass `literal(null)`
+  /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<double?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
   Expr<double?> asDouble() => CastExpression._(this, ColumnType.real);
 
   /// Cast as [Expr<bool?>] using `CAST(NULL AS BOOLEAN)`.
   ///
-  /// This method is rarely necessary, as you can generally pass `literal(null)`
+  /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<bool?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
   Expr<bool?> asBool() => CastExpression._(this, ColumnType.boolean);
 
   /// Cast as [Expr<DateTime?>] using `CAST(NULL AS TIMESTAMP)`.
   ///
-  /// This method is rarely necessary, as you can generally pass `literal(null)`
+  /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<DateTime?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
   Expr<DateTime?> asDateTime() => CastExpression._(this, ColumnType.dateTime);
 
   /// Cast as [Expr<Uint8List?>] using `CAST(NULL AS BLOB)`.
   ///
-  /// This method is rarely necessary, as you can generally pass `literal(null)`
+  /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<Uint8List?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
   Expr<Uint8List?> asBlob() => CastExpression._(this, ColumnType.blob);

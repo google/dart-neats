@@ -92,7 +92,7 @@ await db.createTables();
 // Insert an author and return the authorId!
 final authorId = await db.authors
     .insert(
-      name: literal('Bucks Bunny'),
+      name: toExpr('Bucks Bunny'),
     )
     .returning((author) => (author.authorId,))
     .executeAndFetch();
@@ -100,17 +100,17 @@ final authorId = await db.authors
 // Insert a book, omitting stock since it has a default value!
 await db.books
     .insert(
-      title: literal('Vegan Dining'),
-      authorId: literal(authorId), // by Bucks Bunny
-      stock: literal(3),
+      title: toExpr('Vegan Dining'),
+      authorId: toExpr(authorId), // by Bucks Bunny
+      stock: toExpr(3),
     )
     .execute();
 
 // Decrease stock for 'Vegan Dining', return update stock
 final updatedStock = await db.books
-    .where((b) => b.title.equals(literal('Vegan Dining')))
+    .where((b) => b.title.equals(toExpr('Vegan Dining')))
     .update((b, set) => set(
-          stock: b.stock - literal(1),
+          stock: b.stock - toExpr(1),
         ))
     .returning((b) => (b.stock,))
     .executeAndFetch();
@@ -118,7 +118,7 @@ check(updatedStock).deepEquals([2]);
 
 // Delete all books by Bucks Bunny
 await db.books
-    .where((b) => b.authorId.equals(literal(authorId)))
+    .where((b) => b.authorId.equals(toExpr(authorId)))
     .delete()
     .execute();
 ```
@@ -135,7 +135,7 @@ check(author.name).equals('Bucks Bunny');
 // Lookup book and associated author in one query
 final (book, authorOfBook) = await db.books
     // Filtering using a .where clause with a typed expression
-    .where((b) => b.title.equals(literal('Vegan Dining')))
+    .where((b) => b.title.equals(toExpr('Vegan Dining')))
     // Projection to select Expr<book> and Expr<Author> using a subquery
     .select((b) => (b, b.author))
     .first // only get the first result
@@ -149,7 +149,7 @@ check(authorOfBook.name).equals('Bucks Bunny');
 // We can also query for books with more than 5 in stock and get the title
 // and stock of each book.
 final titleAndStock = await db.books
-    .where((Expr<Book> b) => b.stock > literal(5))
+    .where((Expr<Book> b) => b.stock > toExpr(5))
     .select((b) => (b.title, b.stock))
     .fetch();
 check(titleAndStock).unorderedEquals([
