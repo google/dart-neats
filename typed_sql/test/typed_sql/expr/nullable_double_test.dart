@@ -24,224 +24,224 @@ final _cases = <({
   // Tests for null and double
   (
     name: '3.14 as double?',
-    expr: literal(3.14 as double?),
+    expr: toExpr(3.14 as double?),
     expected: 3.14,
   ),
   (
     name: 'null as double?',
-    expr: literal(null as double?),
+    expr: toExpr(null as double?),
     expected: null,
   ),
   (
     name: '(null as double?).orElse(3.14)',
-    expr: literal(null as double?).orElse(literal(3.14)),
+    expr: toExpr(null as double?).orElse(toExpr(3.14)),
     expected: 3.14,
   ),
   (
     name: '(null as double?).orElseLiteral(3.14)',
-    expr: literal(null as double?).orElseLiteral(3.14),
+    expr: toExpr(null as double?).orElseLiteral(3.14),
     expected: 3.14,
   ),
   (
     name: '(2.71 as double?).orElse(3.14)',
-    expr: literal(2.71 as double?).orElse(literal(3.14)),
+    expr: toExpr(2.71 as double?).orElse(toExpr(3.14)),
     expected: 2.71,
   ),
   (
     name: '(2.71 as double?).orElseLiteral(3.14)',
-    expr: literal(2.71 as double?).orElseLiteral(3.14),
+    expr: toExpr(2.71 as double?).orElseLiteral(3.14),
     expected: 2.71,
   ),
   (
     name: 'null.asDouble()',
-    expr: literal(null).asDouble(),
+    expr: toExpr(null).asDouble(),
     expected: null,
   ),
   (
     name: 'null.asDouble().orElse(3.14)',
-    expr: literal(null).asDouble().orElse(literal(3.14)),
+    expr: toExpr(null).asDouble().orElse(toExpr(3.14)),
     expected: 3.14,
   ),
   (
     name: 'null.asDouble().orElseLiteral(3.14)',
-    expr: literal(null).asDouble().orElseLiteral(3.14),
+    expr: toExpr(null).asDouble().orElseLiteral(3.14),
     expected: 3.14,
   ),
   // Expr<double?>.equals
   (
     name: 'null.asDouble().equals(null)',
-    expr: literal(null).asDouble().equals(literal(null)),
+    expr: toExpr(null).asDouble().equals(toExpr(null)),
     expected: true,
   ),
   (
     name: 'null.asDouble().equals(3.14)',
-    expr: literal(null).asDouble().equals(literal(3.14)),
+    expr: toExpr(null).asDouble().equals(toExpr(3.14)),
     expected: false,
   ),
   (
     name: '3.14.equals(null)',
-    expr: literal(3.14 as double?).equals(literal(null)),
+    expr: toExpr(3.14 as double?).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: '3.14.equals(3.14)',
-    expr: literal(3.14 as double?).equals(literal(3.14)),
+    expr: toExpr(3.14 as double?).equals(toExpr(3.14)),
     expected: true,
   ),
   (
     name: 'null.asDouble().equals(0.0)',
-    expr: literal(null).asDouble().equals(literal(0.0)),
+    expr: toExpr(null).asDouble().equals(toExpr(0.0)),
     expected: false,
   ),
   (
     name: '0.0.equals(null)',
-    expr: literal(0.0 as double?).equals(literal(null)),
+    expr: toExpr(0.0 as double?).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: '0.0.equals(0.0)',
-    expr: literal(0.0 as double?).equals(literal(0.0)),
+    expr: toExpr(0.0 as double?).equals(toExpr(0.0)),
     expected: true,
   ),
   // Expr<double?>.notEquals
   (
     name: 'null.asDouble().notEquals(null)',
-    expr: literal(null).asDouble().notEquals(literal(null)),
+    expr: toExpr(null).asDouble().notEquals(toExpr(null)),
     expected: false,
   ),
   (
     name: 'null.asDouble().notEquals(3.14)',
-    expr: literal(null).asDouble().notEquals(literal(3.14)),
+    expr: toExpr(null).asDouble().notEquals(toExpr(3.14)),
     expected: true,
   ),
   (
     name: '3.14.notEquals(null)',
-    expr: literal(3.14 as double?).notEquals(literal(null)),
+    expr: toExpr(3.14 as double?).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: '3.14.notEquals(3.14)',
-    expr: literal(3.14 as double?).notEquals(literal(3.14)),
+    expr: toExpr(3.14 as double?).notEquals(toExpr(3.14)),
     expected: false,
   ),
   (
     name: 'null.asDouble().notEquals(0.0)',
-    expr: literal(null).asDouble().notEquals(literal(0.0)),
+    expr: toExpr(null).asDouble().notEquals(toExpr(0.0)),
     expected: true,
   ),
   (
     name: '0.0.notEquals(null)',
-    expr: literal(0.0 as double?).notEquals(literal(null)),
+    expr: toExpr(0.0 as double?).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: '0.0.notEquals(0.0)',
-    expr: literal(0.0 as double?).notEquals(literal(0.0)),
+    expr: toExpr(0.0 as double?).notEquals(toExpr(0.0)),
     expected: false,
   ),
   // Expr<double?>.equalsLiteral
   (
     name: 'null.asDouble().equalsLiteral(null)',
-    expr: literal(null).asDouble().equalsLiteral(null),
+    expr: toExpr(null).asDouble().equalsLiteral(null),
     expected: true,
   ),
   (
     name: 'null.asDouble().equalsLiteral(3.14)',
-    expr: literal(null).asDouble().equalsLiteral(3.14),
+    expr: toExpr(null).asDouble().equalsLiteral(3.14),
     expected: false,
   ),
   (
     name: '3.14.equalsLiteral(null)',
-    expr: literal(3.14 as double?).equalsLiteral(null),
+    expr: toExpr(3.14 as double?).equalsLiteral(null),
     expected: false,
   ),
   (
     name: '3.14.equalsLiteral(3.14)',
-    expr: literal(3.14 as double?).equalsLiteral(3.14),
+    expr: toExpr(3.14 as double?).equalsLiteral(3.14),
     expected: true,
   ),
   (
     name: 'null.asDouble().equalsLiteral(0.0)',
-    expr: literal(null).asDouble().equalsLiteral(0.0),
+    expr: toExpr(null).asDouble().equalsLiteral(0.0),
     expected: false,
   ),
   (
     name: '0.0.equalsLiteral(null)',
-    expr: literal(0.0 as double?).equalsLiteral(null),
+    expr: toExpr(0.0 as double?).equalsLiteral(null),
     expected: false,
   ),
   (
     name: '0.0.equalsLiteral(0.0)',
-    expr: literal(0.0 as double?).equalsLiteral(0.0),
+    expr: toExpr(0.0 as double?).equalsLiteral(0.0),
     expected: true,
   ),
   // Expr<double?>.notEqualsLiteral
   (
     name: 'null.asDouble().notEqualsLiteral(null)',
-    expr: literal(null).asDouble().notEqualsLiteral(null),
+    expr: toExpr(null).asDouble().notEqualsLiteral(null),
     expected: false,
   ),
   (
     name: 'null.asDouble().notEqualsLiteral(3.14)',
-    expr: literal(null).asDouble().notEqualsLiteral(3.14),
+    expr: toExpr(null).asDouble().notEqualsLiteral(3.14),
     expected: true,
   ),
   (
     name: '3.14.notEqualsLiteral(null)',
-    expr: literal(3.14 as double?).notEqualsLiteral(null),
+    expr: toExpr(3.14 as double?).notEqualsLiteral(null),
     expected: true,
   ),
   (
     name: '3.14.notEqualsLiteral(3.14)',
-    expr: literal(3.14 as double?).notEqualsLiteral(3.14),
+    expr: toExpr(3.14 as double?).notEqualsLiteral(3.14),
     expected: false,
   ),
   (
     name: 'null.asDouble().notEqualsLiteral(0.0)',
-    expr: literal(null).asDouble().notEqualsLiteral(0.0),
+    expr: toExpr(null).asDouble().notEqualsLiteral(0.0),
     expected: true,
   ),
   (
     name: '0.0.notEqualsLiteral(null)',
-    expr: literal(0.0 as double?).notEqualsLiteral(null),
+    expr: toExpr(0.0 as double?).notEqualsLiteral(null),
     expected: true,
   ),
   (
     name: '0.0.notEqualsLiteral(0.0)',
-    expr: literal(0.0 as double?).notEqualsLiteral(0.0),
+    expr: toExpr(0.0 as double?).notEqualsLiteral(0.0),
     expected: false,
   ),
   // Expr<double?>.isNull()
 
   (
     name: 'null.asDouble().isNull()',
-    expr: literal(null).asDouble().isNull(),
+    expr: toExpr(null).asDouble().isNull(),
     expected: true,
   ),
   (
     name: '3.14.isNull()',
-    expr: literal(3.14 as double?).isNull(),
+    expr: toExpr(3.14 as double?).isNull(),
     expected: false,
   ),
   (
     name: '0.0.isNull()',
-    expr: literal(0.0 as double?).isNull(),
+    expr: toExpr(0.0 as double?).isNull(),
     expected: false,
   ),
   // Expr<double?>.isNotNull()
   (
     name: 'null.asDouble().isNotNull()',
-    expr: literal(null).asDouble().isNotNull(),
+    expr: toExpr(null).asDouble().isNotNull(),
     expected: false,
   ),
   (
     name: '3.14.isNotNull()',
-    expr: literal(3.14 as double?).isNotNull(),
+    expr: toExpr(3.14 as double?).isNotNull(),
     expected: true,
   ),
   (
     name: '0.0.isNotNull()',
-    expr: literal(0.0 as double?).isNotNull(),
+    expr: toExpr(0.0 as double?).isNotNull(),
     expected: true,
   ),
 ];

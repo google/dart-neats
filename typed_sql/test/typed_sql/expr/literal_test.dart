@@ -45,36 +45,36 @@ void main() {
 
   for (final value in _values) {
     r.addTest('literal(${'$value'.replaceAll('\n', '\\n')})', (db) async {
-      final result = await db.select((literal(value),)).fetch();
+      final result = await db.select((toExpr(value),)).fetch();
       check(result).equals(value);
     });
   }
 
   r.addTest('literal(epoch)', (db) async {
-    final result = await db.select((literal(epoch),)).fetch();
+    final result = await db.select((toExpr(epoch),)).fetch();
     check(result).equals(epoch);
   });
 
   r.addTest('literal(today)', (db) async {
-    final result = await db.select((literal(today),)).fetch();
+    final result = await db.select((toExpr(today),)).fetch();
     check(result).equals(today);
   });
 
   r.addTest('literal(today) with microseconds', (db) async {
     final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
-    final result = await db.select((literal(today),)).fetch();
+    final result = await db.select((toExpr(today),)).fetch();
     check(result).equals(today);
   }, skipMysql: 'MySQL driver does not support microseconds');
 
   r.addTest('literal(yearNoUtc) (allow for conversion to UTC)', (db) async {
-    final result = await db.select((literal(yearNoUtc),)).fetch();
+    final result = await db.select((toExpr(yearNoUtc),)).fetch();
     // We allow for conversion to UTC
     check(result!.isAtSameMomentAs(yearNoUtc)).isTrue();
   });
 
   r.addTest('literal(UintList)', (db) async {
     final result = await db.select(
-      (literal(Uint8List.fromList([1, 2, 3])),),
+      (toExpr(Uint8List.fromList([1, 2, 3])),),
     ).fetch();
     check(result).isNotNull().deepEquals(Uint8List.fromList([1, 2, 3]));
   });

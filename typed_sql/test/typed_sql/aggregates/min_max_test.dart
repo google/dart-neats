@@ -20,69 +20,69 @@ import '../testrunner.dart';
 final _integerCases = [
   (
     name: '2, 2, 2',
-    values: [literal(2), literal(2), literal(2)],
+    values: [toExpr(2), toExpr(2), toExpr(2)],
     max: 2,
     min: 2,
   ),
   (
     name: '1, 2, 3',
-    values: [literal(1), literal(2), literal(3)],
+    values: [toExpr(1), toExpr(2), toExpr(3)],
     max: 3,
     min: 1,
   ),
   (
     name: '42',
-    values: [literal(42)],
+    values: [toExpr(42)],
     max: 42,
     min: 42,
   ),
   (
     name: '0, 0, 0',
-    values: [literal(0), literal(0), literal(0)],
+    values: [toExpr(0), toExpr(0), toExpr(0)],
     max: 0,
     min: 0,
   ),
   (
     name: '-1, 0, 1',
-    values: [literal(-1), literal(0), literal(1)],
+    values: [toExpr(-1), toExpr(0), toExpr(1)],
     max: 1,
     min: -1,
   ),
   (
     name: '-1, -2, -3',
-    values: [literal(-1), literal(-2), literal(-3)],
+    values: [toExpr(-1), toExpr(-2), toExpr(-3)],
     max: -1,
     min: -3,
   ),
   (
     name: '2, 1',
-    values: [literal(2), literal(1)],
+    values: [toExpr(2), toExpr(1)],
     max: 2,
     min: 1,
   ),
   // Important to test that nulls are ignored when computing MAX / MIN
   (
     name: '2, null',
-    values: [literal(2), literal(null)],
+    values: [toExpr(2), toExpr(null)],
     max: 2,
     min: 2,
   ),
   (
     name: '2, null, null',
-    values: [literal(2), literal(null), literal(null)],
+    values: [toExpr(2), toExpr(null), toExpr(null)],
     max: 2,
     min: 2,
   ),
   (
     name: '2, null, 1',
-    values: [literal(2), literal(null), literal(1)],
+    values: [toExpr(2), toExpr(null), toExpr(1)],
     max: 2,
     min: 1,
   ),
   (
     name: 'null, null, null',
     // cast here is necessary for the first expression
-    values: [literal(null).asInt(), literal(null), literal(null)],
+    values: [toExpr(null).asInt(), toExpr(null), toExpr(null)],
     max: null,
     min: null,
   ),
@@ -91,111 +91,111 @@ final _integerCases = [
 final _doubleCases = [
   (
     name: '2.0, 2.0, 2.0',
-    values: [literal(2.0), literal(2.0), literal(2.0)],
+    values: [toExpr(2.0), toExpr(2.0), toExpr(2.0)],
     max: 2.0,
     min: 2.0,
   ),
   (
     name: '1.0, 2.0, 3.0',
-    values: [literal(1.0), literal(2.0), literal(3.0)],
+    values: [toExpr(1.0), toExpr(2.0), toExpr(3.0)],
     max: 3.0,
     min: 1.0,
   ),
   (
     name: '42.0',
-    values: [literal(42.0)],
+    values: [toExpr(42.0)],
     max: 42.0,
     min: 42.0,
   ),
   (
     name: '0.0, 0.0, 0.0',
-    values: [literal(0.0), literal(0.0), literal(0.0)],
+    values: [toExpr(0.0), toExpr(0.0), toExpr(0.0)],
     max: 0.0,
     min: 0.0,
   ),
   (
     name: '-1.0, 0.0, 1.0',
-    values: [literal(-1.0), literal(0.0), literal(1.0)],
+    values: [toExpr(-1.0), toExpr(0.0), toExpr(1.0)],
     max: 1.0,
     min: -1.0,
   ),
   (
     name: '-1.0, -2.0, -3.0',
-    values: [literal(-1.0), literal(-2.0), literal(-3.0)],
+    values: [toExpr(-1.0), toExpr(-2.0), toExpr(-3.0)],
     max: -1.0,
     min: -3.0,
   ),
   (
     name: '2.0, 1.0',
-    values: [literal(2.0), literal(1.0)],
+    values: [toExpr(2.0), toExpr(1.0)],
     max: 2.0,
     min: 1.0,
   ),
   (
     name: '3.14, 3.14, 3.14',
-    values: [literal(3.14), literal(3.14), literal(3.14)],
+    values: [toExpr(3.14), toExpr(3.14), toExpr(3.14)],
     max: 3.14,
     min: 3.14,
   ),
   (
     name: '3.14, 6.28, 9.42',
-    values: [literal(3.14), literal(6.28), literal(9.42)],
+    values: [toExpr(3.14), toExpr(6.28), toExpr(9.42)],
     max: 9.42,
     min: 3.14,
   ),
   (
     name: '3.14',
-    values: [literal(3.14)],
+    values: [toExpr(3.14)],
     max: 3.14,
     min: 3.14,
   ),
   (
     name: '0.0, 3.14, 6.28',
-    values: [literal(0.0), literal(3.14), literal(6.28)],
+    values: [toExpr(0.0), toExpr(3.14), toExpr(6.28)],
     max: 6.28,
     min: 0.0,
   ),
   (
     name: '-3.14, 0.0, 3.14',
-    values: [literal(-3.14), literal(0.0), literal(3.14)],
+    values: [toExpr(-3.14), toExpr(0.0), toExpr(3.14)],
     max: 3.14,
     min: -3.14,
   ),
   (
     name: '-3.14, -6.28, -9.42',
-    values: [literal(-3.14), literal(-6.28), literal(-9.42)],
+    values: [toExpr(-3.14), toExpr(-6.28), toExpr(-9.42)],
     max: -3.14,
     min: -9.42,
   ),
   (
     name: '3.14, 6.28',
-    values: [literal(3.14), literal(6.28)],
+    values: [toExpr(3.14), toExpr(6.28)],
     max: 6.28,
     min: 3.14,
   ),
   // Important to test that nulls are ignored when computing MAX / MIN
   (
     name: '3.14, null',
-    values: [literal(3.14), literal(null)],
+    values: [toExpr(3.14), toExpr(null)],
     max: 3.14,
     min: 3.14,
   ),
   (
     name: '3.14, null, null',
-    values: [literal(3.14), literal(null), literal(null)],
+    values: [toExpr(3.14), toExpr(null), toExpr(null)],
     max: 3.14,
     min: 3.14,
   ),
   (
     name: '2.0, null, 1.0',
-    values: [literal(2.0), literal(null), literal(1.0)],
+    values: [toExpr(2.0), toExpr(null), toExpr(1.0)],
     max: 2.0,
     min: 1.0,
   ),
   (
     name: 'null, null, null',
     // cast here is necessary for the first expression
-    values: [literal(null).asDouble(), literal(null), literal(null)],
+    values: [toExpr(null).asDouble(), toExpr(null), toExpr(null)],
     max: null,
     min: null,
   ),
@@ -204,69 +204,69 @@ final _doubleCases = [
 final _stringCases = [
   (
     name: 'a, a, a',
-    values: [literal('a'), literal('a'), literal('a')],
+    values: [toExpr('a'), toExpr('a'), toExpr('a')],
     max: 'a',
     min: 'a',
   ),
   (
     name: 'a, b, c',
-    values: [literal('a'), literal('b'), literal('c')],
+    values: [toExpr('a'), toExpr('b'), toExpr('c')],
     max: 'c',
     min: 'a',
   ),
   (
     name: 'abc',
-    values: [literal('abc')],
+    values: [toExpr('abc')],
     max: 'abc',
     min: 'abc',
   ),
   (
     name: '',
-    values: [literal(''), literal(''), literal('')],
+    values: [toExpr(''), toExpr(''), toExpr('')],
     max: '',
     min: '',
   ),
   (
     name: 'a, , b',
-    values: [literal('a'), literal(''), literal('b')],
+    values: [toExpr('a'), toExpr(''), toExpr('b')],
     max: 'b',
     min: '',
   ),
   (
     name: 'c, b, a',
-    values: [literal('c'), literal('b'), literal('a')],
+    values: [toExpr('c'), toExpr('b'), toExpr('a')],
     max: 'c',
     min: 'a',
   ),
   (
     name: 'b, a',
-    values: [literal('b'), literal('a')],
+    values: [toExpr('b'), toExpr('a')],
     max: 'b',
     min: 'a',
   ),
   // Important to test that nulls are ignored when computing MAX / MIN
   (
     name: 'b, null',
-    values: [literal('b'), literal(null)],
+    values: [toExpr('b'), toExpr(null)],
     max: 'b',
     min: 'b',
   ),
   (
     name: 'b, null, null',
-    values: [literal('b'), literal(null), literal(null)],
+    values: [toExpr('b'), toExpr(null), toExpr(null)],
     max: 'b',
     min: 'b',
   ),
   (
     name: 'b, null, a',
-    values: [literal('b'), literal(null), literal('a')],
+    values: [toExpr('b'), toExpr(null), toExpr('a')],
     max: 'b',
     min: 'a',
   ),
   (
     name: 'null, null, null',
     // cast here is necessary for the first expression
-    values: [literal(null).asString(), literal(null), literal(null)],
+    values: [toExpr(null).asString(), toExpr(null), toExpr(null)],
     max: null,
     min: null,
   ),
@@ -280,63 +280,63 @@ final tomorrow = DateTime.parse('2025-03-11T11:34:36.000000Z');
 final _dateTimeCases = [
   (
     name: 'epoch, epoch, epoch',
-    values: [literal(epoch), literal(epoch), literal(epoch)],
+    values: [toExpr(epoch), toExpr(epoch), toExpr(epoch)],
     max: epoch,
     min: epoch,
   ),
   (
     name: 'yesterday, today, tomorrow',
-    values: [literal(yesterday), literal(today), literal(tomorrow)],
+    values: [toExpr(yesterday), toExpr(today), toExpr(tomorrow)],
     max: tomorrow,
     min: yesterday,
   ),
   (
     name: 'today',
-    values: [literal(today)],
+    values: [toExpr(today)],
     max: today,
     min: today,
   ),
   (
     name: 'epoch, epoch, today',
-    values: [literal(epoch), literal(epoch), literal(today)],
+    values: [toExpr(epoch), toExpr(epoch), toExpr(today)],
     max: today,
     min: epoch,
   ),
   (
     name: 'tomorrow, today, yesterday',
-    values: [literal(tomorrow), literal(today), literal(yesterday)],
+    values: [toExpr(tomorrow), toExpr(today), toExpr(yesterday)],
     max: tomorrow,
     min: yesterday,
   ),
   (
     name: 'today, yesterday',
-    values: [literal(today), literal(yesterday)],
+    values: [toExpr(today), toExpr(yesterday)],
     max: today,
     min: yesterday,
   ),
   // Important to test that nulls are ignored when computing MAX / MIN
   (
     name: 'today, null',
-    values: [literal(today), literal(null)],
+    values: [toExpr(today), toExpr(null)],
     max: today,
     min: today,
   ),
   (
     name: 'today, null, null',
-    values: [literal(today), literal(null), literal(null)],
+    values: [toExpr(today), toExpr(null), toExpr(null)],
     max: today,
     min: today,
   ),
   (
     name: 'today, null, yesterday',
-    values: [literal(today), literal(null), literal(yesterday)],
+    values: [toExpr(today), toExpr(null), toExpr(yesterday)],
     max: today,
     min: yesterday,
   ),
   (
     name: 'null, null, null',
     // cast here is necessary for the first expression
-    values: [literal(null).asDateTime(), literal(null), literal(null)],
+    values: [toExpr(null).asDateTime(), toExpr(null), toExpr(null)],
     max: null,
     min: null,
   ),
@@ -435,7 +435,7 @@ void main() {
 
   r.addTest('{}.min() (emptyset)', (db) async {
     final result = await db
-        .select((literal(42.0),))
+        .select((toExpr(42.0),))
         .asQuery
         .where((v) => v.equalsLiteral(3.0))
         .min()
@@ -446,7 +446,7 @@ void main() {
   r.addTest('{null}.min()', (db) async {
     final result = await db
         .select(
-          (literal(null).asDouble(),),
+          (toExpr(null).asDouble(),),
         )
         .asQuery
         .min()
@@ -456,7 +456,7 @@ void main() {
 
   r.addTest('{}.max() (emptyset)', (db) async {
     final result = await db
-        .select((literal(42.0),))
+        .select((toExpr(42.0),))
         .asQuery
         .where((v) => v.equalsLiteral(3.0))
         .max()
@@ -467,7 +467,7 @@ void main() {
   r.addTest('{null}.max()', (db) async {
     final result = await db
         .select(
-          (literal(null).asDouble(),),
+          (toExpr(null).asDouble(),),
         )
         .asQuery
         .max()

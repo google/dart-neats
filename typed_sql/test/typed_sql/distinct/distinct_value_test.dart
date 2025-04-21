@@ -25,84 +25,84 @@ final _cases = [
   // Test with single character strings
   (
     name: 'A, B, C',
-    values: [literal('A'), literal('B'), literal('C')],
+    values: [toExpr('A'), toExpr('B'), toExpr('C')],
     distinct: {'A', 'B', 'C'},
   ),
   (
     name: 'A, B, C, A',
-    values: [literal('A'), literal('B'), literal('C'), literal('A')],
+    values: [toExpr('A'), toExpr('B'), toExpr('C'), toExpr('A')],
     distinct: {'A', 'B', 'C'},
   ),
   // Test with simple numbers
   (
     name: '1, 2, 3',
-    values: [literal(1), literal(2), literal(3)],
+    values: [toExpr(1), toExpr(2), toExpr(3)],
     distinct: {1, 2, 3},
   ),
   (
     name: '1, 2, 3, 1, 2',
-    values: [literal(1), literal(2), literal(3), literal(1), literal(2)],
+    values: [toExpr(1), toExpr(2), toExpr(3), toExpr(1), toExpr(2)],
     distinct: {1, 2, 3},
   ),
   // Test with double
   (
     name: '3.14, 2.71, 1.61',
-    values: [literal(3.14), literal(2.71), literal(1.61)],
+    values: [toExpr(3.14), toExpr(2.71), toExpr(1.61)],
     distinct: {3.14, 2.71, 1.61},
   ),
   (
     name: '3.14, 2.71, 1.61, 2.71,',
-    values: [literal(3.14), literal(2.71), literal(1.61), literal(2.71)],
+    values: [toExpr(3.14), toExpr(2.71), toExpr(1.61), toExpr(2.71)],
     distinct: {3.14, 2.71, 1.61},
   ),
   // Test with longer strings
   (
     name: 'hello, world, dart',
-    values: [literal('hello'), literal('world'), literal('dart')],
+    values: [toExpr('hello'), toExpr('world'), toExpr('dart')],
     distinct: {'hello', 'world', 'dart'},
   ),
   (
     name: 'hello, world, dart, dart, dart',
     values: [
-      literal('hello'),
-      literal('world'),
-      literal('dart'),
-      literal('dart'),
-      literal('dart')
+      toExpr('hello'),
+      toExpr('world'),
+      toExpr('dart'),
+      toExpr('dart'),
+      toExpr('dart')
     ],
     distinct: {'hello', 'world', 'dart'},
   ),
   // Test with DateTime
   (
     name: 'epoch, yesterday, today',
-    values: [literal(epoch), literal(yesterday), literal(today)],
+    values: [toExpr(epoch), toExpr(yesterday), toExpr(today)],
     distinct: {epoch, yesterday, today},
   ),
   (
     name: 'epoch, yesterday, today, today, today',
     values: [
-      literal(epoch),
-      literal(yesterday),
-      literal(today),
-      literal(today),
-      literal(today)
+      toExpr(epoch),
+      toExpr(yesterday),
+      toExpr(today),
+      toExpr(today),
+      toExpr(today)
     ],
     distinct: {epoch, yesterday, today},
   ),
   // Test with bool
   (
     name: 'true, false, true',
-    values: [literal(true), literal(false), literal(true)],
+    values: [toExpr(true), toExpr(false), toExpr(true)],
     distinct: {true, false},
   ),
   (
     name: 'true, true',
-    values: [literal(true), literal(true)],
+    values: [toExpr(true), toExpr(true)],
     distinct: {true},
   ),
   (
     name: 'false, false',
-    values: [literal(false), literal(false)],
+    values: [toExpr(false), toExpr(false)],
     distinct: {false},
   ),
 ];

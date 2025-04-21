@@ -64,18 +64,18 @@ void main() {
       for (final d in _initialDepartments) {
         await db.departments
             .insert(
-              departmentId: literal(d.id),
-              name: literal(d.name),
-              location: literal(d.location),
+              departmentId: toExpr(d.id),
+              name: toExpr(d.name),
+              location: toExpr(d.location),
             )
             .execute();
       }
       for (final e in _initialEmployees) {
         await db.employees
             .insert(
-              employeeId: literal(e.id),
-              name: literal(e.name),
-              departmentId: literal(e.departmentId),
+              employeeId: toExpr(e.id),
+              name: toExpr(e.name),
+              departmentId: toExpr(e.departmentId),
             )
             .execute();
       }
@@ -177,7 +177,7 @@ void main() {
   r.addTest('employees.join(..).on(true)', (db) async {
     final result = await db.employees
         .join(db.departments)
-        .on((employee, department) => literal(true))
+        .on((employee, department) => toExpr(true))
         .select((employee, department) => (
               employee.name,
               department.name,
@@ -206,7 +206,7 @@ void main() {
   r.addTest('employees.leftJoin(..).on(true)', (db) async {
     final result = await db.employees
         .leftJoin(db.departments)
-        .on((employee, department) => literal(true))
+        .on((employee, department) => toExpr(true))
         .select((employee, department) => (
               employee.name,
               department.name,
@@ -235,7 +235,7 @@ void main() {
   r.addTest('employees.rightJoin(..).on(true)', (db) async {
     final result = await db.employees
         .rightJoin(db.departments)
-        .on((employee, department) => literal(true))
+        .on((employee, department) => toExpr(true))
         .select((employee, department) => (
               employee.name,
               department.name,
@@ -266,7 +266,7 @@ void main() {
   r.addTest('employees.join(..).on(false)', (db) async {
     final result = await db.employees
         .join(db.departments)
-        .on((employee, department) => literal(false))
+        .on((employee, department) => toExpr(false))
         .select((employee, department) => (
               employee.name,
               department.name,
@@ -279,7 +279,7 @@ void main() {
   r.addTest('employees.leftJoin(..).on(false)', (db) async {
     final result = await db.employees
         .leftJoin(db.departments)
-        .on((employee, department) => literal(false))
+        .on((employee, department) => toExpr(false))
         .select((employee, department) => (
               employee.name,
               department.name,
@@ -298,7 +298,7 @@ void main() {
   r.addTest('employees.rightJoin(..).on(false)', (db) async {
     final result = await db.employees
         .rightJoin(db.departments)
-        .on((employee, department) => literal(false))
+        .on((employee, department) => toExpr(false))
         .select((employee, department) => (
               employee.name,
               department.name,
@@ -416,7 +416,7 @@ void main() {
         .join(db.departments)
         .on((employee, department) =>
             employee.departmentId.equals(department.departmentId) &
-            department.name.equals(literal('Engineering')))
+            department.name.equals(toExpr('Engineering')))
         .select((employee, department) => (
               employee.name,
               department.name,
@@ -436,8 +436,8 @@ void main() {
         .on(
           (employee, department) =>
               employee.departmentId.equals(department.departmentId) |
-              (employee.name.equals(literal('David')) &
-                  department.name.equals(literal('Marketing'))),
+              (employee.name.equals(toExpr('David')) &
+                  department.name.equals(toExpr('Marketing'))),
         )
         .select((employee, department) => (
               employee.name,

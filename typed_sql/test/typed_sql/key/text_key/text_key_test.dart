@@ -39,14 +39,14 @@ void main() {
   r.addTest('.insert() two with differnet keys', (db) async {
     await db.items
         .insert(
-          key: literal('A'),
-          value: literal('hello'),
+          key: toExpr('A'),
+          value: toExpr('hello'),
         )
         .execute();
     await db.items
         .insert(
-          key: literal('B'),
-          value: literal('world'),
+          key: toExpr('B'),
+          value: toExpr('world'),
         )
         .execute();
 
@@ -57,16 +57,16 @@ void main() {
   r.addTest('.insert() two same keys (conflict)', (db) async {
     await db.items
         .insert(
-          key: literal('A'),
-          value: literal('hello'),
+          key: toExpr('A'),
+          value: toExpr('hello'),
         )
         .execute();
 
     try {
       await db.items
           .insert(
-            key: literal('A'),
-            value: literal('world'),
+            key: toExpr('A'),
+            value: toExpr('world'),
           )
           .execute();
     } on Exception {
@@ -78,8 +78,8 @@ void main() {
   r.addTest('.byKey()', (db) async {
     await db.items
         .insert(
-          key: literal('A'),
-          value: literal('hello'),
+          key: toExpr('A'),
+          value: toExpr('hello'),
         )
         .execute();
 

@@ -34,11 +34,11 @@ void main() {
   final r = TestRunner<TestDatabase>(
     setup: (db) async {
       await db.createTables();
-      await db.items.insert(id: literal(1), value: literal('a')).execute();
-      await db.items.insert(id: literal(2), value: literal('b')).execute();
-      await db.items.insert(id: literal(3), value: literal('c')).execute();
-      await db.items.insert(id: literal(4), value: literal('c')).execute();
-      await db.items.insert(id: literal(5), value: literal('c')).execute();
+      await db.items.insert(id: toExpr(1), value: toExpr('a')).execute();
+      await db.items.insert(id: toExpr(2), value: toExpr('b')).execute();
+      await db.items.insert(id: toExpr(3), value: toExpr('c')).execute();
+      await db.items.insert(id: toExpr(4), value: toExpr('c')).execute();
+      await db.items.insert(id: toExpr(5), value: toExpr('c')).execute();
     },
   );
 
@@ -51,7 +51,7 @@ void main() {
 
   r.addTest('db.items.where(.id.equals(1)).exists()', (db) async {
     final exists = await db.items
-        .where((item) => item.id.equals(literal(1)))
+        .where((item) => item.id.equals(toExpr(1)))
         .exists()
         .fetch();
     check(exists).isNotNull().isTrue();
@@ -59,7 +59,7 @@ void main() {
 
   r.addTest('db.items.where(.id.equals(-1)).exists()', (db) async {
     final exists = await db.items
-        .where((item) => item.id.equals(literal(-1)))
+        .where((item) => item.id.equals(toExpr(-1)))
         .exists()
         .fetch();
     check(exists).isNotNull().isFalse();

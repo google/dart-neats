@@ -87,19 +87,19 @@ void main() {
       for (final v in _testAuthors) {
         await db.authors
             .insert(
-              authorId: literal(v.authorId),
-              name: literal(v.name),
+              authorId: toExpr(v.authorId),
+              name: toExpr(v.name),
             )
             .execute();
       }
       for (final v in _testBooks) {
         await db.books
             .insert(
-              bookId: literal(v.bookId),
-              title: literal(v.title),
-              authorId: literal(v.authorId),
-              editorId: literal(v.editorId),
-              stock: literal(v.stock),
+              bookId: toExpr(v.bookId),
+              title: toExpr(v.title),
+              authorId: toExpr(v.authorId),
+              editorId: toExpr(v.editorId),
+              stock: toExpr(v.stock),
             )
             .execute();
       }
@@ -107,7 +107,7 @@ void main() {
         await db.authors
             .byKey(v.authorId)
             .update((author, set) => set(
-                  favoriteBookId: literal(v.favoriteBookId),
+                  favoriteBookId: toExpr(v.favoriteBookId),
                 ))
             .execute();
       }
@@ -157,7 +157,7 @@ void main() {
   r.addTest('books.where(.author.name = ...).select(book, .editor)',
       (db) async {
     final result = await db.books
-        .where((book) => book.author.name.equals(literal('Easter Bunny')))
+        .where((book) => book.author.name.equals(toExpr('Easter Bunny')))
         .select(
           (book) => (
             book,
@@ -170,7 +170,7 @@ void main() {
 
   r.addTest('books.where(.bookId = 1).select(book, .editor)', (db) async {
     final result = await db.books
-        .where((book) => book.bookId.equals(literal(1)))
+        .where((book) => book.bookId.equals(toExpr(1)))
         .select(
           (book) => (
             book,

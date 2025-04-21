@@ -39,14 +39,14 @@ void main() {
   r.addTest('.insert() two with same ID, differnet name', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          name: literal('foo'),
+          id: toExpr(1),
+          name: toExpr('foo'),
         )
         .execute();
     await db.items
         .insert(
-          id: literal(1),
-          name: literal('bar'),
+          id: toExpr(1),
+          name: toExpr('bar'),
         )
         .execute();
 
@@ -57,14 +57,14 @@ void main() {
   r.addTest('.insert() two with different ID, same name', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          name: literal('foo'),
+          id: toExpr(1),
+          name: toExpr('foo'),
         )
         .execute();
     await db.items
         .insert(
-          id: literal(2),
-          name: literal('foo'),
+          id: toExpr(2),
+          name: toExpr('foo'),
         )
         .execute();
 
@@ -75,8 +75,8 @@ void main() {
   r.addTest('.byKey()', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          name: literal('foo'),
+          id: toExpr(1),
+          name: toExpr('foo'),
         )
         .execute();
 

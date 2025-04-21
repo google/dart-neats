@@ -64,18 +64,18 @@ void main() {
       for (final d in _initialDepartments) {
         await db.departments
             .insert(
-              departmentId: literal(d.id),
-              name: literal(d.name),
-              location: literal(d.location),
+              departmentId: toExpr(d.id),
+              name: toExpr(d.name),
+              location: toExpr(d.location),
             )
             .execute();
       }
       for (final e in _initialEmployees) {
         await db.employees
             .insert(
-              employeeId: literal(e.id),
-              name: literal(e.name),
-              departmentId: literal(e.departmentId),
+              employeeId: toExpr(e.id),
+              name: toExpr(e.name),
+              departmentId: toExpr(e.departmentId),
             )
             .execute();
       }

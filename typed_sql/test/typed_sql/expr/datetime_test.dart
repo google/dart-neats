@@ -23,427 +23,426 @@ final _cases = [
   // Test for .equals
   (
     name: 'DateTime(2025).equals(DateTime(2025))',
-    expr: literal(DateTime(2025)).equals(literal(DateTime(2025))),
+    expr: toExpr(DateTime(2025)).equals(toExpr(DateTime(2025))),
     expected: true,
   ),
   (
     name: 'DateTime(2025).toUtc().equals(DateTime(2025).toUtc())',
-    expr:
-        literal(DateTime(2025).toUtc()).equals(literal(DateTime(2025).toUtc())),
+    expr: toExpr(DateTime(2025).toUtc()).equals(toExpr(DateTime(2025).toUtc())),
     expected: true,
   ),
   (
     name: 'DateTime(2024).equals(DateTime(2025))',
-    expr: literal(DateTime(2024)).equals(literal(DateTime(2025))),
+    expr: toExpr(DateTime(2024)).equals(toExpr(DateTime(2025))),
     expected: false,
   ),
   (
     name: 'epoch.equals(epoch)',
-    expr: literal(epoch).equals(literal(epoch)),
+    expr: toExpr(epoch).equals(toExpr(epoch)),
     expected: true,
   ),
   (
     name: 'epoch.equals(DateTime(2025))',
-    expr: literal(epoch).equals(literal(DateTime(2025))),
+    expr: toExpr(epoch).equals(toExpr(DateTime(2025))),
     expected: false,
   ),
   (
     name: 'epoch.equals(today)',
-    expr: literal(epoch).equals(literal(today)),
+    expr: toExpr(epoch).equals(toExpr(today)),
     expected: false,
   ),
   (
     name: 'epoch.equals(null)',
-    expr: literal(epoch).equals(literal(null)),
+    expr: toExpr(epoch).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: 'today.equals(null)',
-    expr: literal(today).equals(literal(null)),
+    expr: toExpr(today).equals(toExpr(null)),
     expected: false,
   ),
 
   // Test for .equalsLiteral
   (
     name: 'DateTime(2025).equalsLiteral(DateTime(2025))',
-    expr: literal(DateTime(2025)).equalsLiteral(DateTime(2025)),
+    expr: toExpr(DateTime(2025)).equalsLiteral(DateTime(2025)),
     expected: true,
   ),
   (
     name: 'DateTime(2025).toUtc().equalsLiteral(DateTime(2025).toUtc())',
-    expr: literal(DateTime(2025).toUtc()).equalsLiteral(DateTime(2025).toUtc()),
+    expr: toExpr(DateTime(2025).toUtc()).equalsLiteral(DateTime(2025).toUtc()),
     expected: true,
   ),
   (
     name: 'DateTime(2024).equalsLiteral(DateTime(2025))',
-    expr: literal(DateTime(2024)).equalsLiteral(DateTime(2025)),
+    expr: toExpr(DateTime(2024)).equalsLiteral(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'epoch.equalsLiteral(epoch)',
-    expr: literal(epoch).equalsLiteral(epoch),
+    expr: toExpr(epoch).equalsLiteral(epoch),
     expected: true,
   ),
   (
     name: 'epoch.equalsLiteral(DateTime(2025))',
-    expr: literal(epoch).equalsLiteral(DateTime(2025)),
+    expr: toExpr(epoch).equalsLiteral(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'epoch.equalsLiteral(today)',
-    expr: literal(epoch).equalsLiteral(today),
+    expr: toExpr(epoch).equalsLiteral(today),
     expected: false,
   ),
   (
     name: 'epoch.equalsLiteral(null)',
-    expr: literal(epoch).equalsLiteral(null),
+    expr: toExpr(epoch).equalsLiteral(null),
     expected: false,
   ),
   (
     name: 'today.equalsLiteral(null)',
-    expr: literal(today).equalsLiteral(null),
+    expr: toExpr(today).equalsLiteral(null),
     expected: false,
   ),
 
   // Test for .notEquals
   (
     name: 'DateTime(2025).notEquals(DateTime(2025))',
-    expr: literal(DateTime(2025)).notEquals(literal(DateTime(2025))),
+    expr: toExpr(DateTime(2025)).notEquals(toExpr(DateTime(2025))),
     expected: false,
   ),
   (
     name: 'DateTime(2025).toUtc().notEquals(DateTime(2025).toUtc())',
-    expr: literal(DateTime(2025).toUtc())
-        .notEquals(literal(DateTime(2025).toUtc())),
+    expr: toExpr(DateTime(2025).toUtc())
+        .notEquals(toExpr(DateTime(2025).toUtc())),
     expected: false,
   ),
   (
     name: 'DateTime(2024).notEquals(DateTime(2025))',
-    expr: literal(DateTime(2024)).notEquals(literal(DateTime(2025))),
+    expr: toExpr(DateTime(2024)).notEquals(toExpr(DateTime(2025))),
     expected: true,
   ),
   (
     name: 'epoch.notEquals(epoch)',
-    expr: literal(epoch).notEquals(literal(epoch)),
+    expr: toExpr(epoch).notEquals(toExpr(epoch)),
     expected: false,
   ),
   (
     name: 'epoch.notEquals(DateTime(2025))',
-    expr: literal(epoch).notEquals(literal(DateTime(2025))),
+    expr: toExpr(epoch).notEquals(toExpr(DateTime(2025))),
     expected: true,
   ),
   (
     name: 'epoch.notEquals(today)',
-    expr: literal(epoch).notEquals(literal(today)),
+    expr: toExpr(epoch).notEquals(toExpr(today)),
     expected: true,
   ),
   (
     name: 'epoch.notEquals(null)',
-    expr: literal(epoch).notEquals(literal(null)),
+    expr: toExpr(epoch).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: 'today.notEquals(null)',
-    expr: literal(today).notEquals(literal(null)),
+    expr: toExpr(today).notEquals(toExpr(null)),
     expected: true,
   ),
 
   // Test for .notEqualsLiteral
   (
     name: 'DateTime(2025).notEqualsLiteral(DateTime(2025))',
-    expr: literal(DateTime(2025)).notEqualsLiteral(DateTime(2025)),
+    expr: toExpr(DateTime(2025)).notEqualsLiteral(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'DateTime(2025).toUtc().notEqualsLiteral(DateTime(2025).toUtc())',
-    expr: literal(DateTime(2025).toUtc())
-        .notEqualsLiteral(DateTime(2025).toUtc()),
+    expr:
+        toExpr(DateTime(2025).toUtc()).notEqualsLiteral(DateTime(2025).toUtc()),
     expected: false,
   ),
   (
     name: 'DateTime(2024).notEqualsLiteral(DateTime(2025))',
-    expr: literal(DateTime(2024)).notEqualsLiteral(DateTime(2025)),
+    expr: toExpr(DateTime(2024)).notEqualsLiteral(DateTime(2025)),
     expected: true,
   ),
   (
     name: 'epoch.notEqualsLiteral(epoch)',
-    expr: literal(epoch).notEqualsLiteral(epoch),
+    expr: toExpr(epoch).notEqualsLiteral(epoch),
     expected: false,
   ),
   (
     name: 'epoch.notEqualsLiteral(DateTime(2025))',
-    expr: literal(epoch).notEqualsLiteral(DateTime(2025)),
+    expr: toExpr(epoch).notEqualsLiteral(DateTime(2025)),
     expected: true,
   ),
   (
     name: 'epoch.notEqualsLiteral(today)',
-    expr: literal(epoch).notEqualsLiteral(today),
+    expr: toExpr(epoch).notEqualsLiteral(today),
     expected: true,
   ),
   (
     name: 'epoch.notEqualsLiteral(null)',
-    expr: literal(epoch).notEqualsLiteral(null),
+    expr: toExpr(epoch).notEqualsLiteral(null),
     expected: true,
   ),
   (
     name: 'today.notEqualsLiteral(null)',
-    expr: literal(today).notEqualsLiteral(null),
+    expr: toExpr(today).notEqualsLiteral(null),
     expected: true,
   ),
 
   // Test for .isBefore
   (
     name: 'DateTime(2024).isBefore(DateTime(2025))',
-    expr: literal(DateTime(2024)).isBefore(literal(DateTime(2025))),
+    expr: toExpr(DateTime(2024)).isBefore(toExpr(DateTime(2025))),
     expected: true,
   ),
   (
     name: 'DateTime(2025).isBefore(DateTime(2024))',
-    expr: literal(DateTime(2025)).isBefore(literal(DateTime(2024))),
+    expr: toExpr(DateTime(2025)).isBefore(toExpr(DateTime(2024))),
     expected: false,
   ),
   (
     name: 'DateTime(2025).isBefore(DateTime(2025))',
-    expr: literal(DateTime(2025)).isBefore(literal(DateTime(2025))),
+    expr: toExpr(DateTime(2025)).isBefore(toExpr(DateTime(2025))),
     expected: false,
   ),
   (
     name: 'epoch.isBefore(today)',
-    expr: literal(epoch).isBefore(literal(today)),
+    expr: toExpr(epoch).isBefore(toExpr(today)),
     expected: true,
   ),
   (
     name: 'today.isBefore(epoch)',
-    expr: literal(today).isBefore(literal(epoch)),
+    expr: toExpr(today).isBefore(toExpr(epoch)),
     expected: false,
   ),
   (
     name: 'epoch.isBefore(epoch)',
-    expr: literal(epoch).isBefore(literal(epoch)),
+    expr: toExpr(epoch).isBefore(toExpr(epoch)),
     expected: false,
   ),
 
   // Test for .isBeforeLiteral
   (
     name: 'DateTime(2024).isBeforeLiteral(DateTime(2025))',
-    expr: literal(DateTime(2024)).isBeforeLiteral(DateTime(2025)),
+    expr: toExpr(DateTime(2024)).isBeforeLiteral(DateTime(2025)),
     expected: true,
   ),
   (
     name: 'DateTime(2025).isBeforeLiteral(DateTime(2024))',
-    expr: literal(DateTime(2025)).isBeforeLiteral(DateTime(2024)),
+    expr: toExpr(DateTime(2025)).isBeforeLiteral(DateTime(2024)),
     expected: false,
   ),
   (
     name: 'DateTime(2025).isBeforeLiteral(DateTime(2025))',
-    expr: literal(DateTime(2025)).isBeforeLiteral(DateTime(2025)),
+    expr: toExpr(DateTime(2025)).isBeforeLiteral(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'epoch.isBeforeLiteral(today)',
-    expr: literal(epoch).isBeforeLiteral(today),
+    expr: toExpr(epoch).isBeforeLiteral(today),
     expected: true,
   ),
   (
     name: 'today.isBeforeLiteral(epoch)',
-    expr: literal(today).isBeforeLiteral(epoch),
+    expr: toExpr(today).isBeforeLiteral(epoch),
     expected: false,
   ),
   (
     name: 'epoch.isBeforeLiteral(epoch)',
-    expr: literal(epoch).isBeforeLiteral(epoch),
+    expr: toExpr(epoch).isBeforeLiteral(epoch),
     expected: false,
   ),
 
   // Test for <
   (
     name: 'DateTime(2024) < DateTime(2025)',
-    expr: literal(DateTime(2024)) < literal(DateTime(2025)),
+    expr: toExpr(DateTime(2024)) < toExpr(DateTime(2025)),
     expected: true,
   ),
   (
     name: 'DateTime(2025) < DateTime(2024)',
-    expr: literal(DateTime(2025)) < literal(DateTime(2024)),
+    expr: toExpr(DateTime(2025)) < toExpr(DateTime(2024)),
     expected: false,
   ),
   (
     name: 'DateTime(2025) < DateTime(2025)',
-    expr: literal(DateTime(2025)) < literal(DateTime(2025)),
+    expr: toExpr(DateTime(2025)) < toExpr(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'epoch < today',
-    expr: literal(epoch) < literal(today),
+    expr: toExpr(epoch) < toExpr(today),
     expected: true,
   ),
   (
     name: 'today < epoch',
-    expr: literal(today) < literal(epoch),
+    expr: toExpr(today) < toExpr(epoch),
     expected: false,
   ),
   (
     name: 'epoch < epoch',
-    expr: literal(epoch) < literal(epoch),
+    expr: toExpr(epoch) < toExpr(epoch),
     expected: false,
   ),
 
   // Test for .isAfter
   (
     name: 'DateTime(2024).isAfter(DateTime(2025))',
-    expr: literal(DateTime(2024)).isAfter(literal(DateTime(2025))),
+    expr: toExpr(DateTime(2024)).isAfter(toExpr(DateTime(2025))),
     expected: false,
   ),
   (
     name: 'DateTime(2025).isAfter(DateTime(2024))',
-    expr: literal(DateTime(2025)).isAfter(literal(DateTime(2024))),
+    expr: toExpr(DateTime(2025)).isAfter(toExpr(DateTime(2024))),
     expected: true,
   ),
   (
     name: 'DateTime(2025).isAfter(DateTime(2025))',
-    expr: literal(DateTime(2025)).isAfter(literal(DateTime(2025))),
+    expr: toExpr(DateTime(2025)).isAfter(toExpr(DateTime(2025))),
     expected: false,
   ),
   (
     name: 'epoch.isAfter(today)',
-    expr: literal(epoch).isAfter(literal(today)),
+    expr: toExpr(epoch).isAfter(toExpr(today)),
     expected: false,
   ),
   (
     name: 'today.isAfter(epoch)',
-    expr: literal(today).isAfter(literal(epoch)),
+    expr: toExpr(today).isAfter(toExpr(epoch)),
     expected: true,
   ),
   (
     name: 'epoch.isAfter(epoch)',
-    expr: literal(epoch).isAfter(literal(epoch)),
+    expr: toExpr(epoch).isAfter(toExpr(epoch)),
     expected: false,
   ),
 
   // Test for .isAfterLiteral
   (
     name: 'DateTime(2024).isAfterLiteral(DateTime(2025))',
-    expr: literal(DateTime(2024)).isAfterLiteral(DateTime(2025)),
+    expr: toExpr(DateTime(2024)).isAfterLiteral(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'DateTime(2025).isAfterLiteral(DateTime(2024))',
-    expr: literal(DateTime(2025)).isAfterLiteral(DateTime(2024)),
+    expr: toExpr(DateTime(2025)).isAfterLiteral(DateTime(2024)),
     expected: true,
   ),
   (
     name: 'DateTime(2025).isAfterLiteral(DateTime(2025))',
-    expr: literal(DateTime(2025)).isAfterLiteral(DateTime(2025)),
+    expr: toExpr(DateTime(2025)).isAfterLiteral(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'epoch.isAfterLiteral(today)',
-    expr: literal(epoch).isAfterLiteral(today),
+    expr: toExpr(epoch).isAfterLiteral(today),
     expected: false,
   ),
   (
     name: 'today.isAfterLiteral(epoch)',
-    expr: literal(today).isAfterLiteral(epoch),
+    expr: toExpr(today).isAfterLiteral(epoch),
     expected: true,
   ),
   (
     name: 'epoch.isAfterLiteral(epoch)',
-    expr: literal(epoch).isAfterLiteral(epoch),
+    expr: toExpr(epoch).isAfterLiteral(epoch),
     expected: false,
   ),
 
   // Test for >
   (
     name: 'DateTime(2024) > DateTime(2025)',
-    expr: literal(DateTime(2024)) > literal(DateTime(2025)),
+    expr: toExpr(DateTime(2024)) > toExpr(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'DateTime(2025) > DateTime(2024)',
-    expr: literal(DateTime(2025)) > literal(DateTime(2024)),
+    expr: toExpr(DateTime(2025)) > toExpr(DateTime(2024)),
     expected: true,
   ),
   (
     name: 'DateTime(2025) > DateTime(2025)',
-    expr: literal(DateTime(2025)) > literal(DateTime(2025)),
+    expr: toExpr(DateTime(2025)) > toExpr(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'epoch > today',
-    expr: literal(epoch) > literal(today),
+    expr: toExpr(epoch) > toExpr(today),
     expected: false,
   ),
   (
     name: 'today > epoch',
-    expr: literal(today) > literal(epoch),
+    expr: toExpr(today) > toExpr(epoch),
     expected: true,
   ),
   (
     name: 'epoch > epoch',
-    expr: literal(epoch) > literal(epoch),
+    expr: toExpr(epoch) > toExpr(epoch),
     expected: false,
   ),
 
   // Test for <=
   (
     name: 'DateTime(2024) <= DateTime(2025)',
-    expr: literal(DateTime(2024)) <= literal(DateTime(2025)),
+    expr: toExpr(DateTime(2024)) <= toExpr(DateTime(2025)),
     expected: true,
   ),
   (
     name: 'DateTime(2025) <= DateTime(2024)',
-    expr: literal(DateTime(2025)) <= literal(DateTime(2024)),
+    expr: toExpr(DateTime(2025)) <= toExpr(DateTime(2024)),
     expected: false,
   ),
   (
     name: 'DateTime(2025) <= DateTime(2025)',
-    expr: literal(DateTime(2025)) <= literal(DateTime(2025)),
+    expr: toExpr(DateTime(2025)) <= toExpr(DateTime(2025)),
     expected: true,
   ),
   (
     name: 'epoch <= today',
-    expr: literal(epoch) <= literal(today),
+    expr: toExpr(epoch) <= toExpr(today),
     expected: true,
   ),
   (
     name: 'today <= epoch',
-    expr: literal(today) <= literal(epoch),
+    expr: toExpr(today) <= toExpr(epoch),
     expected: false,
   ),
   (
     name: 'epoch <= epoch',
-    expr: literal(epoch) <= literal(epoch),
+    expr: toExpr(epoch) <= toExpr(epoch),
     expected: true,
   ),
 
   // Test for >=
   (
     name: 'DateTime(2024) >= DateTime(2025)',
-    expr: literal(DateTime(2024)) >= literal(DateTime(2025)),
+    expr: toExpr(DateTime(2024)) >= toExpr(DateTime(2025)),
     expected: false,
   ),
   (
     name: 'DateTime(2025) >= DateTime(2024)',
-    expr: literal(DateTime(2025)) >= literal(DateTime(2024)),
+    expr: toExpr(DateTime(2025)) >= toExpr(DateTime(2024)),
     expected: true,
   ),
   (
     name: 'DateTime(2025) >= DateTime(2025)',
-    expr: literal(DateTime(2025)) >= literal(DateTime(2025)),
+    expr: toExpr(DateTime(2025)) >= toExpr(DateTime(2025)),
     expected: true,
   ),
   (
     name: 'epoch >= today',
-    expr: literal(epoch) >= literal(today),
+    expr: toExpr(epoch) >= toExpr(today),
     expected: false,
   ),
   (
     name: 'today >= epoch',
-    expr: literal(today) >= literal(epoch),
+    expr: toExpr(today) >= toExpr(epoch),
     expected: true,
   ),
   (
     name: 'epoch >= epoch',
-    expr: literal(epoch) >= literal(epoch),
+    expr: toExpr(epoch) >= toExpr(epoch),
     expected: true,
   ),
 ];

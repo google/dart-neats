@@ -40,8 +40,8 @@ void main() {
   r.addTest('.insert() with explicit ID', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal('hello'),
+          id: toExpr(1),
+          value: toExpr('hello'),
         )
         .execute();
 
@@ -50,7 +50,7 @@ void main() {
 
     // Check that we can find it by value
     final items = await db.items
-        .where((item) => item.value.equals(literal('hello')))
+        .where((item) => item.value.equals(toExpr('hello')))
         .fetch();
     check(items).length.equals(1);
     check(items).first
@@ -61,13 +61,13 @@ void main() {
   r.addTest('.insert() auto-incremented IDs', (db) async {
     await db.items
         .insert(
-          value: literal('hello'),
+          value: toExpr('hello'),
         )
         .execute();
 
     await db.items
         .insert(
-          value: literal('world'),
+          value: toExpr('world'),
         )
         .execute();
 

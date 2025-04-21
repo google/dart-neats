@@ -79,19 +79,19 @@ void main() {
       for (final v in _testAuthors) {
         await db.authors
             .insert(
-              authorId: literal(v.authorId),
-              firstname: literal(v.firstname),
-              lastname: literal(v.lastname),
+              authorId: toExpr(v.authorId),
+              firstname: toExpr(v.firstname),
+              lastname: toExpr(v.lastname),
             )
             .execute();
       }
       for (final v in _testBooks) {
         await db.books
             .insert(
-              bookId: literal(v.bookId),
-              title: literal(v.title),
-              authorId: literal(v.authorId),
-              stock: literal(v.stock),
+              bookId: toExpr(v.bookId),
+              title: toExpr(v.title),
+              authorId: toExpr(v.authorId),
+              stock: toExpr(v.stock),
             )
             .execute();
       }
@@ -146,7 +146,7 @@ void main() {
 
   r.addTest('authors.where(.books.count() >= 3)', (db) async {
     final result = await db.authors
-        .where((a) => a.books.count() >= literal(3))
+        .where((a) => a.books.count() >= toExpr(3))
         .select(
           (a) => (a.firstname, a.lastname),
         )

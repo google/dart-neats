@@ -20,59 +20,59 @@ import '../testrunner.dart';
 final _integerCases = [
   (
     name: '2, 2, 2',
-    values: [literal(2), literal(2), literal(2)],
+    values: [toExpr(2), toExpr(2), toExpr(2)],
     avg: 2,
   ),
   (
     name: '1, 2, 3',
-    values: [literal(1), literal(2), literal(3)],
+    values: [toExpr(1), toExpr(2), toExpr(3)],
     avg: 2,
   ),
   (
     name: '42',
-    values: [literal(42)],
+    values: [toExpr(42)],
     avg: 42,
   ),
   (
     name: '0, 0, 0',
-    values: [literal(0), literal(0), literal(0)],
+    values: [toExpr(0), toExpr(0), toExpr(0)],
     avg: 0,
   ),
   (
     name: '-1, 0, 1',
-    values: [literal(-1), literal(0), literal(1)],
+    values: [toExpr(-1), toExpr(0), toExpr(1)],
     avg: 0,
   ),
   (
     name: '-1, -2, -3',
-    values: [literal(-1), literal(-2), literal(-3)],
+    values: [toExpr(-1), toExpr(-2), toExpr(-3)],
     avg: -2,
   ),
   (
     name: '2, 1',
-    values: [literal(2), literal(1)],
+    values: [toExpr(2), toExpr(1)],
     avg: 1.5,
   ),
   // Important to test that nulls are ignored when computing AVG
   (
     name: '2, null',
-    values: [literal(2), literal(null)],
+    values: [toExpr(2), toExpr(null)],
     avg: 2,
   ),
   (
     name: '2, null, null',
-    values: [literal(2), literal(null), literal(null)],
+    values: [toExpr(2), toExpr(null), toExpr(null)],
     avg: 2,
   ),
   (
     name: '2, null, 1',
-    values: [literal(2), literal(null), literal(1)],
+    values: [toExpr(2), toExpr(null), toExpr(1)],
     avg: 1.5,
   ),
   (
     name: 'null, null, null',
     // cast here is necessary for the first expression
-    values: [literal(null).asInt(), literal(null), literal(null)],
+    values: [toExpr(null).asInt(), toExpr(null), toExpr(null)],
     avg: null,
   ),
 ];
@@ -80,94 +80,94 @@ final _integerCases = [
 final _doubleCases = [
   (
     name: '2.0, 2.0, 2.0',
-    values: [literal(2.0), literal(2.0), literal(2.0)],
+    values: [toExpr(2.0), toExpr(2.0), toExpr(2.0)],
     avg: 2.0,
   ),
   (
     name: '1.0, 2.0, 3.0',
-    values: [literal(1.0), literal(2.0), literal(3.0)],
+    values: [toExpr(1.0), toExpr(2.0), toExpr(3.0)],
     avg: 2.0,
   ),
   (
     name: '42.0',
-    values: [literal(42.0)],
+    values: [toExpr(42.0)],
     avg: 42.0,
   ),
   (
     name: '0.0, 0.0, 0.0',
-    values: [literal(0.0), literal(0.0), literal(0.0)],
+    values: [toExpr(0.0), toExpr(0.0), toExpr(0.0)],
     avg: 0.0,
   ),
   (
     name: '-1.0, 0.0, 1.0',
-    values: [literal(-1.0), literal(0.0), literal(1.0)],
+    values: [toExpr(-1.0), toExpr(0.0), toExpr(1.0)],
     avg: 0.0,
   ),
   (
     name: '-1.0, -2.0, -3.0',
-    values: [literal(-1.0), literal(-2.0), literal(-3.0)],
+    values: [toExpr(-1.0), toExpr(-2.0), toExpr(-3.0)],
     avg: -2.0,
   ),
   (
     name: '2.0, 1.0',
-    values: [literal(2.0), literal(1.0)],
+    values: [toExpr(2.0), toExpr(1.0)],
     avg: 1.5,
   ),
   (
     name: '3.14, 3.14, 3.14',
-    values: [literal(3.14), literal(3.14), literal(3.14)],
+    values: [toExpr(3.14), toExpr(3.14), toExpr(3.14)],
     avg: 3.14,
   ),
   (
     name: '3.14, 6.28, 9.42',
-    values: [literal(3.14), literal(6.28), literal(9.42)],
+    values: [toExpr(3.14), toExpr(6.28), toExpr(9.42)],
     avg: 6.28,
   ),
   (
     name: '3.14',
-    values: [literal(3.14)],
+    values: [toExpr(3.14)],
     avg: 3.14,
   ),
   (
     name: '0.0, 3.14, 6.28',
-    values: [literal(0.0), literal(3.14), literal(6.28)],
+    values: [toExpr(0.0), toExpr(3.14), toExpr(6.28)],
     avg: 3.14,
   ),
   (
     name: '-3.14, 0.0, 3.14',
-    values: [literal(-3.14), literal(0.0), literal(3.14)],
+    values: [toExpr(-3.14), toExpr(0.0), toExpr(3.14)],
     avg: 0.0,
   ),
   (
     name: '-3.14, -6.28, -9.42',
-    values: [literal(-3.14), literal(-6.28), literal(-9.42)],
+    values: [toExpr(-3.14), toExpr(-6.28), toExpr(-9.42)],
     avg: -6.28,
   ),
   (
     name: '3.14, 6.28',
-    values: [literal(3.14), literal(6.28)],
+    values: [toExpr(3.14), toExpr(6.28)],
     avg: 4.71,
   ),
   // Important to test that nulls are ignored when computing AVG
   (
     name: '3.14, null',
-    values: [literal(3.14), literal(null)],
+    values: [toExpr(3.14), toExpr(null)],
     avg: 3.14,
   ),
   (
     name: '3.14, null, null',
-    values: [literal(3.14), literal(null), literal(null)],
+    values: [toExpr(3.14), toExpr(null), toExpr(null)],
     avg: 3.14,
   ),
   (
     name: '2.0, null, 1.0',
-    values: [literal(2.0), literal(null), literal(1.0)],
+    values: [toExpr(2.0), toExpr(null), toExpr(1.0)],
     avg: 1.5,
   ),
   (
     name: 'null, null, null',
     // cast here is necessary for the first expression
-    values: [literal(null).asDouble(), literal(null), literal(null)],
+    values: [toExpr(null).asDouble(), toExpr(null), toExpr(null)],
     avg: null,
   ),
 ];
@@ -209,7 +209,7 @@ void main() {
 
   r.addTest('{}.avg() (emptyset)', (db) async {
     final avg = await db
-        .select((literal(42.0),))
+        .select((toExpr(42.0),))
         .asQuery
         .where((v) => v.equalsLiteral(3.0))
         .avg()
@@ -220,7 +220,7 @@ void main() {
   r.addTest('{null}.avg()', (db) async {
     final avg = await db
         .select(
-          (literal(null).asDouble(),),
+          (toExpr(null).asDouble(),),
         )
         .asQuery
         .avg()

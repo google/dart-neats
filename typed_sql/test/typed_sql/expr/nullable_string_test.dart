@@ -24,224 +24,224 @@ final _cases = <({
   // Tests for null and String
   (
     name: 'hello as String?',
-    expr: literal('hello' as String?),
+    expr: toExpr('hello' as String?),
     expected: 'hello',
   ),
   (
     name: 'null as String?',
-    expr: literal(null as String?),
+    expr: toExpr(null as String?),
     expected: null,
   ),
   (
     name: '(null as String?).orElse(\'hello\')',
-    expr: literal(null as String?).orElse(literal('hello')),
+    expr: toExpr(null as String?).orElse(toExpr('hello')),
     expected: 'hello',
   ),
   (
     name: '(null as String?).orElseLiteral(\'hello\')',
-    expr: literal(null as String?).orElseLiteral('hello'),
+    expr: toExpr(null as String?).orElseLiteral('hello'),
     expected: 'hello',
   ),
   (
     name: '(\'world\' as String?).orElse(\'hello\')',
-    expr: literal('world' as String?).orElse(literal('hello')),
+    expr: toExpr('world' as String?).orElse(toExpr('hello')),
     expected: 'world',
   ),
   (
     name: '(\'world\' as String?).orElseLiteral(\'hello\')',
-    expr: literal('world' as String?).orElseLiteral('hello'),
+    expr: toExpr('world' as String?).orElseLiteral('hello'),
     expected: 'world',
   ),
   (
     name: 'null.asString()',
-    expr: literal(null).asString(),
+    expr: toExpr(null).asString(),
     expected: null,
   ),
   (
     name: 'null.asString().orElse(\'hello\')',
-    expr: literal(null).asString().orElse(literal('hello')),
+    expr: toExpr(null).asString().orElse(toExpr('hello')),
     expected: 'hello',
   ),
   (
     name: 'null.asString().orElseLiteral(\'hello\')',
-    expr: literal(null).asString().orElseLiteral('hello'),
+    expr: toExpr(null).asString().orElseLiteral('hello'),
     expected: 'hello',
   ),
   // Expr<String?>.equals
   (
     name: 'null.asString().equals(null)',
-    expr: literal(null).asString().equals(literal(null)),
+    expr: toExpr(null).asString().equals(toExpr(null)),
     expected: true,
   ),
   (
     name: 'null.asString().equals("hello")',
-    expr: literal(null).asString().equals(literal('hello')),
+    expr: toExpr(null).asString().equals(toExpr('hello')),
     expected: false,
   ),
   (
     name: '"hello".equals(null)',
-    expr: literal('hello' as String?).equals(literal(null)),
+    expr: toExpr('hello' as String?).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: '"hello".equals("hello")',
-    expr: literal('hello' as String?).equals(literal('hello')),
+    expr: toExpr('hello' as String?).equals(toExpr('hello')),
     expected: true,
   ),
   (
     name: 'null.asString().equals("")',
-    expr: literal(null).asString().equals(literal('')),
+    expr: toExpr(null).asString().equals(toExpr('')),
     expected: false,
   ),
   (
     name: '"".equals(null)',
-    expr: literal('' as String?).equals(literal(null)),
+    expr: toExpr('' as String?).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: '"".equals("")',
-    expr: literal('' as String?).equals(literal('')),
+    expr: toExpr('' as String?).equals(toExpr('')),
     expected: true,
   ),
   // Expr<String?>.notEquals
   (
     name: 'null.asString().notEquals(null)',
-    expr: literal(null).asString().notEquals(literal(null)),
+    expr: toExpr(null).asString().notEquals(toExpr(null)),
     expected: false,
   ),
   (
     name: 'null.asString().notEquals("hello")',
-    expr: literal(null).asString().notEquals(literal('hello')),
+    expr: toExpr(null).asString().notEquals(toExpr('hello')),
     expected: true,
   ),
   (
     name: '"hello".notEquals(null)',
-    expr: literal('hello' as String?).notEquals(literal(null)),
+    expr: toExpr('hello' as String?).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: '"hello".notEquals("hello")',
-    expr: literal('hello' as String?).notEquals(literal('hello')),
+    expr: toExpr('hello' as String?).notEquals(toExpr('hello')),
     expected: false,
   ),
   (
     name: 'null.asString().notEquals("")',
-    expr: literal(null).asString().notEquals(literal('')),
+    expr: toExpr(null).asString().notEquals(toExpr('')),
     expected: true,
   ),
   (
     name: '"".notEquals(null)',
-    expr: literal('' as String?).notEquals(literal(null)),
+    expr: toExpr('' as String?).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: '"".notEquals("")',
-    expr: literal('' as String?).notEquals(literal('')),
+    expr: toExpr('' as String?).notEquals(toExpr('')),
     expected: false,
   ),
 
   // Expr<String?>.equalsLiteral
   (
     name: 'null.asString().equalsLiteral(null)',
-    expr: literal(null).asString().equalsLiteral(null),
+    expr: toExpr(null).asString().equalsLiteral(null),
     expected: true,
   ),
   (
     name: 'null.asString().equalsLiteral("hello")',
-    expr: literal(null).asString().equalsLiteral('hello'),
+    expr: toExpr(null).asString().equalsLiteral('hello'),
     expected: false,
   ),
   (
     name: '"hello".equalsLiteral(null)',
-    expr: literal('hello' as String?).equalsLiteral(null),
+    expr: toExpr('hello' as String?).equalsLiteral(null),
     expected: false,
   ),
   (
     name: '"hello".equalsLiteral("hello")',
-    expr: literal('hello' as String?).equalsLiteral('hello'),
+    expr: toExpr('hello' as String?).equalsLiteral('hello'),
     expected: true,
   ),
   (
     name: 'null.asString().equalsLiteral("")',
-    expr: literal(null).asString().equalsLiteral(''),
+    expr: toExpr(null).asString().equalsLiteral(''),
     expected: false,
   ),
   (
     name: '"".equalsLiteral(null)',
-    expr: literal('' as String?).equalsLiteral(null),
+    expr: toExpr('' as String?).equalsLiteral(null),
     expected: false,
   ),
   (
     name: '"".equalsLiteral("")',
-    expr: literal('' as String?).equalsLiteral(''),
+    expr: toExpr('' as String?).equalsLiteral(''),
     expected: true,
   ),
   // Expr<String?>.notEqualsLiteral
   (
     name: 'null.asString().notEqualsLiteral(null)',
-    expr: literal(null).asString().notEqualsLiteral(null),
+    expr: toExpr(null).asString().notEqualsLiteral(null),
     expected: false,
   ),
   (
     name: 'null.asString().notEqualsLiteral("hello")',
-    expr: literal(null).asString().notEqualsLiteral('hello'),
+    expr: toExpr(null).asString().notEqualsLiteral('hello'),
     expected: true,
   ),
   (
     name: '"hello".notEqualsLiteral(null)',
-    expr: literal('hello' as String?).notEqualsLiteral(null),
+    expr: toExpr('hello' as String?).notEqualsLiteral(null),
     expected: true,
   ),
   (
     name: '"hello".notEqualsLiteral("hello")',
-    expr: literal('hello' as String?).notEqualsLiteral('hello'),
+    expr: toExpr('hello' as String?).notEqualsLiteral('hello'),
     expected: false,
   ),
   (
     name: 'null.asString().notEqualsLiteral("")',
-    expr: literal(null).asString().notEqualsLiteral(''),
+    expr: toExpr(null).asString().notEqualsLiteral(''),
     expected: true,
   ),
   (
     name: '"".notEqualsLiteral(null)',
-    expr: literal('' as String?).notEqualsLiteral(null),
+    expr: toExpr('' as String?).notEqualsLiteral(null),
     expected: true,
   ),
   (
     name: '"".notEqualsLiteral("")',
-    expr: literal('' as String?).notEqualsLiteral(''),
+    expr: toExpr('' as String?).notEqualsLiteral(''),
     expected: false,
   ),
   // Expr<String?>.isNull()
   (
     name: 'null.asString().isNull()',
-    expr: literal(null).asString().isNull(),
+    expr: toExpr(null).asString().isNull(),
     expected: true,
   ),
   (
     name: '"hello".isNull()',
-    expr: literal('hello' as String?).isNull(),
+    expr: toExpr('hello' as String?).isNull(),
     expected: false,
   ),
   (
     name: '"".isNull()',
-    expr: literal('' as String?).isNull(),
+    expr: toExpr('' as String?).isNull(),
     expected: false,
   ),
   // Expr<String?>.isNotNull()
   (
     name: 'null.asString().isNotNull()',
-    expr: literal(null).asString().isNotNull(),
+    expr: toExpr(null).asString().isNotNull(),
     expected: false,
   ),
   (
     name: '"hello".isNotNull()',
-    expr: literal('hello' as String?).isNotNull(),
+    expr: toExpr('hello' as String?).isNotNull(),
     expected: true,
   ),
   (
     name: '"".isNotNull()',
-    expr: literal('' as String?).isNotNull(),
+    expr: toExpr('' as String?).isNotNull(),
     expected: true,
   ),
 ];

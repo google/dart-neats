@@ -227,12 +227,13 @@ base mixin _ExprBlob implements _ExprTyped<Uint8List> {
 ///  * `null`
 ///
 /// > [!NOTE]
-/// > If you want to use a [CustomDataType], use [Literal.custom] instead.
+/// > If you want to use a [CustomDataType], use the `.asExpr`
+/// > _extension method_ instead.
 ///
 /// {@category inserting_rows}
 /// {@category writing_queries}
 /// {@category update_and_delete}
-Literal<T> literal<T extends Object?>(T value) => Literal(value);
+Expr<T> toExpr<T extends Object?>(T value) => Literal(value);
 
 final class ModelExpression<T extends Model> extends Expr<T> {
   final TableDefinition<T> _table;

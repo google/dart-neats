@@ -34,19 +34,19 @@ void main() {
   final r = TestRunner<TestDatabase>(
     setup: (db) async {
       await db.createTables();
-      await db.items.insert(id: literal(1), value: literal('a')).execute();
-      await db.items.insert(id: literal(2), value: literal('b')).execute();
-      await db.items.insert(id: literal(3), value: literal('c')).execute();
-      await db.items.insert(id: literal(4), value: literal('c')).execute();
-      await db.items.insert(id: literal(5), value: literal('c')).execute();
+      await db.items.insert(id: toExpr(1), value: toExpr('a')).execute();
+      await db.items.insert(id: toExpr(2), value: toExpr('b')).execute();
+      await db.items.insert(id: toExpr(3), value: toExpr('c')).execute();
+      await db.items.insert(id: toExpr(4), value: toExpr('c')).execute();
+      await db.items.insert(id: toExpr(5), value: toExpr('c')).execute();
     },
   );
 
   r.addTest('db.select(db.items.asSubQuery.where().first)', (db) async {
     final (itemA, itemB) = await db.select(
       (
-        db.items.asSubQuery.where((i) => i.id.equals(literal(1))).first,
-        db.items.asSubQuery.where((i) => i.id.equals(literal(2))).first,
+        db.items.asSubQuery.where((i) => i.id.equals(toExpr(1))).first,
+        db.items.asSubQuery.where((i) => i.id.equals(toExpr(2))).first,
       ),
     ).fetchOrNulls();
     check(itemA).isNotNull().value.equals('a');
@@ -56,8 +56,8 @@ void main() {
   r.addTest('db.select(db.items.asSubQuery.where(false).first)', (db) async {
     final (itemA, itemB) = await db.select(
       (
-        db.items.asSubQuery.where((i) => i.id.equals(literal(1))).first,
-        db.items.asSubQuery.where((i) => literal(false)).first,
+        db.items.asSubQuery.where((i) => i.id.equals(toExpr(1))).first,
+        db.items.asSubQuery.where((i) => toExpr(false)).first,
       ),
     ).fetchOrNulls();
     check(itemA).isNotNull().value.equals('a');

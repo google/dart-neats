@@ -57,9 +57,9 @@ void main() {
       for (final v in _testData) {
         await db.employees
             .insert(
-              surname: literal(v.surname),
-              seniority: literal(v.seniority),
-              salary: literal(v.salary),
+              surname: toExpr(v.surname),
+              seniority: toExpr(v.seniority),
+              salary: toExpr(v.salary),
             )
             .execute();
       }
@@ -135,7 +135,7 @@ void main() {
               //
               .count(),
         )
-        .where((surname, seniority, count) => count > literal(1))
+        .where((surname, seniority, count) => count > toExpr(1))
         .fetch();
     check(result).unorderedEquals({
       ('Smith', 'junior', 3),
@@ -155,7 +155,7 @@ void main() {
               //
               .count(),
         )
-        .where((surname, seniority, count) => count > literal(1))
+        .where((surname, seniority, count) => count > toExpr(1))
         .select((surname, seniority, count) => (surname, seniority))
         .fetch();
     check(result).unorderedEquals({
@@ -172,7 +172,7 @@ void main() {
         .aggregate(
           (b) => b
               // without orElse() NULL gets ignored!
-              .min((employee) => employee.salary.orElse(literal(0)))
+              .min((employee) => employee.salary.orElse(toExpr(0)))
               .max((employee) => employee.salary),
         )
         .fetch();

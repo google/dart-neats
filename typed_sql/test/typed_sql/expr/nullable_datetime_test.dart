@@ -27,224 +27,224 @@ final _cases = <({
   // Tests for null and DateTime
   (
     name: 'epoch as DateTime?',
-    expr: literal(epoch as DateTime?),
+    expr: toExpr(epoch as DateTime?),
     expected: epoch,
   ),
   (
     name: 'null as DateTime?',
-    expr: literal(null as DateTime?),
+    expr: toExpr(null as DateTime?),
     expected: null,
   ),
   (
     name: '(null as DateTime?).orElse(epoch)',
-    expr: literal(null as DateTime?).orElse(literal(epoch)),
+    expr: toExpr(null as DateTime?).orElse(toExpr(epoch)),
     expected: epoch,
   ),
   (
     name: '(null as DateTime?).orElseLiteral(epoch)',
-    expr: literal(null as DateTime?).orElseLiteral(epoch),
+    expr: toExpr(null as DateTime?).orElseLiteral(epoch),
     expected: epoch,
   ),
   (
     name: '(today as DateTime?).orElse(epoch)',
-    expr: literal(today as DateTime?).orElse(literal(epoch)),
+    expr: toExpr(today as DateTime?).orElse(toExpr(epoch)),
     expected: today,
   ),
   (
     name: '(today as DateTime?).orElseLiteral(epoch)',
-    expr: literal(today as DateTime?).orElseLiteral(epoch),
+    expr: toExpr(today as DateTime?).orElseLiteral(epoch),
     expected: today,
   ),
   (
     name: 'null.asDateTime()',
-    expr: literal(null).asDateTime(),
+    expr: toExpr(null).asDateTime(),
     expected: null,
   ),
   (
     name: 'null.asDateTime().orElse(epoch)',
-    expr: literal(null).asDateTime().orElse(literal(epoch)),
+    expr: toExpr(null).asDateTime().orElse(toExpr(epoch)),
     expected: epoch,
   ),
   (
     name: 'null.asDateTime().orElseLiteral(epoch)',
-    expr: literal(null).asDateTime().orElseLiteral(epoch),
+    expr: toExpr(null).asDateTime().orElseLiteral(epoch),
     expected: epoch,
   ),
   // Expr<DateTime?>.equals
   (
     name: 'null.asDateTime().equals(null)',
-    expr: literal(null).asDateTime().equals(literal(null)),
+    expr: toExpr(null).asDateTime().equals(toExpr(null)),
     expected: true,
   ),
   (
     name: 'null.asDateTime().equals(epoch)',
-    expr: literal(null).asDateTime().equals(literal(epoch)),
+    expr: toExpr(null).asDateTime().equals(toExpr(epoch)),
     expected: false,
   ),
   (
     name: 'epoch.equals(null)',
-    expr: literal(epoch as DateTime?).equals(literal(null)),
+    expr: toExpr(epoch as DateTime?).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: 'epoch.equals(epoch)',
-    expr: literal(epoch as DateTime?).equals(literal(epoch)),
+    expr: toExpr(epoch as DateTime?).equals(toExpr(epoch)),
     expected: true,
   ),
   (
     name: 'null.asDateTime().equals(today)',
-    expr: literal(null).asDateTime().equals(literal(today)),
+    expr: toExpr(null).asDateTime().equals(toExpr(today)),
     expected: false,
   ),
   (
     name: 'today.equals(null)',
-    expr: literal(today as DateTime?).equals(literal(null)),
+    expr: toExpr(today as DateTime?).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: 'today.equals(today)',
-    expr: literal(today as DateTime?).equals(literal(today)),
+    expr: toExpr(today as DateTime?).equals(toExpr(today)),
     expected: true,
   ),
 
   // Expr<DateTime?>.notEquals
   (
     name: 'null.asDateTime().notEquals(null)',
-    expr: literal(null).asDateTime().notEquals(literal(null)),
+    expr: toExpr(null).asDateTime().notEquals(toExpr(null)),
     expected: false,
   ),
   (
     name: 'null.asDateTime().notEquals(epoch)',
-    expr: literal(null).asDateTime().notEquals(literal(epoch)),
+    expr: toExpr(null).asDateTime().notEquals(toExpr(epoch)),
     expected: true,
   ),
   (
     name: 'epoch.notEquals(null)',
-    expr: literal(epoch as DateTime?).notEquals(literal(null)),
+    expr: toExpr(epoch as DateTime?).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: 'epoch.notEquals(epoch)',
-    expr: literal(epoch as DateTime?).notEquals(literal(epoch)),
+    expr: toExpr(epoch as DateTime?).notEquals(toExpr(epoch)),
     expected: false,
   ),
   (
     name: 'null.asDateTime().notEquals(today)',
-    expr: literal(null).asDateTime().notEquals(literal(today)),
+    expr: toExpr(null).asDateTime().notEquals(toExpr(today)),
     expected: true,
   ),
   (
     name: 'today.notEquals(null)',
-    expr: literal(today as DateTime?).notEquals(literal(null)),
+    expr: toExpr(today as DateTime?).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: 'today.notEquals(today)',
-    expr: literal(today as DateTime?).notEquals(literal(today)),
+    expr: toExpr(today as DateTime?).notEquals(toExpr(today)),
     expected: false,
   ),
   // Expr<DateTime?>.equalsLiteral
   (
     name: 'null.asDateTime().equalsLiteral(null)',
-    expr: literal(null).asDateTime().equalsLiteral(null),
+    expr: toExpr(null).asDateTime().equalsLiteral(null),
     expected: true,
   ),
   (
     name: 'null.asDateTime().equalsLiteral(epoch)',
-    expr: literal(null).asDateTime().equalsLiteral(epoch),
+    expr: toExpr(null).asDateTime().equalsLiteral(epoch),
     expected: false,
   ),
   (
     name: 'epoch.equalsLiteral(null)',
-    expr: literal(epoch as DateTime?).equalsLiteral(null),
+    expr: toExpr(epoch as DateTime?).equalsLiteral(null),
     expected: false,
   ),
   (
     name: 'epoch.equalsLiteral(epoch)',
-    expr: literal(epoch as DateTime?).equalsLiteral(epoch),
+    expr: toExpr(epoch as DateTime?).equalsLiteral(epoch),
     expected: true,
   ),
   (
     name: 'null.asDateTime().equalsLiteral(today)',
-    expr: literal(null).asDateTime().equalsLiteral(today),
+    expr: toExpr(null).asDateTime().equalsLiteral(today),
     expected: false,
   ),
   (
     name: 'today.equalsLiteral(null)',
-    expr: literal(today as DateTime?).equalsLiteral(null),
+    expr: toExpr(today as DateTime?).equalsLiteral(null),
     expected: false,
   ),
   (
     name: 'today.equalsLiteral(today)',
-    expr: literal(today as DateTime?).equalsLiteral(today),
+    expr: toExpr(today as DateTime?).equalsLiteral(today),
     expected: true,
   ),
   // Expr<DateTime?>.notEqualsLiteral
   (
     name: 'null.asDateTime().notEqualsLiteral(null)',
-    expr: literal(null).asDateTime().notEqualsLiteral(null),
+    expr: toExpr(null).asDateTime().notEqualsLiteral(null),
     expected: false,
   ),
   (
     name: 'null.asDateTime().notEqualsLiteral(epoch)',
-    expr: literal(null).asDateTime().notEqualsLiteral(epoch),
+    expr: toExpr(null).asDateTime().notEqualsLiteral(epoch),
     expected: true,
   ),
   (
     name: 'epoch.notEqualsLiteral(null)',
-    expr: literal(epoch as DateTime?).notEqualsLiteral(null),
+    expr: toExpr(epoch as DateTime?).notEqualsLiteral(null),
     expected: true,
   ),
   (
     name: 'epoch.notEqualsLiteral(epoch)',
-    expr: literal(epoch as DateTime?).notEqualsLiteral(epoch),
+    expr: toExpr(epoch as DateTime?).notEqualsLiteral(epoch),
     expected: false,
   ),
   (
     name: 'null.asDateTime().notEqualsLiteral(today)',
-    expr: literal(null).asDateTime().notEqualsLiteral(today),
+    expr: toExpr(null).asDateTime().notEqualsLiteral(today),
     expected: true,
   ),
   (
     name: 'today.notEqualsLiteral(null)',
-    expr: literal(today as DateTime?).notEqualsLiteral(null),
+    expr: toExpr(today as DateTime?).notEqualsLiteral(null),
     expected: true,
   ),
   (
     name: 'today.notEqualsLiteral(today)',
-    expr: literal(today as DateTime?).notEqualsLiteral(today),
+    expr: toExpr(today as DateTime?).notEqualsLiteral(today),
     expected: false,
   ),
   // Expr<DateTime?>.isNull()
   (
     name: 'null.asDateTime().isNull()',
-    expr: literal(null).asDateTime().isNull(),
+    expr: toExpr(null).asDateTime().isNull(),
     expected: true,
   ),
   (
     name: 'epoch.isNull()',
-    expr: literal(epoch as DateTime?).isNull(),
+    expr: toExpr(epoch as DateTime?).isNull(),
     expected: false,
   ),
   (
     name: 'today.isNull()',
-    expr: literal(today as DateTime?).isNull(),
+    expr: toExpr(today as DateTime?).isNull(),
     expected: false,
   ),
   // Expr<DateTime?>.isNotNull()
   (
     name: 'null.asDateTime().isNotNull()',
-    expr: literal(null).asDateTime().isNotNull(),
+    expr: toExpr(null).asDateTime().isNotNull(),
     expected: false,
   ),
   (
     name: 'epoch.isNotNull()',
-    expr: literal(epoch as DateTime?).isNotNull(),
+    expr: toExpr(epoch as DateTime?).isNotNull(),
     expected: true,
   ),
   (
     name: 'today.isNotNull()',
-    expr: literal(today as DateTime?).isNotNull(),
+    expr: toExpr(today as DateTime?).isNotNull(),
     expected: true,
   ),
 ];

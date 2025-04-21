@@ -59,8 +59,8 @@ void main() {
       for (final v in initialAccounts) {
         await db.accounts
             .insert(
-              accountNumber: literal(v.accountNumber),
-              balance: literal(v.balance),
+              accountNumber: toExpr(v.accountNumber),
+              balance: toExpr(v.balance),
             )
             .execute();
       }
@@ -75,13 +75,13 @@ void main() {
           // We can use `.byAccountNumber()` because the `accountNumber` field
           // is annotated with @Unique()
           .byAccountNumber('0001')
-          .update((a, set) => set(balance: a.balance - literal(100)))
+          .update((a, set) => set(balance: a.balance - toExpr(100)))
           .execute();
 
       // Deposit 100 to account 0000-02
       await db.accounts
           .byAccountNumber('0002')
-          .update((a, set) => set(balance: a.balance + literal(100)))
+          .update((a, set) => set(balance: a.balance + toExpr(100)))
           .execute();
     });
     // #endregion
@@ -94,7 +94,7 @@ void main() {
         // Withdraw 100 from account 0000-01
         final newBalance = await db.accounts
             .byAccountNumber('0001')
-            .update((a, set) => set(balance: a.balance - literal(100)))
+            .update((a, set) => set(balance: a.balance - toExpr(100)))
             .returning((a) => (a.balance,))
             .executeAndFetch();
         if (newBalance == null) {
@@ -109,7 +109,7 @@ void main() {
         // Deposit 100 to account 0000-02
         await db.accounts
             .byAccountNumber('0002')
-            .update((a, set) => set(balance: a.balance + literal(100)))
+            .update((a, set) => set(balance: a.balance + toExpr(100)))
             .execute();
       });
     } on TransactionAbortedException catch (e) {
@@ -131,8 +131,8 @@ void main() {
       // Withdraw 100 from account 0000-01
       final newBalance = await db.accounts
           .byAccountNumber('0001')
-          .where((a) => a.balance >= literal(100))
-          .update((a, set) => set(balance: a.balance - literal(100)))
+          .where((a) => a.balance >= toExpr(100))
+          .update((a, set) => set(balance: a.balance - toExpr(100)))
           .returning((a) => (a.balance,))
           .executeAndFetch();
       if (newBalance == null) {
@@ -143,7 +143,7 @@ void main() {
       // Deposit 100 to account 0000-02
       await db.accounts
           .byAccountNumber('0002')
-          .update((a, set) => set(balance: a.balance + literal(100)))
+          .update((a, set) => set(balance: a.balance + toExpr(100)))
           .execute();
     });
     // #endregion
@@ -154,22 +154,22 @@ void main() {
     await db.transact(() async {
       await db.accounts
           .byAccountNumber('0001')
-          .update((a, set) => set(balance: a.balance - literal(100)))
+          .update((a, set) => set(balance: a.balance - toExpr(100)))
           .execute();
 
       try {
         await db.transact(() async {
           await db.accounts
               .insert(
-                accountNumber: literal('0002'),
-                balance: literal(100),
+                accountNumber: toExpr('0002'),
+                balance: toExpr(100),
               )
               .execute();
         });
       } on TransactionAbortedException {
         await db.accounts
             .byAccountNumber('0002')
-            .update((a, set) => set(balance: a.balance + literal(100)))
+            .update((a, set) => set(balance: a.balance + toExpr(100)))
             .execute();
       }
     });

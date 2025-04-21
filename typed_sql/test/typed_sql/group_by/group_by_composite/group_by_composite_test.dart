@@ -137,14 +137,14 @@ void main() {
       for (final v in initialItems) {
         await db.items
             .insert(
-              text: literal(v.text),
-              real: literal(v.real),
-              integer: literal(v.integer),
-              timestamp: literal(v.timestamp),
-              optText: literal(v.optText),
-              optReal: literal(v.optReal),
-              optInteger: literal(v.optInteger),
-              optTimestamp: literal(v.optTimestamp),
+              text: toExpr(v.text),
+              real: toExpr(v.real),
+              integer: toExpr(v.integer),
+              timestamp: toExpr(v.timestamp),
+              optText: toExpr(v.optText),
+              optReal: toExpr(v.optReal),
+              optInteger: toExpr(v.optInteger),
+              optTimestamp: toExpr(v.optTimestamp),
             )
             .execute();
       }

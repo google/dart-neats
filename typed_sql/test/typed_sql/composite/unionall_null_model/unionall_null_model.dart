@@ -43,7 +43,7 @@ void main() {
 
   r.addTest('.unionAll(NULL)', (db) async {
     final q1 = db.select((db.items.byKey(42).asExpr,)).asQuery;
-    final q2 = db.select((literal(null),)).asQuery;
+    final q2 = db.select((toExpr(null),)).asQuery;
 
     final result = await q1.unionAll(q2).fetch();
     check(result).deepEquals([null, null]);
@@ -53,9 +53,9 @@ void main() {
     final q1 =
         db.select((db.items.byKey(42).asExpr,)).asQuery.select((item) => (
               item,
-              literal(42),
+              toExpr(42),
             ));
-    final q2 = db.select((literal(null), literal(42))).asQuery;
+    final q2 = db.select((toExpr(null), toExpr(42))).asQuery;
 
     final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
@@ -63,13 +63,13 @@ void main() {
   });
 
   r.addTest('.insert + .unionAll((NULL, 42))', (db) async {
-    await db.items.insert(id: literal(42), value: literal('hello')).execute();
+    await db.items.insert(id: toExpr(42), value: toExpr('hello')).execute();
     final q1 =
         db.select((db.items.byKey(42).asExpr,)).asQuery.select((item) => (
               item,
-              literal(42),
+              toExpr(42),
             ));
-    final q2 = db.select((literal(null), literal(42))).asQuery;
+    final q2 = db.select((toExpr(null), toExpr(42))).asQuery;
 
     final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
@@ -83,11 +83,11 @@ void main() {
     // This tests that .where doesn't change the expression in a manner that
     // breaks our cast!
     final q2 = db
-        .select((literal(null),))
+        .select((toExpr(null),))
         .asQuery
         // Using a non-trival expression to ensure trivial avoid optimizations
         // don't compile the WHERE-clause away.
-        .where((v) => literal(42) > literal(21))
+        .where((v) => toExpr(42) > toExpr(21))
         .select((v) => (v,));
 
     final result = await q1.unionAll(q2).fetch();

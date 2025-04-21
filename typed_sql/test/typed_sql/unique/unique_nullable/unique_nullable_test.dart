@@ -42,25 +42,25 @@ void main() {
   );
 
   r.addTest('db.account.insert', (db) async {
-    await db.accounts.insert(accountNumber: literal('0001')).execute();
-    await db.accounts.insert(accountNumber: literal('0002')).execute();
+    await db.accounts.insert(accountNumber: toExpr('0001')).execute();
+    await db.accounts.insert(accountNumber: toExpr('0002')).execute();
   });
 
   r.addTest('db.account.insert(accountNumber: null)', (db) async {
-    await db.accounts.insert(accountNumber: literal('0001')).execute();
-    await db.accounts.insert(accountNumber: literal(null)).execute();
+    await db.accounts.insert(accountNumber: toExpr('0001')).execute();
+    await db.accounts.insert(accountNumber: toExpr(null)).execute();
   });
 
   r.addTest('db.account.insert(accountNumber: null) - twice', (db) async {
-    await db.accounts.insert(accountNumber: literal('0001')).execute();
-    await db.accounts.insert(accountNumber: literal(null)).execute();
-    await db.accounts.insert(accountNumber: literal(null)).execute();
+    await db.accounts.insert(accountNumber: toExpr('0001')).execute();
+    await db.accounts.insert(accountNumber: toExpr(null)).execute();
+    await db.accounts.insert(accountNumber: toExpr(null)).execute();
   });
 
   r.addTest('db.account.insert (unqiue violation)', (db) async {
-    await db.accounts.insert(accountNumber: literal('0001')).execute();
+    await db.accounts.insert(accountNumber: toExpr('0001')).execute();
     try {
-      await db.accounts.insert(accountNumber: literal('0001')).execute();
+      await db.accounts.insert(accountNumber: toExpr('0001')).execute();
       fail('expected violation of unique constraint!');
     } on OperationException {
       return;
@@ -68,8 +68,8 @@ void main() {
   });
 
   r.addTest('db.account.byAccountNumber()', (db) async {
-    await db.accounts.insert(accountNumber: literal('0001')).execute();
-    await db.accounts.insert(accountNumber: literal('0002')).execute();
+    await db.accounts.insert(accountNumber: toExpr('0001')).execute();
+    await db.accounts.insert(accountNumber: toExpr('0002')).execute();
 
     final account = await db.accounts.byAccountNumber('0001').fetch();
     check(account).isNotNull()
@@ -78,8 +78,8 @@ void main() {
   });
 
   r.addTest('db.account.byAccountNumber() - not found', (db) async {
-    await db.accounts.insert(accountNumber: literal('0001')).execute();
-    await db.accounts.insert(accountNumber: literal('0002')).execute();
+    await db.accounts.insert(accountNumber: toExpr('0001')).execute();
+    await db.accounts.insert(accountNumber: toExpr('0002')).execute();
 
     final account = await db.accounts.byAccountNumber('0003').fetch();
     check(account).isNull();

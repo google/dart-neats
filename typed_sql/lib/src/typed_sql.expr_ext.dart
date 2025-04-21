@@ -34,37 +34,37 @@ extension CustomTypeNullableExt<S> on Expr<CustomDataType<S>?> {
 /// Extension methods for wrapping an [int] as an expression.
 extension IntExt<T extends int?> on T {
   /// Wrap [int] as an [Expr] expression for use with `package:typed_sql`.
-  Expr<T> get asExpr => literal(this);
+  Expr<T> get asExpr => toExpr(this);
 }
 
 /// Extension methods for wrapping a [double] as an expression.
 extension DoubleExt<T extends double?> on T {
   /// Wrap [double] as an [Expr] expression for use with `package:typed_sql`.
-  Expr<T> get asExpr => literal(this);
+  Expr<T> get asExpr => toExpr(this);
 }
 
 /// Extension methods for wrapping a [String] as an expression.
 extension StringExt<T extends String?> on T {
   /// Wrap [String] as an [Expr] expression for use with `package:typed_sql`.
-  Expr<T> get asExpr => literal(this);
+  Expr<T> get asExpr => toExpr(this);
 }
 
 /// Extension methods for wrapping a [DateTime] as an expression.
 extension DateTimeExt<T extends DateTime?> on T {
   /// Wrap [DateTime] as an [Expr] expression for use with `package:typed_sql`.
-  Expr<T> get asExpr => literal(this);
+  Expr<T> get asExpr => toExpr(this);
 }
 
 /// Extension methods for wrapping a [bool] as an expression.
 extension BoolExt<T extends bool?> on T {
   /// Wrap [bool] as an [Expr] expression for use with `package:typed_sql`.
-  Expr<T> get asExpr => literal(this);
+  Expr<T> get asExpr => toExpr(this);
 }
 
 /// Extension methods for wrapping an [Uint8List] as an expression.
 extension Uint8ListExt<T extends Uint8List?> on T {
   /// Wrap [Uint8List] as an [Expr] expression for use with `package:typed_sql`.
-  Expr<T> get asExpr => literal(this);
+  Expr<T> get asExpr => toExpr(this);
 }
 
 /// Extension methods for casting `NULL` to other types.
@@ -141,7 +141,7 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   Expr<T> orElse(Expr<T> value) => OrElseExpression._(this, value);
 
   /// {@macro orElse}
-  Expr<T> orElseLiteral(T value) => orElse(literal(value));
+  Expr<T> orElseLiteral(T value) => orElse(toExpr(value));
 
   /// {@template equals}
   /// Compare this expression to [value].
@@ -153,7 +153,7 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
 
   /// {@macro equals}
   Expr<bool> equalsLiteral(num? value) =>
-      ExpressionNumEquals(this, literal(value));
+      ExpressionNumEquals(this, toExpr(value));
 
   /// {@template notEquals}
   /// Compare this expression to [value].
@@ -164,14 +164,14 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   Expr<bool> notEquals(Expr<T?> value) => equals(value).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsLiteral(T? value) => notEquals(literal(value));
+  Expr<bool> notEqualsLiteral(T? value) => notEquals(toExpr(value));
 
   /// {@template isNull}
   /// Check if this expression is `NULL`.
   ///
   /// This is equivalent to `this IS NULL` in SQL.
   /// {@endtemplate}
-  Expr<bool> isNull() => equals(literal(null));
+  Expr<bool> isNull() => equals(toExpr(null));
 
   /// {@template isNotNull}
   /// Check if this expression is not `NULL`.
@@ -187,22 +187,22 @@ extension ExpressionNullableString on Expr<String?> {
   Expr<String> orElse(Expr<String> value) => OrElseExpression._(this, value);
 
   /// {@macro orElse}
-  Expr<String> orElseLiteral(String value) => orElse(literal(value));
+  Expr<String> orElseLiteral(String value) => orElse(toExpr(value));
 
   /// {@macro equals}
   Expr<bool> equals(Expr<String?> value) => ExpressionStringEquals(this, value);
 
   /// {@macro equals}
-  Expr<bool> equalsLiteral(String? value) => equals(literal(value));
+  Expr<bool> equalsLiteral(String? value) => equals(toExpr(value));
 
   /// {@macro notEquals}
   Expr<bool> notEquals(Expr<String?> value) => equals(value).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsLiteral(String? value) => notEquals(literal(value));
+  Expr<bool> notEqualsLiteral(String? value) => notEquals(toExpr(value));
 
   /// {@macro isNull}
-  Expr<bool> isNull() => equals(literal(null));
+  Expr<bool> isNull() => equals(toExpr(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -214,7 +214,7 @@ extension ExpressionNullableBool on Expr<bool?> {
   Expr<bool> orElse(Expr<bool> value) => OrElseExpression._(this, value);
 
   /// {@macro orElse}
-  Expr<bool> orElseLiteral(bool value) => orElse(literal(value));
+  Expr<bool> orElseLiteral(bool value) => orElse(toExpr(value));
 
   // TODO: Add boolean equality, so that we can do isNull() / isNotNull()!
 }
@@ -226,7 +226,7 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
       OrElseExpression._(this, value);
 
   /// {@macro orElse}
-  Expr<DateTime> orElseLiteral(DateTime value) => orElse(literal(value));
+  Expr<DateTime> orElseLiteral(DateTime value) => orElse(toExpr(value));
 
   /// {@macro equals}
   Expr<bool> equals(Expr<DateTime?> value) =>
@@ -234,16 +234,16 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
 
   /// {@macro equals}
   Expr<bool> equalsLiteral(DateTime? value) =>
-      ExpressionDateTimeEquals(this, literal(value));
+      ExpressionDateTimeEquals(this, toExpr(value));
 
   /// {@macro notEquals}
   Expr<bool> notEquals(Expr<DateTime?> value) => equals(value).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsLiteral(DateTime? value) => notEquals(literal(value));
+  Expr<bool> notEqualsLiteral(DateTime? value) => notEquals(toExpr(value));
 
   /// {@macro isNull}
-  Expr<bool> isNull() => equals(literal(null));
+  Expr<bool> isNull() => equals(toExpr(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -326,13 +326,13 @@ extension ExpressionString on Expr<String> {
   Expr<bool> equals(Expr<String?> value) => ExpressionStringEquals(this, value);
 
   /// {@macro equals}
-  Expr<bool> equalsLiteral(String? value) => equals(literal(value));
+  Expr<bool> equalsLiteral(String? value) => equals(toExpr(value));
 
   /// {@macro notEquals}
   Expr<bool> notEquals(Expr<String?> value) => equals(value).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsLiteral(String? value) => notEquals(literal(value));
+  Expr<bool> notEqualsLiteral(String? value) => notEquals(toExpr(value));
 
   /// Check if the string is empty.
   ///
@@ -363,7 +363,7 @@ extension ExpressionString on Expr<String> {
 
   /// {@macro startsWith}
   Expr<bool> startsWithLiteral(String value) =>
-      ExpressionStringStartsWith(this, literal(value));
+      ExpressionStringStartsWith(this, toExpr(value));
 
   /// {@template endsWith}
   /// Check if the string ends with [value].
@@ -379,7 +379,7 @@ extension ExpressionString on Expr<String> {
 
   /// {@macro endsWith}
   Expr<bool> endsWithLiteral(String value) =>
-      ExpressionStringEndsWith(this, literal(value));
+      ExpressionStringEndsWith(this, toExpr(value));
 
   /// Matches pattern where `%` is one or more characters, and
   /// `_` is one character.
@@ -400,7 +400,7 @@ extension ExpressionString on Expr<String> {
 
   /// {@macro contains}
   Expr<bool> containsLiteral(String substring) =>
-      ExpressionStringContains(this, literal(substring));
+      ExpressionStringContains(this, toExpr(substring));
 
   /// Converts the string to lower case.
   ///
@@ -482,21 +482,21 @@ extension ExpressionString on Expr<String> {
 
   /// {@macro lessThan}
   /// {@macro unicode-consistency}
-  Expr<bool> lessThanLiteral(String other) => lessThan(literal(other));
+  Expr<bool> lessThanLiteral(String other) => lessThan(toExpr(other));
 
   /// {@macro lessThanOrEqual}
   /// {@macro unicode-consistency}
   Expr<bool> lessThanOrEqualLiteral(String other) =>
-      lessThanOrEqual(literal(other));
+      lessThanOrEqual(toExpr(other));
 
   /// {@macro greaterThan}
   /// {@macro unicode-consistency}
-  Expr<bool> greaterThanLiteral(String other) => greaterThan(literal(other));
+  Expr<bool> greaterThanLiteral(String other) => greaterThan(toExpr(other));
 
   /// {@macro greaterThanOrEqual}
   /// {@macro unicode-consistency}
   Expr<bool> greaterThanOrEqualLiteral(String other) =>
-      greaterThanOrEqual(literal(other));
+      greaterThanOrEqual(toExpr(other));
 
   /// Cast as integer.
   ///
@@ -594,19 +594,19 @@ extension ExpressionInt on Expr<int> {
   Expr<double> operator /(Expr<int> other) => ExpressionNumDivide(this, other);
 
   /// {@macro add}
-  Expr<int> addLiteral(int other) => ExpressionNumAdd(this, literal(other));
+  Expr<int> addLiteral(int other) => ExpressionNumAdd(this, toExpr(other));
 
   /// {@macro subtract}
   Expr<int> subtractLiteral(int other) =>
-      ExpressionNumSubtract(this, literal(other));
+      ExpressionNumSubtract(this, toExpr(other));
 
   /// {@macro multiply}
   Expr<int> multiplyLiteral(int other) =>
-      ExpressionNumMultiply(this, literal(other));
+      ExpressionNumMultiply(this, toExpr(other));
 
   /// {@macro divide-integer-cast}
   Expr<double> divideLiteral(int other) =>
-      ExpressionNumDivide(this, literal(other));
+      ExpressionNumDivide(this, toExpr(other));
 
   /// Cast as string.
   ///
@@ -671,19 +671,19 @@ extension ExpressionDouble on Expr<double> {
 
   /// {@macro add}
   Expr<double> addLiteral(double other) =>
-      ExpressionNumAdd(this, literal(other));
+      ExpressionNumAdd(this, toExpr(other));
 
   /// {@macro subtract}
   Expr<double> subtractLiteral(double other) =>
-      ExpressionNumSubtract(this, literal(other));
+      ExpressionNumSubtract(this, toExpr(other));
 
   /// {@macro multiply}
   Expr<double> multiplyLiteral(double other) =>
-      ExpressionNumMultiply(this, literal(other));
+      ExpressionNumMultiply(this, toExpr(other));
 
   /// {@macro divide}
   Expr<double> divideLiteral(double other) =>
-      ExpressionNumDivide(this, literal(other));
+      ExpressionNumDivide(this, toExpr(other));
 
   /// Cast as string.
   ///
@@ -714,13 +714,13 @@ extension ExpressionNum<T extends num> on Expr<T> {
 
   /// {@macro equals}
   Expr<bool> equalsLiteral(num? value) =>
-      ExpressionNumEquals(this, literal(value));
+      ExpressionNumEquals(this, toExpr(value));
 
   /// {@macro notEquals}
   Expr<bool> notEquals(Expr<T?> value) => equals(value).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsLiteral(T? value) => notEquals(literal(value));
+  Expr<bool> notEqualsLiteral(T? value) => notEquals(toExpr(value));
 
   /// {@macro lessThan}
   Expr<bool> operator <(Expr<T> other) => ExpressionNumLessThan(this, other);
@@ -752,17 +752,17 @@ extension ExpressionNum<T extends num> on Expr<T> {
       ExpressionNumGreaterThanOrEqual(this, other);
 
   /// {@macro lessThan}
-  Expr<bool> lessThanLiteral(T other) => lessThan(literal(other));
+  Expr<bool> lessThanLiteral(T other) => lessThan(toExpr(other));
 
   /// {@macro lessThanOrEqual}
-  Expr<bool> lessThanOrEqualLiteral(T other) => lessThanOrEqual(literal(other));
+  Expr<bool> lessThanOrEqualLiteral(T other) => lessThanOrEqual(toExpr(other));
 
   /// {@macro greaterThan}
-  Expr<bool> greaterThanLiteral(T other) => greaterThan(literal(other));
+  Expr<bool> greaterThanLiteral(T other) => greaterThan(toExpr(other));
 
   /// {@macro greaterThanOrEqual}
   Expr<bool> greaterThanOrEqualLiteral(T other) =>
-      greaterThanOrEqual(literal(other));
+      greaterThanOrEqual(toExpr(other));
 
   //... do other operators...
   // TODO: integerDivide!
@@ -776,13 +776,13 @@ extension ExpressionDateTime on Expr<DateTime> {
 
   /// {@macro equals}
   Expr<bool> equalsLiteral(DateTime? value) =>
-      ExpressionDateTimeEquals(this, literal(value));
+      ExpressionDateTimeEquals(this, toExpr(value));
 
   /// {@macro notEquals}
   Expr<bool> notEquals(Expr<DateTime?> value) => equals(value).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsLiteral(DateTime? value) => notEquals(literal(value));
+  Expr<bool> notEqualsLiteral(DateTime? value) => notEquals(toExpr(value));
 
   // TODO: Decide if we want to support storing a Duration
   // Expression<bool> difference(Expression<DateTime> value) =>
@@ -813,7 +813,7 @@ extension ExpressionDateTime on Expr<DateTime> {
   Expr<bool> isBefore(Expr<DateTime> value) => this < value;
 
   /// {@macro isBefore}
-  Expr<bool> isBeforeLiteral(DateTime value) => isBefore(literal(value));
+  Expr<bool> isBeforeLiteral(DateTime value) => isBefore(toExpr(value));
 
   /// {@template isAfter}
   /// Check if this expression is after [value].
@@ -825,7 +825,7 @@ extension ExpressionDateTime on Expr<DateTime> {
   Expr<bool> isAfter(Expr<DateTime> value) => this > value;
 
   /// {@macro isAfter}
-  Expr<bool> isAfterLiteral(DateTime value) => isAfter(literal(value));
+  Expr<bool> isAfterLiteral(DateTime value) => isAfter(toExpr(value));
 
   // TODO: More features... maybe there is a duration in SQL?
 }

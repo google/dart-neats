@@ -26,53 +26,53 @@ Future<void> main() async {
   // Create 3 users
   await db.users
       .insert(
-        userId: literal(12),
-        name: literal('alice'),
-        email: literal('alice@wonderland.com'),
+        userId: toExpr(12),
+        name: toExpr('alice'),
+        email: toExpr('alice@wonderland.com'),
       )
       .execute();
   await db.users
       .insert(
-        userId: literal(13),
-        name: literal('trudy'),
-        email: literal('trudy@evil.inc'),
+        userId: toExpr(13),
+        name: toExpr('trudy'),
+        email: toExpr('trudy@evil.inc'),
       )
       .execute();
   await db.users
       .insert(
-        userId: literal(14),
-        name: literal('bob'),
-        email: literal('bob@builders.com'),
+        userId: toExpr(14),
+        name: toExpr('bob'),
+        email: toExpr('bob@builders.com'),
       )
       .execute();
 
   // Create two packages
   await db.packages
       .insert(
-        packageName: literal('try'),
-        ownerId: literal(12),
-        likes: literal(0),
-        publisher: literal(null),
+        packageName: toExpr('try'),
+        ownerId: toExpr(12),
+        likes: toExpr(0),
+        publisher: toExpr(null),
       )
       .execute();
   await db.packages
       .insert(
-        packageName: literal('retry'),
-        ownerId: literal(12),
-        likes: literal(0),
-        publisher: literal(null),
+        packageName: toExpr('retry'),
+        ownerId: toExpr(12),
+        likes: toExpr(0),
+        publisher: toExpr(null),
       )
       .execute();
 
   // Create some likes
   await db.likes
-      .insert(userId: literal(12), packageName: literal('retry'))
+      .insert(userId: toExpr(12), packageName: toExpr('retry'))
       .execute();
   await db.likes
-      .insert(userId: literal(13), packageName: literal('try'))
+      .insert(userId: toExpr(13), packageName: toExpr('try'))
       .execute();
   await db.likes
-      .insert(userId: literal(14), packageName: literal('retry'))
+      .insert(userId: toExpr(14), packageName: toExpr('retry'))
       .execute();
 
   // Try to fetch all users
@@ -134,9 +134,9 @@ Future<void> main() async {
         await db.transact(() async {
           await db.users
               .insert(
-                userId: literal(42),
-                name: literal('user'),
-                email: literal('user@example.com'),
+                userId: toExpr(42),
+                name: toExpr('user'),
+                email: toExpr('user@example.com'),
               )
               .execute();
         });

@@ -57,9 +57,9 @@ void main() {
       for (final v in _testData) {
         await db.employees
             .insert(
-              surname: literal(v.surname),
-              seniority: literal(v.seniority),
-              salary: literal(v.salary),
+              surname: toExpr(v.surname),
+              seniority: toExpr(v.seniority),
+              salary: toExpr(v.salary),
             )
             .execute();
       }
@@ -75,7 +75,7 @@ void main() {
             // Expr<Model?> which Expr<Null> would otherwise match.
             // We can't prevent Expr<Null> from matching such extensions, but
             // we can use Expr<void> instead!
-            literal<void>(null),
+            toExpr<void>(null),
           ),
         )
         .aggregate(

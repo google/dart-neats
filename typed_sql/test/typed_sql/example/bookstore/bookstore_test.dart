@@ -89,7 +89,7 @@ void main() {
     // Insert an author and return the authorId!
     final authorId = await db.authors
         .insert(
-          name: literal('Bucks Bunny'),
+          name: toExpr('Bucks Bunny'),
         )
         .returning((author) => (author.authorId,))
         .executeAndFetch();
@@ -97,17 +97,17 @@ void main() {
     // Insert a book, omitting stock since it has a default value!
     await db.books
         .insert(
-          title: literal('Vegan Dining'),
-          authorId: literal(authorId), // by Bucks Bunny
-          stock: literal(3),
+          title: toExpr('Vegan Dining'),
+          authorId: toExpr(authorId), // by Bucks Bunny
+          stock: toExpr(3),
         )
         .execute();
 
     // Decrease stock for 'Vegan Dining', return update stock
     final updatedStock = await db.books
-        .where((b) => b.title.equals(literal('Vegan Dining')))
+        .where((b) => b.title.equals(toExpr('Vegan Dining')))
         .update((b, set) => set(
-              stock: b.stock - literal(1),
+              stock: b.stock - toExpr(1),
             ))
         .returning((b) => (b.stock,))
         .executeAndFetch();
@@ -115,7 +115,7 @@ void main() {
 
     // Delete all books by Bucks Bunny
     await db.books
-        .where((b) => b.authorId.equals(literal(authorId)))
+        .where((b) => b.authorId.equals(toExpr(authorId)))
         .delete()
         .execute();
     // #endregion
@@ -129,16 +129,16 @@ void main() {
       for (final v in initialAuthors) {
         await db.authors
             .insert(
-              name: literal(v.name),
+              name: toExpr(v.name),
             )
             .execute();
       }
       for (final v in initialBooks) {
         await db.books
             .insert(
-              title: literal(v.title),
-              authorId: literal(v.authorId),
-              stock: literal(v.stock),
+              title: toExpr(v.title),
+              authorId: toExpr(v.authorId),
+              stock: toExpr(v.stock),
             )
             .execute();
       }
@@ -158,7 +158,7 @@ void main() {
     // Lookup book and associated author in one query
     final (book, authorOfBook) = await db.books
         // Filtering using a .where clause with a typed expression
-        .where((b) => b.title.equals(literal('Vegan Dining')))
+        .where((b) => b.title.equals(toExpr('Vegan Dining')))
         // Projection to select Expr<book> and Expr<Author> using a subquery
         .select((b) => (b, b.author))
         .first // only get the first result
@@ -172,7 +172,7 @@ void main() {
     // We can also query for books with more than 5 in stock and get the title
     // and stock of each book.
     final titleAndStock = await db.books
-        .where((Expr<Book> b) => b.stock > literal(5))
+        .where((Expr<Book> b) => b.stock > toExpr(5))
         .select((b) => (b.title, b.stock))
         .fetch();
     check(titleAndStock).unorderedEquals([
@@ -216,7 +216,7 @@ void main() {
     // #region authors-insert
     await db.authors
         .insert(
-          name: literal('Roger Rabbit'),
+          name: toExpr('Roger Rabbit'),
         )
         .execute();
     // #endregion
@@ -226,8 +226,8 @@ void main() {
     // #region authors-insert-with-id
     await db.authors
         .insert(
-          authorId: literal(42),
-          name: literal('Roger Rabbit'),
+          authorId: toExpr(42),
+          name: toExpr('Roger Rabbit'),
         )
         .execute();
     // #endregion
@@ -237,7 +237,7 @@ void main() {
     // #region authors-insert-returnInserted
     final author = await db.authors
         .insert(
-          name: literal('Roger Rabbit'),
+          name: toExpr('Roger Rabbit'),
         )
         .returnInserted()
         .executeAndFetch();
@@ -252,7 +252,7 @@ void main() {
     // #region authors-insert-returning-authorId
     final authorId = await db.authors
         .insert(
-          name: literal('Roger Rabbit'),
+          name: toExpr('Roger Rabbit'),
         )
         .returning((author) => (author.authorId,))
         .executeAndFetch();
@@ -265,7 +265,7 @@ void main() {
   r.addTest('books.insert(authorId: fromLookup)', (db) async {
     // #region books-insert-w-lookup
     final authorId = await db.authors
-        .where((author) => author.name.equals(literal('Easter Bunny')))
+        .where((author) => author.name.equals(toExpr('Easter Bunny')))
         .select((author) => (author.authorId,))
         .first
         .fetch();
@@ -276,8 +276,8 @@ void main() {
 
     await db.books
         .insert(
-          title: literal('How to hide eggs'),
-          authorId: literal(authorId),
+          title: toExpr('How to hide eggs'),
+          authorId: toExpr(authorId),
         )
         .execute();
     // #endregion
@@ -287,9 +287,9 @@ void main() {
     // #region books-insert-subquery
     await db.books
         .insert(
-          title: literal('How to hide eggs'),
+          title: toExpr('How to hide eggs'),
           authorId: db.authors.asSubQuery
-              .where((author) => author.name.equals(literal('Easter Bunny')))
+              .where((author) => author.name.equals(toExpr('Easter Bunny')))
               .first
               .authorId
               .asNotNull(),
@@ -302,7 +302,7 @@ void main() {
     // #region books.where-stock-gt-3
     final result = await db.books
         .where(
-          (b) => b.stock > literal(3),
+          (b) => b.stock > toExpr(3),
         )
         .fetch();
 
@@ -319,7 +319,7 @@ void main() {
         .select((b) => (
               b.title,
               b.stock,
-              b.stock > literal(3),
+              b.stock > toExpr(3),
             ))
         // .select() returns Query<(Expr<String>, Expr<int>, Expr<bool>)>,
         .fetch();
@@ -367,7 +367,7 @@ void main() {
             ))
         // This .where extension method takes a callback with two arguments
         // Expr<String?> and Expr<int>.
-        .where((title, stock) => stock > literal(3))
+        .where((title, stock) => stock > toExpr(3))
         .select((title, stock) => (title,))
         // Remove null rows, we cannot do type promotion so the result is still
         // a Query<(Expr<String?>,)>
@@ -375,7 +375,7 @@ void main() {
         // But we can use .orElse to callback to '', which gives us an
         // Query<(Expr<String>,)>, not that there is anything wrong with
         // returning a nullable expression.
-        .select((title) => (title.orElse(literal('')),))
+        .select((title) => (title.orElse(toExpr('')),))
         .fetch();
 
     check(titles).unorderedEquals([
@@ -393,7 +393,7 @@ void main() {
               b.title,
               b.stock,
             ))
-        .where((title, stock) => stock > literal(3));
+        .where((title, stock) => stock > toExpr(3));
 
     // Use await-for to process the stream one row at the time.
     await for (final (title, stock) in q.stream()) {
@@ -495,7 +495,7 @@ void main() {
   r.addTest('books.where().first', (db) async {
     // #region books-where-first
     final book = await db.books
-        .where((b) => b.title.equals(literal('Are Bunnies Unhealthy?')))
+        .where((b) => b.title.equals(toExpr('Are Bunnies Unhealthy?')))
         .first
         .fetch();
 
@@ -510,7 +510,7 @@ void main() {
     // #region select-book-and-author
     final (book, author) = await db.select((
       db.books.asSubQuery
-          .where((b) => b.title.equals(literal('Are Bunnies Unhealthy?')))
+          .where((b) => b.title.equals(toExpr('Are Bunnies Unhealthy?')))
           .first,
       db.authors.byKey(1).asExpr,
     )).fetchOrNulls();
@@ -542,7 +542,7 @@ void main() {
     await db.books
         .byKey(1)
         .update((book, set) => set(
-              stock: book.stock - literal(1),
+              stock: book.stock - toExpr(1),
             ))
         .execute();
     // #endregion
@@ -553,7 +553,7 @@ void main() {
     await db.books
         .byKey(1)
         .update((book, set) => set(
-              title: literal(null),
+              title: toExpr(null),
             ))
         .execute();
     // #endregion
@@ -562,9 +562,9 @@ void main() {
   r.addTest('books.where(.stock > 5).update(stock = stock / 2)', (db) async {
     // #region update-books-where-stock-gt-5
     await db.books
-        .where((book) => book.stock > literal(5))
+        .where((book) => book.stock > toExpr(5))
         .update((book, set) => set(
-              stock: (book.stock / literal(2)).asInt(),
+              stock: (book.stock / toExpr(2)).asInt(),
             ))
         .execute();
     // #endregion
@@ -575,7 +575,7 @@ void main() {
     final updatedBook = await db.books
         .byKey(1)
         .update((book, set) => set(
-              stock: book.stock - literal(1),
+              stock: book.stock - toExpr(1),
             ))
         .returnUpdated() // return the updated row
         .executeAndFetch();
@@ -591,9 +591,9 @@ void main() {
       (db) async {
     // #region update-books-where-returning
     final updatedStock = await db.books
-        .where((book) => book.stock > literal(5))
+        .where((book) => book.stock > toExpr(5))
         .update((book, set) => set(
-              stock: (book.stock / literal(2)).asInt(),
+              stock: (book.stock / toExpr(2)).asInt(),
             ))
         .returning((book) => (book.stock,))
         .executeAndFetch();
@@ -616,7 +616,7 @@ void main() {
   r.addTest('books.where().delete().returnDeleted()', (db) async {
     // #region books-where-delete-return
     final deletedBooks = await db.books
-        .where((book) => book.authorId.equals(literal(1)))
+        .where((book) => book.authorId.equals(toExpr(1)))
         .delete()
         .returning((b) => (
               b.title,
@@ -656,7 +656,7 @@ void main() {
       (db) async {
     // #region books-use-reference-in-where
     final titleAndAuthor = await db.books
-        .where((book) => book.author.name.equals(literal('Easter Bunny')))
+        .where((book) => book.author.name.equals(toExpr('Easter Bunny')))
         .select((book) => (
               book.title,
               book.author.name,
@@ -771,7 +771,7 @@ void main() {
 
   r.addTest('books.groupBy(null).aggregate(sum(.stock))', (db) async {
     final (totalStock, countDifferntBooks) = await db.books
-        .groupBy((b) => (literal(null),))
+        .groupBy((b) => (toExpr(null),))
         .aggregate(
           (agg) => //
               agg.sum((book) => book.stock).count(),

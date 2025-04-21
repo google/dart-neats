@@ -77,9 +77,9 @@ void main() {
       for (final v in _testData) {
         await db.items
             .insert(
-              text: literal(v.text),
-              integer: literal(v.integer),
-              real: literal(v.real),
+              text: toExpr(v.text),
+              integer: toExpr(v.integer),
+              real: toExpr(v.real),
             )
             .execute();
       }

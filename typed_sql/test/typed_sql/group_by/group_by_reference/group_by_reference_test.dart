@@ -70,18 +70,18 @@ void main() {
       for (final v in initialAuthors) {
         await db.authors
             .insert(
-              authorId: literal(v.authorId),
-              name: literal(v.name),
+              authorId: toExpr(v.authorId),
+              name: toExpr(v.name),
             )
             .execute();
       }
       for (final v in initialBooks) {
         await db.books
             .insert(
-              bookId: literal(v.bookId),
-              title: literal(v.title),
-              authorId: literal(v.authorId),
-              stock: literal(v.stock),
+              bookId: toExpr(v.bookId),
+              title: toExpr(v.title),
+              authorId: toExpr(v.authorId),
+              stock: toExpr(v.stock),
             )
             .execute();
       }

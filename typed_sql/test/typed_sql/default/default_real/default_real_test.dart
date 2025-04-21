@@ -34,8 +34,8 @@ void main() {
   r.addTest('.insert() without default', (db) async {
     await db.items
         .insert(
-          id: literal(1),
-          value: literal(_nonDefaultValue),
+          id: toExpr(1),
+          value: toExpr(_nonDefaultValue),
         )
         .execute();
 
@@ -46,7 +46,7 @@ void main() {
   r.addTest('.insert() with default', (db) async {
     await db.items
         .insert(
-          id: literal(1),
+          id: toExpr(1),
         )
         .execute();
 
@@ -57,7 +57,7 @@ void main() {
   r.addTest('.update() default value', (db) async {
     await db.items
         .insert(
-          id: literal(1),
+          id: toExpr(1),
         )
         .execute();
 
@@ -67,7 +67,7 @@ void main() {
     await db.items
         .byKey(1)
         .update((item, set) => set(
-              value: literal(_nonDefaultValue),
+              value: toExpr(_nonDefaultValue),
             ))
         .execute();
 

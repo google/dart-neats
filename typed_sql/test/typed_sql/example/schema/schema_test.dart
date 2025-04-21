@@ -88,7 +88,7 @@ void main() {
     // Insert a row into the "authors" table
     final author = await db.authors
         .insert(
-          name: literal('Easter Bunny'),
+          name: toExpr('Easter Bunny'),
         )
         .returnInserted()
         .executeAndFetch(); // returns Future<Author?>
@@ -96,8 +96,8 @@ void main() {
     // Insert a row into the "books" table
     await db.books
         .insert(
-          title: literal('How to hide eggs'),
-          authorId: literal(author.authorId),
+          title: toExpr('How to hide eggs'),
+          authorId: toExpr(author.authorId),
         )
         .execute();
     // #endregion

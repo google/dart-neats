@@ -98,10 +98,10 @@ void main() {
       for (final v in initialItems) {
         await db.items
             .insert(
-              text: literal(v.text),
-              real: literal(v.real),
-              integer: literal(v.integer),
-              timestamp: literal(v.timestamp),
+              text: toExpr(v.text),
+              real: toExpr(v.real),
+              integer: toExpr(v.integer),
+              timestamp: toExpr(v.timestamp),
             )
             .execute();
       }

@@ -98,8 +98,8 @@ void main() {
       for (final v in initialCars) {
         await db.cars
             .insert(
-              model: literal(v.model),
-              licensePlate: literal(v.licensePlate),
+              model: toExpr(v.model),
+              licensePlate: toExpr(v.licensePlate),
               color: v.color.asExpr,
             )
             .execute();
@@ -111,8 +111,8 @@ void main() {
     // #region insert-car
     await db.cars
         .insert(
-          model: literal('Beetle'),
-          licensePlate: literal('ABC-001'),
+          model: toExpr('Beetle'),
+          licensePlate: toExpr('ABC-001'),
           color: Color.red().asExpr,
         )
         .execute();
