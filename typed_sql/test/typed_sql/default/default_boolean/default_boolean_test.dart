@@ -16,7 +16,7 @@ const _defaultValue = true;
 const _nonDefaultValue = false;
 
 @PrimaryKey(['id'])
-abstract final class Item extends Model {
+abstract final class Item extends Row {
   @AutoIncrement()
   int get id;
 

@@ -23,7 +23,7 @@ abstract final class TestDatabase extends Schema {
 }
 
 @PrimaryKey(['key'])
-abstract final class Item extends Model {
+abstract final class Item extends Row {
   String get key;
 
   String get value;

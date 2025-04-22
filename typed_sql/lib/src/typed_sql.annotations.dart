@@ -66,7 +66,7 @@ final class Unique {
   const Unique();
 }
 
-/// Interface to be implemented by custom types that can be stored in a [Model]
+/// Interface to be implemented by custom types that can be stored in a [Row]
 /// for automatic (de)-serialization.
 ///
 /// Subclasses must:

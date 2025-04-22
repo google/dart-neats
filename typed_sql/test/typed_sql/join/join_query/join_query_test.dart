@@ -24,7 +24,7 @@ abstract final class CompanyDatabase extends Schema {
 }
 
 @PrimaryKey(['employeeId'])
-abstract final class Employee extends Model {
+abstract final class Employee extends Row {
   @AutoIncrement()
   int get employeeId;
 
@@ -34,7 +34,7 @@ abstract final class Employee extends Model {
 }
 
 @PrimaryKey(['departmentId'])
-abstract final class Department extends Model {
+abstract final class Department extends Row {
   @AutoIncrement()
   int get departmentId;
 

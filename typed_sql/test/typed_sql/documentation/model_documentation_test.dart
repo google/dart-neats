@@ -32,7 +32,7 @@ abstract final class TestDatabase extends Schema {
 
 /// Represents a row in the `authors` table.
 @PrimaryKey(['authorId'])
-abstract final class Author extends Model {
+abstract final class Author extends Row {
   /// Primary key for the `authors` table.
   @AutoIncrement()
   int get authorId;
@@ -54,7 +54,7 @@ abstract final class Author extends Model {
 }
 
 @PrimaryKey(['bookId'])
-abstract final class Book extends Model {
+abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 

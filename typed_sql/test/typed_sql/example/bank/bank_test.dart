@@ -26,7 +26,7 @@ abstract final class BankVault extends Schema {
 }
 
 @PrimaryKey(['accountId'])
-abstract final class Account extends Model {
+abstract final class Account extends Row {
   @AutoIncrement()
   int get accountId;
 

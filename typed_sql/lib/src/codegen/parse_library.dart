@@ -54,7 +54,7 @@ Future<ParsedLibrary> parseLibrary(
 
   final models = targetLibrary.classes.where((cls) {
     final supertype = cls.supertype;
-    return supertype != null && modelTypeChecker.isExactlyType(supertype);
+    return supertype != null && rowTypeChecker.isExactlyType(supertype);
   }).map((cls) {
     return modelCache.putIfAbsent(
       cls,
@@ -190,9 +190,9 @@ ParsedSchema _parseSchema(
     }
     final typeArgSupertype = typeArgElement.supertype;
     if (typeArgSupertype == null ||
-        !modelTypeChecker.isExactlyType(typeArgSupertype)) {
+        !rowTypeChecker.isExactlyType(typeArgSupertype)) {
       throw InvalidGenerationSource(
-        'T in `Table<T>` must be a subclass of `Model`',
+        'T in `Table<T>` must be a subclass of `Row`',
         element: a,
       );
     }
@@ -222,19 +222,19 @@ ParsedModel _parseModel(
 
   if (!cls.isAbstract || !cls.isFinal) {
     throw InvalidGenerationSource(
-      'subclasses of `Model` must be `abstract final`',
+      'subclasses of `Row` must be `abstract final`',
       element: cls,
     );
   }
 
   if (cls.methods.isNotEmpty) {
-    throw InvalidGenerationSource('subclasses of `Model` cannot have methods',
+    throw InvalidGenerationSource('subclasses of `Row` cannot have methods',
         element: cls.methods.first);
   }
 
   if (!cls.fields.any((f) => f.getter != null)) {
     throw InvalidGenerationSource(
-      'subclasses of `Model` cannot have fields or setters',
+      'subclasses of `Row` cannot have fields or setters',
       element: cls.fields.first,
     );
   }
@@ -244,13 +244,13 @@ ParsedModel _parseModel(
   for (final a in cls.accessors) {
     if (a.isSetter) {
       throw InvalidGenerationSource(
-        'subclasses of `Model` cannot have setters',
+        'subclasses of `Row` cannot have setters',
         element: a,
       );
     }
     if (!a.isAbstract) {
       throw InvalidGenerationSource(
-        'subclasses of `Model` can only abstract getters',
+        'subclasses of `Row` can only abstract getters',
         element: a,
       );
     }
@@ -399,7 +399,7 @@ ParsedModel _parseModel(
   final pks = primaryKeyTypeChecker.annotationsOfExact(cls);
   if (pks.isEmpty || pks.length > 1) {
     throw InvalidGenerationSource(
-      'subclasses of `Model` must have one `PrimaryKey` annotation',
+      'subclasses of `Row` must have one `PrimaryKey` annotation',
       element: cls,
     );
   }
@@ -420,13 +420,13 @@ ParsedModel _parseModel(
 
   if (primaryKey.isEmpty) {
     throw InvalidGenerationSource(
-      'subclasses of `Model` must have a non-empty `PrimaryKey` annotation',
+      'subclasses of `Row` must have a non-empty `PrimaryKey` annotation',
       element: cls,
     );
   }
   if (primaryKey.length != primaryKey.toSet().length) {
     throw InvalidGenerationSource(
-      'subclasses of `Model` cannot have duplicate fields in `PrimaryKey`',
+      'subclasses of `Row` cannot have duplicate fields in `PrimaryKey`',
       element: cls,
     );
   }

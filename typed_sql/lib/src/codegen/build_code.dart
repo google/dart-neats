@@ -270,7 +270,7 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
   }
 }
 
-/// Generate code for [Model] subclasses used by [table]
+/// Generate code for [Row] subclasses used by [table]
 Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
   final model = table.model;
   final modelName = model.name;

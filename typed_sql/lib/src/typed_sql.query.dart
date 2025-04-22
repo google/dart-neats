@@ -64,7 +64,7 @@ final class RightJoin<T extends Record, S extends Record> {
 /// {@category inserting_rows}
 /// {@category writing_queries}
 /// {@category update_and_delete}
-final class Table<T extends Model> extends Query<(Expr<T>,)> {
+final class Table<T extends Row> extends Query<(Expr<T>,)> {
   final TableClause _tableClause;
 
   Table._(

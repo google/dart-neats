@@ -23,7 +23,7 @@ abstract final class TestDatabase extends Schema {
 }
 
 @PrimaryKey(['id'])
-abstract final class Employee extends Model {
+abstract final class Employee extends Row {
   @AutoIncrement()
   int get id;
 

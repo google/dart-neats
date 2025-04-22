@@ -21,8 +21,8 @@ final typedSqlSrcUri = Uri.parse('package:typed_sql/src/typed_sql.dart');
 final schemaTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#Schema'),
 );
-final modelTypeChecker = TypeChecker.fromUrl(
-  typedSqlSrcUri.resolve('#Model'),
+final rowTypeChecker = TypeChecker.fromUrl(
+  typedSqlSrcUri.resolve('#Row'),
 );
 final tableTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#Table'),

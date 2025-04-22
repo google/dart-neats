@@ -23,7 +23,7 @@ abstract final class PrimaryDatabase extends Schema {
 }
 
 @PrimaryKey(['userId'])
-abstract final class User extends Model {
+abstract final class User extends Row {
   @AutoIncrement()
   int get userId;
 
@@ -38,7 +38,7 @@ abstract final class User extends Model {
 }
 
 @PrimaryKey(['packageName'])
-abstract final class Package extends Model {
+abstract final class Package extends Row {
   String get packageName;
 
   @DefaultValue(0)
@@ -51,7 +51,7 @@ abstract final class Package extends Model {
 }
 
 @PrimaryKey(['userId', 'packageName'])
-abstract final class Like extends Model {
+abstract final class Like extends Row {
   // TODO: Support references
   int get userId;
 

@@ -96,7 +96,7 @@ final class _NullExprType extends ColumnType<Null> {
     _ExprType<S> type,
   ) =>
       switch (type) {
-        _ModelExprType<Model> type =>
+        _ModelExprType<Row> type =>
           type.fields.map((f) => CastExpression._(value, f)),
         CustomExprType type => [CastExpression._(value, type._backingType)],
         ColumnType type => [CastExpression._(value, type)],
@@ -120,7 +120,7 @@ final class CustomExprType<S, T extends CustomDataType<S>>
   }
 }
 
-final class _ModelExprType<T extends Model> extends _ExprType<T> {
+final class _ModelExprType<T extends Row> extends _ExprType<T> {
   final List<ColumnType> fields;
   final T? Function(RowReader r) _readModel;
 
@@ -233,7 +233,7 @@ base mixin _ExprBlob implements _ExprTyped<Uint8List> {
 /// {@category update_and_delete}
 Expr<T> toExpr<T extends Object?>(T value) => Literal(value);
 
-final class ModelExpression<T extends Model> extends Expr<T> {
+final class ModelExpression<T extends Row> extends Expr<T> {
   final TableDefinition<T> _table;
   final int _index;
   final Object _handle;
@@ -290,7 +290,7 @@ final class SubQueryExpression<T> extends Expr<T> {
 
   @override
   Iterable<Expr<Object?>> _explode() => switch (_type) {
-        _ModelExprType<Model> type => Iterable.generate(
+        _ModelExprType<Row> type => Iterable.generate(
             _columns,
             (index) => _field<void>(index, type.fields[index]),
           ),

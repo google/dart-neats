@@ -32,7 +32,7 @@ abstract final class Bookstore extends Schema {
 
 // #region author-model
 @PrimaryKey(['authorId'])
-abstract final class Author extends Model {
+abstract final class Author extends Row {
   @AutoIncrement()
   int get authorId;
 
@@ -43,7 +43,7 @@ abstract final class Author extends Model {
 
 // #region book-model
 @PrimaryKey(['bookId'])
-abstract final class Book extends Model {
+abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 

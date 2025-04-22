@@ -44,12 +44,12 @@ abstract base class Schema {
   }
 }
 
-/// Marker class which all model classes must extend.
+/// Marker class which all _row_ classes must extend.
 ///
 /// {@category schema}
-abstract base class Model {}
+abstract base class Row {}
 
-typedef TableDefinition<T extends Model> = ({
+typedef TableDefinition<T extends Row> = ({
   String tableName,
   List<String> columns,
   List<
@@ -111,7 +111,7 @@ final class ExposedForCodeGen {
   /// Create [Table] object.
   ///
   /// @nodoc
-  static Table<T> declareTable<T extends Model>(
+  static Table<T> declareTable<T extends Row>(
     Database context,
     TableDefinition<T> table,
   ) =>
@@ -121,13 +121,13 @@ final class ExposedForCodeGen {
         table,
       );
 
-  static InsertSingle<T> insertInto<T extends Model>({
+  static InsertSingle<T> insertInto<T extends Row>({
     required Table<T> table,
     required List<Expr?> values,
   }) =>
       InsertSingle._(table, values);
 
-  static Update<T> update<T extends Model>(
+  static Update<T> update<T extends Row>(
     Query<(Expr<T>,)> query,
     TableDefinition<T> table,
     UpdateSet<T> Function(Expr<T> row) updateBuilder,
@@ -143,7 +143,7 @@ final class ExposedForCodeGen {
     );
   }
 
-  static UpdateSingle<T> updateSingle<T extends Model>(
+  static UpdateSingle<T> updateSingle<T extends Row>(
     QuerySingle<(Expr<T>,)> query,
     TableDefinition<T> table,
     UpdateSet<T> Function(Expr<T> row) updateBuilder,
@@ -161,22 +161,22 @@ final class ExposedForCodeGen {
     ));
   }
 
-  static Delete<T> delete<T extends Model>(
+  static Delete<T> delete<T extends Row>(
     Query<(Expr<T>,)> query,
     TableDefinition<T> table,
   ) =>
       Delete._(query, table);
 
-  static DeleteSingle<T> deleteSingle<T extends Model>(
+  static DeleteSingle<T> deleteSingle<T extends Row>(
     QuerySingle<(Expr<T>,)> query,
     TableDefinition<T> table,
   ) =>
       DeleteSingle._(Delete._(query.asQuery, table));
 
-  static UpdateSet<T> buildUpdate<T extends Model>(List<Expr?> values) =>
+  static UpdateSet<T> buildUpdate<T extends Row>(List<Expr?> values) =>
       UpdateSet._(values);
 
-  static Expr<T> field<T extends Object?, M extends Model?>(
+  static Expr<T> field<T extends Object?, M extends Row?>(
     Expr<M> row,
     int index,
     FieldType<T> type,
@@ -194,7 +194,7 @@ final class ExposedForCodeGen {
     );
   }
 
-  static SubQuery<(Expr<T>,)> subqueryTable<T extends Model, S extends Model?>(
+  static SubQuery<(Expr<T>,)> subqueryTable<T extends Row, S extends Row?>(
     TableDefinition<T> table,
   ) {
     return SubQuery._(

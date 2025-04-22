@@ -29,14 +29,14 @@ part of 'typed_sql.dart';
 ///
 /// This is always an opaque object that serves to make the signatures in
 /// `.update` easy to use.
-final class UpdateSet<T extends Model> {
+final class UpdateSet<T extends Row> {
   final List<Expr?> _values;
 
   UpdateSet._(this._values);
 }
 
 /// A `UPDATE` statement to update at-most one row.
-final class UpdateSingle<T extends Model> {
+final class UpdateSingle<T extends Row> {
   final Update<T> _update;
 
   UpdateSingle._(this._update);
@@ -64,7 +64,7 @@ final class UpdateSingle<T extends Model> {
 }
 
 /// A `UPDATE` statement to update multiple rows.
-final class Update<T extends Model> {
+final class Update<T extends Row> {
   final Query<(Expr<T>,)> _query;
   final TableDefinition<T> _table;
   final Object _handle;
@@ -129,7 +129,7 @@ final class Update<T extends Model> {
 }
 
 /// A `INSERT` statement to insert a single row.
-final class InsertSingle<T extends Model> {
+final class InsertSingle<T extends Row> {
   final Table<T> _table;
   final List<Expr?> _values;
 
@@ -184,7 +184,7 @@ final class InsertSingle<T extends Model> {
 }
 
 /// A `DELETE` statement deleting multiple rows.
-final class Delete<T extends Model> {
+final class Delete<T extends Row> {
   final Query<(Expr<T>,)> _query;
   final TableDefinition<T> _table;
 
@@ -237,7 +237,7 @@ final class Delete<T extends Model> {
 }
 
 /// A `DELETE` statement deleting at-most one row.
-final class DeleteSingle<T extends Model> {
+final class DeleteSingle<T extends Row> {
   final Delete<T> _delete;
   DeleteSingle._(this._delete);
 
