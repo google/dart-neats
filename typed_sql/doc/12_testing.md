@@ -148,7 +148,7 @@ necessary to extract the property you want to check, or write custom extension
 methods for `package:checks`. However, if you import `package:checks` when
 defining your database schema (typically in `model.dart`), the code-generator
 for `package:typed_sql` will automatically generate extension methods
-for your _model classes_.
+for your _row classes_.
 
 The following example defines the database schema for a simple bank vault.
 Importing `package:checks/checks.dart` will cause the code-generator to output

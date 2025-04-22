@@ -24,18 +24,18 @@ abstract final class Bookstore extends Schema {
 
 The _schema class_ is only allowed to have abstract getters that returns
 [Table] objects. Each such getter defines a table in the database.
-The `T` in `Table<T>` must be a _model class_ specifying the table layout.
+The `T` in `Table<T>` must be a _row class_ specifying the table layout.
 
 > [!NOTE]
-> Each table must have its own _model class_. It's not possible to reuse the
-> same _model class_ for multiple tables.
+> Each table must have its own _row class_. It's not possible to reuse the
+> same _row class_ for multiple tables.
 
 
-## Model class for `Author`
-For each table in our database we must define a _model class_. This is an
-`abstract final class` extending the `Model` class, specifying what fields
+## Row class for `Author`
+For each table in our database we must define a _row class_. This is an
+`abstract final class` extending the `Row` class, specifying what fields
 the database table has. Continuing with the bookstore example we can define a
-_model class_ for the `authors` table as follows:
+_row class_ for the `authors` table as follows:
 
 ```dart schema_test.dart#author-model
 @PrimaryKey(['authorId'])
@@ -48,7 +48,7 @@ abstract final class Author extends Row {
 }
 ```
 
-The `Author` _model class_ specifies a table with two fields:
+The `Author` _row class_ specifies a table with two fields:
  * `authorId`, and,
  * `name`.
 
@@ -76,24 +76,24 @@ The following data types are allowed for fields:
  * Custom subclasses of `CustomDataType<T>`.
 
 These types are allowed to be nullable and non-nullable. When fields are
-non-nullable in the Dart _model class_ the SQL table will have a `NOT NULL`
+non-nullable in the Dart _row class_ the SQL table will have a `NOT NULL`
 constraint. For details on [CustomDataType] see
 [Custom data types] documentation.
 
 > [!NOTE]
-> These model classes are intended to be data classes, they may not have
+> These _row classes_ are intended to be data classes, they may not have
 > constructors or members other than abstract public getters.
 > Nor can they subclass or implement other classes.
 >
 > If you want to add custom helper methods, you may write extension methods for
-> your model classes.
+> your _row classes_.
 
 
-## `Book` model class with _foreign key_
+## `Book` row class with _foreign key_
 Returning to our bookstore example, we still need to define a `Book`
-_model class_ for the `books` table in the `Bookstore` schema. If we want the
+_row class_ for the `books` table in the `Bookstore` schema. If we want the
 `books` table to have a _foreign key_ referencing the `authors` table we can
-define the `Book` _model class_ as follows:
+define the `Book` _row class_ as follows:
 
 ```dart schema_test.dart#book-model
 @PrimaryKey(['bookId'])
@@ -252,7 +252,7 @@ check(titleAndAuthor).unorderedEquals([
 
 The astute reader might notice that `author.name` is not actually a property on
 the `books` table. However, because we defined a _foreign key_ on `Book`
-_model class_ with the `@References` annotation, and gave it the name `author`,
+_row class_ with the `@References` annotation, and gave it the name `author`,
 the `Expr<Book>` expression gets a subquery property `book.author` that allows
 us to access properties on the referenced `authors` row.
 
