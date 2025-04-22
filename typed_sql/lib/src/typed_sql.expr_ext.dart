@@ -149,11 +149,11 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   /// This is equivalent to `this IS NOT DISTINCT FROM value` in SQL.
   /// Hence, `NULL` is considered equal to `NULL`.
   /// {@endtemplate}
-  Expr<bool> equals(Expr<T?> value) => ExpressionNumEquals(this, value);
+  Expr<bool> equals(Expr<T?> value) => ExpressionIsNotDistinctFrom(this, value);
 
   /// {@macro equals}
   Expr<bool> equalsValue(num? value) =>
-      ExpressionNumEquals(this, toExpr(value));
+      ExpressionIsNotDistinctFrom(this, toExpr(value));
 
   /// {@template notEquals}
   /// Compare this expression to [value].
@@ -190,7 +190,8 @@ extension ExpressionNullableString on Expr<String?> {
   Expr<String> orElseValue(String value) => orElse(toExpr(value));
 
   /// {@macro equals}
-  Expr<bool> equals(Expr<String?> value) => ExpressionStringEquals(this, value);
+  Expr<bool> equals(Expr<String?> value) =>
+      ExpressionIsNotDistinctFrom(this, value);
 
   /// {@macro equals}
   Expr<bool> equalsValue(String? value) => equals(toExpr(value));
@@ -230,11 +231,11 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
 
   /// {@macro equals}
   Expr<bool> equals(Expr<DateTime?> value) =>
-      ExpressionDateTimeEquals(this, value);
+      ExpressionIsNotDistinctFrom(this, value);
 
   /// {@macro equals}
   Expr<bool> equalsValue(DateTime? value) =>
-      ExpressionDateTimeEquals(this, toExpr(value));
+      ExpressionIsNotDistinctFrom(this, toExpr(value));
 
   /// {@macro notEquals}
   Expr<bool> notEquals(Expr<DateTime?> value) => equals(value).not();
@@ -323,7 +324,8 @@ extension ExpressionBool on Expr<bool> {
 /// Extension methods for [String] expressions.
 extension ExpressionString on Expr<String> {
   /// {@macro equals}
-  Expr<bool> equals(Expr<String?> value) => ExpressionStringEquals(this, value);
+  Expr<bool> equals(Expr<String?> value) =>
+      ExpressionIsNotDistinctFrom(this, value);
 
   /// {@macro equals}
   Expr<bool> equalsValue(String? value) => equals(toExpr(value));
@@ -427,8 +429,7 @@ extension ExpressionString on Expr<String> {
   ///
   /// {@endtemplate}
   /// {@macro unicode-consistency}
-  Expr<bool> lessThan(Expr<String> other) =>
-      ExpressionStringLessThan(this, other);
+  Expr<bool> lessThan(Expr<String> other) => ExpressionLessThan(this, other);
 
   /// {@template lessThanOrEqual}
   /// Check if this expression is less than [other].
@@ -438,7 +439,7 @@ extension ExpressionString on Expr<String> {
   /// {@endtemplate}
   /// {@macro unicode-consistency}
   Expr<bool> lessThanOrEqual(Expr<String> other) =>
-      ExpressionStringLessThanOrEqual(this, other);
+      ExpressionLessThanOrEqual(this, other);
 
   /// {@template greaterThan}
   /// Check if this expression is less than [other].
@@ -448,7 +449,7 @@ extension ExpressionString on Expr<String> {
   /// {@endtemplate}
   /// {@macro unicode-consistency}
   Expr<bool> greaterThan(Expr<String> other) =>
-      ExpressionStringGreaterThan(this, other);
+      ExpressionGreaterThan(this, other);
 
   /// {@template greaterThanOrEqual}
   /// Check if this expression is less than [other].
@@ -458,27 +459,26 @@ extension ExpressionString on Expr<String> {
   /// {@endtemplate}
   /// {@macro unicode-consistency}
   Expr<bool> greaterThanOrEqual(Expr<String> other) =>
-      ExpressionStringGreaterThanOrEqual(this, other);
+      ExpressionGreaterThanOrEqual(this, other);
 
   /// {@macro lessThan}
   /// {@macro unicode-consistency}
-  Expr<bool> operator <(Expr<String> other) =>
-      ExpressionStringLessThan(this, other);
+  Expr<bool> operator <(Expr<String> other) => ExpressionLessThan(this, other);
 
   /// {@macro lessThanOrEqual}
   /// {@macro unicode-consistency}
   Expr<bool> operator <=(Expr<String> other) =>
-      ExpressionStringLessThanOrEqual(this, other);
+      ExpressionLessThanOrEqual(this, other);
 
   /// {@macro greaterThan}
   /// {@macro unicode-consistency}
   Expr<bool> operator >(Expr<String> other) =>
-      ExpressionStringGreaterThan(this, other);
+      ExpressionGreaterThan(this, other);
 
   /// {@macro greaterThanOrEqual}
   /// {@macro unicode-consistency}
   Expr<bool> operator >=(Expr<String> other) =>
-      ExpressionStringGreaterThanOrEqual(this, other);
+      ExpressionGreaterThanOrEqual(this, other);
 
   /// {@macro lessThan}
   /// {@macro unicode-consistency}
@@ -709,11 +709,11 @@ extension ExpressionDouble on Expr<double> {
 /// Extension methods for [int] and [double] expressions.
 extension ExpressionNum<T extends num> on Expr<T> {
   /// {@macro equals}
-  Expr<bool> equals(Expr<T?> value) => ExpressionNumEquals(this, value);
+  Expr<bool> equals(Expr<T?> value) => ExpressionIsNotDistinctFrom(this, value);
 
   /// {@macro equals}
   Expr<bool> equalsValue(num? value) =>
-      ExpressionNumEquals(this, toExpr(value));
+      ExpressionIsNotDistinctFrom(this, toExpr(value));
 
   /// {@macro notEquals}
   Expr<bool> notEquals(Expr<T?> value) => equals(value).not();
@@ -722,33 +722,32 @@ extension ExpressionNum<T extends num> on Expr<T> {
   Expr<bool> notEqualsValue(T? value) => notEquals(toExpr(value));
 
   /// {@macro lessThan}
-  Expr<bool> operator <(Expr<T> other) => ExpressionNumLessThan(this, other);
+  Expr<bool> operator <(Expr<T> other) => ExpressionLessThan(this, other);
 
   /// {@macro lessThanOrEqual}
   Expr<bool> operator <=(Expr<T> other) =>
-      ExpressionNumLessThanOrEqual(this, other);
+      ExpressionLessThanOrEqual(this, other);
 
   /// {@macro greaterThan}
-  Expr<bool> operator >(Expr<T> other) => ExpressionNumGreaterThan(this, other);
+  Expr<bool> operator >(Expr<T> other) => ExpressionGreaterThan(this, other);
 
   /// {@macro greaterThanOrEqual}
   Expr<bool> operator >=(Expr<T> other) =>
-      ExpressionNumGreaterThanOrEqual(this, other);
+      ExpressionGreaterThanOrEqual(this, other);
 
   /// {@macro lessThan}
-  Expr<bool> lessThan(Expr<T> other) => ExpressionNumLessThan(this, other);
+  Expr<bool> lessThan(Expr<T> other) => ExpressionLessThan(this, other);
 
   /// {@macro lessThanOrEqual}
   Expr<bool> lessThanOrEqual(Expr<T> other) =>
-      ExpressionNumLessThanOrEqual(this, other);
+      ExpressionLessThanOrEqual(this, other);
 
   /// {@macro greaterThan}
-  Expr<bool> greaterThan(Expr<T> other) =>
-      ExpressionNumGreaterThan(this, other);
+  Expr<bool> greaterThan(Expr<T> other) => ExpressionGreaterThan(this, other);
 
   /// {@macro greaterThanOrEqual}
   Expr<bool> greaterThanOrEqual(Expr<T> other) =>
-      ExpressionNumGreaterThanOrEqual(this, other);
+      ExpressionGreaterThanOrEqual(this, other);
 
   /// {@macro lessThan}
   Expr<bool> lessThanValue(T other) => lessThan(toExpr(other));
@@ -771,11 +770,11 @@ extension ExpressionNum<T extends num> on Expr<T> {
 extension ExpressionDateTime on Expr<DateTime> {
   /// {@macro equals}
   Expr<bool> equals(Expr<DateTime?> value) =>
-      ExpressionDateTimeEquals(this, value);
+      ExpressionIsNotDistinctFrom(this, value);
 
   /// {@macro equals}
   Expr<bool> equalsValue(DateTime? value) =>
-      ExpressionDateTimeEquals(this, toExpr(value));
+      ExpressionIsNotDistinctFrom(this, toExpr(value));
 
   /// {@macro notEquals}
   Expr<bool> notEquals(Expr<DateTime?> value) => equals(value).not();
@@ -788,19 +787,19 @@ extension ExpressionDateTime on Expr<DateTime> {
 
   /// {@macro lessThan}
   Expr<bool> operator <(Expr<DateTime> other) =>
-      ExpressionDateTimeLessThan(this, other);
+      ExpressionLessThan(this, other);
 
   /// {@macro lessThanOrEqual}
   Expr<bool> operator <=(Expr<DateTime> other) =>
-      ExpressionDateTimeLessThanOrEqual(this, other);
+      ExpressionLessThanOrEqual(this, other);
 
   /// {@macro greaterThan}
   Expr<bool> operator >(Expr<DateTime> other) =>
-      ExpressionDateTimeGreaterThan(this, other);
+      ExpressionGreaterThan(this, other);
 
   /// {@macro greaterThanOrEqual}
   Expr<bool> operator >=(Expr<DateTime> other) =>
-      ExpressionDateTimeGreaterThanOrEqual(this, other);
+      ExpressionGreaterThanOrEqual(this, other);
 
   /// {@template isBefore}
   /// Check if this expression is before [value].

@@ -525,29 +525,40 @@ final class ExpressionBoolOr extends BinaryOperationExpression<bool, bool>
   ExpressionBoolOr(super.left, super.right);
 }
 
-final class ExpressionStringEquals
-    extends BinaryOperationExpression<String?, bool> with _ExprBoolean {
-  ExpressionStringEquals(super.left, super.right);
+/// SQL Expression using `=`.
+final class ExpressionEquals<T extends Object>
+    extends BinaryOperationExpression<T?, bool> with _ExprBoolean {
+  ExpressionEquals(super.left, super.right);
 }
 
-final class ExpressionStringLessThan
-    extends BinaryOperationExpression<String, bool> with _ExprBoolean {
-  ExpressionStringLessThan(super.left, super.right);
+/// SQL Expression using `IS NOT DISTINCT FROM`.
+final class ExpressionIsNotDistinctFrom<T extends Object>
+    extends BinaryOperationExpression<T?, bool> with _ExprBoolean {
+  ExpressionIsNotDistinctFrom(super.left, super.right);
 }
 
-final class ExpressionStringLessThanOrEqual
-    extends BinaryOperationExpression<String, bool> with _ExprBoolean {
-  ExpressionStringLessThanOrEqual(super.left, super.right);
+/// SQL Expression using `<`.
+final class ExpressionLessThan<T extends Object>
+    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
+  ExpressionLessThan(super.left, super.right);
 }
 
-final class ExpressionStringGreaterThan
-    extends BinaryOperationExpression<String, bool> with _ExprBoolean {
-  ExpressionStringGreaterThan(super.left, super.right);
+/// SQL Expression using `<=`.
+final class ExpressionLessThanOrEqual<T extends Object>
+    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
+  ExpressionLessThanOrEqual(super.left, super.right);
 }
 
-final class ExpressionStringGreaterThanOrEqual
-    extends BinaryOperationExpression<String, bool> with _ExprBoolean {
-  ExpressionStringGreaterThanOrEqual(super.left, super.right);
+/// SQL Expression using `>`.
+final class ExpressionGreaterThan<T extends Object>
+    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
+  ExpressionGreaterThan(super.left, super.right);
+}
+
+/// SQL Expression using `>=`.
+final class ExpressionGreaterThanOrEqual<T extends Object>
+    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
+  ExpressionGreaterThanOrEqual(super.left, super.right);
 }
 
 final class ExpressionStringIsEmpty extends SingleValueExpr<bool>
@@ -602,11 +613,6 @@ final class ExpressionStringToLowerCase extends SingleValueExpr<String>
   ExpressionStringToLowerCase(this.value) : super._();
 }
 
-final class ExpressionNumEquals<T extends num>
-    extends BinaryOperationExpression<T?, bool> with _ExprBoolean {
-  ExpressionNumEquals(super.left, super.right);
-}
-
 final class ExpressionNumAdd<T extends num>
     extends BinaryOperationExpression<T, T> {
   ExpressionNumAdd(super.left, super.right);
@@ -634,49 +640,4 @@ final class ExpressionNumMultiply<T extends num>
 final class ExpressionNumDivide<T extends num>
     extends BinaryOperationExpression<T, double> with _ExprReal {
   ExpressionNumDivide(super.left, super.right);
-}
-
-final class ExpressionNumLessThan<T extends num>
-    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
-  ExpressionNumLessThan(super.left, super.right);
-}
-
-final class ExpressionNumLessThanOrEqual<T extends num>
-    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
-  ExpressionNumLessThanOrEqual(super.left, super.right);
-}
-
-final class ExpressionNumGreaterThan<T extends num>
-    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
-  ExpressionNumGreaterThan(super.left, super.right);
-}
-
-final class ExpressionNumGreaterThanOrEqual<T extends num>
-    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
-  ExpressionNumGreaterThanOrEqual(super.left, super.right);
-}
-
-final class ExpressionDateTimeEquals
-    extends BinaryOperationExpression<DateTime?, bool> with _ExprBoolean {
-  ExpressionDateTimeEquals(super.left, super.right);
-}
-
-final class ExpressionDateTimeLessThan
-    extends BinaryOperationExpression<DateTime, bool> with _ExprBoolean {
-  ExpressionDateTimeLessThan(super.left, super.right);
-}
-
-final class ExpressionDateTimeLessThanOrEqual
-    extends BinaryOperationExpression<DateTime, bool> with _ExprBoolean {
-  ExpressionDateTimeLessThanOrEqual(super.left, super.right);
-}
-
-final class ExpressionDateTimeGreaterThan
-    extends BinaryOperationExpression<DateTime, bool> with _ExprBoolean {
-  ExpressionDateTimeGreaterThan(super.left, super.right);
-}
-
-final class ExpressionDateTimeGreaterThanOrEqual
-    extends BinaryOperationExpression<DateTime, bool> with _ExprBoolean {
-  ExpressionDateTimeGreaterThanOrEqual(super.left, super.right);
 }
