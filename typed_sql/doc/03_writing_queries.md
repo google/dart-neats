@@ -691,7 +691,7 @@ _extension methods_:
 > the documentation are appreciated.
 
 The reference above, deliberately omits variations such as
-`.<method>Literal(...)` and `.not<method>(...)` because they are merely
+`.<method>Value(...)` and `.not<method>(...)` because they are merely
 convinience functions.
 
 
