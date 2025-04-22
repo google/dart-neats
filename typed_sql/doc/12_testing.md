@@ -1,11 +1,11 @@
 `package:typed_sql` ships with support for connecting to SQLite3 and PostgreSQL.
 A database connection consists of two parts:
- * An `SqlDialect`, which knows how to render SQL queries, and,
- * A `DatabaseAdapter`, which manages connections to the database.
+ * An [SqlDialect], which knows how to render SQL queries, and,
+ * A [DatabaseAdapter], which manages connections to the database.
 
-For convenience, the `DatabaseAdapter` provides constructors for connecting
+For convenience, the [DatabaseAdapter] provides constructors for connecting
 test database. When using one of these constructors a temporary database will
-be created, and when `close()` called on the `DatabaseAdapter` the
+be created, and when [DatabaseAdapter.close] called on the [DatabaseAdapter] the
 temporary database will be deleted.
 
 ## Testing with SQLite3
@@ -42,10 +42,10 @@ void main() {
 [sd-1]: https://pub.dev/packages/sqlite3
 [sd-2]: https://pub.dev/packages/sqlite3#manually-providing-sqlite3-libraries
 
-You can also create an in-memory database using the `DatabaseAdapter.sqlite3`
+You can also create an in-memory database using the [DatabaseAdapter.sqlite3]
 constructor, but beware that the `:memory:` URI does not work well, because
 `package:typed_sql` may need to create multiple concurrent connections.
-See reference documentation for `DatabaseAdapter.sqlite3` for details.
+See [DatabaseAdapter.sqlite3] for details.
 
 
 ## Testing with PostgreSQL
@@ -74,11 +74,11 @@ void main() {
 }
 ```
 
-The `DatabaseAdapter.postgresTestDatabase` will connect to a postgres database,
-create a new database, return a `DatabaseAdapter` connected to the new database,
-and delete the database when `close()` is called on the `DatabaseAdapter`.
+The [DatabaseAdapter.postgresTestDatabase] will connect to a postgres database,
+create a new database, return a [DatabaseAdapter] connected to the new database,
+and delete the database when `close()` is called on the [DatabaseAdapter].
 
-For this to work `DatabaseAdapter.postgresTestDatabase` constructor **must**
+For this to work [DatabaseAdapter.postgresTestDatabase] constructor **must**
 connect a postgres database as _administrator_, you can specify connection
 parameters directly, but if you don't it assumes a database is accessible using:
  * `$PGHOST`, defaults to `'127.0.0.1'`,
@@ -194,3 +194,10 @@ check(account).isNotNull().balance.isLessOrEqual(0);
 ```
 
 [checks]: https://pub.dev/packages/checks
+
+<!-- GENERATED DOCUMENTATION LINKS -->
+[DatabaseAdapter]: ../typed_sql/DatabaseAdapter-class.html
+[DatabaseAdapter.close]: ../typed_sql/DatabaseAdapter/close.html
+[DatabaseAdapter.postgresTestDatabase]: ../typed_sql/DatabaseAdapter/DatabaseAdapter.postgresTestDatabase.html
+[DatabaseAdapter.sqlite3]: ../typed_sql/DatabaseAdapter/DatabaseAdapter.sqlite3.html
+[SqlDialect]: ../typed_sql/SqlDialect-class.html

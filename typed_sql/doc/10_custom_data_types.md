@@ -11,7 +11,7 @@ class that implements `CustomDataType<T>`, where `T` is one of:
 
 > [!NOTE]
 > A _custom types_ does not give rise to a _User Defined Type (UDT)_ in SQL.
-> Implementations of `CustomDataType` serves exclusively to facilitate
+> Implementations of [CustomDataType] serves exclusively to facilitate
 > convenient serialization and deserialization of custom types.
 
 ## Implementing a `CustomDataType`
@@ -199,3 +199,6 @@ check(modelsAndLicense).unorderedEquals([
   ('Cooper', 'DEF-456'),
 ]);
 ```
+
+<!-- GENERATED DOCUMENTATION LINKS -->
+[CustomDataType]: ../typed_sql/CustomDataType-class.html

@@ -66,7 +66,7 @@ await db.authors
 
 We cannot simply provide `name` or `id` as
 `String` or `int` respectively. Instead we have to give an `Expr<String>` or
-`Expr<int>`. We can create such expressions using the `toExpr` function.
+`Expr<int>`. We can create such expressions using the [toExpr] function.
 
 The `toExpr<T>(T value)` function works for the following types:
  * `bool` (e.g. `toExpr(true)`),
@@ -111,7 +111,7 @@ While simple and easy to type, if we only want access to a subset of the
 properties of the row that was inserted, we can return a projection with
 `.returning(projectionBuilder)`. In the example below the `projectionBuilder`
 gets an `Expr<Author>` representing the row that was inserted, and it returns
-a record where values are `Expr` objects.
+a record where values are [Expr] objects.
 
 ```dart bookstore_test.dart#authors-insert-returning-authorId
 final authorId = await db.authors
@@ -132,7 +132,7 @@ the newly inserted author.
 
 It's worth noting that it is possible to write complex expressions and return
 multiple values in the `.returning` clause.
-See documentation on how to write queries for more information on projections.
+For more information on projections, see [Writing queries].
 
 ## Insert from subquery
 If we want to insert a row in the `books` table, but we don't know the
@@ -198,5 +198,9 @@ constraint.
 > Instead it'll allow the `NULL` value propagate, so if the `Book.authorId`
 > property was nullable such insertion would have been allowed.
 
-For more information on subqueries see relevant documentation for writing
-queries.
+For more information on subqueries see [Writing queries].
+
+<!-- GENERATED DOCUMENTATION LINKS -->
+[Expr]: ../typed_sql/Expr-class.html
+[Writing queries]: ../topics/Writing%20queries-topic.html
+[toExpr]: ../typed_sql/toExpr.html

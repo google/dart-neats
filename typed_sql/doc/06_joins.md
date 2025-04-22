@@ -48,7 +48,7 @@ final _initialEmployees = [
 ```
 
 ## (Inner) join two tables with `.join`
-In `package:typed_sql` we can join two `Query` objects creating a new `Query`
+In `package:typed_sql` we can join two [Query] objects creating a new `Query`
 object with fields from both queries. The follow example shows how to join
 the employees table with the departments table.
 
@@ -66,7 +66,7 @@ for (final (employee, department) in result) {
 ```
 
 When joining `Query<(Expr<A>, Expr<B>, ...)>` with
-`Query<(Expr<C>, Expr<D>, ...)>` we first call `.join` to create an `InnerJoin`
+`Query<(Expr<C>, Expr<D>, ...)>` we first call `.join` to create an [InnerJoin]
 object, we then call `InnerJoin.on` to create a
 `Query<(Expr<A>, Expr<B>, ..., Expr<C>, Expr<D>, ...)>`. Once you've joined two
 query objects, you can still use `.where` and `.select` on the resulting
@@ -205,3 +205,7 @@ RIGHT JOIN departments
 > There is currently no support for `FULL OUTER JOIN` in `package:typed_sql`,
 > this may be introduced in the future. But at the moment PostgreSQL only
 > supports `FULL JOIN` on merge-joinable and hash-joinable expressions.
+
+<!-- GENERATED DOCUMENTATION LINKS -->
+[InnerJoin]: ../typed_sql/InnerJoin-class.html
+[Query]: ../typed_sql/Query-class.html

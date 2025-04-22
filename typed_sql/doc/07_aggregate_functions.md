@@ -334,3 +334,5 @@ discrepencies from SQL:
  * `COUNT(column)` in SQL will count all rows that are not `NULL`, this is not
    offered in `package:typed_sql`, but can be trivially emulated using
    `.where((row) => row.isNotNull()).sum()`.
+
+<!-- GENERATED DOCUMENTATION LINKS -->

@@ -589,7 +589,7 @@ a `Query<T>` we can convert it to a `SubQuery<T>` using `.asSubQuery`.
 > which on `SubQuery` returns `Expr<T>` as opposed to `.asExpr` which always
 > gives you a nullable `Expr<T?>`.
 >
-> See documentation for _aggregate functions_ for more details.
+> See [Aggregate functions] for more details.
 
 In general, `.asExpr` is only available on `QuerySingle<(Expr<T>,)>`,
 `.asExpr` is not available on queries returning multiple values.
@@ -789,4 +789,8 @@ select a single integer field (or expression) such that you have
 > the documentation are appreciated.
 
 The above documentation does not outline how `.join` and `.groupBy` works, for
-details on how to use these see their respective documentation topics.
+details on how to use these see [Joins] and [Aggregate functions].
+
+<!-- GENERATED DOCUMENTATION LINKS -->
+[Aggregate functions]: ../topics/Aggregate%20functions-topic.html
+[Joins]: ../topics/Joins-topic.html

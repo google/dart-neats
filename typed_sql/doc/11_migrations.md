@@ -25,7 +25,7 @@ the empty database tables.
 If define our _database schema_ in a `model.dart` file as illustrated below,
 the code-generator for `package:typed_sql` will generate a top-level
 `createBankVaultTables(SqlDialect dialect)` function, which given an
-`SqlDialect` will return [DDL] statements separated by `;`.
+[SqlDialect] will return [DDL] statements separated by `;`.
 
 ```dart migration/lib/model.dart#schema
 import 'package:typed_sql/typed_sql.dart';
@@ -255,3 +255,6 @@ See `atlas` documentation on [applying migrations][atlas-apply] for details.
 [atlas-lint]: https://atlasgo.io/versioned/lint
 [atlas-apply]: https://atlasgo.io/versioned/apply
 [DDL]: https://en.wikipedia.org/wiki/Data_definition_language
+
+<!-- GENERATED DOCUMENTATION LINKS -->
+[SqlDialect]: ../typed_sql/SqlDialect-class.html

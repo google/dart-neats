@@ -238,3 +238,4 @@ then accidentally execute operations/queries outside the transaction context.
 [1]: https://en.wikipedia.org/wiki/Isolation_(database_systems)
 [Zone]: https://api.dart.dev/stable/latest/dart-async/Zone-class.html
 
+<!-- GENERATED DOCUMENTATION LINKS -->

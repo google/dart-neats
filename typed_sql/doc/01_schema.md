@@ -12,7 +12,7 @@ part 'model.g.dart';
 ```
 
 We must then define a _schema class_. This is an `abstract final class`
-extending `Schema`, specifying what tables the database has.
+extending [Schema], specifying what tables the database has.
 If we were working on a bookstore we might define a schema as follows:
 
 ```dart schema_test.dart#schema
@@ -23,7 +23,7 @@ abstract final class Bookstore extends Schema {
 ```
 
 The _schema class_ is only allowed to have abstract getters that returns
-`Table<T>` objects. Each such getter defines a table in the database.
+[Table] objects. Each such getter defines a table in the database.
 The `T` in `Table<T>` must be a _model class_ specifying the table layout.
 
 > [!NOTE]
@@ -77,7 +77,8 @@ The following data types are allowed for fields:
 
 These types are allowed to be nullable and non-nullable. When fields are
 non-nullable in the Dart _model class_ the SQL table will have a `NOT NULL`
-constraint. For details on [CustomDataType] see relevant documentation.
+constraint. For details on [CustomDataType] see
+[Custom data types] documentation.
 
 > [!NOTE]
 > These model classes are intended to be data classes, they may not have
@@ -91,7 +92,7 @@ constraint. For details on [CustomDataType] see relevant documentation.
 ## `Book` model class with _foreign key_
 Returning to our bookstore example, we still need to define a `Book`
 _model class_ for the `books` table in the `Bookstore` schema. If we want the
-`books` table to have a _foreign key_ refenencing the `authors` table we can
+`books` table to have a _foreign key_ referencing the `authors` table we can
 define the `Book` _model class_ as follows:
 
 ```dart schema_test.dart#book-model
@@ -164,14 +165,14 @@ library.
 
 ## Using the database
 When we've defined a schema and generated code we can start using the database.
-We must first create a `Database` instance using a `DatabaseAdapter` and
-`SqlDialect` as follows:
+We must first create a [Database] instance using a [DatabaseAdapter] and
+[SqlDialect] as follows:
 
 ```dart
 final db = Database<Bookstore>(adapter, dialect);
 ```
 
-How you obtain a `DatabaseAdapter` and which `SqlDialect` to use depends on
+How you obtain a [DatabaseAdapter] and which [SqlDialect] to use depends on
 your database, as well as how you are connecting.
 
 Once you have `Database<Bookstore>` instance you can create empty tables for
@@ -191,12 +192,12 @@ final ddl = createBookstoreTables(SqlDialect.postgres());
 ```
 
 This can then be used with external migration management tools to managing
-database migrations. See relevant documentation migrations.
+database migrations. See [Migrations documentation][Migrations].
 
 > [!NOTE]
 > The astute reader might notice that we never actually create an instance
 > of `Bookstore` _schema class_. Instead the class is used to define a type we
-> can parameterize the `Database` instance with.
+> can parameterize the [Database] instance with.
 > This is intentional to avoid juggling constructors, but it might be revised
 > in the future.
 
@@ -255,7 +256,18 @@ _model class_ with the `@References` annotation, and gave it the name `author`,
 the `Expr<Book>` expression gets a subquery property `book.author` that allows
 us to access properties on the referenced `authors` row.
 
-For more information on references see relevant documentation.
+See [References] documentation for details.
 
 [build_runner]: https://pub.dev/packages/build_runner
 [DDL]: https://en.wikipedia.org/wiki/Data_definition_language
+
+<!-- GENERATED DOCUMENTATION LINKS -->
+[Custom data types]: ../topics/Custom%20data%20types-topic.html
+[CustomDataType]: ../typed_sql/CustomDataType-class.html
+[Database]: ../typed_sql/Database-class.html
+[DatabaseAdapter]: ../typed_sql/DatabaseAdapter-class.html
+[Migrations]: ../topics/Migrations-topic.html
+[References]: ../typed_sql/References-class.html
+[Schema]: ../typed_sql/Schema-class.html
+[SqlDialect]: ../typed_sql/SqlDialect-class.html
+[Table]: ../typed_sql/Table-class.html

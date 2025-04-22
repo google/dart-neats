@@ -211,5 +211,8 @@ check(authorAndCount).unorderedEquals([
 
 While it's possible to count authors for each book using a subquery, as in the
 example above. It may be easier for the _query optimizer_ to optimize this
-query, if we used `.join` and `.groupBy`, see documentation on aggregate
-functions for more details.
+query, if we used `.join` and `.groupBy`, see [Aggregate functions] for more
+details.
+
+<!-- GENERATED DOCUMENTATION LINKS -->
+[Aggregate functions]: ../topics/Aggregate%20functions-topic.html

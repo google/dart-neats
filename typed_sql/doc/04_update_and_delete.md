@@ -53,8 +53,8 @@ final initialBooks = [
 
 ## Update a single row with `.update`
 In `package:typed_sql` a `QuerySingle<(Expr<T>,)>` where `T extends Model` will
-always have a `.update` method. You may construct the `QuerySingle` object
-using `.byKey` or `.first`, even ontop of complex `Query` objects.
+always have a `.update` method. You may construct the [QuerySingle] object
+using `.byKey` or `.first`, even ontop of complex [Query] objects.
 Though, in practice, you'll probably mostly update rows using the _primary key_
 with `.byKey`.
 
@@ -92,8 +92,8 @@ Dart because the _named optional parameter_ `stock` has type `Expr<int>` and not
 `Expr<double>`.
 
 Furthermore, as illustrated in the example above, we can use complex
-expressions, including subqueries, to update the field. See documentation on
-how to write queries for details on how to construct expressions.
+expressions, including subqueries, to update the field. See [Writing queries]
+for details on how to construct expressions.
 
 ## Setting a field to `null` with `.update`
 If we wanted to set the title of the book with `bookId = 1` to `null` we have
@@ -171,7 +171,7 @@ check(updatedStock).unorderedEquals([
 ]);
 ```
 
-Using `returning` it's possible to return only the particular fields you care
+Using `.returning` it's possible to return only the particular fields you care
 about. You can also use it to return more complex expressions,
 including subqueries.
 The astute reader might realize that the `.returnInserted()` extension method is
@@ -235,3 +235,8 @@ check(deletedBooks).unorderedEquals([
 Similarly, to `.update`, you'll find that when you use `.delete().returning`
 on a `Query<(Expr<T>,)>` the `.executeAndFetch()` method returns a `List`.
 But if you use it on a `QuerySingle<(Expr<T>,)>`, you just get a nullable row.
+
+<!-- GENERATED DOCUMENTATION LINKS -->
+[Query]: ../typed_sql/Query-class.html
+[QuerySingle]: ../typed_sql/QuerySingle-class.html
+[Writing queries]: ../topics/Writing%20queries-topic.html
