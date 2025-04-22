@@ -511,7 +511,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               )))
           ..lambda = true
           ..body = Code('where(($modelInstanceName) => ${model.primaryKey.map(
-                (f) => '$modelInstanceName.${f.name}.equalsLiteral(${f.name})',
+                (f) => '$modelInstanceName.${f.name}.equalsValue(${f.name})',
               ).join(' & ')}).first'),
       ))
       ..methods.add(Method(
@@ -598,7 +598,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ..lambda = true
                 ..body = Code('''
                   where(($modelInstanceName) =>
-                    $modelInstanceName.${field.name}.equalsLiteral(${field.name})
+                    $modelInstanceName.${field.name}.equalsValue(${field.name})
                   ).first
                 '''),
             ),

@@ -12191,7 +12191,7 @@ extension Aggregate1Project1<A, B> on Aggregation<(Expr<A>,), (Expr<B>,)> {
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<double?>)> avg<C extends num>(
           Expr<C?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
@@ -12306,7 +12306,7 @@ extension Aggregate1Project2<A, B, C>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<double?>)> avg<D extends num>(
           Expr<D?> Function(Expr<A> a) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
@@ -12425,7 +12425,7 @@ extension Aggregate1Project3<A, B, C, D>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<double?>)>
       avg<E extends num>(Expr<E?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
@@ -12546,7 +12546,7 @@ extension Aggregate1Project4<A, B, C, D, E>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<double?>)>
       avg<F extends num>(Expr<F?> Function(Expr<A> a) aggregateBuilder) =>
           _build(aggregateBuilder, AvgExpression._);
@@ -12671,7 +12671,7 @@ extension Aggregate1Project5<A, B, C, D, E, F>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double?>)>
       avg<G extends num>(Expr<G?> Function(Expr<A> a) aggregateBuilder) =>
@@ -12803,7 +12803,7 @@ extension Aggregate1Project6<A, B, C, D, E, F, G> on Aggregation<(Expr<A>,),
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>,),
           (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double?>)>
       avg<H extends num>(Expr<H?> Function(Expr<A> a) aggregateBuilder) =>
@@ -12963,7 +12963,7 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H> on Aggregation<(Expr<A>,),
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<
       (Expr<A>,),
       (
@@ -13121,7 +13121,7 @@ extension Aggregate2Project1<A, B, C>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<double?>)> avg<D extends num>(
           Expr<D?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
       _build(aggregateBuilder, AvgExpression._);
@@ -13241,7 +13241,7 @@ extension Aggregate2Project2<A, B, C, D>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<double?>)>
       avg<E extends num>(
               Expr<E?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
@@ -13364,7 +13364,7 @@ extension Aggregate2Project3<A, B, C, D, E>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<double?>)>
       avg<F extends num>(
               Expr<F?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
@@ -13490,7 +13490,7 @@ extension Aggregate2Project4<A, B, C, D, E, F>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>),
       (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<double?>)> avg<G extends num>(
           Expr<G?> Function(Expr<A> a, Expr<B> b) aggregateBuilder) =>
@@ -13619,7 +13619,7 @@ extension Aggregate2Project5<A, B, C, D, E, F, G> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double?>)>
       avg<H extends num>(
@@ -13755,7 +13755,7 @@ extension Aggregate2Project6<A, B, C, D, E, F, G, H> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>),
           (Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double?>)>
       avg<I extends num>(
@@ -13881,7 +13881,7 @@ extension Aggregate3Project1<A, B, C, D>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<double?>)>
       avg<E extends num>(
               Expr<E?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
@@ -14008,7 +14008,7 @@ extension Aggregate3Project2<A, B, C, D, E>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<double?>)>
       avg<F extends num>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
@@ -14138,7 +14138,7 @@ extension Aggregate3Project3<A, B, C, D, E, F>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<double?>)> avg<G extends num>(
           Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
@@ -14270,7 +14270,7 @@ extension Aggregate3Project4<A, B, C, D, E, F, G> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
       (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<double?>)> avg<H extends num>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c)
@@ -14406,7 +14406,7 @@ extension Aggregate3Project5<A, B, C, D, E, F, G, H> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>),
           (Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double?>)>
       avg<I extends num>(
@@ -14538,7 +14538,7 @@ extension Aggregate4Project1<A, B, C, D, E>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<double?>)>
       avg<F extends num>(
               Expr<F?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
@@ -14669,7 +14669,7 @@ extension Aggregate4Project2<A, B, C, D, E, F>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<double?>)> avg<G extends num>(
           Expr<G?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
@@ -14802,7 +14802,7 @@ extension Aggregate4Project3<A, B, C, D, E, F, G> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<double?>)> avg<H extends num>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
@@ -14938,7 +14938,7 @@ extension Aggregate4Project4<A, B, C, D, E, F, G, H> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>),
       (Expr<E>, Expr<F>, Expr<G>, Expr<H>, Expr<double?>)> avg<I extends num>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
@@ -15071,7 +15071,7 @@ extension Aggregate5Project1<A, B, C, D, E, F>
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<double?>)> avg<G extends num>(
           Expr<G?> Function(
@@ -15208,7 +15208,7 @@ extension Aggregate5Project2<A, B, C, D, E, F, G> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<double?>)> avg<H extends num>(
           Expr<H?> Function(
@@ -15348,7 +15348,7 @@ extension Aggregate5Project3<A, B, C, D, E, F, G, H> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>),
       (Expr<F>, Expr<G>, Expr<H>, Expr<double?>)> avg<I extends num>(
           Expr<I?> Function(
@@ -15486,7 +15486,7 @@ extension Aggregate6Project1<A, B, C, D, E, F, G> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<double?>)> avg<H extends num>(
           Expr<H?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
@@ -15627,7 +15627,7 @@ extension Aggregate6Project2<A, B, C, D, E, F, G, H> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>),
       (Expr<G>, Expr<H>, Expr<double?>)> avg<I extends num>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,
@@ -15777,7 +15777,7 @@ extension Aggregate7Project1<A, B, C, D, E, F, G, H> on Aggregation<
   ///
   /// > [!WARNING]
   /// > If you want `NULL` values to count in denominator of the average, use
-  /// > `.orElseLiteral(0)` to force a non-nullable expression.
+  /// > `.orElseValue(0)` to force a non-nullable expression.
   Aggregation<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>),
       (Expr<H>, Expr<double?>)> avg<I extends num>(
           Expr<I?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d,

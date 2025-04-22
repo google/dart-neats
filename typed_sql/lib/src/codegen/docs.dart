@@ -368,7 +368,7 @@ final aggregationAvg = '''
 
     > [!WARNING]
     > If you want `NULL` values to count in denominator of the average, use
-    > `.orElseLiteral(0)` to force a non-nullable expression.
+    > `.orElseValue(0)` to force a non-nullable expression.
 ''';
 
 /// Documetation for `.min` on [Aggregation].
