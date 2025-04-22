@@ -175,7 +175,7 @@ sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
   @override
   Expr<R> _field<R>(int index, FieldType<R> type) =>
       // This should never happen!
-      throw AssertionError('Only Expr<Model> can have fields');
+      throw AssertionError('Only Expr<Row> can have fields');
 
   @override
   int get _columns => 1;

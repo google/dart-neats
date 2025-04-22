@@ -39,7 +39,7 @@ void main() {
 
   // Tests that we can union with NULL, this is difficult because it requires
   // casts, and those casts needs to be exploded if the left hand side is an
-  // Expr<Model>
+  // Expr<Row>
 
   r.addTest('.unionAll(NULL)', (db) async {
     final q1 = db.select((db.items.byKey(42).asExpr,)).asQuery;
