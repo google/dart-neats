@@ -82,7 +82,7 @@ abstract final class Dealership extends Schema {
 }
 
 @PrimaryKey(['id'])
-abstract final class Car extends Model {
+abstract final class Car extends Row {
   @AutoIncrement()
   int get id;
 

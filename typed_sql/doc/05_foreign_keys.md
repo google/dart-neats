@@ -11,7 +11,7 @@ abstract final class Bookstore extends Schema {
 }
 
 @PrimaryKey(['authorId'])
-abstract final class Author extends Model {
+abstract final class Author extends Row {
   @AutoIncrement()
   int get authorId;
 
@@ -20,7 +20,7 @@ abstract final class Author extends Model {
 }
 
 @PrimaryKey(['bookId'])
-abstract final class Book extends Model {
+abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
@@ -61,7 +61,7 @@ generate convenient subquery properties when building queries.
 
 ```dart schema_test.dart#book-model
 @PrimaryKey(['bookId'])
-abstract final class Book extends Model {
+abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 

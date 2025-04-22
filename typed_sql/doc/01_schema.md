@@ -39,7 +39,7 @@ _model class_ for the `authors` table as follows:
 
 ```dart schema_test.dart#author-model
 @PrimaryKey(['authorId'])
-abstract final class Author extends Model {
+abstract final class Author extends Row {
   @AutoIncrement()
   int get authorId;
 
@@ -97,7 +97,7 @@ define the `Book` _model class_ as follows:
 
 ```dart schema_test.dart#book-model
 @PrimaryKey(['bookId'])
-abstract final class Book extends Model {
+abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
