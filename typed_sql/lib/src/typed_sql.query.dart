@@ -352,8 +352,8 @@ final class OrderByClause extends FromClause implements ExpressionContext {
     if (orderBy.any((e) => e.$1._columns > 1)) {
       // This shouldn't be possible!
       throw AssertionError(
-        'In Expr<T extends Model> T may not implement Comparable<T>, '
-        'using Expr<Model> in .orderBy is not supported!',
+        'In Expr<T extends Row> T may not implement Comparable<T>, '
+        'using Expr<Row> in .orderBy is not supported!',
       );
     }
   }

@@ -52,7 +52,7 @@ final initialBooks = [
 ```
 
 ## Update a single row with `.update`
-In `package:typed_sql` a `QuerySingle<(Expr<T>,)>` where `T extends Model` will
+In `package:typed_sql` a `QuerySingle<(Expr<T>,)>` where `T extends Row` will
 always have a `.update` method. You may construct the [QuerySingle] object
 using `.byKey` or `.first`, even ontop of complex [Query] objects.
 Though, in practice, you'll probably mostly update rows using the _primary key_
@@ -110,7 +110,7 @@ await db.books
 ```
 
 ## Update multiple rows with `.update`
-In `package:typed_sql` a `Query<(Expr<T>,)>` where `T extends Model` will
+In `package:typed_sql` a `Query<(Expr<T>,)>` where `T extends Row` will
 always have a `.update` method. We can use this `.update` method to update all
 rows that match the query.
 
@@ -132,7 +132,7 @@ await db.books
 When updating a row in SQL we can use a `RETURNING` clause to return the
 updated rows. We can do the same thing in `package:typed_sql`.
 The following example shows, how to use `.returnUpdated()` in the
-`QuerySingle<(Expr<Model>,)>.update` example from earlier.
+`QuerySingle<(Expr<Row>,)>.update` example from earlier.
 
 ```dart bookstore_test.dart#update-book-bykey-returnUpdated
 final updatedBook = await db.books
@@ -150,7 +150,7 @@ check(updatedBook.stock).equals(9);
 ```
 
 The `.returnUpdated()` extension method can also be used with
-`Query<(Expr<Model>,)>.update`, it will just return a list of the updated rows
+`Query<(Expr<Row>,)>.update`, it will just return a list of the updated rows
 instead. More generally, it's also possible to return a custom projection,
 similar to the ones you can make with `.select`, as illustrated below:
 
@@ -186,7 +186,7 @@ just an short-hand for `.returning((row) => (row,))`.
 
 ## Deleting rows with `.delete`
 If you have a `QuerySingle<(Expr<T>,)>` or `Query<(Expr<T>,)>` where
-`T extends Model`, then you can delete the rows using `.delete`.
+`T extends Row`, then you can delete the rows using `.delete`.
 The following example shows how to delete the book with `bookId = 1`.
 
 ```dart bookstore_test.dart#books-byKey-delete

@@ -72,7 +72,7 @@ void main() {
         .groupBy(
           (employee) => (
             // Creating an Expr<void> to avoid matching extensions for
-            // Expr<Model?> which Expr<Null> would otherwise match.
+            // Expr<Row?> which Expr<Null> would otherwise match.
             // We can't prevent Expr<Null> from matching such extensions, but
             // we can use Expr<void> instead!
             toExpr<void>(null),
