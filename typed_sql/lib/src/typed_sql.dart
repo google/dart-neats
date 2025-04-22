@@ -198,7 +198,7 @@ final class ExposedForCodeGen {
     TableDefinition<T> table,
   ) {
     return SubQuery._(
-      (ModelExpression._(0, table, Object()),),
+      (RowExpression._(0, table, Object()),),
       (_) => TableClause._(table),
     );
   }

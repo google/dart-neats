@@ -467,8 +467,8 @@ extension on ExpressionResolver<StatmentContext> {
           'UPPER( ${expr(value)} )',
         ExpressionStringToLowerCase(value: final value) =>
           'LOWER( ${expr(value)} )',
-        ModelExpression<Row>() => throw AssertionError(
-            'ModelExpression exist in a context where they are rendered',
+        RowExpression<Row>() => throw AssertionError(
+            'RowExpression exist in a context where they are rendered',
           ),
         ExistsExpression(:final query) =>
           'EXISTS (${selectExpression(query).$1})',

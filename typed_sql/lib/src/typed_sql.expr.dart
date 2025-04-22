@@ -96,7 +96,7 @@ final class _NullExprType extends ColumnType<Null> {
     _ExprType<S> type,
   ) =>
       switch (type) {
-        _ModelExprType<Row> type =>
+        _RowExprType<Row> type =>
           type.fields.map((f) => CastExpression._(value, f)),
         CustomExprType type => [CastExpression._(value, type._backingType)],
         ColumnType type => [CastExpression._(value, type)],
@@ -120,13 +120,13 @@ final class CustomExprType<S, T extends CustomDataType<S>>
   }
 }
 
-final class _ModelExprType<T extends Row> extends _ExprType<T> {
+final class _RowExprType<T extends Row> extends _ExprType<T> {
   final List<ColumnType> fields;
   final T? Function(RowReader r) _readRow;
 
   // TODO: This class should probably be part of a table
   // definition, instead of this way around, but we can refactor that later.
-  _ModelExprType._(TableDefinition<T> table)
+  _RowExprType._(TableDefinition<T> table)
       : _readRow = table.readRow,
         fields = table.columnInfo.map((c) => c.type).toList(),
         super._();
@@ -233,14 +233,14 @@ base mixin _ExprBlob implements _ExprTyped<Uint8List> {
 /// {@category update_and_delete}
 Expr<T> toExpr<T extends Object?>(T value) => Literal(value);
 
-final class ModelExpression<T extends Row> extends Expr<T> {
+final class RowExpression<T extends Row> extends Expr<T> {
   final TableDefinition<T> _table;
   final int _index;
   final Object _handle;
 
   @override
   Expr<T> _standin(int index, Object handle) =>
-      ModelExpression._(index, _table, handle);
+      RowExpression._(index, _table, handle);
 
   @override
   int get _columns => _table.columns.length;
@@ -264,10 +264,10 @@ final class ModelExpression<T extends Row> extends Expr<T> {
         (index) => _field<void>(index, _type.fields[index]),
       );
 
-  ModelExpression._(this._index, this._table, this._handle) : super._();
+  RowExpression._(this._index, this._table, this._handle) : super._();
 
   @override
-  _ModelExprType<T> get _type => _ModelExprType._(_table);
+  _RowExprType<T> get _type => _RowExprType._(_table);
 }
 
 final class FieldExpression<T> extends SingleValueExpr<T> {
@@ -290,7 +290,7 @@ final class SubQueryExpression<T> extends Expr<T> {
 
   @override
   Iterable<Expr<Object?>> _explode() => switch (_type) {
-        _ModelExprType<Row> type => Iterable.generate(
+        _RowExprType<Row> type => Iterable.generate(
             _columns,
             (index) => _field<void>(index, type.fields[index]),
           ),

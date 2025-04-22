@@ -73,7 +73,7 @@ final class Table<T extends Row> extends Query<(Expr<T>,)> {
     TableDefinition<T> definition,
   ) : super._(
           context,
-          (ModelExpression._(0, definition, Object()),),
+          (RowExpression._(0, definition, Object()),),
           (_) => _tableClause,
         );
 }

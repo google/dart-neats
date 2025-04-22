@@ -102,7 +102,7 @@ final class Update<T extends Row> {
   ) {
     final handle = Object();
     final projection = projectionBuilder(
-      ModelExpression._(0, _table, Object())._standin(0, handle),
+      RowExpression._(0, _table, Object())._standin(0, handle),
     );
 
     final table = TableClause._(_table);
@@ -215,7 +215,7 @@ final class Delete<T extends Row> {
   ) {
     final handle = Object();
     final projection = projectionBuilder(
-      ModelExpression._(0, _table, Object())._standin(0, handle),
+      RowExpression._(0, _table, Object())._standin(0, handle),
     );
 
     final table = TableClause._(_table);
