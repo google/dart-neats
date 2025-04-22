@@ -122,17 +122,17 @@ final class CustomExprType<S, T extends CustomDataType<S>>
 
 final class _ModelExprType<T extends Row> extends _ExprType<T> {
   final List<ColumnType> fields;
-  final T? Function(RowReader r) _readModel;
+  final T? Function(RowReader r) _readRow;
 
   // TODO: This class should probably be part of a table
   // definition, instead of this way around, but we can refactor that later.
   _ModelExprType._(TableDefinition<T> table)
-      : _readModel = table.readModel,
+      : _readRow = table.readRow,
         fields = table.columnInfo.map((c) => c.type).toList(),
         super._();
 
   @override
-  T? _read(RowReader r) => _readModel(r);
+  T? _read(RowReader r) => _readRow(r);
 }
 
 abstract final class _ExprTyped<T extends Object?> {

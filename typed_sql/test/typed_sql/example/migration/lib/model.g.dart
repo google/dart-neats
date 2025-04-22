@@ -94,7 +94,7 @@ final class _$Account extends Account {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Account._$fromDatabase,
+    readRow: _$Account._$fromDatabase,
   );
 
   static Account? _$fromDatabase(RowReader row) {

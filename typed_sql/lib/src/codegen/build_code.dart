@@ -132,7 +132,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
 
 /// Generate extensions for use with `package:checks`
 Iterable<Spec> buildChecksForModel(ParsedModel model) sync* {
-  // Create extension for Subject<Model>
+  // Create extension for Subject<Row>
   yield Extension((b) => b
     ..name = '${model.name}Checks'
     ..on = TypeReference(
@@ -372,7 +372,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   )
                 ''').join(',')}
               ],
-              readModel: _\$${model.name}._\$fromDatabase,
+              readRow: _\$${model.name}._\$fromDatabase,
             )
           '''),
       ))

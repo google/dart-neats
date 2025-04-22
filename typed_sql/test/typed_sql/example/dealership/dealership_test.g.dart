@@ -114,7 +114,7 @@ final class _$Car extends Car {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Car._$fromDatabase,
+    readRow: _$Car._$fromDatabase,
   );
 
   static Car? _$fromDatabase(RowReader row) {

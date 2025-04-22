@@ -114,7 +114,7 @@ final class _$User extends User {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$User._$fromDatabase,
+    readRow: _$User._$fromDatabase,
   );
 
   static User? _$fromDatabase(RowReader row) {
@@ -454,7 +454,7 @@ final class _$Package extends Package {
         referencedColumns: ['userId'],
       )
     ],
-    readModel: _$Package._$fromDatabase,
+    readRow: _$Package._$fromDatabase,
   );
 
   static Package? _$fromDatabase(RowReader row) {
@@ -767,7 +767,7 @@ final class _$Like extends Like {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Like._$fromDatabase,
+    readRow: _$Like._$fromDatabase,
   );
 
   static Like? _$fromDatabase(RowReader row) {

@@ -112,7 +112,7 @@ final class _$Employee extends Employee {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Employee._$fromDatabase,
+    readRow: _$Employee._$fromDatabase,
   );
 
   static Employee? _$fromDatabase(RowReader row) {

@@ -172,7 +172,7 @@ final class _$Item extends Item {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Item._$fromDatabase,
+    readRow: _$Item._$fromDatabase,
   );
 
   static Item? _$fromDatabase(RowReader row) {

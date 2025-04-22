@@ -68,7 +68,7 @@ typedef TableDefinition<T extends Row> = ({
         String referencedTable,
         List<String> referencedColumns,
       })> foreignKeys,
-  T? Function(RowReader) readModel,
+  T? Function(RowReader) readRow,
 });
 
 /// Methods exclusively exposed for use by generated code.

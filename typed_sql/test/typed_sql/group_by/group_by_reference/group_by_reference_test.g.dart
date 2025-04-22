@@ -97,7 +97,7 @@ final class _$Author extends Author {
       String referencedTable,
       List<String> referencedColumns,
     })>[],
-    readModel: _$Author._$fromDatabase,
+    readRow: _$Author._$fromDatabase,
   );
 
   static Author? _$fromDatabase(RowReader row) {
@@ -401,7 +401,7 @@ final class _$Book extends Book {
         referencedColumns: ['authorId'],
       )
     ],
-    readModel: _$Book._$fromDatabase,
+    readRow: _$Book._$fromDatabase,
   );
 
   static Book? _$fromDatabase(RowReader row) {
