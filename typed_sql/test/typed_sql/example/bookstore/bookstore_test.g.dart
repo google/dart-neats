@@ -155,7 +155,7 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Author>,)> byKey(int authorId) =>
-      where((author) => author.authorId.equalsLiteral(authorId)).first;
+      where((author) => author.authorId.equalsValue(authorId)).first;
 
   /// Update all rows in the `authors` table matching this [Query].
   ///
@@ -218,7 +218,7 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Author>,)> byName(String name) =>
-      where((author) => author.name.equalsLiteral(name)).first;
+      where((author) => author.name.equalsValue(name)).first;
 
   /// Delete all rows in the `authors` table matching this [Query].
   ///
@@ -478,7 +478,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Book>,)> byKey(int bookId) =>
-      where((book) => book.bookId.equalsLiteral(bookId)).first;
+      where((book) => book.bookId.equalsValue(bookId)).first;
 
   /// Update all rows in the `books` table matching this [Query].
   ///

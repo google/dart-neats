@@ -151,7 +151,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Item>,)> byKey(int id) =>
-      where((item) => item.id.equalsLiteral(id)).first;
+      where((item) => item.id.equalsValue(id)).first;
 
   /// Update all rows in the `items` table matching this [Query].
   ///

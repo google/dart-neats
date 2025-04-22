@@ -175,7 +175,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Employee>,)> byKey(int id) =>
-      where((employee) => employee.id.equalsLiteral(id)).first;
+      where((employee) => employee.id.equalsValue(id)).first;
 
   /// Update all rows in the `employees` table matching this [Query].
   ///

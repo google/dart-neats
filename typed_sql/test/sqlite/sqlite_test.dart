@@ -116,7 +116,7 @@ void main() {
 
   _test('db.users.where(.endsWithLiteral).select()', (db) async {
     final users = await db.users
-        .where((u) => u.email.endsWithLiteral('@example.com'))
+        .where((u) => u.email.endsWithValue('@example.com'))
         .select((u) => (u.name,))
         .fetch();
     expect(users, contains('Alice'));
@@ -126,7 +126,7 @@ void main() {
 
   _test('db.users.where(.startsWithLiteral).select()', (db) async {
     final users = await db.users
-        .where((u) => u.email.startsWithLiteral('alice@'))
+        .where((u) => u.email.startsWithValue('alice@'))
         .select((u) => (u.name,))
         .fetch();
     expect(users, contains('Alice'));
@@ -139,7 +139,7 @@ void main() {
       expect(p!.ownerId, equals(1));
     }
     await db.packages
-        .where((p) => p.packageName.equalsLiteral('foo'))
+        .where((p) => p.packageName.equalsValue('foo'))
         .update((p, set) => set(
               ownerId: toExpr(2),
             ))
@@ -171,7 +171,7 @@ void main() {
     await db.packages
         .byKey('foo')
         .update((u, set) => set(
-              likes: u.likes.addLiteral(1),
+              likes: u.likes.addValue(1),
             ))
         .execute();
 
@@ -183,7 +183,7 @@ void main() {
     await db.packages
         .byKey('foo')
         .update((u, set) => set(
-              likes: u.likes.subtractLiteral(1),
+              likes: u.likes.subtractValue(1),
             ))
         .execute();
 
@@ -218,7 +218,7 @@ void main() {
       expect(packages, hasLength(2));
     }
     await db.packages
-        .where((p) => p.packageName.equalsLiteral('foo'))
+        .where((p) => p.packageName.equalsValue('foo'))
         .delete()
         .execute();
     {
@@ -229,7 +229,7 @@ void main() {
 
   _test('db.users.where().limit()', (db) async {
     final users = await db.users
-        .where((u) => u.email.equalsLiteral('alice@example.com'))
+        .where((u) => u.email.equalsValue('alice@example.com'))
         .limit(1)
         .select((u) => (u.name,))
         .fetch();
@@ -240,7 +240,7 @@ void main() {
   _test('db.users.limit().where()', (db) async {
     final users = await db.users
         .limit(2)
-        .where((u) => u.email.equalsLiteral('alice@example.com'))
+        .where((u) => u.email.equalsValue('alice@example.com'))
         .select((u) => (u.name,))
         .fetch();
     expect(users, contains('Alice'));
@@ -251,7 +251,7 @@ void main() {
     final users = await db.users
         .offset(0)
         .limit(2)
-        .where((u) => u.email.equalsLiteral('bob@example.com'))
+        .where((u) => u.email.equalsValue('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
     expect(users, contains('Bob'));
@@ -262,7 +262,7 @@ void main() {
     final users = await db.users
         .limit(2)
         .offset(0)
-        .where((u) => u.email.equalsLiteral('bob@example.com'))
+        .where((u) => u.email.equalsValue('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
     expect(users, contains('Bob'));
@@ -274,7 +274,7 @@ void main() {
         .orderBy((u) => [(u.userId, Order.ascending)])
         .offset(1)
         .asQuery
-        .where((u) => u.email.equalsLiteral('alice@example.com'))
+        .where((u) => u.email.equalsValue('alice@example.com'))
         .select((u) => (u.name,))
         .fetch();
     expect(users, isEmpty);
@@ -285,7 +285,7 @@ void main() {
         .orderBy((u) => [(u.userId, Order.ascending)])
         .offset(1)
         .asQuery
-        .where((u) => u.email.equalsLiteral('bob@example.com'))
+        .where((u) => u.email.equalsValue('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
     expect(users, contains('Bob'));
@@ -297,7 +297,7 @@ void main() {
         .orderBy((u) => [(u.userId, Order.descending)])
         .offset(1)
         .asQuery
-        .where((u) => u.email.equalsLiteral('bob@example.com'))
+        .where((u) => u.email.equalsValue('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
     expect(users, isEmpty);
@@ -308,7 +308,7 @@ void main() {
         .orderBy((u) => [(u.userId, Order.descending)])
         .offset(1)
         .asQuery
-        .where((u) => u.email.equalsLiteral('alice@example.com'))
+        .where((u) => u.email.equalsValue('alice@example.com'))
         .select((u) => (u.name,))
         .fetch();
     expect(users, contains('Alice'));
@@ -653,7 +653,7 @@ void main() {
 
   _test('db.likes.where().select().count()', (db) async {
     final result = await db.likes
-        .where((l) => l.packageName.equalsLiteral('bar'))
+        .where((l) => l.packageName.equalsValue('bar'))
         .select((l) => (l.packageName,))
         .count()
         .fetch();

@@ -39,7 +39,7 @@ final _cases = <({
   ),
   (
     name: '(null as int?).orElseLiteral(42)',
-    expr: toExpr(null as int?).orElseLiteral(42),
+    expr: toExpr(null as int?).orElseValue(42),
     expected: 42,
   ),
   (
@@ -49,7 +49,7 @@ final _cases = <({
   ),
   (
     name: '(21 as int?).orElseLiteral(42)',
-    expr: toExpr(21 as int?).orElseLiteral(42),
+    expr: toExpr(21 as int?).orElseValue(42),
     expected: 21,
   ),
   (
@@ -64,7 +64,7 @@ final _cases = <({
   ),
   (
     name: 'null.asInt().orElseLiteral(42)',
-    expr: toExpr(null).asInt().orElseLiteral(42),
+    expr: toExpr(null).asInt().orElseValue(42),
     expected: 42,
   ),
   // Expr<int?>.equals
@@ -142,73 +142,73 @@ final _cases = <({
   // Expr<int?>.equalsLiteral
   (
     name: 'null.asInt().equalsLiteral(null)',
-    expr: toExpr(null).asInt().equalsLiteral(null),
+    expr: toExpr(null).asInt().equalsValue(null),
     expected: true,
   ),
   (
     name: 'null.asInt().equalsLiteral(42)',
-    expr: toExpr(null).asInt().equalsLiteral(42),
+    expr: toExpr(null).asInt().equalsValue(42),
     expected: false,
   ),
   (
     name: '42.equalsLiteral(null)',
-    expr: toExpr(42 as int?).equalsLiteral(null),
+    expr: toExpr(42 as int?).equalsValue(null),
     expected: false,
   ),
   (
     name: '42.equalsLiteral(42)',
-    expr: toExpr(42 as int?).equalsLiteral(42),
+    expr: toExpr(42 as int?).equalsValue(42),
     expected: true,
   ),
   (
     name: 'null.asInt().equalsLiteral(0)',
-    expr: toExpr(null).asInt().equalsLiteral(0),
+    expr: toExpr(null).asInt().equalsValue(0),
     expected: false,
   ),
   (
     name: '0.equalsLiteral(null)',
-    expr: toExpr(0 as int?).equalsLiteral(null),
+    expr: toExpr(0 as int?).equalsValue(null),
     expected: false,
   ),
   (
     name: '0.equalsLiteral(0)',
-    expr: toExpr(0 as int?).equalsLiteral(0),
+    expr: toExpr(0 as int?).equalsValue(0),
     expected: true,
   ),
   // Expr<int?>.notEqualsLiteral
   (
     name: 'null.asInt().notEqualsLiteral(null)',
-    expr: toExpr(null).asInt().notEqualsLiteral(null),
+    expr: toExpr(null).asInt().notEqualsValue(null),
     expected: false,
   ),
   (
     name: 'null.asInt().notEqualsLiteral(42)',
-    expr: toExpr(null).asInt().notEqualsLiteral(42),
+    expr: toExpr(null).asInt().notEqualsValue(42),
     expected: true,
   ),
   (
     name: '42.notEqualsLiteral(null)',
-    expr: toExpr(42 as int?).notEqualsLiteral(null),
+    expr: toExpr(42 as int?).notEqualsValue(null),
     expected: true,
   ),
   (
     name: '42.notEqualsLiteral(42)',
-    expr: toExpr(42 as int?).notEqualsLiteral(42),
+    expr: toExpr(42 as int?).notEqualsValue(42),
     expected: false,
   ),
   (
     name: 'null.asInt().notEqualsLiteral(0)',
-    expr: toExpr(null).asInt().notEqualsLiteral(0),
+    expr: toExpr(null).asInt().notEqualsValue(0),
     expected: true,
   ),
   (
     name: '0.notEqualsLiteral(null)',
-    expr: toExpr(0 as int?).notEqualsLiteral(null),
+    expr: toExpr(0 as int?).notEqualsValue(null),
     expected: true,
   ),
   (
     name: '0.notEqualsLiteral(0)',
-    expr: toExpr(0 as int?).notEqualsLiteral(0),
+    expr: toExpr(0 as int?).notEqualsValue(0),
     expected: false,
   ),
   // Expr<int?>.isNull()

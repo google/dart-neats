@@ -81,9 +81,9 @@ void main() {
         .aggregate(
           (agg) => agg //
               .count()
-              .avg((employee) => employee.salary.orElseLiteral(0))
-              .min((employee) => employee.salary.orElseLiteral(0))
-              .max((employee) => employee.salary.orElseLiteral(0)),
+              .avg((employee) => employee.salary.orElseValue(0))
+              .min((employee) => employee.salary.orElseValue(0))
+              .max((employee) => employee.salary.orElseValue(0)),
         )
         .select(
           (_, count, avgSalary, minSalary, maxSalary) => (

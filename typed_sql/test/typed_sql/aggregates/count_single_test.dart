@@ -347,7 +347,7 @@ void main() {
     final result = await db
         .select((toExpr(42.0),))
         .asQuery
-        .where((v) => v.equalsLiteral(3.0))
+        .where((v) => v.equalsValue(3.0))
         .count()
         .fetch();
     check(result).isNotNull().equals(0);

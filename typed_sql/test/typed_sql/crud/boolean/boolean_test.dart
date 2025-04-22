@@ -142,7 +142,7 @@ void main() {
     final item1 = await db.items.first.fetch();
     check(item1).isNotNull();
 
-    await db.items.where((i) => i.id.equalsLiteral(1)).delete().execute();
+    await db.items.where((i) => i.id.equalsValue(1)).delete().execute();
 
     final item2 = await db.items.first.fetch();
     check(item2).isNull();
@@ -160,7 +160,7 @@ void main() {
     check(item1).isNotNull();
 
     final deletedItems = await db.items
-        .where((i) => i.id.equalsLiteral(1))
+        .where((i) => i.id.equalsValue(1))
         .delete()
         .returnDeleted()
         .executeAndFetch();
@@ -184,7 +184,7 @@ void main() {
     check(item1).isNotNull();
 
     final values = await db.items
-        .where((i) => i.id.equalsLiteral(1))
+        .where((i) => i.id.equalsValue(1))
         .delete()
         .returning((item) => (item.value,))
         .executeAndFetch();

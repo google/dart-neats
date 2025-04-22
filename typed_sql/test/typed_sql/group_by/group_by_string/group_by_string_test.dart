@@ -96,7 +96,7 @@ void main() {
       (db) async {
     final result = await db.employees
         .groupBy((employee) => (employee.surname,))
-        .aggregate((b) => b.avg((employee) => employee.salary.orElseLiteral(0)))
+        .aggregate((b) => b.avg((employee) => employee.salary.orElseValue(0)))
         .fetch();
     check(result).unorderedEquals({
       ('Smith', 2000.0),
@@ -114,7 +114,7 @@ void main() {
               //
               .count()
               .avg(
-                (employee) => employee.salary.orElseLiteral(0),
+                (employee) => employee.salary.orElseValue(0),
               ),
         )
         .fetch();

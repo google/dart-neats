@@ -117,37 +117,37 @@ final _cases = [
   // Tests for .equalsLiteral
   (
     name: '"".equalsLiteral("")',
-    expr: toExpr('').equalsLiteral(''),
+    expr: toExpr('').equalsValue(''),
     expected: true,
   ),
   (
     name: '"".equalsLiteral("hello")',
-    expr: toExpr('').equalsLiteral('hello'),
+    expr: toExpr('').equalsValue('hello'),
     expected: false,
   ),
   (
     name: '"hello".equalsLiteral("")',
-    expr: toExpr('hello').equalsLiteral(''),
+    expr: toExpr('hello').equalsValue(''),
     expected: false,
   ),
   (
     name: '"hello".equalsLiteral("hello")',
-    expr: toExpr('hello').equalsLiteral('hello'),
+    expr: toExpr('hello').equalsValue('hello'),
     expected: true,
   ),
   (
     name: '"hello".equalsLiteral("hello world")',
-    expr: toExpr('hello').equalsLiteral('hello world'),
+    expr: toExpr('hello').equalsValue('hello world'),
     expected: false,
   ),
   (
     name: '"".equalsLiteral(null)',
-    expr: toExpr('').equalsLiteral(null),
+    expr: toExpr('').equalsValue(null),
     expected: false,
   ),
   (
     name: '"hello".equalsLiteral(null)',
-    expr: toExpr('hello').equalsLiteral(null),
+    expr: toExpr('hello').equalsValue(null),
     expected: false,
   ),
 
@@ -191,37 +191,37 @@ final _cases = [
   // Tests for .notEqualsLiteral
   (
     name: '"".notEqualsLiteral("")',
-    expr: toExpr('').notEqualsLiteral(''),
+    expr: toExpr('').notEqualsValue(''),
     expected: false,
   ),
   (
     name: '"".notEqualsLiteral("hello")',
-    expr: toExpr('').notEqualsLiteral('hello'),
+    expr: toExpr('').notEqualsValue('hello'),
     expected: true,
   ),
   (
     name: '"hello".notEqualsLiteral("")',
-    expr: toExpr('hello').notEqualsLiteral(''),
+    expr: toExpr('hello').notEqualsValue(''),
     expected: true,
   ),
   (
     name: '"hello".notEqualsLiteral("hello")',
-    expr: toExpr('hello').notEqualsLiteral('hello'),
+    expr: toExpr('hello').notEqualsValue('hello'),
     expected: false,
   ),
   (
     name: '"hello".notEqualsLiteral("hello world")',
-    expr: toExpr('hello').notEqualsLiteral('hello world'),
+    expr: toExpr('hello').notEqualsValue('hello world'),
     expected: true,
   ),
   (
     name: '"".notEqualsLiteral(null)',
-    expr: toExpr('').notEqualsLiteral(null),
+    expr: toExpr('').notEqualsValue(null),
     expected: true,
   ),
   (
     name: '"hello".notEqualsLiteral(null)',
-    expr: toExpr('hello').notEqualsLiteral(null),
+    expr: toExpr('hello').notEqualsValue(null),
     expected: true,
   ),
 
@@ -284,32 +284,32 @@ final _cases = [
   // Tests for .startsWithLiteral
   (
     name: '"".startsWithLiteral("")',
-    expr: toExpr('').startsWithLiteral(''),
+    expr: toExpr('').startsWithValue(''),
     expected: true,
   ),
   (
     name: '"".startsWithLiteral("hello")',
-    expr: toExpr('').startsWithLiteral('hello'),
+    expr: toExpr('').startsWithValue('hello'),
     expected: false,
   ),
   (
     name: '"hello".startsWithLiteral("")',
-    expr: toExpr('hello').startsWithLiteral(''),
+    expr: toExpr('hello').startsWithValue(''),
     expected: true,
   ),
   (
     name: '"hello".startsWithLiteral("hello")',
-    expr: toExpr('hello').startsWithLiteral('hello'),
+    expr: toExpr('hello').startsWithValue('hello'),
     expected: true,
   ),
   (
     name: '"hello".startsWithLiteral("hell")',
-    expr: toExpr('hello').startsWithLiteral('hell'),
+    expr: toExpr('hello').startsWithValue('hell'),
     expected: true,
   ),
   (
     name: '"hello".startsWithLiteral("world")',
-    expr: toExpr('hello').startsWithLiteral('world'),
+    expr: toExpr('hello').startsWithValue('world'),
     expected: false,
   ),
 
@@ -348,32 +348,32 @@ final _cases = [
   // Tests for .endsWithLiteral
   (
     name: '"".endsWithLiteral("")',
-    expr: toExpr('').endsWithLiteral(''),
+    expr: toExpr('').endsWithValue(''),
     expected: true,
   ),
   (
     name: '"".endsWithLiteral("hello")',
-    expr: toExpr('').endsWithLiteral('hello'),
+    expr: toExpr('').endsWithValue('hello'),
     expected: false,
   ),
   (
     name: '"hello".endsWithLiteral("")',
-    expr: toExpr('hello').endsWithLiteral(''),
+    expr: toExpr('hello').endsWithValue(''),
     expected: true,
   ),
   (
     name: '"hello".endsWithLiteral("hello")',
-    expr: toExpr('hello').endsWithLiteral('hello'),
+    expr: toExpr('hello').endsWithValue('hello'),
     expected: true,
   ),
   (
     name: '"hello".endsWithLiteral("llo")',
-    expr: toExpr('hello').endsWithLiteral('llo'),
+    expr: toExpr('hello').endsWithValue('llo'),
     expected: true,
   ),
   (
     name: '"hello".endsWithLiteral("world")',
-    expr: toExpr('hello').endsWithLiteral('world'),
+    expr: toExpr('hello').endsWithValue('world'),
     expected: false,
   ),
 
@@ -499,47 +499,47 @@ final _cases = [
   // Tests for .containsLiteral
   (
     name: '"".containsLiteral("")',
-    expr: toExpr('').containsLiteral(''),
+    expr: toExpr('').containsValue(''),
     expected: true,
   ),
   (
     name: '"".containsLiteral("hello")',
-    expr: toExpr('').containsLiteral('hello'),
+    expr: toExpr('').containsValue('hello'),
     expected: false,
   ),
   (
     name: '"hello".containsLiteral("")',
-    expr: toExpr('hello').containsLiteral(''),
+    expr: toExpr('hello').containsValue(''),
     expected: true,
   ),
   (
     name: '"hello".containsLiteral("hello")',
-    expr: toExpr('hello').containsLiteral('hello'),
+    expr: toExpr('hello').containsValue('hello'),
     expected: true,
   ),
   (
     name: '"hello".containsLiteral("hell")',
-    expr: toExpr('hello').containsLiteral('hell'),
+    expr: toExpr('hello').containsValue('hell'),
     expected: true,
   ),
   (
     name: '"hello".containsLiteral("world")',
-    expr: toExpr('hello').containsLiteral('world'),
+    expr: toExpr('hello').containsValue('world'),
     expected: false,
   ),
   (
     name: '"hello world".containsLiteral("world")',
-    expr: toExpr('hello world').containsLiteral('world'),
+    expr: toExpr('hello world').containsValue('world'),
     expected: true,
   ),
   (
     name: '"hello world".containsLiteral("hello")',
-    expr: toExpr('hello world').containsLiteral('hello'),
+    expr: toExpr('hello world').containsValue('hello'),
     expected: true,
   ),
   (
     name: '"hello world".containsLiteral("llo")',
-    expr: toExpr('hello world').containsLiteral('llo'),
+    expr: toExpr('hello world').containsValue('llo'),
     expected: true,
   ),
 
@@ -573,27 +573,27 @@ final _cases = [
   // Tests for .lessThanLiteral
   (
     name: '"".lessThanLiteral("")',
-    expr: toExpr('').lessThanLiteral(''),
+    expr: toExpr('').lessThanValue(''),
     expected: false,
   ),
   (
     name: '"".lessThanLiteral("A")',
-    expr: toExpr('').lessThanLiteral('A'),
+    expr: toExpr('').lessThanValue('A'),
     expected: true,
   ),
   (
     name: '"A".lessThanLiteral("")',
-    expr: toExpr('A').lessThanLiteral(''),
+    expr: toExpr('A').lessThanValue(''),
     expected: false,
   ),
   (
     name: '"A".lessThanLiteral("A")',
-    expr: toExpr('A').lessThanLiteral('A'),
+    expr: toExpr('A').lessThanValue('A'),
     expected: false,
   ),
   (
     name: '"A".lessThanLiteral("B")',
-    expr: toExpr('A').lessThanLiteral('B'),
+    expr: toExpr('A').lessThanValue('B'),
     expected: true,
   ),
 
@@ -654,27 +654,27 @@ final _cases = [
   // Tests for .greaterThanLiteral
   (
     name: '"".greaterThanLiteral("")',
-    expr: toExpr('').greaterThanLiteral(''),
+    expr: toExpr('').greaterThanValue(''),
     expected: false,
   ),
   (
     name: '"".greaterThanLiteral("A")',
-    expr: toExpr('').greaterThanLiteral('A'),
+    expr: toExpr('').greaterThanValue('A'),
     expected: false,
   ),
   (
     name: '"A".greaterThanLiteral("")',
-    expr: toExpr('A').greaterThanLiteral(''),
+    expr: toExpr('A').greaterThanValue(''),
     expected: true,
   ),
   (
     name: '"A".greaterThanLiteral("A")',
-    expr: toExpr('A').greaterThanLiteral('A'),
+    expr: toExpr('A').greaterThanValue('A'),
     expected: false,
   ),
   (
     name: '"A".greaterThanLiteral("B")',
-    expr: toExpr('A').greaterThanLiteral('B'),
+    expr: toExpr('A').greaterThanValue('B'),
     expected: false,
   ),
 
@@ -735,27 +735,27 @@ final _cases = [
   // Tests for .lessThanOrEqualLiteral
   (
     name: '"".lessThanOrEqualLiteral("")',
-    expr: toExpr('').lessThanOrEqualLiteral(''),
+    expr: toExpr('').lessThanOrEqualValue(''),
     expected: true,
   ),
   (
     name: '"".lessThanOrEqualLiteral("A")',
-    expr: toExpr('').lessThanOrEqualLiteral('A'),
+    expr: toExpr('').lessThanOrEqualValue('A'),
     expected: true,
   ),
   (
     name: '"A".lessThanOrEqualLiteral("")',
-    expr: toExpr('A').lessThanOrEqualLiteral(''),
+    expr: toExpr('A').lessThanOrEqualValue(''),
     expected: false,
   ),
   (
     name: '"A".lessThanOrEqualLiteral("A")',
-    expr: toExpr('A').lessThanOrEqualLiteral('A'),
+    expr: toExpr('A').lessThanOrEqualValue('A'),
     expected: true,
   ),
   (
     name: '"A".lessThanOrEqualLiteral("B")',
-    expr: toExpr('A').lessThanOrEqualLiteral('B'),
+    expr: toExpr('A').lessThanOrEqualValue('B'),
     expected: true,
   ),
 
@@ -816,27 +816,27 @@ final _cases = [
   // Tests for .greaterThanOrEqualLiteral
   (
     name: '"".greaterThanOrEqualLiteral("")',
-    expr: toExpr('').greaterThanOrEqualLiteral(''),
+    expr: toExpr('').greaterThanOrEqualValue(''),
     expected: true,
   ),
   (
     name: '"".greaterThanOrEqualLiteral("A")',
-    expr: toExpr('').greaterThanOrEqualLiteral('A'),
+    expr: toExpr('').greaterThanOrEqualValue('A'),
     expected: false,
   ),
   (
     name: '"A".greaterThanOrEqualLiteral("")',
-    expr: toExpr('A').greaterThanOrEqualLiteral(''),
+    expr: toExpr('A').greaterThanOrEqualValue(''),
     expected: true,
   ),
   (
     name: '"A".greaterThanOrEqualLiteral("A")',
-    expr: toExpr('A').greaterThanOrEqualLiteral('A'),
+    expr: toExpr('A').greaterThanOrEqualValue('A'),
     expected: true,
   ),
   (
     name: '"A".greaterThanOrEqualLiteral("B")',
-    expr: toExpr('A').greaterThanOrEqualLiteral('B'),
+    expr: toExpr('A').greaterThanOrEqualValue('B'),
     expected: false,
   ),
 

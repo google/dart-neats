@@ -203,7 +203,7 @@ void main() {
     final sum = await db
         .select((toExpr(42.0),))
         .asQuery
-        .where((v) => v.equalsLiteral(3.0))
+        .where((v) => v.equalsValue(3.0))
         .sum()
         .fetch();
     check(sum).equals(0);

@@ -93,7 +93,7 @@ void main() {
               .where((i) => i.value.lessThan(item.value))
               .exists()
               .asExpr
-              .orElseLiteral(false),
+              .orElseValue(false),
         )
         .select(
           (item) => (

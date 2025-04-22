@@ -211,7 +211,7 @@ void main() {
     final avg = await db
         .select((toExpr(42.0),))
         .asQuery
-        .where((v) => v.equalsLiteral(3.0))
+        .where((v) => v.equalsValue(3.0))
         .avg()
         .fetch();
     check(avg).isNull();

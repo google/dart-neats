@@ -206,7 +206,7 @@ void main() {
             book.title,
             book.author.name,
             book.editor.authorId,
-            book.editor.name.orElseLiteral('No editor'),
+            book.editor.name.orElseValue('No editor'),
           ),
         )
         .fetch();
@@ -224,7 +224,7 @@ void main() {
         .select(
           (book) => (
             book.title,
-            book.editor.name.orElseLiteral('No editor'),
+            book.editor.name.orElseValue('No editor'),
             book.editor.books.count(),
           ),
         )
@@ -243,7 +243,7 @@ void main() {
         .select(
           (book) => (
             book.title,
-            book.editor.name.orElseLiteral('No editor'),
+            book.editor.name.orElseValue('No editor'),
             // This is an important thing to test, because book.editor may be
             // NULL, in which case book.editor.booksEditedBy is a subquery
             // that should return no rows, but if there are rows where the
@@ -268,7 +268,7 @@ void main() {
         .select(
           (book) => (
             book.title,
-            book.editor.name.orElseLiteral('No editor'),
+            book.editor.name.orElseValue('No editor'),
             book.editor.favoriteBook.title,
           ),
         )

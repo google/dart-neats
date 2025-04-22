@@ -181,7 +181,7 @@ void main() {
         )
         .where(
           (author, stock, countBooksByAuthor) =>
-              author.name.equalsLiteral('Bucks Bunny'),
+              author.name.equalsValue('Bucks Bunny'),
         )
         .fetch();
 
@@ -208,7 +208,7 @@ void main() {
         )
         .where(
           (author, stock, countBooksByAuthor) =>
-              author.name.equalsLiteral('Bucks Bunny'),
+              author.name.equalsValue('Bucks Bunny'),
         )
         .first
         .fetchOrNulls();
@@ -241,7 +241,7 @@ void main() {
         )
         .where(
           (author, stock, countBooksByAuthor) =>
-              author.name.equalsLiteral('Bucks Bunny'),
+              author.name.equalsValue('Bucks Bunny'),
         )
         .first
         .fetchOrNulls();

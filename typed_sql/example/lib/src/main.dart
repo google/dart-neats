@@ -88,7 +88,7 @@ Future<void> main() async {
     if (user != null) {
       print('${user.email} has liked');
       final queryLikes =
-          db.likes.where((like) => like.userId.equalsLiteral(user.userId));
+          db.likes.where((like) => like.userId.equalsValue(user.userId));
       await for (final like in queryLikes.stream()) {
         print(like.packageName);
       }
@@ -104,7 +104,7 @@ Future<void> main() async {
 
   {
     final users = await db.users
-        .where((user) => user.email.endsWithLiteral('@google.com'))
+        .where((user) => user.email.endsWithValue('@google.com'))
         .orderBy((user) => [(user.email, Order.ascending)])
         .offset(5)
         .limit(10)
@@ -121,11 +121,9 @@ Future<void> main() async {
   // We can do transactions
   {
     await db.transact(() async {
-      await db.users
-          .where((u) => u.email.endsWithLiteral('@google.com'))
-          .fetch();
+      await db.users.where((u) => u.email.endsWithValue('@google.com')).fetch();
       await db.likes
-          .where((l) => l.packageName.startsWithLiteral('_').not())
+          .where((l) => l.packageName.startsWithValue('_').not())
           .fetch();
 
       await db.transact(() async {

@@ -62,42 +62,42 @@ final _cases = [
   // Test for .equalsLiteral
   (
     name: '0.equalsLiteral(0)',
-    expr: toExpr(0).equalsLiteral(0),
+    expr: toExpr(0).equalsValue(0),
     expected: true,
   ),
   (
     name: '0.equalsLiteral(1)',
-    expr: toExpr(0).equalsLiteral(1),
+    expr: toExpr(0).equalsValue(1),
     expected: false,
   ),
   (
     name: '1.equalsLiteral(0)',
-    expr: toExpr(1).equalsLiteral(0),
+    expr: toExpr(1).equalsValue(0),
     expected: false,
   ),
   (
     name: '1.equalsLiteral(1)',
-    expr: toExpr(1).equalsLiteral(1),
+    expr: toExpr(1).equalsValue(1),
     expected: true,
   ),
   (
     name: '-1.equalsLiteral(-1)',
-    expr: toExpr(-1).equalsLiteral(-1),
+    expr: toExpr(-1).equalsValue(-1),
     expected: true,
   ),
   (
     name: '42.equalsLiteral(42)',
-    expr: toExpr(42).equalsLiteral(42),
+    expr: toExpr(42).equalsValue(42),
     expected: true,
   ),
   (
     name: '0.equalsLiteral(null)',
-    expr: toExpr(0).equalsLiteral(null),
+    expr: toExpr(0).equalsValue(null),
     expected: false,
   ),
   (
     name: '42.equalsLiteral(null)',
-    expr: toExpr(42).equalsLiteral(null),
+    expr: toExpr(42).equalsValue(null),
     expected: false,
   ),
 
@@ -146,42 +146,42 @@ final _cases = [
   // Test for .notEqualsLiteral
   (
     name: '0.notEqualsLiteral(0)',
-    expr: toExpr(0).notEqualsLiteral(0),
+    expr: toExpr(0).notEqualsValue(0),
     expected: false,
   ),
   (
     name: '0.notEqualsLiteral(1)',
-    expr: toExpr(0).notEqualsLiteral(1),
+    expr: toExpr(0).notEqualsValue(1),
     expected: true,
   ),
   (
     name: '1.notEqualsLiteral(0)',
-    expr: toExpr(1).notEqualsLiteral(0),
+    expr: toExpr(1).notEqualsValue(0),
     expected: true,
   ),
   (
     name: '1.notEqualsLiteral(1)',
-    expr: toExpr(1).notEqualsLiteral(1),
+    expr: toExpr(1).notEqualsValue(1),
     expected: false,
   ),
   (
     name: '-1.notEqualsLiteral(-1)',
-    expr: toExpr(-1).notEqualsLiteral(-1),
+    expr: toExpr(-1).notEqualsValue(-1),
     expected: false,
   ),
   (
     name: '42.notEqualsLiteral(42)',
-    expr: toExpr(42).notEqualsLiteral(42),
+    expr: toExpr(42).notEqualsValue(42),
     expected: false,
   ),
   (
     name: '0.notEqualsLiteral(null)',
-    expr: toExpr(0).notEqualsLiteral(null),
+    expr: toExpr(0).notEqualsValue(null),
     expected: true,
   ),
   (
     name: '42.notEqualsLiteral(null)',
-    expr: toExpr(42).notEqualsLiteral(null),
+    expr: toExpr(42).notEqualsValue(null),
     expected: true,
   ),
 
@@ -348,32 +348,32 @@ final _cases = [
   // Tests for .addLiteral
   (
     name: '0.addLiteral(0)',
-    expr: toExpr(0).addLiteral(0),
+    expr: toExpr(0).addValue(0),
     expected: 0,
   ),
   (
     name: '0.addLiteral(1)',
-    expr: toExpr(0).addLiteral(1),
+    expr: toExpr(0).addValue(1),
     expected: 1,
   ),
   (
     name: '1.addLiteral(0)',
-    expr: toExpr(1).addLiteral(0),
+    expr: toExpr(1).addValue(0),
     expected: 1,
   ),
   (
     name: '1.addLiteral(1)',
-    expr: toExpr(1).addLiteral(1),
+    expr: toExpr(1).addValue(1),
     expected: 2,
   ),
   (
     name: '-1.addLiteral(-1)',
-    expr: toExpr(-1).addLiteral(-1),
+    expr: toExpr(-1).addValue(-1),
     expected: -2,
   ),
   (
     name: '42.addLiteral(42)',
-    expr: toExpr(42).addLiteral(42),
+    expr: toExpr(42).addValue(42),
     expected: 84,
   ),
 
@@ -412,32 +412,32 @@ final _cases = [
   // Tests for .subtractLiteral
   (
     name: '0.subtractLiteral(0)',
-    expr: toExpr(0).subtractLiteral(0),
+    expr: toExpr(0).subtractValue(0),
     expected: 0,
   ),
   (
     name: '0.subtractLiteral(1)',
-    expr: toExpr(0).subtractLiteral(1),
+    expr: toExpr(0).subtractValue(1),
     expected: -1,
   ),
   (
     name: '1.subtractLiteral(0)',
-    expr: toExpr(1).subtractLiteral(0),
+    expr: toExpr(1).subtractValue(0),
     expected: 1,
   ),
   (
     name: '1.subtractLiteral(1)',
-    expr: toExpr(1).subtractLiteral(1),
+    expr: toExpr(1).subtractValue(1),
     expected: 0,
   ),
   (
     name: '-1.subtractLiteral(-1)',
-    expr: toExpr(-1).subtractLiteral(-1),
+    expr: toExpr(-1).subtractValue(-1),
     expected: 0,
   ),
   (
     name: '42.subtractLiteral(42)',
-    expr: toExpr(42).subtractLiteral(42),
+    expr: toExpr(42).subtractValue(42),
     expected: 0,
   ),
 
@@ -476,32 +476,32 @@ final _cases = [
   // Tests for .multiplyLiteral
   (
     name: '0.multiplyLiteral(0)',
-    expr: toExpr(0).multiplyLiteral(0),
+    expr: toExpr(0).multiplyValue(0),
     expected: 0,
   ),
   (
     name: '0.multiplyLiteral(1)',
-    expr: toExpr(0).multiplyLiteral(1),
+    expr: toExpr(0).multiplyValue(1),
     expected: 0,
   ),
   (
     name: '1.multiplyLiteral(0)',
-    expr: toExpr(1).multiplyLiteral(0),
+    expr: toExpr(1).multiplyValue(0),
     expected: 0,
   ),
   (
     name: '1.multiplyLiteral(1)',
-    expr: toExpr(1).multiplyLiteral(1),
+    expr: toExpr(1).multiplyValue(1),
     expected: 1,
   ),
   (
     name: '-1.multiplyLiteral(-1)',
-    expr: toExpr(-1).multiplyLiteral(-1),
+    expr: toExpr(-1).multiplyValue(-1),
     expected: 1,
   ),
   (
     name: '42.multiplyLiteral(42)',
-    expr: toExpr(42).multiplyLiteral(42),
+    expr: toExpr(42).multiplyValue(42),
     expected: 1764,
   ),
 
@@ -540,32 +540,32 @@ final _cases = [
   // Tests for .divideLiteral
   (
     name: '0.divideLiteral(1)',
-    expr: toExpr(0).divideLiteral(1),
+    expr: toExpr(0).divideValue(1),
     expected: 0,
   ),
   (
     name: '1.divideLiteral(1)',
-    expr: toExpr(1).divideLiteral(1),
+    expr: toExpr(1).divideValue(1),
     expected: 1,
   ),
   (
     name: '-1.divideLiteral(-1)',
-    expr: toExpr(-1).divideLiteral(-1),
+    expr: toExpr(-1).divideValue(-1),
     expected: 1,
   ),
   (
     name: '42.divideLiteral(42)',
-    expr: toExpr(42).divideLiteral(42),
+    expr: toExpr(42).divideValue(42),
     expected: 1,
   ),
   (
     name: '42.divideLiteral(2)',
-    expr: toExpr(42).divideLiteral(2),
+    expr: toExpr(42).divideValue(2),
     expected: 21,
   ),
   (
     name: '41.divideLiteral(2)',
-    expr: toExpr(41).divideLiteral(2),
+    expr: toExpr(41).divideValue(2),
     expected: 20.5,
   ),
 
@@ -614,42 +614,42 @@ final _cases = [
   // Tests for .lessThanLiteral
   (
     name: '0.lessThanLiteral(0)',
-    expr: toExpr(0).lessThanLiteral(0),
+    expr: toExpr(0).lessThanValue(0),
     expected: false,
   ),
   (
     name: '0.lessThanLiteral(1)',
-    expr: toExpr(0).lessThanLiteral(1),
+    expr: toExpr(0).lessThanValue(1),
     expected: true,
   ),
   (
     name: '1.lessThanLiteral(0)',
-    expr: toExpr(1).lessThanLiteral(0),
+    expr: toExpr(1).lessThanValue(0),
     expected: false,
   ),
   (
     name: '1.lessThanLiteral(1)',
-    expr: toExpr(1).lessThanLiteral(1),
+    expr: toExpr(1).lessThanValue(1),
     expected: false,
   ),
   (
     name: '-1.lessThanLiteral(-1)',
-    expr: toExpr(-1).lessThanLiteral(-1),
+    expr: toExpr(-1).lessThanValue(-1),
     expected: false,
   ),
   (
     name: '-1.lessThanLiteral(0)',
-    expr: toExpr(-1).lessThanLiteral(0),
+    expr: toExpr(-1).lessThanValue(0),
     expected: true,
   ),
   (
     name: '0.lessThanLiteral(-1)',
-    expr: toExpr(0).lessThanLiteral(-1),
+    expr: toExpr(0).lessThanValue(-1),
     expected: false,
   ),
   (
     name: '42.lessThanLiteral(42)',
-    expr: toExpr(42).lessThanLiteral(42),
+    expr: toExpr(42).lessThanValue(42),
     expected: false,
   ),
 
@@ -740,42 +740,42 @@ final _cases = [
   // Tests for .lessThanOrEqualLiteral
   (
     name: '0.lessThanOrEqualLiteral(0)',
-    expr: toExpr(0).lessThanOrEqualLiteral(0),
+    expr: toExpr(0).lessThanOrEqualValue(0),
     expected: true,
   ),
   (
     name: '0.lessThanOrEqualLiteral(1)',
-    expr: toExpr(0).lessThanOrEqualLiteral(1),
+    expr: toExpr(0).lessThanOrEqualValue(1),
     expected: true,
   ),
   (
     name: '1.lessThanOrEqualLiteral(0)',
-    expr: toExpr(1).lessThanOrEqualLiteral(0),
+    expr: toExpr(1).lessThanOrEqualValue(0),
     expected: false,
   ),
   (
     name: '1.lessThanOrEqualLiteral(1)',
-    expr: toExpr(1).lessThanOrEqualLiteral(1),
+    expr: toExpr(1).lessThanOrEqualValue(1),
     expected: true,
   ),
   (
     name: '-1.lessThanOrEqualLiteral(-1)',
-    expr: toExpr(-1).lessThanOrEqualLiteral(-1),
+    expr: toExpr(-1).lessThanOrEqualValue(-1),
     expected: true,
   ),
   (
     name: '-1.lessThanOrEqualLiteral(0)',
-    expr: toExpr(-1).lessThanOrEqualLiteral(0),
+    expr: toExpr(-1).lessThanOrEqualValue(0),
     expected: true,
   ),
   (
     name: '0.lessThanOrEqualLiteral(-1)',
-    expr: toExpr(0).lessThanOrEqualLiteral(-1),
+    expr: toExpr(0).lessThanOrEqualValue(-1),
     expected: false,
   ),
   (
     name: '42.lessThanOrEqualLiteral(42)',
-    expr: toExpr(42).lessThanOrEqualLiteral(42),
+    expr: toExpr(42).lessThanOrEqualValue(42),
     expected: true,
   ),
 
@@ -866,42 +866,42 @@ final _cases = [
   // Tests for .greaterThanLiteral
   (
     name: '0.greaterThanLiteral(0)',
-    expr: toExpr(0).greaterThanLiteral(0),
+    expr: toExpr(0).greaterThanValue(0),
     expected: false,
   ),
   (
     name: '0.greaterThanLiteral(1)',
-    expr: toExpr(0).greaterThanLiteral(1),
+    expr: toExpr(0).greaterThanValue(1),
     expected: false,
   ),
   (
     name: '1.greaterThanLiteral(0)',
-    expr: toExpr(1).greaterThanLiteral(0),
+    expr: toExpr(1).greaterThanValue(0),
     expected: true,
   ),
   (
     name: '1.greaterThanLiteral(1)',
-    expr: toExpr(1).greaterThanLiteral(1),
+    expr: toExpr(1).greaterThanValue(1),
     expected: false,
   ),
   (
     name: '-1.greaterThanLiteral(-1)',
-    expr: toExpr(-1).greaterThanLiteral(-1),
+    expr: toExpr(-1).greaterThanValue(-1),
     expected: false,
   ),
   (
     name: '-1.greaterThanLiteral(0)',
-    expr: toExpr(-1).greaterThanLiteral(0),
+    expr: toExpr(-1).greaterThanValue(0),
     expected: false,
   ),
   (
     name: '0.greaterThanLiteral(-1)',
-    expr: toExpr(0).greaterThanLiteral(-1),
+    expr: toExpr(0).greaterThanValue(-1),
     expected: true,
   ),
   (
     name: '42.greaterThanLiteral(42)',
-    expr: toExpr(42).greaterThanLiteral(42),
+    expr: toExpr(42).greaterThanValue(42),
     expected: false,
   ),
 
@@ -992,42 +992,42 @@ final _cases = [
   // Tests for .greaterThanOrEqualLiteral
   (
     name: '0.greaterThanOrEqualLiteral(0)',
-    expr: toExpr(0).greaterThanOrEqualLiteral(0),
+    expr: toExpr(0).greaterThanOrEqualValue(0),
     expected: true,
   ),
   (
     name: '0.greaterThanOrEqualLiteral(1)',
-    expr: toExpr(0).greaterThanOrEqualLiteral(1),
+    expr: toExpr(0).greaterThanOrEqualValue(1),
     expected: false,
   ),
   (
     name: '1.greaterThanOrEqualLiteral(0)',
-    expr: toExpr(1).greaterThanOrEqualLiteral(0),
+    expr: toExpr(1).greaterThanOrEqualValue(0),
     expected: true,
   ),
   (
     name: '1.greaterThanOrEqualLiteral(1)',
-    expr: toExpr(1).greaterThanOrEqualLiteral(1),
+    expr: toExpr(1).greaterThanOrEqualValue(1),
     expected: true,
   ),
   (
     name: '-1.greaterThanOrEqualLiteral(-1)',
-    expr: toExpr(-1).greaterThanOrEqualLiteral(-1),
+    expr: toExpr(-1).greaterThanOrEqualValue(-1),
     expected: true,
   ),
   (
     name: '-1.greaterThanOrEqualLiteral(0)',
-    expr: toExpr(-1).greaterThanOrEqualLiteral(0),
+    expr: toExpr(-1).greaterThanOrEqualValue(0),
     expected: false,
   ),
   (
     name: '0.greaterThanOrEqualLiteral(-1)',
-    expr: toExpr(0).greaterThanOrEqualLiteral(-1),
+    expr: toExpr(0).greaterThanOrEqualValue(-1),
     expected: true,
   ),
   (
     name: '42.greaterThanOrEqualLiteral(42)',
-    expr: toExpr(42).greaterThanOrEqualLiteral(42),
+    expr: toExpr(42).greaterThanOrEqualValue(42),
     expected: true,
   ),
 

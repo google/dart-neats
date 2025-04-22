@@ -108,9 +108,9 @@ void main() {
     final titleAndAuthor = await db.books
         .where(
           (book) => book.title
-              .orElseLiteral('') // because title can be null
+              .orElseValue('') // because title can be null
               .toLowerCase()
-              .containsLiteral('eggs'),
+              .containsValue('eggs'),
         )
         .select(
           (book) => (

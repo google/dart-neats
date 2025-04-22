@@ -437,7 +437,7 @@ void main() {
     final result = await db
         .select((toExpr(42.0),))
         .asQuery
-        .where((v) => v.equalsLiteral(3.0))
+        .where((v) => v.equalsValue(3.0))
         .orderBy((v) => [(v, Order.ascending)])
         .first
         .fetch();
@@ -460,7 +460,7 @@ void main() {
     final result = await db
         .select((toExpr(42.0),))
         .asQuery
-        .where((v) => v.equalsLiteral(3.0))
+        .where((v) => v.equalsValue(3.0))
         .orderBy((v) => [(v, Order.descending)])
         .first
         .fetch();

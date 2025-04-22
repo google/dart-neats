@@ -164,7 +164,7 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Account>,)> byKey(int accountId) =>
-      where((account) => account.accountId.equalsLiteral(accountId)).first;
+      where((account) => account.accountId.equalsValue(accountId)).first;
 
   /// Update all rows in the `accounts` table matching this [Query].
   ///
@@ -230,7 +230,7 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Account>,)> byAccountNumber(String accountNumber) =>
-      where((account) => account.accountNumber.equalsLiteral(accountNumber))
+      where((account) => account.accountNumber.equalsValue(accountNumber))
           .first;
 
   /// Delete all rows in the `accounts` table matching this [Query].

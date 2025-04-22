@@ -105,7 +105,7 @@ void main() {
 
   r.addTest('books.where(.author.lastname.equals(Doe))', (db) async {
     final result = await db.books
-        .where((b) => b.author.lastname.equalsLiteral('Doe'))
+        .where((b) => b.author.lastname.equalsValue('Doe'))
         .fetch();
     check(result).length.equals(4);
   });

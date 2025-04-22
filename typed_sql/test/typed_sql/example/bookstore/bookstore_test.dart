@@ -452,7 +452,7 @@ void main() {
         .orderBy((b) => [(b.stock, Order.descending)])
         .limit(3)
         .asQuery // allow the ordering to be discarded!
-        .where((b) => b.authorId.equalsLiteral(2))
+        .where((b) => b.authorId.equalsValue(2))
         .orderBy((b) => [(b.stock, Order.descending)])
         .select((b) => (b.title, b.stock))
         .fetch();
@@ -467,7 +467,7 @@ void main() {
   r.addTest('Query.where.orderBy.limit', (db) async {
     // #region query-where-orderby-limit
     final result = await db.books
-        .where((b) => b.authorId.equalsLiteral(2))
+        .where((b) => b.authorId.equalsValue(2))
         .orderBy((b) => [(b.stock, Order.descending)])
         .limit(3)
         .select((b) => (b.title, b.stock))

@@ -180,7 +180,7 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Car>,)> byKey(int id) =>
-      where((car) => car.id.equalsLiteral(id)).first;
+      where((car) => car.id.equalsValue(id)).first;
 
   /// Update all rows in the `cars` table matching this [Query].
   ///
@@ -249,7 +249,7 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Car>,)> byLicensePlate(String licensePlate) =>
-      where((car) => car.licensePlate.equalsLiteral(licensePlate)).first;
+      where((car) => car.licensePlate.equalsValue(licensePlate)).first;
 
   /// Delete all rows in the `cars` table matching this [Query].
   ///

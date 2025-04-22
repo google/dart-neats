@@ -174,7 +174,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<User>,)> byKey(int userId) =>
-      where((user) => user.userId.equalsLiteral(userId)).first;
+      where((user) => user.userId.equalsValue(userId)).first;
 
   /// Update all rows in the `users` table matching this [Query].
   ///
@@ -240,7 +240,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<User>,)> byEmail(String email) =>
-      where((user) => user.email.equalsLiteral(email)).first;
+      where((user) => user.email.equalsValue(email)).first;
 
   /// Delete all rows in the `users` table matching this [Query].
   ///
@@ -513,7 +513,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Package>,)> byKey(String packageName) =>
-      where((package) => package.packageName.equalsLiteral(packageName)).first;
+      where((package) => package.packageName.equalsValue(packageName)).first;
 
   /// Update all rows in the `packages` table matching this [Query].
   ///
@@ -823,8 +823,8 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
     String packageName,
   ) =>
       where((like) =>
-          like.userId.equalsLiteral(userId) &
-          like.packageName.equalsLiteral(packageName)).first;
+          like.userId.equalsValue(userId) &
+          like.packageName.equalsValue(packageName)).first;
 
   /// Update all rows in the `likes` table matching this [Query].
   ///

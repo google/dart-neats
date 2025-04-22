@@ -168,7 +168,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Employee>,)> byKey(int employeeId) =>
-      where((employee) => employee.employeeId.equalsLiteral(employeeId)).first;
+      where((employee) => employee.employeeId.equalsValue(employeeId)).first;
 
   /// Update all rows in the `employees` table matching this [Query].
   ///
@@ -451,7 +451,7 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Department>,)> byKey(int departmentId) =>
-      where((department) => department.departmentId.equalsLiteral(departmentId))
+      where((department) => department.departmentId.equalsValue(departmentId))
           .first;
 
   /// Update all rows in the `departments` table matching this [Query].

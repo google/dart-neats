@@ -39,7 +39,7 @@ final _cases = <({
   ),
   (
     name: '(null as String?).orElseLiteral(\'hello\')',
-    expr: toExpr(null as String?).orElseLiteral('hello'),
+    expr: toExpr(null as String?).orElseValue('hello'),
     expected: 'hello',
   ),
   (
@@ -49,7 +49,7 @@ final _cases = <({
   ),
   (
     name: '(\'world\' as String?).orElseLiteral(\'hello\')',
-    expr: toExpr('world' as String?).orElseLiteral('hello'),
+    expr: toExpr('world' as String?).orElseValue('hello'),
     expected: 'world',
   ),
   (
@@ -64,7 +64,7 @@ final _cases = <({
   ),
   (
     name: 'null.asString().orElseLiteral(\'hello\')',
-    expr: toExpr(null).asString().orElseLiteral('hello'),
+    expr: toExpr(null).asString().orElseValue('hello'),
     expected: 'hello',
   ),
   // Expr<String?>.equals
@@ -143,73 +143,73 @@ final _cases = <({
   // Expr<String?>.equalsLiteral
   (
     name: 'null.asString().equalsLiteral(null)',
-    expr: toExpr(null).asString().equalsLiteral(null),
+    expr: toExpr(null).asString().equalsValue(null),
     expected: true,
   ),
   (
     name: 'null.asString().equalsLiteral("hello")',
-    expr: toExpr(null).asString().equalsLiteral('hello'),
+    expr: toExpr(null).asString().equalsValue('hello'),
     expected: false,
   ),
   (
     name: '"hello".equalsLiteral(null)',
-    expr: toExpr('hello' as String?).equalsLiteral(null),
+    expr: toExpr('hello' as String?).equalsValue(null),
     expected: false,
   ),
   (
     name: '"hello".equalsLiteral("hello")',
-    expr: toExpr('hello' as String?).equalsLiteral('hello'),
+    expr: toExpr('hello' as String?).equalsValue('hello'),
     expected: true,
   ),
   (
     name: 'null.asString().equalsLiteral("")',
-    expr: toExpr(null).asString().equalsLiteral(''),
+    expr: toExpr(null).asString().equalsValue(''),
     expected: false,
   ),
   (
     name: '"".equalsLiteral(null)',
-    expr: toExpr('' as String?).equalsLiteral(null),
+    expr: toExpr('' as String?).equalsValue(null),
     expected: false,
   ),
   (
     name: '"".equalsLiteral("")',
-    expr: toExpr('' as String?).equalsLiteral(''),
+    expr: toExpr('' as String?).equalsValue(''),
     expected: true,
   ),
   // Expr<String?>.notEqualsLiteral
   (
     name: 'null.asString().notEqualsLiteral(null)',
-    expr: toExpr(null).asString().notEqualsLiteral(null),
+    expr: toExpr(null).asString().notEqualsValue(null),
     expected: false,
   ),
   (
     name: 'null.asString().notEqualsLiteral("hello")',
-    expr: toExpr(null).asString().notEqualsLiteral('hello'),
+    expr: toExpr(null).asString().notEqualsValue('hello'),
     expected: true,
   ),
   (
     name: '"hello".notEqualsLiteral(null)',
-    expr: toExpr('hello' as String?).notEqualsLiteral(null),
+    expr: toExpr('hello' as String?).notEqualsValue(null),
     expected: true,
   ),
   (
     name: '"hello".notEqualsLiteral("hello")',
-    expr: toExpr('hello' as String?).notEqualsLiteral('hello'),
+    expr: toExpr('hello' as String?).notEqualsValue('hello'),
     expected: false,
   ),
   (
     name: 'null.asString().notEqualsLiteral("")',
-    expr: toExpr(null).asString().notEqualsLiteral(''),
+    expr: toExpr(null).asString().notEqualsValue(''),
     expected: true,
   ),
   (
     name: '"".notEqualsLiteral(null)',
-    expr: toExpr('' as String?).notEqualsLiteral(null),
+    expr: toExpr('' as String?).notEqualsValue(null),
     expected: true,
   ),
   (
     name: '"".notEqualsLiteral("")',
-    expr: toExpr('' as String?).notEqualsLiteral(''),
+    expr: toExpr('' as String?).notEqualsValue(''),
     expected: false,
   ),
   // Expr<String?>.isNull()

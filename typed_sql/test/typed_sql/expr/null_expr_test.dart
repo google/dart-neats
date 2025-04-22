@@ -44,7 +44,7 @@ final _cases = <({
   ),
   (
     name: '(null as bool?).orElseLiteral(true)',
-    expr: toExpr(null as bool?).orElseLiteral(true),
+    expr: toExpr(null as bool?).orElseValue(true),
     expected: true,
   ),
   (
@@ -54,7 +54,7 @@ final _cases = <({
   ),
   (
     name: '(false as bool?).orElseLiteral(true)',
-    expr: toExpr(false as bool?).orElseLiteral(true),
+    expr: toExpr(false as bool?).orElseValue(true),
     expected: false,
   ),
   (
@@ -69,7 +69,7 @@ final _cases = <({
   ),
   (
     name: 'null.asBool().orElseLiteral(true)',
-    expr: toExpr(null).asBool().orElseLiteral(true),
+    expr: toExpr(null).asBool().orElseValue(true),
     expected: true,
   ),
 ];

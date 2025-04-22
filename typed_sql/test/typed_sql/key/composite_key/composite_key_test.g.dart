@@ -155,7 +155,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
     int id,
     String name,
   ) =>
-      where((item) => item.id.equalsLiteral(id) & item.name.equalsLiteral(name))
+      where((item) => item.id.equalsValue(id) & item.name.equalsValue(name))
           .first;
 
   /// Update all rows in the `items` table matching this [Query].
