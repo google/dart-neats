@@ -114,7 +114,7 @@ void main() {
         .execute();
   });
 
-  _test('db.users.where(.endsWithLiteral).select()', (db) async {
+  _test('db.users.where(.endsWithValue).select()', (db) async {
     final users = await db.users
         .where((u) => u.email.endsWithValue('@example.com'))
         .select((u) => (u.name,))
@@ -124,7 +124,7 @@ void main() {
     expect(users, hasLength(2));
   });
 
-  _test('db.users.where(.startsWithLiteral).select()', (db) async {
+  _test('db.users.where(.startsWithValue).select()', (db) async {
     final users = await db.users
         .where((u) => u.email.startsWithValue('alice@'))
         .select((u) => (u.name,))

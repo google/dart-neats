@@ -51,14 +51,14 @@ extension ColorExprExt on Expr<Color> {
   // We know black is encoded as zero
   Expr<bool> get isBlack => asEncoded().equalsValue(0);
 
-  // We can make `.equals` and `.equalsLiteral` for `Color` if we want
+  // We can make `.equals` and `.equalsValue` for `Color` if we want
   Expr<bool> equals(Expr<Color> other) => asEncoded().equals(other.asEncoded());
-  Expr<bool> equalsLiteral(Color other) => equals(other.asExpr);
+  Expr<bool> equalsValue(Color other) => equals(other.asExpr);
 
   // We can make our own utility methods too
-  Expr<bool> get isRed => equalsLiteral(Color.red());
-  Expr<bool> get isGreen => equalsLiteral(Color.green());
-  Expr<bool> get isBlue => equalsLiteral(Color.blue());
+  Expr<bool> get isRed => equalsValue(Color.red());
+  Expr<bool> get isGreen => equalsValue(Color.green());
+  Expr<bool> get isBlue => equalsValue(Color.blue());
 }
 // #endregion
 

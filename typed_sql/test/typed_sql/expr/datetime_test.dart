@@ -62,44 +62,44 @@ final _cases = [
     expected: false,
   ),
 
-  // Test for .equalsLiteral
+  // Test for .equalsValue
   (
-    name: 'DateTime(2025).equalsLiteral(DateTime(2025))',
+    name: 'DateTime(2025).equalsValue(DateTime(2025))',
     expr: toExpr(DateTime(2025)).equalsValue(DateTime(2025)),
     expected: true,
   ),
   (
-    name: 'DateTime(2025).toUtc().equalsLiteral(DateTime(2025).toUtc())',
+    name: 'DateTime(2025).toUtc().equalsValue(DateTime(2025).toUtc())',
     expr: toExpr(DateTime(2025).toUtc()).equalsValue(DateTime(2025).toUtc()),
     expected: true,
   ),
   (
-    name: 'DateTime(2024).equalsLiteral(DateTime(2025))',
+    name: 'DateTime(2024).equalsValue(DateTime(2025))',
     expr: toExpr(DateTime(2024)).equalsValue(DateTime(2025)),
     expected: false,
   ),
   (
-    name: 'epoch.equalsLiteral(epoch)',
+    name: 'epoch.equalsValue(epoch)',
     expr: toExpr(epoch).equalsValue(epoch),
     expected: true,
   ),
   (
-    name: 'epoch.equalsLiteral(DateTime(2025))',
+    name: 'epoch.equalsValue(DateTime(2025))',
     expr: toExpr(epoch).equalsValue(DateTime(2025)),
     expected: false,
   ),
   (
-    name: 'epoch.equalsLiteral(today)',
+    name: 'epoch.equalsValue(today)',
     expr: toExpr(epoch).equalsValue(today),
     expected: false,
   ),
   (
-    name: 'epoch.equalsLiteral(null)',
+    name: 'epoch.equalsValue(null)',
     expr: toExpr(epoch).equalsValue(null),
     expected: false,
   ),
   (
-    name: 'today.equalsLiteral(null)',
+    name: 'today.equalsValue(null)',
     expr: toExpr(today).equalsValue(null),
     expected: false,
   ),
@@ -147,44 +147,44 @@ final _cases = [
     expected: true,
   ),
 
-  // Test for .notEqualsLiteral
+  // Test for .notEqualsValue
   (
-    name: 'DateTime(2025).notEqualsLiteral(DateTime(2025))',
+    name: 'DateTime(2025).notEqualsValue(DateTime(2025))',
     expr: toExpr(DateTime(2025)).notEqualsValue(DateTime(2025)),
     expected: false,
   ),
   (
-    name: 'DateTime(2025).toUtc().notEqualsLiteral(DateTime(2025).toUtc())',
+    name: 'DateTime(2025).toUtc().notEqualsValue(DateTime(2025).toUtc())',
     expr: toExpr(DateTime(2025).toUtc()).notEqualsValue(DateTime(2025).toUtc()),
     expected: false,
   ),
   (
-    name: 'DateTime(2024).notEqualsLiteral(DateTime(2025))',
+    name: 'DateTime(2024).notEqualsValue(DateTime(2025))',
     expr: toExpr(DateTime(2024)).notEqualsValue(DateTime(2025)),
     expected: true,
   ),
   (
-    name: 'epoch.notEqualsLiteral(epoch)',
+    name: 'epoch.notEqualsValue(epoch)',
     expr: toExpr(epoch).notEqualsValue(epoch),
     expected: false,
   ),
   (
-    name: 'epoch.notEqualsLiteral(DateTime(2025))',
+    name: 'epoch.notEqualsValue(DateTime(2025))',
     expr: toExpr(epoch).notEqualsValue(DateTime(2025)),
     expected: true,
   ),
   (
-    name: 'epoch.notEqualsLiteral(today)',
+    name: 'epoch.notEqualsValue(today)',
     expr: toExpr(epoch).notEqualsValue(today),
     expected: true,
   ),
   (
-    name: 'epoch.notEqualsLiteral(null)',
+    name: 'epoch.notEqualsValue(null)',
     expr: toExpr(epoch).notEqualsValue(null),
     expected: true,
   ),
   (
-    name: 'today.notEqualsLiteral(null)',
+    name: 'today.notEqualsValue(null)',
     expr: toExpr(today).notEqualsValue(null),
     expected: true,
   ),
@@ -221,34 +221,34 @@ final _cases = [
     expected: false,
   ),
 
-  // Test for .isBeforeLiteral
+  // Test for .isBeforeValue
   (
-    name: 'DateTime(2024).isBeforeLiteral(DateTime(2025))',
+    name: 'DateTime(2024).isBeforeValue(DateTime(2025))',
     expr: toExpr(DateTime(2024)).isBeforeValue(DateTime(2025)),
     expected: true,
   ),
   (
-    name: 'DateTime(2025).isBeforeLiteral(DateTime(2024))',
+    name: 'DateTime(2025).isBeforeValue(DateTime(2024))',
     expr: toExpr(DateTime(2025)).isBeforeValue(DateTime(2024)),
     expected: false,
   ),
   (
-    name: 'DateTime(2025).isBeforeLiteral(DateTime(2025))',
+    name: 'DateTime(2025).isBeforeValue(DateTime(2025))',
     expr: toExpr(DateTime(2025)).isBeforeValue(DateTime(2025)),
     expected: false,
   ),
   (
-    name: 'epoch.isBeforeLiteral(today)',
+    name: 'epoch.isBeforeValue(today)',
     expr: toExpr(epoch).isBeforeValue(today),
     expected: true,
   ),
   (
-    name: 'today.isBeforeLiteral(epoch)',
+    name: 'today.isBeforeValue(epoch)',
     expr: toExpr(today).isBeforeValue(epoch),
     expected: false,
   ),
   (
-    name: 'epoch.isBeforeLiteral(epoch)',
+    name: 'epoch.isBeforeValue(epoch)',
     expr: toExpr(epoch).isBeforeValue(epoch),
     expected: false,
   ),
@@ -317,34 +317,34 @@ final _cases = [
     expected: false,
   ),
 
-  // Test for .isAfterLiteral
+  // Test for .isAfterValue
   (
-    name: 'DateTime(2024).isAfterLiteral(DateTime(2025))',
+    name: 'DateTime(2024).isAfterValue(DateTime(2025))',
     expr: toExpr(DateTime(2024)).isAfterValue(DateTime(2025)),
     expected: false,
   ),
   (
-    name: 'DateTime(2025).isAfterLiteral(DateTime(2024))',
+    name: 'DateTime(2025).isAfterValue(DateTime(2024))',
     expr: toExpr(DateTime(2025)).isAfterValue(DateTime(2024)),
     expected: true,
   ),
   (
-    name: 'DateTime(2025).isAfterLiteral(DateTime(2025))',
+    name: 'DateTime(2025).isAfterValue(DateTime(2025))',
     expr: toExpr(DateTime(2025)).isAfterValue(DateTime(2025)),
     expected: false,
   ),
   (
-    name: 'epoch.isAfterLiteral(today)',
+    name: 'epoch.isAfterValue(today)',
     expr: toExpr(epoch).isAfterValue(today),
     expected: false,
   ),
   (
-    name: 'today.isAfterLiteral(epoch)',
+    name: 'today.isAfterValue(epoch)',
     expr: toExpr(today).isAfterValue(epoch),
     expected: true,
   ),
   (
-    name: 'epoch.isAfterLiteral(epoch)',
+    name: 'epoch.isAfterValue(epoch)',
     expr: toExpr(epoch).isAfterValue(epoch),
     expected: false,
   ),
