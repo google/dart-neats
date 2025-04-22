@@ -42,7 +42,7 @@ Iterable<Spec> buildCode(
         .map((t) => t.rowClass)
         .toSet()
         .sortedBy((m) => m.name)
-        .expand(buildChecksForModel);
+        .expand(buildChecksForRowClass);
   }
 }
 
@@ -50,7 +50,7 @@ Iterable<Spec> buildCode(
 Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
   // Find the unique set of CustomDataType classes used
   final customTypes = library.rowClasses
-      .expand((model) => model.fields)
+      .expand((rowClass) => rowClass.fields)
       .where((field) => field.typeName != field.backingType)
       .map((field) => (
             typeName: field.typeName,
@@ -131,26 +131,26 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
 }
 
 /// Generate extensions for use with `package:checks`
-Iterable<Spec> buildChecksForModel(ParsedRowClass model) sync* {
+Iterable<Spec> buildChecksForRowClass(ParsedRowClass rowClass) sync* {
   // Create extension for Subject<Row>
   yield Extension((b) => b
-    ..name = '${model.name}Checks'
+    ..name = '${rowClass.name}Checks'
     ..on = TypeReference(
       (b) => b
         ..symbol = 'Subject'
-        ..types.add(refer(model.name)),
+        ..types.add(refer(rowClass.name)),
     )
     ..documentation('''
-      Extension methods for assertions on [${model.name}] using
+      Extension methods for assertions on [${rowClass.name}] using
       [`package:checks`][1].
 
       [1]: https://pub.dev/packages/checks
     ''')
-    ..methods.addAll(model.fields.map((field) => Method(
+    ..methods.addAll(rowClass.fields.map((field) => Method(
           (b) => b
             ..name = field.name
             ..documentation('''
-              Create assertions on [${model.name}.${field.name}].
+              Create assertions on [${rowClass.name}.${field.name}].
             ''')
             ..returns = refer('Subject<${field.type}>')
             ..type = MethodType.getter
@@ -272,9 +272,9 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
 
 /// Generate code for [Row] subclasses used by [table]
 Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
-  final model = table.rowClass;
-  final modelName = model.name;
-  final modelInstanceName = lowerCamelCase(modelName);
+  final rowClass = table.rowClass;
+  final rowClassName = rowClass.name;
+  final rowInstanceName = lowerCamelCase(rowClassName);
 
   final referencedFrom = schema.tables
       .expand((t) => t.rowClass.foreignKeys.map((fk) => (table: t, fk: fk)))
@@ -305,22 +305,22 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
     ''';
   }
 
-  // Create implementation class for model
+  // Create implementation class for Row
   yield Class(
     (b) => b
-      ..name = '_\$$modelName'
+      ..name = '_\$$rowClassName'
       ..modifier = ClassModifier.final$
-      ..extend = refer(model.name)
+      ..extend = refer(rowClass.name)
       ..constructors.add(Constructor(
         (b) => b
           ..name = '_'
-          ..requiredParameters.addAll(model.fields.map((field) => Parameter(
+          ..requiredParameters.addAll(rowClass.fields.map((field) => Parameter(
                 (b) => b
                   ..name = field.name
                   ..toThis = true,
               ))),
       ))
-      ..fields.addAll(model.fields.mapIndexed((i, field) => Field(
+      ..fields.addAll(rowClass.fields.mapIndexed((i, field) => Field(
             (b) => b
               ..name = field.name
               ..annotations.add(refer('override'))
@@ -335,14 +335,14 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..assignment = Code('''
             (
               tableName: '${table.name}',
-              columns: <String>[${model.fields.map((f) => '\'${f.name}\'').join(', ')}],
+              columns: <String>[${rowClass.fields.map((f) => '\'${f.name}\'').join(', ')}],
               columnInfo: <({
                     ColumnType type,
                     bool isNotNull,
                     Object? defaultValue,
                     bool autoIncrement,
                   })>[
-                ${model.fields.map((f) => '''
+                ${rowClass.fields.map((f) => '''
                   (
                     type: ${backingExprType(f.backingType)},
                     isNotNull: ${!f.isNullable},
@@ -351,9 +351,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   )
                 ''').join(', ')}
               ],
-              primaryKey: <String>[${model.primaryKey.map((f) => '\'${f.name}\'').join(', ')}],
+              primaryKey: <String>[${rowClass.primaryKey.map((f) => '\'${f.name}\'').join(', ')}],
               unique: <List<String>>[
-                ${model.fields.where((f) => f.unique).map(
+                ${rowClass.fields.where((f) => f.unique).map(
                     (f) => '[\'${f.name}\']',
                   ).join(', ')}
               ],
@@ -363,7 +363,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     String referencedTable,
                     List<String> referencedColumns,
                   })>[
-                ${model.foreignKeys.map((fk) => '''
+                ${rowClass.foreignKeys.map((fk) => '''
                   (
                     name: '${fk.name}',
                     columns: ['${fk.key.name}'],
@@ -372,7 +372,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   )
                 ''').join(',')}
               ],
-              readRow: _\$${model.name}._\$fromDatabase,
+              readRow: _\$${rowClass.name}._\$fromDatabase,
             )
           '''),
       ))
@@ -380,7 +380,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         Method(
           (b) => b
             ..name = '_\$fromDatabase'
-            ..returns = refer('$modelName?')
+            ..returns = refer('$rowClassName?')
             ..static = true
             ..requiredParameters.add(
               Parameter(
@@ -390,12 +390,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ),
             )
             ..body = Code([
-              for (final field in model.fields)
+              for (final field in rowClass.fields)
                 'final ${field.name} = ${readFromRowReader('row', field)};',
-              'if (${model.fields.map((f) => '${f.name} == null').join(' &&  ')}) {',
+              'if (${rowClass.fields.map((f) => '${f.name} == null').join(' &&  ')}) {',
               'return null;',
               '}',
-              'return _\$$modelName._(${model.fields.map((f) => f.name + (f.isNullable ? '' : '!')).join(', ')});',
+              'return _\$$rowClassName._(${rowClass.fields.map((f) => f.name + (f.isNullable ? '' : '!')).join(', ')});',
             ].join('\n')),
         ),
         Method(
@@ -407,20 +407,20 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..body = Code(
               // TODO: Avoid "" around types that don't need it when rendered to
               //       string, like int, double, bool, etc.
-              '\'$modelName(${model.fields.map((field) => '${field.name}: "\$${field.name}"').join(', ')})\'',
+              '\'$rowClassName(${rowClass.fields.map((field) => '${field.name}: "\$${field.name}"').join(', ')})\'',
             ),
         ),
       ]),
   );
 
-  // Extension for Table<model>
+  // Extension for Table<Row>
   yield Extension(
     (b) => b
-      ..name = 'Table${modelName}Ext'
+      ..name = 'Table${rowClassName}Ext'
       ..documentation('''
-        Extension methods for table defined in [$modelName].
+        Extension methods for table defined in [$rowClassName].
       ''')
-      ..on = refer('Table<$modelName>')
+      ..on = refer('Table<$rowClassName>')
       ..methods.add(Method(
         (b) => b
           ..name = 'insert'
@@ -430,7 +430,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             Returns a [InsertSingle] statement on which `.execute` must be
             called for the row to be inserted.
           ''')
-          ..optionalParameters.addAll(model.fields.map((field) {
+          ..optionalParameters.addAll(rowClass.fields.map((field) {
             final hasDefault = field.defaultValue != null ||
                 field.isNullable ||
                 field.autoIncrement;
@@ -443,13 +443,13 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ..type = refer('Expr<${field.type}>$nullable'),
             );
           }))
-          ..returns = refer('InsertSingle<$modelName>')
+          ..returns = refer('InsertSingle<$rowClassName>')
           ..lambda = true
           ..body = Code('''
             ExposedForCodeGen.insertInto(
               table: this,
               values: [
-                ${model.fields.map((field) => field.name).join(', ')},
+                ${rowClass.fields.map((field) => field.name).join(', ')},
               ],
             )
           '''),
@@ -468,8 +468,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             should be deleted. If you wish to delete all rows, use
             `.where((_) => toExpr(true)).delete()`.
           ''')
-          ..returns = refer('DeleteSingle<$modelName>')
-          ..requiredParameters.addAll(model.primaryKey.map((pk) => Parameter(
+          ..returns = refer('DeleteSingle<$rowClassName>')
+          ..requiredParameters.addAll(rowClass.primaryKey.map((pk) => Parameter(
                 (b) => b
                   ..name = pk.name
                   ..type = refer(pk.type),
@@ -478,22 +478,22 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..body = Code('''
             ExposedForCodeGen.deleteSingle(
               byKey(
-                ${model.primaryKey.map((f) => f.name).join(', ')}
+                ${rowClass.primaryKey.map((f) => f.name).join(', ')}
               ),
-              _\$${model.name}._\$table,
+              _\$${rowClass.name}._\$table,
             )
           '''),
       )),
   );
 
-  // Extension for Query<(Expr<model>,)>
+  // Extension for Query<(Expr<Row>,)>
   yield Extension(
     (b) => b
-      ..name = 'Query${modelName}Ext'
+      ..name = 'Query${rowClassName}Ext'
       ..documentation('''
         Extension methods for building queries against the `${table.name}` table.
       ''')
-      ..on = refer('Query<(Expr<$modelName>,)>')
+      ..on = refer('Query<(Expr<$rowClassName>,)>')
       ..methods.add(Method(
         (b) => b
           ..name = 'byKey'
@@ -503,15 +503,15 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             Returns a [QuerySingle] object, which returns at-most one row,
             when `.fetch()` is called.
           ''')
-          ..returns = refer('QuerySingle<(Expr<$modelName>,)>')
-          ..requiredParameters.addAll(model.primaryKey.map((pk) => Parameter(
+          ..returns = refer('QuerySingle<(Expr<$rowClassName>,)>')
+          ..requiredParameters.addAll(rowClass.primaryKey.map((pk) => Parameter(
                 (b) => b
                   ..name = pk.name
                   ..type = refer(pk.type),
               )))
           ..lambda = true
-          ..body = Code('where(($modelInstanceName) => ${model.primaryKey.map(
-                (f) => '$modelInstanceName.${f.name}.equalsValue(${f.name})',
+          ..body = Code('where(($rowInstanceName) => ${rowClass.primaryKey.map(
+                (f) => '$rowInstanceName.${f.name}.equalsValue(${f.name})',
               ).join(' & ')}).first'),
       ))
       ..methods.add(Method(
@@ -546,14 +546,14 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             > the `set` function more than once, and the result should always
             > be returned immediately.
           ''')
-          ..returns = refer('Update<$modelName>')
+          ..returns = refer('Update<$rowClassName>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..type = refer('''
-                  UpdateSet<$modelName> Function(
-                    Expr<$modelName> $modelInstanceName,
-                    UpdateSet<$modelName> Function({
-                      ${model.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
+                  UpdateSet<$rowClassName> Function(
+                    Expr<$rowClassName> $rowInstanceName,
+                    UpdateSet<$rowClassName> Function({
+                      ${rowClass.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
                     }) set,
                   )
                 ''')
@@ -561,20 +561,20 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ))
           ..lambda = true
           ..body = Code('''
-            ExposedForCodeGen.update<$modelName>(
+            ExposedForCodeGen.update<$rowClassName>(
               this,
-              _\$${model.name}._\$table,
-              ($modelInstanceName) => updateBuilder($modelInstanceName, ({
-                  ${model.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
+              _\$${rowClass.name}._\$table,
+              ($rowInstanceName) => updateBuilder($rowInstanceName, ({
+                  ${rowClass.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
                 }) =>
-                  ExposedForCodeGen.buildUpdate<$modelName>([
-                   ${model.fields.map((field) => field.name).join(', ')},
+                  ExposedForCodeGen.buildUpdate<$rowClassName>([
+                   ${rowClass.fields.map((field) => field.name).join(', ')},
                   ]),
               ),
             )
           '''),
       ))
-      ..methods.addAll(model.fields.where((field) => field.unique).map(
+      ..methods.addAll(rowClass.fields.where((field) => field.unique).map(
             (field) => Method(
               (b) => b
                 ..name = 'by${upperCamelCase(field.name)}'
@@ -584,12 +584,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
 
                   We know that lookup by the `${field.name}` field returns
                   at-most one row because the `${field.name}` has an [Unique]
-                  annotation in [$modelName].
+                  annotation in [$rowClassName].
 
                   Returns a [QuerySingle] object, which returns at-most one row,
                   when `.fetch()` is called.
                 ''')
-                ..returns = refer('QuerySingle<(Expr<$modelName>,)>')
+                ..returns = refer('QuerySingle<(Expr<$rowClassName>,)>')
                 ..requiredParameters.add(Parameter(
                   (b) => b
                     ..name = field.name
@@ -597,8 +597,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ))
                 ..lambda = true
                 ..body = Code('''
-                  where(($modelInstanceName) =>
-                    $modelInstanceName.${field.name}.equalsValue(${field.name})
+                  where(($rowInstanceName) =>
+                    $rowInstanceName.${field.name}.equalsValue(${field.name})
                   ).first
                 '''),
             ),
@@ -612,22 +612,22 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             Returns a [Delete] statement on which `.execute()` must be called
             for the rows to be deleted.
           ''')
-          ..returns = refer('Delete<$modelName>')
+          ..returns = refer('Delete<$rowClassName>')
           ..lambda = true
           ..body = Code('''
-              ExposedForCodeGen.delete(this, _\$${model.name}._\$table)
+              ExposedForCodeGen.delete(this, _\$${rowClass.name}._\$table)
             '''),
       )),
   );
 
-  // Extension for QuerySingle<(Expr<model>,)>
+  // Extension for QuerySingle<(Expr<Row>,)>
   yield Extension(
     (b) => b
-      ..name = 'QuerySingle${modelName}Ext'
+      ..name = 'QuerySingle${rowClassName}Ext'
       ..documentation('''
         Extension methods for building point queries against the `${table.name}` table.
       ''')
-      ..on = refer('QuerySingle<(Expr<$modelName>,)>')
+      ..on = refer('QuerySingle<(Expr<$rowClassName>,)>')
       ..methods.add(Method(
         (b) => b
           ..name = 'update'
@@ -662,14 +662,14 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             > the `set` function more than once, and the result should always
             > be returned immediately.
           ''')
-          ..returns = refer('UpdateSingle<$modelName>')
+          ..returns = refer('UpdateSingle<$rowClassName>')
           ..requiredParameters.add(Parameter(
             (b) => b
               ..type = refer('''
-                UpdateSet<$modelName> Function(
-                  Expr<$modelName> $modelInstanceName,
-                  UpdateSet<$modelName> Function({
-                    ${model.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
+                UpdateSet<$rowClassName> Function(
+                  Expr<$rowClassName> $rowInstanceName,
+                  UpdateSet<$rowClassName> Function({
+                    ${rowClass.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
                   }) set,
                 )
               ''')
@@ -677,14 +677,14 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ))
           ..lambda = true
           ..body = Code('''
-            ExposedForCodeGen.updateSingle<$modelName>(
+            ExposedForCodeGen.updateSingle<$rowClassName>(
               this,
-              _\$${model.name}._\$table,
-              ($modelInstanceName) => updateBuilder($modelInstanceName, ({
-                  ${model.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
+              _\$${rowClass.name}._\$table,
+              ($rowInstanceName) => updateBuilder($rowInstanceName, ({
+                  ${rowClass.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
                 }) =>
-                  ExposedForCodeGen.buildUpdate<$modelName>([
-                   ${model.fields.map((field) => field.name).join(', ')},
+                  ExposedForCodeGen.buildUpdate<$rowClassName>([
+                   ${rowClass.fields.map((field) => field.name).join(', ')},
                   ]),
               ),
             )
@@ -700,23 +700,23 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             for the row to be deleted. The resulting statement will **not**
             fail, if there are no rows matching this query exists.
           ''')
-          ..returns = refer('DeleteSingle<$modelName>')
+          ..returns = refer('DeleteSingle<$rowClassName>')
           ..lambda = true
           ..body = Code(
-            'ExposedForCodeGen.deleteSingle(this, _\$${model.name}._\$table)',
+            'ExposedForCodeGen.deleteSingle(this, _\$${rowClass.name}._\$table)',
           ),
       )),
   );
 
-  // Extension for Expression<model>Ext
+  // Extension for Expression<Row>Ext
   yield Extension((b) => b
-    ..name = 'Expression${modelName}Ext'
+    ..name = 'Expression${rowClassName}Ext'
     ..documentation('''
       Extension methods for expressions on a row in the `${table.name}` table.
     ''')
-    ..on = refer('Expr<$modelName>')
+    ..on = refer('Expr<$rowClassName>')
     ..methods.addAll([
-      ...model.fields.mapIndexed((i, field) => Method(
+      ...rowClass.fields.mapIndexed((i, field) => Method(
             (b) => b
               ..name = field.name
               ..docs.add(field.documentation ?? '')
@@ -736,7 +736,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
 
                 This returns a [SubQuery] of [${ref.table.rowClass.name}] rows,
                 where [${ref.table.rowClass.name}.${ref.fk.key.name}] is references
-                [$modelName.${ref.fk.field}] in this row.
+                [$rowClassName.${ref.fk.field}] in this row.
               ''')
               ..type = MethodType.getter
               ..returns = refer('SubQuery<(Expr<${ref.table.rowClass.name}>,)>')
@@ -747,7 +747,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ).where((r) => r.${ref.fk.key.name}.equals(${ref.fk.field}))
               '''),
           )),
-      ...model.foreignKeys.where((fk) => fk.name != null).map((fk) {
+      ...rowClass.foreignKeys.where((fk) => fk.name != null).map((fk) {
         var nullable = '?';
         var ifAnyDocs = ', if any';
         var firstAsNotNull = 'first';
@@ -782,12 +782,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       }),
     ]));
 
-  // Extension for ExpressionNullable<model>Ext
+  // Extension for ExpressionNullable<Row>Ext
   yield Extension((b) => b
-    ..name = 'ExpressionNullable${modelName}Ext'
-    ..on = refer('Expr<$modelName?>')
+    ..name = 'ExpressionNullable${rowClassName}Ext'
+    ..on = refer('Expr<$rowClassName?>')
     ..methods.addAll([
-      ...model.fields.mapIndexed((i, field) => Method(
+      ...rowClass.fields.mapIndexed((i, field) => Method(
             (b) => b
               ..name = field.name
               ..docs.add(field.documentation ?? '')
@@ -807,7 +807,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
 
                 This returns a [SubQuery] of [${ref.table.rowClass.name}] rows,
                 where [${ref.table.rowClass.name}.${ref.fk.key.name}] is references
-                [$modelName.${ref.fk.field}] in this row, if any.
+                [$rowClassName.${ref.fk.field}] in this row, if any.
 
                 If this row is `NULL` the subquery is always be empty.
               ''')
@@ -823,7 +823,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 )
               '''),
           )),
-      ...model.foreignKeys.where((fk) => fk.name != null).map((fk) {
+      ...rowClass.foreignKeys.where((fk) => fk.name != null).map((fk) {
         return Method(
           (b) => b
             ..name = fk.name
@@ -865,7 +865,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..returns = refer('Expr<bool>')
           ..lambda = true
           ..body = Code(
-            model.primaryKey.map((pk) => '${pk.name}.isNotNull()').join(' & '),
+            rowClass.primaryKey
+                .map((pk) => '${pk.name}.isNotNull()')
+                .join(' & '),
           ),
       ),
       Method(

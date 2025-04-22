@@ -35,9 +35,9 @@ Future<ParsedLibrary> parseLibrary(
   ParserContext ctx,
   LibraryReader targetLibrary,
 ) async {
-  // Cache models when parsing, this saves time, but more importantly ensures
-  // that we can use identity equivalence on ParsedModel objects.
-  final modelCache = <ClassElement, ParsedRowClass>{};
+  // Cache row classes when parsing, this saves time, but more importantly
+  // ensures that we can use identity equivalence on ParsedRowClass objects.
+  final rowClassCache = <ClassElement, ParsedRowClass>{};
 
   // We maintain maps to elements so we can make better errors later!
   final schemaToElement = <ParsedSchema, ClassElement>{};
@@ -47,18 +47,18 @@ Future<ParsedLibrary> parseLibrary(
     final supertype = cls.supertype;
     return supertype != null && schemaTypeChecker.isExactlyType(supertype);
   }).map((cls) {
-    final s = _parseSchema(ctx, cls, modelCache, foreignKeyToElement);
+    final s = _parseSchema(ctx, cls, rowClassCache, foreignKeyToElement);
     schemaToElement[s] = cls;
     return s;
   }).toList();
 
-  final models = targetLibrary.classes.where((cls) {
+  final rowClasses = targetLibrary.classes.where((cls) {
     final supertype = cls.supertype;
     return supertype != null && rowTypeChecker.isExactlyType(supertype);
   }).map((cls) {
-    return modelCache.putIfAbsent(
+    return rowClassCache.putIfAbsent(
       cls,
-      () => _parseModel(ctx, cls, foreignKeyToElement),
+      () => _parseRowClass(ctx, cls, foreignKeyToElement),
     );
   }).toList();
 
@@ -73,17 +73,17 @@ Future<ParsedLibrary> parseLibrary(
 
   final library = ParsedLibrary(
     schemas: schemas,
-    rowClasses: models,
+    rowClasses: rowClasses,
   );
 
-  // We only allow a Model subclass to be used for one table!
+  // We only allow a Row subclass to be used for one table!
   final allTables = schemas.expand((s) => s.tables);
   for (final schema in schemas) {
     for (final table in schema.tables) {
       if (allTables.any((t) => t != table && t.rowClass == table.rowClass)) {
         throw InvalidGenerationSource(
-          'Model subclass "${table.rowClass.name}" is used in more than one table!',
-          element: modelCache.entries
+          'Row subclass "${table.rowClass.name}" is used in more than one table!',
+          element: rowClassCache.entries
               .firstWhere((e) => e.value == table.rowClass)
               .key,
         );
@@ -131,7 +131,7 @@ Future<ParsedLibrary> parseLibrary(
 ParsedSchema _parseSchema(
   ParserContext ctx,
   ClassElement cls,
-  Map<ClassElement, ParsedRowClass> modelCache,
+  Map<ClassElement, ParsedRowClass> rowClassCache,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
 ) {
   log.info('Found schema "${cls.name}"');
@@ -202,9 +202,9 @@ ParsedSchema _parseSchema(
     tables.add(ParsedTable(
       name: a.name,
       documentation: a.documentationComment,
-      rowClass: modelCache.putIfAbsent(
+      rowClass: rowClassCache.putIfAbsent(
         typeArgElement,
-        () => _parseModel(ctx, typeArgElement, foreignKeyToElement),
+        () => _parseRowClass(ctx, typeArgElement, foreignKeyToElement),
       ),
     ));
   }
@@ -215,12 +215,12 @@ ParsedSchema _parseSchema(
   );
 }
 
-ParsedRowClass _parseModel(
+ParsedRowClass _parseRowClass(
   ParserContext ctx,
   ClassElement cls,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
 ) {
-  log.info('Found model "${cls.name}"');
+  log.info('Found row class "${cls.name}"');
 
   if (!cls.isAbstract || !cls.isFinal) {
     throw InvalidGenerationSource(
