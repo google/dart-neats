@@ -39,7 +39,7 @@ Iterable<Spec> buildCode(
   if (createChecksExtensions) {
     yield* library.schemas
         .expand((s) => s.tables)
-        .map((t) => t.model)
+        .map((t) => t.rowClass)
         .toSet()
         .sortedBy((m) => m.name)
         .expand(buildChecksForModel);
@@ -49,7 +49,7 @@ Iterable<Spec> buildCode(
 /// Generate extensions for `CustomDataType<T>` subclasses used in fields.
 Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
   // Find the unique set of CustomDataType classes used
-  final customTypes = library.models
+  final customTypes = library.rowClasses
       .expand((model) => model.fields)
       .where((field) => field.typeName != field.backingType)
       .map((field) => (
@@ -131,7 +131,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
 }
 
 /// Generate extensions for use with `package:checks`
-Iterable<Spec> buildChecksForModel(ParsedModel model) sync* {
+Iterable<Spec> buildChecksForModel(ParsedRowClass model) sync* {
   // Create extension for Subject<Row>
   yield Extension((b) => b
     ..name = '${model.name}Checks'
@@ -181,12 +181,12 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
               ..name = table.name
               ..docs.add(table.documentation ?? '')
               ..type = MethodType.getter
-              ..returns = refer('Table<${table.model.name}>')
+              ..returns = refer('Table<${table.rowClass.name}>')
               ..lambda = true
               ..body = Code('''
                 ExposedForCodeGen.declareTable(
                   this,
-                  _\$${table.model.name}._\$table,
+                  _\$${table.rowClass.name}._\$table,
                 )
               '''),
           ),
@@ -226,7 +226,7 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
           ..modifier = FieldModifier.constant
           ..assignment = Code('''[
               ${schema.tables.map(
-                    (table) => '_\$${table.model.name}._\$table',
+                    (table) => '_\$${table.rowClass.name}._\$table',
                   ).join(', ')}
             ]
           '''),
@@ -272,12 +272,12 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
 
 /// Generate code for [Row] subclasses used by [table]
 Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
-  final model = table.model;
+  final model = table.rowClass;
   final modelName = model.name;
   final modelInstanceName = lowerCamelCase(modelName);
 
   final referencedFrom = schema.tables
-      .expand((t) => t.model.foreignKeys.map((fk) => (table: t, fk: fk)))
+      .expand((t) => t.rowClass.foreignKeys.map((fk) => (table: t, fk: fk)))
       .where((ref) => ref.fk.as != null)
       .where((ref) => ref.fk.referencedTable == table)
       .toList();
@@ -734,16 +734,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 Get [SubQuery] of rows from the `${ref.table.name}` table which
                 reference [${ref.fk.field}] in the `${ref.fk.key.name}` field.
 
-                This returns a [SubQuery] of [${ref.table.model.name}] rows,
-                where [${ref.table.model.name}.${ref.fk.key.name}] is references
+                This returns a [SubQuery] of [${ref.table.rowClass.name}] rows,
+                where [${ref.table.rowClass.name}.${ref.fk.key.name}] is references
                 [$modelName.${ref.fk.field}] in this row.
               ''')
               ..type = MethodType.getter
-              ..returns = refer('SubQuery<(Expr<${ref.table.model.name}>,)>')
+              ..returns = refer('SubQuery<(Expr<${ref.table.rowClass.name}>,)>')
               ..lambda = true
               ..body = Code('''
                 ExposedForCodeGen.subqueryTable(
-                  _\$${ref.table.model.name}._\$table
+                  _\$${ref.table.rowClass.name}._\$table
                 ).where((r) => r.${ref.fk.key.name}.equals(${ref.fk.field}))
               '''),
           )),
@@ -764,15 +764,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               `${fk.referencedTable.name}` referenced in [${fk.key.name}].
 
               The gets the row from table `${fk.referencedTable.name}` where
-              [${fk.referencedTable.model.name}.${fk.field}] is equal to
+              [${fk.referencedTable.rowClass.name}.${fk.field}] is equal to
               [${fk.key.name}]$ifAnyDocs.
             ''')
             ..type = MethodType.getter
-            ..returns = refer('Expr<${fk.referencedTable.model.name}$nullable>')
+            ..returns =
+                refer('Expr<${fk.referencedTable.rowClass.name}$nullable>')
             ..lambda = true
             ..body = Code('''
               ExposedForCodeGen.subqueryTable(
-                _\$${fk.referencedTable.model.name}._\$table
+                _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
                 (r) => r.${fk.field}.equals(${fk.key.name})
               ).$firstAsNotNull
@@ -804,18 +805,18 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 Get [SubQuery] of rows from the `${ref.table.name}` table which
                 reference [${ref.fk.field}] in the `${ref.fk.key.name}` field.
 
-                This returns a [SubQuery] of [${ref.table.model.name}] rows,
-                where [${ref.table.model.name}.${ref.fk.key.name}] is references
+                This returns a [SubQuery] of [${ref.table.rowClass.name}] rows,
+                where [${ref.table.rowClass.name}.${ref.fk.key.name}] is references
                 [$modelName.${ref.fk.field}] in this row, if any.
 
                 If this row is `NULL` the subquery is always be empty.
               ''')
               ..type = MethodType.getter
-              ..returns = refer('SubQuery<(Expr<${ref.table.model.name}>,)>')
+              ..returns = refer('SubQuery<(Expr<${ref.table.rowClass.name}>,)>')
               ..lambda = true
               ..body = Code('''
                 ExposedForCodeGen.subqueryTable(
-                  _\$${ref.table.model.name}._\$table
+                  _\$${ref.table.rowClass.name}._\$table
                 ).where((r) =>
                   ${ref.fk.field}.isNotNull() &
                   r.${ref.fk.key.name}.equals(${ref.fk.field})
@@ -831,17 +832,17 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               `${fk.referencedTable.name}` referenced in [${fk.key.name}].
 
               The gets the row from table `${fk.referencedTable.name}` where
-              [${fk.referencedTable.model.name}.${fk.field}] is equal to
+              [${fk.referencedTable.rowClass.name}.${fk.field}] is equal to
               [${fk.key.name}], if any.
 
               If this row is `NULL` the subquery is always return `NULL`.
             ''')
             ..type = MethodType.getter
-            ..returns = refer('Expr<${fk.referencedTable.model.name}?>')
+            ..returns = refer('Expr<${fk.referencedTable.rowClass.name}?>')
             ..lambda = true
             ..body = Code('''
               ExposedForCodeGen.subqueryTable(
-                _\$${fk.referencedTable.model.name}._\$table
+                _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
                 (r) =>
                   ${fk.key.name}.isNotNull() &

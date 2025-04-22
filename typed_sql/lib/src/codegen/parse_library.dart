@@ -37,7 +37,7 @@ Future<ParsedLibrary> parseLibrary(
 ) async {
   // Cache models when parsing, this saves time, but more importantly ensures
   // that we can use identity equivalence on ParsedModel objects.
-  final modelCache = <ClassElement, ParsedModel>{};
+  final modelCache = <ClassElement, ParsedRowClass>{};
 
   // We maintain maps to elements so we can make better errors later!
   final schemaToElement = <ParsedSchema, ClassElement>{};
@@ -73,18 +73,19 @@ Future<ParsedLibrary> parseLibrary(
 
   final library = ParsedLibrary(
     schemas: schemas,
-    models: models,
+    rowClasses: models,
   );
 
   // We only allow a Model subclass to be used for one table!
   final allTables = schemas.expand((s) => s.tables);
   for (final schema in schemas) {
     for (final table in schema.tables) {
-      if (allTables.any((t) => t != table && t.model == table.model)) {
+      if (allTables.any((t) => t != table && t.rowClass == table.rowClass)) {
         throw InvalidGenerationSource(
-          'Model subclass "${table.model.name}" is used in more than one table!',
-          element:
-              modelCache.entries.firstWhere((e) => e.value == table.model).key,
+          'Model subclass "${table.rowClass.name}" is used in more than one table!',
+          element: modelCache.entries
+              .firstWhere((e) => e.value == table.rowClass)
+              .key,
         );
       }
     }
@@ -92,7 +93,7 @@ Future<ParsedLibrary> parseLibrary(
 
   for (final schema in schemas) {
     for (final table in schema.tables) {
-      for (final fk in table.model.foreignKeys) {
+      for (final fk in table.rowClass.foreignKeys) {
         // Resolve referencedTable
         final referencedTable = schema.tables.firstWhereOrNull(
           (t) => t.name == fk.table,
@@ -106,7 +107,8 @@ Future<ParsedLibrary> parseLibrary(
         fk.referencedTable = referencedTable;
 
         // Resolve referencedField
-        final referencedField = referencedTable.model.fields.firstWhereOrNull(
+        final referencedField =
+            referencedTable.rowClass.fields.firstWhereOrNull(
           (f) => f.name == fk.field,
         );
         if (referencedField == null) {
@@ -114,7 +116,7 @@ Future<ParsedLibrary> parseLibrary(
             'Foreign key references unknown field "${fk.field}", '
             'no such field on table "${fk.table}".\n'
             'Available fields: '
-            '${referencedTable.model.fields.map((f) => f.name).join(', ')}.',
+            '${referencedTable.rowClass.fields.map((f) => f.name).join(', ')}.',
             element: foreignKeyToElement[fk],
           );
         }
@@ -129,7 +131,7 @@ Future<ParsedLibrary> parseLibrary(
 ParsedSchema _parseSchema(
   ParserContext ctx,
   ClassElement cls,
-  Map<ClassElement, ParsedModel> modelCache,
+  Map<ClassElement, ParsedRowClass> modelCache,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
 ) {
   log.info('Found schema "${cls.name}"');
@@ -200,7 +202,7 @@ ParsedSchema _parseSchema(
     tables.add(ParsedTable(
       name: a.name,
       documentation: a.documentationComment,
-      model: modelCache.putIfAbsent(
+      rowClass: modelCache.putIfAbsent(
         typeArgElement,
         () => _parseModel(ctx, typeArgElement, foreignKeyToElement),
       ),
@@ -213,7 +215,7 @@ ParsedSchema _parseSchema(
   );
 }
 
-ParsedModel _parseModel(
+ParsedRowClass _parseModel(
   ParserContext ctx,
   ClassElement cls,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
@@ -437,7 +439,7 @@ ParsedModel _parseModel(
     );
   }
 
-  return ParsedModel(
+  return ParsedRowClass(
     name: cls.name,
     primaryKey: primaryKey,
     fields: fields,

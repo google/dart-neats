@@ -14,19 +14,19 @@
 
 final class ParsedLibrary {
   final List<ParsedSchema> schemas;
-  final List<ParsedModel> models;
+  final List<ParsedRowClass> rowClasses;
 
   ParsedLibrary({
     required this.schemas,
-    required this.models,
+    required this.rowClasses,
   });
 
-  bool get isEmpty => schemas.isEmpty && models.isEmpty;
+  bool get isEmpty => schemas.isEmpty && rowClasses.isEmpty;
 
   @override
   String toString() => 'ParsedLibrary(${[
         'schemas: [${schemas.join(', ')}]',
-        'models: [${models.join(', ')}]',
+        'rowClasses: [${rowClasses.join(', ')}]',
       ].join(', ')})';
 }
 
@@ -49,28 +49,28 @@ final class ParsedSchema {
 final class ParsedTable {
   final String name;
   final String? documentation;
-  final ParsedModel model;
+  final ParsedRowClass rowClass;
 
   ParsedTable({
     required this.name,
     required this.documentation,
-    required this.model,
+    required this.rowClass,
   });
 
   @override
   String toString() => 'ParsedTable(${[
         'name: "$name"',
-        'model: $model',
+        'rowClass: $rowClass',
       ].join(', ')})';
 }
 
-final class ParsedModel {
+final class ParsedRowClass {
   final String name;
   final List<ParsedField> primaryKey;
   final List<ParsedField> fields;
   final List<ParsedForeignKey> foreignKeys;
 
-  ParsedModel({
+  ParsedRowClass({
     required this.name,
     required this.primaryKey,
     required this.fields,
@@ -78,7 +78,7 @@ final class ParsedModel {
   });
 
   @override
-  String toString() => 'ParsedModel(${[
+  String toString() => 'ParsedRowClass(${[
         'name: "$name"',
         'primaryKey: [${primaryKey.map((f) => '"${f.name}"').join(', ')}]',
         'fields: [${fields.map((f) => '"${f.name}"').join(', ')}]',
