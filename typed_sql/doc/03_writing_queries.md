@@ -98,7 +98,7 @@ in practice you simply type `db.where((b) => b.stock.` and leverage
 auto-completion to tell you what extension methods are available for the
 `Expr` object you are currently working with.
 
-However, you might still need to know that `literal<T>(value)` is used to
+However, you might still need to know that `toExpr<T>(value)` is used to
 inject Dart values into the SQL expressions as parameters.
 
 

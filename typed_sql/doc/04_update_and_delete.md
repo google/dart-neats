@@ -87,7 +87,7 @@ that `Book` has, using a _named optional parameter_.
 Thus, not only can we decide which fields to update, we also get a type error
 in Dart if we specify a field that doesn't exist or tries to provide an
 expression type that don't match. For example:
-`.update((book, set) => set(stock: literal(3.14)))` would fail type checking in
+`.update((book, set) => set(stock: toExpr(3.14)))` would fail type checking in
 Dart because the _named optional parameter_ `stock` has type `Expr<int>` and not
 `Expr<double>`.
 
@@ -97,7 +97,7 @@ how to write queries for details on how to construct expressions.
 
 ## Setting a field to `null` with `.update`
 If we wanted to set the title of the book with `bookId = 1` to `null` we have
-to use `literal(null)` as the value for the field. As illustrated in the
+to use `toExpr(null)` as the value for the field. As illustrated in the
 following example.
 
 ```dart bookstore_test.dart#update-book-bykey-set-null
@@ -206,7 +206,7 @@ DELETE FROM books WHERE bookId IS NOT DISTINCT FROM 1
 >
 > If you really want to delete all rows in a table, simply do:
 > ```dart
-> await db.books.where((b) => literal(true)).delete().execute();
+> await db.books.where((b) => toExpr(true)).delete().execute();
 > ```
 
 Similarly, to `.update` it is also possible to use `.returning`

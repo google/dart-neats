@@ -155,7 +155,7 @@ LEFT JOIN departments
 > [!WARNING]
 > In `package:typed_sql` the `.equals` extension method is implemented using the
 > SQL operator `IS NOT DISTINCT FROM`, and not `=`. This means that
-> `literal(null).equals(literal(null))` will evalute to `true`.
+> `toExpr(null).equals(toExpr(null))` will evalute to `true`.
 >
 > This is generally useful when working with nullable expression objects, and
 > emulates the comparison semantics we have in Dart. But if you are joining

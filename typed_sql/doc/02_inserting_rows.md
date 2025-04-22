@@ -66,20 +66,20 @@ await db.authors
 
 We cannot simply provide `name` or `id` as
 `String` or `int` respectively. Instead we have to give an `Expr<String>` or
-`Expr<int>`. We can create such expressions using the `literal` function.
+`Expr<int>`. We can create such expressions using the `toExpr` function.
 
-The `literal<T>(T value)` function works for the following types:
- * `bool` (e.g. `literal(true)`),
- * `int` (e.g. `literal(42)`),
- * `double` (e.g. `literal(3.14)`),
- * `String` (e.g. `literal('hello world')`),
- * `DateTime` (e.g. `literal(DateTime.now())`),
- * `Uint8List` (e.g. `literal(Uint8List.from([1, 2, 3]))`), and,
- * `Null` (e.g. `literal(null)`).
+The `toExpr<T>(T value)` function works for the following types:
+ * `bool` (e.g. `toExpr(true)`),
+ * `int` (e.g. `toExpr(42)`),
+ * `double` (e.g. `toExpr(3.14)`),
+ * `String` (e.g. `toExpr('hello world')`),
+ * `DateTime` (e.g. `toExpr(DateTime.now())`),
+ * `Uint8List` (e.g. `toExpr(Uint8List.from([1, 2, 3]))`), and,
+ * `Null` (e.g. `toExpr(null)`).
 
 By wrapping values in `Expr<T>` it possible for `package:typed_sql` to
 distinguish between an omitted value (default value), and intentional decision to
-insert `NULL`. Because `NULL` is always represented as `literal(null)`.
+insert `NULL`. Because `NULL` is always represented as `toExpr(null)`.
 As we will explore later, this also enables us to insert values directly
 from a subquery.
 

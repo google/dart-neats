@@ -145,7 +145,7 @@ abstract final class _ExprTyped<T extends Object?> {
 /// {@category writing_queries}
 /// {@category update_and_delete}
 sealed class Expr<T extends Object?> implements _ExprTyped<T> {
-  factory Expr(T value) => literal(value);
+  factory Expr(T value) => toExpr(value);
 
   const Expr._();
 
@@ -160,8 +160,6 @@ sealed class Expr<T extends Object?> implements _ExprTyped<T> {
   static const null$ = Literal.null$;
   static const true$ = Literal.true$;
   static const false$ = Literal.false$;
-
-  static Literal<T> literal<T extends Object?>(T value) => Literal(value);
 }
 
 sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
