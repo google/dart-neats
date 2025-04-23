@@ -527,7 +527,10 @@ final class ExpressionBoolOr extends BinaryOperationExpression<bool, bool>
 
 /// SQL Expression using `=`.
 final class ExpressionEquals<T extends Object>
-    extends BinaryOperationExpression<T?, bool> with _ExprBoolean {
+    extends BinaryOperationExpression<T?, bool?> {
+  @override
+  final _type = ColumnType.boolean;
+
   ExpressionEquals(super.left, super.right);
 }
 

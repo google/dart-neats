@@ -69,18 +69,8 @@ final _cases = <({
   ),
   // Expr<String?>.equals
   (
-    name: 'null.asString().equals(null)',
-    expr: toExpr(null).asString().equals(toExpr(null)),
-    expected: true,
-  ),
-  (
     name: 'null.asString().equals("hello")',
     expr: toExpr(null).asString().equals(toExpr('hello')),
-    expected: false,
-  ),
-  (
-    name: '"hello".equals(null)',
-    expr: toExpr('hello' as String?).equals(toExpr(null)),
     expected: false,
   ),
   (
@@ -94,29 +84,86 @@ final _cases = <({
     expected: false,
   ),
   (
-    name: '"".equals(null)',
-    expr: toExpr('' as String?).equals(toExpr(null)),
-    expected: false,
-  ),
-  (
     name: '"".equals("")',
     expr: toExpr('' as String?).equals(toExpr('')),
     expected: true,
   ),
-  // Expr<String?>.notEquals
+  // Expr<String?>.isNotDistinctFrom
   (
-    name: 'null.asString().notEquals(null)',
-    expr: toExpr(null).asString().notEquals(toExpr(null)),
-    expected: false,
-  ),
-  (
-    name: 'null.asString().notEquals("hello")',
-    expr: toExpr(null).asString().notEquals(toExpr('hello')),
+    name: 'null.asString().isNotDistinctFrom(null)',
+    expr: toExpr(null).asString().isNotDistinctFrom(toExpr(null)),
     expected: true,
   ),
   (
-    name: '"hello".notEquals(null)',
-    expr: toExpr('hello' as String?).notEquals(toExpr(null)),
+    name: 'null.asString().isNotDistinctFrom("hello")',
+    expr: toExpr(null).asString().isNotDistinctFrom(toExpr('hello')),
+    expected: false,
+  ),
+  (
+    name: '"hello".isNotDistinctFrom(null)',
+    expr: toExpr('hello' as String?).isNotDistinctFrom(toExpr(null)),
+    expected: false,
+  ),
+  (
+    name: '"hello".isNotDistinctFrom("hello")',
+    expr: toExpr('hello' as String?).isNotDistinctFrom(toExpr('hello')),
+    expected: true,
+  ),
+  (
+    name: 'null.asString().isNotDistinctFrom("")',
+    expr: toExpr(null).asString().isNotDistinctFrom(toExpr('')),
+    expected: false,
+  ),
+  (
+    name: '"".isNotDistinctFrom(null)',
+    expr: toExpr('' as String?).isNotDistinctFrom(toExpr(null)),
+    expected: false,
+  ),
+  (
+    name: '"".isNotDistinctFrom("")',
+    expr: toExpr('' as String?).isNotDistinctFrom(toExpr('')),
+    expected: true,
+  ),
+  // Expr<String?>.equalsUnlessNull
+  (
+    name: 'null.asString().equalsUnlessNull(null)',
+    expr: toExpr(null).asString().equalsUnlessNull(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: 'null.asString().equalsUnlessNull("hello")',
+    expr: toExpr(null).asString().equalsUnlessNull(toExpr('hello')),
+    expected: null,
+  ),
+  (
+    name: '"hello".equalsUnlessNull(null)',
+    expr: toExpr('hello' as String?).equalsUnlessNull(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: '"hello".equalsUnlessNull("hello")',
+    expr: toExpr('hello' as String?).equalsUnlessNull(toExpr('hello')),
+    expected: true,
+  ),
+  (
+    name: 'null.asString().equalsUnlessNull("")',
+    expr: toExpr(null).asString().equalsUnlessNull(toExpr('')),
+    expected: null,
+  ),
+  (
+    name: '"".equalsUnlessNull(null)',
+    expr: toExpr('' as String?).equalsUnlessNull(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: '"".equalsUnlessNull("")',
+    expr: toExpr('' as String?).equalsUnlessNull(toExpr('')),
+    expected: true,
+  ),
+  // Expr<String?>.notEquals
+  (
+    name: 'null.asString().notEquals("hello")',
+    expr: toExpr(null).asString().notEquals(toExpr('hello')),
     expected: true,
   ),
   (
@@ -130,11 +177,6 @@ final _cases = <({
     expected: true,
   ),
   (
-    name: '"".notEquals(null)',
-    expr: toExpr('' as String?).notEquals(toExpr(null)),
-    expected: true,
-  ),
-  (
     name: '"".notEquals("")',
     expr: toExpr('' as String?).notEquals(toExpr('')),
     expected: false,
@@ -142,18 +184,8 @@ final _cases = <({
 
   // Expr<String?>.equalsValue
   (
-    name: 'null.asString().equalsValue(null)',
-    expr: toExpr(null).asString().equalsValue(null),
-    expected: true,
-  ),
-  (
     name: 'null.asString().equalsValue("hello")',
     expr: toExpr(null).asString().equalsValue('hello'),
-    expected: false,
-  ),
-  (
-    name: '"hello".equalsValue(null)',
-    expr: toExpr('hello' as String?).equalsValue(null),
     expected: false,
   ),
   (
@@ -167,29 +199,14 @@ final _cases = <({
     expected: false,
   ),
   (
-    name: '"".equalsValue(null)',
-    expr: toExpr('' as String?).equalsValue(null),
-    expected: false,
-  ),
-  (
     name: '"".equalsValue("")',
     expr: toExpr('' as String?).equalsValue(''),
     expected: true,
   ),
   // Expr<String?>.notEqualsValue
   (
-    name: 'null.asString().notEqualsValue(null)',
-    expr: toExpr(null).asString().notEqualsValue(null),
-    expected: false,
-  ),
-  (
     name: 'null.asString().notEqualsValue("hello")',
     expr: toExpr(null).asString().notEqualsValue('hello'),
-    expected: true,
-  ),
-  (
-    name: '"hello".notEqualsValue(null)',
-    expr: toExpr('hello' as String?).notEqualsValue(null),
     expected: true,
   ),
   (
@@ -200,11 +217,6 @@ final _cases = <({
   (
     name: 'null.asString().notEqualsValue("")',
     expr: toExpr(null).asString().notEqualsValue(''),
-    expected: true,
-  ),
-  (
-    name: '"".notEqualsValue(null)',
-    expr: toExpr('' as String?).notEqualsValue(null),
     expected: true,
   ),
   (

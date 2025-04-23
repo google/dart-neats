@@ -379,6 +379,7 @@ void main() {
               department.location,
             ))
         .fetch();
+
     // Since no employee names match department names in the sample data
     check(result).unorderedEquals([
       ('Alice', null, null),
@@ -396,9 +397,10 @@ void main() {
     final result = await db.employees
         .join(db.employees)
         .on((e1, e2) =>
-            e1.departmentId.equals(e2.departmentId) &
-            e1.employeeId.notEquals(e2.employeeId) &
-            e1.departmentId.isNotNull())
+            e1.departmentId
+                .equalsUnlessNull(e2.departmentId)
+                .orElseValue(false) &
+            e1.employeeId.notEquals(e2.employeeId))
         .select((e1, e2) => (
               e1.name,
               e2.name,
@@ -530,9 +532,10 @@ void main() {
         .leftJoin(db.employees)
         .on(
           (e1, e2) =>
-              e1.departmentId.equals(e2.departmentId) &
-              e1.employeeId.notEquals(e2.employeeId) &
-              e1.departmentId.isNotNull(),
+              e1.departmentId
+                  .equalsUnlessNull(e2.departmentId)
+                  .orElseValue(false) &
+              e1.employeeId.notEquals(e2.employeeId),
         )
         .select((e1, e2) => (
               e1.name,

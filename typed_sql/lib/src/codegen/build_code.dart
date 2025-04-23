@@ -818,8 +818,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ExposedForCodeGen.subqueryTable(
                   _\$${ref.table.rowClass.name}._\$table
                 ).where((r) =>
-                  ${ref.fk.field}.isNotNull() &
-                  r.${ref.fk.key.name}.equals(${ref.fk.field})
+                  r.${ref.fk.key.name}.equalsUnlessNull(${ref.fk.field}).asNotNull()
                 )
               '''),
           )),
@@ -845,8 +844,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
                 (r) =>
-                  ${fk.key.name}.isNotNull() &
-                  r.${fk.field}.equals(${fk.key.name})
+                  r.${fk.field}.equalsUnlessNull(${fk.key.name}).asNotNull()
               ).first
             '''),
         );

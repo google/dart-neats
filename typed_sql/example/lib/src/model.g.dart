@@ -358,7 +358,7 @@ extension ExpressionNullableUserExt on Expr<User?> {
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Package>,)> get packages =>
       ExposedForCodeGen.subqueryTable(_$Package._$table)
-          .where((r) => userId.isNotNull() & r.ownerId.equals(userId));
+          .where((r) => r.ownerId.equalsUnlessNull(userId).asNotNull());
 
   /// Check if the row is not `NULL`.
   ///
@@ -697,7 +697,7 @@ extension ExpressionNullablePackageExt on Expr<Package?> {
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<User?> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
-      .where((r) => ownerId.isNotNull() & r.userId.equals(ownerId))
+      .where((r) => r.userId.equalsUnlessNull(ownerId).asNotNull())
       .first;
 
   /// Check if the row is not `NULL`.

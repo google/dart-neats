@@ -69,18 +69,8 @@ final _cases = <({
   ),
   // Expr<double?>.equals
   (
-    name: 'null.asDouble().equals(null)',
-    expr: toExpr(null).asDouble().equals(toExpr(null)),
-    expected: true,
-  ),
-  (
     name: 'null.asDouble().equals(3.14)',
     expr: toExpr(null).asDouble().equals(toExpr(3.14)),
-    expected: false,
-  ),
-  (
-    name: '3.14.equals(null)',
-    expr: toExpr(3.14 as double?).equals(toExpr(null)),
     expected: false,
   ),
   (
@@ -94,29 +84,86 @@ final _cases = <({
     expected: false,
   ),
   (
-    name: '0.0.equals(null)',
-    expr: toExpr(0.0 as double?).equals(toExpr(null)),
-    expected: false,
-  ),
-  (
     name: '0.0.equals(0.0)',
     expr: toExpr(0.0 as double?).equals(toExpr(0.0)),
     expected: true,
   ),
-  // Expr<double?>.notEquals
+  // Expr<double?>.isNotDistinctFrom
   (
-    name: 'null.asDouble().notEquals(null)',
-    expr: toExpr(null).asDouble().notEquals(toExpr(null)),
-    expected: false,
-  ),
-  (
-    name: 'null.asDouble().notEquals(3.14)',
-    expr: toExpr(null).asDouble().notEquals(toExpr(3.14)),
+    name: 'null.asDouble().isNotDistinctFrom(null)',
+    expr: toExpr(null).asDouble().isNotDistinctFrom(toExpr(null)),
     expected: true,
   ),
   (
-    name: '3.14.notEquals(null)',
-    expr: toExpr(3.14 as double?).notEquals(toExpr(null)),
+    name: 'null.asDouble().isNotDistinctFrom(3.14)',
+    expr: toExpr(null).asDouble().isNotDistinctFrom(toExpr(3.14)),
+    expected: false,
+  ),
+  (
+    name: '3.14.isNotDistinctFrom(null)',
+    expr: toExpr(3.14 as double?).isNotDistinctFrom(toExpr(null)),
+    expected: false,
+  ),
+  (
+    name: '3.14.isNotDistinctFrom(3.14)',
+    expr: toExpr(3.14 as double?).isNotDistinctFrom(toExpr(3.14)),
+    expected: true,
+  ),
+  (
+    name: 'null.asDouble().isNotDistinctFrom(0.0)',
+    expr: toExpr(null).asDouble().isNotDistinctFrom(toExpr(0.0)),
+    expected: false,
+  ),
+  (
+    name: '0.0.isNotDistinctFrom(null)',
+    expr: toExpr(0.0 as double?).isNotDistinctFrom(toExpr(null)),
+    expected: false,
+  ),
+  (
+    name: '0.0.isNotDistinctFrom(0.0)',
+    expr: toExpr(0.0 as double?).isNotDistinctFrom(toExpr(0.0)),
+    expected: true,
+  ),
+  // Expr<double?>.equalsUnlessNull
+  (
+    name: 'null.asDouble().equalsUnlessNull(null)',
+    expr: toExpr(null).asDouble().equalsUnlessNull(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: 'null.asDouble().equalsUnlessNull(3.14)',
+    expr: toExpr(null).asDouble().equalsUnlessNull(toExpr(3.14)),
+    expected: null,
+  ),
+  (
+    name: '3.14.equalsUnlessNull(null)',
+    expr: toExpr(3.14 as double?).equalsUnlessNull(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: '3.14.equalsUnlessNull(3.14)',
+    expr: toExpr(3.14 as double?).equalsUnlessNull(toExpr(3.14)),
+    expected: true,
+  ),
+  (
+    name: 'null.asDouble().equalsUnlessNull(0.0)',
+    expr: toExpr(null).asDouble().equalsUnlessNull(toExpr(0.0)),
+    expected: null,
+  ),
+  (
+    name: '0.0.equalsUnlessNull(null)',
+    expr: toExpr(0.0 as double?).equalsUnlessNull(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: '0.0.equalsUnlessNull(0.0)',
+    expr: toExpr(0.0 as double?).equalsUnlessNull(toExpr(0.0)),
+    expected: true,
+  ),
+  // Expr<double?>.notEquals
+  (
+    name: 'null.asDouble().notEquals(3.14)',
+    expr: toExpr(null).asDouble().notEquals(toExpr(3.14)),
     expected: true,
   ),
   (
@@ -130,29 +177,14 @@ final _cases = <({
     expected: true,
   ),
   (
-    name: '0.0.notEquals(null)',
-    expr: toExpr(0.0 as double?).notEquals(toExpr(null)),
-    expected: true,
-  ),
-  (
     name: '0.0.notEquals(0.0)',
     expr: toExpr(0.0 as double?).notEquals(toExpr(0.0)),
     expected: false,
   ),
   // Expr<double?>.equalsValue
   (
-    name: 'null.asDouble().equalsValue(null)',
-    expr: toExpr(null).asDouble().equalsValue(null),
-    expected: true,
-  ),
-  (
     name: 'null.asDouble().equalsValue(3.14)',
     expr: toExpr(null).asDouble().equalsValue(3.14),
-    expected: false,
-  ),
-  (
-    name: '3.14.equalsValue(null)',
-    expr: toExpr(3.14 as double?).equalsValue(null),
     expected: false,
   ),
   (
@@ -166,29 +198,14 @@ final _cases = <({
     expected: false,
   ),
   (
-    name: '0.0.equalsValue(null)',
-    expr: toExpr(0.0 as double?).equalsValue(null),
-    expected: false,
-  ),
-  (
     name: '0.0.equalsValue(0.0)',
     expr: toExpr(0.0 as double?).equalsValue(0.0),
     expected: true,
   ),
   // Expr<double?>.notEqualsValue
   (
-    name: 'null.asDouble().notEqualsValue(null)',
-    expr: toExpr(null).asDouble().notEqualsValue(null),
-    expected: false,
-  ),
-  (
     name: 'null.asDouble().notEqualsValue(3.14)',
     expr: toExpr(null).asDouble().notEqualsValue(3.14),
-    expected: true,
-  ),
-  (
-    name: '3.14.notEqualsValue(null)',
-    expr: toExpr(3.14 as double?).notEqualsValue(null),
     expected: true,
   ),
   (
@@ -199,11 +216,6 @@ final _cases = <({
   (
     name: 'null.asDouble().notEqualsValue(0.0)',
     expr: toExpr(null).asDouble().notEqualsValue(0.0),
-    expected: true,
-  ),
-  (
-    name: '0.0.notEqualsValue(null)',
-    expr: toExpr(0.0 as double?).notEqualsValue(null),
     expected: true,
   ),
   (

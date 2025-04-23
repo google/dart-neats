@@ -382,7 +382,7 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Book>,)> get books =>
       ExposedForCodeGen.subqueryTable(_$Book._$table)
-          .where((r) => authorId.isNotNull() & r.authorId.equals(authorId));
+          .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull());
 
   /// Get [SubQuery] of rows from the `books` table which
   /// reference [authorId] in the `editorId` field.
@@ -394,7 +394,7 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Book>,)> get booksEditedBy =>
       ExposedForCodeGen.subqueryTable(_$Book._$table)
-          .where((r) => authorId.isNotNull() & r.editorId.equals(authorId));
+          .where((r) => r.editorId.equalsUnlessNull(authorId).asNotNull());
 
   /// Do a subquery lookup of the row from table
   /// `books` referenced in [favoriteBookId].
@@ -406,8 +406,7 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Book?> get favoriteBook =>
       ExposedForCodeGen.subqueryTable(_$Book._$table)
-          .where((r) =>
-              favoriteBookId.isNotNull() & r.bookId.equals(favoriteBookId))
+          .where((r) => r.bookId.equalsUnlessNull(favoriteBookId).asNotNull())
           .first;
 
   /// Check if the row is not `NULL`.
@@ -801,7 +800,7 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Author>,)> get favoritedBy =>
       ExposedForCodeGen.subqueryTable(_$Author._$table)
-          .where((r) => bookId.isNotNull() & r.favoriteBookId.equals(bookId));
+          .where((r) => r.favoriteBookId.equalsUnlessNull(bookId).asNotNull());
 
   /// Do a subquery lookup of the row from table
   /// `authors` referenced in [authorId].
@@ -812,7 +811,7 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Author?> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
-      .where((r) => authorId.isNotNull() & r.authorId.equals(authorId))
+      .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull())
       .first;
 
   /// Do a subquery lookup of the row from table
@@ -824,7 +823,7 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Author?> get editor => ExposedForCodeGen.subqueryTable(_$Author._$table)
-      .where((r) => editorId.isNotNull() & r.authorId.equals(editorId))
+      .where((r) => r.authorId.equalsUnlessNull(editorId).asNotNull())
       .first;
 
   /// Check if the row is not `NULL`.

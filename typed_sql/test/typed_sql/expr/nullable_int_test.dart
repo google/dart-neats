@@ -69,18 +69,8 @@ final _cases = <({
   ),
   // Expr<int?>.equals
   (
-    name: 'null.asInt().equals(null)',
-    expr: toExpr(null).asInt().equals(toExpr(null)),
-    expected: true,
-  ),
-  (
     name: 'null.asInt().equals(42)',
     expr: toExpr(null).asInt().equals(toExpr(42)),
-    expected: false,
-  ),
-  (
-    name: '42.equals(null)',
-    expr: toExpr(42 as int?).equals(toExpr(null)),
     expected: false,
   ),
   (
@@ -94,29 +84,86 @@ final _cases = <({
     expected: false,
   ),
   (
-    name: '0.equals(null)',
-    expr: toExpr(0 as int?).equals(toExpr(null)),
-    expected: false,
-  ),
-  (
     name: '0.equals(0)',
     expr: toExpr(0 as int?).equals(toExpr(0)),
     expected: true,
   ),
-  // Expr<int?>.notEquals
+  // Expr<int?>.isNotDistinctFrom
   (
-    name: 'null.asInt().notEquals(null)',
-    expr: toExpr(null).asInt().notEquals(toExpr(null)),
-    expected: false,
-  ),
-  (
-    name: 'null.asInt().notEquals(42)',
-    expr: toExpr(null).asInt().notEquals(toExpr(42)),
+    name: 'null.asInt().isNotDistinctFrom(null)',
+    expr: toExpr(null).asInt().isNotDistinctFrom(toExpr(null)),
     expected: true,
   ),
   (
-    name: '42.notEquals(null)',
-    expr: toExpr(42 as int?).notEquals(toExpr(null)),
+    name: 'null.asInt().isNotDistinctFrom(42)',
+    expr: toExpr(null).asInt().isNotDistinctFrom(toExpr(42)),
+    expected: false,
+  ),
+  (
+    name: '42.isNotDistinctFrom(null)',
+    expr: toExpr(42 as int?).isNotDistinctFrom(toExpr(null)),
+    expected: false,
+  ),
+  (
+    name: '42.isNotDistinctFrom(42)',
+    expr: toExpr(42 as int?).isNotDistinctFrom(toExpr(42)),
+    expected: true,
+  ),
+  (
+    name: 'null.asInt().isNotDistinctFrom(0)',
+    expr: toExpr(null).asInt().isNotDistinctFrom(toExpr(0)),
+    expected: false,
+  ),
+  (
+    name: '0.isNotDistinctFrom(null)',
+    expr: toExpr(0 as int?).isNotDistinctFrom(toExpr(null)),
+    expected: false,
+  ),
+  (
+    name: '0.isNotDistinctFrom(0)',
+    expr: toExpr(0 as int?).isNotDistinctFrom(toExpr(0)),
+    expected: true,
+  ),
+  // Expr<int?>.equalsUnlessNull
+  (
+    name: 'null.asInt().equalsUnlessNull(null)',
+    expr: toExpr(null).asInt().equalsUnlessNull(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: 'null.asInt().equalsUnlessNull(42)',
+    expr: toExpr(null).asInt().equalsUnlessNull(toExpr(42)),
+    expected: null,
+  ),
+  (
+    name: '42.equalsUnlessNull(null)',
+    expr: toExpr(42 as int?).equalsUnlessNull(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: '42.equalsUnlessNull(42)',
+    expr: toExpr(42 as int?).equalsUnlessNull(toExpr(42)),
+    expected: true,
+  ),
+  (
+    name: 'null.asInt().equalsUnlessNull(0)',
+    expr: toExpr(null).asInt().equalsUnlessNull(toExpr(0)),
+    expected: null,
+  ),
+  (
+    name: '0.equalsUnlessNull(null)',
+    expr: toExpr(0 as int?).equalsUnlessNull(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: '0.equalsUnlessNull(0)',
+    expr: toExpr(0 as int?).equalsUnlessNull(toExpr(0)),
+    expected: true,
+  ),
+  // Expr<int?>.notEquals
+  (
+    name: 'null.asInt().notEquals(42)',
+    expr: toExpr(null).asInt().notEquals(toExpr(42)),
     expected: true,
   ),
   (
@@ -130,29 +177,14 @@ final _cases = <({
     expected: true,
   ),
   (
-    name: '0.notEquals(null)',
-    expr: toExpr(0 as int?).notEquals(toExpr(null)),
-    expected: true,
-  ),
-  (
     name: '0.notEquals(0)',
     expr: toExpr(0 as int?).notEquals(toExpr(0)),
     expected: false,
   ),
   // Expr<int?>.equalsValue
   (
-    name: 'null.asInt().equalsValue(null)',
-    expr: toExpr(null).asInt().equalsValue(null),
-    expected: true,
-  ),
-  (
     name: 'null.asInt().equalsValue(42)',
     expr: toExpr(null).asInt().equalsValue(42),
-    expected: false,
-  ),
-  (
-    name: '42.equalsValue(null)',
-    expr: toExpr(42 as int?).equalsValue(null),
     expected: false,
   ),
   (
@@ -166,29 +198,14 @@ final _cases = <({
     expected: false,
   ),
   (
-    name: '0.equalsValue(null)',
-    expr: toExpr(0 as int?).equalsValue(null),
-    expected: false,
-  ),
-  (
     name: '0.equalsValue(0)',
     expr: toExpr(0 as int?).equalsValue(0),
     expected: true,
   ),
   // Expr<int?>.notEqualsValue
   (
-    name: 'null.asInt().notEqualsValue(null)',
-    expr: toExpr(null).asInt().notEqualsValue(null),
-    expected: false,
-  ),
-  (
     name: 'null.asInt().notEqualsValue(42)',
     expr: toExpr(null).asInt().notEqualsValue(42),
-    expected: true,
-  ),
-  (
-    name: '42.notEqualsValue(null)',
-    expr: toExpr(42 as int?).notEqualsValue(null),
     expected: true,
   ),
   (
@@ -199,11 +216,6 @@ final _cases = <({
   (
     name: 'null.asInt().notEqualsValue(0)',
     expr: toExpr(null).asInt().notEqualsValue(0),
-    expected: true,
-  ),
-  (
-    name: '0.notEqualsValue(null)',
-    expr: toExpr(0 as int?).notEqualsValue(null),
     expected: true,
   ),
   (
