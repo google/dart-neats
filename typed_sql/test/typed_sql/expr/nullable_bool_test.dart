@@ -324,68 +324,68 @@ final _cases = [
 
   // Tests for .isTrue
   (
-    name: 'null.isTrue',
-    expr: toExpr(null as bool?).isTrue,
+    name: 'null.isTrue()',
+    expr: toExpr(null as bool?).isTrue(),
     expected: false,
   ),
   (
-    name: 'true.isTrue',
-    expr: toExpr(true as bool?).isTrue,
+    name: 'true.isTrue()',
+    expr: toExpr(true as bool?).isTrue(),
     expected: true,
   ),
   (
-    name: 'false.isTrue',
-    expr: toExpr(false as bool?).isTrue,
+    name: 'false.isTrue()',
+    expr: toExpr(false as bool?).isTrue(),
     expected: false,
   ),
 
   // Tests for .isFalse
   (
-    name: 'null.isFalse',
-    expr: toExpr(null as bool?).isFalse,
+    name: 'null.isFalse()',
+    expr: toExpr(null as bool?).isFalse(),
     expected: false,
   ),
   (
-    name: 'true.isFalse',
-    expr: toExpr(true as bool?).isFalse,
+    name: 'true.isFalse()',
+    expr: toExpr(true as bool?).isFalse(),
     expected: false,
   ),
   (
-    name: 'false.isFalse',
-    expr: toExpr(false as bool?).isFalse,
+    name: 'false.isFalse()',
+    expr: toExpr(false as bool?).isFalse(),
     expected: true,
   ),
 
   // Tests for .isNull
   (
-    name: 'null.isNull',
+    name: 'null.isNull()',
     expr: toExpr(null as bool?).isNull(),
     expected: true,
   ),
   (
-    name: 'true.isNull',
+    name: 'true.isNull()',
     expr: toExpr(true as bool?).isNull(),
     expected: false,
   ),
   (
-    name: 'false.isNull',
+    name: 'false.isNull()',
     expr: toExpr(false as bool?).isNull(),
     expected: false,
   ),
 
   // Tests for .isNotNull
   (
-    name: 'null.isNotNull',
+    name: 'null.isNotNull()',
     expr: toExpr(null as bool?).isNotNull(),
     expected: false,
   ),
   (
-    name: 'true.isNotNull',
+    name: 'true.isNotNull()',
     expr: toExpr(true as bool?).isNotNull(),
     expected: true,
   ),
   (
-    name: 'false.isNotNull',
+    name: 'false.isNotNull()',
     expr: toExpr(false as bool?).isNotNull(),
     expected: true,
   ),

@@ -277,12 +277,12 @@ extension ExpressionNullableBool on Expr<bool?> {
   Expr<bool> isNotNull() => isNull().not();
 
   /// True, if this expression evaluates to `TRUE`.
-  Expr<bool> get isTrue => isNotDistinctFrom(Literal.true$);
+  Expr<bool> isTrue() => isNotDistinctFrom(Literal.true$);
 
   /// True, if this expression evaluates to `FALSE`.
   ///
   /// If this is `NULL`, [isFalse] will evaluate to `FALSE`.
-  Expr<bool> get isFalse => isNotDistinctFrom(Literal.false$);
+  Expr<bool> isFalse() => isNotDistinctFrom(Literal.false$);
 }
 
 /// Extension methods for nullable [DateTime] expressions.
