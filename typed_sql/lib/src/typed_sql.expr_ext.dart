@@ -249,7 +249,40 @@ extension ExpressionNullableBool on Expr<bool?> {
   /// {@macro orElse}
   Expr<bool> orElseValue(bool value) => orElse(toExpr(value));
 
-  // TODO: Add boolean equality, so that we can do isNull() / isNotNull()!
+  /// {@macro equals}
+  Expr<bool> equals(Expr<bool> value) =>
+      ExpressionEquals(this, value).orElseValue(false);
+
+  /// {@macro equals}
+  Expr<bool> equalsValue(bool value) => equals(toExpr(value));
+
+  /// {@macro notEquals}
+  Expr<bool> notEquals(Expr<bool> value) => equals(value).not();
+
+  /// {@macro notEquals}
+  Expr<bool> notEqualsValue(bool value) => notEquals(toExpr(value));
+
+  /// {@macro isNotDistinctFrom}
+  Expr<bool> isNotDistinctFrom(Expr<bool?> value) =>
+      ExpressionIsNotDistinctFrom(this, value);
+
+  /// {@macro equalsUnlessNull}
+  Expr<bool?> equalsUnlessNull(Expr<bool?> value) =>
+      ExpressionEquals(this, value);
+
+  /// {@macro isNull}
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
+
+  /// {@macro isNotNull}
+  Expr<bool> isNotNull() => isNull().not();
+
+  /// True, if this expression evaluates to `TRUE`.
+  Expr<bool> get isTrue => isNotDistinctFrom(Literal.true$);
+
+  /// True, if this expression evaluates to `FALSE`.
+  ///
+  /// If this is `NULL`, [isFalse] will evaluate to `FALSE`.
+  Expr<bool> get isFalse => isNotDistinctFrom(Literal.false$);
 }
 
 /// Extension methods for nullable [DateTime] expressions.
@@ -291,6 +324,19 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
 
 /// Extension methods for [bool] expressions.
 extension ExpressionBool on Expr<bool> {
+  /// {@macro equals}
+  Expr<bool> equals(Expr<bool?> value) =>
+      ExpressionEquals(this, value).orElseValue(false);
+
+  /// {@macro equals}
+  Expr<bool> equalsValue(bool? value) => equals(toExpr(value));
+
+  /// {@macro notEquals}
+  Expr<bool> notEquals(Expr<bool?> value) => equals(value).not();
+
+  /// {@macro notEquals}
+  Expr<bool> notEqualsValue(bool? value) => notEquals(toExpr(value));
+
   /// Negate this expression.
   ///
   /// This is equivalent to `NOT this` in SQL.

@@ -137,6 +137,90 @@ final _cases = [
     expr: toExpr(false).asInt(),
     expected: 0,
   ),
+  // Test for .equals
+  (
+    name: 'true.equals(true)',
+    expr: toExpr(true).equals(toExpr(true)),
+    expected: true,
+  ),
+  (
+    name: 'true.equals(false)',
+    expr: toExpr(true).equals(toExpr(false)),
+    expected: false,
+  ),
+  (
+    name: 'false.equals(true)',
+    expr: toExpr(false).equals(toExpr(true)),
+    expected: false,
+  ),
+  (
+    name: 'false.equals(false)',
+    expr: toExpr(false).equals(toExpr(false)),
+    expected: true,
+  ),
+  // Test for .equalsValue
+  (
+    name: 'true.equalsValue(true)',
+    expr: toExpr(true).equalsValue(true),
+    expected: true,
+  ),
+  (
+    name: 'true.equalsValue(false)',
+    expr: toExpr(true).equalsValue(false),
+    expected: false,
+  ),
+  (
+    name: 'false.equalsValue(true)',
+    expr: toExpr(false).equalsValue(true),
+    expected: false,
+  ),
+  (
+    name: 'false.equalsValue(false)',
+    expr: toExpr(false).equalsValue(false),
+    expected: true,
+  ),
+  // Test for .notEquals
+  (
+    name: 'true.notEquals(true)',
+    expr: toExpr(true).notEquals(toExpr(true)),
+    expected: false,
+  ),
+  (
+    name: 'true.notEquals(false)',
+    expr: toExpr(true).notEquals(toExpr(false)),
+    expected: true,
+  ),
+  (
+    name: 'false.notEquals(true)',
+    expr: toExpr(false).notEquals(toExpr(true)),
+    expected: true,
+  ),
+  (
+    name: 'false.notEquals(false)',
+    expr: toExpr(false).notEquals(toExpr(false)),
+    expected: false,
+  ),
+  // Test for .notEqualsValue
+  (
+    name: 'true.notEqualsValue(true)',
+    expr: toExpr(true).notEqualsValue(true),
+    expected: false,
+  ),
+  (
+    name: 'true.notEqualsValue(false)',
+    expr: toExpr(true).notEqualsValue(false),
+    expected: true,
+  ),
+  (
+    name: 'false.notEqualsValue(true)',
+    expr: toExpr(false).notEqualsValue(true),
+    expected: true,
+  ),
+  (
+    name: 'false.notEqualsValue(false)',
+    expr: toExpr(false).notEqualsValue(false),
+    expected: false,
+  ),
 ];
 
 void main() {
