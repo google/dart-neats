@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: deprecated_member_use
+
 /// This library providers the [Builder] implementation for `build_runner`.
 ///
 /// > [!NOTE]
