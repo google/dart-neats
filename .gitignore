@@ -6,5 +6,6 @@
 /*/example/.packages
 /*/example/pubspec.lock
 /*/example/doc/api/
+/*/notes.md
 /.dart_tool/
 /.packages

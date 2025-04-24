@@ -1,0 +1,52 @@
+dartdoc:
+  categories:
+    schema:
+      markdown: doc/01_schema.md
+      displayName: 'Schema definition'
+    inserting_rows:
+      markdown: doc/02_inserting_rows.md
+      displayName: 'Inserting rows'
+    writing_queries:
+      markdown: doc/03_writing_queries.md
+      displayName: 'Writing queries'
+    update_and_delete:
+      markdown: doc/04_update_and_delete.md
+      displayName: 'Update and delete'
+    foreign_keys:
+      markdown: doc/05_foreign_keys.md
+      displayName: 'Foreign keys'
+    joins:
+      markdown: doc/06_joins.md
+      displayName: 'Joins'
+    aggregate_functions:
+      markdown: doc/07_aggregate_functions.md
+      displayName: 'Aggregate functions'
+    transactions:
+      markdown: doc/08_transactions.md
+      displayName: 'Transactions'
+    exceptions:
+      markdown: doc/09_exceptions.md
+      displayName: 'Exceptions'
+    custom_data_types:
+      markdown: doc/10_custom_data_types.md
+      displayName: 'Custom data types'
+    migrations:
+      markdown: doc/11_migrations.md
+      displayName: 'Migrations'
+    testing:
+      markdown: doc/12_testing.md
+      displayName: 'Testing'
+  categoryOrder:
+  - schema
+  - inserting_rows
+  - writing_queries
+  - update_and_delete
+  - foreign_keys
+  - joins
+  - aggregate_functions
+  - transactions
+  - exceptions
+  - custom_data_types
+  - migrations
+  - testing
+  showUndocumentedCategories: true
