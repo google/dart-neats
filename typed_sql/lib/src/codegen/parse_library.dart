@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // ignore_for_file: deprecated_member_use
+// See: https://github.com/dart-lang/build/issues/3977
 
 /// @docImport '../typed_sql.dart';
 library;
