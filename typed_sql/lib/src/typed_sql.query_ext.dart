@@ -53,17 +53,18 @@ extension OrderedSubQueryRange1Ext<T> on OrderedSubQueryRange<(Expr<T>,)> {
 }
 
 /// {@macro SubQuery1Ext}
-extension ProjectedOrderedSubQuery1Ext<T> on ProjectedOrderedSubQuery<(Expr<T>,)> {
+extension ProjectedOrderedSubQuery1Ext<T>
+    on ProjectedOrderedSubQuery<(Expr<T>,)> {
   /// {@macro first-subquery}
   Expr<T?> get first => _query.first;
 }
 
 /// {@macro SubQuery1Ext}
-extension ProjectedOrderedSubQueryRange1Ext<T> on ProjectedOrderedSubQueryRange<(Expr<T>,)> {
+extension ProjectedOrderedSubQueryRange1Ext<T>
+    on ProjectedOrderedSubQueryRange<(Expr<T>,)> {
   /// {@macro first-subquery}
   Expr<T?> get first => _query.first;
 }
-
 
 /// Extension methods for queries projected to an [int] expression.
 extension QueryInteger on Query<(Expr<int?>,)> {

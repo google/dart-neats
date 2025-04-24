@@ -255,7 +255,7 @@ final class RowExpression<T extends Row> extends Expr<T> {
             'at index $index',
       );
     }
-    return FieldExpression._(this._index + index, _handle, type);
+    return FieldExpression._(_index + index, _handle, type);
   }
 
   @override
