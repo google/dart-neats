@@ -901,8 +901,8 @@ final class StepBuilder9<A, B, C, D, E, F, G, H, I> {
   /// the expression defining a step. See [Step.define] for how to define steps.
   StepBuilder9N<A, B, C, D, E, F, G, H, I, S> deps<S>(Iterable<Step<S>> deps) {
     ArgumentError.checkNotNull(deps, 'deps');
-    final _deps = List<Step<S>>.from(deps);
-    return StepBuilder9N._(_name, _a, _b, _c, _d, _e, _f, _g, _h, _i, _deps);
+    final deps_ = List<Step<S>>.from(deps);
+    return StepBuilder9N._(_name, _a, _b, _c, _d, _e, _f, _g, _h, _i, deps_);
   }
 
   /// Build a step with a single dependency.

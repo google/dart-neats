@@ -19,7 +19,7 @@ class _InMemoryEntry<T> {
   final T value;
   final DateTime? _expires;
   _InMemoryEntry(this.value, [this._expires]);
-  bool get isExpired => _expires != null && _expires!.isBefore(DateTime.now());
+  bool get isExpired => _expires != null && _expires.isBefore(DateTime.now());
 }
 
 /// Simple two-generational LRU cache inspired by:

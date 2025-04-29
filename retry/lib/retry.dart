@@ -17,7 +17,7 @@
 /// For a simple solution see [retry], to modify and persist retry options see
 /// [RetryOptions]. Note, in many cases the added configurability is
 /// unnecessary and using [retry] is perfectly fine.
-library retry;
+library;
 
 import 'dart:async';
 import 'dart:math' as math;

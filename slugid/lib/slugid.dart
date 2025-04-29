@@ -18,7 +18,7 @@
 /// These are useful when embedding random UUIDs in URLs. The [Slugid] class in
 /// this library wraps a slugid and allows you to obtain the string
 /// representation, raw bytes, or the UUID representation.
-library slugid;
+library;
 
 import 'dart:convert';
 import 'dart:typed_data';

@@ -15,7 +15,7 @@
 /// Minimalistic [RESP[1] protocol implementation in Dart.
 ///
 /// [1]: https://redis.io/topics/protocol
-library resp;
+library;
 
 import 'dart:async';
 import 'dart:collection';

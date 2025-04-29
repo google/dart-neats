@@ -42,7 +42,7 @@ bool _isAscii(String s) => s.split('').every((c) => char(c) < 128);
 
 class _RawMapEntry extends RawMapEntry {
   final int offset;
-  _RawMapEntry(Uint8List key, Object? value, this.offset) : super(key, value);
+  _RawMapEntry(super.key, super.value, this.offset);
 }
 
 class Decoder {

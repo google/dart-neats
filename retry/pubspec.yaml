@@ -8,9 +8,9 @@ repository: https://github.com/google/dart-neats.git
 issue_tracker: https://github.com/google/dart-neats/labels/pkg:retry
 dev_dependencies:
   test: ^1.16.0-nullsafety.13
-  lints: ^1.0.0
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.5.0
 topics:
  - network
  - http
+resolution: workspace

@@ -38,7 +38,7 @@
 /// UTF-8 in Unicode Normalization Form C and decoded as UTF-8 causing an
 /// [InvalidCanonicalJsonException] exception in case of strings not satisfying
 /// this property.
-library canonical_json;
+library;
 
 import 'dart:convert' show Codec, json;
 import 'src/codec.dart' show CanonicalJsonCodec;

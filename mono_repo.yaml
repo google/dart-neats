@@ -1,9 +1,0 @@
-# See with https://pub.dev/packages/mono_repo for details on this file
-
-github:
-  cron: '0 0 * * 0'
-
-self_validate: analyze
-
-merge_stages:
-  - analyze

@@ -55,7 +55,7 @@
 /// a list of certificates see [decodePemBlocks].
 ///
 /// [1]: https://tools.ietf.org/html/rfc7468
-library pem;
+library;
 
 import 'dart:convert' show base64, Codec, Converter;
 import 'dart:math' as math;

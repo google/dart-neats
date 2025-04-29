@@ -28,6 +28,7 @@ which can be reused independently.
 | [sanitize_html](sanitize_html/) | Function for sanitizing HTML to prevent XSS by restrict elements and attributes to a safe subset of allowed values. | [![pub package](https://img.shields.io/pub/v/sanitize_html.svg)](https://pub.dev/packages/sanitize_html) |
 | [slugid](slugid/) | A URL-safe base64 encoding for UUIDv4 stripped of padding. Useful when embedding short random UUIDs in URLs. | [![pub package](https://img.shields.io/pub/v/slugid.svg)](https://pub.dev/packages/slugid) |
 | [vendor](vendor/) | Utility for vendoring packages into a project and rewriting import/export statements. | [![pub package](https://img.shields.io/pub/v/vendor.svg)](https://pub.dev/packages/vendor) |
+| [typed_sql](typed_sql/) | Package for doing SQL with type safety. | [![pub package](https://img.shields.io/pub/v/typed_sql.svg)](https://pub.dev/packages/typed_sql) |
 
 ## Repository Management
 The root `pubspec.yaml` is only intended to lock the development dependencies

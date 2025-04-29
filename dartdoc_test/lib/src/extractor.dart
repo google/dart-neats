@@ -45,17 +45,15 @@ List<DocumentationComment> extractDocumentationComments(ParsedUnitResult r) {
 
   final comments = <DocumentationComment>[];
   r.unit.accept(_ForEachCommentAstVisitor((comment) {
-    if (comment.isDocumentation) {
-      final span = file.span(comment.offset, comment.end);
-      final content = stripComments(span.text);
+    final span = file.span(comment.offset, comment.end);
+    final content = stripComments(span.text);
 
-      comments.add(DocumentationComment(
-        path: r.path,
-        contents: content,
-        span: span,
-        imports: imports,
-      ));
-    }
+    comments.add(DocumentationComment(
+      path: r.path,
+      contents: content,
+      span: span,
+      imports: imports,
+    ));
   }));
   return comments;
 }
