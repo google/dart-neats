@@ -1,4 +1,4 @@
-name: _
+name: root
 publish_to: none
 workspace:
  - acyclic_steps/
