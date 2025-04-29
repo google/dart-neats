@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library sanitize_html;
-
 import 'src/sane_html_validator.dart' show SaneHtmlValidator;
 
 /// Sanitize [htmlString] to prevent XSS exploits and limit interference with

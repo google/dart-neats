@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library neat_periodic_task;
+library;
 
 import 'dart:async' show Future, Completer, scheduleMicrotask, TimeoutException;
 

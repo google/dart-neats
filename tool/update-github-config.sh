@@ -88,15 +88,21 @@ jobs:
 EOF
 }
 
+PACKAGE_TABLE='| Package | Description | Version | Test |\n|---|---|---|---|\n'
 for P in $PACKAGES; do
   create_issue_template "$P"
 
   if [[ -f "$DIR/../.github/workflows/pkg-$P-override.yml" ]]; then
     rm -f "$DIR/../.github/workflows/pkg-$P.yml"
     echo "Using pkg-$P-override.yml"
+    WF="pkg-$P-override.yml"
   else
     create_workflow "$P"
+    WF="pkg-$P.yml"
   fi
+
+  DESCRIPTION=$(python3 -c 'import sys,yaml;print(yaml.safe_load(sys.stdin.read())["description"])' < "$DIR/../$P/pubspec.yaml")
+  PACKAGE_TABLE+="| [$P]($P/) | $DESCRIPTION | [![pub package](https://img.shields.io/pub/v/$P.svg)](https://pub.dev/packages/$P) | [![$P](https://github.com/google/dart-neats/actions/workflows/$WF/badge.svg)](https://github.com/google/dart-neats/actions/workflows/$WF) |\n"
 done
 
 # Returns 0, if the list $1 contains the element $2.
@@ -118,3 +124,23 @@ for P in $PACKAGES; do
     gh api -X POST '/repos/google/dart-neats/labels' -F name="pkg:$P" -F color=f29513 | jq
   fi
 done
+
+
+awk -i inplace -v package_table="$PACKAGE_TABLE" '
+{
+  if ($0 ~ /BEGIN PACKAGE TABLE/) {
+    print
+    print package_table
+    skip_lines=1
+    next
+  }
+  if ($0 ~ /END PACKAGE TABLE/) {
+    print
+    skip_lines=0
+    next
+  }
+  if (!skip_lines) {
+    print
+  }
+}
+' "$DIR/../README.md"

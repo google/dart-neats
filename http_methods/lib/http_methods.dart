@@ -20,7 +20,7 @@
 ///  * [isSafeHttpMethod] to tell if it is a safe HTTP 1.1 method supported by
 ///  all HTTP servers, and,
 ///  * [isIdempotentHttpMethod] to tell if an HTTP method is idempotent.
-library http_methods;
+library;
 
 /// True, if the [method] given is an IANA registered HTTP method.
 ///

@@ -1,9 +1,21 @@
-name: dart_neats
-# This should never be published it just locks the dev_dependencies for
-# repository management, so they don't have to be installed globally.
+name: root
 publish_to: none
+workspace:
+ - acyclic_steps/
+ - canonical_json/
+ - chunked_stream/
+ - dartdoc_test/
+ - http_methods/
+ - neat_cache/
+ - neat_periodic_task/
+ - pem/
+ - retry/
+ - safe_url_check/
+ - sanitize_html/
+ - slugid/
+ - typed_sql/
+ - vendor/
 dev_dependencies:
-  mono_repo: ^6.1.0
-  pubspec_parse: ^1.2.0
+  lints: ^5.0.0
 environment:
-  sdk: '>=2.15.0 <3.0.0'
+  sdk: ^3.6.0

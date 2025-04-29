@@ -32,7 +32,7 @@
 ///   }
 /// }
 /// ```
-library safe_url_check;
+library;
 
 import 'dart:io';
 import 'dart:async';

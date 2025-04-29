@@ -28,7 +28,7 @@
 ///  [ChunkedStreamIterator].
 ///  * [asChunkedStream], for wrapping a [Stream<T>] as [Stream<List<T>>],
 ///  useful for batch processing elements from a stream.
-library chunked_stream;
+library;
 
 import 'dart:typed_data';
 

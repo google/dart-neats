@@ -84,6 +84,6 @@
 ///   // ... run some tests ...
 /// }
 /// ```
-library acyclic_steps;
+library;
 
 export 'src/fluent_api.dart' show RunStepWrapper, Runner, Step;
