@@ -26,6 +26,8 @@ jobs:
     - run: dart pub global run pana . >> "$GITHUB_STEP_SUMMARY"
       working-directory: ${{needs.find-package.outputs.package}}
   publish:
+    permissions:
+      id-token: write
     needs:
     - find-package
     - pana
