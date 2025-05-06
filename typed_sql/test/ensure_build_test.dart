@@ -12,13 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io';
+
 import 'package:build_verify/build_verify.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('ensure_build', () async {
-    await expectBuildClean(
-      packageRelativeDirectory: 'pkgs/typed_sql',
-    );
-  }, skip: 'fix this tests before landing!');
+  // We only run this when CI=true, because it requires a pristine git clone
+  final ci = (Platform.environment['CI'] ?? '').toLowerCase();
+  final isCI = ci != 'false' && ci != '0' && ci.isNotEmpty;
+
+  test(
+    'ensure_build',
+    () async {
+      await expectBuildClean(
+        packageRelativeDirectory: 'typed_sql',
+      );
+    },
+    skip: isCI ? null : 'Only runs with CI=true',
+    timeout: const Timeout(Duration(minutes: 5)),
+  );
 }
