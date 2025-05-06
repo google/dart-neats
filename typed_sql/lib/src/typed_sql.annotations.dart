@@ -57,6 +57,26 @@ final class References {
   });
 }
 
+/// Annotation for declaring a _composite foreign key_.
+///
+/// {@category schema}
+/// {@category foreign_keys}
+final class ForeignKey {
+  final List<String> foreignKey;
+  final String table;
+  final List<String> fields;
+  final String? as;
+  final String? name;
+
+  const ForeignKey(
+    this.foreignKey, {
+    required this.table,
+    required this.fields,
+    this.name,
+    this.as,
+  });
+}
+
 /// Annotation for a unique field.
 ///
 /// {@category schema}

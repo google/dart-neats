@@ -86,28 +86,28 @@ final class ParsedRowClass {
 }
 
 final class ParsedForeignKey {
-  final ParsedField key;
+  final List<ParsedField> foreignKey;
   final String table;
-  final String field;
+  final List<String> fields;
   final String? as;
   final String? name;
 
   ParsedForeignKey({
-    required this.key,
+    required this.foreignKey,
     required this.table,
-    required this.field,
+    required this.fields,
     required this.as,
     required this.name,
   });
 
-  late final ParsedField referencedField;
+  late final List<ParsedField> referencedFields;
   late final ParsedTable referencedTable;
 
   @override
   String toString() => 'ParsedForeignKey(${[
-        'key: "$key"',
+        'foreignKey: [${foreignKey.map((k) => k.name).join(', ')}]',
         'table: "$table"',
-        'field: "$field"',
+        'fields: [${fields.map((f) => '"$f"').join(', ')}]',
         'as: ${as != null ? '"$as"' : 'null'}',
         'name: ${name != null ? '"$name"' : 'null'}',
       ].join(', ')})';

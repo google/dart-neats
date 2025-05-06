@@ -300,11 +300,12 @@ extension ExpressionAuthorExt on Expr<Author> {
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
   /// Get [SubQuery] of rows from the `books` table which
-  /// reference [authorId] in the `authorId` field.
+  /// reference this row.
   ///
   /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId] is references
-  /// [Author.authorId] in this row.
+  /// where [Book.authorId]
+  /// references [Author.authorId]
+  /// in this row.
   SubQuery<(Expr<Book>,)> get books =>
       ExposedForCodeGen.subqueryTable(_$Book._$table)
           .where((r) => r.authorId.equals(authorId));
@@ -318,11 +319,12 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
   /// Get [SubQuery] of rows from the `books` table which
-  /// reference [authorId] in the `authorId` field.
+  /// reference this row.
   ///
   /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId] is references
-  /// [Author.authorId] in this row, if any.
+  /// where [Book.authorId]
+  /// references [Author.authorId]
+  /// in this row, if any.
   ///
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Book>,)> get books =>
@@ -629,11 +631,12 @@ extension ExpressionBookExt on Expr<Book> {
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
 
   /// Do a subquery lookup of the row from table
-  /// `authors` referenced in [authorId].
+  /// `authors` referenced in
+  /// [authorId].
   ///
   /// The gets the row from table `authors` where
-  /// [Author.authorId] is equal to
-  /// [authorId].
+  /// [Author.authorId]
+  /// is equal to [authorId].
   Expr<Author> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
       .where((r) => r.authorId.equals(authorId))
       .first
@@ -654,11 +657,12 @@ extension ExpressionNullableBookExt on Expr<Book?> {
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
 
   /// Do a subquery lookup of the row from table
-  /// `authors` referenced in [authorId].
+  /// `authors` referenced in
+  /// [authorId].
   ///
   /// The gets the row from table `authors` where
-  /// [Author.authorId] is equal to
-  /// [authorId], if any.
+  /// [Author.authorId]
+  /// is equal to [authorId], if any.
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Author?> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)

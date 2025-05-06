@@ -40,7 +40,7 @@ import 'src/codegen/record_parser.dart';
 Builder typedSqlBuilder(BuilderOptions options) => g.SharedPartBuilder(
       [_TypedSqlBuilder(options)],
       'typed_sql',
-      allowSyntaxErrors: false,
+      allowSyntaxErrors: true,
     );
 
 final class _TypedSqlBuilder extends g.Generator {

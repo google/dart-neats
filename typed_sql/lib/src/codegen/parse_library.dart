@@ -107,21 +107,24 @@ Future<ParsedLibrary> parseLibrary(
         }
         fk.referencedTable = referencedTable;
 
-        // Resolve referencedField
-        final referencedField =
-            referencedTable.rowClass.fields.firstWhereOrNull(
-          (f) => f.name == fk.field,
-        );
-        if (referencedField == null) {
+        // Throw exception, when [f] cannot be found
+        Never throwUnknownField(String field) {
           throw InvalidGenerationSource(
-            'Foreign key references unknown field "${fk.field}", '
+            'Foreign key references unknown field "$field", '
             'no such field on table "${fk.table}".\n'
             'Available fields: '
             '${referencedTable.rowClass.fields.map((f) => f.name).join(', ')}.',
             element: foreignKeyToElement[fk],
           );
         }
-        fk.referencedField = referencedField;
+
+        // Resolve referencedField
+        fk.referencedFields = fk.fields.map((field) {
+          return referencedTable.rowClass.fields.firstWhere(
+            (f) => f.name == field,
+            orElse: () => throwUnknownField(field),
+          );
+        }).toList();
       }
     }
   }
@@ -407,9 +410,9 @@ ParsedRowClass _parseRowClass(
       }
 
       final fk = ParsedForeignKey(
-        key: fields.firstWhere((f) => f.name == key),
+        foreignKey: [fields.firstWhere((f) => f.name == key)],
         table: table,
-        field: field,
+        fields: [field],
         as: as,
         name: name,
       );
