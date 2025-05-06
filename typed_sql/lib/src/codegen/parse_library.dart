@@ -29,9 +29,7 @@ import 'parsed_library.dart';
 import 'type_checkers.dart';
 
 final class ParserContext {
-  final ClassElement customDataType;
-
-  ParserContext({required this.customDataType});
+  ParserContext();
 }
 
 Future<ParsedLibrary> parseLibrary(
@@ -265,8 +263,28 @@ ParsedRowClass _parseRowClass(
     if (type != null) {
       backingType = type;
     } else {
-      final customDataTypeVariant =
-          a.returnType.asInstanceOf(ctx.customDataType);
+      final aReturnTypeElement = a.returnType.extensionTypeErasure.element;
+      if (aReturnTypeElement is! ClassElement) {
+        throw InvalidGenerationSource(
+          'Unsupported data-type',
+          element: a,
+        );
+      }
+      final customDataType = aReturnTypeElement.allSupertypes
+          .firstWhereOrNull((e) =>
+              e.element3.name3 == 'CustomDataType' &&
+              e.element3.library2.uri ==
+                  Uri.parse('package:typed_sql/src/typed_sql.dart'))
+          ?.element;
+
+      if (customDataType is! ClassElement) {
+        throw InvalidGenerationSource(
+          'Unsupported data-type',
+          element: a,
+        );
+      }
+
+      final customDataTypeVariant = a.returnType.asInstanceOf(customDataType);
       if (customDataTypeVariant != null) {
         final T = customDataTypeVariant.typeArguments.first;
         backingType = _tryGetColumnType(T);
