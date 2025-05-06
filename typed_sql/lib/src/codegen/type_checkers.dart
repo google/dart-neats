@@ -42,6 +42,9 @@ final referencesTypeChecker = TypeChecker.fromUrl(
 final primaryKeyTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#PrimaryKey'),
 );
+final foreignKeyTypeChecker = TypeChecker.fromUrl(
+  typedSqlSrcUri.resolve('#ForeignKey'),
+);
 final customDataTypeTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#CustomDataType'),
 );

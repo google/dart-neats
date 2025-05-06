@@ -421,6 +421,31 @@ ParsedRowClass _parseRowClass(
     }
   }
 
+  // Extract @ForeignKey annotations
+  for (final annotation in foreignKeyTypeChecker.annotationsOfExact(cls)) {
+    final foreignKey = annotation
+        .getField('foreignKey')!
+        .toListValue()!
+        .map((v) => v.toStringValue()!)
+        .map((field) {
+      return fields.firstWhere((f) => f.name == field);
+    }).toList();
+
+    final fk = ParsedForeignKey(
+      foreignKey: foreignKey,
+      table: annotation.getField('table')!.toStringValue()!,
+      fields: annotation
+          .getField('fields')!
+          .toListValue()!
+          .map((v) => v.toStringValue()!)
+          .toList(),
+      as: annotation.getField('as')?.toStringValue(),
+      name: annotation.getField('name')?.toStringValue(),
+    );
+    foreignKeyToElement[fk] = cls;
+    foreignKeys.add(fk);
+  }
+
   // Extract primary key!
   final pks = primaryKeyTypeChecker.annotationsOfExact(cls);
   if (pks.isEmpty || pks.length > 1) {
