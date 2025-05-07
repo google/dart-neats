@@ -221,7 +221,7 @@ need to define a _composite foreign key_. If a _foreign key_ consists of
 multiple fields, then we can't use the `@References` annotation.
 For this we need to use the `@ForeignKey` annotation on the _row class_.
 
-The follow example illustrates how to define a _composite foreign key_ using the
+The following example illustrates how to define a _composite foreign key_ using the
 `@ForeignKey` annotation.
 
 ```dart blog_test.dart#schema
@@ -259,7 +259,7 @@ abstract final class Comment extends Row {
 
 The `@ForeignKey` annotation works the same as the `@References` annotation,
 except that it is possible to include multiple fields in the _foreign key_.
-Similar to `@References` the optional `name` and `as` attributes gives rise to
+Similar to `@References` the optional `name` and `as` attributes give rise to
 _extension methods_ on expressions for `Expr<Comment>` and `Expr<Post>`
 respectively.
 
