@@ -315,6 +315,17 @@ extension ExpressionPostExt on Expr<Post> {
 
   Expr<String> get content =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+
+  /// Get [SubQuery] of rows from the `comments` table which
+  /// reference this row.
+  ///
+  /// This returns a [SubQuery] of [Comment] rows,
+  /// where [Comment.author], [Comment.postSlug]
+  /// references [Post.author], [Post.slug]
+  /// in this row.
+  SubQuery<(Expr<Comment>,)> get comments =>
+      ExposedForCodeGen.subqueryTable(_$Comment._$table)
+          .where((r) => r.author.equals(author) & r.postSlug.equals(slug));
 }
 
 extension ExpressionNullablePostExt on Expr<Post?> {
@@ -326,6 +337,20 @@ extension ExpressionNullablePostExt on Expr<Post?> {
 
   Expr<String?> get content =>
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+
+  /// Get [SubQuery] of rows from the `comments` table which
+  /// reference this row.
+  ///
+  /// This returns a [SubQuery] of [Comment] rows,
+  /// where [Comment.author], [Comment.postSlug]
+  /// references [Post.author], [Post.slug]
+  /// in this row, if any.
+  ///
+  /// If this row is `NULL` the subquery is always be empty.
+  SubQuery<(Expr<Comment>,)> get comments =>
+      ExposedForCodeGen.subqueryTable(_$Comment._$table).where((r) =>
+          r.author.equalsUnlessNull(author).asNotNull() &
+          r.postSlug.equalsUnlessNull(slug).asNotNull());
 
   /// Check if the row is not `NULL`.
   ///
@@ -407,7 +432,7 @@ final class _$Comment extends Comment {
       List<String> referencedColumns,
     })>[
       (
-        name: 'null',
+        name: 'post',
         columns: ['author', 'postSlug'],
         referencedTable: 'posts',
         referencedColumns: ['author', 'slug'],
@@ -628,6 +653,18 @@ extension ExpressionCommentExt on Expr<Comment> {
 
   Expr<String> get comment =>
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
+
+  /// Do a subquery lookup of the row from table
+  /// `posts` referenced in
+  /// [author], [postSlug].
+  ///
+  /// The gets the row from table `posts` where
+  /// [Post.author], [Post.slug]
+  /// is equal to [author], [postSlug].
+  Expr<Post> get post => ExposedForCodeGen.subqueryTable(_$Post._$table)
+      .where((r) => r.author.equals(author) & r.slug.equals(postSlug))
+      .first
+      .asNotNull();
 }
 
 extension ExpressionNullableCommentExt on Expr<Comment?> {
@@ -642,6 +679,21 @@ extension ExpressionNullableCommentExt on Expr<Comment?> {
 
   Expr<String?> get comment =>
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
+
+  /// Do a subquery lookup of the row from table
+  /// `posts` referenced in
+  /// [author], [postSlug].
+  ///
+  /// The gets the row from table `posts` where
+  /// [Post.author], [Post.slug]
+  /// is equal to [author], [postSlug], if any.
+  ///
+  /// If this row is `NULL` the subquery is always return `NULL`.
+  Expr<Post?> get post => ExposedForCodeGen.subqueryTable(_$Post._$table)
+      .where((r) =>
+          r.author.equalsUnlessNull(author).asNotNull() &
+          r.slug.equalsUnlessNull(postSlug).asNotNull())
+      .first;
 
   /// Check if the row is not `NULL`.
   ///
