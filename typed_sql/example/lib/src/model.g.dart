@@ -328,11 +328,12 @@ extension ExpressionUserExt on Expr<User> {
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
 
   /// Get [SubQuery] of rows from the `packages` table which
-  /// reference [userId] in the `ownerId` field.
+  /// reference this row.
   ///
   /// This returns a [SubQuery] of [Package] rows,
-  /// where [Package.ownerId] is references
-  /// [User.userId] in this row.
+  /// where [Package.ownerId]
+  /// references [User.userId]
+  /// in this row.
   SubQuery<(Expr<Package>,)> get packages =>
       ExposedForCodeGen.subqueryTable(_$Package._$table)
           .where((r) => r.ownerId.equals(userId));
@@ -349,11 +350,12 @@ extension ExpressionNullableUserExt on Expr<User?> {
       ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
 
   /// Get [SubQuery] of rows from the `packages` table which
-  /// reference [userId] in the `ownerId` field.
+  /// reference this row.
   ///
   /// This returns a [SubQuery] of [Package] rows,
-  /// where [Package.ownerId] is references
-  /// [User.userId] in this row, if any.
+  /// where [Package.ownerId]
+  /// references [User.userId]
+  /// in this row, if any.
   ///
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Package>,)> get packages =>
@@ -664,11 +666,12 @@ extension ExpressionPackageExt on Expr<Package> {
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
 
   /// Do a subquery lookup of the row from table
-  /// `users` referenced in [ownerId].
+  /// `users` referenced in
+  /// [ownerId].
   ///
   /// The gets the row from table `users` where
-  /// [User.userId] is equal to
-  /// [ownerId].
+  /// [User.userId]
+  /// is equal to [ownerId].
   Expr<User> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
       .where((r) => r.userId.equals(ownerId))
       .first
@@ -689,11 +692,12 @@ extension ExpressionNullablePackageExt on Expr<Package?> {
       ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
 
   /// Do a subquery lookup of the row from table
-  /// `users` referenced in [ownerId].
+  /// `users` referenced in
+  /// [ownerId].
   ///
   /// The gets the row from table `users` where
-  /// [User.userId] is equal to
-  /// [ownerId], if any.
+  /// [User.userId]
+  /// is equal to [ownerId], if any.
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<User?> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)

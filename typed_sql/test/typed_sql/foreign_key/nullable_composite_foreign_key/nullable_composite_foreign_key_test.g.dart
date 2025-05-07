@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'bookstore_test.dart';
+part of 'nullable_composite_foreign_key_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-/// Extension methods for a [Database] operating on [Bookstore].
-extension BookstoreSchema on Database<Bookstore> {
+/// Extension methods for a [Database] operating on [TestDatabase].
+extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Author._$table, _$Book._$table];
 
   Table<Author> get authors => ExposedForCodeGen.declareTable(
@@ -20,11 +20,11 @@ extension BookstoreSchema on Database<Bookstore> {
         _$Book._$table,
       );
 
-  /// Create tables defined in [Bookstore].
+  /// Create tables defined in [TestDatabase].
   ///
   /// Calling this on an empty database will create the tables
-  /// defined in [Bookstore]. In production it's often better to
-  /// use [createBookstoreTables] and manage migrations using
+  /// defined in [TestDatabase]. In production it's often better to
+  /// use [createTestDatabaseTables] and manage migrations using
   /// external tools.
   ///
   /// This method is mostly useful for testing.
@@ -38,38 +38,38 @@ extension BookstoreSchema on Database<Bookstore> {
       );
 }
 
-/// Get SQL [DDL statements][1] for tables defined in [Bookstore].
+/// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
 ///
 /// This returns a SQL script with multiple DDL statements separated by `;`
 /// using the specified [dialect].
 ///
 /// Executing these statements in an empty database will create the tables
-/// defined in [Bookstore]. In practice, this method is often used for
+/// defined in [TestDatabase]. In practice, this method is often used for
 /// printing the DDL statements, such that migrations can be managed by
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBookstoreTables(SqlDialect dialect) =>
+String createTestDatabaseTables(SqlDialect dialect) =>
     ExposedForCodeGen.createTableSchema(
       dialect: dialect,
-      tables: BookstoreSchema._$tables,
+      tables: TestDatabaseSchema._$tables,
     );
 
 final class _$Author extends Author {
   _$Author._(
-    this.authorId,
-    this.name,
+    this.firstName,
+    this.lastName,
   );
 
   @override
-  final int authorId;
+  final String firstName;
 
   @override
-  final String name;
+  final String lastName;
 
   static const _$table = (
     tableName: 'authors',
-    columns: <String>['authorId', 'name'],
+    columns: <String>['firstName', 'lastName'],
     columnInfo: <({
       ColumnType type,
       bool isNotNull,
@@ -77,10 +77,10 @@ final class _$Author extends Author {
       bool autoIncrement,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
-        autoIncrement: true,
+        autoIncrement: false,
       ),
       (
         type: ExposedForCodeGen.text,
@@ -89,10 +89,8 @@ final class _$Author extends Author {
         autoIncrement: false,
       )
     ],
-    primaryKey: <String>['authorId'],
-    unique: <List<String>>[
-      ['name']
-    ],
+    primaryKey: <String>['firstName', 'lastName'],
+    unique: <List<String>>[],
     foreignKeys: <({
       String name,
       List<String> columns,
@@ -103,16 +101,16 @@ final class _$Author extends Author {
   );
 
   static Author? _$fromDatabase(RowReader row) {
-    final authorId = row.readInt();
-    final name = row.readString();
-    if (authorId == null && name == null) {
+    final firstName = row.readString();
+    final lastName = row.readString();
+    if (firstName == null && lastName == null) {
       return null;
     }
-    return _$Author._(authorId!, name!);
+    return _$Author._(firstName!, lastName!);
   }
 
   @override
-  String toString() => 'Author(authorId: "$authorId", name: "$name")';
+  String toString() => 'Author(firstName: "$firstName", lastName: "$lastName")';
 }
 
 /// Extension methods for table defined in [Author].
@@ -122,14 +120,14 @@ extension TableAuthorExt on Table<Author> {
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
   InsertSingle<Author> insert({
-    Expr<int>? authorId,
-    required Expr<String> name,
+    required Expr<String> firstName,
+    required Expr<String> lastName,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
-          authorId,
-          name,
+          firstName,
+          lastName,
         ],
       );
 
@@ -142,8 +140,12 @@ extension TableAuthorExt on Table<Author> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Author> delete(int authorId) => ExposedForCodeGen.deleteSingle(
-        byKey(authorId),
+  DeleteSingle<Author> delete(
+    String firstName,
+    String lastName,
+  ) =>
+      ExposedForCodeGen.deleteSingle(
+        byKey(firstName, lastName),
         _$Author._$table,
       );
 }
@@ -154,8 +156,13 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Author>,)> byKey(int authorId) =>
-      where((author) => author.authorId.equalsValue(authorId)).first;
+  QuerySingle<(Expr<Author>,)> byKey(
+    String firstName,
+    String lastName,
+  ) =>
+      where((author) =>
+          author.firstName.equalsValue(firstName) &
+          author.lastName.equalsValue(lastName)).first;
 
   /// Update all rows in the `authors` table matching this [Query].
   ///
@@ -188,8 +195,8 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
           UpdateSet<Author> Function(
             Expr<Author> author,
             UpdateSet<Author> Function({
-              Expr<int> authorId,
-              Expr<String> name,
+              Expr<String> firstName,
+              Expr<String> lastName,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Author>(
@@ -198,27 +205,15 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
         (author) => updateBuilder(
           author,
           ({
-            Expr<int>? authorId,
-            Expr<String>? name,
+            Expr<String>? firstName,
+            Expr<String>? lastName,
           }) =>
               ExposedForCodeGen.buildUpdate<Author>([
-            authorId,
-            name,
+            firstName,
+            lastName,
           ]),
         ),
       );
-
-  /// Lookup a single row in `authors` table using the
-  /// `name` field.
-  ///
-  /// We know that lookup by the `name` field returns
-  /// at-most one row because the `name` has an [Unique]
-  /// annotation in [Author].
-  ///
-  /// Returns a [QuerySingle] object, which returns at-most one row,
-  /// when `.fetch()` is called.
-  QuerySingle<(Expr<Author>,)> byName(String name) =>
-      where((author) => author.name.equalsValue(name)).first;
 
   /// Delete all rows in the `authors` table matching this [Query].
   ///
@@ -262,8 +257,8 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
           UpdateSet<Author> Function(
             Expr<Author> author,
             UpdateSet<Author> Function({
-              Expr<int> authorId,
-              Expr<String> name,
+              Expr<String> firstName,
+              Expr<String> lastName,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.updateSingle<Author>(
@@ -272,12 +267,12 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
         (author) => updateBuilder(
           author,
           ({
-            Expr<int>? authorId,
-            Expr<String>? name,
+            Expr<String>? firstName,
+            Expr<String>? lastName,
           }) =>
               ExposedForCodeGen.buildUpdate<Author>([
-            authorId,
-            name,
+            firstName,
+            lastName,
           ]),
         ),
       );
@@ -293,43 +288,45 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
 
 /// Extension methods for expressions on a row in the `authors` table.
 extension ExpressionAuthorExt on Expr<Author> {
-  Expr<int> get authorId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+  Expr<String> get firstName =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
 
-  Expr<String> get name =>
+  Expr<String> get lastName =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
   /// Get [SubQuery] of rows from the `books` table which
   /// reference this row.
   ///
   /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId]
-  /// references [Author.authorId]
+  /// where [Book.authorFirstName], [Book.authorLastName]
+  /// references [Author.firstName], [Author.lastName]
   /// in this row.
   SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(_$Book._$table)
-          .where((r) => r.authorId.equals(authorId));
+      ExposedForCodeGen.subqueryTable(_$Book._$table).where((r) =>
+          r.authorFirstName.equals(firstName) &
+          r.authorLastName.equals(lastName));
 }
 
 extension ExpressionNullableAuthorExt on Expr<Author?> {
-  Expr<int?> get authorId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+  Expr<String?> get firstName =>
+      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
 
-  Expr<String?> get name =>
+  Expr<String?> get lastName =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
   /// Get [SubQuery] of rows from the `books` table which
   /// reference this row.
   ///
   /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId]
-  /// references [Author.authorId]
+  /// where [Book.authorFirstName], [Book.authorLastName]
+  /// references [Author.firstName], [Author.lastName]
   /// in this row, if any.
   ///
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(_$Book._$table)
-          .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull());
+      ExposedForCodeGen.subqueryTable(_$Book._$table).where((r) =>
+          r.authorFirstName.equalsUnlessNull(firstName).asNotNull() &
+          r.authorLastName.equalsUnlessNull(lastName).asNotNull());
 
   /// Check if the row is not `NULL`.
   ///
@@ -337,7 +334,7 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   ///
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
-  Expr<bool> isNotNull() => authorId.isNotNull();
+  Expr<bool> isNotNull() => firstName.isNotNull() & lastName.isNotNull();
 
   /// Check if the row is `NULL`.
   ///
@@ -352,7 +349,8 @@ final class _$Book extends Book {
   _$Book._(
     this.bookId,
     this.title,
-    this.authorId,
+    this.authorFirstName,
+    this.authorLastName,
     this.stock,
   );
 
@@ -360,17 +358,26 @@ final class _$Book extends Book {
   final int bookId;
 
   @override
-  final String? title;
+  final String title;
 
   @override
-  final int authorId;
+  final String? authorFirstName;
+
+  @override
+  final String? authorLastName;
 
   @override
   final int stock;
 
   static const _$table = (
     tableName: 'books',
-    columns: <String>['bookId', 'title', 'authorId', 'stock'],
+    columns: <String>[
+      'bookId',
+      'title',
+      'authorFirstName',
+      'authorLastName',
+      'stock'
+    ],
     columnInfo: <({
       ColumnType type,
       bool isNotNull,
@@ -385,6 +392,18 @@ final class _$Book extends Book {
       ),
       (
         type: ExposedForCodeGen.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        type: ExposedForCodeGen.text,
+        isNotNull: false,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        type: ExposedForCodeGen.text,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
@@ -393,12 +412,6 @@ final class _$Book extends Book {
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
-        autoIncrement: false,
-      ),
-      (
-        type: ExposedForCodeGen.integer,
-        isNotNull: true,
-        defaultValue: 0,
         autoIncrement: false,
       )
     ],
@@ -412,9 +425,9 @@ final class _$Book extends Book {
     })>[
       (
         name: 'author',
-        columns: ['authorId'],
+        columns: ['authorFirstName', 'authorLastName'],
         referencedTable: 'authors',
-        referencedColumns: ['authorId'],
+        referencedColumns: ['firstName', 'lastName'],
       )
     ],
     readRow: _$Book._$fromDatabase,
@@ -423,17 +436,22 @@ final class _$Book extends Book {
   static Book? _$fromDatabase(RowReader row) {
     final bookId = row.readInt();
     final title = row.readString();
-    final authorId = row.readInt();
+    final authorFirstName = row.readString();
+    final authorLastName = row.readString();
     final stock = row.readInt();
-    if (bookId == null && title == null && authorId == null && stock == null) {
+    if (bookId == null &&
+        title == null &&
+        authorFirstName == null &&
+        authorLastName == null &&
+        stock == null) {
       return null;
     }
-    return _$Book._(bookId!, title, authorId!, stock!);
+    return _$Book._(bookId!, title!, authorFirstName, authorLastName, stock!);
   }
 
   @override
   String toString() =>
-      'Book(bookId: "$bookId", title: "$title", authorId: "$authorId", stock: "$stock")';
+      'Book(bookId: "$bookId", title: "$title", authorFirstName: "$authorFirstName", authorLastName: "$authorLastName", stock: "$stock")';
 }
 
 /// Extension methods for table defined in [Book].
@@ -444,16 +462,18 @@ extension TableBookExt on Table<Book> {
   /// called for the row to be inserted.
   InsertSingle<Book> insert({
     Expr<int>? bookId,
-    Expr<String?>? title,
-    required Expr<int> authorId,
-    Expr<int>? stock,
+    required Expr<String> title,
+    Expr<String?>? authorFirstName,
+    Expr<String?>? authorLastName,
+    required Expr<int> stock,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
           bookId,
           title,
-          authorId,
+          authorFirstName,
+          authorLastName,
           stock,
         ],
       );
@@ -514,8 +534,9 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
             Expr<Book> book,
             UpdateSet<Book> Function({
               Expr<int> bookId,
-              Expr<String?> title,
-              Expr<int> authorId,
+              Expr<String> title,
+              Expr<String?> authorFirstName,
+              Expr<String?> authorLastName,
               Expr<int> stock,
             }) set,
           ) updateBuilder) =>
@@ -526,14 +547,16 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
           book,
           ({
             Expr<int>? bookId,
-            Expr<String?>? title,
-            Expr<int>? authorId,
+            Expr<String>? title,
+            Expr<String?>? authorFirstName,
+            Expr<String?>? authorLastName,
             Expr<int>? stock,
           }) =>
               ExposedForCodeGen.buildUpdate<Book>([
             bookId,
             title,
-            authorId,
+            authorFirstName,
+            authorLastName,
             stock,
           ]),
         ),
@@ -582,8 +605,9 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
             Expr<Book> book,
             UpdateSet<Book> Function({
               Expr<int> bookId,
-              Expr<String?> title,
-              Expr<int> authorId,
+              Expr<String> title,
+              Expr<String?> authorFirstName,
+              Expr<String?> authorLastName,
               Expr<int> stock,
             }) set,
           ) updateBuilder) =>
@@ -594,14 +618,16 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
           book,
           ({
             Expr<int>? bookId,
-            Expr<String?>? title,
-            Expr<int>? authorId,
+            Expr<String>? title,
+            Expr<String?>? authorFirstName,
+            Expr<String?>? authorLastName,
             Expr<int>? stock,
           }) =>
               ExposedForCodeGen.buildUpdate<Book>([
             bookId,
             title,
-            authorId,
+            authorFirstName,
+            authorLastName,
             stock,
           ]),
         ),
@@ -621,26 +647,30 @@ extension ExpressionBookExt on Expr<Book> {
   Expr<int> get bookId =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  Expr<String?> get title =>
+  Expr<String> get title =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  Expr<int> get authorId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+  Expr<String?> get authorFirstName =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+
+  Expr<String?> get authorLastName =>
+      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
 
   Expr<int> get stock =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
+      ExposedForCodeGen.field(this, 4, ExposedForCodeGen.integer);
 
   /// Do a subquery lookup of the row from table
   /// `authors` referenced in
-  /// [authorId].
+  /// [authorFirstName], [authorLastName].
   ///
   /// The gets the row from table `authors` where
-  /// [Author.authorId]
-  /// is equal to [authorId].
-  Expr<Author> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equals(authorId))
-      .first
-      .asNotNull();
+  /// [Author.firstName], [Author.lastName]
+  /// is equal to [authorFirstName], [authorLastName], if any.
+  Expr<Author?> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
+      .where((r) =>
+          r.firstName.equals(authorFirstName) &
+          r.lastName.equals(authorLastName))
+      .first;
 }
 
 extension ExpressionNullableBookExt on Expr<Book?> {
@@ -650,23 +680,28 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   Expr<String?> get title =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
 
-  Expr<int?> get authorId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+  Expr<String?> get authorFirstName =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+
+  Expr<String?> get authorLastName =>
+      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
 
   Expr<int?> get stock =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
+      ExposedForCodeGen.field(this, 4, ExposedForCodeGen.integer);
 
   /// Do a subquery lookup of the row from table
   /// `authors` referenced in
-  /// [authorId].
+  /// [authorFirstName], [authorLastName].
   ///
   /// The gets the row from table `authors` where
-  /// [Author.authorId]
-  /// is equal to [authorId], if any.
+  /// [Author.firstName], [Author.lastName]
+  /// is equal to [authorFirstName], [authorLastName], if any.
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Author?> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull())
+      .where((r) =>
+          r.firstName.equalsUnlessNull(authorFirstName).asNotNull() &
+          r.lastName.equalsUnlessNull(authorLastName).asNotNull())
       .first;
 
   /// Check if the row is not `NULL`.
@@ -691,11 +726,11 @@ extension ExpressionNullableBookExt on Expr<Book?> {
 ///
 /// [1]: https://pub.dev/packages/checks
 extension AuthorChecks on Subject<Author> {
-  /// Create assertions on [Author.authorId].
-  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
+  /// Create assertions on [Author.firstName].
+  Subject<String> get firstName => has((m) => m.firstName, 'firstName');
 
-  /// Create assertions on [Author.name].
-  Subject<String> get name => has((m) => m.name, 'name');
+  /// Create assertions on [Author.lastName].
+  Subject<String> get lastName => has((m) => m.lastName, 'lastName');
 }
 
 /// Extension methods for assertions on [Book] using
@@ -707,10 +742,15 @@ extension BookChecks on Subject<Book> {
   Subject<int> get bookId => has((m) => m.bookId, 'bookId');
 
   /// Create assertions on [Book.title].
-  Subject<String?> get title => has((m) => m.title, 'title');
+  Subject<String> get title => has((m) => m.title, 'title');
 
-  /// Create assertions on [Book.authorId].
-  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
+  /// Create assertions on [Book.authorFirstName].
+  Subject<String?> get authorFirstName =>
+      has((m) => m.authorFirstName, 'authorFirstName');
+
+  /// Create assertions on [Book.authorLastName].
+  Subject<String?> get authorLastName =>
+      has((m) => m.authorLastName, 'authorLastName');
 
   /// Create assertions on [Book.stock].
   Subject<int> get stock => has((m) => m.stock, 'stock');

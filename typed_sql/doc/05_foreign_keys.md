@@ -214,5 +214,64 @@ example above. It may be easier for the _query optimizer_ to optimize this
 query, if we used `.join` and `.groupBy`, see [Aggregate functions] for more
 details.
 
+## Composite foreign keys
+As illustrated in the examples above the `@References` annotation is used on a
+field to define the field as a _foreign key_. This works great until you
+need to define a _composite foreign key_. If a _foreign key_ consists of
+multiple fields, then we can't use the `@References` annotation.
+For this we need to use the `@ForeignKey` annotation on the _row class_.
+
+The following example illustrates how to define a _composite foreign key_ using the
+`@ForeignKey` annotation.
+
+```dart blog_test.dart#schema
+abstract final class BlogDatabase extends Schema {
+  Table<Post> get posts;
+  Table<Comment> get comments;
+}
+
+@PrimaryKey(['author', 'slug'])
+abstract final class Post extends Row {
+  String get author;
+  String get slug;
+
+  String get content;
+}
+
+@PrimaryKey(['commentId'])
+@ForeignKey(
+  ['author', 'postSlug'],
+  table: 'posts',
+  fields: ['author', 'slug'],
+  name: 'post',
+  as: 'comments',
+)
+abstract final class Comment extends Row {
+  int get commentId;
+
+  // composite foreign key
+  String get author;
+  String get postSlug;
+
+  String get comment;
+}
+```
+
+The `@ForeignKey` annotation works the same as the `@References` annotation,
+except that it is possible to include multiple fields in the _foreign key_.
+Similar to `@References` the optional `name` and `as` attributes give rise to
+_extension methods_ on expressions for `Expr<Comment>` and `Expr<Post>`
+respectively.
+
+The `@ForeignKey` annotation can be used to define _foreign keys_ consistent of
+a single field, ie. _foreign keys_ are that not _composite foreign keys_.
+When used in this manner the `@ForeignKey` annotation behaves the same as
+the `@References` annotation, the only difference being where the annotation is
+attached.
+
+> [!TIP]
+> Prefer using the `@References` annotation when defining a _foreign key_
+> consistent of a single field.
+
 <!-- GENERATED DOCUMENTATION LINKS -->
 [Aggregate functions]: ../topics/Aggregate%20functions-topic.html

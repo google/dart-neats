@@ -366,9 +366,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ${rowClass.foreignKeys.map((fk) => '''
                   (
                     name: '${fk.name}',
-                    columns: ['${fk.key.name}'],
+                    columns: [${fk.foreignKey.map((f) => '\'${f.name}\'').join(', ')}],
                     referencedTable: '${fk.table}',
-                    referencedColumns: ['${fk.field}'],
+                    referencedColumns: [${fk.fields.map((f) => '\'$f\'').join(', ')}],
                   )
                 ''').join(',')}
               ],
@@ -732,11 +732,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..name = ref.fk.as!
               ..documentation('''
                 Get [SubQuery] of rows from the `${ref.table.name}` table which
-                reference [${ref.fk.field}] in the `${ref.fk.key.name}` field.
+                reference this row.
 
                 This returns a [SubQuery] of [${ref.table.rowClass.name}] rows,
-                where [${ref.table.rowClass.name}.${ref.fk.key.name}] is references
-                [$rowClassName.${ref.fk.field}] in this row.
+                where ${ref.fk.foreignKey.map((f) => '[${ref.table.rowClass.name}.${f.name}]').join(', ')}
+                references ${ref.fk.fields.map((f) => '[$rowClassName.$f]').join(', ')}
+                in this row.
               ''')
               ..type = MethodType.getter
               ..returns = refer('SubQuery<(Expr<${ref.table.rowClass.name}>,)>')
@@ -744,14 +745,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..body = Code('''
                 ExposedForCodeGen.subqueryTable(
                   _\$${ref.table.rowClass.name}._\$table
-                ).where((r) => r.${ref.fk.key.name}.equals(${ref.fk.field}))
+                ).where((r) =>
+                  ${ref.fk.foreignKey.mapIndexed((i, fk) => 'r.${fk.name}.equals(${ref.fk.fields[i]})').join(' & ')}
+                )
               '''),
           )),
       ...rowClass.foreignKeys.where((fk) => fk.name != null).map((fk) {
         var nullable = '?';
         var ifAnyDocs = ', if any';
         var firstAsNotNull = 'first';
-        if (!fk.key.isNullable) {
+        if (!fk.foreignKey.any((f) => f.isNullable)) {
           nullable = '';
           ifAnyDocs = '';
           firstAsNotNull = 'first.asNotNull()';
@@ -761,11 +764,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..name = fk.name
             ..documentation('''
               Do a subquery lookup of the row from table
-              `${fk.referencedTable.name}` referenced in [${fk.key.name}].
+              `${fk.referencedTable.name}` referenced in
+              ${fk.foreignKey.map((f) => '[${f.name}]').join(', ')}.
 
               The gets the row from table `${fk.referencedTable.name}` where
-              [${fk.referencedTable.rowClass.name}.${fk.field}] is equal to
-              [${fk.key.name}]$ifAnyDocs.
+              ${fk.fields.map((f) => '[${fk.referencedTable.rowClass.name}.$f]').join(', ')}
+              is equal to ${fk.foreignKey.map((f) => '[${f.name}]').join(', ')}$ifAnyDocs.
             ''')
             ..type = MethodType.getter
             ..returns =
@@ -775,7 +779,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ExposedForCodeGen.subqueryTable(
                 _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
-                (r) => r.${fk.field}.equals(${fk.key.name})
+                (r) =>
+                  ${fk.fields.mapIndexed((i, f) => 'r.$f.equals(${fk.foreignKey[i].name})').join(' & ')}
               ).$firstAsNotNull
             '''),
         );
@@ -803,11 +808,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..name = ref.fk.as!
               ..documentation('''
                 Get [SubQuery] of rows from the `${ref.table.name}` table which
-                reference [${ref.fk.field}] in the `${ref.fk.key.name}` field.
+                reference this row.
 
                 This returns a [SubQuery] of [${ref.table.rowClass.name}] rows,
-                where [${ref.table.rowClass.name}.${ref.fk.key.name}] is references
-                [$rowClassName.${ref.fk.field}] in this row, if any.
+                where ${ref.fk.foreignKey.map((f) => '[${ref.table.rowClass.name}.${f.name}]').join(', ')}
+                references ${ref.fk.fields.map((f) => '[$rowClassName.$f]').join(', ')}
+                in this row, if any.
 
                 If this row is `NULL` the subquery is always be empty.
               ''')
@@ -818,7 +824,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ExposedForCodeGen.subqueryTable(
                   _\$${ref.table.rowClass.name}._\$table
                 ).where((r) =>
-                  r.${ref.fk.key.name}.equalsUnlessNull(${ref.fk.field}).asNotNull()
+                  ${ref.fk.foreignKey.mapIndexed((i, fk) => 'r.${fk.name}.equalsUnlessNull(${ref.fk.fields[i]}).asNotNull()').join(' & ')}
                 )
               '''),
           )),
@@ -828,11 +834,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..name = fk.name
             ..documentation('''
               Do a subquery lookup of the row from table
-              `${fk.referencedTable.name}` referenced in [${fk.key.name}].
+              `${fk.referencedTable.name}` referenced in
+              ${fk.foreignKey.map((f) => '[${f.name}]').join(', ')}.
 
               The gets the row from table `${fk.referencedTable.name}` where
-              [${fk.referencedTable.rowClass.name}.${fk.field}] is equal to
-              [${fk.key.name}], if any.
+              ${fk.fields.map((f) => '[${fk.referencedTable.rowClass.name}.$f]').join(', ')}
+              is equal to ${fk.foreignKey.map((f) => '[${f.name}]').join(', ')}, if any.
 
               If this row is `NULL` the subquery is always return `NULL`.
             ''')
@@ -844,7 +851,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
                 (r) =>
-                  r.${fk.field}.equalsUnlessNull(${fk.key.name}).asNotNull()
+                  ${fk.fields.mapIndexed((i, f) => 'r.$f.equalsUnlessNull(${fk.foreignKey[i].name}).asNotNull()').join(' & ')}
               ).first
             '''),
         );
