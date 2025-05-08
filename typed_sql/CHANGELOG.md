@@ -1,4 +1,4 @@
-## 0.1.2-wip
+## 0.1.2
  * Support for _composite foreign keys_ using the `@ForeignKey` annotation.
  * Extension methods for joining table using _foreign keys_.
 
