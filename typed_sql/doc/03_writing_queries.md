@@ -710,16 +710,16 @@ The difference between these operators is what arguments they take, and how they
 behave when comparing to `NULL`. In SQL `NULL = NULL` yields `UNKNOWN`
 represented by `NULL`. Meaning that when we compare two expressions in SQL using
 the `=` operator, the result cannot be `TRUE` if one of the expressions is `NULL`.
-This is very different from Dart, thus, to avoid any confusion the SQL `=`
+This is very different from Dart. Thus, to avoid any confusion the SQL `=`
 operator is exposed using the `.equalsUnlessNull` extension method.
 
 The `.equalsUnlessNull` extension method will return `NULL` if any of the two
 operands are `NULL`, thus, the return type for `.equalsUnlessNull` is
-`Expr<bool?>`. This isn't very convinient, but if you're comparing two
+`Expr<bool?>`. This isn't very convenient, but if you're comparing two
 expressions where one of them is not nullable, you can use the `.equals`
 extension method.
 
-The `.equals` extension method requires that at-least one of the two operands
+The `.equals` extension method requires that at least one of the two operands
 are not nullable. This is implemented by having two variants:
  * `Expr<T>.equals(Expr<T?> other) -> Expr<bool>`, and,
  * `Expr<T?>.equals(Expr<T> other) -> Expr<bool>`.
