@@ -369,6 +369,32 @@ extension ExpressionNullablePostExt on Expr<Post?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+extension InnerJoinPostCommentExt
+    on InnerJoin<(Expr<Post>,), (Expr<Comment>,)> {
+  /// Join using the `post` _foreign key_.
+  ///
+  /// This will match rows where [Post.author] = [Comment.author] and [Post.slug] = [Comment.postSlug].
+  Query<(Expr<Post>, Expr<Comment>)> usingPost() =>
+      on((a, b) => a.author.equals(b.author) & a.slug.equals(b.postSlug));
+}
+
+extension LeftJoinPostCommentExt on LeftJoin<(Expr<Post>,), (Expr<Comment>,)> {
+  /// Join using the `post` _foreign key_.
+  ///
+  /// This will match rows where [Post.author] = [Comment.author] and [Post.slug] = [Comment.postSlug].
+  Query<(Expr<Post>, Expr<Comment?>)> usingPost() =>
+      on((a, b) => a.author.equals(b.author) & a.slug.equals(b.postSlug));
+}
+
+extension RightJoinPostCommentExt
+    on RightJoin<(Expr<Post>,), (Expr<Comment>,)> {
+  /// Join using the `post` _foreign key_.
+  ///
+  /// This will match rows where [Post.author] = [Comment.author] and [Post.slug] = [Comment.postSlug].
+  Query<(Expr<Post?>, Expr<Comment>)> usingPost() =>
+      on((a, b) => a.author.equals(b.author) & a.slug.equals(b.postSlug));
+}
+
 final class _$Comment extends Comment {
   _$Comment._(
     this.commentId,
@@ -710,6 +736,32 @@ extension ExpressionNullableCommentExt on Expr<Comment?> {
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
+}
+
+extension InnerJoinCommentPostExt
+    on InnerJoin<(Expr<Comment>,), (Expr<Post>,)> {
+  /// Join using the `post` _foreign key_.
+  ///
+  /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
+  Query<(Expr<Comment>, Expr<Post>)> usingPost() =>
+      on((a, b) => b.author.equals(a.author) & b.slug.equals(a.postSlug));
+}
+
+extension LeftJoinCommentPostExt on LeftJoin<(Expr<Comment>,), (Expr<Post>,)> {
+  /// Join using the `post` _foreign key_.
+  ///
+  /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
+  Query<(Expr<Comment>, Expr<Post?>)> usingPost() =>
+      on((a, b) => b.author.equals(a.author) & b.slug.equals(a.postSlug));
+}
+
+extension RightJoinCommentPostExt
+    on RightJoin<(Expr<Comment>,), (Expr<Post>,)> {
+  /// Join using the `post` _foreign key_.
+  ///
+  /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
+  Query<(Expr<Comment?>, Expr<Post>)> usingPost() =>
+      on((a, b) => b.author.equals(a.author) & b.slug.equals(a.postSlug));
 }
 
 /// Extension methods for assertions on [Comment] using

@@ -255,5 +255,33 @@ void main() {
     ]);
   });
 
+  r.addTest(
+      'authors.join(books).usingAuthor().groupBy(.author).aggregate(sum(.stock))',
+      (db) async {
+    final result = await db.authors
+        .join(db.books)
+        .usingAuthor()
+        .groupBy((author, book) => (author,))
+        .aggregate(
+          (agg) => //
+              agg.sum((author, book) => book.stock),
+        )
+        .select(
+          (author, stock) => (
+            author.firstname,
+            author.lastname,
+            stock,
+          ),
+        )
+        .fetch();
+
+    check(result).unorderedEquals([
+      ('John', 'Doe', 5),
+      ('Jane', 'Doe', 7),
+      ('Easter', 'Bunny', 22),
+      ('Bucks', 'Bunny', 45),
+    ]);
+  });
+
   r.run();
 }

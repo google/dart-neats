@@ -163,7 +163,7 @@ check(titleAndStock).unorderedEquals([
 // have in stock by author.
 final stockByAuthor = await db.books
     .join(db.authors)
-    .on((b, a) => a.authorId.equals(b.authorId))
+    .usingAuthor()
     .groupBy((b, a) => (a,))
     .aggregate((agg) => agg.sum((b, a) => b.stock))
     .select((a, totalStock) => (a.name, totalStock))

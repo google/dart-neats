@@ -417,6 +417,66 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Author.authorId] = [Book.authorId].
+  Query<(Expr<Author>, Expr<Book>)> usingAuthor() =>
+      on((a, b) => a.authorId.equals(b.authorId));
+
+  /// Join using the `editor` _foreign key_.
+  ///
+  /// This will match rows where [Author.authorId] = [Book.editorId].
+  Query<(Expr<Author>, Expr<Book>)> usingEditor() =>
+      on((a, b) => a.authorId.equals(b.editorId));
+
+  /// Join using the `favoriteBook` _foreign key_.
+  ///
+  /// This will match rows where [Author.favoriteBookId] = [Book.bookId].
+  Query<(Expr<Author>, Expr<Book>)> usingFavoriteBook() =>
+      on((a, b) => b.bookId.equals(a.favoriteBookId));
+}
+
+extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Author.authorId] = [Book.authorId].
+  Query<(Expr<Author>, Expr<Book?>)> usingAuthor() =>
+      on((a, b) => a.authorId.equals(b.authorId));
+
+  /// Join using the `editor` _foreign key_.
+  ///
+  /// This will match rows where [Author.authorId] = [Book.editorId].
+  Query<(Expr<Author>, Expr<Book?>)> usingEditor() =>
+      on((a, b) => a.authorId.equals(b.editorId));
+
+  /// Join using the `favoriteBook` _foreign key_.
+  ///
+  /// This will match rows where [Author.favoriteBookId] = [Book.bookId].
+  Query<(Expr<Author>, Expr<Book?>)> usingFavoriteBook() =>
+      on((a, b) => b.bookId.equals(a.favoriteBookId));
+}
+
+extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Author.authorId] = [Book.authorId].
+  Query<(Expr<Author?>, Expr<Book>)> usingAuthor() =>
+      on((a, b) => a.authorId.equals(b.authorId));
+
+  /// Join using the `editor` _foreign key_.
+  ///
+  /// This will match rows where [Author.authorId] = [Book.editorId].
+  Query<(Expr<Author?>, Expr<Book>)> usingEditor() =>
+      on((a, b) => a.authorId.equals(b.editorId));
+
+  /// Join using the `favoriteBook` _foreign key_.
+  ///
+  /// This will match rows where [Author.favoriteBookId] = [Book.bookId].
+  Query<(Expr<Author?>, Expr<Book>)> usingFavoriteBook() =>
+      on((a, b) => b.bookId.equals(a.favoriteBookId));
+}
+
 final class _$Book extends Book {
   _$Book._(
     this.bookId,
@@ -838,6 +898,66 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
+}
+
+extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
+  /// Join using the `favoriteBook` _foreign key_.
+  ///
+  /// This will match rows where [Book.bookId] = [Author.favoriteBookId].
+  Query<(Expr<Book>, Expr<Author>)> usingFavoriteBook() =>
+      on((a, b) => a.bookId.equals(b.favoriteBookId));
+
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Book.authorId] = [Author.authorId].
+  Query<(Expr<Book>, Expr<Author>)> usingAuthor() =>
+      on((a, b) => b.authorId.equals(a.authorId));
+
+  /// Join using the `editor` _foreign key_.
+  ///
+  /// This will match rows where [Book.editorId] = [Author.authorId].
+  Query<(Expr<Book>, Expr<Author>)> usingEditor() =>
+      on((a, b) => b.authorId.equals(a.editorId));
+}
+
+extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
+  /// Join using the `favoriteBook` _foreign key_.
+  ///
+  /// This will match rows where [Book.bookId] = [Author.favoriteBookId].
+  Query<(Expr<Book>, Expr<Author?>)> usingFavoriteBook() =>
+      on((a, b) => a.bookId.equals(b.favoriteBookId));
+
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Book.authorId] = [Author.authorId].
+  Query<(Expr<Book>, Expr<Author?>)> usingAuthor() =>
+      on((a, b) => b.authorId.equals(a.authorId));
+
+  /// Join using the `editor` _foreign key_.
+  ///
+  /// This will match rows where [Book.editorId] = [Author.authorId].
+  Query<(Expr<Book>, Expr<Author?>)> usingEditor() =>
+      on((a, b) => b.authorId.equals(a.editorId));
+}
+
+extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
+  /// Join using the `favoriteBook` _foreign key_.
+  ///
+  /// This will match rows where [Book.bookId] = [Author.favoriteBookId].
+  Query<(Expr<Book?>, Expr<Author>)> usingFavoriteBook() =>
+      on((a, b) => a.bookId.equals(b.favoriteBookId));
+
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Book.authorId] = [Author.authorId].
+  Query<(Expr<Book?>, Expr<Author>)> usingAuthor() =>
+      on((a, b) => b.authorId.equals(a.authorId));
+
+  /// Join using the `editor` _foreign key_.
+  ///
+  /// This will match rows where [Book.editorId] = [Author.authorId].
+  Query<(Expr<Book?>, Expr<Author>)> usingEditor() =>
+      on((a, b) => b.authorId.equals(a.editorId));
 }
 
 /// Extension methods for assertions on [Author] using

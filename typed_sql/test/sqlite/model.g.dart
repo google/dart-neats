@@ -387,6 +387,32 @@ extension ExpressionNullableUserExt on Expr<User?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+extension InnerJoinUserPackageExt
+    on InnerJoin<(Expr<User>,), (Expr<Package>,)> {
+  /// Join using the `owner` _foreign key_.
+  ///
+  /// This will match rows where [User.userId] = [Package.ownerId].
+  Query<(Expr<User>, Expr<Package>)> usingOwner() =>
+      on((a, b) => a.userId.equals(b.ownerId));
+}
+
+extension LeftJoinUserPackageExt on LeftJoin<(Expr<User>,), (Expr<Package>,)> {
+  /// Join using the `owner` _foreign key_.
+  ///
+  /// This will match rows where [User.userId] = [Package.ownerId].
+  Query<(Expr<User>, Expr<Package?>)> usingOwner() =>
+      on((a, b) => a.userId.equals(b.ownerId));
+}
+
+extension RightJoinUserPackageExt
+    on RightJoin<(Expr<User>,), (Expr<Package>,)> {
+  /// Join using the `owner` _foreign key_.
+  ///
+  /// This will match rows where [User.userId] = [Package.ownerId].
+  Query<(Expr<User?>, Expr<Package>)> usingOwner() =>
+      on((a, b) => a.userId.equals(b.ownerId));
+}
+
 final class _$Package extends Package {
   _$Package._(
     this.packageName,
@@ -727,6 +753,32 @@ extension ExpressionNullablePackageExt on Expr<Package?> {
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
+}
+
+extension InnerJoinPackageUserExt
+    on InnerJoin<(Expr<Package>,), (Expr<User>,)> {
+  /// Join using the `owner` _foreign key_.
+  ///
+  /// This will match rows where [Package.ownerId] = [User.userId].
+  Query<(Expr<Package>, Expr<User>)> usingOwner() =>
+      on((a, b) => b.userId.equals(a.ownerId));
+}
+
+extension LeftJoinPackageUserExt on LeftJoin<(Expr<Package>,), (Expr<User>,)> {
+  /// Join using the `owner` _foreign key_.
+  ///
+  /// This will match rows where [Package.ownerId] = [User.userId].
+  Query<(Expr<Package>, Expr<User?>)> usingOwner() =>
+      on((a, b) => b.userId.equals(a.ownerId));
+}
+
+extension RightJoinPackageUserExt
+    on RightJoin<(Expr<Package>,), (Expr<User>,)> {
+  /// Join using the `owner` _foreign key_.
+  ///
+  /// This will match rows where [Package.ownerId] = [User.userId].
+  Query<(Expr<Package?>, Expr<User>)> usingOwner() =>
+      on((a, b) => b.userId.equals(a.ownerId));
 }
 
 final class _$Like extends Like {

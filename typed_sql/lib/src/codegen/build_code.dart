@@ -891,6 +891,75 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..body = Code('isNotNull().not()'),
       ),
     ]));
+
+  // Extension for InnerJoin<...>
+  final relatedTables = {
+    ...referencedFrom
+        .where((ref) => ref.fk.name != null)
+        .map((ref) => ref.table),
+    ...rowClass.foreignKeys
+        .where((fk) => fk.name != null)
+        .map((fk) => fk.referencedTable),
+  }.sortedBy((t) => t.name);
+
+  for (final relatedTable in relatedTables) {
+    final T = relatedTable.rowClass.name;
+
+    final relatedForeignKeys =
+        rowClass.foreignKeys.where((fk) => fk.referencedTable == relatedTable);
+    final relatedReferencedFrom =
+        referencedFrom.where((ref) => ref.table == relatedTable);
+
+    final kinds = [
+      ('Inner', '', ''),
+      ('Left', '', '?'),
+      ('Right', '?', ''),
+    ];
+
+    for (final (kind, ln, rn) in kinds) {
+      final returns = refer('Query<(Expr<$rowClassName$ln>, Expr<$T$rn>)>');
+
+      yield Extension((b) => b
+        ..name = '${kind}Join$rowClassName${T}Ext'
+        ..on = refer('${kind}Join<(Expr<$rowClassName>,), (Expr<$T>,)>')
+        ..methods.addAll([
+          ...relatedReferencedFrom.map((ref) => Method(
+                (b) => b
+                  ..name = 'using${upperCamelCase(ref.fk.name!)}'
+                  ..documentation('''
+                  Join using the `${ref.fk.name!}` _foreign key_.
+
+                  This will match rows where ${ref.fk.fields.mapIndexed((i, f) => '[$rowClassName.$f] = [$T.${ref.fk.foreignKey[i].name}]').join(' and ')}.
+                ''')
+                  ..returns = returns
+                  ..lambda = true
+                  ..body = Code('''
+                  on((a, b) =>
+                    ${ref.fk.fields.mapIndexed((i, f) => 'a.$f.equals(b.${ref.fk.foreignKey[i].name})').join(' & ')}
+                  )
+                '''),
+              )),
+          ...relatedForeignKeys.where((fk) => fk.name != null).map((fk) {
+            return Method(
+              (b) => b
+                ..name = 'using${upperCamelCase(fk.name!)}'
+                ..documentation('''
+                Join using the `${fk.name!}` _foreign key_.
+
+                This will match rows where ${fk.fields.mapIndexed((i, f) => '[$rowClassName.${fk.foreignKey[i].name}] = [$T.$f]').join(' and ')}.
+              ''')
+                ..returns = returns
+                ..lambda = true
+                ..body = Code('''
+                on((a, b) =>
+                  ${fk.fields.mapIndexed((i, f) => 'b.$f.equals(a.${fk.foreignKey[i].name})').join(' & ')}
+                )
+              '''),
+            );
+          }),
+        ]));
+    }
+  }
 }
 
 /// Generate code for using `Query<T>` where `T` is a named record!

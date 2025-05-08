@@ -345,6 +345,33 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Author.firstName] = [Book.authorFirstName] and [Author.lastName] = [Book.authorLastName].
+  Query<(Expr<Author>, Expr<Book>)> usingAuthor() => on((a, b) =>
+      a.firstName.equals(b.authorFirstName) &
+      a.lastName.equals(b.authorLastName));
+}
+
+extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Author.firstName] = [Book.authorFirstName] and [Author.lastName] = [Book.authorLastName].
+  Query<(Expr<Author>, Expr<Book?>)> usingAuthor() => on((a, b) =>
+      a.firstName.equals(b.authorFirstName) &
+      a.lastName.equals(b.authorLastName));
+}
+
+extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Author.firstName] = [Book.authorFirstName] and [Author.lastName] = [Book.authorLastName].
+  Query<(Expr<Author?>, Expr<Book>)> usingAuthor() => on((a, b) =>
+      a.firstName.equals(b.authorFirstName) &
+      a.lastName.equals(b.authorLastName));
+}
+
 final class _$Book extends Book {
   _$Book._(
     this.bookId,
@@ -720,6 +747,33 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
+}
+
+extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Book.authorFirstName] = [Author.firstName] and [Book.authorLastName] = [Author.lastName].
+  Query<(Expr<Book>, Expr<Author>)> usingAuthor() => on((a, b) =>
+      b.firstName.equals(a.authorFirstName) &
+      b.lastName.equals(a.authorLastName));
+}
+
+extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Book.authorFirstName] = [Author.firstName] and [Book.authorLastName] = [Author.lastName].
+  Query<(Expr<Book>, Expr<Author?>)> usingAuthor() => on((a, b) =>
+      b.firstName.equals(a.authorFirstName) &
+      b.lastName.equals(a.authorLastName));
+}
+
+extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Book.authorFirstName] = [Author.firstName] and [Book.authorLastName] = [Author.lastName].
+  Query<(Expr<Book?>, Expr<Author>)> usingAuthor() => on((a, b) =>
+      b.firstName.equals(a.authorFirstName) &
+      b.lastName.equals(a.authorLastName));
 }
 
 /// Extension methods for assertions on [Author] using
