@@ -4,18 +4,8 @@ follows:
 
 ```dart company_test.dart#schema
 abstract final class CompanyDatabase extends Schema {
-  Table<Employee> get employees;
   Table<Department> get departments;
-}
-
-@PrimaryKey(['employeeId'])
-abstract final class Employee extends Row {
-  @AutoIncrement()
-  int get employeeId;
-
-  String get name;
-
-  int? get departmentId;
+  Table<Employee> get employees;
 }
 
 @PrimaryKey(['departmentId'])
@@ -27,6 +17,23 @@ abstract final class Department extends Row {
 
   String get location;
 }
+
+@PrimaryKey(['employeeId'])
+abstract final class Employee extends Row {
+  @AutoIncrement()
+  int get employeeId;
+
+  String get name;
+
+  @References(
+    table: 'departments',
+    field: 'departmentId',
+    name: 'department',
+    as: 'employees',
+  )
+  int? get departmentId;
+}
+
 ```
 
 Similarly, examples in this document will assume that the database is loaded
@@ -43,7 +50,7 @@ final _initialEmployees = [
   (id: 2, name: 'Bob', departmentId: 2),
   (id: 3, name: 'Charlie', departmentId: 1),
   (id: 4, name: 'David', departmentId: null),
-  (id: 5, name: 'Eve', departmentId: 4),
+  (id: 5, name: 'Eve', departmentId: null),
 ];
 ```
 
@@ -102,15 +109,42 @@ INNER JOIN departments
   ON employees.departmentId IS NOT DISTINCT FROM departments.departmentId
 ```
 
-Instead of using the `.on` extension method on `InnerJoin` it's also possible to
-use `.all` which will return the cartesian product (`CROSS JOIN`). The `.all`
-extension method is not available for left and right joins.
+The `.on` extension method on `InnerJoin` let's us join on any condition.
+However, because used the `@References` annotation to declare
+`Employee.departmentId` a _foreign key_, we also get a `.usingDepartment`
+extension method on `InnerJoin<(Expr<Employee>,), (Expr<Department>,)>`.
+Thus, we don't have to use `.on`, instead we can simply do:
+
+```dart company_test.dart#inner-join-using-select
+final result = await db.employees
+    .join(db.departments)
+    // Join using the foreign key declared with @References
+    .usingDepartment()
+    .select((employee, department) => (
+          employee.name,
+          department.name,
+        ))
+    .fetch();
+
+check(result).unorderedEquals([
+  // employee.name, department.name
+  ('Alice', 'Engineering'),
+  ('Bob', 'Sales'),
+  ('Charlie', 'Engineering'),
+]);
+```
+
+The `.usingDepartment` is only available when joining `departments` with
+`employees` or `employees` with `departments`. If you want to join multiple
+tables or projections you'll have to use the `.on` extension method.
 
 > [!NOTE]
-> There is currently no support for `JOIN .. USING` in `package:typed_sql`.
-> Support for convenient joins leveraging _foreign keys_ annotated with
-> `@References` might be introduced in a future release.
+> The name of the `.usingDepartment` extension method, gets the suffix
+> "Department" from the `name` field in the `@References` annotation.
 
+If you want to create the cartesian product (`CROSS JOIN`), you can use the
+`.all` extension method. The `.all` extension method is not available for
+left and right joins.
 
 ## (Left) join two tables with `.leftJoin`
 We can also do a `.leftJoin` of two queries, this works the same way as `.join`
@@ -123,8 +157,7 @@ departments table, resulting in a query object where `department` is nullable.
 ```dart company_test.dart#left-join-select
 final result = await db.employees
     .leftJoin(db.departments)
-    .on((employee, department) =>
-        employee.departmentId.equals(department.departmentId))
+    .usingDepartment()
     // Now we have a Query<(Expr<Employee>, Expr<Department?>)>
     .select((employee, department) => (
           employee.name,
@@ -149,20 +182,12 @@ SELECT
   departments.name
 FROM employees
 LEFT JOIN departments
-  ON employees.departmentId IS NOT DISTINCT FROM departments.departmentId
+  ON employees.departmentId = departments.departmentId
 ```
 
-> [!WARNING]
-> In `package:typed_sql` the `.equals` extension method is implemented using the
-> SQL operator `IS NOT DISTINCT FROM`, and not `=`. This means that
-> `toExpr(null).equals(toExpr(null))` will evalute to `true`.
->
-> This is generally useful when working with nullable expression objects, and
-> emulates the comparison semantics we have in Dart. But if you are joining
-> two queries using nullable fields, you might want to add use
-> `a.field.equals(b.field) & a.field.isNotNull()`. Otherwise, you will join
-> rows where `a.field` and `b.field` are both `NULL`.
-
+Again the `.usingDepartment` extension method is only available for joins on
+between `departments` and `employees` or `employees` and `departments`.
+For other joins you'll have to use the `.on` extension method.
 
 ## (Right) join two tables with `.rightJoin`
 Similarly, to how we can do a `.leftJoin`, we can also do a `.rightJoin`. This
@@ -173,8 +198,7 @@ the joined query. The following example show how to do a `RIGHT JOIN`:
 ```dart company_test.dart#right-join-select
 final result = await db.employees
     .rightJoin(db.departments)
-    .on((employee, department) =>
-        employee.departmentId.equals(department.departmentId))
+    .usingDepartment()
     // Now we have a Query<(Expr<Employee?>, Expr<Department>)>
     .select((employee, department) => (
           employee.name,
@@ -198,7 +222,7 @@ SELECT
   departments.name
 FROM employees
 RIGHT JOIN departments
-  ON employees.departmentId IS NOT DISTINCT FROM departments.departmentId
+  ON employees.departmentId = departments.departmentId
 ```
 
 > [!NOTE]

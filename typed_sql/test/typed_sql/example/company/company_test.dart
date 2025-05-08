@@ -22,18 +22,8 @@ part 'company_test.g.dart';
 
 // #region schema
 abstract final class CompanyDatabase extends Schema {
-  Table<Employee> get employees;
   Table<Department> get departments;
-}
-
-@PrimaryKey(['employeeId'])
-abstract final class Employee extends Row {
-  @AutoIncrement()
-  int get employeeId;
-
-  String get name;
-
-  int? get departmentId;
+  Table<Employee> get employees;
 }
 
 @PrimaryKey(['departmentId'])
@@ -45,6 +35,23 @@ abstract final class Department extends Row {
 
   String get location;
 }
+
+@PrimaryKey(['employeeId'])
+abstract final class Employee extends Row {
+  @AutoIncrement()
+  int get employeeId;
+
+  String get name;
+
+  @References(
+    table: 'departments',
+    field: 'departmentId',
+    name: 'department',
+    as: 'employees',
+  )
+  int? get departmentId;
+}
+
 // #endregion
 
 // #region initial-data
@@ -59,7 +66,7 @@ final _initialEmployees = [
   (id: 2, name: 'Bob', departmentId: 2),
   (id: 3, name: 'Charlie', departmentId: 1),
   (id: 4, name: 'David', departmentId: null),
-  (id: 5, name: 'Eve', departmentId: 4),
+  (id: 5, name: 'Eve', departmentId: null),
 ];
 // #endregion
 
@@ -125,12 +132,32 @@ void main() {
     // #endregion
   });
 
+  r.addTest('employees.join(departments).using().select()', (db) async {
+    // #region inner-join-using-select
+    final result = await db.employees
+        .join(db.departments)
+        // Join using the foreign key declared with @References
+        .usingDepartment()
+        .select((employee, department) => (
+              employee.name,
+              department.name,
+            ))
+        .fetch();
+
+    check(result).unorderedEquals([
+      // employee.name, department.name
+      ('Alice', 'Engineering'),
+      ('Bob', 'Sales'),
+      ('Charlie', 'Engineering'),
+    ]);
+    // #endregion
+  });
+
   r.addTest('employees.leftJoin(departments).select()', (db) async {
     // #region left-join-select
     final result = await db.employees
         .leftJoin(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
+        .usingDepartment()
         // Now we have a Query<(Expr<Employee>, Expr<Department?>)>
         .select((employee, department) => (
               employee.name,
@@ -153,8 +180,7 @@ void main() {
     // #region right-join-select
     final result = await db.employees
         .rightJoin(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
+        .usingDepartment()
         // Now we have a Query<(Expr<Employee?>, Expr<Department>)>
         .select((employee, department) => (
               employee.name,
