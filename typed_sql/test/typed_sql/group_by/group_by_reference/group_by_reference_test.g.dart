@@ -334,6 +334,30 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Author.authorId] = [Book.authorId].
+  Query<(Expr<Author>, Expr<Book>)> usingAuthor() =>
+      on((a, b) => a.authorId.equals(b.authorId));
+}
+
+extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Author.authorId] = [Book.authorId].
+  Query<(Expr<Author>, Expr<Book?>)> usingAuthor() =>
+      on((a, b) => a.authorId.equals(b.authorId));
+}
+
+extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Author.authorId] = [Book.authorId].
+  Query<(Expr<Author?>, Expr<Book>)> usingAuthor() =>
+      on((a, b) => a.authorId.equals(b.authorId));
+}
+
 final class _$Book extends Book {
   _$Book._(
     this.bookId,
@@ -670,6 +694,30 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
+}
+
+extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Book.authorId] = [Author.authorId].
+  Query<(Expr<Book>, Expr<Author>)> usingAuthor() =>
+      on((a, b) => b.authorId.equals(a.authorId));
+}
+
+extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Book.authorId] = [Author.authorId].
+  Query<(Expr<Book>, Expr<Author?>)> usingAuthor() =>
+      on((a, b) => b.authorId.equals(a.authorId));
+}
+
+extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
+  /// Join using the `author` _foreign key_.
+  ///
+  /// This will match rows where [Book.authorId] = [Author.authorId].
+  Query<(Expr<Book?>, Expr<Author>)> usingAuthor() =>
+      on((a, b) => b.authorId.equals(a.authorId));
 }
 
 /// Extension methods for assertions on [Author] using
