@@ -17,7 +17,6 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' show Pool;
 
 import '../exceptions.dart';
@@ -104,7 +103,6 @@ abstract base class DatabaseAdapter extends Executor {
   /// any data stored in the database will be gone.
   ///
   /// {@macro sqlite-dependency}
-  @visibleForTesting
   factory DatabaseAdapter.sqlite3TestDatabase() =>
       futureDatabaseAdapter(sqlite3TestingDatabaseAdapter());
 
@@ -155,7 +153,6 @@ abstract base class DatabaseAdapter extends Executor {
   /// See Github Actions documentation on
   /// [creating PostgreSQL service containers](https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers)
   /// for details.
-  @visibleForTesting
   factory DatabaseAdapter.postgresTestDatabase({
     String? host,
     int? port,
