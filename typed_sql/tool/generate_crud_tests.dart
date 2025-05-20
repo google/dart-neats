@@ -44,6 +44,8 @@ final instances = [
     'type': 'int',
     'initialValue': '42',
     'updatedValue': '21',
+    'emptyValue': '0',
+    'otherValue': '-5',
     'equality': 'equals',
   },
   {
@@ -51,6 +53,8 @@ final instances = [
     'type': 'String',
     'initialValue': '\'hello\'',
     'updatedValue': '\'hello world\'',
+    'emptyValue': '\'\'',
+    'otherValue': '\'-\'',
     'equality': 'equals',
   },
   {
@@ -58,6 +62,8 @@ final instances = [
     'type': 'bool',
     'initialValue': 'true',
     'updatedValue': 'false',
+    'emptyValue': 'false',
+    'otherValue': 'true',
     'equality': 'equals',
   },
   {
@@ -65,6 +71,8 @@ final instances = [
     'type': 'double',
     'initialValue': '42.2',
     'updatedValue': '43.2',
+    'emptyValue': '0.0',
+    'otherValue': '-5.2',
     'equality': 'equals',
   },
   {
@@ -72,6 +80,10 @@ final instances = [
     'type': 'DateTime',
     'initialValue': 'DateTime(2024).toUtc()',
     'updatedValue': 'DateTime(2025).toUtc()',
+    // It's important that we test 0 and -5 as these are encoded differnetly in
+    // postgres where it needs to use BC suffixes!
+    'emptyValue': 'DateTime.utc(0)',
+    'otherValue': 'DateTime.utc(-5)',
     'equality': 'equals',
   },
   {
@@ -79,6 +91,8 @@ final instances = [
     'type': 'Uint8List',
     'initialValue': 'Uint8List.fromList([1, 2, 3])',
     'updatedValue': 'Uint8List.fromList([1, 2, 3, 4])',
+    'emptyValue': 'Uint8List.fromList([])',
+    'otherValue': 'Uint8List.fromList([0])',
     'equality': 'deepEquals',
   },
 ];
@@ -118,6 +132,8 @@ void main() {
 
   final initialValue = {{initialValue}};
   final updatedValue = {{updatedValue}};
+  final emptyValue = {{emptyValue}};
+  final otherValue = {{otherValue}};
 
   r.addTest('.insert()', (db) async {
     await db.items
@@ -129,6 +145,30 @@ void main() {
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.{{equality}}(initialValue);
+  });
+
+  r.addTest('.insert(value: empty)', (db) async {
+    await db.items
+        .insert(
+          id: toExpr(1),
+          value: toExpr(emptyValue),
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.{{equality}}(emptyValue);
+  });
+
+  r.addTest('.insert(value: other)', (db) async {
+    await db.items
+        .insert(
+          id: toExpr(1),
+          value: toExpr(otherValue),
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.{{equality}}(otherValue);
   });
 
   r.addTest('.insert().returnInserted()', (db) async {

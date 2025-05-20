@@ -32,6 +32,8 @@ void main() {
 
   final initialValue = Uint8List.fromList([1, 2, 3]);
   final updatedValue = Uint8List.fromList([1, 2, 3, 4]);
+  final emptyValue = Uint8List.fromList([]);
+  final otherValue = Uint8List.fromList([0]);
 
   r.addTest('.insert()', (db) async {
     await db.items
@@ -43,6 +45,30 @@ void main() {
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.deepEquals(initialValue);
+  });
+
+  r.addTest('.insert(value: empty)', (db) async {
+    await db.items
+        .insert(
+          id: toExpr(1),
+          value: toExpr(emptyValue),
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.deepEquals(emptyValue);
+  });
+
+  r.addTest('.insert(value: other)', (db) async {
+    await db.items
+        .insert(
+          id: toExpr(1),
+          value: toExpr(otherValue),
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.deepEquals(otherValue);
   });
 
   r.addTest('.insert().returnInserted()', (db) async {
