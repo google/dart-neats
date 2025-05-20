@@ -98,6 +98,9 @@ final class TransactionAbortedException extends DatabaseException {
   final Exception reason;
 
   TransactionAbortedException._(this.reason);
+
+  @override
+  String toString() => 'TransactionAbortedException(reason: $reason)';
 }
 
 /// Throw a [TransactionAbortedException] with the given [reason].
