@@ -32,6 +32,8 @@ void main() {
 
   final initialValue = DateTime(2024).toUtc();
   final updatedValue = DateTime(2025).toUtc();
+  final emptyValue = DateTime.utc(0);
+  final otherValue = DateTime.utc(-5);
 
   r.addTest('.insert()', (db) async {
     await db.items
@@ -43,6 +45,30 @@ void main() {
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(initialValue);
+  });
+
+  r.addTest('.insert(value: empty)', (db) async {
+    await db.items
+        .insert(
+          id: toExpr(1),
+          value: toExpr(emptyValue),
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.equals(emptyValue);
+  });
+
+  r.addTest('.insert(value: other)', (db) async {
+    await db.items
+        .insert(
+          id: toExpr(1),
+          value: toExpr(otherValue),
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.equals(otherValue);
   });
 
   r.addTest('.insert().returnInserted()', (db) async {
