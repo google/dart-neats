@@ -142,7 +142,7 @@ final class _Sqlite extends SqlDialect {
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS $a2 WHERE',
         statement.table.primaryKey
             .map((f) => '$a1.${escape(f)} = $a2.${escape(f)}')
-            .join(', '),
+            .join(' AND '),
         ')',
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
@@ -174,7 +174,7 @@ final class _Sqlite extends SqlDialect {
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS $a2 WHERE',
         statement.table.primaryKey
             .map((f) => '$a1.${escape(f)} = $a2.${escape(f)}')
-            .join(', '),
+            .join(' AND '),
         ')',
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),

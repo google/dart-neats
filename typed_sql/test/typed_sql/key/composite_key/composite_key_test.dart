@@ -27,6 +27,8 @@ abstract final class Item extends Row {
   int get id;
 
   String get name;
+
+  String? get value;
 }
 
 void main() {
@@ -82,6 +84,39 @@ void main() {
 
     final item = await db.items.byKey(1, 'foo').fetch();
     check(item).isNotNull().name.equals('foo');
+  });
+
+  r.addTest('.update()', (db) async {
+    await db.items
+        .insert(
+          id: toExpr(1),
+          name: toExpr('foo'),
+          value: toExpr('old-value'),
+        )
+        .execute();
+
+    await db.items
+        .byKey(1, 'foo')
+        .update((item, set) => set(value: toExpr('new-value')))
+        .execute();
+
+    final item = await db.items.byKey(1, 'foo').fetch();
+    check(item).isNotNull().value.equals('new-value');
+  });
+
+  r.addTest('.delete()', (db) async {
+    await db.items
+        .insert(
+          id: toExpr(1),
+          name: toExpr('foo'),
+          value: toExpr('old-value'),
+        )
+        .execute();
+
+    await db.items.byKey(1, 'foo').delete().execute();
+
+    final item = await db.items.byKey(1, 'foo').fetch();
+    check(item).isNull();
   });
 
   r.run();

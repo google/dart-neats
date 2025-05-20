@@ -147,7 +147,7 @@ final class _PostgresDialect extends SqlDialect {
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS $a2 WHERE',
         statement.table.primaryKey
             .map((f) => '$a1.${escape(f)} = $a2.${escape(f)}')
-            .join(', '),
+            .join(' AND '),
         ')',
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
@@ -179,7 +179,7 @@ final class _PostgresDialect extends SqlDialect {
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS $a2 WHERE',
         statement.table.primaryKey
             .map((f) => '$a1.${escape(f)} = $a2.${escape(f)}')
-            .join(', '),
+            .join(' AND '),
         ')',
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
@@ -246,7 +246,7 @@ extension on ExpressionResolver<StatmentContext> {
   /// Return someting you can use in `SELECT ... FROM <sql>`
   (String sql, List<String> columns) tableExpression(QueryClause q) {
     if (q is TableClause) {
-      return (q.name, q.columns);
+      return (escape(q.name), q.columns);
     }
     if (q is CompositeQueryClause) {
       final (sql1, columns) = tableExpression(q.left);
