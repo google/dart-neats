@@ -1,3 +1,7 @@
+## 0.1.3-wip
+ * Added `TransactionAbortedException.toString()` to render the `reason` when
+   printing an exception.
+
 ## 0.1.2
  * Support for _composite foreign keys_ using the `@ForeignKey` annotation.
  * Extension methods for joining table using _foreign keys_.
