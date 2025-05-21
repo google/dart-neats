@@ -3,6 +3,8 @@
    printing an exception.
  * Fix postgres support for `DateTime.utc(0)`, which must be encoded as 'BC'
    suffixed date-time.
+ * Escaping table names in queries.
+ * Fix `.update` / `.delete` for tables with composite primary keys.
 
 ## 0.1.2
  * Support for _composite foreign keys_ using the `@ForeignKey` annotation.

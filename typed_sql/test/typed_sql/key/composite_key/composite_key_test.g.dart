@@ -54,6 +54,7 @@ final class _$Item extends Item {
   _$Item._(
     this.id,
     this.name,
+    this.value,
   );
 
   @override
@@ -62,9 +63,12 @@ final class _$Item extends Item {
   @override
   final String name;
 
+  @override
+  final String? value;
+
   static const _$table = (
     tableName: 'items',
-    columns: <String>['id', 'name'],
+    columns: <String>['id', 'name', 'value'],
     columnInfo: <({
       ColumnType type,
       bool isNotNull,
@@ -80,6 +84,12 @@ final class _$Item extends Item {
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+      ),
+      (
+        type: ExposedForCodeGen.text,
+        isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
       )
@@ -98,14 +108,15 @@ final class _$Item extends Item {
   static Item? _$fromDatabase(RowReader row) {
     final id = row.readInt();
     final name = row.readString();
-    if (id == null && name == null) {
+    final value = row.readString();
+    if (id == null && name == null && value == null) {
       return null;
     }
-    return _$Item._(id!, name!);
+    return _$Item._(id!, name!, value);
   }
 
   @override
-  String toString() => 'Item(id: "$id", name: "$name")';
+  String toString() => 'Item(id: "$id", name: "$name", value: "$value")';
 }
 
 /// Extension methods for table defined in [Item].
@@ -117,12 +128,14 @@ extension TableItemExt on Table<Item> {
   InsertSingle<Item> insert({
     required Expr<int> id,
     required Expr<String> name,
+    Expr<String?>? value,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
           id,
           name,
+          value,
         ],
       );
 
@@ -191,6 +204,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             UpdateSet<Item> Function({
               Expr<int> id,
               Expr<String> name,
+              Expr<String?> value,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Item>(
@@ -201,10 +215,12 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
           ({
             Expr<int>? id,
             Expr<String>? name,
+            Expr<String?>? value,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
             name,
+            value,
           ]),
         ),
       );
@@ -253,6 +269,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             UpdateSet<Item> Function({
               Expr<int> id,
               Expr<String> name,
+              Expr<String?> value,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.updateSingle<Item>(
@@ -263,10 +280,12 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
           ({
             Expr<int>? id,
             Expr<String>? name,
+            Expr<String?>? value,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
             name,
+            value,
           ]),
         ),
       );
@@ -287,6 +306,9 @@ extension ExpressionItemExt on Expr<Item> {
 
   Expr<String> get name =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  Expr<String?> get value =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
 }
 
 extension ExpressionNullableItemExt on Expr<Item?> {
@@ -295,6 +317,9 @@ extension ExpressionNullableItemExt on Expr<Item?> {
 
   Expr<String?> get name =>
       ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  Expr<String?> get value =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
 
   /// Check if the row is not `NULL`.
   ///
@@ -323,4 +348,7 @@ extension ItemChecks on Subject<Item> {
 
   /// Create assertions on [Item.name].
   Subject<String> get name => has((m) => m.name, 'name');
+
+  /// Create assertions on [Item.value].
+  Subject<String?> get value => has((m) => m.value, 'value');
 }
