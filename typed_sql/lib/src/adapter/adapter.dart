@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'dart:typed_data';
-;
 import 'package:postgres/postgres.dart' show Pool;
 
 import '../exceptions.dart';
