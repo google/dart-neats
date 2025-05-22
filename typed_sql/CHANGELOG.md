@@ -1,4 +1,4 @@
-## 0.1.3-wip
+## 0.1.3
  * Added `TransactionAbortedException.toString()` to render the `reason` when
    printing an exception.
  * Fix postgres support for `DateTime.utc(0)`, which must be encoded as 'BC'

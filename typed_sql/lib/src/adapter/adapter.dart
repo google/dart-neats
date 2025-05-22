@@ -12,11 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// @docImport 'package:test/test.dart';
-library;
-
 import 'dart:typed_data';
-
 import 'package:postgres/postgres.dart' show Pool;
 
 import '../exceptions.dart';
@@ -195,7 +191,7 @@ abstract base class DatabaseAdapter extends Executor {
   /// > compatibility guarantees.
   ///
   /// This is intended for debugging purposes, and pairs nicely with
-  /// [printOnFailure] from `package:test/test.dart`.
+  /// `printOnFailure` from `package:test/test.dart`.
   factory DatabaseAdapter.withLogging(
     DatabaseAdapter adapter,
     void Function(String message) log,
