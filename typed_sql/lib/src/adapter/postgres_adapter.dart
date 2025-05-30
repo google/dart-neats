@@ -18,6 +18,7 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:postgres/postgres.dart';
 
+import '../types/json_value.dart' show JsonValue;
 import '../utils/notifier.dart';
 import 'adapter.dart';
 
@@ -440,6 +441,19 @@ final class _PostgresRowReader extends RowReader {
   }
 
   @override
+  JsonValue? readJsonValue() {
+    final value = _row[_i++];
+    if (value == null ||
+        value is bool ||
+        value is num ||
+        value is List ||
+        value is Map) {
+      return JsonValue(value);
+    }
+    throw AssertionError('readJsonValue() expected a JSON type, got "$value"');
+  }
+
+  @override
   bool tryReadNull() {
     if (_row[_i] == null) {
       _i++;
@@ -462,6 +476,7 @@ List<Object?> _paramsForPostgres(List<Object?> params) => params
           int i => i,
           double d => d,
           Uint8List u => TypedValue(Type.byteArray, u, isSqlNull: false),
+          JsonValue v => TypedValue(Type.jsonb, v.value, isSqlNull: false),
           _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
         })
     .toList();

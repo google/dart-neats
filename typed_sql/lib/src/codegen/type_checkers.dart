@@ -51,6 +51,9 @@ final sqlOverrideTypeChecker = TypeChecker.fromUrl(
 final customDataTypeTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#CustomDataType'),
 );
+final jsonValueTypeChecker = TypeChecker.fromUrl(
+  Uri.parse('package:typed_sql/src/types/json_value.dart#JsonValue'),
+);
 final dateTimeTypeChecker = const TypeChecker.fromUrl('dart:core#DateTime');
 final uint8ListTypeChecker =
     const TypeChecker.fromUrl('dart:typed_data#Uint8List');

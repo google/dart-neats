@@ -1,10 +1,9 @@
-## 0.1.6-dev
- * Support for `@DefaultValue(0)` on fields of type `double` (with value being
-   cast during code generation).
-
 ## 0.1.5
  * Upgraded `package:build` dependency to allow `>=3.0.0 <5.0.0`.
  * Added check for a `Row` class not included in the `build.yaml` sources.
+ * Support for `@DefaultValue(0)` on fields of type `double` (with value being
+   cast during code generation).
+ * Initial support for `JSONB` columns with `JsonValue` wrapper.
 
 ## 0.1.4
  * Upgraded dependencies (incl. `package:analyzer`).

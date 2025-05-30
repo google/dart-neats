@@ -37,6 +37,7 @@ sealed class ColumnType<T extends Object?> extends FieldType<T> {
   static const ColumnType<double> real = _RealExprType._();
   static const ColumnType<String> text = _TextExprType._();
   static const ColumnType<Null> nullType = _NullExprType._();
+  static const ColumnType<JsonValue> jsonValue = _JsonValueExprType._();
 }
 
 final class _BlobExprType extends ColumnType<Uint8List> {
@@ -79,6 +80,13 @@ final class _TextExprType extends ColumnType<String> {
 
   @override
   String? _read(RowReader r) => r.readString();
+}
+
+final class _JsonValueExprType extends ColumnType<JsonValue> {
+  const _JsonValueExprType._() : super._();
+
+  @override
+  JsonValue? _read(RowReader r) => r.readJsonValue();
 }
 
 final class _NullExprType extends ColumnType<Null> {
@@ -505,6 +513,8 @@ final class Literal<T> extends SingleValueExpr<T> {
         return Literal._(value, ColumnType.blob as _ExprType<T>);
       case DateTime _:
         return Literal._(value, ColumnType.dateTime as _ExprType<T>);
+      case JsonValue _:
+        return Literal._(value, ColumnType.jsonValue as _ExprType<T>);
 
       case CustomDataType _:
         throw ArgumentError.value(

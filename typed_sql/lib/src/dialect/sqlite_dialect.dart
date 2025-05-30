@@ -16,6 +16,7 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:collection/collection.dart';
 
+import '../types/json_value.dart' show JsonValue;
 import 'dialect.dart';
 
 SqlDialect sqliteDialect() => _Sqlite();
@@ -571,6 +572,7 @@ extension on ColumnType {
         ColumnType<int> _ => 'INTEGER',
         ColumnType<double> _ => 'REAL',
         ColumnType<String> _ => 'TEXT',
+        ColumnType<JsonValue> _ => 'JSONB',
         ColumnType<Null> _ => throw UnsupportedError(
             'Null type cannot be used as column type',
           ),
