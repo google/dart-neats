@@ -418,6 +418,19 @@ final class _SqliteRowReader extends RowReader {
   }
 
   @override
+  JsonValue? readJsonValue() {
+    final value = jsonb.decode(_row.values[_i++] as Uint8List);
+    if (value == null ||
+        value is bool ||
+        value is num ||
+        value is List ||
+        value is Map) {
+      return JsonValue(value);
+    }
+    throw AssertionError('readJsonValue() expected a JSON type, got "$value"');
+  }
+
+  @override
   bool tryReadNull() {
     if (_row.values[_i] == null) {
       _i++;
@@ -436,6 +449,7 @@ List<Object?> _paramsForSqlite(List<Object?> params) => params
           int i => i,
           double d => d,
           Uint8List u => u,
+          JsonValue v => jsonb.encode(v.value),
           _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
         })
     .toList();

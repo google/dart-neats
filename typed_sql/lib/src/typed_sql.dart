@@ -232,4 +232,5 @@ final class ExposedForCodeGen {
   static const ColumnType<double> real = ColumnType.real;
   static const ColumnType<String> text = ColumnType.text;
   static const ColumnType<Null> nullType = ColumnType.nullType;
+  static const ColumnType<JsonValue> jsonValue = ColumnType.jsonValue;
 }

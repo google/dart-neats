@@ -320,6 +320,17 @@ abstract base class RowReader {
   /// Throws [AssertionError], if the type is not [Uint8List].
   Uint8List? readUint8List();
 
+  /// Read [JsonValue] or `null`.
+  ///
+  /// Throws [AssertionError], if the type is not [JsonValue].
+  JsonValue? readJsonValue();
+
   /// Return `true` and consume next column, if next column is `null`.
   bool tryReadNull();
+}
+
+class JsonValue {
+  final Object? value;
+
+  JsonValue(this.value);
 }
