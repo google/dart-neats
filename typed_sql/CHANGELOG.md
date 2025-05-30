@@ -1,3 +1,6 @@
+## 0.1.4
+ * Initial support for `JSONB` columns with `JsonValue` wrapper.
+
 ## 0.1.3
  * Added `TransactionAbortedException.toString()` to render the `reason` when
    printing an exception.

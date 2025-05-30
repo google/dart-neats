@@ -290,6 +290,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       'bool' => '$rowReader.readBool()',
       'DateTime' => '$rowReader.readDateTime()',
       'Uint8List' => '$rowReader.readUint8List()',
+      'JsonValue' => '$rowReader.readJsonValue()',
       _ => throw UnsupportedError(
           'Unsupported type "${field.typeName}"',
         ),
@@ -1155,6 +1156,7 @@ String backingExprType(String backingType) {
     'bool' => 'ExposedForCodeGen.boolean',
     'DateTime' => 'ExposedForCodeGen.dateTime',
     'Uint8List' => 'ExposedForCodeGen.blob',
+    'JsonValue' => 'ExposedForCodeGen.jsonValue',
     _ => throw UnsupportedError(
         'Unsupported backingType: "$backingType"',
       ),

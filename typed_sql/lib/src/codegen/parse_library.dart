@@ -509,6 +509,12 @@ String? _tryGetColumnType(DartType t) {
     return 'DateTime';
   } else if (uint8ListTypeChecker.isExactlyType(t)) {
     return 'Uint8List';
+  } else if (t.toString().contains('JsonValue') &&
+      (t.element3
+              ?.getExtendedDisplayName2()
+              .contains('/typed_sql/lib/src/adapter/adapter.dart') ??
+          false)) {
+    return 'JsonValue';
   }
   return null;
 }
