@@ -16,6 +16,7 @@ import 'dart:typed_data';
 import 'package:postgres/postgres.dart' show Pool;
 
 import '../exceptions.dart';
+import '../types/json_value.dart' show JsonValue;
 import 'future_adapter.dart';
 import 'logging_adapter.dart';
 import 'postgres_adapter.dart';
@@ -319,6 +320,11 @@ abstract base class RowReader {
   ///
   /// Throws [AssertionError], if the type is not [Uint8List].
   Uint8List? readUint8List();
+
+  /// Read [JsonValue] or `null`.
+  ///
+  /// Throws [AssertionError], if the type is not [JsonValue].
+  JsonValue? readJsonValue();
 
   /// Return `true` and consume next column, if next column is `null`.
   bool tryReadNull();
