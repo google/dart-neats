@@ -17,6 +17,7 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:sqlite3/sqlite3.dart';
 
+import '../types/json_value.dart' show JsonValue;
 import '../utils/notifier.dart';
 import 'adapter.dart';
 
