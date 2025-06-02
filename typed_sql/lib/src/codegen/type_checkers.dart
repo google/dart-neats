@@ -48,6 +48,9 @@ final foreignKeyTypeChecker = TypeChecker.fromUrl(
 final customDataTypeTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#CustomDataType'),
 );
+final jsonValueTypeChecker = TypeChecker.fromUrl(
+  typedSqlSrcUri.resolve('#JsonValue'),
+);
 final dateTimeTypeChecker = const TypeChecker.fromUrl('dart:core#DateTime');
 final uint8ListTypeChecker =
     const TypeChecker.fromUrl('dart:typed_data#Uint8List');
