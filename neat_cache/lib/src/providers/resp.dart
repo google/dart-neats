@@ -145,7 +145,7 @@ class RespClient {
   /// [1]: https://redis.io/topics/protocol
   Future<Object?> command(List<Object> args) async {
     if (_closing) {
-      throw RedisConnectionException._('redis connection is closed');
+      throw RedisConnectionException._('redis connection is closing');
     }
 
     final out = BytesBuilder(copy: false);
@@ -215,13 +215,39 @@ class RespClient {
       }
     }
 
+    // Ensure that we also attempt to close the [Socket] after all pending
+    // commands have been sent.
+    //
+    // This may be necessary, as it appears that [Socket] from 'dart:io' may
+    // throw [StateError], if it's bound to stream when [close] is called.
+    //
+    // See: https://github.com/dart-lang/sdk/issues/41707
+    _pendingStream = _pendingStream.then((_) async {
+      try {
+        await _output.close();
+      } catch (e) {
+        // ignore
+      }
+    });
+
     if (!force) {
       scheduleMicrotask(() async {
-        await _output.close().catchError((_) {/* ignore */});
+        try {
+          await _output.close();
+        } catch (e) {
+          // ignore
+        }
       });
       await _closed.future;
     } else {
-      await _output.close().catchError((_) {/* ignore */});
+      try {
+        // TODO(https://github.com/dart-lang/sdk/issues/61743): Sadly, this can throw, it can even throw synchroniously,
+        //       implying [Socket] from 'dart:io' fails to implement
+        //       [StreamSink] as specified.
+        await _output.close();
+      } catch (e) {
+        // ignore
+      }
 
       // Resolve all outstanding requests
       final pending = _pending.toList(growable: false);
