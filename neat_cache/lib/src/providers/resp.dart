@@ -241,7 +241,7 @@ class RespClient {
       await _closed.future;
     } else {
       try {
-        // NOTE: Sadly, this can throw, it can even throw synchroniously,
+        // TODO(https://github.com/dart-lang/sdk/issues/61743): Sadly, this can throw, it can even throw synchroniously,
         //       implying [Socket] from 'dart:io' fails to implement
         //       [StreamSink] as specified.
         await _output.close();
