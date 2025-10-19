@@ -13,8 +13,10 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:checks/context.dart';
 import 'package:meta/meta.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
@@ -150,4 +152,14 @@ final class TestRunner<T extends Schema> {
       });
     }
   }
+}
+
+extension JsonValueSubjectExt on Subject<JsonValue> {
+  void deepEquals(JsonValue other) =>
+      context.expect(() => ['matches JSON'], (v) {
+        if (json.encode(v.value) == json.encode(other.value)) {
+          return null;
+        }
+        return Rejection();
+      });
 }

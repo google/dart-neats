@@ -93,3 +93,4 @@ export 'src/typed_sql.dart'
         UnionClause,
         UpdateStatement,
         WhereClause;
+export 'src/types/json_value.dart' show JsonValue;
