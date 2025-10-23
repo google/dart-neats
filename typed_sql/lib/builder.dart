@@ -61,8 +61,8 @@ final class _TypedSqlBuilder extends g.Generator {
     }
 
     // Check if Subjects from package:checks is imported!
-    final hasSubjectFromChecks = targetLibrary.element.importedLibraries
-        .map((l) => l.exportNamespace.get('Subject')?.library?.identifier)
+    final hasSubjectFromChecks = targetLibrary.element.firstFragment.importedLibraries
+        .map((l) => l.exportNamespace.get2('Subject')?.library?.identifier)
         .nonNulls
         .any((id) => id.startsWith('package:checks/'));
 
@@ -73,11 +73,11 @@ final class _TypedSqlBuilder extends g.Generator {
         final library = await buildStep.resolver.libraryFor(input);
         // We only consider libraries that are importing the library we are
         // generating for!
-        if (!library.importedLibraries.contains(targetLibrary.element)) {
+        if (!library.firstFragment.importedLibraries.contains(targetLibrary.element)) {
           continue;
         }
         final astNode = await buildStep.resolver.astNodeFor(
-          library.definingCompilationUnit,
+          library.firstFragment,
           resolve: true,
         );
         if (astNode != null) {

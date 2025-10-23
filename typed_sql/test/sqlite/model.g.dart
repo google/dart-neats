@@ -1058,6 +1058,7 @@ extension QueryOwnerPackageNamed<A, B> on Query<
                 e.owner,
                 e.package,
               ));
+
   static Query<
       ({
         Expr<A> owner,
@@ -1070,6 +1071,7 @@ extension QueryOwnerPackageNamed<A, B> on Query<
                 owner: e.$1,
                 package: e.$2,
               ));
+
   static T Function(Expr<A> a, Expr<B> b) _wrapBuilder<T, A, B>(
           T Function(
                   ({

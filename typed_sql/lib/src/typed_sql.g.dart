@@ -164,6 +164,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+
   QueryClause _castAs(Query<(Expr<A>,)> as) {
     final (handle, projection) = _build((a) => [
           if (a._type is _ExprType<Null>)
@@ -1028,6 +1029,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+
   QueryClause _castAs(Query<(Expr<A>, Expr<B>)> as) {
     final (handle, projection) = _build((a, b) => [
           if (a._type is _ExprType<Null>)
@@ -1928,6 +1930,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+
   QueryClause _castAs(Query<(Expr<A>, Expr<B>, Expr<C>)> as) {
     final (handle, projection) = _build((a, b, c) => [
           if (a._type is _ExprType<Null>)
@@ -2867,6 +2870,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+
   QueryClause _castAs(Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> as) {
     final (handle, projection) = _build((a, b, c, d) => [
           if (a._type is _ExprType<Null>)
@@ -3842,6 +3846,7 @@ extension Query5<A, B, C, D, E>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+
   QueryClause _castAs(Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> as) {
     final (handle, projection) = _build((a, b, c, d, e) => [
           if (a._type is _ExprType<Null>)
@@ -4845,6 +4850,7 @@ extension Query6<A, B, C, D, E, F>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+
   QueryClause _castAs(
       Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> as) {
     final (handle, projection) = _build((a, b, c, d, e, f) => [
@@ -5891,6 +5897,7 @@ extension Query7<A, B, C, D, E, F, G>
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+
   QueryClause _castAs(
       Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
           as) {
@@ -7059,6 +7066,7 @@ extension Query8<A, B, C, D, E, F, G, H> on Query<
         (ExistsExpression._(_from(_expressions.toList())),),
         SelectClause._,
       ));
+
   QueryClause _castAs(
       Query<
               (

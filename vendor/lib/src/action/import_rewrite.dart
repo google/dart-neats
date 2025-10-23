@@ -71,8 +71,8 @@ class ImportRewriteAction extends Action {
         if (u.isPart) {
           continue; // Skip parts, they can't have imports
         }
-        if (u.errors.isNotEmpty) {
-          ctx.warning('  Failed to parse: ${u.errors.first.toString()}');
+        if (u.diagnostics.isNotEmpty) {
+          ctx.warning('  Failed to parse: ${u.diagnostics.first.toString()}');
           continue;
         }
 

@@ -161,13 +161,13 @@ ParsedSchema _parseSchema(
   }
 
   final tables = <ParsedTable>[];
-  for (final a in cls.accessors) {
-    if (a.isSetter) {
+  if (cls.setters.isNotEmpty) {
       throw InvalidGenerationSource(
         'subclasses of `Schema` cannot have setters',
-        element: a,
+        element: cls.setters.first,
       );
-    }
+  }
+  for (final a in cls.getters) {
     if (!a.isAbstract) {
       throw InvalidGenerationSource(
         'subclasses of `Schema` can only abstract getters',
@@ -204,7 +204,7 @@ ParsedSchema _parseSchema(
     }
 
     tables.add(ParsedTable(
-      name: a.name,
+      name: a.name!,
       documentation: a.documentationComment,
       rowClass: rowClassCache.putIfAbsent(
         typeArgElement,
@@ -214,7 +214,7 @@ ParsedSchema _parseSchema(
   }
 
   return ParsedSchema(
-    name: cls.name,
+    name: cls.name!,
     tables: tables,
   );
 }
@@ -247,13 +247,13 @@ ParsedRowClass _parseRowClass(
 
   // Find parsed fields
   final fields = <ParsedField>[];
-  for (final a in cls.accessors) {
-    if (a.isSetter) {
+  if (cls.setters.isNotEmpty) {
       throw InvalidGenerationSource(
         'subclasses of `Row` cannot have setters',
-        element: a,
+        element: cls.setters.first,
       );
-    }
+  }
+  for (final a in cls.getters) {
     if (!a.isAbstract) {
       throw InvalidGenerationSource(
         'subclasses of `Row` can only abstract getters',
@@ -315,7 +315,7 @@ ParsedRowClass _parseRowClass(
             element: a,
           );
         }
-        if (constructor.parameters.length != 1) {
+        if (constructor.formalParameters.length != 1) {
           throw InvalidGenerationSource(
             'CustomDataType<T> subclasses must have a `fromDatabase` '
             'constructor must take a single argument!',
@@ -323,7 +323,7 @@ ParsedRowClass _parseRowClass(
           );
         }
         final constructorArgType =
-            _tryGetColumnType(constructor.parameters.first.type);
+            _tryGetColumnType(constructor.formalParameters.first.type);
         if (constructorArgType != backingType) {
           throw throw InvalidGenerationSource(
             'CustomDataType<T> subclasses must have a `fromDatabase` '
@@ -373,9 +373,9 @@ ParsedRowClass _parseRowClass(
     }
 
     final field = ParsedField(
-      name: a.name,
+      name: a.name!,
       documentation: a.documentationComment,
-      typeName: type,
+      typeName: type!,
       isNullable: a.returnType.nullabilitySuffix != NullabilitySuffix.none,
       backingType: backingType,
       // TODO: Support Unique(given: [...])
@@ -388,7 +388,7 @@ ParsedRowClass _parseRowClass(
 
   // Extract @References annotations
   final foreignKeys = <ParsedForeignKey>[];
-  for (final a in cls.accessors) {
+  for (final a in [...cls.getters, ...cls.setters]) {
     for (final annotation in referencesTypeChecker.annotationsOf(a)) {
       final key = a.name;
       final table = annotation.getField('table')?.toStringValue();
@@ -489,7 +489,7 @@ ParsedRowClass _parseRowClass(
   }
 
   return ParsedRowClass(
-    name: cls.name,
+    name: cls.name!,
     primaryKey: primaryKey,
     fields: fields,
     foreignKeys: foreignKeys,
