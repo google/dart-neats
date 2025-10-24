@@ -162,10 +162,10 @@ ParsedSchema _parseSchema(
 
   final tables = <ParsedTable>[];
   if (cls.setters.isNotEmpty) {
-      throw InvalidGenerationSource(
-        'subclasses of `Schema` cannot have setters',
-        element: cls.setters.first,
-      );
+    throw InvalidGenerationSource(
+      'subclasses of `Schema` cannot have setters',
+      element: cls.setters.first,
+    );
   }
   for (final a in cls.getters) {
     if (!a.isAbstract) {
@@ -248,10 +248,10 @@ ParsedRowClass _parseRowClass(
   // Find parsed fields
   final fields = <ParsedField>[];
   if (cls.setters.isNotEmpty) {
-      throw InvalidGenerationSource(
-        'subclasses of `Row` cannot have setters',
-        element: cls.setters.first,
-      );
+    throw InvalidGenerationSource(
+      'subclasses of `Row` cannot have setters',
+      element: cls.setters.first,
+    );
   }
   for (final a in cls.getters) {
     if (!a.isAbstract) {
