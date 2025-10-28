@@ -14,7 +14,7 @@
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/error/error.dart';
+import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:source_span/source_span.dart';
 
 import 'model.dart';
@@ -26,7 +26,7 @@ Future<DartdocAnalysisResult> getAnalysisResult(
 ) async {
   final result = await context.currentSession.getErrors(file.path);
   if (result is ErrorsResult) {
-    final errors = result.errors.map((e) {
+    final errors = result.diagnostics.map((e) {
       final (start, end) = (e.offset, e.offset + e.length);
       final generatedSpan = file.sourceFile.span(start, end);
       final commentSpan = getOriginalSubSpan(
@@ -61,7 +61,7 @@ FileSpan? getOriginalSubSpan({
 /// Dartdoc error result
 class DartdocErrorResult {
   /// Error description
-  final AnalysisError error;
+  final Diagnostic error;
 
   /// Source span of the comment containing code sample from the original file.
   final FileSpan? commentSpan;
