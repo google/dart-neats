@@ -60,4 +60,4 @@ jobs:
       run: dart analyze --fatal-infos
       if: always() && steps.install.outcome == 'success'
     - name: Run tests
-      run: dart test
+      run: dart test -j 1
