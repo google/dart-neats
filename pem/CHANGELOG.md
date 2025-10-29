@@ -1,3 +1,6 @@
+## v3.0.0
+ * Update `petitparser` dependency to allow version `>=5.1.0 <8.0.0`.
+
 ## v2.0.5
  * Allow `petitparser` version `>=5.1.0 <7.0.0`.
 
