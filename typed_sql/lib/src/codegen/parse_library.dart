@@ -188,6 +188,12 @@ ParsedSchema _parseSchema(
 
     final typeArg = returnType.typeArguments.first;
     final typeArgElement = typeArg.element;
+    if (typeArgElement == null) {
+      throw InvalidGenerationSource(
+        'Unable to resolve T in `Table<T>` properties, may need to include it in the `build.yaml` sources',
+        element: a,
+      );
+    }
     if (typeArgElement is! ClassElement) {
       throw InvalidGenerationSource(
         'T must be a class in `Table<T>` properties',

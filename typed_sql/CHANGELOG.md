@@ -1,5 +1,6 @@
 ## 0.1.5
  * Upgraded `package:build` dependency to allow `>=3.0.0 <5.0.0`.
+ * Added check for a `Row` class not included in the `build.yaml` sources.
 
 ## 0.1.4
  * Upgraded dependencies (incl. `package:analyzer`).
