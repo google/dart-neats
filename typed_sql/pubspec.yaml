@@ -1,5 +1,5 @@
 name: typed_sql
-version: 0.1.4
+version: 0.1.5-dev
 description: Package for doing SQL with some type safety.
 homepage: https://github.com/google/dart-neats/tree/master/typed_sql
 repository: https://github.com/google/dart-neats.git
@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   analyzer: ^8.0.0
-  build: ^3.0.0
+  build: '>=3.0.0 <5.0.0'
   code_builder: ^4.5.0
   collection: ^1.19.0
   convert: ^3.1.2
