@@ -17,6 +17,9 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:test/test.dart';
+import 'package:typed_sql/src/adapter/mysql_adaptor.dart'
+    show mysqlTestingAdaptor;
+import 'package:typed_sql/src/dialect/mysql_dialect.dart';
 import 'package:typed_sql/typed_sql.dart';
 
 export 'package:checks/checks.dart';
@@ -72,13 +75,19 @@ final class TestRunner<T extends Schema> {
     return DatabaseAdapter.postgresTestDatabase(host: _getPostgresSocket);
   }
 
+  DatabaseAdapter _getMysql() {
+    return mysqlTestingAdaptor();
+  }
+
   void run() {
     DatabaseAdapter Function() getSqlite;
     DatabaseAdapter Function() getPostgres;
+    DatabaseAdapter Function() getMysql;
 
     if (_resetDatabaseForEachTest) {
       getSqlite = DatabaseAdapter.sqlite3TestDatabase;
       getPostgres = _getPostgres;
+      getMysql = _getMysql;
     } else {
       late DatabaseAdapter sqlite;
       getSqlite = () => DatabaseAdapter.withNopClose(sqlite);
@@ -86,13 +95,18 @@ final class TestRunner<T extends Schema> {
       late DatabaseAdapter postgres;
       getPostgres = () => DatabaseAdapter.withNopClose(postgres);
 
+      late DatabaseAdapter mysql;
+      getMysql = () => DatabaseAdapter.withNopClose(mysql);
+
       setUpAll(() async {
         sqlite = DatabaseAdapter.sqlite3TestDatabase();
         postgres = _getPostgres();
+        mysql = _getMysql();
       });
       tearDownAll(() async {
         await sqlite.close();
         await postgres.close();
+        await mysql.close();
       });
     }
 
@@ -133,6 +147,32 @@ final class TestRunner<T extends Schema> {
         final adapter =
             DatabaseAdapter.withLogging(getPostgres(), printOnFailure);
         final db = Database<T>(adapter, SqlDialect.postgres());
+
+        try {
+          if (_setup != null) {
+            await _setup(db);
+          }
+
+          await testcase.fn(db);
+
+          if (_validate != null) {
+            await _validate(db);
+          }
+        } finally {
+          await adapter.close(force: true);
+        }
+      });
+    }
+
+    for (final testcase in _tests) {
+      test('${testcase.name} (variant: mysql)', () async {
+        if (testcase.skipMysql != null) {
+          markTestSkipped(testcase.skipMysql!);
+          return;
+        }
+
+        final adapter = DatabaseAdapter.withLogging(getMysql(), printOnFailure);
+        final db = Database<T>(adapter, mysqlDialect());
 
         try {
           if (_setup != null) {
