@@ -274,7 +274,7 @@ void main() {
     check(result[1].$1).isNotNull().title.equals('Vegetarian Dining');
     check(result[0].$2).isNotNull().equals(1);
     check(result[1].$2).isNotNull().equals(1);
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
+  });
 
   r.addTest('books.groupBy(.author).aggregate(sum(.stock)).select(subquery...)',
       (db) async {

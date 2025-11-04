@@ -227,7 +227,7 @@ extension on ExpressionResolver<StatmentContext> {
       final (sql1, columns) = tableExpression(q.left);
       final (sql2, _) = tableExpression(q.right);
       return (
-        '(SELECT * FROM ($sql1) ${q.operator} SELECT * FROM ($sql2))',
+        '(SELECT * FROM ($sql1) AS $tableAlias1 ${q.operator} SELECT * FROM ($sql2) AS $tableAlias2)',
         columns
       );
     }
@@ -402,7 +402,9 @@ extension on ExpressionResolver<StatmentContext> {
       final ctx = withScope(order, columnsAndAlias);
       ordering = order.orderBy.map((key) {
         final (e, order) = key;
-        return '${ctx.expr(e)} ${order == Order.descending ? 'DESC' : 'ASC'} NULLS LAST';
+        final expr = ctx.expr(e);
+        final direction = order == Order.descending ? 'DESC' : 'ASC';
+        return '($expr IS NULL) ASC, $expr $direction';
       }).join(', ');
     }
 
@@ -533,8 +535,8 @@ extension on BinaryOperationExpression {
         //       even smarter.
         ExpressionBoolAnd() => 'AND',
         ExpressionBoolOr() => 'OR',
-        ExpressionEquals() => '<=>',
-        ExpressionIsNotDistinctFrom() => 'IS NOT DISTINCT FROM',
+        ExpressionEquals() => '=',
+        ExpressionIsNotDistinctFrom() => '<=>',
         ExpressionLessThan() => '<',
         ExpressionLessThanOrEqual() => '<=',
         ExpressionGreaterThan() => '>',

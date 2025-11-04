@@ -88,6 +88,7 @@ final class _MysqlDatabaseAdapter extends DatabaseAdapter {
   int _pendingConnectionRequests = 0;
   final List<MySqlConnection> _idleConnections = [];
   final _stateChanged = Notifier();
+  int _savePointIndex = 0;
 
   _MysqlDatabaseAdapter(this._connect);
 
@@ -207,23 +208,40 @@ final class _MysqlDatabaseAdapter extends DatabaseAdapter {
   }
 
   @override
-  Future<T> transact<T>(Future<T> Function(Executor tx) fn) {
-    throw UnimplementedError();
+  Future<T> transact<T>(Future<T> Function(DatabaseTransaction tx) fn) async {
+    return await _withConnection((conn) async {
+      try {
+        await conn.query('START TRANSACTION');
+        final tx = _DatabaseTransaction(conn, this);
+        final T value;
+        try {
+          value = await fn(tx);
+        } finally {
+          tx._closed = true;
+        }
+        await conn.query('COMMIT');
+        return value;
+      } on Exception catch (e) {
+        await conn.query('ROLLBACK');
+        throwTransactionAbortedException(e);
+      } catch (e) {
+        await conn.query('ROLLBACK');
+        rethrow;
+      }
+    });
   }
 }
 
-/*
-// ignore: unused_element
 final class _DatabaseTransaction extends DatabaseTransaction {
-  final _MysqlDatabaseAdapter _adaptor;
+  final _MysqlDatabaseAdapter _adapter;
   final MySqlConnection _conn;
   var _closed = false;
   var _activeSubtransaction = false;
 
-  _DatabaseTransaction(this._conn, this._adaptor);
+  _DatabaseTransaction(this._conn, this._adapter);
 
   void _throwIfBlocked() {
-    _adaptor._throwIfClosed();
+    _adapter._throwIfClosed();
     if (_closed) {
       throw StateError('Transaction is closed!');
     }
@@ -237,17 +255,12 @@ final class _DatabaseTransaction extends DatabaseTransaction {
     _throwIfBlocked();
     (sql, params) = _rearrangeParams(sql, params);
     try {
-      final stmt = await _conn.prepare(sql, false);
-      try {
-        final result = await stmt.execute(params);
-        return QueryResult(
-          affectedRows: result.affectedRows.toInt(),
-        );
-      } finally {
-        await stmt.deallocate();
-      }
+      final result = await _conn.query(sql, params);
+      return QueryResult(
+        affectedRows: result.affectedRows!,
+      );
     } on Exception catch (e) {
-      _adaptor._throwDatabaseException(e);
+      _adapter._throwDatabaseException(e);
     }
   }
 
@@ -256,15 +269,10 @@ final class _DatabaseTransaction extends DatabaseTransaction {
     _throwIfBlocked();
     (sql, params) = _rearrangeParams(sql, params);
     try {
-      final stmt = await _conn.prepare(sql, false);
-      try {
-        final result = await stmt.execute(params);
-        yield* Stream.fromIterable(result.rows.map(_MysqlRowReader.new));
-      } finally {
-        await stmt.deallocate();
-      }
+      final result = await _conn.query(sql, params);
+      yield* Stream.fromIterable(result.map(_MysqlRowReader.new));
     } on Exception catch (e) {
-      _adaptor._throwDatabaseException(e);
+      _adapter._throwDatabaseException(e);
     }
   }
 
@@ -273,17 +281,45 @@ final class _DatabaseTransaction extends DatabaseTransaction {
     _throwIfBlocked();
 
     try {
-      await _conn.execute(sql);
+      // TODO: Fix this pretty ugly hack!
+      for (final s in sql.split(';')) {
+        await _conn.query(s);
+      }
     } on Exception catch (e) {
-      _adaptor._throwDatabaseException(e);
+      _adapter._throwDatabaseException(e);
     }
   }
 
   @override
-  Future<T> transact<T>(Future<T> Function(DatabaseTransaction tx) fn) {
-    throw UnimplementedError();
+  Future<T> transact<T>(Future<T> Function(DatabaseTransaction tx) fn) async {
+    _throwIfBlocked();
+
+    final sp = 'sp_${_adapter._savePointIndex++}';
+    try {
+      _activeSubtransaction = true;
+      await _conn.query('SAVEPOINT `$sp`');
+      try {
+        final tx = _DatabaseTransaction(_conn, _adapter);
+        final T value;
+        try {
+          value = await fn(tx);
+        } finally {
+          tx._closed = true;
+        }
+        await _conn.query('RELEASE SAVEPOINT `$sp`');
+        return value;
+      } on Exception catch (e) {
+        await _conn.query('ROLLBACK TO `$sp`');
+        throwTransactionAbortedException(e);
+      } catch (e) {
+        await _conn.query('ROLLBACK TO `$sp`');
+        rethrow;
+      }
+    } finally {
+      _activeSubtransaction = false;
+    }
   }
-}*/
+}
 
 final class _MysqlRowReader extends RowReader {
   int _i = 0;
@@ -467,3 +503,5 @@ final class MysqlDatabaseConnectionTimeoutException
 
   MysqlDatabaseConnectionTimeoutException._(this.message);
 }
+
+
