@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert' show utf8;
+import 'dart:convert' show latin1, utf8;
 import 'dart:io';
 import 'dart:typed_data' show Uint8List;
 
@@ -403,6 +403,11 @@ final class _MysqlRowReader extends RowReader {
     if (value is Blob) {
       return Uint8List.fromList(value.toBytes());
     }
+    // If we do CAST(? AS BINARY) the database won't return it as a BLOB, but as
+    // a binary string instead.
+    if (value is String) {
+      return latin1.encode(value);
+    }
     if (value == null) {
       return null;
     }
@@ -503,5 +508,3 @@ final class MysqlDatabaseConnectionTimeoutException
 
   MysqlDatabaseConnectionTimeoutException._(this.message);
 }
-
-

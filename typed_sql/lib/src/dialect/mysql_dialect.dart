@@ -205,6 +205,32 @@ final class StatmentContext {
   final parameters = <Object?>[];
 
   String addParameter(Object? value) {
+    switch (value) {
+      case bool _:
+        parameters.add(value);
+        final index = parameters.length;
+        return 'CAST(?$index AS SIGNED)';
+      case int _:
+        parameters.add(value);
+        final index = parameters.length;
+        return 'CAST(?$index AS SIGNED)';
+      case double _:
+        parameters.add(value);
+        final index = parameters.length;
+        return 'CAST(?$index AS DOUBLE)';
+      case Uint8List _:
+        parameters.add(value);
+        final index = parameters.length;
+        return 'CAST(?$index AS BINARY)';
+      case DateTime _:
+        parameters.add(value.toUtc());
+        final index = parameters.length;
+        return 'CAST(?$index AS DATETIME)';
+      case String _:
+        parameters.add(value);
+        final index = parameters.length;
+        return 'CAST(?$index AS CHAR)';
+    }
     parameters.add(value);
     final index = parameters.length;
     return '?$index';
