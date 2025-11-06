@@ -250,12 +250,8 @@ extension on ExpressionResolver<StatmentContext> {
       return (escape(q.name), q.columns);
     }
     if (q is CompositeQueryClause) {
-      final (sql1, columns) = tableExpression(q.left);
-      final (sql2, _) = tableExpression(q.right);
-      return (
-        '(SELECT * FROM ($sql1) AS $tableAlias1 ${q.operator} SELECT * FROM ($sql2) AS $tableAlias2)',
-        columns
-      );
+      final (sql, columns) = selectExpression(q);
+      return ('($sql)', columns);
     }
     if (q is JoinClause) {
       final (sql1, columns1) = tableExpression(q.from);
@@ -293,7 +289,12 @@ extension on ExpressionResolver<StatmentContext> {
 
   /// Return something on the form `SELECT ...`
   (String sql, List<String> columns) selectExpression(QueryClause q) {
-    if (q is TableClause || q is CompositeQueryClause || q is JoinClause) {
+    if (q is CompositeQueryClause) {
+      final (sql1, columns) = selectExpression(q.left);
+      final (sql2, _) = selectExpression(q.right);
+      return ('($sql1) ${q.operator} ($sql2)', columns);
+    }
+    if (q is TableClause || q is JoinClause) {
       final (sql, columns) = tableExpression(q);
       return (
         'SELECT ${columns.map(escape).join(', ')} FROM $sql',
