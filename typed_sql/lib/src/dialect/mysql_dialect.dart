@@ -40,20 +40,51 @@ final class _MysqlSqlDialect extends SqlDialect {
   String createTables(List<CreateTableStatement> statements) {
     return [
       ...statements.map((table) {
+        final resolvedColumnDefinitions = table.columns.map((c) {
+          final override =
+              c.overrides.firstWhereOrNull((o) => o.dialect == 'mysql');
+          final generic =
+              c.overrides.firstWhereOrNull((o) => o.dialect == null);
+          final sqlType =
+              override?.columnType ?? generic?.columnType ?? c.type.sqlType;
+          return (
+            name: c.name,
+            sqlType: sqlType,
+            originalColumnType: c.type,
+            isNotNull: c.isNotNull,
+            autoIncrement: c.autoIncrement,
+            defaultValue: c.defaultValue,
+          );
+        }).toList();
+
+        final indexedColumnNames = {
+          ...table.primaryKey,
+          ...table.unique.expand((u) => u),
+          ...table.foreignKeys.expand((fk) => fk.columns),
+        }.toSet();
+
+        for (final colDef in resolvedColumnDefinitions) {
+          if (indexedColumnNames.contains(colDef.name) &&
+              colDef.originalColumnType == ColumnType.text &&
+              colDef.sqlType == 'TEXT') {
+            throw ArgumentError(
+              'Column \'${colDef.name}\' in table \'${table.tableName}\' cannot be '
+              'of type TEXT because it is used in a key constraint. MySQL '
+              'does not support indexing full TEXT columns. Consider using an '
+              '"@SqlOverride(dialect: \'mysql\', columnType: \'VARCHAR(255)\')" '
+              'annotation on the field to specify an indexable type.',
+            );
+          }
+        }
+
         return [
           'CREATE TABLE ${escape(table.tableName)} (',
           [
             // Columns
-            ...table.columns.map((c) {
-              final override = c.overrides
-                  .firstWhereOrNull((o) => o.dialect == 'mysql');
-              final generic = c.overrides
-                  .firstWhereOrNull((o) => o.dialect == null);
-              final type = override?.columnType ?? generic?.columnType ?? c.type.sqlType;
-
+            ...resolvedColumnDefinitions.map((c) {
               return [
                 escape(c.name),
-                type,
+                c.sqlType,
                 if (c.isNotNull) 'NOT NULL',
                 if (c.autoIncrement) 'AUTO_INCREMENT',
                 if (c.defaultValue != null)
