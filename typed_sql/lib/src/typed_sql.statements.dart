@@ -26,6 +26,7 @@ final class CreateTableStatement extends SqlStatement {
         bool isNotNull,
         Object? defaultValue,
         bool autoIncrement,
+        List<SqlOverride> overrides,
       })> columns;
   final List<List<String>> unique;
   final List<

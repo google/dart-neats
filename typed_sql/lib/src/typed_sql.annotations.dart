@@ -114,3 +114,25 @@ final class Unique {
 abstract interface class CustomDataType<T extends Object?> {
   T toDatabase();
 }
+
+/// An annotation to provide overrides for SQL schema generation.
+///
+/// This can be used multiple times on a single field to specify different
+/// overrides for different dialects.
+final class SqlOverride {
+  /// The dialect this override applies to (e.g. 'mysql', 'postgres', 'sqlite').
+  /// If omitted (`null`), the override applies to all dialects.
+  final String? dialect;
+
+  /// Overrides the SQL data type definition for the annotated column.
+  ///
+  /// Example:
+  ///  * `VARCHAR(255)`,
+  ///  * `DECIMAL(10, 2)`, etc.
+  final String? columnType;
+
+  const SqlOverride({
+    this.dialect,
+    this.columnType,
+  });
+}

@@ -58,6 +58,7 @@ typedef TableDefinition<T extends Row> = ({
         bool isNotNull,
         Object? defaultValue,
         bool autoIncrement,
+        List<SqlOverride> overrides,
       })> columnInfo,
   List<String> primaryKey,
   List<List<String>> unique,
@@ -91,6 +92,7 @@ final class ExposedForCodeGen {
                           isNotNull: t.columnInfo[i].isNotNull,
                           defaultValue: t.columnInfo[i].defaultValue,
                           autoIncrement: t.columnInfo[i].autoIncrement,
+                          overrides: t.columnInfo[i].overrides,
                         ))
                     .toList(),
                 unique: t.unique,

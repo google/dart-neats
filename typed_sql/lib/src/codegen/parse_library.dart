@@ -25,6 +25,8 @@ import 'package:build/build.dart' show log;
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
+import 'package:typed_sql/src/typed_sql.dart' show SqlOverride;
+
 import 'parsed_library.dart';
 import 'type_checkers.dart';
 
@@ -382,6 +384,12 @@ ParsedRowClass _parseRowClass(
       unique: uniqueTypeChecker.hasAnnotationOf(a),
       autoIncrement: autoIncrement,
       defaultValue: _parseDefaultValue(a, type),
+      sqlOverrides: sqlOverrideTypeChecker.annotationsOf(a).map((annotation) {
+        return SqlOverride(
+          dialect: annotation.getField('dialect')?.toStringValue(),
+          columnType: annotation.getField('columnType')?.toStringValue(),
+        );
+      }).toList(),
     );
     fields.add(field);
   }

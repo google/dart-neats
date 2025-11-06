@@ -84,24 +84,28 @@ final class _$User extends User {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['userId'],
@@ -433,30 +437,35 @@ final class _$Package extends Package {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: 0,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['packageName'],
@@ -793,18 +802,21 @@ final class _$Like extends Like {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['userId', 'packageName'],

@@ -45,6 +45,9 @@ final primaryKeyTypeChecker = TypeChecker.fromUrl(
 final foreignKeyTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#ForeignKey'),
 );
+final sqlOverrideTypeChecker = TypeChecker.fromUrl(
+  typedSqlSrcUri.resolve('#SqlOverride'),
+);
 final customDataTypeTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#CustomDataType'),
 );

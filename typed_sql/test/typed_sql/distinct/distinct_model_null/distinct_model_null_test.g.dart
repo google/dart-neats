@@ -78,30 +78,35 @@ final class _$Item extends Item {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.integer,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.real,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['id'],

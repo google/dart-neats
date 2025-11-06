@@ -79,24 +79,28 @@ final class _$Post extends Post {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['author', 'slug'],
@@ -423,30 +427,35 @@ final class _$Comment extends Comment {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['commentId'],

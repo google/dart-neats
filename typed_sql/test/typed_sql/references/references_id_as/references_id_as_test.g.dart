@@ -79,24 +79,28 @@ final class _$Author extends Author {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['authorId'],
@@ -412,30 +416,35 @@ final class _$Book extends Book {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['bookId'],

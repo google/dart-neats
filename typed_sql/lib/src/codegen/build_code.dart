@@ -341,6 +341,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     bool isNotNull,
                     Object? defaultValue,
                     bool autoIncrement,
+                    List<SqlOverride> overrides,
                   })>[
                 ${rowClass.fields.map((f) => '''
                   (
@@ -348,6 +349,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     isNotNull: ${!f.isNullable},
                     defaultValue: ${literal(f.defaultValue)},
                     autoIncrement: ${f.autoIncrement},
+                    overrides: <SqlOverride>[
+                      ${f.sqlOverrides.map(
+                        (o) =>
+                            'SqlOverride(dialect: ${literal(o.dialect)}, columnType: ${literal(o.columnType)})',
+                      ).join(',')}
+                    ],
                   )
                 ''').join(', ')}
               ],

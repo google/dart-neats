@@ -45,9 +45,15 @@ final class _MysqlSqlDialect extends SqlDialect {
           [
             // Columns
             ...table.columns.map((c) {
+              final override = c.overrides
+                  .firstWhereOrNull((o) => o.dialect == 'mysql');
+              final generic = c.overrides
+                  .firstWhereOrNull((o) => o.dialect == null);
+              final type = override?.columnType ?? generic?.columnType ?? c.type.sqlType;
+
               return [
                 escape(c.name),
-                c.type.sqlType,
+                type,
                 if (c.isNotNull) 'NOT NULL',
                 if (c.autoIncrement) 'AUTO_INCREMENT',
                 if (c.defaultValue != null)
@@ -55,13 +61,7 @@ final class _MysqlSqlDialect extends SqlDialect {
               ].join(' ');
             }),
             // Primary key (composite)
-            'PRIMARY KEY (${table.primaryKey.map((k) {
-              final type = table.columns.firstWhere((c) => c.name == k).type;
-              if (type == ColumnType.blob || type == ColumnType.text) {
-                return '${escape(k)}(191)';
-              }
-              return escape(k);
-            }).join(', ')})',
+            'PRIMARY KEY (${table.primaryKey.map(escape).join(', ')})',
             // Unique constraints - MySQL uses UNIQUE KEY syntax
             ...table.unique
                 .map((u) => 'UNIQUE KEY (${u.map(escape).join(', ')})'),
