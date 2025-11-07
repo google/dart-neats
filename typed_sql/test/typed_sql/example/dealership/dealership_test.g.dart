@@ -99,7 +99,9 @@ final class _$Car extends Car {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.integer,

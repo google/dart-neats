@@ -88,7 +88,9 @@ final class _$Item extends Item {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.text,

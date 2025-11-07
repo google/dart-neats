@@ -82,14 +82,18 @@ final class _$Author extends Author {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       )
     ],
     primaryKey: <String>['firstName', 'lastName'],
@@ -434,14 +438,18 @@ final class _$Book extends Book {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.integer,

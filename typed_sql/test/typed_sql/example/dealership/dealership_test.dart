@@ -75,6 +75,7 @@ abstract final class Car extends Row {
   String get model;
 
   @Unique()
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get licensePlate;
 
   // We can use our custom type as column type

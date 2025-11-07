@@ -86,14 +86,18 @@ final class _$Post extends Post {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.text,
@@ -441,14 +445,18 @@ final class _$Comment extends Comment {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.text,

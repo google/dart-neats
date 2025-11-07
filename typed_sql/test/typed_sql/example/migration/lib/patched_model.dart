@@ -28,6 +28,7 @@ abstract final class Account extends Row {
   int get accountId;
 
   @Unique()
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get accountNumber;
 
   @DefaultValue(0.0)

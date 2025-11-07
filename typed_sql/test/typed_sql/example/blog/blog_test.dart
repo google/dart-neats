@@ -26,7 +26,9 @@ abstract final class BlogDatabase extends Schema {
 
 @PrimaryKey(['author', 'slug'])
 abstract final class Post extends Row {
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get author;
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get slug;
 
   String get content;
@@ -44,7 +46,9 @@ abstract final class Comment extends Row {
   int get commentId;
 
   // composite foreign key
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get author;
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get postSlug;
 
   String get comment;

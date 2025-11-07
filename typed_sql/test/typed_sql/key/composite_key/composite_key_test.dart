@@ -26,6 +26,7 @@ abstract final class TestDatabase extends Schema {
 abstract final class Item extends Row {
   int get id;
 
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get name;
 
   String? get value;

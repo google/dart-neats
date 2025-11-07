@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:convert' show latin1, utf8;
 import 'dart:io';
 import 'dart:typed_data' show Uint8List;
+import 'package:test/test.dart' show printOnFailure;
 
 // ignore: depend_on_referenced_packages
 import 'package:mysql1/mysql1.dart';
@@ -442,7 +443,8 @@ final _paramPattern = RegExp(r'\?([0-9]+)');
           })
       .toList();
 
-  print('###: ("$newSql", $newParams)');
+  // TODO: Remove this when mysql driver is working reasonably well.
+  printOnFailure('###: ("$newSql", $newParams)');
   return (newSql, newParams);
 }
 

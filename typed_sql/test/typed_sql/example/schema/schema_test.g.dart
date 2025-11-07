@@ -89,7 +89,9 @@ final class _$Author extends Author {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       )
     ],
     primaryKey: <String>['authorId'],

@@ -84,7 +84,9 @@ final class _$Account extends Account {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: <SqlOverride>[],
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       )
     ],
     primaryKey: <String>['accountId'],
