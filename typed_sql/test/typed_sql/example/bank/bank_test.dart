@@ -124,7 +124,7 @@ void main() {
       }
     }
     // #endregion
-  });
+  }, skipMysql: 'RETURNING not supported in mysql');
 
   r.addTest('transfer 100 conditional update', (db) async {
     // #region transfer-100-with-conditional-update
@@ -148,7 +148,7 @@ void main() {
           .execute();
     });
     // #endregion
-  });
+  }, skipMysql: 'RETURNING not supported in mysql');
 
   r.addTest('insert or update using nested transaction', (db) async {
     // #region insert-or-update-using-nested-transaction

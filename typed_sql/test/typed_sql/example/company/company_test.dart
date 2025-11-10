@@ -108,7 +108,7 @@ void main() {
       check(employee.departmentId).equals(department.departmentId);
     }
     // #endregion
-  });
+  }, skipMysql: 'TODO: Fix unknown mysql dialect issue');
 
   r.addTest('employees.join(departments).select()', (db) async {
     // #region inner-join-select

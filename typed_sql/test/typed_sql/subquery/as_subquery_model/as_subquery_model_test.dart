@@ -132,5 +132,33 @@ void main() {
     ]);
   });
 
+  r.addTest('test 1', (db) async {
+    await db.items
+        .select((i) => (
+              i.id,
+              db.items.where((item) => item.id.equals(i.id)).count().asExpr,
+            ))
+        .fetch();
+  });
+
+  r.addTest('test 2', (db) async {
+    await db.items
+        .select((i) => (
+              i.id,
+              db.items
+                  .where((item) => db.items
+                      .where(
+                        (item2) =>
+                            item2.id.equals(i.id) & item2.id.equals(item.id),
+                      )
+                      .exists()
+                      .asExpr
+                      .isTrue())
+                  .count()
+                  .asExpr,
+            ))
+        .fetch();
+  });
+
   r.run();
 }

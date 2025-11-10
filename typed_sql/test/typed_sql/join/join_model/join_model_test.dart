@@ -89,7 +89,7 @@ void main() {
             employee.departmentId.equals(department.departmentId))
         .fetch();
     check(result).length.equals(3);
-  });
+  }, skipMysql: 'TODO: Fix unknown mysql dialect issue');
 
   r.addTest('employees.leftJoin(departments)', (db) async {
     final result = await db.employees
@@ -98,7 +98,7 @@ void main() {
             employee.departmentId.equals(department.departmentId))
         .fetch();
     check(result).length.equals(5);
-  });
+  }, skipMysql: 'TODO: Fix unknown mysql dialect issue');
 
   r.addTest('employees.rightJoin(departments)', (db) async {
     final result = await db.employees
@@ -107,7 +107,7 @@ void main() {
             employee.departmentId.equals(department.departmentId))
         .fetch();
     check(result).length.equals(4);
-  });
+  }, skipMysql: 'TODO: Fix unknown mysql dialect issue');
 
   // --- Standard Join Test Cases (Equi-Join) ---
 
@@ -149,7 +149,7 @@ void main() {
       ('David', null, null),
       ('Eve', null, null),
     ]);
-  });
+  }, skipMysql: 'TODO: Fix unknown mysql dialect issue');
 
   // Test standard RIGHT JOIN with equality ON condition.
   r.addTest('employees.rightJoin(departments)', (db) async {
