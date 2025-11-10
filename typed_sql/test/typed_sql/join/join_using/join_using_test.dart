@@ -95,19 +95,19 @@ void main() {
             employee.departmentId.equals(department.departmentId))
         .fetch();
     check(result).length.equals(3);
-  }, skipMysql: 'TODO: Fix unknown mysql dialect issue');
+  });
 
   r.addTest('employees.leftJoin(departments)', (db) async {
     final result =
         await db.employees.leftJoin(db.departments).usingDepartment().fetch();
     check(result).length.equals(5);
-  }, skipMysql: 'TODO: Fix unknown mysql dialect issue');
+  });
 
   r.addTest('employees.rightJoin(departments)', (db) async {
     final result =
         await db.employees.rightJoin(db.departments).usingDepartment().fetch();
     check(result).length.equals(4);
-  }, skipMysql: 'TODO: Fix unknown mysql dialect issue');
+  });
 
   // --- Standard Join Test Cases (Equi-Join) ---
 

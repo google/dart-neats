@@ -327,8 +327,9 @@ extension on ExpressionResolver<StatmentContext> {
     }
     if (q is TableClause || q is JoinClause) {
       final (sql, columns) = tableExpression(q);
+      final alias = tableAlias;
       return (
-        'SELECT ${columns.map(escape).join(', ')} FROM $sql',
+        'SELECT ${columns.map((c) => '$alias.${escape(c)}').join(', ')} FROM $sql AS $alias',
         columns,
       );
     }
