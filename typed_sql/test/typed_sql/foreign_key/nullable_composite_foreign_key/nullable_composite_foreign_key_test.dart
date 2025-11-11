@@ -189,7 +189,7 @@ void main() {
     check(result).unorderedEquals([
       ('Easter', 'Bunny'),
     ]);
-  }, skipMysql: 'mysql is not good with nested scalar subqueries');
+  });
 
   r.addTest('books.groupBy(.author).aggregate(sum(.stock))', (db) async {
     final result = await db.books

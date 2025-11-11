@@ -197,7 +197,7 @@ void main() {
       ('Easter Bunny', 2),
       ('Bucks Bunny', 1),
     });
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
+  });
 
   r.addTest('books', (db) async {
     final result = await db.books
