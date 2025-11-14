@@ -71,12 +71,20 @@ final class TestRunner<T extends Schema> {
     return null;
   }();
 
+  late final String? _getMysqlSocket = () {
+    final socketFile = File('.dart_tool/run/mariadb/mysqld.sock');
+    if (socketFile.existsSync()) {
+      return socketFile.absolute.path;
+    }
+    return null;
+  }();
+
   DatabaseAdapter _getPostgres() {
     return DatabaseAdapter.postgresTestDatabase(host: _getPostgresSocket);
   }
 
   DatabaseAdapter _getMysql() {
-    return mysqlTestingAdaptor();
+    return mysqlTestingAdaptor(host: _getMysqlSocket);
   }
 
   void run() {

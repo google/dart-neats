@@ -25,7 +25,7 @@ import 'package:build/build.dart' show log;
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'package:typed_sql/src/typed_sql.dart' show SqlOverride;
+import '../typed_sql.dart' show SqlOverride;
 
 import 'parsed_library.dart';
 import 'type_checkers.dart';

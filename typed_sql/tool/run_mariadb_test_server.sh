@@ -26,7 +26,7 @@ mkdir -p "$SOCKET_DIR"
 docker run \
   -ti --rm \
   --name typed_sql_mariadb \
-  -e MARIADB_ROOT_PASSWORD=mysql \
+  -e MARIADB_ROOT_PASSWORD=root \
   -v "$SOCKET_DIR":/run/mysqld/ \
   --mount type=tmpfs,destination=/var/lib/mysql \
   mariadb:11 \

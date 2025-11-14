@@ -16,29 +16,66 @@ import 'dart:async';
 import 'dart:convert' show latin1, utf8;
 import 'dart:io';
 import 'dart:typed_data' show Uint8List;
-import 'package:test/test.dart' show printOnFailure;
 
 // ignore: depend_on_referenced_packages
 import 'package:mysql1/mysql1.dart';
+
+// ignore: depend_on_referenced_packages
+import 'package:test/test.dart' show printOnFailure;
 
 import '../utils/notifier.dart';
 import '../utils/uuid.dart';
 import 'adapter.dart'; // ignore: implementation_imports
 
-DatabaseAdapter mysqlTestingAdaptor() {
-  return DatabaseAdapter.fromFuture(_mysqlTestingAdapter());
+DatabaseAdapter mysqlTestingAdaptor({
+  String? host,
+  int? port,
+  String? database,
+  String? user,
+  String? password,
+}) {
+  return DatabaseAdapter.fromFuture(_mysqlTestingAdapter(
+    host: host,
+    port: port,
+    database: database,
+    user: user,
+    password: password,
+  ));
 }
 
-Future<DatabaseAdapter> _mysqlTestingAdapter() async {
-  final f = File('.dart_tool/run/mariadb/mysqld.sock');
+Future<DatabaseAdapter> _mysqlTestingAdapter({
+  String? host,
+  int? port,
+  String? database,
+  String? user,
+  String? password,
+}) async {
+  host ??= Platform.environment['MYSQL_HOST'] ?? '127.0.0.1';
+  port ??= int.tryParse(Platform.environment['MYSQL_PORT'] ?? '') ?? 3306;
+  database ??= Platform.environment['MYSQL_DATABASE'] ?? '';
+  user ??= Platform.environment['MYSQL_USER'] ?? 'root';
+  password ??= Platform.environment['MYSQL_PASSWORD'] ?? 'root';
+
+  final isUnixSocket = Platform.isWindows
+      ? host.startsWith(RegExp(r'[a-zA-Z]+:\\'))
+      : host.startsWith('/');
 
   final admin = await MySqlConnection.connect(
-    ConnectionSettings.socket(
-      path: f.absolute.path,
-      user: 'root',
-      password: 'mysql',
-    ),
-    isUnixSocket: true,
+    isUnixSocket
+        ? ConnectionSettings.socket(
+            path: host,
+            db: database,
+            user: user,
+            password: password,
+          )
+        : ConnectionSettings(
+            host: host,
+            db: database,
+            port: port,
+            user: user,
+            password: password,
+          ),
+    isUnixSocket: isUnixSocket,
   );
 
   final testdb = 'testdb-${uuid()}';
@@ -49,13 +86,21 @@ Future<DatabaseAdapter> _mysqlTestingAdapter() async {
   final closed = Completer<void>();
   final adaptor = _MysqlDatabaseAdapter(() async {
     return await MySqlConnection.connect(
-      ConnectionSettings.socket(
-        path: f.absolute.path,
-        user: 'root',
-        password: 'mysql',
-        db: testdb,
-      ),
-      isUnixSocket: true,
+      isUnixSocket
+          ? ConnectionSettings.socket(
+              path: host!,
+              db: testdb,
+              user: user,
+              password: password,
+            )
+          : ConnectionSettings(
+              host: host!,
+              db: testdb,
+              port: port!,
+              user: user,
+              password: password,
+            ),
+      isUnixSocket: isUnixSocket,
     );
   });
   return DatabaseAdapter.withOnClose(adaptor, ({

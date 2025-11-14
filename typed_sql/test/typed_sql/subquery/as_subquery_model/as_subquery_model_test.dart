@@ -132,7 +132,7 @@ void main() {
     ]);
   });
 
-  r.addTest('test 1', (db) async {
+  r.addTest('count() in a subquery', (db) async {
     await db.items
         .select((i) => (
               i.id,
@@ -141,7 +141,7 @@ void main() {
         .fetch();
   });
 
-  r.addTest('test 2', (db) async {
+  r.addTest('double nested subquery', (db) async {
     await db.items
         .select((i) => (
               i.id,
