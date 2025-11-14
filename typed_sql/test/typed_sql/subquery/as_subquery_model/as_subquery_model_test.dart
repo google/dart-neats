@@ -105,7 +105,7 @@ void main() {
       ('c', 3),
       ('c', 3),
     ]);
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
+  });
 
   r.addTest(
       'db.items.select(.value, db.items.where(.value = value).orderBy(.id).first.asExpr.id)',
@@ -130,7 +130,35 @@ void main() {
       ('c', 3),
       ('c', 3),
     ]);
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
+  });
+
+  r.addTest('count() in a subquery', (db) async {
+    await db.items
+        .select((i) => (
+              i.id,
+              db.items.where((item) => item.id.equals(i.id)).count().asExpr,
+            ))
+        .fetch();
+  });
+
+  r.addTest('double nested subquery', (db) async {
+    await db.items
+        .select((i) => (
+              i.id,
+              db.items
+                  .where((item) => db.items
+                      .where(
+                        (item2) =>
+                            item2.id.equals(i.id) & item2.id.equals(item.id),
+                      )
+                      .exists()
+                      .asExpr
+                      .isTrue())
+                  .count()
+                  .asExpr,
+            ))
+        .fetch();
+  });
 
   r.run();
 }

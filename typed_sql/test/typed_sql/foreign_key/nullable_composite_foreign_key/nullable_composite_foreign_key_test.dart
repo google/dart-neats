@@ -25,7 +25,10 @@ abstract final class TestDatabase extends Schema {
 
 @PrimaryKey(['firstName', 'lastName'])
 abstract final class Author extends Row {
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get firstName;
+
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get lastName;
 }
 
@@ -43,7 +46,9 @@ abstract final class Book extends Row {
 
   String get title;
 
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String? get authorFirstName;
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String? get authorLastName;
 
   int get stock;
@@ -184,7 +189,7 @@ void main() {
     check(result).unorderedEquals([
       ('Easter', 'Bunny'),
     ]);
-  }, skipMysql: 'mysql is not good with nested scalar subqueries');
+  });
 
   r.addTest('books.groupBy(.author).aggregate(sum(.stock))', (db) async {
     final result = await db.books

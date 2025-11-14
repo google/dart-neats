@@ -70,18 +70,23 @@ final class _$Item extends Item {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['key'],

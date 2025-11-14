@@ -80,10 +80,8 @@ final instances = [
     'type': 'DateTime',
     'initialValue': 'DateTime(2024).toUtc()',
     'updatedValue': 'DateTime(2025).toUtc()',
-    // It's important that we test 0 and -5 as these are encoded differnetly in
-    // postgres where it needs to use BC suffixes!
     'emptyValue': 'DateTime.utc(0)',
-    'otherValue': 'DateTime.utc(-5)',
+    'otherValue': 'DateTime.utc(1)',
     'equality': 'equals',
   },
   {

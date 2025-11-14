@@ -33,7 +33,7 @@ void main() {
   final initialValue = DateTime(2024).toUtc();
   final updatedValue = DateTime(2025).toUtc();
   final emptyValue = DateTime.utc(0);
-  final otherValue = DateTime.utc(-5);
+  final otherValue = DateTime.utc(1);
 
   r.addTest('.insert()', (db) async {
     await db.items

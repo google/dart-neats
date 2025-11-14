@@ -74,24 +74,30 @@ final class _$Account extends Account {
       bool isNotNull,
       Object? defaultValue,
       bool autoIncrement,
+      List<SqlOverride> overrides,
     })>[
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
+        overrides: <SqlOverride>[],
       ),
       (
         type: ExposedForCodeGen.text,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
+        overrides: <SqlOverride>[
+          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+        ],
       ),
       (
         type: ExposedForCodeGen.real,
         isNotNull: true,
         defaultValue: 0.0,
         autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['accountId'],

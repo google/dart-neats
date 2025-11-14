@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import '../typed_sql.dart' show SqlOverride;
+
 final class ParsedLibrary {
   final List<ParsedSchema> schemas;
   final List<ParsedRowClass> rowClasses;
@@ -122,6 +124,7 @@ final class ParsedField {
   final Object? defaultValue;
   final bool autoIncrement;
   final bool unique;
+  final List<SqlOverride> sqlOverrides;
 
   ParsedField({
     required this.name,
@@ -132,6 +135,7 @@ final class ParsedField {
     required this.defaultValue,
     required this.autoIncrement,
     required this.unique,
+    required this.sqlOverrides,
   });
 
   @override

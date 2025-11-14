@@ -59,7 +59,7 @@ void main() {
           file:
               dartFile.uri.toFilePath().substring(rootUri.toFilePath().length),
           regionId: m.group(1)!.trim(),
-          content: trimLines(m.group(2)!),
+          content: extractRegionLines(m.group(2)!),
         ));
   }).toList();
 
@@ -128,10 +128,12 @@ void main() {
   }
 }
 
-/// Trim whitespace at the start of lines in [content]
-String trimLines(String content) {
+/// Trim whitespace at the start of lines in [content], and omit lines with
+/// `#hide`.
+String extractRegionLines(String content) {
   final indentation = content
       .split('\n')
+      .where((line) => !line.contains('#hide'))
       .where((line) => line.contains(RegExp(r'[^ \t]')))
       .map(
         (line) => line.indexOf(RegExp(r'[^ ]')),
@@ -139,6 +141,7 @@ String trimLines(String content) {
       .min;
   return content
       .split('\n')
+      .where((line) => !line.contains('#hide'))
       .map((line) => line.substring(switch (indentation) {
             -1 => 0,
             int i when (i < line.length) => i,
