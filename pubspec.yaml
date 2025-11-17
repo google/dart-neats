@@ -16,6 +16,6 @@ workspace:
  - typed_sql/
  - vendor/
 dev_dependencies:
-  lints: ^5.0.0
+  lints: ^6.0.0
 environment:
   sdk: ^3.6.0

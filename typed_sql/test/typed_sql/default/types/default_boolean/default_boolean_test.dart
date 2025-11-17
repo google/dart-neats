@@ -4,16 +4,16 @@
 
 import 'package:typed_sql/typed_sql.dart';
 
-import '../../testrunner.dart';
+import '../../../testrunner.dart';
 
-part 'default_integer_test.g.dart';
+part 'default_boolean_test.g.dart';
 
 abstract final class TestDatabase extends Schema {
   Table<Item> get items;
 }
 
-const _defaultValue = 42;
-const _nonDefaultValue = 21;
+const _defaultValue = true;
+const _nonDefaultValue = false;
 
 @PrimaryKey(['id'])
 abstract final class Item extends Row {
@@ -21,7 +21,7 @@ abstract final class Item extends Row {
   int get id;
 
   @DefaultValue(_defaultValue)
-  int get value;
+  bool get value;
 }
 
 void main() {
