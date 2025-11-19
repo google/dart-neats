@@ -31,13 +31,13 @@ String _literal(dynamic value) => switch (value) {
         "'${d.toIso8601String().substring(0, 19).replaceFirst('T', ' ')}'",
       Uint8List b =>
         "X'${b.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}'",
-      _ => throw UnsupportedError(
-          'Unsupported literal type for MySQL: ${value.runtimeType}'),
+      _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
     };
 
 final class _MysqlSqlDialect extends SqlDialect {
   @override
   String createTables(List<CreateTableStatement> statements) {
+    final resolver = ExpressionResolver(PlainSqlContext());
     return [
       ...statements.map((table) {
         final resolvedColumnDefinitions = table.columns.map((c) {
@@ -82,13 +82,15 @@ final class _MysqlSqlDialect extends SqlDialect {
           [
             // Columns
             ...resolvedColumnDefinitions.map((c) {
+              final defaultValue = c.defaultValue;
               return [
                 escape(c.name),
                 c.sqlType,
                 if (c.isNotNull) 'NOT NULL',
                 if (c.autoIncrement) 'AUTO_INCREMENT',
                 if (c.defaultValue != null)
-                  'DEFAULT ${_literal(c.defaultValue)}',
+                  if (defaultValue != null)
+                    'DEFAULT ${resolver.expr(defaultValue)}',
               ].join(' ');
             }),
             // Primary key (composite)
@@ -232,9 +234,14 @@ final class _MysqlSqlDialect extends SqlDialect {
 /// Throws if [name] cannot be safely escaped.
 String escape(String name) => '`$name`'; // TODO: escape `
 
-final class StatmentContext {
+abstract class SqlContext {
+  String addParameter(Object? value);
+}
+
+final class StatmentContext extends SqlContext {
   final parameters = <Object?>[];
 
+  @override
   String addParameter(Object? value) {
     switch (value) {
       case bool _:
@@ -268,7 +275,14 @@ final class StatmentContext {
   }
 }
 
-extension on ExpressionResolver<StatmentContext> {
+final class PlainSqlContext extends SqlContext {
+  final parameters = <Object?>[];
+
+  @override
+  String addParameter(Object? value) => _literal(value);
+}
+
+extension on ExpressionResolver<SqlContext> {
   String get tableAlias => 't$depth';
   String get tableAlias1 => 't${depth}_1';
   String get tableAlias2 => 't${depth}_2';
@@ -548,6 +562,7 @@ extension on ExpressionResolver<StatmentContext> {
         final CastExpression e =>
           'CAST(${expr(e.value)} AS ${e.type.sqlCastType})',
         EncodedCustomDataTypeExpression(:final value) => expr(value),
+        CurrentTimestampExpression _ => 'UTC_TIMESTAMP()',
       };
 }
 

@@ -82,7 +82,7 @@ final class _$Item extends Item {
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
-        defaultValue: 42,
+        defaultValue: (kind: 'raw', value: 42),
         autoIncrement: false,
         overrides: <SqlOverride>[],
       )

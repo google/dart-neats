@@ -18,6 +18,7 @@
 /// @docImport '../typed_sql.dart';
 library;
 
+import 'package:analyzer/dart/constant/value.dart' show DartObject;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -27,6 +28,7 @@ import 'package:source_gen/source_gen.dart';
 
 import '../typed_sql.dart' show SqlOverride;
 
+import 'parsed_default_value.dart';
 import 'parsed_library.dart';
 import 'type_checkers.dart';
 
@@ -74,10 +76,7 @@ Future<ParsedLibrary> parseLibrary(
     );
   }
 
-  final library = ParsedLibrary(
-    schemas: schemas,
-    rowClasses: rowClasses,
-  );
+  final library = ParsedLibrary(schemas: schemas, rowClasses: rowClasses);
 
   // We only allow a Row subclass to be used for one table!
   final allTables = schemas.expand((s) => s.tables);
@@ -150,8 +149,10 @@ ParsedSchema _parseSchema(
   }
 
   if (cls.methods.isNotEmpty) {
-    throw InvalidGenerationSource('subclasses of `Schema` cannot have methods',
-        element: cls.methods.first);
+    throw InvalidGenerationSource(
+      'subclasses of `Schema` cannot have methods',
+      element: cls.methods.first,
+    );
   }
 
   final firstNonGetter = cls.fields.where((f) => f.getter == null).firstOrNull;
@@ -211,20 +212,19 @@ ParsedSchema _parseSchema(
       );
     }
 
-    tables.add(ParsedTable(
-      name: a.name!,
-      documentation: a.documentationComment,
-      rowClass: rowClassCache.putIfAbsent(
-        typeArgElement,
-        () => _parseRowClass(ctx, typeArgElement, foreignKeyToElement),
+    tables.add(
+      ParsedTable(
+        name: a.name!,
+        documentation: a.documentationComment,
+        rowClass: rowClassCache.putIfAbsent(
+          typeArgElement,
+          () => _parseRowClass(ctx, typeArgElement, foreignKeyToElement),
+        ),
       ),
-    ));
+    );
   }
 
-  return ParsedSchema(
-    name: cls.name!,
-    tables: tables,
-  );
+  return ParsedSchema(name: cls.name!, tables: tables);
 }
 
 ParsedRowClass _parseRowClass(
@@ -242,8 +242,10 @@ ParsedRowClass _parseRowClass(
   }
 
   if (cls.methods.isNotEmpty) {
-    throw InvalidGenerationSource('subclasses of `Row` cannot have methods',
-        element: cls.methods.first);
+    throw InvalidGenerationSource(
+      'subclasses of `Row` cannot have methods',
+      element: cls.methods.first,
+    );
   }
 
   if (!cls.fields.any((f) => f.getter != null)) {
@@ -276,23 +278,19 @@ ParsedRowClass _parseRowClass(
     } else {
       final aReturnTypeElement = a.returnType.extensionTypeErasure.element;
       if (aReturnTypeElement is! ClassElement) {
-        throw InvalidGenerationSource(
-          'Unsupported data-type',
-          element: a,
-        );
+        throw InvalidGenerationSource('Unsupported data-type', element: a);
       }
       final customDataType = aReturnTypeElement.allSupertypes
-          .firstWhereOrNull((e) =>
-              e.element3.name3 == 'CustomDataType' &&
-              e.element3.library2.uri ==
-                  Uri.parse('package:typed_sql/src/typed_sql.dart'))
+          .firstWhereOrNull(
+            (e) =>
+                e.element3.name3 == 'CustomDataType' &&
+                e.element3.library2.uri ==
+                    Uri.parse('package:typed_sql/src/typed_sql.dart'),
+          )
           ?.element;
 
       if (customDataType is! ClassElement) {
-        throw InvalidGenerationSource(
-          'Unsupported data-type',
-          element: a,
-        );
+        throw InvalidGenerationSource('Unsupported data-type', element: a);
       }
 
       final customDataTypeVariant = a.returnType.asInstanceOf(customDataType);
@@ -315,8 +313,9 @@ ParsedRowClass _parseRowClass(
         var returnType = a.returnType as InterfaceType;
 
         // Check that there is a fromDatabase constructor
-        final constructor = returnType.constructors
-            .firstWhereOrNull((c) => c.name == 'fromDatabase');
+        final constructor = returnType.constructors.firstWhereOrNull(
+          (c) => c.name == 'fromDatabase',
+        );
         if (constructor == null) {
           throw InvalidGenerationSource(
             'CustomDataType<T> subclasses must have a `fromDatabase` constructor!',
@@ -330,8 +329,9 @@ ParsedRowClass _parseRowClass(
             element: a,
           );
         }
-        final constructorArgType =
-            _tryGetColumnType(constructor.formalParameters.first.type);
+        final constructorArgType = _tryGetColumnType(
+          constructor.formalParameters.first.type,
+        );
         if (constructorArgType != backingType) {
           throw throw InvalidGenerationSource(
             'CustomDataType<T> subclasses must have a `fromDatabase` '
@@ -365,10 +365,7 @@ ParsedRowClass _parseRowClass(
         // TODO: Consider support for Duration
         // TODO: Consider support for List, Set, Map, Record (probably not)
         // TODO: Consider support for enums
-        throw InvalidGenerationSource(
-          'Unsupported data-type',
-          element: a,
-        );
+        throw InvalidGenerationSource('Unsupported data-type', element: a);
       }
     }
 
@@ -527,8 +524,14 @@ String? _tryGetColumnType(DartType t) {
   return null;
 }
 
+Never _throwInternalDefaultValue(Element field) =>
+    throw InvalidGenerationSource(
+      'Invalid DefaultValue annotation, internal invariant violated!',
+      element: field,
+    );
+
 /// Parsed [DefaultValue] annotations from [field] with [type].
-Object? _parseDefaultValue(Element field, String type) {
+ParsedDefaultValue? _parseDefaultValue(Element field, String type) {
   final defaultValueAnnotations = defaultValueTypeChecker.annotationsOfExact(
     field,
   );
@@ -543,63 +546,153 @@ Object? _parseDefaultValue(Element field, String type) {
   }
 
   final annotation = defaultValueAnnotations.first;
-  final value = annotation.getField('value');
-  if (value == null) {
+  final value_ = annotation.getField('_value');
+  if (value_ == null) {
     throw InvalidGenerationSource(
       'DefaultValue annotation must have a non-null value',
       element: field,
     );
   }
+
+  final valueRecord = value_.toRecordValue();
+  final kind = valueRecord?.named['kind']?.toStringValue();
+  final value = valueRecord?.named['value'];
+  if (kind == null || value == null) {
+    _throwInternalDefaultValue(field);
+  }
+
+  if (kind == 'raw') {
+    return _parseDefaultRawValue(field, type, value);
+  }
+
+  if (kind == 'datetime' && value.toStringValue() == 'epoch') {
+    if (type != 'DateTime') {
+      throw InvalidGenerationSource(
+        '@DefaultValue.epoch is only allowed for DateTime fields',
+        element: field,
+      );
+    }
+    return ParsedDefaultDateTimeEpochValue();
+  }
+
+  if (kind == 'datetime' && value.toStringValue() == 'now') {
+    if (type != 'DateTime') {
+      throw InvalidGenerationSource(
+        '@DefaultValue.now is only allowed for DateTime fields',
+        element: field,
+      );
+    }
+    return ParsedDefaultDateTimeNow();
+  }
+
+  if (kind == 'datetime') {
+    return _parseDefaultDateTimeValue(field, type, value);
+  }
+
+  _throwInternalDefaultValue(field);
+}
+
+ParsedDefaultValue? _parseDefaultDateTimeValue(
+  Element field,
+  String type,
+  DartObject value,
+) {
+  if (type != 'DateTime') {
+    throw InvalidGenerationSource(
+      '@DefaultValue.dateTime(...) is only allowed for DateTime fields',
+      element: field,
+    );
+  }
+
+  final args = value
+      .toRecordValue()
+      ?.positional
+      .map((v) => v.toIntValue())
+      .nonNulls
+      .toList();
+  if (args == null || args.length != 8) {
+    _throwInternalDefaultValue(field);
+  }
+
+  return ParsedDefaultDateTimeValue(
+    args[0],
+    args[1],
+    args[2],
+    args[3],
+    args[4],
+    args[5],
+    args[6],
+    args[7],
+  );
+}
+
+ParsedDefaultValue? _parseDefaultRawValue(
+    Element field, String type, DartObject value) {
   final defaultValue = value.toBoolValue() ??
       value.toIntValue() ??
       value.toDoubleValue() ??
       value.toStringValue();
-  // TODO: Support parsing date-time!
+
   if (defaultValue == null) {
     throw InvalidGenerationSource(
-      'Unsupported DefaultValue',
+      'Disallowed value in @DefaultValue(value) annotation. '
+      'Only bool, int, double and String are allowed.',
       element: field,
     );
   }
-  if (defaultValue is String && type != 'String') {
-    throw InvalidGenerationSource(
-      'DefaultValue of type String is only allowed for String fields',
-      element: field,
-    );
+
+  if (defaultValue is String) {
+    if (type != 'String') {
+      throw InvalidGenerationSource(
+        '@DefaultValue(String) is only allowed for String fields',
+        element: field,
+      );
+    }
+    return ParsedDefaultStringValue(defaultValue);
   }
-  if (defaultValue is bool && type != 'bool') {
-    throw InvalidGenerationSource(
-      'DefaultValue of type bool is only allowed for bool fields',
-      element: field,
-    );
+
+  if (defaultValue is bool) {
+    if (type != 'bool') {
+      throw InvalidGenerationSource(
+        '@DefaultValue(bool) is only allowed for bool fields',
+        element: field,
+      );
+    }
+    return ParsedDefaultBoolValue(defaultValue);
   }
+
   if (defaultValue is int) {
     // Allow casting an int to a double (so long as it's safe)
     if (type == 'double') {
       // A double can represent integers precisely up to 2^53.
       if (defaultValue.abs() > 9007199254740991) {
         throw InvalidGenerationSource(
-          'Integer literal $defaultValue is too large to be represented as a '
-          'double without losing precision. A double can safely represent '
+          '@DefaultValue(int) cannot be cast to double. '
+          'A double can safely represent '
           'integers in the range [-(2^53 - 1), 2^53 - 1].',
           element: field,
         );
       }
-      return defaultValue.toDouble();
+      return ParsedDefaultDoubleValue(defaultValue.toDouble());
     }
     if (type != 'int') {
       throw InvalidGenerationSource(
-        'DefaultValue of type int is only allowed for int or double fields',
+        '@DefaultValue(int) is only allowed for int or double fields',
         element: field,
       );
     }
-  }
-  if (defaultValue is double && type != 'double') {
-    throw InvalidGenerationSource(
-      'DefaultValue of type double is only allowed for double fields',
-      element: field,
-    );
+    return ParsedDefaultIntValue(defaultValue);
   }
 
-  return defaultValue;
+  if (defaultValue is double) {
+    if (type != 'double') {
+      throw InvalidGenerationSource(
+        '@DefaultValue(double) is only allowed for double fields',
+        element: field,
+      );
+    }
+    return ParsedDefaultDoubleValue(defaultValue);
+  }
+
+  _throwInternalDefaultValue(field);
 }

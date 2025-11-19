@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import '../typed_sql.dart' show SqlOverride;
+import 'parsed_default_value.dart' show ParsedDefaultValue;
 
 final class ParsedLibrary {
   final List<ParsedSchema> schemas;
@@ -121,7 +122,7 @@ final class ParsedField {
   final String typeName;
   final bool isNullable;
   final String backingType;
-  final Object? defaultValue;
+  final ParsedDefaultValue? defaultValue;
   final bool autoIncrement;
   final bool unique;
   final List<SqlOverride> sqlOverrides;

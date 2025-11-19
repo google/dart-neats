@@ -157,9 +157,11 @@ sealed class Expr<T extends Object?> implements _ExprTyped<T> {
 
   Iterable<Expr<Object?>> _explode();
 
-  static const null$ = Literal.null$;
-  static const true$ = Literal.true$;
-  static const false$ = Literal.false$;
+  static const Expr<Null> null$ = Literal.null$;
+  static const Expr<bool> true$ = Literal.true$;
+  static const Expr<bool> false$ = Literal.false$;
+  static const Expr<DateTime> currentTimestamp =
+      CurrentTimestampExpression.currentTimestamp;
 }
 
 sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
@@ -502,6 +504,15 @@ final class Literal<T> extends SingleValueExpr<T> {
         );
     }
   }
+}
+
+final class CurrentTimestampExpression extends SingleValueExpr<DateTime> {
+  const CurrentTimestampExpression._() : super._();
+
+  static const currentTimestamp = CurrentTimestampExpression._();
+
+  @override
+  final _type = ColumnType.dateTime;
 }
 
 sealed class BinaryOperationExpression<T, R> extends SingleValueExpr<R> {

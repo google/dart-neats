@@ -23,13 +23,48 @@ final class PrimaryKey {
   const PrimaryKey(this.fields);
 }
 
-/// Annotation for a field that has a default value, specified by [value].
+/// Annotation for a field that has a default value.
 ///
 /// {@category schema}
-final class DefaultValue<T> {
-  final T value;
+final class DefaultValue {
+  // ignore: unused_field
+  final ({String kind, Object value}) _value; // decoded by code-gen
 
-  const DefaultValue(this.value);
+  // Note:
+  // The encoding of default value here is read by code-generation.
+  // This encoding matches the one used in table definition, though this is
+  // not strictly a requirement. However, there is reason to use two different
+  // encodings.
+
+  const DefaultValue._(String kind, Object value)
+      : _value = (kind: kind, value: value);
+
+  const DefaultValue(Object value) : _value = (kind: 'raw', value: value);
+  const DefaultValue.dateTime(
+    int year, [
+    int month = 1,
+    int day = 1,
+    int hour = 0,
+    int minute = 0,
+    int second = 0,
+    int millisecond = 0,
+    int microsecond = 0,
+  ]) : _value = (
+          kind: 'datetime',
+          value: (
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            second,
+            millisecond,
+            microsecond,
+          ),
+        );
+
+  static const DefaultValue epoch = DefaultValue._('datetime', 'epoch');
+  static const DefaultValue now = DefaultValue._('datetime', 'now');
 }
 
 /// Annotation for a field that should be auto-incremented (by default).

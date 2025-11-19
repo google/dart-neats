@@ -24,7 +24,7 @@ final class CreateTableStatement extends SqlStatement {
         String name,
         ColumnType type,
         bool isNotNull,
-        Object? defaultValue,
+        Expr<Object>? defaultValue,
         bool autoIncrement,
         List<SqlOverride> overrides,
       })> columns;
