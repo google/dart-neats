@@ -444,6 +444,32 @@ final _cases = [
     expr: toExpr(epoch) >= toExpr(epoch),
     expected: true,
   ),
+
+  // Test for Expr.currentTimestamp
+  (
+    name: 'Expr.currentTimestamp.isAfter(epoch)',
+    expr: Expr.currentTimestamp.isAfter(toExpr(epoch)),
+    expected: true,
+  ),
+  (
+    name: 'Expr.currentTimestamp.isBefore(3000)',
+    expr: Expr.currentTimestamp.isBefore(toExpr(DateTime.utc(3000))),
+    expected: true,
+  ),
+  (
+    name: 'Expr.currentTimestamp.isAfter(today - 1 day)',
+    expr: Expr.currentTimestamp.isAfter(
+      toExpr(DateTime.now().toUtc().subtract(const Duration(days: 1))),
+    ),
+    expected: true,
+  ),
+  (
+    name: 'Expr.currentTimestamp.isBefore(today + 1 day)',
+    expr: Expr.currentTimestamp.isBefore(
+      toExpr(DateTime.now().toUtc().add(const Duration(days: 1))),
+    ),
+    expected: true,
+  ),
 ];
 
 void main() {

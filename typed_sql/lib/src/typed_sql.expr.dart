@@ -157,9 +157,25 @@ sealed class Expr<T extends Object?> implements _ExprTyped<T> {
 
   Iterable<Expr<Object?>> _explode();
 
-  static const null$ = Literal.null$;
-  static const true$ = Literal.true$;
-  static const false$ = Literal.false$;
+  static const Expr<Null> null$ = Literal.null$;
+  static const Expr<bool> true$ = Literal.true$;
+  static const Expr<bool> false$ = Literal.false$;
+
+  /// Get an [Expr<DateTime>] that represents the current timestamp in UTC.
+  ///
+  /// This [Expr<DateTime>] will be evaluated in the database. Semantically,
+  /// it's supposed to be equivalent to:
+  /// ```dart
+  /// final currentTimestamp = toExpr(DateTime.now().toUtc());
+  /// ```
+  ///
+  /// However, in practice many databases will render timestamps with fewer
+  /// decimals than `DateTime.now().toUtc()` in Dart.
+  ///
+  /// This is mainly intended if you want to use the database clock.
+  /// For example, this is how [DefaultValue.now] is encoded.
+  static const Expr<DateTime> currentTimestamp =
+      CurrentTimestampExpression.currentTimestamp;
 }
 
 sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
@@ -220,13 +236,17 @@ base mixin _ExprBlob implements _ExprTyped<Uint8List> {
 ///  * [int],
 ///  * [double],
 ///  * [bool],
-///  * [DateTime],
+///  * [DateTime] (consider using [DateTime.toUtc]),
 ///  * [Uint8List],
 ///  * `null`
 ///
 /// > [!NOTE]
 /// > If you want to use a [CustomDataType], use the `.asExpr`
 /// > _extension method_ instead.
+///
+/// When wrapping a [DateTime] object using [toExpr], do consider converting to
+/// UTC first using [DateTime.toUtc], some database adapters may already do so
+/// implicitly.
 ///
 /// {@category inserting_rows}
 /// {@category writing_queries}
@@ -502,6 +522,15 @@ final class Literal<T> extends SingleValueExpr<T> {
         );
     }
   }
+}
+
+final class CurrentTimestampExpression extends SingleValueExpr<DateTime> {
+  const CurrentTimestampExpression._() : super._();
+
+  static const currentTimestamp = CurrentTimestampExpression._();
+
+  @override
+  final _type = ColumnType.dateTime;
 }
 
 sealed class BinaryOperationExpression<T, R> extends SingleValueExpr<R> {

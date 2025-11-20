@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'default_int_for_double_test.dart';
+part of 'default_date_time_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-/// Extension methods for a [Database] operating on [TestDatabase].
-extension TestDatabaseSchema on Database<TestDatabase> {
+/// Extension methods for a [Database] operating on [MySchema].
+extension MySchemaSchema on Database<MySchema> {
   static const _$tables = [_$Item._$table];
 
   Table<Item> get items => ExposedForCodeGen.declareTable(
@@ -15,11 +15,11 @@ extension TestDatabaseSchema on Database<TestDatabase> {
         _$Item._$table,
       );
 
-  /// Create tables defined in [TestDatabase].
+  /// Create tables defined in [MySchema].
   ///
   /// Calling this on an empty database will create the tables
-  /// defined in [TestDatabase]. In production it's often better to
-  /// use [createTestDatabaseTables] and manage migrations using
+  /// defined in [MySchema]. In production it's often better to
+  /// use [createMySchemaTables] and manage migrations using
   /// external tools.
   ///
   /// This method is mostly useful for testing.
@@ -33,38 +33,50 @@ extension TestDatabaseSchema on Database<TestDatabase> {
       );
 }
 
-/// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
+/// Get SQL [DDL statements][1] for tables defined in [MySchema].
 ///
 /// This returns a SQL script with multiple DDL statements separated by `;`
 /// using the specified [dialect].
 ///
 /// Executing these statements in an empty database will create the tables
-/// defined in [TestDatabase]. In practice, this method is often used for
+/// defined in [MySchema]. In practice, this method is often used for
 /// printing the DDL statements, such that migrations can be managed by
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createTestDatabaseTables(SqlDialect dialect) =>
+String createMySchemaTables(SqlDialect dialect) =>
     ExposedForCodeGen.createTableSchema(
       dialect: dialect,
-      tables: TestDatabaseSchema._$tables,
+      tables: MySchemaSchema._$tables,
     );
 
 final class _$Item extends Item {
   _$Item._(
     this.id,
-    this.value,
+    this.name,
+    this.birthday,
+    this.createdAt,
+    this.expires,
   );
 
   @override
   final int id;
 
   @override
-  final double value;
+  final String name;
+
+  @override
+  final DateTime birthday;
+
+  @override
+  final DateTime createdAt;
+
+  @override
+  final DateTime expires;
 
   static const _$table = (
     tableName: 'items',
-    columns: <String>['id', 'value'],
+    columns: <String>['id', 'name', 'birthday', 'createdAt', 'expires'],
     columnInfo: <({
       ColumnType type,
       bool isNotNull,
@@ -80,9 +92,30 @@ final class _$Item extends Item {
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.real,
+        type: ExposedForCodeGen.text,
         isNotNull: true,
-        defaultValue: (kind: 'raw', value: 0.0),
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: <SqlOverride>[],
+      ),
+      (
+        type: ExposedForCodeGen.dateTime,
+        isNotNull: true,
+        defaultValue: (kind: 'datetime', value: 'epoch'),
+        autoIncrement: false,
+        overrides: <SqlOverride>[],
+      ),
+      (
+        type: ExposedForCodeGen.dateTime,
+        isNotNull: true,
+        defaultValue: (kind: 'datetime', value: 'now'),
+        autoIncrement: false,
+        overrides: <SqlOverride>[],
+      ),
+      (
+        type: ExposedForCodeGen.dateTime,
+        isNotNull: true,
+        defaultValue: (kind: 'datetime', value: (2035, 11, 17, 0, 0, 0, 0, 0)),
         autoIncrement: false,
         overrides: <SqlOverride>[],
       )
@@ -100,15 +133,23 @@ final class _$Item extends Item {
 
   static Item? _$fromDatabase(RowReader row) {
     final id = row.readInt();
-    final value = row.readDouble();
-    if (id == null && value == null) {
+    final name = row.readString();
+    final birthday = row.readDateTime();
+    final createdAt = row.readDateTime();
+    final expires = row.readDateTime();
+    if (id == null &&
+        name == null &&
+        birthday == null &&
+        createdAt == null &&
+        expires == null) {
       return null;
     }
-    return _$Item._(id!, value!);
+    return _$Item._(id!, name!, birthday!, createdAt!, expires!);
   }
 
   @override
-  String toString() => 'Item(id: "$id", value: "$value")';
+  String toString() =>
+      'Item(id: "$id", name: "$name", birthday: "$birthday", createdAt: "$createdAt", expires: "$expires")';
 }
 
 /// Extension methods for table defined in [Item].
@@ -119,13 +160,19 @@ extension TableItemExt on Table<Item> {
   /// called for the row to be inserted.
   InsertSingle<Item> insert({
     Expr<int>? id,
-    Expr<double>? value,
+    required Expr<String> name,
+    Expr<DateTime>? birthday,
+    Expr<DateTime>? createdAt,
+    Expr<DateTime>? expires,
   }) =>
       ExposedForCodeGen.insertInto(
         table: this,
         values: [
           id,
-          value,
+          name,
+          birthday,
+          createdAt,
+          expires,
         ],
       );
 
@@ -185,7 +232,10 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             Expr<Item> item,
             UpdateSet<Item> Function({
               Expr<int> id,
-              Expr<double> value,
+              Expr<String> name,
+              Expr<DateTime> birthday,
+              Expr<DateTime> createdAt,
+              Expr<DateTime> expires,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.update<Item>(
@@ -195,11 +245,17 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<double>? value,
+            Expr<String>? name,
+            Expr<DateTime>? birthday,
+            Expr<DateTime>? createdAt,
+            Expr<DateTime>? expires,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
-            value,
+            name,
+            birthday,
+            createdAt,
+            expires,
           ]),
         ),
       );
@@ -247,7 +303,10 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             Expr<Item> item,
             UpdateSet<Item> Function({
               Expr<int> id,
-              Expr<double> value,
+              Expr<String> name,
+              Expr<DateTime> birthday,
+              Expr<DateTime> createdAt,
+              Expr<DateTime> expires,
             }) set,
           ) updateBuilder) =>
       ExposedForCodeGen.updateSingle<Item>(
@@ -257,11 +316,17 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
           item,
           ({
             Expr<int>? id,
-            Expr<double>? value,
+            Expr<String>? name,
+            Expr<DateTime>? birthday,
+            Expr<DateTime>? createdAt,
+            Expr<DateTime>? expires,
           }) =>
               ExposedForCodeGen.buildUpdate<Item>([
             id,
-            value,
+            name,
+            birthday,
+            createdAt,
+            expires,
           ]),
         ),
       );
@@ -280,16 +345,34 @@ extension ExpressionItemExt on Expr<Item> {
   Expr<int> get id =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  Expr<double> get value =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.real);
+  Expr<String> get name =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  Expr<DateTime> get birthday =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.dateTime);
+
+  Expr<DateTime> get createdAt =>
+      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.dateTime);
+
+  Expr<DateTime> get expires =>
+      ExposedForCodeGen.field(this, 4, ExposedForCodeGen.dateTime);
 }
 
 extension ExpressionNullableItemExt on Expr<Item?> {
   Expr<int?> get id =>
       ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
 
-  Expr<double?> get value =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.real);
+  Expr<String?> get name =>
+      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+
+  Expr<DateTime?> get birthday =>
+      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.dateTime);
+
+  Expr<DateTime?> get createdAt =>
+      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.dateTime);
+
+  Expr<DateTime?> get expires =>
+      ExposedForCodeGen.field(this, 4, ExposedForCodeGen.dateTime);
 
   /// Check if the row is not `NULL`.
   ///
@@ -316,6 +399,15 @@ extension ItemChecks on Subject<Item> {
   /// Create assertions on [Item.id].
   Subject<int> get id => has((m) => m.id, 'id');
 
-  /// Create assertions on [Item.value].
-  Subject<double> get value => has((m) => m.value, 'value');
+  /// Create assertions on [Item.name].
+  Subject<String> get name => has((m) => m.name, 'name');
+
+  /// Create assertions on [Item.birthday].
+  Subject<DateTime> get birthday => has((m) => m.birthday, 'birthday');
+
+  /// Create assertions on [Item.createdAt].
+  Subject<DateTime> get createdAt => has((m) => m.createdAt, 'createdAt');
+
+  /// Create assertions on [Item.expires].
+  Subject<DateTime> get expires => has((m) => m.expires, 'expires');
 }

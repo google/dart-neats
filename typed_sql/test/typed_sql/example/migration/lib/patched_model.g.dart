@@ -95,7 +95,7 @@ final class _$Account extends Account {
       (
         type: ExposedForCodeGen.real,
         isNotNull: true,
-        defaultValue: 0.0,
+        defaultValue: (kind: 'raw', value: 0.0),
         autoIncrement: false,
         overrides: <SqlOverride>[],
       )

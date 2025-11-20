@@ -23,6 +23,7 @@ import 'package:collection/collection.dart';
 import '../utils/camelcase.dart';
 import 'code_builder_ext.dart';
 import 'docs.dart' as docs;
+import 'parsed_default_value.dart';
 import 'parsed_library.dart';
 import 'type_args.dart';
 
@@ -347,7 +348,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   (
                     type: ${backingExprType(f.backingType)},
                     isNotNull: ${!f.isNullable},
-                    defaultValue: ${literal(f.defaultValue)},
+                    defaultValue: ${literal(f.defaultValue?.expression)},
                     autoIncrement: ${f.autoIncrement},
                     overrides: <SqlOverride>[
                       ${f.sqlOverrides.map(
@@ -1174,4 +1175,71 @@ String fieldType(ParsedField field) {
     return backingTypeName;
   }
   return '${field.typeName}Ext._exprType';
+}
+
+extension on ParsedDefaultValue {
+  /// Get an [Expression] for this [ParsedDefaultValue] which matches
+  /// the encoding expected by `_defaultValueAsExpr` from `typed_sql.dart`.
+  ///
+  /// This is the encoding used in the table definition serialized in
+  /// generated code.
+  Expression get expression {
+    // Note:
+    // This is the same encoding used by @DefaultValue annotations internally.
+    // While it's not a requirment that these encodings are the same, there is
+    // also no reason to use two different encodings.
+
+    switch (this) {
+      case ParsedDefaultBoolValue v:
+        return literalRecord([], {
+          'kind': literal('raw'),
+          'value': literal(v.value),
+        });
+
+      case ParsedDefaultIntValue v:
+        return literalRecord([], {
+          'kind': literal('raw'),
+          'value': literal(v.value),
+        });
+
+      case ParsedDefaultDoubleValue v:
+        return literalRecord([], {
+          'kind': literal('raw'),
+          'value': literal(v.value),
+        });
+
+      case ParsedDefaultStringValue v:
+        return literalRecord([], {
+          'kind': literal('raw'),
+          'value': literal(v.value),
+        });
+
+      case ParsedDefaultDateTimeValue v:
+        return literalRecord([], {
+          'kind': literal('datetime'),
+          'value': literalRecord([
+            literal(v.year),
+            literal(v.month),
+            literal(v.day),
+            literal(v.hour),
+            literal(v.minute),
+            literal(v.second),
+            literal(v.millisecond),
+            literal(v.microsecond),
+          ], {})
+        });
+
+      case ParsedDefaultDateTimeEpochValue():
+        return literalRecord([], {
+          'kind': literal('datetime'),
+          'value': literal('epoch'),
+        });
+
+      case ParsedDefaultDateTimeNow():
+        return literalRecord([], {
+          'kind': literal('datetime'),
+          'value': literal('now'),
+        });
+    }
+  }
 }

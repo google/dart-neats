@@ -431,7 +431,7 @@ final class _$Book extends Book {
       (
         type: ExposedForCodeGen.integer,
         isNotNull: true,
-        defaultValue: 0,
+        defaultValue: (kind: 'raw', value: 0),
         autoIncrement: false,
         overrides: <SqlOverride>[],
       )

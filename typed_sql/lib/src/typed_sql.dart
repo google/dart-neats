@@ -72,6 +72,71 @@ typedef TableDefinition<T extends Row> = ({
   T? Function(RowReader) readRow,
 });
 
+/// Parsed the encoding from table defintion to [Expr].
+Expr<Object>? _defaultValueAsExpr(Object? defaultValue) {
+  if (defaultValue == null) {
+    return null;
+  }
+
+  // WARNING:
+  // It's important that the Expr<T> objects returned here can be rendered as
+  // literals by the dialects. Because it is not possible for dialects to return
+  // parameters along with the `CREATE TABLE` statements. This is intentional
+  // because parameters don't work well with schema migration tools.
+
+  if (defaultValue case (kind: 'raw', value: final String value)) {
+    return toExpr(value);
+  }
+  if (defaultValue case (kind: 'raw', value: final bool value)) {
+    return toExpr(value);
+  }
+  if (defaultValue case (kind: 'raw', value: final int value)) {
+    return toExpr(value);
+  }
+  if (defaultValue case (kind: 'raw', value: final double value)) {
+    return toExpr(value);
+  }
+
+  if (defaultValue case (kind: 'datetime', value: 'epoch')) {
+    return toExpr(DateTime.fromMillisecondsSinceEpoch(0, isUtc: true));
+  }
+
+  if (defaultValue case (kind: 'datetime', value: 'now')) {
+    return Expr.currentTimestamp;
+  }
+
+  if (defaultValue
+      case (
+        kind: 'datetime',
+        value: (
+          final int year,
+          final int month,
+          final int day,
+          final int hour,
+          final int minute,
+          final int second,
+          final int millisecond,
+          final int microsecond,
+        )
+      )) {
+    return toExpr(DateTime.utc(
+      year,
+      month,
+      day,
+      hour,
+      minute,
+      second,
+      millisecond,
+      microsecond,
+    ));
+  }
+
+  throw AssertionError(
+    'Unable to understand generated code from @DefaultValue annotation, '
+    'try: `dart run build_runner build` or file a bug',
+  );
+}
+
 /// Methods exclusively exposed for use by generated code.
 ///
 /// @nodoc
@@ -90,7 +155,8 @@ final class ExposedForCodeGen {
                           name: c,
                           type: t.columnInfo[i].type,
                           isNotNull: t.columnInfo[i].isNotNull,
-                          defaultValue: t.columnInfo[i].defaultValue,
+                          defaultValue:
+                              _defaultValueAsExpr(t.columnInfo[i].defaultValue),
                           autoIncrement: t.columnInfo[i].autoIncrement,
                           overrides: t.columnInfo[i].overrides,
                         ))
