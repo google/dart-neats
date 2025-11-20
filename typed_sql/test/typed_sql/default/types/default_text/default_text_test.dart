@@ -4,7 +4,7 @@
 
 import 'package:typed_sql/typed_sql.dart';
 
-import '../../testrunner.dart';
+import '../../../testrunner.dart';
 
 part 'default_text_test.g.dart';
 

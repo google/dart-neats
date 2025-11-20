@@ -573,11 +573,26 @@ Object? _parseDefaultValue(Element field, String type) {
       element: field,
     );
   }
-  if (defaultValue is int && type != 'int') {
-    throw InvalidGenerationSource(
-      'DefaultValue of type int is only allowed for int fields',
-      element: field,
-    );
+  if (defaultValue is int) {
+    // Allow casting an int to a double (so long as it's safe)
+    if (type == 'double') {
+      // A double can represent integers precisely up to 2^53.
+      if (defaultValue.abs() > 9007199254740991) {
+        throw InvalidGenerationSource(
+          'Integer literal $defaultValue is too large to be represented as a '
+          'double without losing precision. A double can safely represent '
+          'integers in the range [-(2^53 - 1), 2^53 - 1].',
+          element: field,
+        );
+      }
+      return defaultValue.toDouble();
+    }
+    if (type != 'int') {
+      throw InvalidGenerationSource(
+        'DefaultValue of type int is only allowed for int or double fields',
+        element: field,
+      );
+    }
   }
   if (defaultValue is double && type != 'double') {
     throw InvalidGenerationSource(
