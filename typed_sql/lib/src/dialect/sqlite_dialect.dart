@@ -62,7 +62,7 @@ final class _Sqlite extends SqlDialect {
               if (c.autoIncrement && !isPrimaryKey)
                 'GENERATED ALWAYS AS (rowid) STORED',
               if (defaultValue != null)
-                'DEFAULT ${resolver.expr(defaultValue)}',
+                'DEFAULT (${resolver.expr(defaultValue)})',
             ].join(' ');
           }),
           // Primary key
@@ -101,8 +101,12 @@ final class _Sqlite extends SqlDialect {
     return (
       [
         'INSERT INTO ${escape(statement.table)}',
-        '(${statement.columns.map(escape).join(', ')})',
-        'VALUES (${statement.values.map(resolver.expr).join(', ')})',
+        if (statement.columns.isEmpty)
+          'DEFAULT VALUES'
+        else ...[
+          '(${statement.columns.map(escape).join(', ')})',
+          'VALUES (${statement.values.map(resolver.expr).join(', ')})',
+        ],
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
       resolver.context.parameters,
@@ -498,7 +502,8 @@ extension on ExpressionResolver<SqlContext> {
         NotNullExpression<T>(:final value) => expr(value),
         final CastExpression e => 'CAST(${expr(e.value)} AS ${e.type.sqlType})',
         EncodedCustomDataTypeExpression(:final value) => expr(value),
-        CurrentTimestampExpression _ => 'CURRENT_TIMESTAMP',
+        CurrentTimestampExpression _ =>
+          'strftime(\'%Y-%m-%dT%H:%M:%SZ\', \'now\')',
       };
 }
 

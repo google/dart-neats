@@ -73,7 +73,7 @@ The `toExpr<T>(T value)` function works for the following types:
  * `int` (e.g. `toExpr(42)`),
  * `double` (e.g. `toExpr(3.14)`),
  * `String` (e.g. `toExpr('hello world')`),
- * `DateTime` (e.g. `toExpr(DateTime.now())`),
+ * `DateTime` (e.g. `toExpr(DateTime.now().toUtc())`),
  * `Uint8List` (e.g. `toExpr(Uint8List.from([1, 2, 3]))`), and,
  * `Null` (e.g. `toExpr(null)`).
 

@@ -105,8 +105,12 @@ final class _PostgresDialect extends SqlDialect {
     return (
       [
         'INSERT INTO ${escape(statement.table)}',
-        '(${statement.columns.map(escape).join(', ')})',
-        'VALUES (${statement.values.map(resolver.expr).join(', ')})',
+        if (statement.columns.isEmpty)
+          'DEFAULT VALUES'
+        else ...[
+          '(${statement.columns.map(escape).join(', ')})',
+          'VALUES (${statement.values.map(resolver.expr).join(', ')})',
+        ],
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
       resolver.context.parameters,

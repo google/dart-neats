@@ -444,10 +444,10 @@ Never _throwSqliteException(SqliteException e) {
   switch (e.resultCode) {
     case SqlError.SQLITE_BUSY:
     case SqlError.SQLITE_LOCKED:
-      throw SqliteUnspecifiedOperationException._();
+      throw SqliteUnspecifiedOperationException._(e);
 
     default:
-      throw SqliteUnspecifiedOperationException._();
+      throw SqliteUnspecifiedOperationException._(e);
   }
 }
 
@@ -460,7 +460,12 @@ final class SqliteConstraintViolationException
 
 final class SqliteUnspecifiedOperationException
     extends UnspecifiedOperationException with SqliteDatabaseException {
-  SqliteUnspecifiedOperationException._();
+  final SqliteException _e;
+
+  SqliteUnspecifiedOperationException._(this._e);
+
+  @override
+  String toString() => 'SqliteUnspecifiedOperationException($_e)';
 }
 
 final class SqliteDatabaseConnectionForceClosedException
