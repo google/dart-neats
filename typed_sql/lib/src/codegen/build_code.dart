@@ -79,7 +79,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
             ..modifier = FieldModifier.final$
             ..static = true
             ..assignment = Code('''
-              $ForGeneratedCode.customDataType(
+              \$ForGeneratedCode.customDataType(
                 $backingTypeExpr,
                 $typeName.fromDatabase,
               )
@@ -93,7 +93,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
             ..type = MethodType.getter
             ..lambda = true
             ..body = Code('''
-              $ForGeneratedCode.literalCustomDataType(
+              \$ForGeneratedCode.literalCustomDataType(
                 this,
                 _exprType,
               ).asNotNull()
@@ -119,7 +119,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
             ..type = MethodType.getter
             ..lambda = true
             ..body = Code('''
-              $ForGeneratedCode.literalCustomDataType(
+              \$ForGeneratedCode.literalCustomDataType(
                 this,
                 ${typeName}Ext._exprType,
               )
@@ -185,7 +185,7 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
               ..returns = refer('Table<${table.rowClass.name}>')
               ..lambda = true
               ..body = Code('''
-                $ForGeneratedCode.declareTable(
+                \$ForGeneratedCode.declareTable(
                   this,
                   _\$${table.rowClass.name}._\$table,
                 )
@@ -213,7 +213,7 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
             ..returns = refer('Future<void>')
             ..lambda = true
             ..body = Code('''
-              $ForGeneratedCode.createTables(
+              \$ForGeneratedCode.createTables(
                 context: this,
                 tables: _\$tables,
               )
@@ -259,7 +259,7 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
       ))
       ..lambda = true
       ..body = Code('''
-        $ForGeneratedCode.createTableSchema(
+        \$ForGeneratedCode.createTableSchema(
           dialect: dialect,
           tables: ${schema.name}Schema._\$tables,
         )
@@ -299,7 +299,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       return readBackingType;
     }
     return '''
-      $ForGeneratedCode.customDataTypeOrNull(
+      \$ForGeneratedCode.customDataTypeOrNull(
         $readBackingType,
         ${field.typeName}.fromDatabase,
       )
@@ -454,7 +454,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..returns = refer('InsertSingle<$rowClassName>')
           ..lambda = true
           ..body = Code('''
-            $ForGeneratedCode.insertInto(
+            \$ForGeneratedCode.insertInto(
               table: this,
               values: [
                 ${rowClass.fields.map((field) => field.name).join(', ')},
@@ -484,7 +484,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               )))
           ..lambda = true
           ..body = Code('''
-            $ForGeneratedCode.deleteSingle(
+            \$ForGeneratedCode.deleteSingle(
               byKey(
                 ${rowClass.primaryKey.map((f) => f.name).join(', ')}
               ),
@@ -569,13 +569,13 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ))
           ..lambda = true
           ..body = Code('''
-            $ForGeneratedCode.update<$rowClassName>(
+            \$ForGeneratedCode.update<$rowClassName>(
               this,
               _\$${rowClass.name}._\$table,
               ($rowInstanceName) => updateBuilder($rowInstanceName, ({
                   ${rowClass.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
                 }) =>
-                  $ForGeneratedCode.buildUpdate<$rowClassName>([
+                  \$ForGeneratedCode.buildUpdate<$rowClassName>([
                    ${rowClass.fields.map((field) => field.name).join(', ')},
                   ]),
               ),
@@ -623,7 +623,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..returns = refer('Delete<$rowClassName>')
           ..lambda = true
           ..body = Code('''
-              $ForGeneratedCode.delete(this, _\$${rowClass.name}._\$table)
+              \$ForGeneratedCode.delete(this, _\$${rowClass.name}._\$table)
             '''),
       )),
   );
@@ -685,13 +685,13 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ))
           ..lambda = true
           ..body = Code('''
-            $ForGeneratedCode.updateSingle<$rowClassName>(
+            \$ForGeneratedCode.updateSingle<$rowClassName>(
               this,
               _\$${rowClass.name}._\$table,
               ($rowInstanceName) => updateBuilder($rowInstanceName, ({
                   ${rowClass.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
                 }) =>
-                  $ForGeneratedCode.buildUpdate<$rowClassName>([
+                  \$ForGeneratedCode.buildUpdate<$rowClassName>([
                    ${rowClass.fields.map((field) => field.name).join(', ')},
                   ]),
               ),
@@ -711,7 +711,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..returns = refer('DeleteSingle<$rowClassName>')
           ..lambda = true
           ..body = Code(
-            '$ForGeneratedCode.deleteSingle(this, _\$${rowClass.name}._\$table)',
+            '\$ForGeneratedCode.deleteSingle(this, _\$${rowClass.name}._\$table)',
           ),
       )),
   );
@@ -732,7 +732,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..returns = refer('Expr<${field.type}>')
               ..lambda = true
               ..body = Code(
-                '$ForGeneratedCode.field(this, $i, ${fieldType(field)})',
+                '\$ForGeneratedCode.field(this, $i, ${fieldType(field)})',
               ),
           )),
       ...referencedFrom.map((ref) => Method(
@@ -751,7 +751,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..returns = refer('SubQuery<(Expr<${ref.table.rowClass.name}>,)>')
               ..lambda = true
               ..body = Code('''
-                $ForGeneratedCode.subqueryTable(
+                \$ForGeneratedCode.subqueryTable(
                   _\$${ref.table.rowClass.name}._\$table
                 ).where((r) =>
                   ${ref.fk.foreignKey.mapIndexed((i, fk) => 'r.${fk.name}.equals(${ref.fk.fields[i]})').join(' & ')}
@@ -784,7 +784,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 refer('Expr<${fk.referencedTable.rowClass.name}$nullable>')
             ..lambda = true
             ..body = Code('''
-              $ForGeneratedCode.subqueryTable(
+              \$ForGeneratedCode.subqueryTable(
                 _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
                 (r) =>
@@ -808,7 +808,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..returns = refer('Expr<${field.typeName}?>')
               ..lambda = true
               ..body = Code(
-                '$ForGeneratedCode.field(this, $i, ${fieldType(field)})',
+                '\$ForGeneratedCode.field(this, $i, ${fieldType(field)})',
               ),
           )),
       ...referencedFrom.map((ref) => Method(
@@ -829,7 +829,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..returns = refer('SubQuery<(Expr<${ref.table.rowClass.name}>,)>')
               ..lambda = true
               ..body = Code('''
-                $ForGeneratedCode.subqueryTable(
+                \$ForGeneratedCode.subqueryTable(
                   _\$${ref.table.rowClass.name}._\$table
                 ).where((r) =>
                   ${ref.fk.foreignKey.mapIndexed((i, fk) => 'r.${fk.name}.equalsUnlessNull(${ref.fk.fields[i]}).asNotNull()').join(' & ')}
@@ -855,7 +855,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..returns = refer('Expr<${fk.referencedTable.rowClass.name}?>')
             ..lambda = true
             ..body = Code('''
-              $ForGeneratedCode.subqueryTable(
+              \$ForGeneratedCode.subqueryTable(
                 _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
                 (r) =>
@@ -991,7 +991,7 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
           ..type = MethodType.getter
           ..lambda = true
           ..body = Code('''
-              $ForGeneratedCode.renamedRecord(this, (e) => (${record.fields.map(
+              \$ForGeneratedCode.renamedRecord(this, (e) => (${record.fields.map(
                     (f) => 'e.$f',
                   ).join(', ')},))
             '''),
@@ -1010,7 +1010,7 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
         ))
         ..lambda = true
         ..body = Code('''
-            $ForGeneratedCode.renamedRecord(query, (e) => (${record.fields.mapIndexed(
+            \$ForGeneratedCode.renamedRecord(query, (e) => (${record.fields.mapIndexed(
                   (i, f) => '$f: e.\$${i + 1}',
                 ).join(', ')},))
           '''),
@@ -1157,12 +1157,12 @@ extension on ParsedField {
 
 String backingExprType(String backingType) {
   return switch (backingType) {
-    'String' => '$ForGeneratedCode.text',
-    'int' => '$ForGeneratedCode.integer',
-    'double' => '$ForGeneratedCode.real',
-    'bool' => '$ForGeneratedCode.boolean',
-    'DateTime' => '$ForGeneratedCode.dateTime',
-    'Uint8List' => '$ForGeneratedCode.blob',
+    'String' => '\$ForGeneratedCode.text',
+    'int' => '\$ForGeneratedCode.integer',
+    'double' => '\$ForGeneratedCode.real',
+    'bool' => '\$ForGeneratedCode.boolean',
+    'DateTime' => '\$ForGeneratedCode.dateTime',
+    'Uint8List' => '\$ForGeneratedCode.blob',
     _ => throw UnsupportedError(
         'Unsupported backingType: "$backingType"',
       ),
