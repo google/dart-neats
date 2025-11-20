@@ -10,7 +10,7 @@ part of 'dealership_test.dart';
 extension DealershipSchema on Database<Dealership> {
   static const _$tables = [_$Car._$table];
 
-  Table<Car> get cars => ExposedForCodeGen.declareTable(
+  Table<Car> get cars => $ForGeneratedCode.declareTable(
         this,
         _$Car._$table,
       );
@@ -27,7 +27,7 @@ extension DealershipSchema on Database<Dealership> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => ExposedForCodeGen.createTables(
+  Future<void> createTables() async => $ForGeneratedCode.createTables(
         context: this,
         tables: _$tables,
       );
@@ -45,7 +45,7 @@ extension DealershipSchema on Database<Dealership> {
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createDealershipTables(SqlDialect dialect) =>
-    ExposedForCodeGen.createTableSchema(
+    $ForGeneratedCode.createTableSchema(
       dialect: dialect,
       tables: DealershipSchema._$tables,
     );
@@ -81,21 +81,21 @@ final class _$Car extends Car {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -104,7 +104,7 @@ final class _$Car extends Car {
         ],
       ),
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -128,7 +128,7 @@ final class _$Car extends Car {
     final id = row.readInt();
     final model = row.readString();
     final licensePlate = row.readString();
-    final color = ExposedForCodeGen.customDataTypeOrNull(
+    final color = $ForGeneratedCode.customDataTypeOrNull(
       row.readInt(),
       Color.fromDatabase,
     );
@@ -155,7 +155,7 @@ extension TableCarExt on Table<Car> {
     required Expr<String> licensePlate,
     required Expr<Color> color,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           id,
@@ -174,7 +174,7 @@ extension TableCarExt on Table<Car> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Car> delete(int id) => ExposedForCodeGen.deleteSingle(
+  DeleteSingle<Car> delete(int id) => $ForGeneratedCode.deleteSingle(
         byKey(id),
         _$Car._$table,
       );
@@ -226,7 +226,7 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
               Expr<Color> color,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Car>(
+      $ForGeneratedCode.update<Car>(
         this,
         _$Car._$table,
         (car) => updateBuilder(
@@ -237,7 +237,7 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
             Expr<String>? licensePlate,
             Expr<Color>? color,
           }) =>
-              ExposedForCodeGen.buildUpdate<Car>([
+              $ForGeneratedCode.buildUpdate<Car>([
             id,
             model,
             licensePlate,
@@ -262,7 +262,7 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Car> delete() => ExposedForCodeGen.delete(this, _$Car._$table);
+  Delete<Car> delete() => $ForGeneratedCode.delete(this, _$Car._$table);
 }
 
 /// Extension methods for building point queries against the `cars` table.
@@ -306,7 +306,7 @@ extension QuerySingleCarExt on QuerySingle<(Expr<Car>,)> {
               Expr<Color> color,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Car>(
+      $ForGeneratedCode.updateSingle<Car>(
         this,
         _$Car._$table,
         (car) => updateBuilder(
@@ -317,7 +317,7 @@ extension QuerySingleCarExt on QuerySingle<(Expr<Car>,)> {
             Expr<String>? licensePlate,
             Expr<Color>? color,
           }) =>
-              ExposedForCodeGen.buildUpdate<Car>([
+              $ForGeneratedCode.buildUpdate<Car>([
             id,
             model,
             licensePlate,
@@ -332,35 +332,35 @@ extension QuerySingleCarExt on QuerySingle<(Expr<Car>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Car> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Car._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Car._$table);
 }
 
 /// Extension methods for expressions on a row in the `cars` table.
 extension ExpressionCarExt on Expr<Car> {
   Expr<int> get id =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String> get model =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String> get licensePlate =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
-  Expr<Color> get color => ExposedForCodeGen.field(this, 3, ColorExt._exprType);
+  Expr<Color> get color => $ForGeneratedCode.field(this, 3, ColorExt._exprType);
 }
 
 extension ExpressionNullableCarExt on Expr<Car?> {
   Expr<int?> get id =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String?> get model =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String?> get licensePlate =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   Expr<Color?> get color =>
-      ExposedForCodeGen.field(this, 3, ColorExt._exprType);
+      $ForGeneratedCode.field(this, 3, ColorExt._exprType);
 
   /// Check if the row is not `NULL`.
   ///
@@ -382,17 +382,19 @@ extension ExpressionNullableCarExt on Expr<Car?> {
 /// Wrap this [Color] as [Expr<Color>] for use queries with
 /// `package:typed_sql`.
 extension ColorExt on Color {
-  static final _exprType = ExposedForCodeGen.customDataType(
-    ExposedForCodeGen.integer,
+  static final _exprType = $ForGeneratedCode.customDataType(
+    $ForGeneratedCode.integer,
     Color.fromDatabase,
   );
 
   /// Wrap this [Color] as [Expr<Color>] for use queries with
   /// `package:typed_sql`.
-  Expr<Color> get asExpr => ExposedForCodeGen.literalCustomDataType(
+  Expr<Color> get asExpr => $ForGeneratedCode
+      .literalCustomDataType(
         this,
         _exprType,
-      ).asNotNull();
+      )
+      .asNotNull();
 }
 
 /// Wrap this [Color] as [Expr<Color>] for use queries with
@@ -400,7 +402,7 @@ extension ColorExt on Color {
 extension ColorNullableExt on Color? {
   /// Wrap this [Color] as [Expr<Color?>] for use queries with
   /// `package:typed_sql`.
-  Expr<Color?> get asExpr => ExposedForCodeGen.literalCustomDataType(
+  Expr<Color?> get asExpr => $ForGeneratedCode.literalCustomDataType(
         this,
         ColorExt._exprType,
       );

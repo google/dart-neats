@@ -10,17 +10,17 @@ part of 'model.dart';
 extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   static const _$tables = [_$User._$table, _$Package._$table, _$Like._$table];
 
-  Table<User> get users => ExposedForCodeGen.declareTable(
+  Table<User> get users => $ForGeneratedCode.declareTable(
         this,
         _$User._$table,
       );
 
-  Table<Package> get packages => ExposedForCodeGen.declareTable(
+  Table<Package> get packages => $ForGeneratedCode.declareTable(
         this,
         _$Package._$table,
       );
 
-  Table<Like> get likes => ExposedForCodeGen.declareTable(
+  Table<Like> get likes => $ForGeneratedCode.declareTable(
         this,
         _$Like._$table,
       );
@@ -37,7 +37,7 @@ extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => ExposedForCodeGen.createTables(
+  Future<void> createTables() async => $ForGeneratedCode.createTables(
         context: this,
         tables: _$tables,
       );
@@ -55,7 +55,7 @@ extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createPrimaryDatabaseTables(SqlDialect dialect) =>
-    ExposedForCodeGen.createTableSchema(
+    $ForGeneratedCode.createTableSchema(
       dialect: dialect,
       tables: PrimaryDatabaseSchema._$tables,
     );
@@ -87,21 +87,21 @@ final class _$User extends User {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -147,7 +147,7 @@ extension TableUserExt on Table<User> {
     required Expr<String> name,
     required Expr<String> email,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           userId,
@@ -165,7 +165,7 @@ extension TableUserExt on Table<User> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<User> delete(int userId) => ExposedForCodeGen.deleteSingle(
+  DeleteSingle<User> delete(int userId) => $ForGeneratedCode.deleteSingle(
         byKey(userId),
         _$User._$table,
       );
@@ -216,7 +216,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
               Expr<String> email,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<User>(
+      $ForGeneratedCode.update<User>(
         this,
         _$User._$table,
         (user) => updateBuilder(
@@ -226,7 +226,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
             Expr<String>? name,
             Expr<String>? email,
           }) =>
-              ExposedForCodeGen.buildUpdate<User>([
+              $ForGeneratedCode.buildUpdate<User>([
             userId,
             name,
             email,
@@ -250,7 +250,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<User> delete() => ExposedForCodeGen.delete(this, _$User._$table);
+  Delete<User> delete() => $ForGeneratedCode.delete(this, _$User._$table);
 }
 
 /// Extension methods for building point queries against the `users` table.
@@ -293,7 +293,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
               Expr<String> email,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<User>(
+      $ForGeneratedCode.updateSingle<User>(
         this,
         _$User._$table,
         (user) => updateBuilder(
@@ -303,7 +303,7 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
             Expr<String>? name,
             Expr<String>? email,
           }) =>
-              ExposedForCodeGen.buildUpdate<User>([
+              $ForGeneratedCode.buildUpdate<User>([
             userId,
             name,
             email,
@@ -317,23 +317,23 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<User> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$User._$table);
+      $ForGeneratedCode.deleteSingle(this, _$User._$table);
 }
 
 /// Extension methods for expressions on a row in the `users` table.
 extension ExpressionUserExt on Expr<User> {
   Expr<int> get userId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   /// Name of the user
   ///
   /// This is the fullname.
   Expr<String> get name =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   /// The users email address, not verified, by provided from OIDC.
   Expr<String> get email =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `packages` table which
   /// reference this row.
@@ -342,24 +342,24 @@ extension ExpressionUserExt on Expr<User> {
   /// where [Package.ownerId]
   /// references [User.userId]
   /// in this row.
-  SubQuery<(Expr<Package>,)> get packages =>
-      ExposedForCodeGen.subqueryTable(_$Package._$table)
-          .where((r) => r.ownerId.equals(userId));
+  SubQuery<(Expr<Package>,)> get packages => $ForGeneratedCode
+      .subqueryTable(_$Package._$table)
+      .where((r) => r.ownerId.equals(userId));
 }
 
 extension ExpressionNullableUserExt on Expr<User?> {
   Expr<int?> get userId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   /// Name of the user
   ///
   /// This is the fullname.
   Expr<String?> get name =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   /// The users email address, not verified, by provided from OIDC.
   Expr<String?> get email =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `packages` table which
   /// reference this row.
@@ -370,9 +370,9 @@ extension ExpressionNullableUserExt on Expr<User?> {
   /// in this row, if any.
   ///
   /// If this row is `NULL` the subquery is always be empty.
-  SubQuery<(Expr<Package>,)> get packages =>
-      ExposedForCodeGen.subqueryTable(_$Package._$table)
-          .where((r) => r.ownerId.equalsUnlessNull(userId).asNotNull());
+  SubQuery<(Expr<Package>,)> get packages => $ForGeneratedCode
+      .subqueryTable(_$Package._$table)
+      .where((r) => r.ownerId.equalsUnlessNull(userId).asNotNull());
 
   /// Check if the row is not `NULL`.
   ///
@@ -448,28 +448,28 @@ final class _$Package extends Package {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: (kind: 'raw', value: 0),
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
@@ -525,7 +525,7 @@ extension TablePackageExt on Table<Package> {
     required Expr<int> ownerId,
     Expr<String?>? publisher,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           packageName,
@@ -545,7 +545,7 @@ extension TablePackageExt on Table<Package> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Package> delete(String packageName) =>
-      ExposedForCodeGen.deleteSingle(
+      $ForGeneratedCode.deleteSingle(
         byKey(packageName),
         _$Package._$table,
       );
@@ -597,7 +597,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
               Expr<String?> publisher,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Package>(
+      $ForGeneratedCode.update<Package>(
         this,
         _$Package._$table,
         (package) => updateBuilder(
@@ -608,7 +608,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
             Expr<int>? ownerId,
             Expr<String?>? publisher,
           }) =>
-              ExposedForCodeGen.buildUpdate<Package>([
+              $ForGeneratedCode.buildUpdate<Package>([
             packageName,
             likes,
             ownerId,
@@ -621,7 +621,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Package> delete() => ExposedForCodeGen.delete(this, _$Package._$table);
+  Delete<Package> delete() => $ForGeneratedCode.delete(this, _$Package._$table);
 }
 
 /// Extension methods for building point queries against the `packages` table.
@@ -665,7 +665,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
               Expr<String?> publisher,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Package>(
+      $ForGeneratedCode.updateSingle<Package>(
         this,
         _$Package._$table,
         (package) => updateBuilder(
@@ -676,7 +676,7 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
             Expr<int>? ownerId,
             Expr<String?>? publisher,
           }) =>
-              ExposedForCodeGen.buildUpdate<Package>([
+              $ForGeneratedCode.buildUpdate<Package>([
             packageName,
             likes,
             ownerId,
@@ -691,22 +691,22 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Package> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Package._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Package._$table);
 }
 
 /// Extension methods for expressions on a row in the `packages` table.
 extension ExpressionPackageExt on Expr<Package> {
   Expr<String> get packageName =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.text);
 
   Expr<int> get likes =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.integer);
 
   Expr<int> get ownerId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
 
   Expr<String?> get publisher =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.text);
 
   /// Do a subquery lookup of the row from table
   /// `users` referenced in
@@ -715,7 +715,8 @@ extension ExpressionPackageExt on Expr<Package> {
   /// The gets the row from table `users` where
   /// [User.userId]
   /// is equal to [ownerId].
-  Expr<User> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
+  Expr<User> get owner => $ForGeneratedCode
+      .subqueryTable(_$User._$table)
       .where((r) => r.userId.equals(ownerId))
       .first
       .asNotNull();
@@ -723,16 +724,16 @@ extension ExpressionPackageExt on Expr<Package> {
 
 extension ExpressionNullablePackageExt on Expr<Package?> {
   Expr<String?> get packageName =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.text);
 
   Expr<int?> get likes =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.integer);
 
   Expr<int?> get ownerId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
 
   Expr<String?> get publisher =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.text);
 
   /// Do a subquery lookup of the row from table
   /// `users` referenced in
@@ -743,7 +744,8 @@ extension ExpressionNullablePackageExt on Expr<Package?> {
   /// is equal to [ownerId], if any.
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
-  Expr<User?> get owner => ExposedForCodeGen.subqueryTable(_$User._$table)
+  Expr<User?> get owner => $ForGeneratedCode
+      .subqueryTable(_$User._$table)
       .where((r) => r.userId.equalsUnlessNull(ownerId).asNotNull())
       .first;
 
@@ -813,14 +815,14 @@ final class _$Like extends Like {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -861,7 +863,7 @@ extension TableLikeExt on Table<Like> {
     required Expr<int> userId,
     required Expr<String> packageName,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           userId,
@@ -882,7 +884,7 @@ extension TableLikeExt on Table<Like> {
     int userId,
     String packageName,
   ) =>
-      ExposedForCodeGen.deleteSingle(
+      $ForGeneratedCode.deleteSingle(
         byKey(userId, packageName),
         _$Like._$table,
       );
@@ -937,7 +939,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
               Expr<String> packageName,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Like>(
+      $ForGeneratedCode.update<Like>(
         this,
         _$Like._$table,
         (like) => updateBuilder(
@@ -946,7 +948,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
             Expr<int>? userId,
             Expr<String>? packageName,
           }) =>
-              ExposedForCodeGen.buildUpdate<Like>([
+              $ForGeneratedCode.buildUpdate<Like>([
             userId,
             packageName,
           ]),
@@ -957,7 +959,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Like> delete() => ExposedForCodeGen.delete(this, _$Like._$table);
+  Delete<Like> delete() => $ForGeneratedCode.delete(this, _$Like._$table);
 }
 
 /// Extension methods for building point queries against the `likes` table.
@@ -999,7 +1001,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
               Expr<String> packageName,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Like>(
+      $ForGeneratedCode.updateSingle<Like>(
         this,
         _$Like._$table,
         (like) => updateBuilder(
@@ -1008,7 +1010,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
             Expr<int>? userId,
             Expr<String>? packageName,
           }) =>
-              ExposedForCodeGen.buildUpdate<Like>([
+              $ForGeneratedCode.buildUpdate<Like>([
             userId,
             packageName,
           ]),
@@ -1021,24 +1023,24 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Like> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Like._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Like._$table);
 }
 
 /// Extension methods for expressions on a row in the `likes` table.
 extension ExpressionLikeExt on Expr<Like> {
   Expr<int> get userId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String> get packageName =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 }
 
 extension ExpressionNullableLikeExt on Expr<Like?> {
   Expr<int?> get userId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String?> get packageName =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   /// Check if the row is not `NULL`.
   ///
@@ -1064,7 +1066,7 @@ extension QueryOwnerPackageNamed<A, B> on Query<
       Expr<B> package,
     })> {
   Query<(Expr<A>, Expr<B>)> get _asPositionalQuery =>
-      ExposedForCodeGen.renamedRecord(
+      $ForGeneratedCode.renamedRecord(
           this,
           (e) => (
                 e.owner,
@@ -1077,7 +1079,7 @@ extension QueryOwnerPackageNamed<A, B> on Query<
         Expr<B> package,
       })> _fromPositionalQuery<A, B>(
           Query<(Expr<A>, Expr<B>)> query) =>
-      ExposedForCodeGen.renamedRecord(
+      $ForGeneratedCode.renamedRecord(
           query,
           (e) => (
                 owner: e.$1,

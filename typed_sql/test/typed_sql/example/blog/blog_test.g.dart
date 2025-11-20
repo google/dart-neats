@@ -10,12 +10,12 @@ part of 'blog_test.dart';
 extension BlogDatabaseSchema on Database<BlogDatabase> {
   static const _$tables = [_$Post._$table, _$Comment._$table];
 
-  Table<Post> get posts => ExposedForCodeGen.declareTable(
+  Table<Post> get posts => $ForGeneratedCode.declareTable(
         this,
         _$Post._$table,
       );
 
-  Table<Comment> get comments => ExposedForCodeGen.declareTable(
+  Table<Comment> get comments => $ForGeneratedCode.declareTable(
         this,
         _$Comment._$table,
       );
@@ -32,7 +32,7 @@ extension BlogDatabaseSchema on Database<BlogDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => ExposedForCodeGen.createTables(
+  Future<void> createTables() async => $ForGeneratedCode.createTables(
         context: this,
         tables: _$tables,
       );
@@ -50,7 +50,7 @@ extension BlogDatabaseSchema on Database<BlogDatabase> {
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createBlogDatabaseTables(SqlDialect dialect) =>
-    ExposedForCodeGen.createTableSchema(
+    $ForGeneratedCode.createTableSchema(
       dialect: dialect,
       tables: BlogDatabaseSchema._$tables,
     );
@@ -82,7 +82,7 @@ final class _$Post extends Post {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -91,7 +91,7 @@ final class _$Post extends Post {
         ],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -100,7 +100,7 @@ final class _$Post extends Post {
         ],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -144,7 +144,7 @@ extension TablePostExt on Table<Post> {
     required Expr<String> slug,
     required Expr<String> content,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           author,
@@ -166,7 +166,7 @@ extension TablePostExt on Table<Post> {
     String author,
     String slug,
   ) =>
-      ExposedForCodeGen.deleteSingle(
+      $ForGeneratedCode.deleteSingle(
         byKey(author, slug),
         _$Post._$table,
       );
@@ -221,7 +221,7 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
               Expr<String> content,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Post>(
+      $ForGeneratedCode.update<Post>(
         this,
         _$Post._$table,
         (post) => updateBuilder(
@@ -231,7 +231,7 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
             Expr<String>? slug,
             Expr<String>? content,
           }) =>
-              ExposedForCodeGen.buildUpdate<Post>([
+              $ForGeneratedCode.buildUpdate<Post>([
             author,
             slug,
             content,
@@ -243,7 +243,7 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Post> delete() => ExposedForCodeGen.delete(this, _$Post._$table);
+  Delete<Post> delete() => $ForGeneratedCode.delete(this, _$Post._$table);
 }
 
 /// Extension methods for building point queries against the `posts` table.
@@ -286,7 +286,7 @@ extension QuerySinglePostExt on QuerySingle<(Expr<Post>,)> {
               Expr<String> content,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Post>(
+      $ForGeneratedCode.updateSingle<Post>(
         this,
         _$Post._$table,
         (post) => updateBuilder(
@@ -296,7 +296,7 @@ extension QuerySinglePostExt on QuerySingle<(Expr<Post>,)> {
             Expr<String>? slug,
             Expr<String>? content,
           }) =>
-              ExposedForCodeGen.buildUpdate<Post>([
+              $ForGeneratedCode.buildUpdate<Post>([
             author,
             slug,
             content,
@@ -310,19 +310,19 @@ extension QuerySinglePostExt on QuerySingle<(Expr<Post>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Post> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Post._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Post._$table);
 }
 
 /// Extension methods for expressions on a row in the `posts` table.
 extension ExpressionPostExt on Expr<Post> {
   Expr<String> get author =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.text);
 
   Expr<String> get slug =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String> get content =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `comments` table which
   /// reference this row.
@@ -331,20 +331,20 @@ extension ExpressionPostExt on Expr<Post> {
   /// where [Comment.author], [Comment.postSlug]
   /// references [Post.author], [Post.slug]
   /// in this row.
-  SubQuery<(Expr<Comment>,)> get comments =>
-      ExposedForCodeGen.subqueryTable(_$Comment._$table)
-          .where((r) => r.author.equals(author) & r.postSlug.equals(slug));
+  SubQuery<(Expr<Comment>,)> get comments => $ForGeneratedCode
+      .subqueryTable(_$Comment._$table)
+      .where((r) => r.author.equals(author) & r.postSlug.equals(slug));
 }
 
 extension ExpressionNullablePostExt on Expr<Post?> {
   Expr<String?> get author =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.text);
 
   Expr<String?> get slug =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String?> get content =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `comments` table which
   /// reference this row.
@@ -356,7 +356,7 @@ extension ExpressionNullablePostExt on Expr<Post?> {
   ///
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Comment>,)> get comments =>
-      ExposedForCodeGen.subqueryTable(_$Comment._$table).where((r) =>
+      $ForGeneratedCode.subqueryTable(_$Comment._$table).where((r) =>
           r.author.equalsUnlessNull(author).asNotNull() &
           r.postSlug.equalsUnlessNull(slug).asNotNull());
 
@@ -434,14 +434,14 @@ final class _$Comment extends Comment {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -450,7 +450,7 @@ final class _$Comment extends Comment {
         ],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -459,7 +459,7 @@ final class _$Comment extends Comment {
         ],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -515,7 +515,7 @@ extension TableCommentExt on Table<Comment> {
     required Expr<String> postSlug,
     required Expr<String> comment,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           commentId,
@@ -534,7 +534,7 @@ extension TableCommentExt on Table<Comment> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Comment> delete(int commentId) => ExposedForCodeGen.deleteSingle(
+  DeleteSingle<Comment> delete(int commentId) => $ForGeneratedCode.deleteSingle(
         byKey(commentId),
         _$Comment._$table,
       );
@@ -586,7 +586,7 @@ extension QueryCommentExt on Query<(Expr<Comment>,)> {
               Expr<String> comment,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Comment>(
+      $ForGeneratedCode.update<Comment>(
         this,
         _$Comment._$table,
         (comment) => updateBuilder(
@@ -597,7 +597,7 @@ extension QueryCommentExt on Query<(Expr<Comment>,)> {
             Expr<String>? postSlug,
             Expr<String>? comment,
           }) =>
-              ExposedForCodeGen.buildUpdate<Comment>([
+              $ForGeneratedCode.buildUpdate<Comment>([
             commentId,
             author,
             postSlug,
@@ -610,7 +610,7 @@ extension QueryCommentExt on Query<(Expr<Comment>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Comment> delete() => ExposedForCodeGen.delete(this, _$Comment._$table);
+  Delete<Comment> delete() => $ForGeneratedCode.delete(this, _$Comment._$table);
 }
 
 /// Extension methods for building point queries against the `comments` table.
@@ -654,7 +654,7 @@ extension QuerySingleCommentExt on QuerySingle<(Expr<Comment>,)> {
               Expr<String> comment,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Comment>(
+      $ForGeneratedCode.updateSingle<Comment>(
         this,
         _$Comment._$table,
         (comment) => updateBuilder(
@@ -665,7 +665,7 @@ extension QuerySingleCommentExt on QuerySingle<(Expr<Comment>,)> {
             Expr<String>? postSlug,
             Expr<String>? comment,
           }) =>
-              ExposedForCodeGen.buildUpdate<Comment>([
+              $ForGeneratedCode.buildUpdate<Comment>([
             commentId,
             author,
             postSlug,
@@ -680,22 +680,22 @@ extension QuerySingleCommentExt on QuerySingle<(Expr<Comment>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Comment> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Comment._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Comment._$table);
 }
 
 /// Extension methods for expressions on a row in the `comments` table.
 extension ExpressionCommentExt on Expr<Comment> {
   Expr<int> get commentId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String> get author =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String> get postSlug =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   Expr<String> get comment =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.text);
 
   /// Do a subquery lookup of the row from table
   /// `posts` referenced in
@@ -704,7 +704,8 @@ extension ExpressionCommentExt on Expr<Comment> {
   /// The gets the row from table `posts` where
   /// [Post.author], [Post.slug]
   /// is equal to [author], [postSlug].
-  Expr<Post> get post => ExposedForCodeGen.subqueryTable(_$Post._$table)
+  Expr<Post> get post => $ForGeneratedCode
+      .subqueryTable(_$Post._$table)
       .where((r) => r.author.equals(author) & r.slug.equals(postSlug))
       .first
       .asNotNull();
@@ -712,16 +713,16 @@ extension ExpressionCommentExt on Expr<Comment> {
 
 extension ExpressionNullableCommentExt on Expr<Comment?> {
   Expr<int?> get commentId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String?> get author =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String?> get postSlug =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   Expr<String?> get comment =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.text);
 
   /// Do a subquery lookup of the row from table
   /// `posts` referenced in
@@ -732,7 +733,8 @@ extension ExpressionNullableCommentExt on Expr<Comment?> {
   /// is equal to [author], [postSlug], if any.
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
-  Expr<Post?> get post => ExposedForCodeGen.subqueryTable(_$Post._$table)
+  Expr<Post?> get post => $ForGeneratedCode
+      .subqueryTable(_$Post._$table)
       .where((r) =>
           r.author.equalsUnlessNull(author).asNotNull() &
           r.slug.equalsUnlessNull(postSlug).asNotNull())
