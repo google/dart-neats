@@ -10,12 +10,12 @@ part of 'company_test.dart';
 extension CompanyDatabaseSchema on Database<CompanyDatabase> {
   static const _$tables = [_$Department._$table, _$Employee._$table];
 
-  Table<Department> get departments => ExposedForCodeGen.declareTable(
+  Table<Department> get departments => $ForGeneratedCode.declareTable(
         this,
         _$Department._$table,
       );
 
-  Table<Employee> get employees => ExposedForCodeGen.declareTable(
+  Table<Employee> get employees => $ForGeneratedCode.declareTable(
         this,
         _$Employee._$table,
       );
@@ -32,7 +32,7 @@ extension CompanyDatabaseSchema on Database<CompanyDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => ExposedForCodeGen.createTables(
+  Future<void> createTables() async => $ForGeneratedCode.createTables(
         context: this,
         tables: _$tables,
       );
@@ -50,7 +50,7 @@ extension CompanyDatabaseSchema on Database<CompanyDatabase> {
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createCompanyDatabaseTables(SqlDialect dialect) =>
-    ExposedForCodeGen.createTableSchema(
+    $ForGeneratedCode.createTableSchema(
       dialect: dialect,
       tables: CompanyDatabaseSchema._$tables,
     );
@@ -82,21 +82,21 @@ final class _$Department extends Department {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -140,7 +140,7 @@ extension TableDepartmentExt on Table<Department> {
     required Expr<String> name,
     required Expr<String> location,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           departmentId,
@@ -159,7 +159,7 @@ extension TableDepartmentExt on Table<Department> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Department> delete(int departmentId) =>
-      ExposedForCodeGen.deleteSingle(
+      $ForGeneratedCode.deleteSingle(
         byKey(departmentId),
         _$Department._$table,
       );
@@ -211,7 +211,7 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
               Expr<String> location,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Department>(
+      $ForGeneratedCode.update<Department>(
         this,
         _$Department._$table,
         (department) => updateBuilder(
@@ -221,7 +221,7 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
             Expr<String>? name,
             Expr<String>? location,
           }) =>
-              ExposedForCodeGen.buildUpdate<Department>([
+              $ForGeneratedCode.buildUpdate<Department>([
             departmentId,
             name,
             location,
@@ -234,7 +234,7 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
   Delete<Department> delete() =>
-      ExposedForCodeGen.delete(this, _$Department._$table);
+      $ForGeneratedCode.delete(this, _$Department._$table);
 }
 
 /// Extension methods for building point queries against the `departments` table.
@@ -277,7 +277,7 @@ extension QuerySingleDepartmentExt on QuerySingle<(Expr<Department>,)> {
               Expr<String> location,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Department>(
+      $ForGeneratedCode.updateSingle<Department>(
         this,
         _$Department._$table,
         (department) => updateBuilder(
@@ -287,7 +287,7 @@ extension QuerySingleDepartmentExt on QuerySingle<(Expr<Department>,)> {
             Expr<String>? name,
             Expr<String>? location,
           }) =>
-              ExposedForCodeGen.buildUpdate<Department>([
+              $ForGeneratedCode.buildUpdate<Department>([
             departmentId,
             name,
             location,
@@ -301,19 +301,19 @@ extension QuerySingleDepartmentExt on QuerySingle<(Expr<Department>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Department> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Department._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Department._$table);
 }
 
 /// Extension methods for expressions on a row in the `departments` table.
 extension ExpressionDepartmentExt on Expr<Department> {
   Expr<int> get departmentId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String> get name =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String> get location =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `employees` table which
   /// reference this row.
@@ -322,20 +322,20 @@ extension ExpressionDepartmentExt on Expr<Department> {
   /// where [Employee.departmentId]
   /// references [Department.departmentId]
   /// in this row.
-  SubQuery<(Expr<Employee>,)> get employees =>
-      ExposedForCodeGen.subqueryTable(_$Employee._$table)
-          .where((r) => r.departmentId.equals(departmentId));
+  SubQuery<(Expr<Employee>,)> get employees => $ForGeneratedCode
+      .subqueryTable(_$Employee._$table)
+      .where((r) => r.departmentId.equals(departmentId));
 }
 
 extension ExpressionNullableDepartmentExt on Expr<Department?> {
   Expr<int?> get departmentId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String?> get name =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String?> get location =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `employees` table which
   /// reference this row.
@@ -346,9 +346,9 @@ extension ExpressionNullableDepartmentExt on Expr<Department?> {
   /// in this row, if any.
   ///
   /// If this row is `NULL` the subquery is always be empty.
-  SubQuery<(Expr<Employee>,)> get employees =>
-      ExposedForCodeGen.subqueryTable(_$Employee._$table).where(
-          (r) => r.departmentId.equalsUnlessNull(departmentId).asNotNull());
+  SubQuery<(Expr<Employee>,)> get employees => $ForGeneratedCode
+      .subqueryTable(_$Employee._$table)
+      .where((r) => r.departmentId.equalsUnlessNull(departmentId).asNotNull());
 
   /// Check if the row is not `NULL`.
   ///
@@ -421,21 +421,21 @@ final class _$Employee extends Employee {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
@@ -486,7 +486,7 @@ extension TableEmployeeExt on Table<Employee> {
     required Expr<String> name,
     Expr<int?>? departmentId,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           employeeId,
@@ -505,7 +505,7 @@ extension TableEmployeeExt on Table<Employee> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Employee> delete(int employeeId) =>
-      ExposedForCodeGen.deleteSingle(
+      $ForGeneratedCode.deleteSingle(
         byKey(employeeId),
         _$Employee._$table,
       );
@@ -556,7 +556,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
               Expr<int?> departmentId,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Employee>(
+      $ForGeneratedCode.update<Employee>(
         this,
         _$Employee._$table,
         (employee) => updateBuilder(
@@ -566,7 +566,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
             Expr<String>? name,
             Expr<int?>? departmentId,
           }) =>
-              ExposedForCodeGen.buildUpdate<Employee>([
+              $ForGeneratedCode.buildUpdate<Employee>([
             employeeId,
             name,
             departmentId,
@@ -579,7 +579,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
   Delete<Employee> delete() =>
-      ExposedForCodeGen.delete(this, _$Employee._$table);
+      $ForGeneratedCode.delete(this, _$Employee._$table);
 }
 
 /// Extension methods for building point queries against the `employees` table.
@@ -622,7 +622,7 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
               Expr<int?> departmentId,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Employee>(
+      $ForGeneratedCode.updateSingle<Employee>(
         this,
         _$Employee._$table,
         (employee) => updateBuilder(
@@ -632,7 +632,7 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
             Expr<String>? name,
             Expr<int?>? departmentId,
           }) =>
-              ExposedForCodeGen.buildUpdate<Employee>([
+              $ForGeneratedCode.buildUpdate<Employee>([
             employeeId,
             name,
             departmentId,
@@ -646,19 +646,19 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Employee> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Employee._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Employee._$table);
 }
 
 /// Extension methods for expressions on a row in the `employees` table.
 extension ExpressionEmployeeExt on Expr<Employee> {
   Expr<int> get employeeId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String> get name =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<int?> get departmentId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
 
   /// Do a subquery lookup of the row from table
   /// `departments` referenced in
@@ -667,21 +667,21 @@ extension ExpressionEmployeeExt on Expr<Employee> {
   /// The gets the row from table `departments` where
   /// [Department.departmentId]
   /// is equal to [departmentId], if any.
-  Expr<Department?> get department =>
-      ExposedForCodeGen.subqueryTable(_$Department._$table)
-          .where((r) => r.departmentId.equals(departmentId))
-          .first;
+  Expr<Department?> get department => $ForGeneratedCode
+      .subqueryTable(_$Department._$table)
+      .where((r) => r.departmentId.equals(departmentId))
+      .first;
 }
 
 extension ExpressionNullableEmployeeExt on Expr<Employee?> {
   Expr<int?> get employeeId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String?> get name =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<int?> get departmentId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
 
   /// Do a subquery lookup of the row from table
   /// `departments` referenced in
@@ -692,11 +692,10 @@ extension ExpressionNullableEmployeeExt on Expr<Employee?> {
   /// is equal to [departmentId], if any.
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
-  Expr<Department?> get department =>
-      ExposedForCodeGen.subqueryTable(_$Department._$table)
-          .where(
-              (r) => r.departmentId.equalsUnlessNull(departmentId).asNotNull())
-          .first;
+  Expr<Department?> get department => $ForGeneratedCode
+      .subqueryTable(_$Department._$table)
+      .where((r) => r.departmentId.equalsUnlessNull(departmentId).asNotNull())
+      .first;
 
   /// Check if the row is not `NULL`.
   ///

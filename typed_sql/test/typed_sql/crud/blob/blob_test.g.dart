@@ -10,7 +10,7 @@ part of 'blob_test.dart';
 extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Item._$table];
 
-  Table<Item> get items => ExposedForCodeGen.declareTable(
+  Table<Item> get items => $ForGeneratedCode.declareTable(
         this,
         _$Item._$table,
       );
@@ -27,7 +27,7 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => ExposedForCodeGen.createTables(
+  Future<void> createTables() async => $ForGeneratedCode.createTables(
         context: this,
         tables: _$tables,
       );
@@ -45,7 +45,7 @@ extension TestDatabaseSchema on Database<TestDatabase> {
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createTestDatabaseTables(SqlDialect dialect) =>
-    ExposedForCodeGen.createTableSchema(
+    $ForGeneratedCode.createTableSchema(
       dialect: dialect,
       tables: TestDatabaseSchema._$tables,
     );
@@ -73,14 +73,14 @@ final class _$Item extends Item {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.blob,
+        type: $ForGeneratedCode.blob,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -121,7 +121,7 @@ extension TableItemExt on Table<Item> {
     Expr<int>? id,
     required Expr<Uint8List> value,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           id,
@@ -138,7 +138,7 @@ extension TableItemExt on Table<Item> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Item> delete(int id) => ExposedForCodeGen.deleteSingle(
+  DeleteSingle<Item> delete(int id) => $ForGeneratedCode.deleteSingle(
         byKey(id),
         _$Item._$table,
       );
@@ -188,7 +188,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
               Expr<Uint8List> value,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Item>(
+      $ForGeneratedCode.update<Item>(
         this,
         _$Item._$table,
         (item) => updateBuilder(
@@ -197,7 +197,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             Expr<int>? id,
             Expr<Uint8List>? value,
           }) =>
-              ExposedForCodeGen.buildUpdate<Item>([
+              $ForGeneratedCode.buildUpdate<Item>([
             id,
             value,
           ]),
@@ -208,7 +208,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Item> delete() => ExposedForCodeGen.delete(this, _$Item._$table);
+  Delete<Item> delete() => $ForGeneratedCode.delete(this, _$Item._$table);
 }
 
 /// Extension methods for building point queries against the `items` table.
@@ -250,7 +250,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
               Expr<Uint8List> value,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Item>(
+      $ForGeneratedCode.updateSingle<Item>(
         this,
         _$Item._$table,
         (item) => updateBuilder(
@@ -259,7 +259,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             Expr<int>? id,
             Expr<Uint8List>? value,
           }) =>
-              ExposedForCodeGen.buildUpdate<Item>([
+              $ForGeneratedCode.buildUpdate<Item>([
             id,
             value,
           ]),
@@ -272,24 +272,24 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Item> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Item._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Item._$table);
 }
 
 /// Extension methods for expressions on a row in the `items` table.
 extension ExpressionItemExt on Expr<Item> {
   Expr<int> get id =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<Uint8List> get value =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.blob);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.blob);
 }
 
 extension ExpressionNullableItemExt on Expr<Item?> {
   Expr<int?> get id =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<Uint8List?> get value =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.blob);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.blob);
 
   /// Check if the row is not `NULL`.
   ///

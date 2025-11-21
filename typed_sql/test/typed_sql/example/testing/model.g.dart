@@ -10,7 +10,7 @@ part of 'model.dart';
 extension BankVaultSchema on Database<BankVault> {
   static const _$tables = [_$Account._$table];
 
-  Table<Account> get accounts => ExposedForCodeGen.declareTable(
+  Table<Account> get accounts => $ForGeneratedCode.declareTable(
         this,
         _$Account._$table,
       );
@@ -27,7 +27,7 @@ extension BankVaultSchema on Database<BankVault> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => ExposedForCodeGen.createTables(
+  Future<void> createTables() async => $ForGeneratedCode.createTables(
         context: this,
         tables: _$tables,
       );
@@ -45,7 +45,7 @@ extension BankVaultSchema on Database<BankVault> {
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createBankVaultTables(SqlDialect dialect) =>
-    ExposedForCodeGen.createTableSchema(
+    $ForGeneratedCode.createTableSchema(
       dialect: dialect,
       tables: BankVaultSchema._$tables,
     );
@@ -77,14 +77,14 @@ final class _$Account extends Account {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -93,7 +93,7 @@ final class _$Account extends Account {
         ],
       ),
       (
-        type: ExposedForCodeGen.real,
+        type: $ForGeneratedCode.real,
         isNotNull: true,
         defaultValue: (kind: 'raw', value: 0.0),
         autoIncrement: false,
@@ -139,7 +139,7 @@ extension TableAccountExt on Table<Account> {
     required Expr<String> accountNumber,
     Expr<double>? balance,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           accountId,
@@ -157,7 +157,7 @@ extension TableAccountExt on Table<Account> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Account> delete(int accountId) => ExposedForCodeGen.deleteSingle(
+  DeleteSingle<Account> delete(int accountId) => $ForGeneratedCode.deleteSingle(
         byKey(accountId),
         _$Account._$table,
       );
@@ -208,7 +208,7 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
               Expr<double> balance,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Account>(
+      $ForGeneratedCode.update<Account>(
         this,
         _$Account._$table,
         (account) => updateBuilder(
@@ -218,7 +218,7 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
             Expr<String>? accountNumber,
             Expr<double>? balance,
           }) =>
-              ExposedForCodeGen.buildUpdate<Account>([
+              $ForGeneratedCode.buildUpdate<Account>([
             accountId,
             accountNumber,
             balance,
@@ -243,7 +243,7 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Account> delete() => ExposedForCodeGen.delete(this, _$Account._$table);
+  Delete<Account> delete() => $ForGeneratedCode.delete(this, _$Account._$table);
 }
 
 /// Extension methods for building point queries against the `accounts` table.
@@ -286,7 +286,7 @@ extension QuerySingleAccountExt on QuerySingle<(Expr<Account>,)> {
               Expr<double> balance,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Account>(
+      $ForGeneratedCode.updateSingle<Account>(
         this,
         _$Account._$table,
         (account) => updateBuilder(
@@ -296,7 +296,7 @@ extension QuerySingleAccountExt on QuerySingle<(Expr<Account>,)> {
             Expr<String>? accountNumber,
             Expr<double>? balance,
           }) =>
-              ExposedForCodeGen.buildUpdate<Account>([
+              $ForGeneratedCode.buildUpdate<Account>([
             accountId,
             accountNumber,
             balance,
@@ -310,30 +310,30 @@ extension QuerySingleAccountExt on QuerySingle<(Expr<Account>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Account> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Account._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Account._$table);
 }
 
 /// Extension methods for expressions on a row in the `accounts` table.
 extension ExpressionAccountExt on Expr<Account> {
   Expr<int> get accountId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String> get accountNumber =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<double> get balance =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.real);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.real);
 }
 
 extension ExpressionNullableAccountExt on Expr<Account?> {
   Expr<int?> get accountId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String?> get accountNumber =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<double?> get balance =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.real);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.real);
 
   /// Check if the row is not `NULL`.
   ///

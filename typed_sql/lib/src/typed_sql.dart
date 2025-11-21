@@ -140,7 +140,7 @@ Expr<Object>? _defaultValueAsExpr(Object? defaultValue) {
 /// Methods exclusively exposed for use by generated code.
 ///
 /// @nodoc
-final class ExposedForCodeGen {
+final class $ForGeneratedCode {
   static String createTableSchema({
     required SqlDialect dialect,
     required List<TableDefinition> tables,

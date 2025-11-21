@@ -10,7 +10,7 @@ part of 'group_by_null_test.dart';
 extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Employee._$table];
 
-  Table<Employee> get employees => ExposedForCodeGen.declareTable(
+  Table<Employee> get employees => $ForGeneratedCode.declareTable(
         this,
         _$Employee._$table,
       );
@@ -27,7 +27,7 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => ExposedForCodeGen.createTables(
+  Future<void> createTables() async => $ForGeneratedCode.createTables(
         context: this,
         tables: _$tables,
       );
@@ -45,7 +45,7 @@ extension TestDatabaseSchema on Database<TestDatabase> {
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createTestDatabaseTables(SqlDialect dialect) =>
-    ExposedForCodeGen.createTableSchema(
+    $ForGeneratedCode.createTableSchema(
       dialect: dialect,
       tables: TestDatabaseSchema._$tables,
     );
@@ -81,28 +81,28 @@ final class _$Employee extends Employee {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
@@ -148,7 +148,7 @@ extension TableEmployeeExt on Table<Employee> {
     required Expr<String> seniority,
     Expr<int?>? salary,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           id,
@@ -167,7 +167,7 @@ extension TableEmployeeExt on Table<Employee> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Employee> delete(int id) => ExposedForCodeGen.deleteSingle(
+  DeleteSingle<Employee> delete(int id) => $ForGeneratedCode.deleteSingle(
         byKey(id),
         _$Employee._$table,
       );
@@ -219,7 +219,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
               Expr<int?> salary,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Employee>(
+      $ForGeneratedCode.update<Employee>(
         this,
         _$Employee._$table,
         (employee) => updateBuilder(
@@ -230,7 +230,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
             Expr<String>? seniority,
             Expr<int?>? salary,
           }) =>
-              ExposedForCodeGen.buildUpdate<Employee>([
+              $ForGeneratedCode.buildUpdate<Employee>([
             id,
             surname,
             seniority,
@@ -244,7 +244,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
   Delete<Employee> delete() =>
-      ExposedForCodeGen.delete(this, _$Employee._$table);
+      $ForGeneratedCode.delete(this, _$Employee._$table);
 }
 
 /// Extension methods for building point queries against the `employees` table.
@@ -288,7 +288,7 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
               Expr<int?> salary,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Employee>(
+      $ForGeneratedCode.updateSingle<Employee>(
         this,
         _$Employee._$table,
         (employee) => updateBuilder(
@@ -299,7 +299,7 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
             Expr<String>? seniority,
             Expr<int?>? salary,
           }) =>
-              ExposedForCodeGen.buildUpdate<Employee>([
+              $ForGeneratedCode.buildUpdate<Employee>([
             id,
             surname,
             seniority,
@@ -314,36 +314,36 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Employee> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Employee._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Employee._$table);
 }
 
 /// Extension methods for expressions on a row in the `employees` table.
 extension ExpressionEmployeeExt on Expr<Employee> {
   Expr<int> get id =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String> get surname =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String> get seniority =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   Expr<int?> get salary =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.integer);
 }
 
 extension ExpressionNullableEmployeeExt on Expr<Employee?> {
   Expr<int?> get id =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String?> get surname =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String?> get seniority =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   Expr<int?> get salary =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.integer);
 
   /// Check if the row is not `NULL`.
   ///

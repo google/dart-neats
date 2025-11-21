@@ -10,12 +10,12 @@ part of 'references_id_as_test.dart';
 extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Author._$table, _$Book._$table];
 
-  Table<Author> get authors => ExposedForCodeGen.declareTable(
+  Table<Author> get authors => $ForGeneratedCode.declareTable(
         this,
         _$Author._$table,
       );
 
-  Table<Book> get books => ExposedForCodeGen.declareTable(
+  Table<Book> get books => $ForGeneratedCode.declareTable(
         this,
         _$Book._$table,
       );
@@ -32,7 +32,7 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => ExposedForCodeGen.createTables(
+  Future<void> createTables() async => $ForGeneratedCode.createTables(
         context: this,
         tables: _$tables,
       );
@@ -50,7 +50,7 @@ extension TestDatabaseSchema on Database<TestDatabase> {
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
 String createTestDatabaseTables(SqlDialect dialect) =>
-    ExposedForCodeGen.createTableSchema(
+    $ForGeneratedCode.createTableSchema(
       dialect: dialect,
       tables: TestDatabaseSchema._$tables,
     );
@@ -82,21 +82,21 @@ final class _$Author extends Author {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -140,7 +140,7 @@ extension TableAuthorExt on Table<Author> {
     required Expr<String> firstname,
     required Expr<String> lastname,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           authorId,
@@ -158,7 +158,7 @@ extension TableAuthorExt on Table<Author> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Author> delete(int authorId) => ExposedForCodeGen.deleteSingle(
+  DeleteSingle<Author> delete(int authorId) => $ForGeneratedCode.deleteSingle(
         byKey(authorId),
         _$Author._$table,
       );
@@ -209,7 +209,7 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
               Expr<String> lastname,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Author>(
+      $ForGeneratedCode.update<Author>(
         this,
         _$Author._$table,
         (author) => updateBuilder(
@@ -219,7 +219,7 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
             Expr<String>? firstname,
             Expr<String>? lastname,
           }) =>
-              ExposedForCodeGen.buildUpdate<Author>([
+              $ForGeneratedCode.buildUpdate<Author>([
             authorId,
             firstname,
             lastname,
@@ -231,7 +231,7 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Author> delete() => ExposedForCodeGen.delete(this, _$Author._$table);
+  Delete<Author> delete() => $ForGeneratedCode.delete(this, _$Author._$table);
 }
 
 /// Extension methods for building point queries against the `authors` table.
@@ -274,7 +274,7 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
               Expr<String> lastname,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Author>(
+      $ForGeneratedCode.updateSingle<Author>(
         this,
         _$Author._$table,
         (author) => updateBuilder(
@@ -284,7 +284,7 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
             Expr<String>? firstname,
             Expr<String>? lastname,
           }) =>
-              ExposedForCodeGen.buildUpdate<Author>([
+              $ForGeneratedCode.buildUpdate<Author>([
             authorId,
             firstname,
             lastname,
@@ -298,19 +298,19 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Author> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Author._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Author._$table);
 }
 
 /// Extension methods for expressions on a row in the `authors` table.
 extension ExpressionAuthorExt on Expr<Author> {
   Expr<int> get authorId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String> get firstname =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String> get lastname =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `books` table which
   /// reference this row.
@@ -319,20 +319,20 @@ extension ExpressionAuthorExt on Expr<Author> {
   /// where [Book.authorId]
   /// references [Author.authorId]
   /// in this row.
-  SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(_$Book._$table)
-          .where((r) => r.authorId.equals(authorId));
+  SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
+      .subqueryTable(_$Book._$table)
+      .where((r) => r.authorId.equals(authorId));
 }
 
 extension ExpressionNullableAuthorExt on Expr<Author?> {
   Expr<int?> get authorId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String?> get firstname =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<String?> get lastname =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `books` table which
   /// reference this row.
@@ -343,9 +343,9 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   /// in this row, if any.
   ///
   /// If this row is `NULL` the subquery is always be empty.
-  SubQuery<(Expr<Book>,)> get books =>
-      ExposedForCodeGen.subqueryTable(_$Book._$table)
-          .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull());
+  SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
+      .subqueryTable(_$Book._$table)
+      .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull());
 
   /// Check if the row is not `NULL`.
   ///
@@ -419,28 +419,28 @@ final class _$Book extends Book {
       List<SqlOverride> overrides,
     })>[
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: true,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.text,
+        type: $ForGeneratedCode.text,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
       ),
       (
-        type: ExposedForCodeGen.integer,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
@@ -493,7 +493,7 @@ extension TableBookExt on Table<Book> {
     required Expr<int> authorId,
     required Expr<int> stock,
   }) =>
-      ExposedForCodeGen.insertInto(
+      $ForGeneratedCode.insertInto(
         table: this,
         values: [
           bookId,
@@ -512,7 +512,7 @@ extension TableBookExt on Table<Book> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Book> delete(int bookId) => ExposedForCodeGen.deleteSingle(
+  DeleteSingle<Book> delete(int bookId) => $ForGeneratedCode.deleteSingle(
         byKey(bookId),
         _$Book._$table,
       );
@@ -564,7 +564,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
               Expr<int> stock,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.update<Book>(
+      $ForGeneratedCode.update<Book>(
         this,
         _$Book._$table,
         (book) => updateBuilder(
@@ -575,7 +575,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
             Expr<int>? authorId,
             Expr<int>? stock,
           }) =>
-              ExposedForCodeGen.buildUpdate<Book>([
+              $ForGeneratedCode.buildUpdate<Book>([
             bookId,
             title,
             authorId,
@@ -588,7 +588,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Book> delete() => ExposedForCodeGen.delete(this, _$Book._$table);
+  Delete<Book> delete() => $ForGeneratedCode.delete(this, _$Book._$table);
 }
 
 /// Extension methods for building point queries against the `books` table.
@@ -632,7 +632,7 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
               Expr<int> stock,
             }) set,
           ) updateBuilder) =>
-      ExposedForCodeGen.updateSingle<Book>(
+      $ForGeneratedCode.updateSingle<Book>(
         this,
         _$Book._$table,
         (book) => updateBuilder(
@@ -643,7 +643,7 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
             Expr<int>? authorId,
             Expr<int>? stock,
           }) =>
-              ExposedForCodeGen.buildUpdate<Book>([
+              $ForGeneratedCode.buildUpdate<Book>([
             bookId,
             title,
             authorId,
@@ -658,22 +658,22 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
   DeleteSingle<Book> delete() =>
-      ExposedForCodeGen.deleteSingle(this, _$Book._$table);
+      $ForGeneratedCode.deleteSingle(this, _$Book._$table);
 }
 
 /// Extension methods for expressions on a row in the `books` table.
 extension ExpressionBookExt on Expr<Book> {
   Expr<int> get bookId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String> get title =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<int> get authorId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
 
   Expr<int> get stock =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.integer);
 
   /// Do a subquery lookup of the row from table
   /// `authors` referenced in
@@ -682,7 +682,8 @@ extension ExpressionBookExt on Expr<Book> {
   /// The gets the row from table `authors` where
   /// [Author.authorId]
   /// is equal to [authorId].
-  Expr<Author> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
+  Expr<Author> get author => $ForGeneratedCode
+      .subqueryTable(_$Author._$table)
       .where((r) => r.authorId.equals(authorId))
       .first
       .asNotNull();
@@ -690,16 +691,16 @@ extension ExpressionBookExt on Expr<Book> {
 
 extension ExpressionNullableBookExt on Expr<Book?> {
   Expr<int?> get bookId =>
-      ExposedForCodeGen.field(this, 0, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
   Expr<String?> get title =>
-      ExposedForCodeGen.field(this, 1, ExposedForCodeGen.text);
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
   Expr<int?> get authorId =>
-      ExposedForCodeGen.field(this, 2, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
 
   Expr<int?> get stock =>
-      ExposedForCodeGen.field(this, 3, ExposedForCodeGen.integer);
+      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.integer);
 
   /// Do a subquery lookup of the row from table
   /// `authors` referenced in
@@ -710,7 +711,8 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   /// is equal to [authorId], if any.
   ///
   /// If this row is `NULL` the subquery is always return `NULL`.
-  Expr<Author?> get author => ExposedForCodeGen.subqueryTable(_$Author._$table)
+  Expr<Author?> get author => $ForGeneratedCode
+      .subqueryTable(_$Author._$table)
       .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull())
       .first;
 
