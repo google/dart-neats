@@ -107,7 +107,7 @@ void main() {
     // Decrease stock for 'Vegan Dining', return update stock
     final updatedStock = await db.books
         .where((b) => b.title.equals(toExpr('Vegan Dining')))
-        .update((b, set) => set(
+        .updateAll((b, set) => set(
               stock: b.stock - toExpr(1),
             ))
         .returning((b) => (b.stock,))
@@ -560,11 +560,11 @@ void main() {
     // #endregion
   });
 
-  r.addTest('books.where(.stock > 5).update(stock = stock / 2)', (db) async {
+  r.addTest('books.where(.stock > 5).updateAll(stock = stock / 2)', (db) async {
     // #region update-books-where-stock-gt-5
     await db.books
         .where((book) => book.stock > toExpr(5))
-        .update((book, set) => set(
+        .updateAll((book, set) => set(
               stock: (book.stock / toExpr(2)).asInt(),
             ))
         .execute();
@@ -588,12 +588,12 @@ void main() {
     // #endregion
   }, skipMysql: 'RETURNING not supported in MySQL');
 
-  r.addTest('books.where(.stock > 5).update(stock = stock / 2).returning',
+  r.addTest('books.where(.stock > 5).updateAll(stock = stock / 2).returning',
       (db) async {
     // #region update-books-where-returning
     final updatedStock = await db.books
         .where((book) => book.stock > toExpr(5))
-        .update((book, set) => set(
+        .updateAll((book, set) => set(
               stock: (book.stock / toExpr(2)).asInt(),
             ))
         .returning((book) => (book.stock,))

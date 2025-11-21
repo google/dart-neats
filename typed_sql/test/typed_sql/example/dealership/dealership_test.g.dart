@@ -216,7 +216,7 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Car> update(
+  Update<Car> updateAll(
           UpdateSet<Car> Function(
             Expr<Car> car,
             UpdateSet<Car> Function({

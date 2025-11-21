@@ -93,7 +93,7 @@ void main() {
     check(value).isNotNull().equals(initialValue);
   });
 
-  r.addTest('.update()', (db) async {
+  r.addTest('.updateAll()', (db) async {
     await db.items
         .insert(
           id: toExpr(1),
@@ -102,7 +102,7 @@ void main() {
         .execute();
 
     await db.items
-        .update((item, set) => set(
+        .updateAll((item, set) => set(
               value: toExpr(updatedValue),
             ))
         .execute();
@@ -111,7 +111,7 @@ void main() {
     check(item).isNotNull().value.equals(updatedValue);
   });
 
-  r.addTest('.update().returnUpdated()', (db) async {
+  r.addTest('.updateAll().returnUpdated()', (db) async {
     await db.items
         .insert(
           id: toExpr(1),
@@ -120,7 +120,7 @@ void main() {
         .execute();
 
     final updatedItems = await db.items
-        .update((item, set) => set(
+        .updateAll((item, set) => set(
               value: toExpr(updatedValue),
             ))
         .returnUpdated()
@@ -134,7 +134,7 @@ void main() {
     check(item).isNotNull().value.equals(updatedValue);
   }, skipMysql: 'UPDATE RETURNING not supported');
 
-  r.addTest('.update().returning(.value)', (db) async {
+  r.addTest('.updateAll().returning(.value)', (db) async {
     await db.items
         .insert(
           id: toExpr(1),
@@ -143,7 +143,7 @@ void main() {
         .execute();
 
     final values = await db.items
-        .update((item, set) => set(
+        .updateAll((item, set) => set(
               value: toExpr(updatedValue),
             ))
         .returning((item) => (item.value,))

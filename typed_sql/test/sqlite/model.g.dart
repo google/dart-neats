@@ -207,7 +207,7 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<User> update(
+  Update<User> updateAll(
           UpdateSet<User> Function(
             Expr<User> user,
             UpdateSet<User> Function({
@@ -587,7 +587,7 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Package> update(
+  Update<Package> updateAll(
           UpdateSet<Package> Function(
             Expr<Package> package,
             UpdateSet<Package> Function({
@@ -931,7 +931,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Like> update(
+  Update<Like> updateAll(
           UpdateSet<Like> Function(
             Expr<Like> like,
             UpdateSet<Like> Function({

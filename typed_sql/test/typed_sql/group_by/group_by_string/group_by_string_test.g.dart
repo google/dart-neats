@@ -209,7 +209,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Employee> update(
+  Update<Employee> updateAll(
           UpdateSet<Employee> Function(
             Expr<Employee> employee,
             UpdateSet<Employee> Function({

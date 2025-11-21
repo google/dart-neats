@@ -140,7 +140,7 @@ void main() {
     }
     await db.packages
         .where((p) => p.packageName.equalsValue('foo'))
-        .update((p, set) => set(
+        .updateAll((p, set) => set(
               ownerId: toExpr(2),
             ))
         .execute();

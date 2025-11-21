@@ -524,7 +524,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ))
       ..methods.add(Method(
         (b) => b
-          ..name = 'update'
+          ..name = 'updateAll'
           ..documentation('''
             Update all rows in the `${table.name}` table matching this [Query].
 

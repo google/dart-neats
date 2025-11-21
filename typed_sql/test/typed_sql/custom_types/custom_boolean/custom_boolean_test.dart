@@ -61,7 +61,7 @@ void main() {
     check(item).isNotNull().value.equals(initialValue);
   });
 
-  r.addTest('update', (db) async {
+  r.addTest('updateAll', (db) async {
     await db.items
         .insert(
           id: toExpr(1),
@@ -70,7 +70,7 @@ void main() {
         .execute();
 
     await db.items
-        .update((item, set) => set(
+        .updateAll((item, set) => set(
               value: updatedValue.asExpr,
             ))
         .execute();

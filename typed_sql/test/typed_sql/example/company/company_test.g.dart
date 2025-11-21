@@ -202,7 +202,7 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Department> update(
+  Update<Department> updateAll(
           UpdateSet<Department> Function(
             Expr<Department> department,
             UpdateSet<Department> Function({
@@ -547,7 +547,7 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Employee> update(
+  Update<Employee> updateAll(
           UpdateSet<Employee> Function(
             Expr<Employee> employee,
             UpdateSet<Employee> Function({
