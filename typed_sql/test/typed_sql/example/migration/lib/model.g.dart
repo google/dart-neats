@@ -185,7 +185,7 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Account> update(
+  Update<Account> updateAll(
           UpdateSet<Account> Function(
             Expr<Account> account,
             UpdateSet<Account> Function({

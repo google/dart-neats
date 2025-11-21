@@ -200,7 +200,7 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Author> update(
+  Update<Author> updateAll(
           UpdateSet<Author> Function(
             Expr<Author> author,
             UpdateSet<Author> Function({
@@ -554,7 +554,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Book> update(
+  Update<Book> updateAll(
           UpdateSet<Book> Function(
             Expr<Book> book,
             UpdateSet<Book> Function({

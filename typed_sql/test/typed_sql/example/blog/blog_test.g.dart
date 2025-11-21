@@ -212,7 +212,7 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Post> update(
+  Update<Post> updateAll(
           UpdateSet<Post> Function(
             Expr<Post> post,
             UpdateSet<Post> Function({
@@ -576,7 +576,7 @@ extension QueryCommentExt on Query<(Expr<Comment>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Comment> update(
+  Update<Comment> updateAll(
           UpdateSet<Comment> Function(
             Expr<Comment> comment,
             UpdateSet<Comment> Function({

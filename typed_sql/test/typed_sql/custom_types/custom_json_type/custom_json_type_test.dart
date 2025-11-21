@@ -82,7 +82,7 @@ void main() {
         .execute();
 
     await db.items
-        .update((item, set) => set(
+        .updateAll((item, set) => set(
               value: updatedValue.asExpr,
             ))
         .execute();
