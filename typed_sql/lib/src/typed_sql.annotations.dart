@@ -23,7 +23,10 @@ final class PrimaryKey {
   const PrimaryKey(this.fields);
 }
 
-/// Annotation for a field that has a default value.
+/// Annotation that assigns a _default value_ to a field.
+///
+/// Using this annotation on a non-nullable field, also causes the field
+/// to be _optional_ when inserting rows.
 ///
 /// {@category schema}
 final class DefaultValue {
@@ -39,7 +42,25 @@ final class DefaultValue {
   const DefaultValue._(String kind, Object value)
       : _value = (kind: kind, value: value);
 
+  /// Annotate a field with a constant default value.
+  ///
+  /// The [value] must be one of the following types:
+  ///  * [String],
+  ///  * [bool],
+  ///  * [int], or,
+  ///  * [double].
+  ///
+  /// Consequently, this constructor can only be used to annotate a
+  /// _default value_ to a field of a matching type.
   const DefaultValue(Object value) : _value = (kind: 'raw', value: value);
+
+  /// Annotate a [DateTime] field with a fixed default value.
+  ///
+  /// This constructor behaves similar to [DateTime.utc], as arguments will all
+  /// be interpreted as UTC.
+  ///
+  /// To use `CURRENT_TIMESTAMP` as default value for a field, see
+  /// [DefaultValue.now].
   const DefaultValue.dateTime(
     int year, [
     int month = 1,
@@ -63,7 +84,16 @@ final class DefaultValue {
           ),
         );
 
+  /// Annotate a [DateTime] field with a default value of
+  /// `1970-01-01T00:00:00Z`.
   static const DefaultValue epoch = DefaultValue._('datetime', 'epoch');
+
+  /// Annotate a [DateTime] field with a default value of `CURRENT_TIMESTAMP`.
+  ///
+  /// This will cause the field to have a default value of the current timestamp
+  /// in UTC, when a row is inserted.
+  ///
+  /// See [Expr.currentTimestamp] for further details.
   static const DefaultValue now = DefaultValue._('datetime', 'now');
 }
 
