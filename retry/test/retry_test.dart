@@ -131,5 +131,25 @@ void main() {
       await expectLater(f, throwsA(isException));
       expect(count, equals(2));
     });
+
+    test('custom exponent', () {
+      final r = RetryOptions(
+        exponent: 1.0,
+        delayFactor: Duration(seconds: 1),
+        randomizationFactor: 0,
+      );
+      expect(r.delay(1), equals(Duration(seconds: 1)));
+      expect(r.delay(2), equals(Duration(seconds: 1)));
+    });
+
+    test('exponent 3', () {
+      final r = RetryOptions(
+        exponent: 3.0,
+        delayFactor: Duration(seconds: 1),
+        randomizationFactor: 0,
+      );
+      expect(r.delay(1), equals(Duration(seconds: 3)));
+      expect(r.delay(2), equals(Duration(seconds: 9)));
+    });
   });
 }

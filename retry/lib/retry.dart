@@ -76,6 +76,9 @@ final class RetryOptions {
   /// Maximum number of attempts before giving up, defaults to 8.
   final int maxAttempts;
 
+  /// Exponent for the exponential backoff, defaults to 2.0.
+  final double exponent;
+
   /// Create a set of [RetryOptions].
   ///
   /// Defaults to 8 attempts, sleeping as following after 1st, 2nd, 3rd, ...,
@@ -92,11 +95,12 @@ final class RetryOptions {
     this.randomizationFactor = 0.25,
     this.maxDelay = const Duration(seconds: 30),
     this.maxAttempts = 8,
+    this.exponent = 2.0,
   });
 
   /// Delay after [attempt] number of attempts.
   ///
-  /// This is computed as `pow(2, attempt) * delayFactor`, then is multiplied by
+  /// This is computed as `pow(exponent, attempt) * delayFactor`, then is multiplied by
   /// between `-randomizationFactor` and `randomizationFactor` at random.
   Duration delay(int attempt) {
     assert(attempt >= 0, 'attempt cannot be negative');
@@ -105,7 +109,7 @@ final class RetryOptions {
     }
     final rf = (randomizationFactor * (_rand.nextDouble() * 2 - 1) + 1);
     final exp = math.min(attempt, 31); // prevent overflows.
-    final delay = (delayFactor * math.pow(2.0, exp) * rf);
+    final delay = (delayFactor * math.pow(exponent, exp) * rf);
     return delay < maxDelay ? delay : maxDelay;
   }
 
@@ -177,6 +181,7 @@ Future<T> retry<T>(
   double randomizationFactor = 0.25,
   Duration maxDelay = const Duration(seconds: 30),
   int maxAttempts = 8,
+  double exponent = 2.0,
   FutureOr<bool> Function(Exception)? retryIf,
   FutureOr<void> Function(Exception)? onRetry,
 }) =>
@@ -185,4 +190,5 @@ Future<T> retry<T>(
       randomizationFactor: randomizationFactor,
       maxDelay: maxDelay,
       maxAttempts: maxAttempts,
+      exponent: exponent,
     ).retry(fn, retryIf: retryIf, onRetry: onRetry);

@@ -1,5 +1,5 @@
 name: retry
-version: 3.1.2
+version: 3.1.3
 description: >-
   Utility for wrapping an asynchronous function in automatic retry logic with
   exponential back-off, useful when making requests over network.
