@@ -59,7 +59,7 @@ these point to the _table_ and _field_ that is being referenced.
 The `name` and `as` properties are optional, if present they will be used to
 generate convenient subquery properties when building queries.
 
-```dart schema_test.dart#book-model
+```dart schema_references_test.dart#book-model
 @PrimaryKey(['bookId'])
 abstract final class Book extends Row {
   @AutoIncrement()

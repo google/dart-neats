@@ -14,14 +14,15 @@
 
 import 'package:typed_sql/typed_sql.dart';
 
-import '../../testrunner.dart';
+import '../../../testrunner.dart';
 
-part 'schema_test.g.dart';
+part 'schema_references_test.g.dart';
 
 // Remark: please keep this schema in sync with ../bookstore/bookstore_test.dart
 //         Documentation will assume that both of them uses the same schema,
-//         we just have different clips of the regions, and schema_test.dart
-//         has more comments.
+//         we just have different clips of the regions and comments in:
+//         - schema_default_value_test.dart
+//         - schema_references_test.dart
 
 // #region schema
 abstract final class Bookstore extends Schema {

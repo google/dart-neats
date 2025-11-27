@@ -21,10 +21,11 @@ import '../../testrunner.dart';
 
 part 'bookstore_test.g.dart';
 
-// Remark: please keep this schema in sync with ../schema/schema_test.dart
+// Remark: please keep this schema in sync with ../schema/**_test.dart
 //         Documentation will assume that both of them uses the same schema,
-//         we just have different clips of the regions, and schema_test.dart
-//         has more comments.
+//         we just have different clips of the regions and comments in:
+//         - schema_default_value_test.dart
+//         - schema_references_test.dart
 
 // #region bookstore-schema
 abstract final class Bookstore extends Schema {

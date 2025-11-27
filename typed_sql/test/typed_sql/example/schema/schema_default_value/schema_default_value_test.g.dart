@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'schema_test.dart';
+part of 'schema_default_value_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder

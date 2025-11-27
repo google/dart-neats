@@ -605,7 +605,7 @@ Recall that `Author.name` is annotated with `@Unique()`. This means that the
 _name_ field in the database will have `UNIQUE` constraint. But also that
 `Query<(Expr<Author>,)>` will have a convenient `.byName` method.
 
-```dart schema_test.dart#author-model
+```dart schema_references_test.dart#author-model
 @PrimaryKey(['authorId'])
 abstract final class Author extends Row {
   @AutoIncrement()
