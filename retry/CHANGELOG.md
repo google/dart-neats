@@ -1,3 +1,6 @@
+## v3.1.3
+ * Expose ability to configure `exponent`
+
 ## v3.1.2
  * Make the `RetryOptions` class `final`.
 
