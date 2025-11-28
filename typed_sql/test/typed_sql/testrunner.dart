@@ -13,10 +13,8 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:checks/context.dart';
 import 'package:meta/meta.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/src/adapter/mysql_adaptor.dart'
@@ -26,6 +24,7 @@ import 'package:typed_sql/typed_sql.dart';
 
 export 'package:checks/checks.dart';
 export 'package:test/test.dart' show fail;
+export 'types/checks_helper.dart';
 
 final class TestRunner<T extends Schema> {
   final bool _resetDatabaseForEachTest;
@@ -200,14 +199,4 @@ final class TestRunner<T extends Schema> {
       });
     }
   }
-}
-
-extension JsonValueSubjectExt on Subject<JsonValue> {
-  void deepEquals(JsonValue other) =>
-      context.expect(() => ['matches JSON'], (v) {
-        if (json.encode(v.value) == json.encode(other.value)) {
-          return null;
-        }
-        return Rejection();
-      });
 }

@@ -420,7 +420,15 @@ final class _SqliteRowReader extends RowReader {
 
   @override
   JsonValue? readJsonValue() {
-    final value = jsonb.decode(_row.values[_i++] as Uint8List);
+    final rawValue = _row.values[_i++];
+    if (rawValue == null) {
+      return null;
+    }
+    if (rawValue is! Uint8List) {
+      throw AssertionError(
+          'readJsonValue() expected a Uint8List raw value, got "$rawValue"');
+    }
+    final value = jsonb.decode(rawValue);
     if (value == null ||
         value is bool ||
         value is num ||
