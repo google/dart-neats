@@ -446,6 +446,7 @@ final class _PostgresRowReader extends RowReader {
     if (value == null ||
         value is bool ||
         value is num ||
+        value is String ||
         value is List ||
         value is Map) {
       return JsonValue(value);

@@ -16,6 +16,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 
+import '../types/json_value.dart';
 import 'dialect.dart';
 
 SqlDialect mysqlDialect() => _MysqlSqlDialect();
@@ -630,6 +631,7 @@ extension on ColumnType {
         ColumnType<int> _ => 'BIGINT',
         ColumnType<double> _ => 'DOUBLE',
         ColumnType<String> _ => 'TEXT',
+        ColumnType<JsonValue> _ => 'JSON',
         ColumnType<Null> _ => throw UnsupportedError(
             'Null type cannot be used as column type',
           ),
@@ -642,6 +644,7 @@ extension on ColumnType {
         ColumnType<int> _ => 'SIGNED',
         ColumnType<double> _ => 'DOUBLE',
         ColumnType<String> _ => 'CHAR',
+        ColumnType<JsonValue> _ => 'JSON',
         ColumnType<Null> _ => throw UnsupportedError(
             'Null type cannot be used as column type',
           ),
