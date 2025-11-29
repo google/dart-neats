@@ -12,19 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Wraps a JSON [value], one of:
+/// Wraps a JSON [value].
+///
+/// {@template JsonValue-allows-types}
+/// A _JSON value_ can be one of the following types:
 /// - `null`
-/// - `boolean`: `true` or `false`
-/// - `int`
-/// - `double`
-/// - `String`
-/// - `List` of JSON values
-/// - `Map` (JSON `object`)
+/// - [bool] (`true` or `false`),
+/// - [int],
+/// - [double],
+/// - [String],
+/// - [List] (where entries are _JSON values_), and,
+/// - [Map] (where keys are [String] and values are _JSON values_).
+/// {@endtemplate}
 base class JsonValue {
+  /// The JSON value held by this object.
+  ///
+  /// {@macro JsonValue-allows-types}
   final Object? value;
 
   JsonValue(this.value) : assert(_isJsonValue(value));
 
+  /// Check if [value] is a valid JSON value.
+  ///
+  /// That is check if it can be encoded as JSON.
   static bool _isJsonValue(Object? value) {
     if (value == null ||
         value is bool ||
