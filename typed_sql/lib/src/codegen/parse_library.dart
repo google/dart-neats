@@ -520,6 +520,8 @@ String? _tryGetColumnType(DartType t) {
     return 'DateTime';
   } else if (uint8ListTypeChecker.isExactlyType(t)) {
     return 'Uint8List';
+  } else if (jsonValueTypeChecker.isExactlyType(t)) {
+    return 'JsonValue';
   }
   return null;
 }

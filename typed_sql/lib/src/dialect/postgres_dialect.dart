@@ -16,6 +16,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 
+import '../types/json_value.dart' show JsonValue;
 import 'dialect.dart';
 
 SqlDialect postgresDialect() => _PostgresDialect();
@@ -599,6 +600,7 @@ extension on ColumnType {
         ColumnType<int> _ => 'BIGINT',
         ColumnType<double> _ => 'DOUBLE PRECISION',
         ColumnType<String> _ => 'TEXT',
+        ColumnType<JsonValue> _ => 'JSONB',
         ColumnType<Null> _ => throw UnsupportedError(
             'Null type cannot be used as column type',
           ),

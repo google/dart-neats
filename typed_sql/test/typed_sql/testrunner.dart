@@ -24,6 +24,7 @@ import 'package:typed_sql/typed_sql.dart';
 
 export 'package:checks/checks.dart';
 export 'package:test/test.dart' show fail;
+export 'types/checks_helper.dart';
 
 final class TestRunner<T extends Schema> {
   final bool _resetDatabaseForEachTest;
