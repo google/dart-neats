@@ -24,7 +24,7 @@
 /// - [List] (where entries are _JSON values_), and,
 /// - [Map] (where keys are [String] and values are _JSON values_).
 /// {@endtemplate}
-base class JsonValue {
+final class JsonValue {
   /// The JSON value held by this object.
   ///
   /// {@macro JsonValue-allows-types}
