@@ -19,6 +19,7 @@ dependencies:
   postgres: ^3.5.4
   source_gen: ^4.0.0
   sqlite3: ^2.7.2
+  unorm_dart: ^0.2.0
 
 dev_dependencies:
   build_runner: ^2.1.9

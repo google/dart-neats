@@ -18,6 +18,7 @@ import 'dart:typed_data' show Uint8List;
 import 'package:sqlite3/sqlite3.dart';
 
 import '../types/json_value.dart' show JsonValue;
+import '../utils/normalize_json.dart' show normalizeJson;
 import '../utils/notifier.dart';
 import 'adapter.dart';
 
@@ -432,6 +433,7 @@ final class _SqliteRowReader extends RowReader {
     if (value == null ||
         value is bool ||
         value is num ||
+        value is String ||
         value is List ||
         value is Map) {
       return JsonValue(value);
@@ -458,7 +460,11 @@ List<Object?> _paramsForSqlite(List<Object?> params) => params
           int i => i,
           double d => d,
           Uint8List u => u,
-          JsonValue v => jsonb.encode(v.value),
+          // TODO: Consider if package:sqlite3 could have a normalizing JSONB
+          //       encoder, or if we should write one here.
+          //       This could offer better performance and more reliable
+          //       normalization.
+          JsonValue v => jsonb.encode(normalizeJson(v.value)),
           _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
         })
     .toList();
