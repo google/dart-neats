@@ -14,6 +14,7 @@
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:meta/meta.dart';
 
 final _allowedElements = <String>{
   'H1',
@@ -177,6 +178,33 @@ bool _validUrl(String url) {
   }
 }
 
+bool _validBase64Image(String base64String) {
+  try {
+    final regex = RegExp(r'^data:image\/(png|jpeg|jpg|gif|bmp|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$');
+    return regex.hasMatch(base64String);
+  } catch (e) {
+    return false;
+  }
+}
+
+bool _validCIDImage(String cidString) {
+  try {
+    return cidString.startsWith('cid:');
+  } catch (e) {
+    return false;
+  }
+}
+
+@visibleForTesting
+bool validateBase64Image(String base64String) => _validBase64Image(base64String);
+
+@visibleForTesting
+bool validateCIDImage(String cidString) => _validCIDImage(cidString);
+
+bool _validImageSource(String url) {
+  return _validUrl(url) || _validBase64Image(url) || validateCIDImage(url);
+}
+
 final _citeAttributeValidator = <String, bool Function(String)>{
   'cite': _validUrl,
 };
@@ -187,8 +215,8 @@ final _elementAttributeValidators =
     'href': _validLink,
   },
   'IMG': {
-    'src': _validUrl,
-    'longdesc': _validUrl,
+    'src': _validImageSource,
+    'longdesc': _validImageSource,
   },
   'DIV': {
     'itemscope': _alwaysAllowed,
@@ -212,11 +240,15 @@ class SaneHtmlValidator {
   final bool Function(String)? allowElementId;
   final bool Function(String)? allowClassName;
   final Iterable<String>? Function(String)? addLinkRel;
+  final List<String>? allowAttributes;
+  final List<String>? allowTags;
 
   SaneHtmlValidator({
     required this.allowElementId,
     required this.allowClassName,
     required this.addLinkRel,
+    required this.allowAttributes,
+    required this.allowTags,
   });
 
   String sanitize(String htmlString) {
@@ -228,16 +260,19 @@ class SaneHtmlValidator {
   void _sanitize(Node node) {
     if (node is Element) {
       final tagName = node.localName!.toUpperCase();
-      if (!_allowedElements.contains(tagName)) {
+      if (!_allowedElements.contains(tagName)
+          && !(allowTags?.contains(tagName.toLowerCase()) ?? false)) {
         node.remove();
         return;
       }
       node.attributes.removeWhere((k, v) {
         final attrName = k.toString();
         if (attrName == 'id') {
-          return allowElementId == null || !allowElementId!(v);
+          return allowAttributes?.contains('id') != true &&
+            (allowElementId == null || !allowElementId!(v));
         }
         if (attrName == 'class') {
+          if (allowAttributes?.contains('class') == true) return false;
           if (allowClassName == null) return true;
           node.classes.removeWhere((cn) => !allowClassName!(cn));
           return node.classes.isEmpty;
@@ -269,6 +304,8 @@ class SaneHtmlValidator {
   }
 
   bool _isAttributeAllowed(String tagName, String attrName, String value) {
+    if (allowAttributes?.contains(attrName.toLowerCase()) == true) return true;
+
     if (_alwaysAllowedAttributes.contains(attrName)) return true;
 
     // Special validators for special attributes on special tags (href/src/cite)
