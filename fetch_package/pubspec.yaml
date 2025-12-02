@@ -1,0 +1,20 @@
+name: fetch_package
+version: 0.1.0-dev
+environment:
+  sdk: ^3.0.0
+description: >-
+  Utility for downloading packages from pub.dev
+homepage: https://github.com/google/dart-neats/tree/master/fetch_package
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:retry
+dependencies:
+  args: ^2.4.2
+  collection: ^1.18.0
+  http: ^1.1.2
+  path: ^1.9.0
+  retry: ^3.1.2
+  tar: ^1.0.3
+dev_dependencies:
+  test:
+topics:
+ - packages
