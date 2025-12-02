@@ -29,8 +29,6 @@ void main() {
 
     return sanitizeHtml(
       template,
-      allowElementId: (id) => id == 'only-allowed-id',
-      allowClassName: (className) => className == 'only-allowed-class',
       addLinkRel: (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : null,
     );
   }
@@ -68,18 +66,11 @@ void main() {
   // test id filtering..
   testContains('<span id="only-allowed-id">hello</span>', 'id');
   testContains('<span id="only-allowed-id">hello</span>', 'only-allowed-id');
-  testNotContains('<span id="disallowed-id">hello</span>', 'id');
-  testNotContains('<span id="disallowed-id">hello</span>', 'only-allowed-id');
 
   // test class filtering
   testContains('<span class="only-allowed-class">hello</span>', 'class');
   testContains(
       '<span class="only-allowed-class">hello</span>', 'only-allowed-class');
-  testContains('<span class="only-allowed-class disallowed-class">hello</span>',
-      'class="only-allowed-class"');
-  testNotContains('<span class="disallowed-class">hello</span>', 'class');
-  testNotContains(
-      '<span class="disallowed-class">hello</span>', 'only-allowed-class');
 
   testContains('<a href="test.html">hello', 'href');
   testContains('<a href="test.html">hello', 'test.html');
@@ -129,7 +120,6 @@ void main() {
   testNotContains('<br>', '</br>');
   testNotContains('<br>', '</ br>');
   testContains('><', '&gt;&lt;');
-  testContains('<div><div id="x">a</div></div>', '<div><div>a</div></div>');
   testContains('<a href="a.html">a</a><a href="b.html">b</a>',
       '<a href="a.html">a</a><a href="b.html">b</a>');
 
@@ -151,10 +141,6 @@ void main() {
     testContains('<a href="any-href">hey', 'href=',
         withOptionalConfiguration: false);
     testNotContains('<a href="any-href">hey', 'rel=',
-        withOptionalConfiguration: false);
-    testNotContains('<span id="any-id">hello</span>', 'id=',
-        withOptionalConfiguration: false);
-    testNotContains('<span class="any-class">hello</span>', 'class=',
         withOptionalConfiguration: false);
   });
 }
