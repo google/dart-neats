@@ -50,7 +50,7 @@ Object? normalizeJson(Object? value) {
       if (value == 0.0) {
         return 0;
       }
-      if (value % 1 == 0.0) {
+      if (value.toInt() == value) {
         return value.toInt();
       }
       return value;
