@@ -465,6 +465,9 @@ final class _MysqlRowReader extends RowReader {
   @override
   JsonValue? readJsonValue() {
     final value = _row[_i++];
+    if (value == null) {
+      return null;
+    }
     if (value is String) {
       return JsonValue(json.decode(value));
     }

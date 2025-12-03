@@ -233,6 +233,10 @@ final class StatmentContext extends SqlContext {
         parameters.add(value);
         final index = parameters.length;
         return '\$$index::DOUBLE PRECISION';
+      case JsonValue _:
+        parameters.add(value);
+        final index = parameters.length;
+        return '\$$index::jsonb';
       case Uint8List _:
         parameters.add(value);
         final index = parameters.length;

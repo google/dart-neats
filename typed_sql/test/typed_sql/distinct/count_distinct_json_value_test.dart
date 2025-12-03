@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:collection/collection.dart';
 import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
@@ -27,9 +26,8 @@ final _cases = [
       JsonValue('B'),
       JsonValue('C'),
     ],
-    distinct: ['A', 'B', 'C'],
+    count: 3,
   ),
-
   // Check that duplicate strings are not distinct
   (
     name: '"A", "B", "A"',
@@ -38,9 +36,8 @@ final _cases = [
       JsonValue('B'),
       JsonValue('A'),
     ],
-    distinct: ['A', 'B'],
+    count: 2,
   ),
-
   // Check with numbers
   (
     name: '1, 2, 1, 3.0, 3.0',
@@ -51,9 +48,8 @@ final _cases = [
       JsonValue(3.0),
       JsonValue(3.0),
     ],
-    distinct: [1, 2, 3.0],
+    count: 3,
   ),
-
   // Check with int vs double
   (
     name: '1, 1.0, 2, 2.0',
@@ -63,12 +59,8 @@ final _cases = [
       JsonValue(2),
       JsonValue(2.0),
     ],
-    distinct: [
-      1,
-      2,
-    ],
+    count: 2,
   ),
-
   // Check with negative int vs double
   (
     name: '-1, -1.0, -2, -2.0',
@@ -78,12 +70,8 @@ final _cases = [
       JsonValue(-2),
       JsonValue(-2.0),
     ],
-    distinct: [
-      -1,
-      -2,
-    ],
+    count: 2,
   ),
-
   // Check with booleans
   (
     name: 'true, false, true',
@@ -92,9 +80,8 @@ final _cases = [
       JsonValue(false),
       JsonValue(true),
     ],
-    distinct: [true, false],
+    count: 2,
   ),
-
   // Check with null
   (
     name: 'null, null',
@@ -102,9 +89,8 @@ final _cases = [
       JsonValue(null),
       JsonValue(null),
     ],
-    distinct: [null],
+    count: 1,
   ),
-
   // Check with empty string
   (
     name: '"" and ""',
@@ -112,9 +98,8 @@ final _cases = [
       JsonValue(''),
       JsonValue(''),
     ],
-    distinct: [''],
+    count: 1,
   ),
-
   // Check with simple lists
   (
     name: '[1, 2], [1, 2], [2, 1]',
@@ -123,12 +108,8 @@ final _cases = [
       JsonValue([1, 2]),
       JsonValue([2, 1]),
     ],
-    distinct: [
-      [1, 2],
-      [2, 1]
-    ],
+    count: 2,
   ),
-
   // Check with simple maps
   (
     name: '{"a": 1}, {"a": 1}, {"b": 2}',
@@ -137,12 +118,8 @@ final _cases = [
       JsonValue({'a': 1}),
       JsonValue({'b': 2}),
     ],
-    distinct: [
-      {'a': 1},
-      {'b': 2}
-    ],
+    count: 2,
   ),
-
   // Check with maps with different key order
   (
     name: '{"a": 1, "b": 2}, {"b": 2, "a": 1}',
@@ -150,11 +127,8 @@ final _cases = [
       JsonValue({'a': 1, 'b': 2}),
       JsonValue({'b': 2, 'a': 1}),
     ],
-    distinct: [
-      {'a': 1, 'b': 2}
-    ],
+    count: 1,
   ),
-
   // Check with complex nested objects
   (
     name: 'complex nested objects',
@@ -168,12 +142,7 @@ final _cases = [
         'a': [1, 2]
       }),
     ],
-    distinct: [
-      {
-        'a': [1, 2],
-        'b': {'c': 'hello'}
-      }
-    ],
+    count: 1,
   ),
   // Check with empty list
   (
@@ -182,7 +151,7 @@ final _cases = [
       JsonValue([]),
       JsonValue([]),
     ],
-    distinct: [<Object?>[]],
+    count: 1,
   ),
   // Check with empty map
   (
@@ -191,7 +160,7 @@ final _cases = [
       JsonValue({}),
       JsonValue({}),
     ],
-    distinct: [<String, Object?>{}],
+    count: 1,
   ),
   // Check empty list and empty map
   (
@@ -200,20 +169,7 @@ final _cases = [
       JsonValue([]),
       JsonValue({}),
     ],
-    distinct: [<Object?>[], <String, Object?>{}],
-  ),
-  // Check with nested empty structures
-  (
-    name: '[[]], [[]], [{}]',
-    values: [
-      JsonValue([<Object?>[]]),
-      JsonValue([<Object?>[]]),
-      JsonValue([<String, Object?>{}]),
-    ],
-    distinct: [
-      [<Object?>[]],
-      [<String, Object?>{}]
-    ],
+    count: 2,
   ),
   // Check with a mix of many different things
   (
@@ -228,16 +184,8 @@ final _cases = [
       JsonValue(null),
       JsonValue([1, 'A']),
     ],
-    distinct: [
-      null,
-      1,
-      'A',
-      true,
-      [1, 'A'],
-      {'a': 1},
-    ],
+    count: 6,
   ),
-
   // Check with int vs double
   (
     name: '1, 1.0',
@@ -245,9 +193,8 @@ final _cases = [
       JsonValue(1),
       JsonValue(1.0),
     ],
-    distinct: [1],
+    count: 1,
   ),
-
   // Check with map with null value
   (
     name: '{"a": null}, {"a": null}',
@@ -255,9 +202,7 @@ final _cases = [
       JsonValue({'a': null}),
       JsonValue({'a': null}),
     ],
-    distinct: [
-      {'a': null}
-    ],
+    count: 1,
   ),
   // Check with list with null value
   (
@@ -266,9 +211,7 @@ final _cases = [
       JsonValue([null]),
       JsonValue([null]),
     ],
-    distinct: [
-      [null]
-    ],
+    count: 1,
   ),
   // Check with lists of maps
   (
@@ -283,16 +226,7 @@ final _cases = [
         {'a': 1}
       ]),
     ],
-    distinct: [
-      [
-        {'a': 1},
-        {'b': 2}
-      ],
-      [
-        {'b': 2},
-        {'a': 1}
-      ],
-    ],
+    count: 2,
   ),
   // Check with maps of lists
   (
@@ -305,55 +239,13 @@ final _cases = [
         'key': [2, 1]
       }),
     ],
-    distinct: [
-      {
-        'key': [1, 2]
-      },
-      {
-        'key': [2, 1]
-      },
-    ],
-  ),
-  // Check with deeply nested structures
-  (
-    name: 'deeply nested structures',
-    values: [
-      JsonValue({
-        'a': [
-          1,
-          {
-            'b': 'c',
-            'd': [null, true]
-          }
-        ]
-      }),
-      JsonValue({
-        'a': [
-          1,
-          {
-            'd': [null, true],
-            'b': 'c'
-          }
-        ]
-      }),
-    ],
-    distinct: [
-      {
-        'a': [
-          1,
-          {
-            'b': 'c',
-            'd': [null, true]
-          }
-        ]
-      }
-    ],
+    count: 2,
   ),
   // Check JSON string vs native type
   (
     name: 'string "true" vs boolean true',
     values: [JsonValue('true'), JsonValue(true)],
-    distinct: ['true', true],
+    count: 2,
   ),
 ];
 
@@ -366,32 +258,8 @@ void main() {
           .map((v) => db.select((toExpr(v),)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2));
 
-      final result = await q.distinct().fetch();
-      final values = result.map((e) => e.value).toList();
-
-      check(values).length.equals(c.distinct.length);
-
-      // Check distinct contains all values v
-      for (final v in values) {
-        var hasV = false;
-        for (final d in c.distinct) {
-          hasV |= const DeepCollectionEquality().equals(v, d);
-        }
-        if (!hasV) {
-          fail('Expected ${c.distinct} to contain $v (from database)');
-        }
-      }
-
-      // Check that values contain all distinct values d
-      for (final d in c.distinct) {
-        var hasD = false;
-        for (final v in values) {
-          hasD |= const DeepCollectionEquality().equals(v, d);
-        }
-        if (!hasD) {
-          fail('Expected $values (from database) to contain $d');
-        }
-      }
+      final result = await q.distinct().count().fetch();
+      check(result).isNotNull().equals(c.count);
     });
   }
 

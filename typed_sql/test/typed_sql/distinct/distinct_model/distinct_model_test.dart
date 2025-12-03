@@ -30,6 +30,7 @@ abstract final class Item extends Row {
   String get text;
   int get integer;
   double get real;
+  JsonValue get json;
 }
 
 final _testData = [
@@ -37,36 +38,43 @@ final _testData = [
     text: 'A',
     integer: 0,
     real: 0.0,
+    json: JsonValue({'real': 0}),
   ),
   (
     text: 'A',
     integer: 22,
     real: 0.0,
+    json: JsonValue({'real': 0}),
   ),
   (
     text: 'A',
     integer: 22,
     real: 0.0,
+    json: JsonValue({'real': 0.0}),
   ),
   (
     text: 'B',
     integer: 22,
     real: 0.0,
+    json: JsonValue({'real': 0.0}),
   ),
   (
     text: 'C',
     integer: 22,
     real: 3.14,
+    json: JsonValue({'real': 3.14}),
   ),
   (
     text: 'D',
     integer: 0,
     real: 3.14,
+    json: JsonValue({'real': 3.14}),
   ),
   (
     text: 'D',
     integer: 0,
     real: 1.2,
+    json: JsonValue({'real': 1.2}),
   ),
 ];
 
@@ -80,6 +88,7 @@ void main() {
               text: toExpr(v.text),
               integer: toExpr(v.integer),
               real: toExpr(v.real),
+              json: toExpr(v.json),
             )
             .execute();
       }
@@ -142,6 +151,16 @@ void main() {
     final items = await db.items
         .select(
           (i) => (i.real,),
+        )
+        .distinct()
+        .fetch();
+    check(items).length.equals(3);
+  });
+
+  r.addTest('items.select(.json).distinct()', (db) async {
+    final items = await db.items
+        .select(
+          (i) => (i.json,),
         )
         .distinct()
         .fetch();

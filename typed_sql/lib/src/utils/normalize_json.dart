@@ -14,8 +14,6 @@
 
 import 'package:collection/collection.dart';
 
-import 'fast_unorm.dart' show fastNfc;
-
 /// Wrap JSON [value] such that encoding is likely to be normalized.
 ///
 /// This is a _best-effort_ normalization, notably we shall ensure that:
@@ -47,9 +45,15 @@ Object? normalizeJson(Object? value) {
     case int():
       return value;
     case double():
+      if (value == 0.0) {
+        return 0;
+      }
+      if (value % 1 == 0.0) {
+        return value.toInt();
+      }
       return value;
     case String():
-      return fastNfc(value);
+      return value;
     case List():
       return value.map(normalizeJson).toList();
     case Map():
@@ -58,7 +62,7 @@ Object? normalizeJson(Object? value) {
         if (k is! String) {
           throw ArgumentError('Invalid JSON object: keys must be strings!');
         }
-        return MapEntry(fastNfc(k), normalizeJson(e.value));
+        return MapEntry(k, normalizeJson(e.value));
       }).sortedBy((e) => e.key));
     default:
       throw ArgumentError('Invalid JSON object: $value');
