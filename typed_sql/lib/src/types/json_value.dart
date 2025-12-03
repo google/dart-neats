@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:convert' show json;
+
 /// Wraps a JSON [value].
 ///
 /// {@template JsonValue-allows-types}
@@ -31,6 +33,9 @@ final class JsonValue {
   final Object? value;
 
   JsonValue(this.value) : assert(_isJsonValue(value));
+
+  @override
+  String toString() => 'JsonValue(${json.encode(value)})';
 
   /// Check if [value] is a valid JSON value.
   ///

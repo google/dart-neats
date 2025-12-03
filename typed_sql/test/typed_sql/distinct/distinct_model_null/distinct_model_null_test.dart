@@ -30,6 +30,7 @@ abstract final class Item extends Row {
   String? get text;
   int? get integer;
   double? get real;
+  JsonValue? get json;
 }
 
 final _testData = [
@@ -37,36 +38,43 @@ final _testData = [
     text: 'A',
     integer: 0,
     real: null,
+    json: null,
   ),
   (
     text: 'A',
     integer: null,
     real: null,
+    json: null,
   ),
   (
     text: 'A',
     integer: null,
     real: null,
+    json: null,
   ),
   (
     text: 'B',
     integer: null,
     real: null,
+    json: JsonValue({'real': null}),
   ),
   (
     text: 'C',
     integer: null,
     real: 3.14,
+    json: JsonValue({'real': 3.14}),
   ),
   (
     text: null,
     integer: 0,
     real: 3.14,
+    json: JsonValue({'real': 3.14}),
   ),
   (
     text: null,
     integer: 0,
     real: 1.2,
+    json: JsonValue({'real': 1.2}),
   ),
 ];
 
@@ -80,6 +88,7 @@ void main() {
               text: toExpr(v.text),
               integer: toExpr(v.integer),
               real: toExpr(v.real),
+              json: toExpr(v.json),
             )
             .execute();
       }

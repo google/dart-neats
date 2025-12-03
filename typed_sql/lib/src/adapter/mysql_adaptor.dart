@@ -24,6 +24,7 @@ import 'package:mysql1/mysql1.dart';
 import 'package:test/test.dart' show printOnFailure;
 
 import '../types/json_value.dart';
+import '../utils/normalize_json.dart';
 import '../utils/notifier.dart';
 import '../utils/uuid.dart';
 import 'adapter.dart'; // ignore: implementation_imports
@@ -464,6 +465,9 @@ final class _MysqlRowReader extends RowReader {
   @override
   JsonValue? readJsonValue() {
     final value = _row[_i++];
+    if (value == null) {
+      return null;
+    }
     if (value is String) {
       return JsonValue(json.decode(value));
     }
@@ -497,7 +501,10 @@ final _paramPattern = RegExp(r'\?([0-9]+)');
       .map((p) => switch (p) {
             DateTime d => d.toUtc(),
             Uint8List b => Blob.fromBytes(b),
-            JsonValue v => json.encode(v.value),
+            // TODO: Consider forking JsonEncoder from 'dart:convert' and
+            //       normalize while we encode for increased performance
+            //       and more reliable normalization.
+            JsonValue v => json.encode(normalizeJson(v.value)),
             _ => p,
           })
       .toList();

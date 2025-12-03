@@ -56,6 +56,7 @@ final class _$Item extends Item {
     this.text,
     this.integer,
     this.real,
+    this.json,
   );
 
   @override
@@ -70,9 +71,12 @@ final class _$Item extends Item {
   @override
   final double real;
 
+  @override
+  final JsonValue json;
+
   static const _$table = (
     tableName: 'items',
-    columns: <String>['id', 'text', 'integer', 'real'],
+    columns: <String>['id', 'text', 'integer', 'real', 'json'],
     columnInfo: <({
       ColumnType type,
       bool isNotNull,
@@ -107,6 +111,13 @@ final class _$Item extends Item {
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
+      ),
+      (
+        type: $ForGeneratedCode.jsonValue,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['id'],
@@ -125,15 +136,20 @@ final class _$Item extends Item {
     final text = row.readString();
     final integer = row.readInt();
     final real = row.readDouble();
-    if (id == null && text == null && integer == null && real == null) {
+    final json = row.readJsonValue();
+    if (id == null &&
+        text == null &&
+        integer == null &&
+        real == null &&
+        json == null) {
       return null;
     }
-    return _$Item._(id!, text!, integer!, real!);
+    return _$Item._(id!, text!, integer!, real!, json!);
   }
 
   @override
   String toString() =>
-      'Item(id: "$id", text: "$text", integer: "$integer", real: "$real")';
+      'Item(id: "$id", text: "$text", integer: "$integer", real: "$real", json: "$json")';
 }
 
 /// Extension methods for table defined in [Item].
@@ -147,6 +163,7 @@ extension TableItemExt on Table<Item> {
     required Expr<String> text,
     required Expr<int> integer,
     required Expr<double> real,
+    required Expr<JsonValue> json,
   }) =>
       $ForGeneratedCode.insertInto(
         table: this,
@@ -155,6 +172,7 @@ extension TableItemExt on Table<Item> {
           text,
           integer,
           real,
+          json,
         ],
       );
 
@@ -217,6 +235,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
               Expr<String> text,
               Expr<int> integer,
               Expr<double> real,
+              Expr<JsonValue> json,
             }) set,
           ) updateBuilder) =>
       $ForGeneratedCode.update<Item>(
@@ -229,12 +248,14 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             Expr<String>? text,
             Expr<int>? integer,
             Expr<double>? real,
+            Expr<JsonValue>? json,
           }) =>
               $ForGeneratedCode.buildUpdate<Item>([
             id,
             text,
             integer,
             real,
+            json,
           ]),
         ),
       );
@@ -285,6 +306,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
               Expr<String> text,
               Expr<int> integer,
               Expr<double> real,
+              Expr<JsonValue> json,
             }) set,
           ) updateBuilder) =>
       $ForGeneratedCode.updateSingle<Item>(
@@ -297,12 +319,14 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             Expr<String>? text,
             Expr<int>? integer,
             Expr<double>? real,
+            Expr<JsonValue>? json,
           }) =>
               $ForGeneratedCode.buildUpdate<Item>([
             id,
             text,
             integer,
             real,
+            json,
           ]),
         ),
       );
@@ -329,6 +353,9 @@ extension ExpressionItemExt on Expr<Item> {
 
   Expr<double> get real =>
       $ForGeneratedCode.field(this, 3, $ForGeneratedCode.real);
+
+  Expr<JsonValue> get json =>
+      $ForGeneratedCode.field(this, 4, $ForGeneratedCode.jsonValue);
 }
 
 extension ExpressionNullableItemExt on Expr<Item?> {
@@ -343,6 +370,9 @@ extension ExpressionNullableItemExt on Expr<Item?> {
 
   Expr<double?> get real =>
       $ForGeneratedCode.field(this, 3, $ForGeneratedCode.real);
+
+  Expr<JsonValue?> get json =>
+      $ForGeneratedCode.field(this, 4, $ForGeneratedCode.jsonValue);
 
   /// Check if the row is not `NULL`.
   ///
@@ -377,4 +407,7 @@ extension ItemChecks on Subject<Item> {
 
   /// Create assertions on [Item.real].
   Subject<double> get real => has((m) => m.real, 'real');
+
+  /// Create assertions on [Item.json].
+  Subject<JsonValue> get json => has((m) => m.json, 'json');
 }
