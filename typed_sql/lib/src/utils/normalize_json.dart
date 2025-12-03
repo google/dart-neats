@@ -18,7 +18,11 @@ import 'package:collection/collection.dart';
 ///
 /// This is a _best-effort_ normalization, notably we shall ensure that:
 ///  * [Map] keys are sorted, and,
-///  * [String] values are re-encoded as [Unicode Normalization Form C][1].
+///  * [double] values encoded as ints where possible.
+///
+/// This will not attempt to normalize unicode encoding, leaving this for the
+/// user to do in the application layer or specify in the database using
+/// collations.
 ///
 /// This method does not encode the JSON, because some databases employ
 /// client side JSONB encoding (sqlite). Thus, using a normalized encoding,
@@ -34,8 +38,6 @@ import 'package:collection/collection.dart';
 /// - [String],
 /// - [List] (where entries are _JSON values_), and,
 /// - [Map] (where keys are [String] and values are _JSON values_).
-///
-/// [1]: https://unicode.org/reports/tr15/
 Object? normalizeJson(Object? value) {
   switch (value) {
     case null:
