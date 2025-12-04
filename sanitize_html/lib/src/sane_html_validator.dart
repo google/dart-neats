@@ -23,6 +23,17 @@ import 'package:sanitize_html/src/node_sanitizer.dart';
 /// easily interferes with the rest of the page.
 ///
 /// [1]: https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb
+///
+///
+/// Sanitizes HTML nodes using a DOM-based filtering approach
+/// to mitigate XSS vectors.
+///
+/// This validator:
+/// - removes all HTML comments (normal or malformed)
+/// - filters elements and attributes based on NodeSanitizer rules
+/// - returns only safe HTML content
+///
+/// Behavior follows common HTML email sanitization principles.
 class SaneHtmlValidator {
   final bool Function(String)? allowElementId;
   final bool Function(String)? allowClassName;
@@ -48,16 +59,60 @@ class SaneHtmlValidator {
     );
   }
 
+  /// Remove all HTML comments, including malformed cases:
+  /// - Standard comment: <!-- ... -->
+  /// - Broken comment missing '-->'
+  ///   → treat the first '>' after '<!--' as the end of the comment
+  ///
+  /// If no closing '>' is found, the remainder of the string is discarded.
+  String _stripHtmlComments(String html) {
+    final buffer = StringBuffer();
+    var index = 0;
+
+    while (index < html.length) {
+      final start = html.indexOf('<!--', index);
+      if (start == -1) {
+        buffer.write(html.substring(index));
+        break;
+      }
+
+      // Write text before comment
+      buffer.write(html.substring(index, start));
+
+      final commentStart = start + 4;
+      final normalEnd = html.indexOf('-->', commentStart);
+
+      if (normalEnd != -1) {
+        index = normalEnd + 3;
+        continue;
+      }
+
+      final fallback = html.indexOf('>', commentStart);
+      if (fallback == -1) break;
+
+      index = fallback + 1;
+    }
+
+    return buffer.toString();
+  }
+
+  /// Sanitizes HTML:
+  /// - strips comments
+  /// - parses DOM
+  /// - applies NodeSanitizer to <body>
+  /// - returns sanitized inner HTML
   String sanitize(String html) {
     if (html.isEmpty) return '';
 
-    final doc = html_parser.parse(html);
-    final body = doc.body;
+    final noComments = _stripHtmlComments(html);
+    final document = html_parser.parse(noComments);
+
+    final body = document.body;
     if (body == null) return '';
 
     _nodeSanitizer.sanitize(body, allowUnwrap: false);
 
-    final output = body.innerHtml;
-    return output.isEmpty ? '' : output.trim();
+    final output = body.innerHtml.trim();
+    return output.isEmpty ? '' : output;
   }
 }

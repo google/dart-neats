@@ -4,23 +4,23 @@ import 'package:sanitize_html/src/html_sanitize_config.dart';
 import 'package:sanitize_html/src/url_validators.dart';
 
 class AttributePolicy {
+  /// Pre-normalized attribute validators.
   static final Map<String, Map<String, bool Function(String)>> _validators =
-      _preNormalizeTagValidators();
+      _normalizeTagAttributeValidators();
 
   static Map<String, Map<String, bool Function(String)>>
-      _preNormalizeTagValidators() {
+      _normalizeTagAttributeValidators() {
     final out = <String, Map<String, bool Function(String)>>{};
     AttributePolicy.tagAttributeValidators.forEach((tag, attrs) {
-      final normalized = tag.toUpperCase();
-      final newMap = <String, bool Function(String)>{};
-      attrs.forEach((a, fn) {
-        newMap[a.toLowerCase()] = fn;
-      });
-      out[normalized] = newMap;
+      final normalizedTag = tag.toUpperCase();
+      out[normalizedTag] = {
+        for (final entry in attrs.entries) entry.key.toLowerCase(): entry.value
+      };
     });
     return out;
   }
 
+  /// Original validator definitions.
   static final tagAttributeValidators =
       <String, Map<String, bool Function(String)>>{
     'A': {'href': UrlValidators.validLink},
@@ -51,15 +51,20 @@ class AttributePolicy {
     bool Function(String)? allowId,
     bool Function(String)? allowClass,
   }) {
-    final a = attr.toLowerCase();
+    final normalizedAttr = attr.toLowerCase();
 
-    if (HtmlSanitizeConfig.forbiddenAttributes.contains(a)) return false;
+    // 1. Forbidden attribute → reject immediately
+    if (HtmlSanitizeConfig.forbiddenAttributes.contains(normalizedAttr)) {
+      return false;
+    }
 
-    if (a == 'id') {
+    // 2. ID handling
+    if (normalizedAttr == 'id') {
       return allowId != null ? allowId(value) : isSafeId(value);
     }
 
-    if (a == 'class') {
+    // 3. Class handling
+    if (normalizedAttr == 'class') {
       final original = node.className;
       if (original.isEmpty) return false;
 
@@ -75,24 +80,30 @@ class AttributePolicy {
       return node.classes.isNotEmpty;
     }
 
-    if (a == 'style') {
+    // 4. Inline style sanitization
+    if (normalizedAttr == 'style') {
       final sanitized = CssSanitizer.sanitizeInline(value);
       if (sanitized.isEmpty) return false;
       node.attributes['style'] = sanitized;
       return true;
     }
 
-    if (HtmlSanitizeConfig.alwaysAllowedAttributes.contains(a)) return true;
+    // 5. Attribute always allowed (e.g., aria-*, role, etc.)
+    if (HtmlSanitizeConfig.alwaysAllowedAttributes.contains(normalizedAttr)) {
+      return true;
+    }
 
+    // 6. Tag-specific attribute validators
     final tagName = node.localName?.toUpperCase();
     if (tagName != null) {
-      final validators = _validators[tagName];
-      if (validators != null) {
-        final fn = validators[a];
-        if (fn != null) return fn(value);
+      final tagValidators = _validators[tagName];
+      final validator = tagValidators?[normalizedAttr];
+      if (validator != null) {
+        return validator(value);
       }
     }
 
+    // 7. Reject by default
     return false;
   }
 }

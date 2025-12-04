@@ -1,43 +1,63 @@
+import 'package:sanitize_html/src/html_sanitize_config.dart';
+
 class UrlValidators {
-  static final RegExp _base64ImageRegex = RegExp(
-    r'^data:image\/(png|jpeg|jpg|gif|bmp|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$',
-  );
+  /// Common internal URI validator used by validLink() and validUrl().
+  static Uri? _tryParse(String input) {
+    if (input.isEmpty) return null;
 
+    try {
+      return Uri.parse(input);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Validates a hyperlink (<a href>)
+  ///
+  /// Allowed:
+  /// - http
+  /// - https
+  /// - mailto
+  /// - URLs without scheme (relative links)
   static bool validLink(String url) {
-    if (url.isEmpty) return false;
+    final uri = _tryParse(url);
+    if (uri == null) return false;
 
-    try {
-      final uri = Uri.parse(url);
-
-      return uri.isScheme('https') ||
-          uri.isScheme('http') ||
-          uri.isScheme('mailto') ||
-          !uri.hasScheme;
-    } catch (_) {
-      return false;
-    }
+    return uri.isScheme('https') ||
+        uri.isScheme('http') ||
+        uri.isScheme('mailto') ||
+        !uri.hasScheme;
   }
 
+  /// Validates a general URL (non-mailto)
+  ///
+  /// Allowed:
+  /// - http
+  /// - https
+  /// - URLs without scheme
   static bool validUrl(String url) {
-    if (url.isEmpty) return false;
+    final uri = _tryParse(url);
+    if (uri == null) return false;
 
-    try {
-      final uri = Uri.parse(url);
-
-      return uri.isScheme('https') || uri.isScheme('http') || !uri.hasScheme;
-    } catch (_) {
-      return false;
-    }
+    return uri.isScheme('https') || uri.isScheme('http') || !uri.hasScheme;
   }
 
+  /// Check base64 image header
   static bool validBase64Image(String v) {
-    return _base64ImageRegex.hasMatch(v);
+    return HtmlSanitizeConfig.base64ImageRegex.hasMatch(v);
   }
 
+  /// Check cid:xxx inline attachments
   static bool validCIDImage(String cid) {
     return cid.startsWith('cid:');
   }
 
+  /// Unified image source validator for <img src>
+  ///
+  /// Allowed:
+  /// - http/https or no-scheme URLs
+  /// - data:image/*;base64
+  /// - cid:xxxxx
   static bool validImageSource(String url) {
     return validUrl(url) || validBase64Image(url) || validCIDImage(url);
   }

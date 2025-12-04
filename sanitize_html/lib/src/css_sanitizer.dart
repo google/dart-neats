@@ -1,22 +1,49 @@
 import 'package:sanitize_html/src/html_sanitize_config.dart';
 
 class CssSanitizer {
+  /// Check forbidden CSS keywords (javascript: / expression / url("javascript:") / ...)
   static bool isSafeCssValue(String value) {
     final lower = value.toLowerCase();
-    for (final f in HtmlSanitizeConfig.forbiddenCss) {
-      if (lower.contains(f)) return false;
+    for (final forbidden in HtmlSanitizeConfig.forbiddenCss) {
+      if (lower.contains(forbidden)) return false;
     }
     return true;
   }
 
+  /// Normalize whitespace: "0px   20px\n  " → "0px 20px"
+  static String _normalizeWhitespace(String value) =>
+      value.replaceAll(RegExp(r'\s+'), ' ').trim();
+
+  /// Add px to pure integer width/height values:
+  /// height: 10   → height: 10px
+  static String _normalizeLengthUnits(String prop, String value) {
+    if ((prop == 'height' || prop == 'width') &&
+        HtmlSanitizeConfig.unitlessNumberPattern.hasMatch(value)) {
+      return '${value}px';
+    }
+    return value;
+  }
+
+  /// Special-case normalization for certain CSS properties
+  static String _normalizeCommonProperties(String prop, String value) {
+    switch (prop) {
+      case 'padding':
+      case 'border':
+        return _normalizeWhitespace(value);
+      default:
+        return value;
+    }
+  }
+
+  /// Main CSS inline sanitizer for style="..."
   static String sanitizeInline(String raw) {
     raw = raw.trim();
     if (raw.isEmpty) return '';
 
     final buf = StringBuffer();
+    final declarations = raw.split(';');
 
-    final items = raw.split(';');
-    for (var d in items) {
+    for (var d in declarations) {
       d = d.trim();
       if (d.isEmpty) continue;
 
@@ -24,20 +51,27 @@ class CssSanitizer {
       if (colon <= 0) continue;
 
       final prop = d.substring(0, colon).trim().toLowerCase();
-      final val = d.substring(colon + 1).trim();
+      var val = d.substring(colon + 1).trim();
 
+      // Property not allowed → skip
       if (!HtmlSanitizeConfig.allowedCssProperties.contains(prop)) continue;
+
+      // Forbidden keywords → skip
       if (!isSafeCssValue(val)) continue;
 
+      // Normalize units & whitespace based on property
+      val = _normalizeLengthUnits(prop, val);
+      val = _normalizeCommonProperties(prop, val);
+
+      // Append to buffer
       if (buf.isNotEmpty) buf.write('; ');
-      buf.write(prop);
-      buf.write(': ');
-      buf.write(val);
+      buf.write('$prop: $val');
     }
 
     return buf.toString();
   }
 
+  /// Stylesheet sanitizer
   static String sanitizeStylesheet(String css) {
     css = css.replaceAll(HtmlSanitizeConfig.cssCommentPattern, '').trim();
     if (css.isEmpty) return '';
@@ -49,14 +83,17 @@ class CssSanitizer {
       block = block.trim();
       if (block.isEmpty) continue;
 
-      final brace = block.indexOf('{');
-      if (brace <= 0) continue;
+      final braceIdx = block.indexOf('{');
+      if (braceIdx <= 0) continue;
 
-      final selector = block.substring(0, brace).trim();
+      final selector = block.substring(0, braceIdx).trim();
+
+      // Block @media, @supports, @keyframes, @xyz (Gmail/Roundcube behavior)
       if (selector.startsWith('@')) continue;
 
-      final declarations = block.substring(brace + 1).trim();
-      final sanitized = sanitizeInline(declarations);
+      final rawDeclarations = block.substring(braceIdx + 1).trim();
+      final sanitized = sanitizeInline(rawDeclarations);
+
       if (sanitized.isEmpty) continue;
 
       buffer

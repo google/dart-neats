@@ -152,32 +152,89 @@ void main() {
           expect(out.contains('rel="nofollow"'), true);
         });
 
-        test('invalid URLs removed (javascript:)', () {
+        test('javascript: URL removed entirely', () {
           final out =
               validator.sanitize('<a href="javascript:alert(1)">Bad</a>');
           expect(out.contains('href='), false);
         });
 
-        test('valid base64 and CID images allowed', () {
-          final out = validator.sanitize('''
-          <img src="cid:123">
-          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA">
-        ''');
-
-          expect(out.contains('cid:123'), true);
-          expect(out.contains('data:image/png;base64'), true);
+        test('cid: URLs are preserved', () {
+          final out = validator.sanitize('<img src="cid:12345">');
+          expect(out.contains('cid:12345'), true);
         });
 
-        test('invalid base64 images removed', () {
+        test(
+            'valid base64 PNG data URL preserved exactly (newline and tab allowed)',
+            () {
+          const html = '<img src="data:image/png;base64,AAA\n\tBBB">';
+          final out = validator.sanitize(html);
+
+          expect(
+            out,
+            '<img src="data:image/png;base64,AAA\n\tBBB">',
+            reason:
+                'Base64 data URL must be preserved as-is (Roundcube compatibility)',
+          );
+        });
+
+        test('base64 image containing javascript: removed', () {
+          final out = validator.sanitize(
+            '<img src="data:image/png;base64,javascript:evil">',
+          );
+          expect(out.contains('src='), false);
+        });
+
+        test('invalid base64 images removed (non-base64 characters)', () {
           final out = validator.sanitize(
             '<img src="data:image/png;base64,INVALID@!"/>',
           );
           expect(out.contains('<img>'), true);
         });
 
-        test('invalid image URLs removed', () {
+        test('SVG data URLs are blocked completely', () {
+          final out = validator.sanitize(
+            '<img src="data:image/svg+xml;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=="/>',
+          );
+          expect(out.contains('src='), false,
+              reason: 'SVG images are dangerous and must be removed');
+        });
+
+        test('invalid image URLs removed (javascript inside src)', () {
           final out = validator.sanitize('<img src="javascript:evil()"/>');
           expect(out.contains('<img>'), true);
+        });
+
+        test('normalize whitespace inside non-data URLs', () {
+          const html = '<a href=" http://example.com \n\t ">Link</a>';
+          final out = validator.sanitize(html);
+
+          expect(out.contains('href="http://example.com"'), true);
+        });
+
+        test('remove dangerous unicode-escaped javascript URLs', () {
+          const html =
+              '<a href="\\6A\\61\\76\\61\\73\\63\\72\\69\\70\\74:alert(1)">X</a>';
+          final out = validator.sanitize(html);
+
+          expect(out.contains('href='), false);
+          expect(out.contains('alert'), false);
+        });
+
+        test('srcset sanitized properly (dropping javascript URLs)', () {
+          const html = '''
+      <img srcset="
+          javascript:alert(1) 2x,
+          http://safe.com/image.png 2x
+      ">
+    ''';
+
+          final out = validator.sanitize(html);
+
+          // javascript entry MUST be removed
+          expect(out.contains('javascript:'), false);
+
+          // safe entry SHOULD remain
+          expect(out.contains('http://safe.com/image.png'), true);
         });
       });
 
@@ -734,7 +791,7 @@ void main() {
 
         final out = validator.sanitize(html);
 
-        expect(out.contains('<svg'), false);
+        expect(out.contains('<svg'), true);
         expect(out.contains('foreignObject'), false);
         expect(out.contains('<script'), false);
         expect(out.contains('animate'), false);
@@ -793,7 +850,8 @@ void main() {
 
         expect(out.contains('CDATA'), false);
         expect(out.contains('alert'), false);
-        expect(out.contains('<svg'), false);
+        expect(out.contains('<svg'), true);
+        expect(out.contains('<circle'), true);
       });
 
       test('meta refresh removed entirely', () {
@@ -978,6 +1036,332 @@ void main() {
         expect(out.contains('<custom-tag'), false);
         expect(out.contains('Hello'), true);
         expect(out.contains('World'), true);
+      });
+    });
+
+    group('HTML safety and XSS hardening tests', () {
+      late SaneHtmlValidator validator;
+
+      setUp(() {
+        validator = SaneHtmlValidator(
+          allowElementId: (_) => true,
+          allowClassName: (_) => true,
+          addLinkRel: (_) => ['nofollow'],
+          allowAttributes: null,
+          allowTags: null,
+        );
+      });
+
+      test('XSS – strip data:, vbscript:, data:application links', () {
+        const html = ''
+            '<a href="data:text/html,&lt;script&gt;alert(document.cookie)&lt;/script&gt;">Firefox</a>'
+            '<a href="vbscript:alert(document.cookie)">Internet Explorer</a>'
+            '<A href="data:text/html,&lt;script&gt;alert(document.cookie)&lt;/script&gt;">Firefox</a>'
+            '<A HREF="vbscript:alert(document.cookie)">Internet Explorer</a>'
+            '<a href="data:application/xhtml+xml;base64,PGh0bW">CLICK ME</a>';
+
+        final out = validator.sanitize(html);
+
+        expect(out, isNot(contains('data:text')),
+            reason: 'data:text/html removed');
+        expect(out, isNot(contains('vbscript:')), reason: 'vbscript removed');
+        expect(out, isNot(contains('data:application')),
+            reason: 'data:application removed');
+      });
+
+      test('href – normalize newlines in href attribute', () {
+        const html =
+            '<p><a href="\nhttp://test.com\n">Firefox</a><a href="domain.com">Firefox</a>';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('href="http://test.com"'));
+      });
+
+      test('data:image – preserve base64 even with newlines', () {
+        const html =
+            '<p><img src="data:image/png;base64,12345\n\t67890" /></p>';
+
+        final out = validator.sanitize(html);
+
+        expect(
+          out,
+          '<p><img src="data:image/png;base64,12345\n\t67890"></p>',
+        );
+      });
+
+      test('AREA – remove data:, vbscript:, javascript: in href', () {
+        const html = ''
+            '<p><area href="data:text/html,&lt;script&gt;alert(document.cookie)&lt;/script&gt;">'
+            '<area href="vbscript:alert(document.cookie)">IE</p>'
+            '<area href="javascript:alert(document.domain)" shape=default>'
+            '<p><AREA HREF="data:text/html,&lt;script&gt;alert(document.cookie)&lt;/script&gt;">'
+            '<Area href="vbscript:alert(document.cookie)">IE</p>'
+            '<area HREF="javascript:alert(document.domain)" shape=default>';
+
+        final out = validator.sanitize(html);
+
+        expect(out, isNot(contains('data:text')));
+        expect(out, isNot(contains('vbscript:')));
+        expect(out, isNot(contains('javascript:')));
+      });
+
+      test('object – remove <object>/<param> but preserve children', () {
+        const html = '''
+<div>
+  <object data="move.swf" type="application/x-shockwave-flash">
+    <param name="foo" value="bar">
+    <p>This alternative text should survive</p>
+  </object>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, isNot(contains('<object')));
+        expect(out, isNot(contains('<param')));
+        expect(out, contains('This alternative text should survive'));
+      });
+
+      test('comments – remove all comments safely', () {
+        washer(String html) => validator.sanitize(html);
+
+        expect(
+          washer('<!--[if gte mso 10]><p>p1</p><!--><p>p2</p>'),
+          '<p>p2</p>',
+        );
+        expect(washer('<!--TestCommentInvalid><p>test</p>'), '<p>test</p>');
+        expect(
+          washer('<p>para1</p><!-- comment --><p>para2</p>'),
+          '<p>para1</p><p>para2</p>',
+        );
+        expect(
+          washer('<p>para1</p><!-- <hr> comment --><p>para2</p>'),
+          '<p>para1</p><p>para2</p>',
+        );
+        expect(
+          washer('<p>para1</p><!-- comment => comment --><p>para2</p>'),
+          '<p>para1</p><p>para2</p>',
+        );
+        expect(
+          washer(
+              '<p><!-- span>1</span -->\n<span>2</span>\n<!-- >3</span --><span>4</span></p>'),
+          '<p>\n<span>2</span>\n<span>4</span></p>',
+        );
+      });
+
+      test('textarea – forbidden, remove tag and its content', () {
+        const html = '<textarea>test';
+
+        final out = validator.sanitize(html);
+
+        expect(out, isNot(contains('<textarea')));
+        expect(out, isNot(contains('test')));
+      });
+
+      test('closing tag with attributes – invalid closing attributes stripped',
+          () {
+        const html = '<a href="http://test.com">test</a href>';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('</a>'));
+      });
+
+      test('style – preserve font-size and rgb() colors', () {
+        const html =
+            '<p style="font-size: 10px; color: rgb(241, 245, 218)">a</p>';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('color: rgb(241, 245, 218)'));
+        expect(out, contains('font-size: 10px'));
+      });
+
+      test('style – preserve line-height, normalize height unit & whitespace',
+          () {
+        const html1 = '<p style="line-height: 1; height: 10">a</p>';
+        final out1 = validator.sanitize(html1);
+
+        expect(out1, contains('line-height: 1;'));
+        expect(out1, contains('height: 10px'));
+
+        const html2 =
+            '<div style="padding: 0px\n   20px;border:1px solid #000;"></div>';
+        final out2 = validator.sanitize(html2);
+
+        expect(out2, contains('padding: 0px 20px;'));
+        expect(out2, contains('border: 1px solid #000'));
+      });
+
+      test('style – disallow onerror injection via quote manipulation', () {
+        final out1 =
+            validator.sanitize("<img style=aaa:'\"/onerror=alert(1)//'>");
+        expect(out1, isNot(contains('onerror=alert(1)')));
+
+        final out2 =
+            validator.sanitize("<img style=aaa:'&quot;/onerror=alert(1)//'>");
+        expect(out2, isNot(contains('onerror=alert(1)')));
+      });
+
+      test('title – drop <title> content from output', () {
+        final out1 = validator.sanitize(
+            '<html><head><title>title1</title></head><body><p>test</p></body>');
+        expect(out1, '<p>test</p>');
+
+        final out2 = validator.sanitize(
+            '<html><head><title>title1<img />title2</title></head><body><p>test</p></body>');
+        expect(out2, '<p>test</p>');
+      });
+
+      test('SVG – sanitize complex SVG elements safely', () {
+        const svg = '''
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <polygon id="triangle" points="0,0 0,50 50,0" fill="#009900" stroke="#004400" onmouseover="alert(1)" />
+  <text x="50" y="68" font-size="48" fill="#FFF">410</text>
+  <script>alert(document.cookie);</script>
+  <foreignObject xlink:href="data:text/xml,%3Cscript%3Ealert(1)%3C/script%3E"/>
+  <set attributeName="onmouseover" to="alert(1)"/>
+  <animate attributeName="onunload" to="alert(1)"/>
+</svg>
+''';
+
+        final out = validator.sanitize(svg);
+
+        expect(out, contains('<polygon'));
+        expect(out, isNot(contains('onmouseover="alert(1)"')));
+        expect(out, isNot(contains('<script')));
+        expect(out, isNot(contains('foreignObject')));
+        expect(out, isNot(contains('<set ')));
+        expect(out, isNot(contains('<animate ')));
+        expect(out, contains('410'));
+      });
+
+      test('SVG – wash javascript: in xlink:href', () {
+        const html =
+            '<svg><a xlink:href="javascript:alert(1)"><text>XSS</text></a></svg>';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('<svg>'));
+        expect(out, isNot(contains('javascript:alert(1)')));
+        expect(out, contains('XSS'));
+      });
+
+      test('SVG – remove animate/set with JS payload', () {
+        const animateHtml = '<svg>'
+            '<animate attributeName="href" values="javascript:alert(1)" />'
+            '<a id="xss"><text>XSS</text></a>'
+            '</svg>';
+
+        final out1 = validator.sanitize(animateHtml);
+        expect(out1, isNot(contains('<animate')));
+        expect(out1, contains('<a id="xss">'));
+        expect(out1, contains('XSS'));
+
+        const setHtml = '<svg>'
+            '<set attributeName="href" to="javascript:alert(1)" />'
+            '<a id="xss"><text>XSS</text></a>'
+            '</svg>';
+
+        final out2 = validator.sanitize(setHtml);
+        expect(out2, isNot(contains('<set')));
+        expect(out2, contains('<a id="xss">'));
+      });
+
+      test('XSS – remove javascript: in href/src attributes', () {
+        const html = '<html><body>'
+            '<a href="javascript:alert(1)">X</a>'
+            '<img src="javascript:alert(1)" />'
+            '</body></html>';
+
+        final out = validator.sanitize(html);
+
+        expect(out, isNot(contains('href="javascript:')));
+        expect(out, isNot(contains('src="javascript:')));
+        expect(out, contains('X'));
+      });
+
+      test('body background – remove javascript: in background attr', () {
+        const html =
+            '<html><body background="javascript:alert(1)">test</body></html>';
+        final out = validator.sanitize(html);
+
+        expect(out, isNot(contains('background="javascript:')));
+        expect(out, contains('test'));
+      });
+
+      test('textarea – forbidden, remove tag, content and XSS attributes', () {
+        const html =
+            '<textarea><p style="x:</textarea><img src=x onerror=alert(1)>">';
+
+        final out = validator.sanitize(html);
+
+        expect(out, isNot(contains('textarea')));
+        expect(out, isNot(contains('<p style="x:')));
+        expect(out, isNot(contains('onerror=')));
+        expect(out, contains('<img src="x">'));
+      });
+
+      test('CDATA – script inside CDATA removed', () {
+        const html =
+            '<p><![CDATA[<script>alert(document.cookie)</script>]]></p>';
+
+        final out = validator.sanitize(html);
+
+        expect(out, isNot(contains('<script>')));
+        expect(out, isNot(contains('alert(document.cookie)')));
+      });
+
+      test('XML – remove XML tag, namespace, prolog', () {
+        const html1 = '<p><?xml:namespace prefix="xsl" /></p>';
+        final out1 = validator.sanitize(html1);
+        expect(out1, '<p></p>');
+
+        const html2 = '<?xml encoding="UTF-8"><html><body>HTML</body></html>';
+        final out2 = validator.sanitize(html2);
+        expect(out2, 'HTML');
+      });
+
+      test('missing html/body tags – body content still preserved', () {
+        washer(String html) => validator.sanitize(html);
+
+        expect(
+          washer('<head></head>First line<br />Second line'),
+          contains('First line'),
+        );
+        expect(washer('First line<br />Second line'), contains('First line'));
+        expect(washer('<html>First line</html>'), contains('First line'));
+        expect(washer('<html><body>First</body></html>'), contains('First'));
+      });
+
+      test('table nested – normalize malformed nested <tr>', () {
+        const html = '''
+<table id="t1">
+  <tr>
+    <td>
+      <table id="t2">
+        <tr>
+        <tr>
+          <td></td>
+        </tr>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr><td></td></tr>
+</table>
+''';
+
+        final out = validator.sanitize(html);
+        final canonical = out.replaceAll(RegExp(r'>[^<>]+<'), '><');
+
+        expect(canonical, contains('<table id="t1"'));
+        expect(canonical, contains('<table id="t2"'));
+        expect(
+          RegExp(r'<tr>').allMatches(canonical).length,
+          greaterThanOrEqualTo(2),
+        );
       });
     });
   });

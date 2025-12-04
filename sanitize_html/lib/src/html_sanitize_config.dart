@@ -1,8 +1,13 @@
 class HtmlSanitizeConfig {
+  //
+  // ALLOWED ELEMENTS
+  //
   static const Set<String> allowedElements = {
     ..._allowedElementsBase,
+    ..._allowedSvgElements,
   };
 
+  // Base HTML elements
   static const Set<String> _allowedElementsBase = {
     'H1',
     'H2',
@@ -78,6 +83,23 @@ class HtmlSanitizeConfig {
     'STYLE',
   };
 
+  // SVG elements
+  static const Set<String> _allowedSvgElements = {
+    'SVG',
+    'G',
+    'PATH',
+    'POLYGON',
+    'RECT',
+    'CIRCLE',
+    'ELLIPSE',
+    'LINE',
+    'POLYLINE',
+    'TEXT',
+  };
+
+  //
+  // ALWAYS ALLOWED ATTRIBUTES
+  //
   static const Set<String> alwaysAllowedAttributes = {
     ..._alwaysAllowedAttributesBase,
   };
@@ -155,8 +177,12 @@ class HtmlSanitizeConfig {
     'data-mimetype',
   };
 
+  //
+  // FORBIDDEN TAGS
+  //
   static const Set<String> forbiddenTags = {
     ..._forbiddenTagsBase,
+    ..._forbiddenSvgAnimationTags,
   };
 
   static const Set<String> _forbiddenTagsBase = {
@@ -172,6 +198,28 @@ class HtmlSanitizeConfig {
     'OPTION',
   };
 
+  static const Set<String> _forbiddenSvgAnimationTags = {
+    'ANIMATE',
+    'SET',
+    'ANIMATEMOTION',
+    'ANIMATETRANSFORM',
+    'MPATH',
+  };
+
+  static const Set<String> forbiddenSvgAnimationAttributes = {
+    'to',
+    'from',
+    'by',
+    'values',
+    'dur',
+    'begin',
+    'repeatcount',
+    'repeatdur',
+  };
+
+  //
+  // FORBIDDEN ATTRIBUTES
+  //
   static const Set<String> forbiddenAttributes = {
     ..._forbiddenEventHandlers,
     ..._forbiddenFormAttributes,
@@ -261,6 +309,9 @@ class HtmlSanitizeConfig {
     'srcdoc',
   };
 
+  //
+  // CSS RULES
+  //
   static const Set<String> allowedCssProperties = {
     'color',
     'background-color',
@@ -324,35 +375,9 @@ class HtmlSanitizeConfig {
     'stroke-width',
   };
 
-  static const Set<String> svgMathmlTags = {
-    'svg',
-    'path',
-    'g',
-    'rect',
-    'circle',
-    'polyline',
-    'polygon',
-    'animate',
-    'foreignobject',
-    'math',
-    'mstyle',
-    'mscript',
-    'mprescripts',
-    'mfenced',
-  };
-
-  static const List<String> dangerousPatternsHtmlMarkup = [
-    '<',
-    '>',
-    '</',
-    '<script',
-    '-->',
-    '<!--',
-    '<![cdata[',
-    '&lt;',
-    '&gt;',
-  ];
-
+  //
+  // DANGEROUS HTML / JS SIGNATURES
+  //
   static const List<String> signaturesDangerousRawJs = [
     'alert(',
     'eval(',
@@ -371,6 +396,9 @@ class HtmlSanitizeConfig {
     'url(',
   ];
 
+  //
+  // REGEX
+  //
   static final RegExp safeIdPattern =
       RegExp(r'^[A-Za-z][A-Za-z0-9\-\_\:\.]{0,63}$');
 
@@ -381,4 +409,19 @@ class HtmlSanitizeConfig {
 
   static final RegExp unicodeEscapeReg =
       RegExp(r'\\[0-9a-f]{2}', caseSensitive: false);
+
+  static final RegExp unitlessNumberPattern = RegExp(r'^\d+$');
+
+  static final RegExp base64ImageRegex = RegExp(
+    r'^data:image\/(png|jpeg|jpg|gif|bmp|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$',
+  );
+
+  static final RegExp whitespacePattern = RegExp(r'\s+');
+
+  static final RegExp base64ValuePattern = RegExp(r'^[A-Za-z0-9+/=]+$');
+
+  static final RegExp dangerousMarkupRegex = RegExp(
+    r'(<|</|<!--|-->|<script|<!\[cdata\[|&lt;|&gt;)',
+    caseSensitive: false,
+  );
 }
