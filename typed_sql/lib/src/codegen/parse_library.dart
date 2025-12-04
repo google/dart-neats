@@ -46,13 +46,20 @@ Future<ParsedLibrary> parseLibrary(
 
   // We maintain maps to elements so we can make better errors later!
   final schemaToElement = <ParsedSchema, ClassElement>{};
+  final fieldToElement = <ParsedField, Element>{};
   final foreignKeyToElement = <ParsedForeignKey, Element>{};
 
   final schemas = targetLibrary.classes.where((cls) {
     final supertype = cls.supertype;
     return supertype != null && schemaTypeChecker.isExactlyType(supertype);
   }).map((cls) {
-    final s = _parseSchema(ctx, cls, rowClassCache, foreignKeyToElement);
+    final s = _parseSchema(
+      ctx,
+      cls,
+      rowClassCache,
+      foreignKeyToElement,
+      fieldToElement,
+    );
     schemaToElement[s] = cls;
     return s;
   }).toList();
@@ -63,7 +70,7 @@ Future<ParsedLibrary> parseLibrary(
   }).map((cls) {
     return rowClassCache.putIfAbsent(
       cls,
-      () => _parseRowClass(ctx, cls, foreignKeyToElement),
+      () => _parseRowClass(ctx, cls, foreignKeyToElement, fieldToElement),
     );
   }).toList();
 
@@ -93,6 +100,29 @@ Future<ParsedLibrary> parseLibrary(
     }
   }
 
+  // Check that AutoIncrement is only used on non-composite primary keys
+  for (final schema in schemas) {
+    for (final table in schema.tables) {
+      for (final field in table.rowClass.fields) {
+        if (field.autoIncrement) {
+          if (!table.rowClass.primaryKey.contains(field)) {
+            throw InvalidGenerationSource(
+              'AutoIncrement is only allowed on primary key fields',
+              element: fieldToElement[field],
+            );
+          }
+          if (table.rowClass.primaryKey.length != 1) {
+            throw InvalidGenerationSource(
+              'AutoIncrement is only allowed on non-composite primary key fields',
+              element: fieldToElement[field],
+            );
+          }
+        }
+      }
+    }
+  }
+
+  // Check references in foreign keys can be resolved
   for (final schema in schemas) {
     for (final table in schema.tables) {
       for (final fk in table.rowClass.foreignKeys) {
@@ -138,6 +168,7 @@ ParsedSchema _parseSchema(
   ClassElement cls,
   Map<ClassElement, ParsedRowClass> rowClassCache,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
+  Map<ParsedField, Element> fieldToElement,
 ) {
   log.info('Found schema "${cls.name}"');
 
@@ -210,7 +241,12 @@ ParsedSchema _parseSchema(
         documentation: a.documentationComment,
         rowClass: rowClassCache.putIfAbsent(
           typeArgElement,
-          () => _parseRowClass(ctx, typeArgElement, foreignKeyToElement),
+          () => _parseRowClass(
+            ctx,
+            typeArgElement,
+            foreignKeyToElement,
+            fieldToElement,
+          ),
         ),
       ),
     );
@@ -223,6 +259,7 @@ ParsedRowClass _parseRowClass(
   ParserContext ctx,
   ClassElement cls,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
+  Map<ParsedField, Element> fieldToElement,
 ) {
   log.info('Found row class "${cls.name}"');
 
@@ -379,6 +416,7 @@ ParsedRowClass _parseRowClass(
         );
       }).toList(),
     );
+    fieldToElement[field] = a;
     fields.add(field);
   }
 

@@ -16,7 +16,7 @@ import 'test_code_generation.dart';
 
 void main() {
   testCodeGeneration(
-    name: '@AutoIncrement on int primary key',
+    name: '@AutoIncrement works on int primary key',
     source: r'''
       abstract final class TestDatabase extends Schema {
         Table<Item> get items;
@@ -33,8 +33,43 @@ void main() {
     generated: contains('extends Item'),
   );
 
-  // TODO: Forbid AutoIncrement on anything that isn't a primary key.
-  //       Possibly forbid in composite primary keys too.
+  testCodeGeneration(
+    name: '@AutoIncrement not allowed on non-primary key fields',
+    source: r'''
+      abstract final class TestDatabase extends Schema {
+        Table<Item> get items;
+      }
+
+      @PrimaryKey(['id'])
+      abstract final class Item extends Row {
+        int get id;
+
+        @AutoIncrement()
+        int get autoValue;
+      }
+    ''',
+    error: contains('AutoIncrement is only allowed on primary key fields'),
+  );
+
+  testCodeGeneration(
+    name: '@AutoIncrement is not allowed on composite primary key fields',
+    source: r'''
+      abstract final class TestDatabase extends Schema {
+        Table<Item> get items;
+      }
+
+      @PrimaryKey(['hash', 'id'])
+      abstract final class Item extends Row {
+        @AutoIncrement()
+        int get id;
+
+        String get hash;
+      }
+    ''',
+    error: contains(
+      'AutoIncrement is only allowed on non-composite primary key fields',
+    ),
+  );
 
   testCodeGeneration(
     name: '@AutoIncrement not allowed on String',
@@ -45,10 +80,8 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        String get id;
-
         @AutoIncrement()
-        String get autoId;
+        String get id;
       }
     ''',
     error: contains('AutoIncrement is only allowed for int fields'),
@@ -63,10 +96,8 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        String get id;
-
         @AutoIncrement()
-        bool get autoId;
+        String get id;
       }
     ''',
     error: contains('AutoIncrement is only allowed for int fields'),
