@@ -155,14 +155,6 @@ ParsedSchema _parseSchema(
     );
   }
 
-  final firstNonGetter = cls.fields.where((f) => f.getter == null).firstOrNull;
-  if (firstNonGetter != null) {
-    throw InvalidGenerationSource(
-      'subclasses of `Schema` cannot have fields or setters',
-      element: firstNonGetter,
-    );
-  }
-
   final tables = <ParsedTable>[];
   if (cls.setters.isNotEmpty) {
     throw InvalidGenerationSource(
@@ -199,7 +191,7 @@ ParsedSchema _parseSchema(
     }
     if (typeArgElement is! ClassElement) {
       throw InvalidGenerationSource(
-        'T must be a class in `Table<T>` properties',
+        'T in `Table<T>` must be a subclass of `Row`',
         element: a,
       );
     }
@@ -245,13 +237,6 @@ ParsedRowClass _parseRowClass(
     throw InvalidGenerationSource(
       'subclasses of `Row` cannot have methods',
       element: cls.methods.first,
-    );
-  }
-
-  if (!cls.fields.any((f) => f.getter != null)) {
-    throw InvalidGenerationSource(
-      'subclasses of `Row` cannot have fields or setters',
-      element: cls.fields.first,
     );
   }
 
@@ -406,7 +391,7 @@ ParsedRowClass _parseRowClass(
       final field = annotation.getField('field')?.toStringValue();
       final as = annotation.getField('as')?.toStringValue();
       final name = annotation.getField('name')?.toStringValue();
-      if (table == null || field == null) {
+      if (table == null || field == null || table.isEmpty || field.isEmpty) {
         throw InvalidGenerationSource(
           'References annotation must have `table` and `field` fields!',
           element: a,
@@ -550,10 +535,7 @@ ParsedDefaultValue? _parseDefaultValue(Element field, String type) {
   final annotation = defaultValueAnnotations.first;
   final value_ = annotation.getField('_value');
   if (value_ == null) {
-    throw InvalidGenerationSource(
-      'DefaultValue annotation must have a non-null value',
-      element: field,
-    );
+    throw _throwInternalDefaultValue(field);
   }
 
   final valueRecord = value_.toRecordValue();
