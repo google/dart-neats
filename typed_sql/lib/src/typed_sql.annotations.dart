@@ -156,12 +156,12 @@ final class Unique {
 ///
 /// Subclasses must:
 ///  * specify a concrete `T` that will be the serialized representation type. As one of:
-///    - String
-///    - Uint8List
-///    - bool
-///    - int
-///    - double
-///    - DateTime
+///    - [String],
+///    - [Uint8List],
+///    - [bool],
+///    - [int],
+///    - [double], or,
+///    - [DateTime].
 ///  * have a `fromDatabase(T value)` constructor.
 ///
 /// If a subclass implements [Comparable] then the encoded values returned by
