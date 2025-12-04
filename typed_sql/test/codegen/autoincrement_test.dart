@@ -16,7 +16,7 @@ import 'test_code_generation.dart';
 
 void main() {
   testCodeGeneration(
-    name: '@AutoIncrement work on int primary key',
+    name: '@AutoIncrement works on int primary key',
     source: r'''
       abstract final class TestDatabase extends Schema {
         Table<Item> get items;
