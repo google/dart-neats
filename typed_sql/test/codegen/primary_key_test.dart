@@ -106,4 +106,21 @@ void main() {
       'PrimaryKey fields cannot be nullable',
     ),
   );
+
+  testCodeGeneration(
+    name: 'PrimaryKey cannot reference JsonValue field',
+    source: r'''
+      abstract final class TestDatabase extends Schema {
+        Table<Item> get items;
+      }
+
+      @PrimaryKey(['id', 'value'])
+      abstract final class Item extends Row {
+        int get id;
+
+        JsonValue get value;
+      }
+    ''',
+    error: contains('JsonValue field cannot be used in PrimaryKey annotation'),
+  );
 }

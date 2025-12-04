@@ -160,6 +160,45 @@ Future<ParsedLibrary> parseLibrary(
     }
   }
 
+  // Sanity check foreign keys
+  for (final schema in schemas) {
+    for (final table in schema.tables) {
+      for (final fk in table.rowClass.foreignKeys) {
+        // Check we equal fields
+        if (fk.foreignKey.length != fk.referencedFields.length) {
+          throw InvalidGenerationSource(
+            'Foreign key fields and referenced fields must have the same length',
+            element: foreignKeyToElement[fk],
+          );
+        }
+
+        // Check referenced foreign keys have matching types
+        for (var i = 0; i < fk.foreignKey.length; i++) {
+          final fkField = fk.foreignKey[i];
+          final referencedField = fk.referencedFields[i];
+          if (fkField.typeName != referencedField.typeName) {
+            throw InvalidGenerationSource(
+              'Foreign key field "${fkField.name}" has type '
+              '"${fkField.typeName}" but references field '
+              '"${referencedField.name}" with type '
+              '"${referencedField.typeName}" in table "${fk.table}". '
+              'Types must match!',
+              element: foreignKeyToElement[fk],
+            );
+          }
+        }
+
+        // Check that backingType is never JsonValue
+        if (fk.foreignKey.any((f) => f.backingType == 'JsonValue')) {
+          throw InvalidGenerationSource(
+            'JsonValue field cannot be used in foreign keys',
+            element: foreignKeyToElement[fk],
+          );
+        }
+      }
+    }
+  }
+
   return library;
 }
 
@@ -497,6 +536,12 @@ ParsedRowClass _parseRowClass(
     if (field == null) {
       throw InvalidGenerationSource(
         'PrimaryKey annotation references unknown field "$field"',
+        element: cls,
+      );
+    }
+    if (field.backingType == 'JsonValue') {
+      throw InvalidGenerationSource(
+        'JsonValue field cannot be used in PrimaryKey annotation',
         element: cls,
       );
     }

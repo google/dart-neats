@@ -138,4 +138,122 @@ void main() {
     ''',
     error: contains('Foreign key references unknown field'),
   );
+
+  testCodeGeneration(
+    name: 'References must have matching types',
+    source: r'''
+      abstract final class TestDatabase extends Schema {
+        Table<Author> get authors;
+        Table<Book> get books;
+      }
+
+      @PrimaryKey(['authorId'])
+      abstract final class Author extends Row {
+        int get authorId;
+
+        String get authorName;
+      }
+
+      @PrimaryKey(['bookId'])
+      abstract final class Book extends Row {
+        int get bookId;
+
+        @References(table: 'authors', field: 'authorName', name: 'author', as: 'books')
+        int get authorId;
+      }
+    ''',
+    error: allOf(contains('Foreign key field'), contains('Types must match!')),
+  );
+
+  testCodeGeneration(
+    name: 'Composite foreign keys works',
+    source: r'''
+      abstract final class TestDatabase extends Schema {
+        Table<Author> get authors;
+        Table<Book> get books;
+      }
+
+      @PrimaryKey(['firstName', 'lastName'])
+      abstract final class Author extends Row {
+        String get firstName;
+        String get lastName;
+      }
+
+      @PrimaryKey(['bookId'])
+      @ForeignKey(
+        ['authorFirstName', 'authorLastName'],
+        table: 'authors',
+        fields: ['firstName', 'lastName'],
+        name: 'author',
+        as: 'books',
+      )
+      abstract final class Book extends Row {
+        int get bookId;
+        String get title;
+        String get authorFirstName;
+        String get authorLastName;
+      }
+    ''',
+    generated: anything,
+  );
+
+  testCodeGeneration(
+    name: 'Composite foreign keys must have matching number of fields',
+    source: r'''
+      abstract final class TestDatabase extends Schema {
+        Table<Author> get authors;
+        Table<Book> get books;
+      }
+
+      @PrimaryKey(['firstName', 'lastName'])
+      abstract final class Author extends Row {
+        String get firstName;
+        String get lastName;
+      }
+
+      @PrimaryKey(['bookId'])
+      @ForeignKey(
+        ['authorFirstName', 'authorLastName'],
+        table: 'authors',
+        fields: ['firstName'],
+        name: 'author',
+        as: 'books',
+      )
+      abstract final class Book extends Row {
+        int get bookId;
+        String get title;
+        String get authorFirstName;
+        String get authorLastName;
+      }
+    ''',
+    error: contains(
+      'Foreign key fields and referenced fields must have the same length',
+    ),
+  );
+
+  testCodeGeneration(
+    name: 'JsonValue field cannot be used in foreign keys',
+    source: r'''
+      abstract final class TestDatabase extends Schema {
+        Table<Author> get authors;
+        Table<Book> get books;
+      }
+
+      @PrimaryKey(['authorId'])
+      abstract final class Author extends Row {
+        int get authorId;
+
+        JsonValue get info;
+      }
+
+      @PrimaryKey(['bookId'])
+      abstract final class Book extends Row {
+        int get bookId;
+
+        @References(table: 'authors', field: 'info')
+        JsonValue get authorInfo;
+      }
+    ''',
+    error: contains('JsonValue field cannot be used in foreign keys'),
+  );
 }
