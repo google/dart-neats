@@ -23,7 +23,7 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';
 
-part 'nullable_boolean_test.g.dart';
+part 'blob_test.g.dart';
 
 abstract final class TestDatabase extends Schema {
   Table<Item> get items;
@@ -34,10 +34,10 @@ abstract final class Item extends Row {
   @AutoIncrement()
   int get id;
 
-  bool? get value;
+  Uint8List? get value;
 }
 
-final _value = true;
+final _value = Uint8List.fromList([1, 2, 3]);
 
 void main() {
   final r = TestRunner<TestDatabase>(
@@ -55,7 +55,7 @@ void main() {
         .execute();
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.isNotNull().equals(_value);
+    check(item).isNotNull().value.isNotNull().deepEquals(_value);
   });
 
   r.addTest('.insert() null by default', (db) async {
@@ -99,7 +99,7 @@ void main() {
         .execute();
 
     final updateItem = await db.items.first.fetch();
-    check(updateItem).isNotNull().value.isNotNull().equals(_value);
+    check(updateItem).isNotNull().value.isNotNull().deepEquals(_value);
   });
 
   r.addTest('.update() null explicitly', (db) async {
@@ -121,7 +121,7 @@ void main() {
         .execute();
 
     final updateItem = await db.items.first.fetch();
-    check(updateItem).isNotNull().value.isNotNull().equals(_value);
+    check(updateItem).isNotNull().value.isNotNull().deepEquals(_value);
   });
 
   r.run();

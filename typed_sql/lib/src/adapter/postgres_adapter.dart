@@ -442,7 +442,11 @@ final class _PostgresRowReader extends RowReader {
 
   @override
   JsonValue? readJsonValue() {
-    final value = _row[_i++];
+    final index = _i++;
+    if (_row.isSqlNull(index)) {
+      return null;
+    }
+    final value = _row[index];
     if (value == null ||
         value is bool ||
         value is num ||

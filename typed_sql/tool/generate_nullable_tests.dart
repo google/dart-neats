@@ -43,26 +43,43 @@ final instances = [
     'name': 'nullable_integer',
     'type': 'int',
     'value': '42',
+    'equality': 'equals',
   },
   {
     'name': 'nullable_text',
     'type': 'String',
     'value': '\'hello\'',
+    'equality': 'equals',
   },
   {
     'name': 'nullable_boolean',
     'type': 'bool',
     'value': 'true',
+    'equality': 'equals',
   },
   {
     'name': 'nullable_real',
     'type': 'double',
     'value': '42.2',
+    'equality': 'equals',
   },
   {
     'name': 'nullable_datetime',
     'type': 'DateTime',
     'value': 'DateTime(2024).toUtc()',
+    'equality': 'equals',
+  },
+  {
+    'name': 'blob',
+    'type': 'Uint8List',
+    'value': 'Uint8List.fromList([1, 2, 3])',
+    'equality': 'deepEquals',
+  },
+  {
+    'name': 'nullable_json',
+    'type': 'JsonValue',
+    'value': 'JsonValue({\'foo\': \'bar\'})',
+    'equality': 'deepEquals',
   },
 ];
 
@@ -84,6 +101,9 @@ final template = '''
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// ignore: unused_import
+import 'dart:typed_data';
 
 import 'package:typed_sql/typed_sql.dart';
 
@@ -121,7 +141,7 @@ void main() {
         .execute();
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(_value);
+    check(item).isNotNull().value.isNotNull().{{equality}}(_value);
   });
 
   r.addTest('.insert() null by default', (db) async {
@@ -165,7 +185,7 @@ void main() {
         .execute();
 
     final updateItem = await db.items.first.fetch();
-    check(updateItem).isNotNull().value.equals(_value);
+    check(updateItem).isNotNull().value.isNotNull().{{equality}}(_value);
   });
 
   r.addTest('.update() null explicitly', (db) async {
@@ -187,7 +207,7 @@ void main() {
         .execute();
 
     final updateItem = await db.items.first.fetch();
-    check(updateItem).isNotNull().value.equals(_value);
+    check(updateItem).isNotNull().value.isNotNull().{{equality}}(_value);
   });
 
   r.run();
