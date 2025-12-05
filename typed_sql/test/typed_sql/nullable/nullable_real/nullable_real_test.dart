@@ -16,6 +16,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore: unused_import
+import 'dart:typed_data';
+
 import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';
@@ -52,7 +55,7 @@ void main() {
         .execute();
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(_value);
+    check(item).isNotNull().value.isNotNull().equals(_value);
   });
 
   r.addTest('.insert() null by default', (db) async {
@@ -96,7 +99,7 @@ void main() {
         .execute();
 
     final updateItem = await db.items.first.fetch();
-    check(updateItem).isNotNull().value.equals(_value);
+    check(updateItem).isNotNull().value.isNotNull().equals(_value);
   });
 
   r.addTest('.update() null explicitly', (db) async {
@@ -118,7 +121,7 @@ void main() {
         .execute();
 
     final updateItem = await db.items.first.fetch();
-    check(updateItem).isNotNull().value.equals(_value);
+    check(updateItem).isNotNull().value.isNotNull().equals(_value);
   });
 
   r.run();
