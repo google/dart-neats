@@ -199,6 +199,23 @@ Future<ParsedLibrary> parseLibrary(
     }
   }
 
+  // Check that JsonValue is not used in UNIQUE constraints
+  for (final schema in schemas) {
+    for (final table in schema.tables) {
+      for (final uc in table.rowClass.uniqueConstraints) {
+        final f = uc.fields.firstWhereOrNull(
+          (f) => f.backingType == 'JsonValue',
+        );
+        if (f != null) {
+          throw InvalidGenerationSource(
+            'JsonValue field cannot be used in a `Unique` annotation',
+            element: fieldToElement[f],
+          );
+        }
+      }
+    }
+  }
+
   return library;
 }
 
@@ -430,6 +447,7 @@ ParsedRowClass _parseRowClass(
       }
     }
 
+    // Check for AutoIncrement
     final autoIncrement = autoIncrementTypeChecker.hasAnnotationOf(a);
     if (autoIncrement && type != 'int') {
       throw InvalidGenerationSource(
@@ -438,14 +456,13 @@ ParsedRowClass _parseRowClass(
       );
     }
 
+    // Create the parsed field
     final field = ParsedField(
       name: a.name!,
       documentation: a.documentationComment,
       typeName: type!,
       isNullable: a.returnType.nullabilitySuffix != NullabilitySuffix.none,
       backingType: backingType,
-      // TODO: Support Unique(given: [...])
-      unique: uniqueTypeChecker.hasAnnotationOf(a),
       autoIncrement: autoIncrement,
       defaultValue: _parseDefaultValue(a, type),
       sqlOverrides: sqlOverrideTypeChecker.annotationsOf(a).map((annotation) {
@@ -457,6 +474,97 @@ ParsedRowClass _parseRowClass(
     );
     fieldToElement[field] = a;
     fields.add(field);
+  }
+
+  // Extract @Unique.field() annotations
+  final uniqueConstraints = <ParsedUniqueConstraint>[];
+  for (final a in cls.getters) {
+    // Find the annotated field
+    final field = fields.firstWhere((f) => f.name == a.name!);
+
+    // Check for Unique.field annotation
+    final uniques = uniqueTypeChecker.annotationsOf(a);
+    if (uniques.length > 1) {
+      throw InvalidGenerationSource(
+        'Only one `Unique.field` annotation is allowed per field',
+        element: a,
+      );
+    }
+    if (uniques.isNotEmpty) {
+      final u = uniques.first;
+      final name = u.getField('_name')?.toStringValue() ?? field.name;
+      final fields = u.getField('_fields')?.toListValue();
+      if (fields != null) {
+        throw InvalidGenerationSource(
+          '`Unique()` cannot be used on fields, use `Unique.fields` instead',
+          element: a,
+        );
+      }
+
+      if (name != '-' && !isValidIdentifier(name)) {
+        throw InvalidGenerationSource(
+          '`Unique.field(name: "$name")`: name is not a valid Dart identifier',
+          element: a,
+        );
+      }
+
+      uniqueConstraints.add(ParsedUniqueConstraint(
+        name: name == '-' ? null : name,
+        fields: [field],
+      ));
+    }
+  }
+
+  // Extract @Unique annotations
+  for (final a in uniqueTypeChecker.annotationsOfExact(cls)) {
+    final name = a.getField('_name')?.toStringValue();
+    final uniqueFields = a
+        .getField('_fields')
+        ?.toListValue()
+        ?.map((v) => v.toStringValue()!)
+        .toList();
+
+    // Forbid use of Unique.field() on classes
+    if (name == null || uniqueFields == null) {
+      throw InvalidGenerationSource(
+        '`Unique.field()` cannot be used on classes, use `Unique()` instead',
+        element: cls,
+      );
+    }
+
+    // Check name is valid, if present
+    if (name != '-' && !isValidIdentifier(name)) {
+      throw InvalidGenerationSource(
+        '`Unique(name: "$name")`: name is not a valid Dart identifier',
+        element: cls,
+      );
+    }
+
+    if (uniqueFields.isEmpty) {
+      throw InvalidGenerationSource(
+        '`Unique()` annotation must have non-empty `fields`!',
+        element: cls,
+      );
+    }
+
+    // Throw exception, when [f] cannot be found
+    Never throwUnknownField(String field) {
+      throw InvalidGenerationSource(
+        '`Unique()` annotation references unknown field "$field", '
+        'no such field on row class "${cls.name}".',
+        element: cls,
+      );
+    }
+
+    uniqueConstraints.add(ParsedUniqueConstraint(
+      name: name == '-' ? null : name,
+      fields: uniqueFields.map((field) {
+        return fields.firstWhere(
+          (f) => f.name == field,
+          orElse: () => throwUnknownField(field),
+        );
+      }).toList(),
+    ));
   }
 
   // Extract @References annotations
@@ -572,6 +680,7 @@ ParsedRowClass _parseRowClass(
     primaryKey: primaryKey,
     fields: fields,
     foreignKeys: foreignKeys,
+    uniqueConstraints: uniqueConstraints,
   );
 }
 
@@ -763,3 +872,6 @@ ParsedDefaultValue? _parseDefaultRawValue(
 
   _throwInternalDefaultValue(field);
 }
+
+bool isValidIdentifier(String id) =>
+    RegExp(r'^[A-Za-z][A-Za-z0-9_]*$').hasMatch(id);

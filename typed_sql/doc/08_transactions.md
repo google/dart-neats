@@ -12,7 +12,7 @@ abstract final class Account extends Row {
   @AutoIncrement()
   int get accountId;
 
-  @Unique()
+  @Unique.field()
   String get accountNumber;
 
   @DefaultValue(0.0)
@@ -40,7 +40,7 @@ await db.transact(() async {
   // Withdraw 100 from account 0000-01
   await db.accounts
       // We can use `.byAccountNumber()` because the `accountNumber` field
-      // is annotated with @Unique()
+      // is annotated with @Unique.field()
       .byAccountNumber('0001')
       .update((a, set) => set(balance: a.balance - toExpr(100)))
       .execute();

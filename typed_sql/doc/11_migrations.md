@@ -42,7 +42,7 @@ abstract final class Account extends Row {
   @AutoIncrement()
   int get accountId;
 
-  @Unique()
+  @Unique.field()
   String get accountNumber;
 }
 ```
@@ -189,7 +189,7 @@ abstract final class Account extends Row {
   @AutoIncrement()
   int get accountId;
 
-  @Unique()
+  @Unique.field()
   String get accountNumber;
 
   @DefaultValue(0.0)

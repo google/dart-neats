@@ -29,7 +29,7 @@ abstract final class User extends Row {
 
   String get name;
 
-  @Unique()
+  @Unique.field()
   String get email;
 }
 

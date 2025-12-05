@@ -88,7 +88,7 @@ abstract final class Car extends Row {
 
   String get model;
 
-  @Unique()
+  @Unique.field()
   String get licensePlate;
 
   // We can use our custom type as column type

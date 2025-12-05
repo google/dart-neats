@@ -235,11 +235,10 @@ extension QueryUserExt on Query<(Expr<User>,)> {
       );
 
   /// Lookup a single row in `users` table using the
-  /// `email` field.
+  /// `email` field
   ///
   /// We know that lookup by the `email` field returns
-  /// at-most one row because the `email` has an [Unique]
-  /// annotation in [User].
+  /// at-most one row because the [Unique] annotation in [User].
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.

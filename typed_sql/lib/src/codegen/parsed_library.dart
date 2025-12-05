@@ -72,12 +72,14 @@ final class ParsedRowClass {
   final List<ParsedField> primaryKey;
   final List<ParsedField> fields;
   final List<ParsedForeignKey> foreignKeys;
+  final List<ParsedUniqueConstraint> uniqueConstraints;
 
   ParsedRowClass({
     required this.name,
     required this.primaryKey,
     required this.fields,
     required this.foreignKeys,
+    required this.uniqueConstraints,
   });
 
   @override
@@ -85,7 +87,18 @@ final class ParsedRowClass {
         'name: "$name"',
         'primaryKey: [${primaryKey.map((f) => '"${f.name}"').join(', ')}]',
         'fields: [${fields.map((f) => '"${f.name}"').join(', ')}]',
+        // TODO: Add foreign keys and unique
       ].join(', ')})';
+}
+
+final class ParsedUniqueConstraint {
+  final String? name;
+  final List<ParsedField> fields;
+
+  ParsedUniqueConstraint({
+    required this.name,
+    required this.fields,
+  });
 }
 
 final class ParsedForeignKey {
@@ -124,7 +137,6 @@ final class ParsedField {
   final String backingType;
   final ParsedDefaultValue? defaultValue;
   final bool autoIncrement;
-  final bool unique;
   final List<SqlOverride> sqlOverrides;
 
   ParsedField({
@@ -135,7 +147,6 @@ final class ParsedField {
     required this.backingType,
     required this.defaultValue,
     required this.autoIncrement,
-    required this.unique,
     required this.sqlOverrides,
   });
 
@@ -147,7 +158,6 @@ final class ParsedField {
         'backingType: "$backingType"',
         'defaultValue: ${defaultValue != null ? '"$defaultValue"' : 'null'}',
         'autoIncrement: $autoIncrement',
-        'unique: $unique',
       ].join(', ')})';
 }
 

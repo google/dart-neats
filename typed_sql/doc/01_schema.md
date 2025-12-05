@@ -43,7 +43,7 @@ abstract final class Author extends Row {
   @AutoIncrement()
   int get authorId;
 
-  @Unique()
+  @Unique.field()
   String get name;
 }
 ```
@@ -55,7 +55,7 @@ The `Author` _row class_ specifies a table with two fields:
 The `authorId` will be a 64 bit integer, auto-incremented by default and used
 as _primary key_. The `name` field will be `TEXT` and have two constraints
 `NOT NULL` (because the Dart getter isn't nullable) and `UNIQUE` because of
-the `@Unique()` annotation.
+the `@Unique.field()` annotation.
 
 The equivalent SQL depends on the database, but it looks something like:
 ```sql

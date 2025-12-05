@@ -13,7 +13,7 @@ abstract final class Author extends Row {
   @AutoIncrement()
   int get authorId;
 
-  @Unique()
+  @Unique.field()
   String get name;
 }
 

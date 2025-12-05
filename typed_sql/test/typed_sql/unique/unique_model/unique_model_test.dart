@@ -27,7 +27,7 @@ abstract final class Account extends Row {
   @AutoIncrement()
   int get accountId;
 
-  @Unique()
+  @Unique.field()
   @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get accountNumber;
 
@@ -47,7 +47,7 @@ void main() {
     await db.accounts.insert(accountNumber: toExpr('0002')).execute();
   });
 
-  r.addTest('db.account.insert (unqiue violation)', (db) async {
+  r.addTest('db.account.insert (unique violation)', (db) async {
     await db.accounts.insert(accountNumber: toExpr('0001')).execute();
     try {
       await db.accounts.insert(accountNumber: toExpr('0001')).execute();

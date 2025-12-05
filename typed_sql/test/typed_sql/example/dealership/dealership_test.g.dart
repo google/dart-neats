@@ -247,11 +247,10 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
       );
 
   /// Lookup a single row in `cars` table using the
-  /// `licensePlate` field.
+  /// `licensePlate` field
   ///
   /// We know that lookup by the `licensePlate` field returns
-  /// at-most one row because the `licensePlate` has an [Unique]
-  /// annotation in [Car].
+  /// at-most one row because the [Unique] annotation in [Car].
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
