@@ -13,7 +13,7 @@ abstract final class Author extends Row {
   @AutoIncrement()
   int get authorId;
 
-  @Unique()
+  @Unique.field()
   String get name;
 }
 
@@ -596,13 +596,13 @@ In general, `.asExpr` is only available on `QuerySingle<(Expr<T>,)>`,
 
 
 ## Point queries with `.byName` using `@Unique` constraints
-Whenever a field is annotated `@Unique()` a `UNIQUE` constraint will be added
-to the table schema, and in the generated code `package:typed_sql` will
+Whenever a field is annotated `@Unique.field()` a `UNIQUE` constraint will be
+added to the table schema, and in the generated code `package:typed_sql` will
 introduce a convenient `.By<fieldName>` method to make _point queries_ using
 the unique field.
 
-Recall that `Author.name` is annotated with `@Unique()`. This means that the
-_name_ field in the database will have `UNIQUE` constraint. But also that
+Recall that `Author.name` is annotated with `@Unique.field()`. This means that
+the _name_ field in the database will have `UNIQUE` constraint. But also that
 `Query<(Expr<Author>,)>` will have a convenient `.byName` method.
 
 ```dart schema_references_test.dart#author-model
@@ -611,7 +611,7 @@ abstract final class Author extends Row {
   @AutoIncrement()
   int get authorId;
 
-  @Unique()
+  @Unique.field()
   String get name;
 }
 ```

@@ -34,7 +34,7 @@ abstract final class Author extends Row {
   @AutoIncrement()
   int get authorId;
 
-  @Unique()
+  @Unique.field()
   @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get name;
 }

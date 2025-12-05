@@ -33,7 +33,7 @@ abstract final class User extends Row {
   String get name;
 
   /// The users email address, not verified, by provided from OIDC.
-  @Unique()
+  @Unique.field()
   String get email;
 }
 

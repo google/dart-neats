@@ -27,7 +27,7 @@ abstract final class Account extends Row {
   @AutoIncrement()
   int get accountId;
 
-  @Unique()
+  @Unique.field()
   @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get accountNumber;
 
