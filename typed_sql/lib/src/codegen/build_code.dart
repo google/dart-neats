@@ -362,9 +362,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ],
               primaryKey: <String>[${rowClass.primaryKey.map((f) => '\'${f.name}\'').join(', ')}],
               unique: <List<String>>[
-                ${rowClass.fields.where((f) => f.unique).map(
-                    (f) => '[\'${f.name}\']',
-                  ).join(', ')}
+                ${rowClass.uniqueConstraints.map((uc) => '[${uc.fields.map((f) => '\'${f.name}\'').join(', ')}]').join(', ')}
               ],
               foreignKeys: <({
                     String name,
@@ -583,35 +581,37 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             )
           '''),
       ))
-      ..methods.addAll(rowClass.fields.where((field) => field.unique).map(
-            (field) => Method(
-              (b) => b
-                ..name = 'by${upperCamelCase(field.name)}'
-                ..documentation('''
-                  Lookup a single row in `${table.name}` table using the
-                  `${field.name}` field.
+      ..methods.addAll(
+          rowClass.uniqueConstraints.where((uc) => uc.name != null).map((uc) {
+        final s = uc.fields.length == 1 ? '' : 's';
+        final fields = uc.fields.map((f) => '`${f.name}`').join(', ');
+        return Method((b) => b
+          ..name = 'by${upperCamelCase(uc.name!)}'
+          ..documentation('''
+            Lookup a single row in `${table.name}` table using the
+            $fields field$s
 
-                  We know that lookup by the `${field.name}` field returns
-                  at-most one row because the `${field.name}` has an [Unique]
-                  annotation in [$rowClassName].
+            We know that lookup by the $fields field$s returns
+            at-most one row because the [Unique] annotation in [$rowClassName].
 
-                  Returns a [QuerySingle] object, which returns at-most one row,
-                  when `.fetch()` is called.
-                ''')
-                ..returns = refer('QuerySingle<(Expr<$rowClassName>,)>')
-                ..requiredParameters.add(Parameter(
-                  (b) => b
-                    ..name = field.name
-                    ..type = refer(field.typeName),
-                ))
-                ..lambda = true
-                ..body = Code('''
-                  where(($rowInstanceName) =>
-                    $rowInstanceName.${field.name}.equalsValue(${field.name})
-                  ).first
-                '''),
-            ),
-          ))
+            Returns a [QuerySingle] object, which returns at-most one row,
+            when `.fetch()` is called.
+          ''')
+          ..returns = refer('QuerySingle<(Expr<$rowClassName>,)>')
+          ..requiredParameters.addAll(uc.fields.map((field) => Parameter(
+                (b) => b
+                  ..name = field.name
+                  ..type = refer(field.typeName),
+              )))
+          ..lambda = true
+          ..body = Code('''
+            where(($rowInstanceName) =>
+              ${uc.fields.map((field) => 
+                '$rowInstanceName.${field.name}.equalsValue(${field.name})'
+              ).join(' & ')}
+            ).first
+          '''));
+      }))
       ..methods.add(Method(
         (b) => b
           ..name = 'delete'
