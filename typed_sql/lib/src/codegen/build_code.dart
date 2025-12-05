@@ -606,9 +606,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           ..lambda = true
           ..body = Code('''
             where(($rowInstanceName) =>
-              ${uc.fields.map((field) => 
-                '$rowInstanceName.${field.name}.equalsValue(${field.name})'
-              ).join(' & ')}
+              ${uc.fields.map((field) => '$rowInstanceName.${field.name}.equalsValue(${field.name})').join(' & ')}
             ).first
           '''));
       }))
