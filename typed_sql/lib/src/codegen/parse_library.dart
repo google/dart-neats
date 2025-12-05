@@ -199,6 +199,23 @@ Future<ParsedLibrary> parseLibrary(
     }
   }
 
+  // Check that JsonValue is not used in UNIQUE constraints
+  for (final schema in schemas) {
+    for (final table in schema.tables) {
+      for (final uc in table.rowClass.uniqueConstraints) {
+        final f = uc.fields.firstWhereOrNull(
+          (f) => f.backingType == 'JsonValue',
+        );
+        if (f != null) {
+          throw InvalidGenerationSource(
+            'JsonValue field cannot be used in a `Unique` annotation',
+            element: fieldToElement[f],
+          );
+        }
+      }
+    }
+  }
+
   return library;
 }
 
