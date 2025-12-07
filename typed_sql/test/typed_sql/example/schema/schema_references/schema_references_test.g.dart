@@ -214,11 +214,10 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
       );
 
   /// Lookup a single row in `authors` table using the
-  /// `name` field.
+  /// `name` field
   ///
   /// We know that lookup by the `name` field returns
-  /// at-most one row because the `name` has an [Unique]
-  /// annotation in [Author].
+  /// at-most one row because the [Unique] annotation in [Author].
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.

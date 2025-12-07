@@ -210,11 +210,10 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
       );
 
   /// Lookup a single row in `accounts` table using the
-  /// `accountNumber` field.
+  /// `accountNumber` field
   ///
   /// We know that lookup by the `accountNumber` field returns
-  /// at-most one row because the `accountNumber` has an [Unique]
-  /// annotation in [Account].
+  /// at-most one row because the [Unique] annotation in [Account].
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.

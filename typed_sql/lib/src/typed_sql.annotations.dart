@@ -142,13 +142,76 @@ final class ForeignKey {
   });
 }
 
-/// Annotation for a unique field.
+/// Annotation to define `UNIQUE` constraints.
 ///
 /// {@category schema}
 final class Unique {
-  // TODO: Consider allowing a `given: ['foo', 'bar']` argument for fields
-  //       that are unique given fields 'foo' and 'bar'.
-  const Unique();
+  // ignore: unused_field
+  final String? _name; // used by code-gen
+  // ignore: unused_field
+  final List<String>? _fields; // used by code-gen
+
+  /// Add a composite `UNIQUE` constraint covering multiple fields.
+  ///
+  /// The optional [name] parameter specifies the [name] used when generating
+  /// auxiliary `.by<name>(...)` methods to lookup rows using the covered
+  /// fields.
+  ///
+  /// In the example below `db.users.byFullName(String firstName, String lastName)`
+  /// will be generated, and allow lookup of `User` rows by `firstName` and
+  /// `lastName`.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// @PrimaryKey(['id'])
+  /// @Unique(
+  ///   name: 'fullname',
+  ///   // Enforce unique `firstName` and `lastName` for each row!
+  ///   fields: ['firstName', 'lastName'],
+  /// )
+  /// abstract final class User extends Row {
+  ///   int get id;
+  ///
+  ///   String get firstName;
+  ///   String get lastName;
+  /// }
+  /// ```
+  ///
+  /// > [!TIP]
+  /// > If you only want to make a single field `UNIQUE`, you may use the
+  /// > [Unique.field] annotation instead.
+  const Unique({String? name, required List<String> fields})
+      : _name = name ?? '-',
+        _fields = fields;
+
+  /// Add `UNIQUE` constraint to a single field.
+  ///
+  /// To create a _composite `UNIQUE`_ constraint, use the [Unique] annotation
+  /// at the _row class_ level.
+  ///
+  /// The optional [name] parameter specifies the [name] used when generating
+  /// auxiliary `.by<name>(...)` methods to lookup rows using the unique field.
+  ///
+  /// If [name] is not specified, it'll default to the name of the field.
+  /// Specify dash `'-'` as name, to omit generation of the `.by<name>` method.
+  ///
+  /// In the example, below `db.accounts.byAccountNumber(String accountNumber)`
+  /// will be generated, and allow lookup of `Account` rows by `accountNumber`.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// @PrimaryKey(['accountId'])
+  /// abstract final class Account extends Row {
+  ///   int get accountId;
+  ///
+  ///   // Enforce unique `accountNumber` for each row!
+  ///   @Unique.field()
+  ///   String get accountNumber;
+  /// }
+  /// ```
+  const Unique.field({String? name})
+      : _name = name,
+        _fields = null;
 }
 
 /// Interface to be implemented by custom types that can be stored in a [Row]
