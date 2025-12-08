@@ -56,25 +56,25 @@ final _testData = [
     text: 'B',
     integer: null,
     real: null,
-    json: JsonValue({'real': null}),
+    json: const JsonValue({'real': null}),
   ),
   (
     text: 'C',
     integer: null,
     real: 3.14,
-    json: JsonValue({'real': 3.14}),
+    json: const JsonValue({'real': 3.14}),
   ),
   (
     text: null,
     integer: 0,
     real: 3.14,
-    json: JsonValue({'real': 3.14}),
+    json: const JsonValue({'real': 3.14}),
   ),
   (
     text: null,
     integer: 0,
     real: 1.2,
-    json: JsonValue({'real': 1.2}),
+    json: const JsonValue({'real': 1.2}),
   ),
 ];
 

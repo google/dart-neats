@@ -37,7 +37,7 @@ abstract final class Item extends Row {
   JsonValue? get value;
 }
 
-final _value = JsonValue({'foo': 'bar'});
+final _value = const JsonValue({'foo': 'bar'});
 
 void main() {
   final r = TestRunner<TestDatabase>(
