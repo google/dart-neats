@@ -3,7 +3,16 @@ import 'package:sanitize_html/src/html_sanitize_config.dart';
 class CssSanitizer {
   /// Check forbidden CSS keywords (javascript: / expression / url("javascript:") / ...)
   static bool isSafeCssValue(String value) {
-    final lower = value.toLowerCase();
+    final lower = value.toLowerCase().trim();
+
+    // Allow safe data:image URLs inside url(...)
+    if (lower.startsWith('url(')) {
+      final inside = lower.substring(4, lower.endsWith(')') ? lower.length - 1 : lower.length).trim();
+      if (HtmlSanitizeConfig.base64ImageRegex.hasMatch(inside)) {
+        return true;
+      }
+    }
+
     for (final forbidden in HtmlSanitizeConfig.forbiddenCss) {
       if (lower.contains(forbidden)) return false;
     }
@@ -17,7 +26,12 @@ class CssSanitizer {
   /// Add px to pure integer width/height values:
   /// height: 10   → height: 10px
   static String _normalizeLengthUnits(String prop, String value) {
-    if ((prop == 'height' || prop == 'width') &&
+    if ((prop == 'height' ||
+        prop == 'width' ||
+        prop == 'min-height' ||
+        prop == 'max-height' ||
+        prop == 'min-width' ||
+        prop == 'max-width') &&
         HtmlSanitizeConfig.unitlessNumberPattern.hasMatch(value)) {
       return '${value}px';
     }

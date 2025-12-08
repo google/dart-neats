@@ -376,19 +376,8 @@ class HtmlSanitizeConfig {
   };
 
   //
-  // DANGEROUS HTML / JS SIGNATURES
+  // JS SIGNATURES
   //
-  static const List<String> signaturesDangerousRawJs = [
-    'alert(',
-    'eval(',
-    'function(',
-    'javascript:',
-    'document.',
-    'window.',
-    'new Function',
-    '=>',
-  ];
-
   static const List<String> forbiddenCss = [
     'expression(',
     'javascript:',
@@ -421,7 +410,7 @@ class HtmlSanitizeConfig {
   static final RegExp base64ValuePattern = RegExp(r'^[A-Za-z0-9+/=]+$');
 
   static final RegExp dangerousMarkupRegex = RegExp(
-    r'(<|</|<!--|-->|<script|<!\[cdata\[|&lt;|&gt;)',
+    r'(<script|</script|<!\[CDATA\[)',
     caseSensitive: false,
   );
 }

@@ -74,21 +74,35 @@ class NodeSanitizer {
     return false;
   }
 
-  bool _isDangerousRawJs(String s) {
-    final trimmed = s.trim();
-    if (trimmed.isEmpty) return false;
+  bool _shouldStripText(Text node) {
+    final text = node.text.trim();
+    if (text.isEmpty) return false;
 
-    for (final pattern in HtmlSanitizeConfig.signaturesDangerousRawJs) {
-      if (trimmed.contains(pattern)) {
+    final lower = text.toLowerCase();
+    final parentTag = node.parent?.localName?.toLowerCase();
+
+    // CDATA-like patterns after HTML parsing
+    if (lower.contains('<script') ||
+        lower.contains(']]>') ||
+        lower.contains(']]&gt;') ||
+        lower.contains('document.cookie')) {
+      return true;
+    }
+
+    // Text inside SVG treated as CDATA-like script
+    if (parentTag == 'svg') {
+      if (lower.contains('alert(') ||
+          lower.contains('function(') ||
+          lower.contains('document.cookie') ||
+          lower.contains('=>')) {
         return true;
       }
     }
-    return false;
-  }
 
-  bool _shouldStripText(Text node) {
-    final text = node.text;
-    return _isDangerousRawJs(text) || _isEncodedJs(text);
+    // Strip encoded JS payloads
+    if (_isEncodedJs(text)) return true;
+
+    return false;
   }
 
   bool _isUrlAttribute(String attrLower) {

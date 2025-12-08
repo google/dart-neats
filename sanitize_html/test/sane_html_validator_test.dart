@@ -1364,5 +1364,160 @@ void main() {
         );
       });
     });
+
+    group('Sanitize – Keep harmless JS-like text content', () {
+      late SaneHtmlValidator validator;
+
+      setUp(() {
+        validator = SaneHtmlValidator(
+          allowElementId: (_) => true,
+          allowClassName: (_) => true,
+          addLinkRel: (_) => ['nofollow'],
+          allowAttributes: null,
+          allowTags: null,
+        );
+      });
+
+      test('Keep alert(), window.alert and JS examples in text', () {
+        const html = '''
+<div>
+  <h2>Emergency Instructions</h2>
+  <p>Please call the alert() function immediately when the system detects an error!</p>
+  <p>This is important: use the alert() method to notify users.</p>
+  <p>Example code: <code>window.alert('System error detected')</code></p>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('alert()'));
+        expect(out, contains('window.alert'));
+        expect(out, contains('Please call the alert() function'));
+      });
+
+      test('Keep arrow functions and => in text', () {
+        const html = '''
+<div>
+  <h2>JavaScript Tutorial: Arrow Functions</h2>
+  <p>Arrow functions use the syntax: <code>(a, b) => a + b</code></p>
+  <p>Click the arrow => to continue</p>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('Arrow functions use the syntax:'));
+        expect(out, contains('(a, b)'));
+        expect(out, contains('Click the arrow'));
+      });
+
+      test('Keep JS functions, DOM access, addEventListener, even alert() in code samples', () {
+        const html = '''
+<div>
+  <h1>JavaScript Best Practices</h1>
+  <code>
+  function greet(name) {
+    alert('Hello ' + name);
+  }
+  </code>
+  <p>Use window.addEventListener for events</p>
+  <p>document.querySelector('.my-class')</p>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('alert('));
+        expect(out, contains('window.addEventListener'));
+        expect(out, contains('document.querySelector'));
+      });
+
+      test('Keep document.pdf, document.docx, document.getElementById', () {
+        const html = '''
+<div>
+  <p>Please check the document.pdf file</p>
+  <p>The document.getElementById method is useful</p>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('document.pdf'));
+        expect(out, contains('document.getElementById'));
+      });
+
+      test('Keep "eval(uation)" and eval() text examples', () {
+        const html = '''
+<div>
+  <p>Never use the eval() function in production</p>
+  <p>Please evaluate(assessment)</p>
+  <p>Contact the eval(uation) team.</p>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('eval('));
+        expect(out, contains('evaluate'));
+        expect(out, contains('eval(uation)'));
+      });
+
+      test('Keep function() and code examples', () {
+        const html = '''
+<div>
+  <p>You can define a function(param) like this:</p>
+  <code>function add(a, b) { return a + b; }</code>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('function add'));
+        expect(out, contains('function(param)'));
+      });
+
+      test('Keep all JS training examples', () {
+        const html = '''
+<div>
+  <h3>Alerts</h3>
+  <p>How to use alert() for user notifications</p>
+  <p>The alert() dialog is synchronous</p>
+
+  <h3>DOM</h3>
+  <p>document.getElementById</p>
+
+  <h3>Window</h3>
+  <p>window.location.href</p>
+
+  <h3>Functions</h3>
+  <p>(x, y) => x + y</p>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('alert()'));
+        expect(out, contains('document.getElementById'));
+        expect(out, contains('window.location'));
+      });
+
+      test('Original: Keep window.location / window.display etc.', () {
+        const html = '''
+<div>
+  <p>Please visit the window.location in the main building</p>
+  <p>The new window.display area is now open!</p>
+  <p>window.addEventListener is useful</p>
+  <p>window.glass weekly</p>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('window.location'));
+        expect(out, contains('window.display'));
+        expect(out, contains('window.addEventListener'));
+        expect(out, contains('window.glass'));
+      });
+    });
   });
 }
