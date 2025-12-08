@@ -1549,10 +1549,6 @@ void main() {
       });
     });
 
-    group('CSS hardening – missing properties and blocked url()', () {
-
-    });
-
     group('CSS Sanitization – Validator integration', () {
       late SaneHtmlValidator validator;
 
