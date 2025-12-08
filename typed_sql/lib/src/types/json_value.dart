@@ -32,29 +32,17 @@ final class JsonValue {
   /// {@macro JsonValue-allows-types}
   final Object? value;
 
-  JsonValue(this.value) : assert(_isJsonValue(value));
+  const JsonValue(this.value)
+      : assert(
+            value == null ||
+                value is bool ||
+                value is int ||
+                value is double ||
+                value is String ||
+                value is List ||
+                value is Map,
+            'Value must be a JSON primitive, List, or Map');
 
   @override
   String toString() => 'JsonValue(${json.encode(value)})';
-
-  /// Check if [value] is a valid JSON value.
-  ///
-  /// That is check if it can be encoded as JSON.
-  static bool _isJsonValue(Object? value) {
-    if (value == null ||
-        value is bool ||
-        value is int ||
-        value is double ||
-        value is String) {
-      return true;
-    }
-    if (value is List) {
-      return value.every(_isJsonValue);
-    }
-    if (value is Map) {
-      return value.entries
-          .every((e) => e.key is String && _isJsonValue(e.value));
-    }
-    return false;
-  }
 }

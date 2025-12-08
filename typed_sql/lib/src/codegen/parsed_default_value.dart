@@ -15,9 +15,12 @@
 /// @docImport '../typed_sql.dart';
 library;
 
+import '../types/json_value.dart' show JsonValue;
+
 /// Parsed [DefaultValue] annotation.
 sealed class ParsedDefaultValue {}
 
+/// Parsed [DefaultValue] annotation with [int] argument.
 final class ParsedDefaultIntValue extends ParsedDefaultValue {
   final int value;
 
@@ -27,6 +30,7 @@ final class ParsedDefaultIntValue extends ParsedDefaultValue {
   String toString() => '$value';
 }
 
+/// Parsed [DefaultValue] annotation with [String] argument.
 final class ParsedDefaultStringValue extends ParsedDefaultValue {
   final String value;
 
@@ -36,6 +40,7 @@ final class ParsedDefaultStringValue extends ParsedDefaultValue {
   String toString() => "'${value.replaceAll("'", "\\'")}'";
 }
 
+/// Parsed [DefaultValue] annotation with [bool] argument.
 final class ParsedDefaultBoolValue extends ParsedDefaultValue {
   final bool value;
 
@@ -45,6 +50,7 @@ final class ParsedDefaultBoolValue extends ParsedDefaultValue {
   String toString() => '$value';
 }
 
+/// Parsed [DefaultValue] annotation with [double] argument.
 final class ParsedDefaultDoubleValue extends ParsedDefaultValue {
   final double value;
 
@@ -54,6 +60,7 @@ final class ParsedDefaultDoubleValue extends ParsedDefaultValue {
   String toString() => '$value';
 }
 
+/// Parsed [DefaultValue.dateTime] annotation.
 final class ParsedDefaultDateTimeValue extends ParsedDefaultValue {
   final int year;
   final int month;
@@ -81,12 +88,24 @@ final class ParsedDefaultDateTimeValue extends ParsedDefaultValue {
   }
 }
 
+/// Parsed [DefaultValue.epoch] annotation.
 final class ParsedDefaultDateTimeEpochValue extends ParsedDefaultValue {
   @override
   String toString() => 'epoch';
 }
 
+/// Parsed [DefaultValue.now] annotation.
 final class ParsedDefaultDateTimeNow extends ParsedDefaultValue {
   @override
   String toString() => 'now';
+}
+
+/// Parsed [DefaultValue] annotation with [JsonValue] argument.
+final class ParsedDefaultJsonValue extends ParsedDefaultValue {
+  final JsonValue value;
+
+  ParsedDefaultJsonValue(this.value);
+
+  @override
+  String toString() => '$value';
 }

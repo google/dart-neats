@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:convert' show json;
 import 'dart:io';
 import 'dart:isolate';
 
@@ -35,6 +36,12 @@ void main() {
       template,
       (template, entry) => template.replaceAll('{{${entry.key}}}', entry.value),
     ));
+
+    if (Process.runSync('dart', ['format', target.absolute.path]).exitCode !=
+        0) {
+      print('Failed to format: ${target.path}');
+      exit(1);
+    }
   }
 }
 
@@ -44,30 +51,81 @@ final instances = [
     'type': 'int',
     'defaultValue': '42',
     'nonDefaultValue': '21',
+    'equality': 'equals',
   },
   {
     'name': 'default_text',
     'type': 'String',
     'defaultValue': '\'hello\'',
     'nonDefaultValue': '\'hello world\'',
+    'equality': 'equals',
   },
   {
     'name': 'default_boolean',
     'type': 'bool',
     'defaultValue': 'true',
     'nonDefaultValue': 'false',
+    'equality': 'equals',
   },
   {
     'name': 'default_real',
     'type': 'double',
     'defaultValue': '42.2',
     'nonDefaultValue': '3.14',
+    'equality': 'equals',
   },
   {
     'name': 'default_zero_real',
     'type': 'double',
     'defaultValue': '0.0',
     'nonDefaultValue': '3.14',
+    'equality': 'equals',
+  },
+  {
+    'name': 'default_json',
+    'type': 'JsonValue',
+    'defaultValue': 'JsonValue({\'hello\': \'world\', \'count\': 42})',
+    'nonDefaultValue': 'JsonValue({\'count\': 43})',
+    'equality': 'deepEquals',
+  },
+  {
+    'name': 'default_json_single_quote',
+    'type': 'JsonValue',
+    'defaultValue':
+        'JsonValue({\'description\': \'it\\\'s working\', \'count\': 42})',
+    'nonDefaultValue': 'JsonValue({\'count\': 43})',
+    'equality': 'deepEquals',
+  },
+  {
+    'name': 'default_json_nested_structures',
+    'type': 'JsonValue',
+    'defaultValue': 'JsonValue(${json.encode({
+          'string': 'hello world',
+          'int': 42,
+          'double': 3.14,
+          'bool': true,
+          'null': null,
+          'object': {
+            'string': 'hello world',
+            'int': 42,
+            'double': 3.14,
+            'bool': true,
+            'null': null,
+            'array': [1, 2, 3],
+            'object': {
+              'string': 'hello world',
+            }
+          },
+          'array': [
+            'hello world',
+            42,
+            3.14,
+            true,
+            null,
+          ],
+        })})',
+    'nonDefaultValue': 'JsonValue({\'count\': 43})',
+    'equality': 'deepEquals',
   },
   // TODO: Add support for default DateTime
   /*{
@@ -121,7 +179,7 @@ void main() {
         .execute();
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(_nonDefaultValue);
+    check(item).isNotNull().value.{{equality}}(_nonDefaultValue);
   });
 
   r.addTest('.insert() with default', (db) async {
@@ -132,7 +190,7 @@ void main() {
         .execute();
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(_defaultValue);
+    check(item).isNotNull().value.{{equality}}(_defaultValue);
   });
 
   r.addTest('.update() default value', (db) async {
@@ -143,7 +201,7 @@ void main() {
         .execute();
 
     final item = await db.items.first.fetch();
-    check(item).isNotNull().value.equals(_defaultValue);
+    check(item).isNotNull().value.{{equality}}(_defaultValue);
 
     await db.items
         .byKey(1)
@@ -153,7 +211,7 @@ void main() {
         .execute();
 
     final updateItem = await db.items.first.fetch();
-    check(updateItem).isNotNull().value.equals(_nonDefaultValue);
+    check(updateItem).isNotNull().value.{{equality}}(_nonDefaultValue);
   });
 
   r.run();

@@ -349,7 +349,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   (
                     type: ${backingExprType(f.backingType)},
                     isNotNull: ${!f.isNullable},
-                    defaultValue: ${literal(f.defaultValue?.expression)},
+                    defaultValue: ${renderExpression(f.defaultValue?.expression ?? literal(null))},
                     autoIncrement: ${f.autoIncrement},
                     overrides: <SqlOverride>[
                       ${f.sqlOverrides.map(
@@ -1177,6 +1177,10 @@ String fieldType(ParsedField field) {
   return '${field.typeName}Ext._exprType';
 }
 
+String renderExpression(Expression e) {
+  return e.accept(DartEmitter(useNullSafetySyntax: true)).toString();
+}
+
 extension on ParsedDefaultValue {
   /// Get an [Expression] for this [ParsedDefaultValue] which matches
   /// the encoding expected by `_defaultValueAsExpr` from `typed_sql.dart`.
@@ -1239,6 +1243,12 @@ extension on ParsedDefaultValue {
         return literalRecord([], {
           'kind': literal('datetime'),
           'value': literal('now'),
+        });
+
+      case ParsedDefaultJsonValue v:
+        return literalRecord([], {
+          'kind': literal('raw'),
+          'value': refer('JsonValue').call([literal(v.value.value)]),
         });
     }
   }
