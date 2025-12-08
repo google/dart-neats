@@ -36,6 +36,13 @@ void main() {
       (template, entry) => template.replaceAll('{{${entry.key}}}', entry.value),
     ));
 
+    if (Process.runSync('dart', ['fix', '--apply', target.absolute.path])
+            .exitCode !=
+        0) {
+      print('Failed to dart fix: ${target.path}');
+      exit(1);
+    }
+
     if (Process.runSync('dart', ['format', target.absolute.path]).exitCode !=
         0) {
       print('Failed to format: ${target.path}');

@@ -13,21 +13,21 @@ abstract final class TestDatabase extends Schema {
 }
 
 const _defaultValue = JsonValue({
-  "string": "hello world",
-  "int": 42,
-  "double": 3.14,
-  "bool": true,
-  "null": null,
-  "object": {
-    "string": "hello world",
-    "int": 42,
-    "double": 3.14,
-    "bool": true,
-    "null": null,
-    "array": [1, 2, 3],
-    "object": {"string": "hello world"}
+  'string': 'hello world',
+  'int': 42,
+  'double': 3.14,
+  'bool': true,
+  'null': null,
+  'object': {
+    'string': 'hello world',
+    'int': 42,
+    'double': 3.14,
+    'bool': true,
+    'null': null,
+    'array': [1, 2, 3],
+    'object': {'string': 'hello world'}
   },
-  "array": ["hello world", 42, 3.14, true, null]
+  'array': ['hello world', 42, 3.14, true, null]
 });
 const _nonDefaultValue = JsonValue({'count': 43});
 
