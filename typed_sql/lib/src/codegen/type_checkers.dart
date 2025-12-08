@@ -15,8 +15,12 @@
 import 'package:source_gen/source_gen.dart';
 
 final typedSqlSrcUri = Uri.parse('package:typed_sql/src/typed_sql.dart');
-final jsonValueSrcUri =
-    Uri.parse('package:typed_sql/src/types/json_value.dart#JsonValue');
+final jsonValueSrcUri = Uri.parse(
+  'package:typed_sql/src/types/json_value.dart',
+);
+final customDataTypeSrcUri = Uri.parse(
+  'package:typed_sql/src/types/custom_data_type.dart#CustomDataType',
+);
 
 // TODO: Consider, if type checkers could be extension methods!
 
@@ -51,9 +55,12 @@ final sqlOverrideTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#SqlOverride'),
 );
 final customDataTypeTypeChecker = TypeChecker.fromUrl(
-  typedSqlSrcUri.resolve('#CustomDataType'),
+  customDataTypeSrcUri.resolve('#CustomDataType'),
 );
-final jsonValueTypeChecker = TypeChecker.fromUrl(jsonValueSrcUri);
+final jsonValueTypeChecker = TypeChecker.fromUrl(
+  jsonValueSrcUri.resolve('#JsonValue'),
+);
 final dateTimeTypeChecker = const TypeChecker.fromUrl('dart:core#DateTime');
-final uint8ListTypeChecker =
-    const TypeChecker.fromUrl('dart:typed_data#Uint8List');
+final uint8ListTypeChecker = const TypeChecker.fromUrl(
+  'dart:typed_data#Uint8List',
+);

@@ -22,7 +22,6 @@ import 'package:collection/collection.dart';
 
 import 'adapter/adapter.dart';
 import 'dialect/dialect.dart';
-import 'types/json_value.dart' show JsonValue;
 
 part 'typed_sql.annotations.dart';
 part 'typed_sql.database.dart';
