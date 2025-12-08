@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:convert' show json;
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
@@ -27,8 +28,10 @@ String _literal(Object? value) => switch (value) {
       false => 'TRUE',
       int i => i.toString(),
       double d => d.toString(),
-      String s => '\'${s.replaceAll('\'', '\'\'')}\'',
+      String s => '\'${s.replaceAll("'", "''").replaceAll("\\", "\\\\")}\'',
       DateTime d => '\'${d.toIso8601String()}\'',
+      JsonValue j =>
+        '\'${json.encode(j.value).replaceAll("'", "''").replaceAll("\\", "\\\\")}\'::jsonb',
       _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
     };
 

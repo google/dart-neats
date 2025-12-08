@@ -24,7 +24,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue('hello world')
@@ -32,6 +31,24 @@ void main() {
       }
     ''',
     generated: allOf(contains('extends Item'), contains('hello world')),
+  );
+
+  testCodeGeneration(
+    name: 'DefaultValue works for JsonValue',
+    source: r'''
+      abstract final class TestDatabase extends Schema {
+        Table<Item> get items;
+      }
+
+      @PrimaryKey(['id'])
+      abstract final class Item extends Row {
+        int get id;
+
+        @DefaultValue(JsonValue({'hello': 'world', 'count': 42}))
+        JsonValue get value;
+      }
+    ''',
+    generated: allOf(contains('hello'), contains('world')),
   );
 
   testCodeGeneration(
@@ -43,7 +60,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue('hello world')
@@ -63,7 +79,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue.epoch
@@ -82,7 +97,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue.now
@@ -101,7 +115,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue.dateTime(2025, 1, 1)
@@ -122,7 +135,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue(const Deprecated('nosense'))
@@ -141,7 +153,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue('hello world')
@@ -160,7 +171,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue(true)
@@ -179,7 +189,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue(9007199254740992)
@@ -200,7 +209,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue(42)
@@ -221,7 +229,6 @@ void main() {
 
       @PrimaryKey(['id'])
       abstract final class Item extends Row {
-        @AutoIncrement()
         int get id;
 
         @DefaultValue(3.14)

@@ -28,6 +28,7 @@ import 'package:source_gen/source_gen.dart';
 
 import '../typed_sql.dart' show SqlOverride;
 
+import '../types/json_value.dart' show JsonValue;
 import 'parsed_default_value.dart';
 import 'parsed_library.dart';
 import 'type_checkers.dart';
@@ -807,7 +808,8 @@ ParsedDefaultValue? _parseDefaultRawValue(
   final defaultValue = value.toBoolValue() ??
       value.toIntValue() ??
       value.toDoubleValue() ??
-      value.toStringValue();
+      value.toStringValue() ??
+      value.toJsonValue();
 
   if (defaultValue == null) {
     throw InvalidGenerationSource(
@@ -870,8 +872,81 @@ ParsedDefaultValue? _parseDefaultRawValue(
     return ParsedDefaultDoubleValue(defaultValue);
   }
 
+  if (defaultValue is JsonValue) {
+    if (type != 'JsonValue') {
+      throw InvalidGenerationSource(
+        '@DefaultValue(JsonValue) is only allowed for JsonValue fields',
+        element: field,
+      );
+    }
+    return ParsedDefaultJsonValue(defaultValue);
+  }
+
   _throwInternalDefaultValue(field);
 }
 
 bool isValidIdentifier(String id) =>
     RegExp(r'^[A-Za-z][A-Za-z0-9_]*$').hasMatch(id);
+
+extension on DartObject {
+  /// Return a [JsonValue] corresponding to the [JsonValue] being represented
+  /// by this [DartObject], or `null` if:
+  ///  * this object is not of type 'JsonValue',
+  ///  * the value of the object being represented is not known, or
+  ///  * the value of the object being represented is null.
+  JsonValue? toJsonValue() {
+    // Check if defaultValue is actually a JsonValue object
+    final valueType = type;
+    if (valueType == null || !jsonValueTypeChecker.isExactlyType(valueType)) {
+      return null;
+    }
+
+    if (!hasKnownValue) {
+      return null;
+    }
+
+    Object? decodeValue(DartObject v) {
+      if (v.isNull) {
+        return null;
+      }
+      if (v.toBoolValue() case final bool b) {
+        return b;
+      }
+      if (v.toDoubleValue() case final double d) {
+        return d;
+      }
+      if (v.toIntValue() case final int i) {
+        return i;
+      }
+      if (v.toStringValue() case final String s) {
+        return s;
+      }
+      if (v.toListValue() case final List<DartObject> l) {
+        return l.map(decodeValue).toList();
+      }
+      if (v.toMapValue() case final Map<DartObject, DartObject> m) {
+        return Map.fromEntries(m.entries.map((e) {
+          final k = decodeValue(e.key);
+          if (k is! String) {
+            throw const FormatException('Expected String key');
+          }
+          return MapEntry(
+            k,
+            decodeValue(e.value),
+          );
+        }));
+      }
+      throw const FormatException('Invalid JSON value');
+    }
+
+    try {
+      final v = getField('value');
+      if (v == null) {
+        return null;
+      }
+      return JsonValue(decodeValue(v));
+    } on FormatException {
+      return null;
+    }
+  }
+}

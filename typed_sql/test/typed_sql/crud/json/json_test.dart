@@ -30,10 +30,10 @@ void main() {
     },
   );
 
-  final initialValue = JsonValue({'x': 1});
-  final updatedValue = JsonValue({'x': 2});
-  final emptyValue = JsonValue([]);
-  final otherValue = JsonValue(true);
+  final initialValue = const JsonValue({'x': 1});
+  final updatedValue = const JsonValue({'x': 2});
+  final emptyValue = const JsonValue([]);
+  final otherValue = const JsonValue(true);
 
   r.addTest('.insert()', (db) async {
     await db.items

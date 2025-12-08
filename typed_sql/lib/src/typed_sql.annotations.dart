@@ -47,8 +47,9 @@ final class DefaultValue {
   /// The [value] must be one of the following types:
   ///  * [String],
   ///  * [bool],
-  ///  * [int], or,
-  ///  * [double].
+  ///  * [int],
+  ///  * [double], or,
+  ///  * [JsonValue].
   ///
   /// Consequently, this constructor can only be used to annotate a
   /// _default value_ to a field of a matching type.

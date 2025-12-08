@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:convert' show json;
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 
 import '../types/json_value.dart';
+import '../utils/normalize_json.dart';
 import 'dialect.dart';
 
 SqlDialect mysqlDialect() => _MysqlSqlDialect();
@@ -32,6 +34,8 @@ String _literal(dynamic value) => switch (value) {
         "'${d.toIso8601String().substring(0, 19).replaceFirst('T', ' ')}'",
       Uint8List b =>
         "X'${b.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}'",
+      JsonValue j =>
+        '(\'${json.encode(normalizeJson(j.value)).replaceAll("'", "''").replaceAll("\\", "\\\\")}\')',
       _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
     };
 

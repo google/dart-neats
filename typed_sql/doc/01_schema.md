@@ -176,10 +176,17 @@ CREATE TABLE books (
 
 Notice the `DEFAULT 0` clause in the declaration of the `stock` field.
 
-It is possible to define default values for `String`, `bool`, `int` and `double`
-fields, using the `@DefaultValue(...)` annotation. However, since [DateTime]
-does not have a _const_ constructor one of the following annoations must be
-used to create a [DateTime] field with a _default value_:
+It's possible to use the `@DefaultValue(...)` annotation to define a default
+value for fields with type:
+ * `bool`,
+ * `int`,
+ * `double`,
+ * `String`, and,
+ * `JsonValue`.
+
+However, since [DateTime] does not have a _const_ constructor one of the
+following annoations must be used to create a [DateTime] field with a
+_default value_:
  * `@DefaultValue.dateTime(year, [month, day, ...])`,
  * `@DefaultValue.epoch`, or,
  * `@DefaultValue.now`.

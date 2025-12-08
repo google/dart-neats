@@ -100,6 +100,9 @@ Expr<Object>? _defaultValueAsExpr(Object? defaultValue) {
   if (defaultValue case (kind: 'raw', value: final double value)) {
     return toExpr(value);
   }
+  if (defaultValue case (kind: 'raw', value: final JsonValue value)) {
+    return toExpr(value);
+  }
 
   if (defaultValue case (kind: 'datetime', value: 'epoch')) {
     return toExpr(DateTime.fromMillisecondsSinceEpoch(0, isUtc: true));
