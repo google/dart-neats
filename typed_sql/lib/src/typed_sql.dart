@@ -21,7 +21,10 @@ import 'dart:typed_data' show Uint8List;
 import 'package:collection/collection.dart';
 
 import 'adapter/adapter.dart';
-import 'dialect/dialect.dart';
+import 'dialect/dialect.dart' show SqlDialect;
+
+import 'types/custom_data_type.dart' show CustomDataType;
+import 'types/json_value.dart' show JsonValue;
 
 part 'typed_sql.annotations.dart';
 part 'typed_sql.database.dart';

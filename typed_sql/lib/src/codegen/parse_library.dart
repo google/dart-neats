@@ -361,10 +361,7 @@ ParsedRowClass _parseRowClass(
       }
       final customDataType = aReturnTypeElement.allSupertypes
           .firstWhereOrNull(
-            (e) =>
-                e.element3.name3 == 'CustomDataType' &&
-                e.element3.library2.uri ==
-                    Uri.parse('package:typed_sql/src/typed_sql.dart'),
+            (e) => customDataTypeTypeChecker.isExactly(e.element),
           )
           ?.element;
 

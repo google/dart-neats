@@ -19,7 +19,7 @@ final jsonValueSrcUri = Uri.parse(
   'package:typed_sql/src/types/json_value.dart',
 );
 final customDataTypeSrcUri = Uri.parse(
-  'package:typed_sql/src/types/custom_data_type.dart#CustomDataType',
+  'package:typed_sql/src/types/custom_data_type.dart',
 );
 
 // TODO: Consider, if type checkers could be extension methods!
