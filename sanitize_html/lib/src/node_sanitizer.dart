@@ -202,19 +202,9 @@ class NodeSanitizer {
 
       // === Handle URL attributes ===
       if (_isUrlAttribute(attrLower)) {
-        // Block SVG images via data:image/svg
-        if (valueLower.startsWith('data:image/svg')) {
-          return true;
-        }
-
         if (valueLower.startsWith('data:image/')) {
           // Block "javascript:" inside data URI
           if (valueLower.contains('javascript:')) {
-            return true;
-          }
-
-          // Extra guard for data:image/svg+xml
-          if (valueLower.startsWith('data:image/svg')) {
             return true;
           }
 

@@ -1,16 +1,38 @@
 import 'package:sanitize_html/src/html_sanitize_config.dart';
 
 class CssSanitizer {
+  /// Check safe url(...)
+  static bool _isSafeUrlValue(String raw) {
+    final clean = raw.trim().toLowerCase();
+
+    // url(x) extract
+    if (!clean.startsWith("url(") || !clean.endsWith(")")) return false;
+
+    final inside = clean.substring(4, clean.length - 1).trim();
+
+    // Block javascript: data: vbscript:
+    if (inside.startsWith("javascript:")) return false;
+    if (inside.startsWith("vbscript:")) return false;
+
+    // Allow base64 image
+    if (HtmlSanitizeConfig.base64ImageRegex.hasMatch(inside)) return true;
+
+    // Allow http, https, relative path
+    if (inside.startsWith("/")
+        || inside.startsWith("http://")
+        || inside.startsWith("https://")) {
+      return true;
+    }
+
+    return false;
+  }
+
   /// Check forbidden CSS keywords (javascript: / expression / url("javascript:") / ...)
   static bool isSafeCssValue(String value) {
     final lower = value.toLowerCase().trim();
 
-    // Allow safe data:image URLs inside url(...)
-    if (lower.startsWith('url(')) {
-      final inside = lower.substring(4, lower.endsWith(')') ? lower.length - 1 : lower.length).trim();
-      if (HtmlSanitizeConfig.base64ImageRegex.hasMatch(inside)) {
-        return true;
-      }
+    if (lower.startsWith("url(")) {
+      return _isSafeUrlValue(value);
     }
 
     for (final forbidden in HtmlSanitizeConfig.forbiddenCss) {
@@ -49,13 +71,68 @@ class CssSanitizer {
     }
   }
 
+  static List<String> _splitCssDeclarations(String raw) {
+    final result = <String>[];
+    final buffer = StringBuffer();
+
+    var inSingleQuote = false;
+    var inDoubleQuote = false;
+    var parenDepth = 0;
+
+    for (var i = 0; i < raw.length; i++) {
+      final ch = raw[i];
+
+      if (ch == "'" && !inDoubleQuote) {
+        inSingleQuote = !inSingleQuote;
+        buffer.write(ch);
+        continue;
+      }
+      if (ch == '"' && !inSingleQuote) {
+        inDoubleQuote = !inDoubleQuote;
+        buffer.write(ch);
+        continue;
+      }
+
+      if (!inSingleQuote && !inDoubleQuote) {
+        if (ch == '(') {
+          parenDepth++;
+          buffer.write(ch);
+          continue;
+        }
+        if (ch == ')') {
+          if (parenDepth > 0) parenDepth--;
+          buffer.write(ch);
+          continue;
+        }
+
+        if (ch == ';' && parenDepth == 0) {
+          final part = buffer.toString().trim();
+          if (part.isNotEmpty) {
+            result.add(part);
+          }
+          buffer.clear();
+          continue;
+        }
+      }
+
+      buffer.write(ch);
+    }
+
+    final tail = buffer.toString().trim();
+    if (tail.isNotEmpty) {
+      result.add(tail);
+    }
+
+    return result;
+  }
+
   /// Main CSS inline sanitizer for style="..."
   static String sanitizeInline(String raw) {
     raw = raw.trim();
     if (raw.isEmpty) return '';
 
     final buf = StringBuffer();
-    final declarations = raw.split(';');
+    final declarations = _splitCssDeclarations(raw);
 
     for (var d in declarations) {
       d = d.trim();

@@ -78,8 +78,10 @@ void main() {
 
       final result = CssSanitizer.sanitizeInline(style);
 
-      expect(result, '',
-          reason: 'background-image is not allowed → removed by sanitizer');
+      expect(
+        result,
+        'background-image: url(data:image/png;base64,AAABBBCCC123==)',
+      );
     });
 
     test('drops dangerous expressions', () {
@@ -105,11 +107,97 @@ void main() {
           'padding:10px; unknown:1; color:red; border: 1px solid black;');
       expect(result, 'padding: 10px; color: red; border: 1px solid black');
     });
-  });
 
-  // ======================================================================
-  // Stylesheet block (<style>) tests
-  // ======================================================================
+    test('keeps safe url() in background-image', () {
+      final result = CssSanitizer.sanitizeInline(
+          'background-image: url(/images/header.jpg); padding: 20px;');
+
+      expect(
+          result.contains('background-image: url(/images/header.jpg)'), true);
+      expect(result.contains('padding: 20px'), true);
+    });
+
+    test('keeps https url() in background-image', () {
+      final result = CssSanitizer.sanitizeInline(
+          'background-image: url(https://example.com/bg.png);');
+
+      expect(result, 'background-image: url(https://example.com/bg.png)');
+    });
+
+    test('allows data:image/* base64 url() in background-image', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA);',
+      );
+
+      expect(
+        result,
+        'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA)',
+      );
+    });
+
+    test('removes javascript: url() but keeps safe properties', () {
+      final result = CssSanitizer.sanitizeInline(
+          'background-image: url(javascript:evil); color: red;');
+
+      expect(result, 'color: red');
+    });
+
+    test('keeps opacity property', () {
+      final result = CssSanitizer.sanitizeInline('opacity: 0.9;');
+      expect(result, 'opacity: 0.9');
+    });
+
+    test('keeps box-shadow property', () {
+      final result =
+          CssSanitizer.sanitizeInline('box-shadow: 0 2px 5px rgba(0,0,0,0.2);');
+      expect(result, 'box-shadow: 0 2px 5px rgba(0,0,0,0.2)');
+    });
+
+    test('keeps text-shadow property', () {
+      final result =
+          CssSanitizer.sanitizeInline('text-shadow: 1px 1px 2px #333;');
+      expect(result, 'text-shadow: 1px 1px 2px #333');
+    });
+
+    test('keeps display:flex', () {
+      final result = CssSanitizer.sanitizeInline('display: flex;');
+      expect(result, 'display: flex');
+    });
+
+    test('keeps justify-content for flexbox', () {
+      final result = CssSanitizer.sanitizeInline(
+          'display: flex; justify-content: space-between;');
+
+      expect(result.contains('display: flex'), true);
+      expect(result.contains('justify-content: space-between'), true);
+    });
+
+    test('keeps align-items for flexbox', () {
+      final result =
+          CssSanitizer.sanitizeInline('display: flex; align-items: center;');
+
+      expect(result.contains('align-items: center'), true);
+    });
+
+    test('keeps flex shorthand', () {
+      final result = CssSanitizer.sanitizeInline('flex: 1;');
+      expect(result, 'flex: 1');
+    });
+
+    test('keeps safe background-image', () {
+      final result =
+          CssSanitizer.sanitizeInline('background-image: url(/img/bg.png);');
+
+      expect(result, 'background-image: url(/img/bg.png)');
+    });
+
+    test('removes unsafe background-image with javascript url()', () {
+      final result = CssSanitizer.sanitizeInline(
+          'background-image: url(javascript:evil); opacity: 1;');
+
+      expect(result, 'opacity: 1');
+    });
+  });
 
   group('CssSanitizer – stylesheet', () {
     test('removes comments & @rules', () {
