@@ -34,6 +34,26 @@ void main() {
   );
 
   testCodeGeneration(
+    name: 'Only one PrimaryKey is allowed',
+    source: r'''
+      abstract final class TestDatabase extends Schema {
+        Table<Item> get items;
+      }
+
+      @PrimaryKey(['id'])
+      @PrimaryKey(['id'])
+      abstract final class Item extends Row {
+        int get id;
+
+        String get value;
+      }
+    ''',
+    error: contains(
+      'Only one `PrimaryKey` annotation is allowed',
+    ),
+  );
+
+  testCodeGeneration(
     name: 'PrimaryKey annotation references unknown field',
     source: r'''
       abstract final class TestDatabase extends Schema {
