@@ -17,7 +17,6 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 
-import '../types/json_value.dart';
 import '../utils/normalize_json.dart';
 import 'dialect.dart';
 

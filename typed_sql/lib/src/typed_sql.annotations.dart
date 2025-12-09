@@ -215,35 +215,6 @@ final class Unique {
         _fields = null;
 }
 
-/// Interface to be implemented by custom types that can be stored in a [Row]
-/// for automatic (de)-serialization.
-///
-/// Subclasses must:
-///  * specify a concrete `T` that will be the serialized representation type. As one of:
-///    - [String],
-///    - [Uint8List],
-///    - [bool],
-///    - [int],
-///    - [double], or,
-///    - [DateTime].
-///  * have a `fromDatabase(T value)` constructor.
-///
-/// If a subclass implements [Comparable] then the encoded values returned by
-/// [toDatabase] **must** also be comparable and have the same ordering!
-///
-/// > [!TIP]
-/// > Custom types are not required to be _immutable_ but using an immutable
-/// > type is recommended. The analyzer can help with you this if you use the
-/// > [immutable] annotation from [`package:meta`][1].
-///
-/// [1]: https://pub.dev/packages/meta
-///
-/// {@category schema}
-/// {@category custom_data_types}
-abstract interface class CustomDataType<T extends Object?> {
-  T toDatabase();
-}
-
 /// An annotation to provide overrides for SQL schema generation.
 ///
 /// This can be used multiple times on a single field to specify different

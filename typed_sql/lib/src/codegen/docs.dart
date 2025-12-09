@@ -14,7 +14,7 @@
 
 /// This library provides documentation strings for generated extension methods.
 ///
-/// @docImport 'package:typed_sql/src/typed_sql.dart';
+/// @docImport 'package:typed_sql/typed_sql.dart';
 library;
 
 /// Documentation for `.where` on [Query], [SubQuery], [QuerySingle] with

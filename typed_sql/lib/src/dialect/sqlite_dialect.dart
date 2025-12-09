@@ -17,7 +17,6 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:collection/collection.dart';
 
-import '../types/json_value.dart' show JsonValue;
 import '../utils/normalize_json.dart';
 import 'dialect.dart';
 

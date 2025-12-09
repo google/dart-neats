@@ -17,7 +17,6 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 
-import '../types/json_value.dart' show JsonValue;
 import 'dialect.dart';
 
 SqlDialect postgresDialect() => _PostgresDialect();

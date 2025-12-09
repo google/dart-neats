@@ -26,7 +26,6 @@ export '../typed_sql.dart'
         CountAllExpression,
         CreateTableStatement,
         CurrentTimestampExpression,
-        CustomDataType,
         DeleteStatement,
         DistinctClause,
         EncodedCustomDataTypeExpression,
@@ -86,6 +85,8 @@ export '../typed_sql.dart'
         UnionClause,
         UpdateStatement,
         WhereClause;
+export '../types/custom_data_type.dart' show CustomDataType;
+export '../types/json_value.dart' show JsonValue;
 
 /// Interface for implementation of custom SQL dialects for `package:typed_sql`.
 ///
