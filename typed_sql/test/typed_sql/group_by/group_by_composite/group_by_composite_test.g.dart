@@ -57,10 +57,12 @@ final class _$Item extends Item {
     this.real,
     this.integer,
     this.timestamp,
+    this.json,
     this.optText,
     this.optReal,
     this.optInteger,
     this.optTimestamp,
+    this.optJson,
   );
 
   @override
@@ -79,6 +81,9 @@ final class _$Item extends Item {
   final DateTime timestamp;
 
   @override
+  final JsonValue json;
+
+  @override
   final String? optText;
 
   @override
@@ -90,6 +95,9 @@ final class _$Item extends Item {
   @override
   final DateTime? optTimestamp;
 
+  @override
+  final JsonValue? optJson;
+
   static const _$table = (
     tableName: 'items',
     columns: <String>[
@@ -98,10 +106,12 @@ final class _$Item extends Item {
       'real',
       'integer',
       'timestamp',
+      'json',
       'optText',
       'optReal',
       'optInteger',
-      'optTimestamp'
+      'optTimestamp',
+      'optJson'
     ],
     columnInfo: <({
       ColumnType type,
@@ -146,6 +156,13 @@ final class _$Item extends Item {
         overrides: <SqlOverride>[],
       ),
       (
+        type: $ForGeneratedCode.jsonValue,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: <SqlOverride>[],
+      ),
+      (
         type: $ForGeneratedCode.text,
         isNotNull: false,
         defaultValue: null,
@@ -172,6 +189,13 @@ final class _$Item extends Item {
         defaultValue: null,
         autoIncrement: false,
         overrides: <SqlOverride>[],
+      ),
+      (
+        type: $ForGeneratedCode.jsonValue,
+        isNotNull: false,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: <SqlOverride>[],
       )
     ],
     primaryKey: <String>['id'],
@@ -191,28 +215,32 @@ final class _$Item extends Item {
     final real = row.readDouble();
     final integer = row.readInt();
     final timestamp = row.readDateTime();
+    final json = row.readJsonValue();
     final optText = row.readString();
     final optReal = row.readDouble();
     final optInteger = row.readInt();
     final optTimestamp = row.readDateTime();
+    final optJson = row.readJsonValue();
     if (id == null &&
         text == null &&
         real == null &&
         integer == null &&
         timestamp == null &&
+        json == null &&
         optText == null &&
         optReal == null &&
         optInteger == null &&
-        optTimestamp == null) {
+        optTimestamp == null &&
+        optJson == null) {
       return null;
     }
-    return _$Item._(id!, text!, real!, integer!, timestamp!, optText, optReal,
-        optInteger, optTimestamp);
+    return _$Item._(id!, text!, real!, integer!, timestamp!, json!, optText,
+        optReal, optInteger, optTimestamp, optJson);
   }
 
   @override
   String toString() =>
-      'Item(id: "$id", text: "$text", real: "$real", integer: "$integer", timestamp: "$timestamp", optText: "$optText", optReal: "$optReal", optInteger: "$optInteger", optTimestamp: "$optTimestamp")';
+      'Item(id: "$id", text: "$text", real: "$real", integer: "$integer", timestamp: "$timestamp", json: "$json", optText: "$optText", optReal: "$optReal", optInteger: "$optInteger", optTimestamp: "$optTimestamp", optJson: "$optJson")';
 }
 
 /// Extension methods for table defined in [Item].
@@ -227,10 +255,12 @@ extension TableItemExt on Table<Item> {
     required Expr<double> real,
     required Expr<int> integer,
     required Expr<DateTime> timestamp,
+    required Expr<JsonValue> json,
     Expr<String?>? optText,
     Expr<double?>? optReal,
     Expr<int?>? optInteger,
     Expr<DateTime?>? optTimestamp,
+    Expr<JsonValue?>? optJson,
   }) =>
       $ForGeneratedCode.insertInto(
         table: this,
@@ -240,10 +270,12 @@ extension TableItemExt on Table<Item> {
           real,
           integer,
           timestamp,
+          json,
           optText,
           optReal,
           optInteger,
           optTimestamp,
+          optJson,
         ],
       );
 
@@ -307,10 +339,12 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
               Expr<double> real,
               Expr<int> integer,
               Expr<DateTime> timestamp,
+              Expr<JsonValue> json,
               Expr<String?> optText,
               Expr<double?> optReal,
               Expr<int?> optInteger,
               Expr<DateTime?> optTimestamp,
+              Expr<JsonValue?> optJson,
             }) set,
           ) updateBuilder) =>
       $ForGeneratedCode.update<Item>(
@@ -324,10 +358,12 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             Expr<double>? real,
             Expr<int>? integer,
             Expr<DateTime>? timestamp,
+            Expr<JsonValue>? json,
             Expr<String?>? optText,
             Expr<double?>? optReal,
             Expr<int?>? optInteger,
             Expr<DateTime?>? optTimestamp,
+            Expr<JsonValue?>? optJson,
           }) =>
               $ForGeneratedCode.buildUpdate<Item>([
             id,
@@ -335,10 +371,12 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
             real,
             integer,
             timestamp,
+            json,
             optText,
             optReal,
             optInteger,
             optTimestamp,
+            optJson,
           ]),
         ),
       );
@@ -390,10 +428,12 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
               Expr<double> real,
               Expr<int> integer,
               Expr<DateTime> timestamp,
+              Expr<JsonValue> json,
               Expr<String?> optText,
               Expr<double?> optReal,
               Expr<int?> optInteger,
               Expr<DateTime?> optTimestamp,
+              Expr<JsonValue?> optJson,
             }) set,
           ) updateBuilder) =>
       $ForGeneratedCode.updateSingle<Item>(
@@ -407,10 +447,12 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             Expr<double>? real,
             Expr<int>? integer,
             Expr<DateTime>? timestamp,
+            Expr<JsonValue>? json,
             Expr<String?>? optText,
             Expr<double?>? optReal,
             Expr<int?>? optInteger,
             Expr<DateTime?>? optTimestamp,
+            Expr<JsonValue?>? optJson,
           }) =>
               $ForGeneratedCode.buildUpdate<Item>([
             id,
@@ -418,10 +460,12 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
             real,
             integer,
             timestamp,
+            json,
             optText,
             optReal,
             optInteger,
             optTimestamp,
+            optJson,
           ]),
         ),
       );
@@ -452,17 +496,23 @@ extension ExpressionItemExt on Expr<Item> {
   Expr<DateTime> get timestamp =>
       $ForGeneratedCode.field(this, 4, $ForGeneratedCode.dateTime);
 
+  Expr<JsonValue> get json =>
+      $ForGeneratedCode.field(this, 5, $ForGeneratedCode.jsonValue);
+
   Expr<String?> get optText =>
-      $ForGeneratedCode.field(this, 5, $ForGeneratedCode.text);
+      $ForGeneratedCode.field(this, 6, $ForGeneratedCode.text);
 
   Expr<double?> get optReal =>
-      $ForGeneratedCode.field(this, 6, $ForGeneratedCode.real);
+      $ForGeneratedCode.field(this, 7, $ForGeneratedCode.real);
 
   Expr<int?> get optInteger =>
-      $ForGeneratedCode.field(this, 7, $ForGeneratedCode.integer);
+      $ForGeneratedCode.field(this, 8, $ForGeneratedCode.integer);
 
   Expr<DateTime?> get optTimestamp =>
-      $ForGeneratedCode.field(this, 8, $ForGeneratedCode.dateTime);
+      $ForGeneratedCode.field(this, 9, $ForGeneratedCode.dateTime);
+
+  Expr<JsonValue?> get optJson =>
+      $ForGeneratedCode.field(this, 10, $ForGeneratedCode.jsonValue);
 }
 
 extension ExpressionNullableItemExt on Expr<Item?> {
@@ -481,17 +531,23 @@ extension ExpressionNullableItemExt on Expr<Item?> {
   Expr<DateTime?> get timestamp =>
       $ForGeneratedCode.field(this, 4, $ForGeneratedCode.dateTime);
 
+  Expr<JsonValue?> get json =>
+      $ForGeneratedCode.field(this, 5, $ForGeneratedCode.jsonValue);
+
   Expr<String?> get optText =>
-      $ForGeneratedCode.field(this, 5, $ForGeneratedCode.text);
+      $ForGeneratedCode.field(this, 6, $ForGeneratedCode.text);
 
   Expr<double?> get optReal =>
-      $ForGeneratedCode.field(this, 6, $ForGeneratedCode.real);
+      $ForGeneratedCode.field(this, 7, $ForGeneratedCode.real);
 
   Expr<int?> get optInteger =>
-      $ForGeneratedCode.field(this, 7, $ForGeneratedCode.integer);
+      $ForGeneratedCode.field(this, 8, $ForGeneratedCode.integer);
 
   Expr<DateTime?> get optTimestamp =>
-      $ForGeneratedCode.field(this, 8, $ForGeneratedCode.dateTime);
+      $ForGeneratedCode.field(this, 9, $ForGeneratedCode.dateTime);
+
+  Expr<JsonValue?> get optJson =>
+      $ForGeneratedCode.field(this, 10, $ForGeneratedCode.jsonValue);
 
   /// Check if the row is not `NULL`.
   ///
@@ -530,6 +586,9 @@ extension ItemChecks on Subject<Item> {
   /// Create assertions on [Item.timestamp].
   Subject<DateTime> get timestamp => has((m) => m.timestamp, 'timestamp');
 
+  /// Create assertions on [Item.json].
+  Subject<JsonValue> get json => has((m) => m.json, 'json');
+
   /// Create assertions on [Item.optText].
   Subject<String?> get optText => has((m) => m.optText, 'optText');
 
@@ -542,4 +601,7 @@ extension ItemChecks on Subject<Item> {
   /// Create assertions on [Item.optTimestamp].
   Subject<DateTime?> get optTimestamp =>
       has((m) => m.optTimestamp, 'optTimestamp');
+
+  /// Create assertions on [Item.optJson].
+  Subject<JsonValue?> get optJson => has((m) => m.optJson, 'optJson');
 }

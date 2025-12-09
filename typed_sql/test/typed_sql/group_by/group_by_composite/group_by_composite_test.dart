@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
 
 import 'package:typed_sql/typed_sql.dart';
@@ -33,11 +35,13 @@ abstract final class Item extends Row {
   double get real;
   int get integer;
   DateTime get timestamp;
+  JsonValue get json;
 
   String? get optText;
   double? get optReal;
   int? get optInteger;
   DateTime? get optTimestamp;
+  JsonValue? get optJson;
 }
 
 final epoch = DateTime.fromMicrosecondsSinceEpoch(0).toUtc();
@@ -51,80 +55,96 @@ final initialItems = [
     real: 1.0,
     integer: 1,
     timestamp: yesterday,
+    json: JsonValue({'msg': 'hello world'}),
     optText: 'a',
     optReal: 1.0,
     optInteger: 1,
     optTimestamp: yesterday,
+    optJson: null,
   ),
   (
     text: 'a',
     real: 2.0,
     integer: 2,
     timestamp: today,
+    json: JsonValue({'msg': 'hello world'}),
     optText: 'a',
     optReal: 2.0,
     optInteger: 2,
     optTimestamp: today,
+    optJson: null,
   ),
   (
     text: 'a',
     real: 3.0,
     integer: 3,
     timestamp: tomorrow,
+    json: JsonValue({'a': 1, 'b': 2}),
     optText: 'a',
     optReal: 3.0,
     optInteger: 3,
     optTimestamp: tomorrow,
+    optJson: JsonValue({'a': 1, 'b': 2}),
   ),
   (
     text: 'b',
     real: 1.0,
     integer: 1,
     timestamp: yesterday,
+    json: JsonValue({'b': 2, 'a': 1}),
     optText: 'b',
     optReal: 1.0,
     optInteger: 1,
     optTimestamp: yesterday,
+    optJson: JsonValue({'b': 2, 'a': 1}),
   ),
   (
     text: 'b',
     real: 2.0,
     integer: 2,
     timestamp: today,
+    json: JsonValue('hello world'),
     optText: 'b',
     optReal: 2.0,
     optInteger: 2,
     optTimestamp: today,
+    optJson: JsonValue(null),
   ),
   (
     text: 'b',
     real: 3.0,
     integer: 3,
     timestamp: tomorrow,
+    json: JsonValue(42),
     optText: 'b',
     optReal: 3.0,
     optInteger: 3,
     optTimestamp: tomorrow,
+    optJson: JsonValue(3.14),
   ),
   (
     text: 'c',
     real: 1.0,
     integer: 1,
     timestamp: yesterday,
+    json: JsonValue(true),
     optText: null,
     optReal: null,
     optInteger: null,
     optTimestamp: null,
+    optJson: JsonValue(false),
   ),
   (
     text: 'c',
     real: 2.0,
     integer: 2,
     timestamp: today,
+    json: JsonValue(null),
     optText: null,
     optReal: null,
     optInteger: null,
     optTimestamp: null,
+    optJson: null,
   ),
 ];
 
@@ -141,10 +161,12 @@ void main() {
               real: toExpr(v.real),
               integer: toExpr(v.integer),
               timestamp: toExpr(v.timestamp),
+              json: toExpr(v.json),
               optText: toExpr(v.optText),
               optReal: toExpr(v.optReal),
               optInteger: toExpr(v.optInteger),
               optTimestamp: toExpr(v.optTimestamp),
+              optJson: toExpr(v.optJson),
             )
             .execute();
       }
@@ -607,6 +629,57 @@ void main() {
       ('b', 2, today, today, 1),
       ('b', 3, tomorrow, tomorrow, 1),
       (null, null, null, null, 2),
+    ]);
+  });
+
+  // Test .sum(), count(), grouped by json
+  r.addTest('groupBy(.json).aggregate(sum(1), count)', (db) async {
+    final result = await db.items
+        .groupBy((i) => (i.json,))
+        .aggregate(
+          (agg) => agg
+              //
+              .sum((i) => toExpr(1))
+              .count(),
+        )
+        .select((json, sum, count) => (
+              sum,
+              count,
+            ))
+        .fetch();
+
+    check(result).unorderedEquals([
+      (2, 2),
+      (2, 2),
+      (1, 1),
+      (1, 1),
+      (1, 1),
+      (1, 1),
+    ]);
+  });
+
+  // Test .sum(), count(), grouped by optJson
+  r.addTest('groupBy(.optJson).aggregate(sum(1), count)', (db) async {
+    final result = await db.items
+        .groupBy((i) => (i.optJson,))
+        .aggregate(
+          (agg) => agg
+              //
+              .sum((i) => toExpr(1))
+              .count(),
+        )
+        .select((json, sum, count) => (
+              sum,
+              count,
+            ))
+        .fetch();
+
+    check(result).unorderedEquals([
+      (3, 3),
+      (2, 2),
+      (1, 1),
+      (1, 1),
+      (1, 1),
     ]);
   });
 
