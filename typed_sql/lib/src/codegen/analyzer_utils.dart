@@ -24,8 +24,6 @@ import 'package:source_gen/source_gen.dart'
 extension TypeCheckerExt on TypeChecker {
   /// Get [ElementAnnotation] and [DartObject] (value) for each annotation of
   /// [element].
-  ///
-  ///
   List<(ElementAnnotation, DartObject)> annotationAndValuesOfExact(
     Element element,
   ) {
