@@ -195,7 +195,7 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   ///
   /// This is equivalent to `this IS NULL` in SQL.
   /// {@endtemplate}
-  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
 
   /// {@template isNotNull}
   /// Check if this expression is not `NULL`.
@@ -235,7 +235,7 @@ extension ExpressionNullableString on Expr<String?> {
       ExpressionEquals(this, value);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -271,7 +271,7 @@ extension ExpressionNullableBool on Expr<bool?> {
       ExpressionEquals(this, value);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -316,7 +316,7 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
       ExpressionEquals(this, value);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
