@@ -29,6 +29,7 @@ import 'package:source_gen/source_gen.dart';
 import '../typed_sql.dart' show SqlOverride;
 
 import '../types/json_value.dart' show JsonValue;
+import 'analyzer_utils.dart';
 import 'parsed_default_value.dart';
 import 'parsed_library.dart';
 import 'type_checkers.dart';
@@ -50,11 +51,11 @@ Future<ParsedLibrary> parseLibrary(
   final fieldToElement = <ParsedField, Element>{};
   final foreignKeyToElement = <ParsedForeignKey, Element>{};
 
-  final schemas = targetLibrary.classes.where((cls) {
+  final schemas = await Future.wait(targetLibrary.classes.where((cls) {
     final supertype = cls.supertype;
     return supertype != null && schemaTypeChecker.isExactlyType(supertype);
-  }).map((cls) {
-    final s = _parseSchema(
+  }).map((cls) async {
+    final s = await _parseSchema(
       ctx,
       cls,
       rowClassCache,
@@ -63,17 +64,19 @@ Future<ParsedLibrary> parseLibrary(
     );
     schemaToElement[s] = cls;
     return s;
-  }).toList();
+  }).toList());
 
-  final rowClasses = targetLibrary.classes.where((cls) {
+  final rowClasses = await Future.wait(targetLibrary.classes.where((cls) {
     final supertype = cls.supertype;
     return supertype != null && rowTypeChecker.isExactlyType(supertype);
-  }).map((cls) {
+  }).map((cls) async {
+    final rowClass =
+        await _parseRowClass(ctx, cls, foreignKeyToElement, fieldToElement);
     return rowClassCache.putIfAbsent(
       cls,
-      () => _parseRowClass(ctx, cls, foreignKeyToElement, fieldToElement),
+      () => rowClass,
     );
-  }).toList();
+  }));
 
   // At this point we only support one schema per library.
   if (schemas.length > 1) {
@@ -220,13 +223,13 @@ Future<ParsedLibrary> parseLibrary(
   return library;
 }
 
-ParsedSchema _parseSchema(
+Future<ParsedSchema> _parseSchema(
   ParserContext ctx,
   ClassElement cls,
   Map<ClassElement, ParsedRowClass> rowClassCache,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
   Map<ParsedField, Element> fieldToElement,
-) {
+) async {
   log.info('Found schema "${cls.name}"');
 
   if (!cls.isAbstract || !cls.isFinal) {
@@ -292,18 +295,19 @@ ParsedSchema _parseSchema(
       );
     }
 
+    final rowClass = await _parseRowClass(
+      ctx,
+      typeArgElement,
+      foreignKeyToElement,
+      fieldToElement,
+    );
     tables.add(
       ParsedTable(
         name: a.name!,
         documentation: a.documentationComment,
         rowClass: rowClassCache.putIfAbsent(
           typeArgElement,
-          () => _parseRowClass(
-            ctx,
-            typeArgElement,
-            foreignKeyToElement,
-            fieldToElement,
-          ),
+          () => rowClass,
         ),
       ),
     );
@@ -312,12 +316,12 @@ ParsedSchema _parseSchema(
   return ParsedSchema(name: cls.name!, tables: tables);
 }
 
-ParsedRowClass _parseRowClass(
+Future<ParsedRowClass> _parseRowClass(
   ParserContext ctx,
   ClassElement cls,
   Map<ParsedForeignKey, Element> foreignKeyToElement,
   Map<ParsedField, Element> fieldToElement,
-) {
+) async {
   log.info('Found row class "${cls.name}"');
 
   if (!cls.isAbstract || !cls.isFinal) {
@@ -446,12 +450,27 @@ ParsedRowClass _parseRowClass(
     }
 
     // Check for AutoIncrement
-    final autoIncrement = autoIncrementTypeChecker.hasAnnotationOf(a);
-    if (autoIncrement && type != 'int') {
-      throw InvalidGenerationSource(
-        'AutoIncrement is only allowed for int fields',
-        element: a,
-      );
+    var autoIncrement = false;
+    final autoIncrementAnnotations =
+        autoIncrementTypeChecker.annotationAndValuesOfExact(a);
+    if (autoIncrementAnnotations.isNotEmpty) {
+      if (autoIncrementAnnotations.length > 1) {
+        final (elementAnnotation, annotation) = autoIncrementAnnotations[1];
+        await throwInvalidAnnotationInSource(
+          'Only one AutoIncrement annotation is allowed per field',
+          annotatedElement: a,
+          annotation: elementAnnotation,
+        );
+      }
+      final (elementAnnotation, annotation) = autoIncrementAnnotations.first;
+      if (type != 'int') {
+        await throwInvalidAnnotationInSource(
+          'AutoIncrement is only allowed for int fields',
+          annotatedElement: a,
+          annotation: elementAnnotation,
+        );
+      }
+      autoIncrement = true;
     }
 
     // Create the parsed field
@@ -462,7 +481,7 @@ ParsedRowClass _parseRowClass(
       isNullable: a.returnType.nullabilitySuffix != NullabilitySuffix.none,
       backingType: backingType,
       autoIncrement: autoIncrement,
-      defaultValue: _parseDefaultValue(a, type),
+      defaultValue: await _parseDefaultValue(a, type),
       sqlOverrides: sqlOverrideTypeChecker.annotationsOf(a).map((annotation) {
         return SqlOverride(
           dialect: annotation.getField('dialect')?.toStringValue(),
@@ -481,28 +500,32 @@ ParsedRowClass _parseRowClass(
     final field = fields.firstWhere((f) => f.name == a.name!);
 
     // Check for Unique.field annotation
-    final uniques = uniqueTypeChecker.annotationsOf(a);
+    final uniques = uniqueTypeChecker.annotationAndValuesOfExact(a);
     if (uniques.length > 1) {
-      throw InvalidGenerationSource(
+      final (elementAnnotation, annotation) = uniques[1];
+      await throwInvalidAnnotationInSource(
         'Only one `Unique.field` annotation is allowed per field',
-        element: a,
+        annotatedElement: a,
+        annotation: elementAnnotation,
       );
     }
     if (uniques.isNotEmpty) {
-      final u = uniques.first;
-      final name = u.getField('_name')?.toStringValue() ?? field.name;
-      final fields = u.getField('_fields')?.toListValue();
+      final (elementAnnotation, value) = uniques.first;
+      final name = value.getField('_name')?.toStringValue() ?? field.name;
+      final fields = value.getField('_fields')?.toListValue();
       if (fields != null) {
-        throw InvalidGenerationSource(
+        await throwInvalidAnnotationInSource(
           '`Unique()` cannot be used on fields, use `Unique.fields` instead',
-          element: a,
+          annotatedElement: a,
+          annotation: elementAnnotation,
         );
       }
 
       if (name != '-' && !isValidIdentifier(name)) {
-        throw InvalidGenerationSource(
+        await throwInvalidAnnotationInSource(
           '`Unique.field(name: "$name")`: name is not a valid Dart identifier',
-          element: a,
+          annotatedElement: a,
+          annotation: elementAnnotation,
         );
       }
 
@@ -514,7 +537,7 @@ ParsedRowClass _parseRowClass(
   }
 
   // Extract @Unique annotations
-  for (final a in uniqueTypeChecker.annotationsOfExact(cls)) {
+  for (final (ea, a) in uniqueTypeChecker.annotationAndValuesOfExact(cls)) {
     final name = a.getField('_name')?.toStringValue();
     final uniqueFields = a
         .getField('_fields')
@@ -524,67 +547,73 @@ ParsedRowClass _parseRowClass(
 
     // Forbid use of Unique.field() on classes
     if (name == null || uniqueFields == null) {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '`Unique.field()` cannot be used on classes, use `Unique()` instead',
-        element: cls,
+        annotatedElement: cls,
+        annotation: ea,
       );
     }
 
     // Check name is valid, if present
     if (name != '-' && !isValidIdentifier(name)) {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '`Unique(name: "$name")`: name is not a valid Dart identifier',
-        element: cls,
+        annotatedElement: cls,
+        annotation: ea,
       );
     }
 
     if (uniqueFields.isEmpty) {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '`Unique()` annotation must have non-empty `fields`!',
-        element: cls,
+        annotatedElement: cls,
+        annotation: ea,
       );
     }
 
-    // Throw exception, when [f] cannot be found
-    Never throwUnknownField(String field) {
-      throw InvalidGenerationSource(
-        '`Unique()` annotation references unknown field "$field", '
-        'no such field on row class "${cls.name}".',
-        element: cls,
-      );
+    final constraintFields = <ParsedField>[];
+    for (final fieldName in uniqueFields) {
+      final field = fields.firstWhereOrNull((f) => f.name == fieldName);
+      if (field == null) {
+        await throwInvalidAnnotationInSource(
+          '`Unique()` annotation references unknown field "$fieldName", '
+          'no such field on row class "${cls.name}".',
+          annotatedElement: cls,
+          annotation: ea,
+        );
+      }
+      constraintFields.add(field);
     }
 
     uniqueConstraints.add(ParsedUniqueConstraint(
       name: name == '-' ? null : name,
-      fields: uniqueFields.map((field) {
-        return fields.firstWhere(
-          (f) => f.name == field,
-          orElse: () => throwUnknownField(field),
-        );
-      }).toList(),
+      fields: constraintFields,
     ));
   }
 
   // Extract @References annotations
   final foreignKeys = <ParsedForeignKey>[];
   for (final a in [...cls.getters, ...cls.setters]) {
-    for (final annotation in referencesTypeChecker.annotationsOf(a)) {
+    for (final (elementAnnotation, annotation)
+        in referencesTypeChecker.annotationAndValuesOfExact(a)) {
       final key = a.name;
       final table = annotation.getField('table')?.toStringValue();
       final field = annotation.getField('field')?.toStringValue();
       final as = annotation.getField('as')?.toStringValue();
       final name = annotation.getField('name')?.toStringValue();
       if (table == null || field == null || table.isEmpty || field.isEmpty) {
-        throw InvalidGenerationSource(
+        await throwInvalidAnnotationInSource(
           'References annotation must have `table` and `field` fields!',
-          element: a,
+          annotatedElement: a,
+          annotation: elementAnnotation,
         );
       }
       if (fields.any((f) => f.name == name)) {
-        throw InvalidGenerationSource(
+        await throwInvalidAnnotationInSource(
           'References have `name: "$name"` which conflicts with the field '
           'that has the same name!',
-          element: a,
+          annotatedElement: a,
+          annotation: elementAnnotation,
         );
       }
 
@@ -626,50 +655,64 @@ ParsedRowClass _parseRowClass(
   }
 
   // Extract primary key!
-  final pks = primaryKeyTypeChecker.annotationsOfExact(cls);
-  if (pks.isEmpty || pks.length > 1) {
+  final pks = primaryKeyTypeChecker.annotationAndValuesOfExact(cls);
+  if (pks.isEmpty) {
     throw InvalidGenerationSource(
       'subclasses of `Row` must have one `PrimaryKey` annotation',
       element: cls,
     );
   }
-  final primaryKey = pks.first
+  if (pks.length > 1) {
+    final (a, v) = pks[1];
+    await throwInvalidAnnotationInSource(
+      'Only one `PrimaryKey` annotation is allowed',
+      annotatedElement: cls,
+      annotation: a,
+    );
+  }
+  final (pka, pkv) = pks.first;
+  final primaryKey = <ParsedField>[];
+  for (final key in pkv
       .getField('fields')!
       .toListValue()!
-      .map((v) => v.toStringValue()!)
-      .map((key) {
+      .map((v) => v.toStringValue()!)) {
     final field = fields.firstWhereOrNull((field) => field.name == key);
     if (field == null) {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         'PrimaryKey annotation references unknown field "$field"',
-        element: cls,
+        annotatedElement: cls,
+        annotation: pka,
       );
     }
     if (field.backingType == 'JsonValue') {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         'JsonValue field cannot be used in PrimaryKey annotation',
-        element: cls,
+        annotatedElement: cls,
+        annotation: pka,
       );
     }
-    return field;
-  }).toList();
+    primaryKey.add(field);
+  }
 
   if (primaryKey.isEmpty) {
-    throw InvalidGenerationSource(
+    await throwInvalidAnnotationInSource(
       'subclasses of `Row` must have a non-empty `PrimaryKey` annotation',
-      element: cls,
+      annotatedElement: cls,
+      annotation: pka,
     );
   }
   if (primaryKey.length != primaryKey.toSet().length) {
-    throw InvalidGenerationSource(
+    await throwInvalidAnnotationInSource(
       'subclasses of `Row` cannot have duplicate fields in `PrimaryKey`',
-      element: cls,
+      annotatedElement: cls,
+      annotation: pka,
     );
   }
   if (primaryKey.any((f) => f.isNullable)) {
-    throw InvalidGenerationSource(
+    await throwInvalidAnnotationInSource(
       'PrimaryKey fields cannot be nullable',
-      element: cls,
+      annotatedElement: cls,
+      annotation: pka,
     );
   }
 
@@ -701,49 +744,57 @@ String? _tryGetColumnType(DartType t) {
   return null;
 }
 
-Never _throwInternalDefaultValue(Element field) =>
-    throw InvalidGenerationSource(
+Future<Never> _throwInternalDefaultValue(
+  Element annotatedElement,
+  ElementAnnotation annotation,
+) async =>
+    await throwInvalidAnnotationInSource(
       'Invalid DefaultValue annotation, internal invariant violated!',
-      element: field,
+      annotatedElement: annotatedElement,
+      annotation: annotation,
     );
 
 /// Parsed [DefaultValue] annotations from [field] with [type].
-ParsedDefaultValue? _parseDefaultValue(Element field, String type) {
-  final defaultValueAnnotations = defaultValueTypeChecker.annotationsOfExact(
-    field,
-  );
+Future<ParsedDefaultValue?> _parseDefaultValue(
+    Element field, String type) async {
+  final defaultValueAnnotations =
+      defaultValueTypeChecker.annotationAndValuesOfExact(field);
+
   if (defaultValueAnnotations.isEmpty) {
     return null;
   }
   if (defaultValueAnnotations.length > 1) {
-    throw InvalidGenerationSource(
+    final (elementAnnotation, annotation) = defaultValueAnnotations[1];
+    await throwInvalidAnnotationInSource(
       'Only one DefaultValue annotation is allowed',
-      element: field,
+      annotatedElement: field,
+      annotation: elementAnnotation,
     );
   }
 
-  final annotation = defaultValueAnnotations.first;
+  final (elementAnnotation, annotation) = defaultValueAnnotations.first;
   final value_ = annotation.getField('_value');
   if (value_ == null) {
-    throw _throwInternalDefaultValue(field);
+    await _throwInternalDefaultValue(field, elementAnnotation);
   }
 
   final valueRecord = value_.toRecordValue();
   final kind = valueRecord?.named['kind']?.toStringValue();
   final value = valueRecord?.named['value'];
   if (kind == null || value == null) {
-    _throwInternalDefaultValue(field);
+    await _throwInternalDefaultValue(field, elementAnnotation);
   }
 
   if (kind == 'raw') {
-    return _parseDefaultRawValue(field, type, value);
+    return await _parseDefaultRawValue(field, type, elementAnnotation, value);
   }
 
   if (kind == 'datetime' && value.toStringValue() == 'epoch') {
     if (type != 'DateTime') {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '@DefaultValue.epoch is only allowed for DateTime fields',
-        element: field,
+        annotatedElement: field,
+        annotation: elementAnnotation,
       );
     }
     return ParsedDefaultDateTimeEpochValue();
@@ -751,30 +802,38 @@ ParsedDefaultValue? _parseDefaultValue(Element field, String type) {
 
   if (kind == 'datetime' && value.toStringValue() == 'now') {
     if (type != 'DateTime') {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '@DefaultValue.now is only allowed for DateTime fields',
-        element: field,
+        annotatedElement: field,
+        annotation: elementAnnotation,
       );
     }
     return ParsedDefaultDateTimeNow();
   }
 
   if (kind == 'datetime') {
-    return _parseDefaultDateTimeValue(field, type, value);
+    return await _parseDefaultDateTimeValue(
+      field,
+      type,
+      elementAnnotation,
+      value,
+    );
   }
 
-  _throwInternalDefaultValue(field);
+  await _throwInternalDefaultValue(field, elementAnnotation);
 }
 
-ParsedDefaultValue? _parseDefaultDateTimeValue(
+Future<ParsedDefaultValue?> _parseDefaultDateTimeValue(
   Element field,
   String type,
+  ElementAnnotation elementAnnotation,
   DartObject value,
-) {
+) async {
   if (type != 'DateTime') {
-    throw InvalidGenerationSource(
+    await throwInvalidAnnotationInSource(
       '@DefaultValue.dateTime(...) is only allowed for DateTime fields',
-      element: field,
+      annotatedElement: field,
+      annotation: elementAnnotation,
     );
   }
 
@@ -785,7 +844,7 @@ ParsedDefaultValue? _parseDefaultDateTimeValue(
       .nonNulls
       .toList();
   if (args == null || args.length != 8) {
-    _throwInternalDefaultValue(field);
+    await _throwInternalDefaultValue(field, elementAnnotation);
   }
 
   return ParsedDefaultDateTimeValue(
@@ -800,8 +859,12 @@ ParsedDefaultValue? _parseDefaultDateTimeValue(
   );
 }
 
-ParsedDefaultValue? _parseDefaultRawValue(
-    Element field, String type, DartObject value) {
+Future<ParsedDefaultValue?> _parseDefaultRawValue(
+  Element field,
+  String type,
+  ElementAnnotation elementAnnotation,
+  DartObject value,
+) async {
   final defaultValue = value.toBoolValue() ??
       value.toIntValue() ??
       value.toDoubleValue() ??
@@ -809,18 +872,20 @@ ParsedDefaultValue? _parseDefaultRawValue(
       value.toJsonValue();
 
   if (defaultValue == null) {
-    throw InvalidGenerationSource(
+    await throwInvalidAnnotationInSource(
       'Disallowed value in @DefaultValue(value) annotation. '
       'Only bool, int, double and String are allowed.',
-      element: field,
+      annotatedElement: field,
+      annotation: elementAnnotation,
     );
   }
 
   if (defaultValue is String) {
     if (type != 'String') {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '@DefaultValue(String) is only allowed for String fields',
-        element: field,
+        annotatedElement: field,
+        annotation: elementAnnotation,
       );
     }
     return ParsedDefaultStringValue(defaultValue);
@@ -828,9 +893,10 @@ ParsedDefaultValue? _parseDefaultRawValue(
 
   if (defaultValue is bool) {
     if (type != 'bool') {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '@DefaultValue(bool) is only allowed for bool fields',
-        element: field,
+        annotatedElement: field,
+        annotation: elementAnnotation,
       );
     }
     return ParsedDefaultBoolValue(defaultValue);
@@ -841,19 +907,21 @@ ParsedDefaultValue? _parseDefaultRawValue(
     if (type == 'double') {
       // A double can represent integers precisely up to 2^53.
       if (defaultValue.abs() > 9007199254740991) {
-        throw InvalidGenerationSource(
+        await throwInvalidAnnotationInSource(
           '@DefaultValue(int) cannot be cast to double. '
           'A double can safely represent '
           'integers in the range [-(2^53 - 1), 2^53 - 1].',
-          element: field,
+          annotatedElement: field,
+          annotation: elementAnnotation,
         );
       }
       return ParsedDefaultDoubleValue(defaultValue.toDouble());
     }
     if (type != 'int') {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '@DefaultValue(int) is only allowed for int or double fields',
-        element: field,
+        annotatedElement: field,
+        annotation: elementAnnotation,
       );
     }
     return ParsedDefaultIntValue(defaultValue);
@@ -861,9 +929,10 @@ ParsedDefaultValue? _parseDefaultRawValue(
 
   if (defaultValue is double) {
     if (type != 'double') {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '@DefaultValue(double) is only allowed for double fields',
-        element: field,
+        annotatedElement: field,
+        annotation: elementAnnotation,
       );
     }
     return ParsedDefaultDoubleValue(defaultValue);
@@ -871,15 +940,16 @@ ParsedDefaultValue? _parseDefaultRawValue(
 
   if (defaultValue is JsonValue) {
     if (type != 'JsonValue') {
-      throw InvalidGenerationSource(
+      await throwInvalidAnnotationInSource(
         '@DefaultValue(JsonValue) is only allowed for JsonValue fields',
-        element: field,
+        annotatedElement: field,
+        annotation: elementAnnotation,
       );
     }
     return ParsedDefaultJsonValue(defaultValue);
   }
 
-  _throwInternalDefaultValue(field);
+  await _throwInternalDefaultValue(field, elementAnnotation);
 }
 
 bool isValidIdentifier(String id) =>
