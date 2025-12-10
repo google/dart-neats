@@ -424,5 +424,19 @@ void main() {
 
       expect(result.contains('background-image'), false);
     });
+
+    test('blocks Unicode-escaped slashes', () {
+      final result = CssSanitizer.sanitizeInline(
+        r'background-image: url(\u002F\u002Fevil.com);',
+      );
+      expect(result.contains('background-image'), false);
+    });
+
+    test('blocks percent-encoded protocol-relative', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url(%2F%2Fevil.com);',
+      );
+      expect(result.contains('background-image'), false);
+    });
   });
 }
