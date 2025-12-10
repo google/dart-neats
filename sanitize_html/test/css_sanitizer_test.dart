@@ -439,4 +439,291 @@ void main() {
       expect(result.contains('background-image'), false);
     });
   });
+
+  group('CssSanitizer.sanitizeInline – overflow rules', () {
+    test('keeps overflow: hidden when allowed', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: hidden; white-space: nowrap;',
+      );
+
+      expect(result.contains('overflow: hidden'), true);
+      expect(result.contains('white-space: nowrap'), true);
+    });
+
+    test('keeps overflow-x: scroll when allowed', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow-x: scroll; color: red;',
+      );
+
+      expect(result.contains('overflow-x: scroll'), true);
+      expect(result.contains('color: red'), true);
+    });
+
+    test('keeps overflow-y: auto when allowed', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow-y: auto; font-size: 14px;',
+      );
+
+      expect(result.contains('overflow-y: auto'), true);
+      expect(result.contains('font-size: 14px'), true);
+    });
+
+    test('removes overflow with disallowed value', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: visiblex; color: blue;',
+      );
+
+      expect(result.contains('overflow'), false,
+          reason: 'Only visible/hidden/scroll/auto allowed');
+      expect(result.contains('color: blue'), true);
+    });
+
+    test('removes overflow that contains expression() attack', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: expression(alert(1));',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('removes overflow with javascript: url attack', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow-x: url(javascript:alert(1));',
+      );
+
+      expect(result.contains('overflow-x'), false);
+    });
+
+    test('removes overflow with protocol-relative URL //evil.com', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: //evil.com; text-align: center;',
+      );
+
+      expect(result.contains('overflow'), false);
+      expect(result.contains('text-align: center'), true);
+    });
+
+    test('keeps valid ellipsis chain overflow + white-space + text-overflow',
+        () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: hidden; white-space: nowrap; text-overflow: ellipsis;',
+      );
+
+      expect(result.contains('overflow: hidden'), true);
+      expect(result.contains('white-space: nowrap'), true);
+      expect(result.contains('text-overflow: ellipsis'), true);
+    });
+
+    test('keeps overflow: auto when multiple declarations exist', () {
+      final result = CssSanitizer.sanitizeInline(
+        'color: red; overflow: auto; padding: 10px;',
+      );
+
+      expect(result.contains('overflow: auto'), true);
+      expect(result.contains('color: red'), true);
+      expect(result.contains('padding: 10px'), true);
+    });
+
+    test('normalizes units before applying overflow rule', () {
+      final result = CssSanitizer.sanitizeInline(
+        'width: 100px; overflow: hidden; height: 2em;',
+      );
+
+      expect(result.contains('width: 100px'), true);
+      expect(result.contains('height: 2em'), true);
+      expect(result.contains('overflow: hidden'), true);
+    });
+
+    test('keeps overflow with normalized sibling properties', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: auto; max-width: 50%; padding: 10px;',
+      );
+
+      expect(result.contains('overflow: auto'), true);
+      expect(result.contains('max-width: 50%'), true);
+      expect(result.contains('padding: 10px'), true);
+    });
+
+    test('property order does not affect sanitize result', () {
+      final resultA = CssSanitizer.sanitizeInline(
+        'overflow: hidden; white-space: nowrap; text-overflow: ellipsis;',
+      );
+
+      final resultB = CssSanitizer.sanitizeInline(
+        'text-overflow: ellipsis; overflow: hidden; white-space: nowrap;',
+      );
+
+      expect(resultA.contains('overflow: hidden'), true);
+      expect(resultA.contains('white-space: nowrap'), true);
+      expect(resultA.contains('text-overflow: ellipsis'), true);
+
+      expect(resultB.contains('overflow: hidden'), true);
+      expect(resultB.contains('white-space: nowrap'), true);
+      expect(resultB.contains('text-overflow: ellipsis'), true);
+    });
+
+    test('reordering with mix of safe and unsafe properties', () {
+      final out = CssSanitizer.sanitizeInline(
+        'color: red; overflow: hidden; expression: test; padding: 4px;',
+      );
+
+      expect(out.contains('expression'), false);
+      expect(out.contains('color: red'), true);
+      expect(out.contains('padding: 4px'), true);
+      expect(out.contains('overflow: hidden'), true);
+    });
+
+    test('removes overflow if value contains comment obfuscation', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: /*evil*/ hidden;',
+      );
+      expect(result.contains('overflow'), false,
+          reason: 'Comment obfuscation must not bypass overflow value rule');
+    });
+
+    test('removes overflow if comment splits value (hidden)', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: h/*x*/idden;',
+      );
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks comment-wrapped value overflow: /*x*/auto', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: /*x*/auto;',
+      );
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks hidden with trailing comment overflow: hidden/*x*/', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: hidden/*x*/;',
+      );
+      expect(result.contains('overflow'), false);
+    });
+
+    test('does not allow comment to bypass protocol-relative // attack', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: /*x*/ //evil.com;',
+      );
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks unicode escaped "hidden" (h\\0069dden)', () {
+      final result = CssSanitizer.sanitizeInline(
+        r'overflow: h\0069dden;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks unicode escaped "auto" (\\0061uto)', () {
+      final result = CssSanitizer.sanitizeInline(
+        r'overflow: \0061uto;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks multi-digit unicode encoding (h\\000069dden)', () {
+      final result = CssSanitizer.sanitizeInline(
+        r'overflow: h\000069dden;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks hidden with zero-width space injection', () {
+      final zwsp = '\u200B';
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: h${zwsp}idden;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks hidden with mixed zero-width chars', () {
+      final zw1 = '\u200B';
+      final zw2 = '\u200C';
+      final zw3 = '\u200D';
+
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: h${zw1}i${zw2}d${zw3}den;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('allows only lowercase safe values (HiDdEn should fail)', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: HiDdEn;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks AuTo mixed-case', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: AuTo;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks hidden split across multiple comments h/*x*//*y*/idden', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: h/*x*//*y*/idden;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks comment before + after + inside "auto"', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: /*a*/a/*b*/u/*c*/t/*d*/o/*e*/;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks hidden using character reference (&#104;idden)', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: &#104;idden;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks auto using entity (a&#117;to)', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: a&#117;to;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks scroll using numeric entities (scr&#111;ll)', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: scr&#111;ll;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks hybrid attack: h\\0069d/*x*/d\\0065n + zero-width', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: h\\0069d/*x*/d\\0065n\u200B;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks //evil.com hidden behind unicode or comment', () {
+      final result = CssSanitizer.sanitizeInline(
+        r'overflow: /*x*/ \002F\002Fevil.com;',
+      );
+
+      expect(result.contains('overflow'), false);
+    });
+  });
 }

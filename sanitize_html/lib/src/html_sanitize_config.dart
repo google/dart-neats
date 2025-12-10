@@ -331,6 +331,9 @@ class HtmlSanitizeConfig {
     'word-wrap',
     'word-break',
     'overflow-wrap',
+    'overflow',
+    'overflow-x',
+    'overflow-y',
     'text-overflow',
     'vertical-align',
     'direction',
@@ -411,6 +414,13 @@ class HtmlSanitizeConfig {
 
   static final RegExp safeClassPattern =
       RegExp(r'^[A-Za-z][A-Za-z0-9\-\_]{0,63}$');
+
+  static const Set<String> safeOverflowValues = {
+    'hidden',
+    'auto',
+    'scroll',
+    'visible',
+  };
 
   static final RegExp cssCommentPattern = RegExp(r'/\*.*?\*/', dotAll: true);
 

@@ -162,6 +162,14 @@ class CssSanitizer {
       // Property not allowed → skip
       if (!HtmlSanitizeConfig.allowedCssProperties.contains(prop)) continue;
 
+      // Special safe check for overflow properties
+      if (prop == 'overflow' || prop == 'overflow-x' || prop == 'overflow-y') {
+        final cleaned = val.trim();
+        if (!HtmlSanitizeConfig.safeOverflowValues.contains(cleaned)) {
+          continue;
+        }
+      }
+
       // Forbidden keywords → skip
       if (!isSafeCssValue(val)) continue;
 
