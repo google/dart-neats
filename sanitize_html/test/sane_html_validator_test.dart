@@ -1737,6 +1737,27 @@ void main() {
 
         expect(out, contains('Hi'));
       });
+
+      test('SVG – strip animation attributes on allowed elements', () {
+        const html = '<svg>'
+            '<rect width="100" height="100" '
+            'values="0;1" dur="5s" begin="0s" repeatCount="indefinite">'
+            '</rect>'
+            '</svg>';
+
+        final out = validator.sanitize(html);
+
+        // Animation attributes should be stripped
+        expect(out, isNot(contains('values=')));
+        expect(out, isNot(contains('dur=')));
+        expect(out, isNot(contains('begin=')));
+        expect(out, isNot(contains('repeatCount=')));
+
+        // But the rect element should remain
+        expect(out, contains('<rect'));
+        expect(out, contains('width="100"'));
+        expect(out, contains('height="100"'));
+      });
     });
   });
 }

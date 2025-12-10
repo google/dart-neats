@@ -297,4 +297,132 @@ void main() {
       expect(CssSanitizer.sanitizeStylesheet(css), 'p { color: blue }');
     });
   });
+
+  group(
+      'CssSanitizer.sanitizeInline – protocol-relative URL (//domain) blocking',
+      () {
+    test('blocks protocol-relative URL in background-image', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url(//evil.com/a.png);',
+      );
+
+      expect(
+        result.contains('background-image'),
+        false,
+        reason: 'background-image with protocol-relative URL must be removed',
+      );
+    });
+
+    test('blocks protocol-relative URL with whitespace', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url(   //evil.com/a.png   ); color: red;',
+      );
+
+      expect(result.contains('color: red'), true);
+      expect(result.contains('background-image'), false);
+    });
+
+    test('blocks protocol-relative URL without url()', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background: //evil.com/bg.jpg; font-size: 14px;',
+      );
+
+      expect(result.contains('background'), false);
+      expect(result.contains('font-size: 14px'), true);
+    });
+
+    test('blocks mixed-case protocol-relative URL', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url(//EVIL.com/a.png);',
+      );
+
+      expect(
+        result.contains('background-image'),
+        false,
+        reason: 'mixed-case //EVIL.com must still be blocked',
+      );
+    });
+
+    test('does not block safe http URL', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url(http://example.com/x.png);',
+      );
+
+      expect(result, 'background-image: url(http://example.com/x.png)');
+    });
+
+    test('does not block safe https URL', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url(https://example.com/x.png);',
+      );
+
+      expect(result, 'background-image: url(https://example.com/x.png)');
+    });
+
+    test('does not block data:image/png;base64 (safe base64)', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url(data:image/png;base64,AAA);',
+      );
+
+      expect(result, 'background-image: url(data:image/png;base64,AAA)');
+    });
+
+    test('blocks protocol-relative URL when inside shorthand background', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background: url(//evil.com/x.png) no-repeat center;',
+      );
+
+      expect(
+        result.contains('background'),
+        false,
+        reason: 'Any background containing // must be removed',
+      );
+    });
+
+    test('multiple declarations – only unsafe is removed', () {
+      final result = CssSanitizer.sanitizeInline(
+        'padding: 10px; background-image: url(//evil.com/a.png); margin: 5px;',
+      );
+
+      expect(result.contains('padding: 10px'), true);
+      expect(result.contains('margin: 5px'), true);
+      expect(
+        result.contains('background-image'),
+        false,
+        reason: 'unsafe declaration should be removed without affecting others',
+      );
+    });
+
+    test('protocol-relative URL with comments (obfuscation attempt)', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url(/*x*/ //evil.com/hack.png);',
+      );
+
+      expect(
+        result.contains('background-image'),
+        false,
+        reason: 'comments should not allow bypass of // rule',
+      );
+    });
+
+    test('protocol-relative URL inside quotes', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background-image: url("//evil.com/a.png");',
+      );
+
+      expect(
+        result.contains('background-image'),
+        false,
+        reason: 'quoted protocol-relative URL must also be blocked',
+      );
+    });
+
+    test('protocol-relative URL with escaped slashes', () {
+      final result = CssSanitizer.sanitizeInline(
+        r'background-image: url(\/\//evil.com/a.png);',
+      );
+
+      expect(result.contains('background-image'), false);
+    });
+  });
 }

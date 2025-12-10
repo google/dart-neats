@@ -8,7 +8,15 @@ class CssSanitizer {
     // url(x) extract
     if (!clean.startsWith("url(") || !clean.endsWith(")")) return false;
 
-    final inside = clean.substring(4, clean.length - 1).trim();
+    final rawInside = clean.substring(4, clean.length - 1).trim();
+
+    String inside = rawInside.trim().toLowerCase();
+
+    // Remove comments to avoid bypass
+    inside = inside.replaceAll(RegExp(r'/\*.*?\*/', dotAll: true), '').trim();
+
+    // Block protocol-relative URL
+    if (inside.startsWith("//")) return false;
 
     // Block javascript: data: vbscript:
     if (inside.startsWith("javascript:")) return false;
@@ -143,6 +151,13 @@ class CssSanitizer {
 
       final prop = d.substring(0, colon).trim().toLowerCase();
       var val = d.substring(colon + 1).trim();
+
+      // Normalize raw value for quick safety check
+      final rawVal = val.trim().toLowerCase();
+        // Block protocol-relative URL used directly as value
+      if (rawVal.startsWith("//")) {
+        continue;
+      }
 
       // Property not allowed → skip
       if (!HtmlSanitizeConfig.allowedCssProperties.contains(prop)) continue;
