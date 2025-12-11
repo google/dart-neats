@@ -17,8 +17,8 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:test/test.dart';
-import 'package:typed_sql/src/adapter/mysql_adaptor.dart'
-    show mysqlTestingAdaptor;
+import 'package:typed_sql/src/adapter/mysql_adapter.dart'
+    show mysqlTestingAdapter;
 import 'package:typed_sql/src/dialect/mysql_dialect.dart';
 import 'package:typed_sql/typed_sql.dart';
 
@@ -85,7 +85,7 @@ final class TestRunner<T extends Schema> {
   }
 
   DatabaseAdapter _getMysql() {
-    return mysqlTestingAdaptor(host: _getMysqlSocket);
+    return mysqlTestingAdapter(host: _getMysqlSocket);
   }
 
   void run() {

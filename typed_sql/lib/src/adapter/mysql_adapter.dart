@@ -29,7 +29,7 @@ import '../utils/notifier.dart';
 import '../utils/uuid.dart';
 import 'adapter.dart'; // ignore: implementation_imports
 
-DatabaseAdapter mysqlTestingAdaptor({
+DatabaseAdapter mysqlTestingAdapter({
   String? host,
   int? port,
   String? database,
