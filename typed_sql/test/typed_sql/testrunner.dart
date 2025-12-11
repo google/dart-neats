@@ -89,15 +89,24 @@ final class TestRunner<T extends Schema> {
   }();
 
   DatabaseAdapter _getPostgres() {
-    return DatabaseAdapter.postgresTestDatabase(host: _getPostgresSocket);
+    return DatabaseAdapter.postgresTestDatabase(
+      host: _getPostgresSocket,
+      port: int.tryParse(Platform.environment['POSTGRES_PORT'] ?? ''),
+    );
   }
 
   DatabaseAdapter _getMysql() {
-    return mysqlTestingAdapter(host: _getMysqlSocket);
+    return mysqlTestingAdapter(
+      host: _getMysqlSocket,
+      port: int.tryParse(Platform.environment['MYSQL_PORT'] ?? ''),
+    );
   }
 
   DatabaseAdapter _getMariadb() {
-    return mysqlTestingAdapter(host: _getMariadbSocket);
+    return mysqlTestingAdapter(
+      host: _getMariadbSocket,
+      port: int.tryParse(Platform.environment['MARIADB_PORT'] ?? ''),
+    );
   }
 
   void run() {
