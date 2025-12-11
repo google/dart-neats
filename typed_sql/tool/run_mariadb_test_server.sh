@@ -23,8 +23,10 @@ ROOT="${SCRIPT_DIR}/.."
 SOCKET_DIR="${ROOT}/.dart_tool/run/mariadb/"
 mkdir -p "$SOCKET_DIR"
 
+trap "docker stop typed_sql_mariadb 2>/dev/null || true" EXIT
+
 docker run \
-  -ti --rm \
+  -t --rm \
   --name typed_sql_mariadb \
   -e MARIADB_ROOT_PASSWORD=root \
   -v "$SOCKET_DIR":/run/mysqld/ \
@@ -34,4 +36,6 @@ docker run \
   --innodb-doublewrite=0 \
   --innodb-flush-log-at-trx_commit=0 \
   --sync-binlog=0 \
-  --skip-name-resolve
+  --skip-name-resolve &
+
+wait
