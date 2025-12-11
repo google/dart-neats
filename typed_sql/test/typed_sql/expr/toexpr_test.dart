@@ -79,5 +79,12 @@ void main() {
     check(result).isNotNull().deepEquals(Uint8List.fromList([1, 2, 3]));
   });
 
+  r.addTest('toExpr(JsonValue)', (db) async {
+    final result = await db.select(
+      (toExpr(const JsonValue([1, 2, 3])),),
+    ).fetch();
+    check(result).isNotNull().deepEquals(const JsonValue([1, 2, 3]));
+  });
+
   r.run();
 }

@@ -143,5 +143,21 @@ void main() {
     check(result).isNotNull().deepEquals(value!);
   });
 
+  r.addTest('JsonValue.asExpr', (db) async {
+    final value = const JsonValue('hello world');
+    final result = await db.select(
+      (value.asExpr,),
+    ).fetch();
+    check(result).isNotNull().deepEquals(value);
+  });
+
+  r.addTest('JsonValue?.asExpr', (db) async {
+    final value = const JsonValue('hello world') as JsonValue?;
+    final result = await db.select(
+      (value.asExpr,),
+    ).fetch();
+    check(result).isNotNull().deepEquals(value!);
+  });
+
   r.run();
 }
