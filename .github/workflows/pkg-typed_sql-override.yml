@@ -50,7 +50,6 @@ jobs:
         image: mariadb:11
         env:
           MARIADB_ROOT_PASSWORD: root
-        # We cannot use healthcheck.sh for mysql
         options: >-
           --health-cmd "healthcheck.sh --connect --innodb_initialized"
           --health-interval 10s
@@ -63,9 +62,8 @@ jobs:
         image: mysql:9
         env:
           MYSQL_ROOT_PASSWORD: root
-        # We cannot use healthcheck.sh for mysql
         options: >-
-          --health-cmd "healthcheck.sh --connect --innodb_initialized"
+          --health-cmd "mysqladmin ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
