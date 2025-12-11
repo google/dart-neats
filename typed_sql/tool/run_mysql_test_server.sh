@@ -20,18 +20,18 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ROOT="${SCRIPT_DIR}/.."
 
 # Create directory for exposing sockets
-SOCKET_DIR="${ROOT}/.dart_tool/run/mariadb/"
+SOCKET_DIR="${ROOT}/.dart_tool/run/mysql/"
 mkdir -p "$SOCKET_DIR"
 
-trap "docker stop typed_sql_mariadb 2>/dev/null || true" EXIT
+trap "docker stop typed_sql_mysql 2>/dev/null || true" EXIT
 
 docker run \
   -t --rm \
-  --name typed_sql_mariadb \
-  -e MARIADB_ROOT_PASSWORD=root \
+  --name typed_sql_mysql \
+  -e MYSQL_ROOT_PASSWORD=root \
   -v "$SOCKET_DIR":/run/mysqld/ \
   --mount type=tmpfs,destination=/var/lib/mysql \
-  mariadb:11 \
+  mysql:9 \
   --skip-log-bin \
   --innodb-doublewrite=0 \
   --innodb-flush-log-at-trx_commit=0 \

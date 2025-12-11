@@ -647,7 +647,7 @@ extension on ColumnType {
         ColumnType<int> _ => 'SIGNED',
         ColumnType<double> _ => 'DOUBLE',
         ColumnType<String> _ => 'CHAR',
-        ColumnType<JsonValue> _ => 'JSON',
+        ColumnType<JsonValue> _ => 'CHAR',
         ColumnType<Null> _ => throw UnsupportedError(
             'Null type cannot be used as column type',
           ),
