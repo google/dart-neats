@@ -23,6 +23,9 @@ class UrlValidators {
     final uri = _tryParse(url);
     if (uri == null) return false;
 
+    // Block protocol-relative URLs
+    if (!uri.hasScheme && uri.host.isNotEmpty) return false;
+
     return uri.isScheme('https') ||
         uri.isScheme('http') ||
         uri.isScheme('mailto') ||

@@ -22,20 +22,6 @@ void main() {
       expect(UrlValidators.validUrl('mailto:abc'), false);
     });
 
-    test('validBase64Image works correctly', () {
-      expect(
-        UrlValidators.validBase64Image(
-          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA',
-        ),
-        true,
-      );
-
-      expect(
-        UrlValidators.validBase64Image('data:image/png;base64,INVALID##'),
-        false,
-      );
-    });
-
     test('validBase64Image Valid Base64 PNG image string', () {
       String validBase64PNG =
           'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA';
@@ -60,16 +46,16 @@ void main() {
       expect(UrlValidators.validBase64Image(invalidBase64), isFalse);
     });
 
-    test('validBase64Image Valid Base64 SVG image string', () {
-      String validBase64SVG =
-          'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDov';
-      expect(UrlValidators.validBase64Image(validBase64SVG), isTrue);
-    });
-
     test('validBase64Image Invalid Base64 image string (wrong image type)', () {
       String invalidBase64Type =
           'data:image/tiff;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA';
       expect(UrlValidators.validBase64Image(invalidBase64Type), isFalse);
+    });
+
+    test('validBase64Image rejects SVG data URLs', () {
+      const svgData =
+          'data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9ImFsZXJ0KDEpIj48L3N2Zz4=';
+      expect(UrlValidators.validBase64Image(svgData), isFalse);
     });
 
     test('validBase64Image Empty string', () {
@@ -80,11 +66,6 @@ void main() {
     test('validBase64Image Non-image Base64 string', () {
       String nonImageBase64 = 'data:text/plain;base64,dGVzdA==';
       expect(UrlValidators.validBase64Image(nonImageBase64), isFalse);
-    });
-
-    test('validCIDImage works correctly', () {
-      expect(UrlValidators.validCIDImage('cid:12345'), true);
-      expect(UrlValidators.validCIDImage('abc:12345'), false);
     });
 
     test('validCIDImage returns true for valid cid string', () {

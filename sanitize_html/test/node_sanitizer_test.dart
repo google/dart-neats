@@ -37,14 +37,14 @@ void main() {
     });
 
     test('sanitizes STYLE inside fragment (email HTML case)', () {
-      final fragment = parseFragment(
+      final doc = parse(
         '<style>p { color: red; position: absolute; }</style>',
       );
 
-      sanitizer.sanitize(fragment, allowUnwrap: false);
+      if (doc.head != null) sanitizer.sanitize(doc.head!, allowUnwrap: false);
 
       expect(
-        fragment.outerHtml.trim(),
+        doc.head!.innerHtml.trim(),
         '<style>p { color: red }</style>',
       );
     });

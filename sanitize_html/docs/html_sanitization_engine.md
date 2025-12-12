@@ -61,7 +61,7 @@ Responsible for:
 - Sanitizing inline style declarations  
 - Sanitizing `<style>` blocks  
 - Removing unsupported or dangerous rules  
-- Rejecting `expression`, `url()`, `javascript:` tokens  
+- Rejecting `expression`, unsafe `url()` (javascript:, protocol-relative), and dangerous CSS tokens
 
 ### **UrlValidators**
 Provides XSS-safe URL and image validation:
@@ -84,7 +84,7 @@ Provides XSS-safe URL and image validation:
 | Attribute Filtering | Basic | Comprehensive forbidden attributes |
 | Overrides | Unsafe, permissive | Strict validation, fail-fast |
 | Testing | Limited | Full coverage for tags, attributes, CSS, overrides |
-| Security Level | Medium | Equivalent to DOMPurify SAFE-FOR-EMAIL |
+| Security Level | Medium | Inspired by DOMPurify's email-safe approach |
 
 ---
 
@@ -134,6 +134,13 @@ Examples:
 - Malicious `<style>` blocks  
 - DOM injection via unknown tags  
 
+### Defense in Depth
+This sanitizer provides robust HTML sanitization but should be deployed as part of a defense-in-depth strategy:
+- When rendering in iframes/webviews, use platform sandboxing attributes
+- Apply Content Security Policy (CSP) headers where applicable
+- Use platform-specific security primitives available in your rendering context
+- Disable JavaScript execution in rendering contexts when possible
+
 ---
 
 ## 6. Attribute Sanitization
@@ -149,7 +156,7 @@ Always removed:
 Structural or semantic:
 - `title`, `lang`, `dir`  
 - `width`, `height`  
-- `aria-*`  
+- `common ARIA attributes (aria-describedby, aria-hidden, …`  
 - `data-filename`, `public-asset-id`  
 
 ### **6.3 Per-Tag Validators**
@@ -164,13 +171,13 @@ Reject:
 #### **Images (`<img src>`)**
 Allowed:
 - Valid http/https  
-- Strict base64  
+- Strict base64 (Only allow `data:image/(png|jpeg|jpg|gif|bmp);base64,...` and rejected `data:image/svg+xml;base64,...` )
 - CID images (email standard)  
 
 ### **6.4 Safe ID & Class Names**
 Pattern:
-```
-^[A-Za-z][A-Za-z0-9-_]{0,63}$
+```regex
+^[A-Za-z][A-Za-z0-9\-_:.]{0,63}$
 ```
 
 Rationale:
@@ -288,8 +295,8 @@ Protects from:
 
 Although CSS allows `_class`, `-class`, etc., sanitizer restricts class names to:
 
-```
-^[A-Za-z][A-Za-z0-9-_]{0,63}$
+```regex
+^[A-Za-z][A-Za-z0-9\-_:.]{0,63}$
 ```
 
 Reasons:
@@ -311,7 +318,7 @@ Reasons:
 
 ## 14. Recommended Usage
 
-```
+```dart
 final validator = SaneHtmlValidator(
   allowElementId: null,
   allowClassName: null,

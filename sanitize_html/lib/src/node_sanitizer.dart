@@ -63,11 +63,10 @@ class NodeSanitizer {
       return true;
     }
 
-    // Data URL that contains javascript:alert in base64 payload
+    // Data URL that contains javascript in base64 payload (heuristic check)
     if (lower.startsWith('data:text') &&
         lower.contains('base64') &&
-        RegExp(r'(?=.*amF2YXNjcmlwdA)(?=.*YWxlcnQ)', caseSensitive: false)
-            .hasMatch(lower)) {
+        RegExp(r'amF2YXNjcmlwdA', caseSensitive: false).hasMatch(lower)) {
       return true;
     }
 
@@ -93,8 +92,7 @@ class NodeSanitizer {
     if (parentTag == 'svg') {
       if (lower.contains('alert(') ||
           lower.contains('function(') ||
-          lower.contains('document.cookie') ||
-          lower.contains('=>')) {
+          lower.contains('document.cookie')) {
         return true;
       }
     }
@@ -113,8 +111,7 @@ class NodeSanitizer {
       case 'poster':
       case 'data':
       case 'background':
-      case 'srcset':
-      case 'xlink:href':
+        // Note: srcset and xlink:href are handled separately in _sanitizeAttributes
         return true;
       default:
         return false;
@@ -147,11 +144,7 @@ class NodeSanitizer {
 
     node.attributes.removeWhere((attr, value) {
       final attrLower = attr.toString().toLowerCase();
-      final valueLower = value.toLowerCase();
-
-      if (allowAttributes?.contains(attrLower) == true) {
-        return false;
-      }
+      final explicitlyAllowed = allowAttributes?.contains(attrLower) == true;
 
       // === Handle SRCSET ===
       if (attrLower == 'srcset') {
@@ -165,15 +158,30 @@ class NodeSanitizer {
 
           // Remove unsafe URLs
           if (lower.startsWith('javascript:') ||
+              lower.startsWith('vbscript:') ||
               lower.startsWith('data:application') ||
+              lower.startsWith('data:text') ||
               _isEncodedJs(lower)) {
             continue;
           }
 
-          // Allow http/https only
-          if (lower.startsWith('http://') || lower.startsWith('https://')) {
-            safeEntries.add(trimmed);
+          // Allow http/https and relative URLs
+          // Block protocol-relative URLs (//) which can bypass scheme checks
+          if (lower.startsWith('//')) {
+            continue;
           }
+
+          // Allow data:image URLs for inline images (restrict to safe formats)
+          if (lower.startsWith('data:image/')) {
+            // Only allow safe raster formats, not SVG
+            if (HtmlSanitizeConfig.safeBase64ImageRegex.hasMatch(lower)) {
+              safeEntries.add(trimmed);
+              continue;
+            }
+            continue; // skip unsafe data:image types
+          }
+
+          safeEntries.add(trimmed);
         }
 
         if (safeEntries.isEmpty) {
@@ -184,46 +192,51 @@ class NodeSanitizer {
         return false; // keep sanitized srcset
       }
 
-      // Handle xlink:href on SVG separately
       if (attrLower == 'xlink:href') {
-        final lowered = valueLower.trim();
+        // normalize whitespace
+        var normalized = _normalizeUrl(value).trim();
+        var lower = normalized.toLowerCase();
 
-        // Block javascript: and encoded payload
-        if (lowered.startsWith('javascript:') ||
-            lowered.startsWith('data:application') ||
-            _isEncodedJs(lowered)) {
-          return true;
+        // strip CSS-style comments (to block ja/*x*/vascript:)
+        normalized =
+            normalized.replaceAll(RegExp(r'/\*.*?\*/', dotAll: true), '');
+        lower = normalized.toLowerCase().trim();
+
+        // block dangerous schemes
+        if (lower.startsWith('javascript:') ||
+            lower.startsWith('vbscript:') ||
+            lower.startsWith('data:application') ||
+            lower.startsWith('data:text') ||
+            _isEncodedJs(lower)) {
+          return true; // remove attribute
         }
 
-        // Allow http/https/mailto/#id/relative as-is
-        node.attributes[attr] = value;
-        return false;
+        // block data:image/svgxml (SVG can contain scripts)
+        if (lower.startsWith('data:image/svg')) {
+          return true; // remove
+        }
+
+        // restrict data:image to safe raster formats only
+        if (lower.startsWith('data:image/')) {
+          if (!HtmlSanitizeConfig.safeBase64ImageRegex.hasMatch(lower)) {
+            return true; // remove unsafe data:image
+          }
+        }
+
+        // block protocol-relative URL
+        if (lower.startsWith('//')) {
+          return true; // remove
+        }
+
+        // write normalized version back to attribute
+        node.attributes[attr] = normalized;
+        value = normalized; // update value for subsequent checks
+        // fall through to HTML markup, SVG animation, and AttributePolicy checks
       }
 
       // === Handle URL attributes ===
       if (_isUrlAttribute(attrLower)) {
-        if (valueLower.startsWith('data:image/')) {
-          // Block "javascript:" inside data URI
-          if (valueLower.contains('javascript:')) {
-            return true;
-          }
-
-          // Validate base64 payload
-          var base64Part = value.split(',').last;
-          if (HtmlSanitizeConfig.whitespacePattern.hasMatch(base64Part)) {
-            base64Part =
-                base64Part.replaceAll(HtmlSanitizeConfig.whitespacePattern, '');
-          }
-          if (!HtmlSanitizeConfig.base64ValuePattern.hasMatch(base64Part)) {
-            return true; // attribute removed => <img> remains
-          }
-
-          // Preserve original data URI
-          node.attributes[attr] = value;
-          return false;
-        }
-
-        // Normalize whitespace for other URLs
+        // Normalize whitespace (java script: → javascript:, etc.)
         final normalized = _normalizeUrl(value);
         value = normalized;
         node.attributes[attr] = normalized;
@@ -233,19 +246,27 @@ class NodeSanitizer {
         // Block dangerous URL schemes
         if (lower.startsWith('javascript:') ||
             lower.startsWith('vbscript:') ||
-            lower.startsWith('data:application')) {
+            lower.startsWith('data:application') ||
+            lower.startsWith('data:text')) {
           return true;
         }
 
-        // Block encoded JS payload
+        // block data:image/svgxml (SVG can contain scripts)
+        if (lower.startsWith('data:image/svg')) {
+          return true;
+        }
+
+        // restrict data:image to safe raster formats only
+        if (lower.startsWith('data:image/')) {
+          if (!HtmlSanitizeConfig.safeBase64ImageRegex.hasMatch(lower)) {
+            return true; // remove unsafe data:image
+          }
+        }
+
+        // Block encoded / obfuscated JS payloads
         if (_isEncodedJs(normalized)) {
           return true;
         }
-      }
-
-      // Base64 override: allow data:image/* on src after URL checks
-      if (attrLower == 'src' && valueLower.startsWith('data:image/')) {
-        return false;
       }
 
       // Attribute value contains HTML markup → strip it
@@ -259,6 +280,11 @@ class NodeSanitizer {
         return true;
       }
 
+      // If explicitly allowed by name, keep the attribute after value checks.
+      if (explicitlyAllowed) {
+        return false;
+      }
+
       final ok = AttributePolicy.sanitizeAttribute(
         node,
         attrLower,
@@ -266,7 +292,6 @@ class NodeSanitizer {
         allowId: allowId,
         allowClass: allowClass,
       );
-
       return !ok;
     });
   }
@@ -288,8 +313,8 @@ class NodeSanitizer {
 
     // Non-element nodes: sanitize children
     if (node is! Element) {
-      for (var i = 0; i < node.nodes.length; i++) {
-        sanitize(node.nodes[i], allowUnwrap: true);
+      for (final child in node.nodes.toList()) {
+        sanitize(child, allowUnwrap: true);
       }
       return;
     }
@@ -334,9 +359,9 @@ class NodeSanitizer {
     }
 
     // Check allowed tag
-    final isAllowedTag =
-        HtmlSanitizeConfig.allowedElements.contains(tagUpper) ||
-            (allowTags?.contains(tagUpper.toLowerCase()) ?? false);
+    final isAllowedTag = HtmlSanitizeConfig.allowedElements
+            .contains(tagUpper) ||
+        (allowTags?.map((t) => t.toUpperCase()).contains(tagUpper) ?? false);
 
     // Unwrap disallowed tags if allowed to unwrap
     if (!isAllowedTag && allowUnwrap) {

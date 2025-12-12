@@ -15,8 +15,6 @@ class HtmlSanitizeConfig {
     'H4',
     'H5',
     'H6',
-    'H7',
-    'H8',
     'BR',
     'B',
     'I',
@@ -191,6 +189,9 @@ class HtmlSanitizeConfig {
     'OBJECT',
     'EMBED',
     'APPLET',
+    'BASE',
+    'LINK',
+    'META',
     'INPUT',
     'BUTTON',
     'TEXTAREA',
@@ -292,6 +293,20 @@ class HtmlSanitizeConfig {
     'onscroll',
     'onselect',
     'onselectstart',
+    'onpointerdown',
+    'onpointerup',
+    'onpointermove',
+    'onpointerenter',
+    'onpointerleave',
+    'onpointercancel',
+    'onwheel',
+    'ontoggle',
+    'ongotpointercapture',
+    'onlostpointercapture',
+    'onanimationstart',
+    'onanimationend',
+    'onanimationiteration',
+    'ontransitionend',
   };
 
   static const Set<String> _forbiddenFormAttributes = {
@@ -404,6 +419,10 @@ class HtmlSanitizeConfig {
     'expression(',
     'javascript:',
     'vbscript:',
+    'behavior',
+    '-moz-binding',
+    '-webkit-binding',
+    '@import',
   ];
 
   //
@@ -420,6 +439,10 @@ class HtmlSanitizeConfig {
     'auto',
     'scroll',
     'visible',
+    'inherit',
+    'initial',
+    'unset',
+    'revert',
   };
 
   static final RegExp cssCommentPattern = RegExp(r'/\*.*?\*/', dotAll: true);
@@ -430,7 +453,7 @@ class HtmlSanitizeConfig {
   static final RegExp unitlessNumberPattern = RegExp(r'^\d+$');
 
   static final RegExp base64ImageRegex = RegExp(
-    r'^data:image\/(png|jpeg|jpg|gif|bmp|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$',
+    r'^data:image\/(png|jpeg|jpg|gif|bmp);base64,[A-Za-z0-9+/]+={0,2}$',
   );
 
   static final RegExp whitespacePattern = RegExp(r'\s+');
@@ -439,6 +462,11 @@ class HtmlSanitizeConfig {
 
   static final RegExp dangerousMarkupRegex = RegExp(
     r'(<script|</script|<!\[CDATA\[)',
+    caseSensitive: false,
+  );
+
+  static final RegExp safeBase64ImageRegex = RegExp(
+    r'^data:image/(png|jpeg|jpg|gif|bmp|webp);',
     caseSensitive: false,
   );
 }

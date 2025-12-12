@@ -438,6 +438,31 @@ void main() {
       );
       expect(result.contains('background-image'), false);
     });
+
+    test('blocks obfuscated javascript url inside multi-token background', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background: red url(java/**/script:alert(1)) no-repeat;',
+      );
+
+      expect(result.contains('background'), false);
+    });
+
+    test('keeps safe https url inside multi-token background', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background: #fff url(https://example.com/bg.png) no-repeat;',
+      );
+
+      expect(
+          result, 'background: #fff url(https://example.com/bg.png) no-repeat');
+    });
+
+    test('blocks malformed url without closing parenthesis', () {
+      final result = CssSanitizer.sanitizeInline(
+        'background: url(https://example.com/bg.png;',
+      );
+
+      expect(result.contains('background'), false);
+    });
   });
 
   group('CssSanitizer.sanitizeInline – overflow rules', () {
@@ -654,22 +679,6 @@ void main() {
       expect(result.contains('overflow'), false);
     });
 
-    test('allows only lowercase safe values (HiDdEn should fail)', () {
-      final result = CssSanitizer.sanitizeInline(
-        'overflow: HiDdEn;',
-      );
-
-      expect(result.contains('overflow'), false);
-    });
-
-    test('blocks AuTo mixed-case', () {
-      final result = CssSanitizer.sanitizeInline(
-        'overflow: AuTo;',
-      );
-
-      expect(result.contains('overflow'), false);
-    });
-
     test('blocks hidden split across multiple comments h/*x*//*y*/idden', () {
       final result = CssSanitizer.sanitizeInline(
         'overflow: h/*x*//*y*/idden;',
@@ -724,6 +733,116 @@ void main() {
       );
 
       expect(result.contains('overflow'), false);
+    });
+
+    test('allows case-insensitive overflow: HIDDEN', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: HIDDEN; color: red;',
+      );
+
+      expect(result.contains('overflow: HIDDEN'), true);
+      expect(result.contains('color: red'), true);
+    });
+
+    test('allows case-insensitive overflow: Hidden', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: Hidden; padding: 5px;',
+      );
+
+      expect(result.contains('overflow: Hidden'), true);
+      expect(result.contains('padding: 5px'), true);
+    });
+
+    test('allows case-insensitive overflow-x: AUTO', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow-x: AUTO; margin: 10px;',
+      );
+
+      expect(result.contains('overflow-x: AUTO'), true);
+      expect(result.contains('margin: 10px'), true);
+    });
+
+    test('allows case-insensitive overflow-y: Scroll', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow-y: Scroll; width: 100px;',
+      );
+
+      expect(result.contains('overflow-y: Scroll'), true);
+      expect(result.contains('width: 100px'), true);
+    });
+
+    test('allows case-insensitive overflow: VISIBLE', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: VISIBLE; height: 50px;',
+      );
+
+      expect(result.contains('overflow: VISIBLE'), true);
+      expect(result.contains('height: 50px'), true);
+    });
+
+    test('blocks invalid overflow value regardless of case', () {
+      final result = CssSanitizer.sanitizeInline(
+        'overflow: INVALID; color: blue;',
+      );
+
+      expect(result.contains('overflow'), false);
+      expect(result.contains('color: blue'), true);
+    });
+
+    test('keeps original case for inherit', () {
+      final result = CssSanitizer.sanitizeInline('overflow: inherit;');
+      expect(result, 'overflow: inherit');
+    });
+
+    test('keeps original case for InHeRiT', () {
+      final result = CssSanitizer.sanitizeInline('overflow: InHeRiT;');
+      expect(result, 'overflow: InHeRiT');
+    });
+
+    test('keeps original case for INITIAL', () {
+      final result = CssSanitizer.sanitizeInline('overflow: INITIAL;');
+      expect(result, 'overflow: INITIAL');
+    });
+
+    test('keeps original case for UnSeT', () {
+      final result = CssSanitizer.sanitizeInline('overflow: UnSeT;');
+      expect(result, 'overflow: UnSeT');
+    });
+
+    test('keeps original case for ReVeRt', () {
+      final result = CssSanitizer.sanitizeInline('overflow: ReVeRt;');
+      expect(result, 'overflow: ReVeRt');
+    });
+
+    test('blocks invalid "none"', () {
+      final result = CssSanitizer.sanitizeInline('overflow: none;');
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks random value', () {
+      final result = CssSanitizer.sanitizeInline('overflow: abcxyz;');
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks inherit obfuscated with comments', () {
+      final result = CssSanitizer.sanitizeInline('overflow: in/**/her/**/it;');
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks inherit + js attempt', () {
+      final result =
+          CssSanitizer.sanitizeInline('overflow: inherit javascript:alert(1)');
+      expect(result.contains('overflow'), false);
+    });
+
+    test('blocks ReVeRt + garbage', () {
+      final result = CssSanitizer.sanitizeInline('overflow: ReVeRt xxx;');
+      expect(result.contains('overflow'), false);
+    });
+
+    test('keeps casing but trims spaces', () {
+      final result = CssSanitizer.sanitizeInline('  overflow :   INITIAL  ;  ');
+      expect(result, 'overflow: INITIAL');
     });
   });
 }

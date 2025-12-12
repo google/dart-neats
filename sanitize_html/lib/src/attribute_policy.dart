@@ -68,7 +68,7 @@ class AttributePolicy {
       final original = node.className;
       if (original.isEmpty) return false;
 
-      final parts = original.split(' ');
+      final parts = original.split(RegExp(r'\s+'));
       node.classes.clear();
 
       for (final c in parts) {
@@ -78,6 +78,11 @@ class AttributePolicy {
       }
 
       return node.classes.isNotEmpty;
+    }
+
+    if (normalizedAttr == 'src' || normalizedAttr == 'href') {
+      final raw = value.trim().toLowerCase();
+      if (raw.startsWith('//')) return false;
     }
 
     // 4. Inline style sanitization

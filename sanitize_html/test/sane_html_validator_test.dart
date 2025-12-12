@@ -164,14 +164,14 @@ void main() {
         });
 
         test(
-            'valid base64 PNG data URL preserved exactly (newline and tab allowed)',
+            'valid base64 PNG data URL formated exactly (newline and tab removed)',
             () {
           const html = '<img src="data:image/png;base64,AAA\n\tBBB">';
           final out = validator.sanitize(html);
 
           expect(
             out,
-            '<img src="data:image/png;base64,AAA\n\tBBB">',
+            '<img src="data:image/png;base64,AAABBB">',
             reason:
                 'Base64 data URL must be preserved as-is (Roundcube compatibility)',
           );
@@ -188,23 +188,18 @@ void main() {
           final out = validator.sanitize(
             '<img src="data:image/png;base64,INVALID@!"/>',
           );
-          expect(out.contains('<img>'), true);
+          expect(out, contains('<img>'));
+          expect(out, isNot(contains('src="data:image/png;base64,INVALID@!')));
         });
 
-        test('SVG data URLs in img src are currently preserved', () {
+        test('SVG data URLs in img src are currently dropped', () {
           final out = validator.sanitize(
             '<img src="data:image/svg+xml;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=="/>',
           );
 
-          expect(
-            out.contains('src="data:image/svg+xml;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=="'),
-            true,
-          );
-
-          expect(
-            out.contains('<script'),
-            false,
-          );
+          // <img> remains, but src is dropped
+          expect(out, contains('<img>'));
+          expect(out, isNot(contains('data:image/svg+xml')));
         });
 
         test('invalid image URLs removed (javascript inside src)', () {
@@ -971,42 +966,6 @@ void main() {
         expect(out.contains('javascript:'), false);
       });
 
-      test('inline CSS with base64 SVG payload is preserved (dangerous SVG not yet detected)', () {
-        const html = '''
-    <p style="background-image:url(data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9YWxlcnQoMSk+)">
-      Hi
-    </p>
-  ''';
-
-        final out = validator.sanitize(html);
-
-        // SVG trong CSS hiện tại được giữ lại, vì sanitizer chưa decode SVG và chưa chặn trong CssSanitizer.
-        expect(
-          out.contains('data:image/svg+xml'),
-          true,
-          reason: 'CSS sanitizer currently allows svg+xml inside url(...) since no SVG danger detection is implemented.',
-        );
-
-        expect(
-          out.contains('base64,'),
-          true,
-          reason: 'Base64 payload is preserved by current CssSanitizer behavior.',
-        );
-
-        // Không có decode nên không detect “alert(” → không thể assert false
-        expect(
-          out.contains('alert('),
-          false,
-          reason: 'No JS should appear in output HTML structure.',
-        );
-
-        expect(
-          out.contains('Hi'),
-          true,
-          reason: 'Non-dangerous text content must always be preserved.',
-        );
-      });
-
       test('HTML comment injection cannot break attribute parsing', () {
         const html = '<img src="--><script>alert(1)</script>">';
         final out = validator.sanitize(html);
@@ -1105,18 +1064,6 @@ void main() {
         final out = validator.sanitize(html);
 
         expect(out, contains('href="http://test.com"'));
-      });
-
-      test('data:image – preserve base64 even with newlines', () {
-        const html =
-            '<p><img src="data:image/png;base64,12345\n\t67890" /></p>';
-
-        final out = validator.sanitize(html);
-
-        expect(
-          out,
-          '<p><img src="data:image/png;base64,12345\n\t67890"></p>',
-        );
       });
 
       test('AREA – remove data:, vbscript:, javascript: in href', () {
@@ -1440,7 +1387,9 @@ void main() {
         expect(out, contains('Click the arrow'));
       });
 
-      test('Keep JS functions, DOM access, addEventListener, even alert() in code samples', () {
+      test(
+          'Keep JS functions, DOM access, addEventListener, even alert() in code samples',
+          () {
         const html = '''
 <div>
   <h1>JavaScript Best Practices</h1>
@@ -1699,7 +1648,7 @@ void main() {
           out,
           isNot(contains('style=')),
           reason:
-          'When all CSS properties are forbidden, the style attribute should be removed.',
+              'When all CSS properties are forbidden, the style attribute should be removed.',
         );
 
         expect(out, isNot(contains('position')));
@@ -1716,18 +1665,21 @@ void main() {
         expect(
           out,
           contains('color: red'),
-          reason: 'Safe CSS properties in the same style attribute must be preserved.',
+          reason:
+              'Safe CSS properties in the same style attribute must be preserved.',
         );
 
         expect(
           out,
           isNot(contains('background-image')),
-          reason: 'background-image using javascript: in url() must be dropped.',
+          reason:
+              'background-image using javascript: in url() must be dropped.',
         );
         expect(
           out,
           isNot(contains('url(')),
-          reason: 'Unsafe url() declarations must not leak into sanitized output.',
+          reason:
+              'Unsafe url() declarations must not leak into sanitized output.',
         );
         expect(
           out,
