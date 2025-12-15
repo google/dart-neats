@@ -469,6 +469,14 @@ extension on ExpressionResolver<SqlContext> {
         Literal<CustomDataType?>(value: final value) =>
           context.addParameter(value?.toDatabase()),
         Literal<T>(value: final value) => context.addParameter(value),
+        ExpressionBlobLength(:final value) => 'LENGTH(${expr(value)})',
+        ExpressionBlobToHex(:final value) => 'HEX(${expr(value)})',
+        ExpressionBlobDecodeUtf8(:final value) =>
+          'CAST(${expr(value)} AS TEXT)',
+        ExpressionBlobSublist(:final value, :final start, :final length) =>
+          'SUBSTR(${expr(value)}, ${expr(start)} + 1 ${length != null ? ', ${expr(length)}' : ''})',
+        ExpressionBlobConcat(:final left, :final right) =>
+          'CAST(${expr(left)} || ${expr(right)} AS BLOB)',
         final ExpressionNumDivide e =>
           '( CAST(${expr(e.left)} AS REAL) ${e.operator} ${expr(e.right)} )',
         final BinaryOperationExpression e =>
@@ -564,6 +572,9 @@ extension on BinaryOperationExpression {
         ExpressionNumSubtract<num>() => '-',
         ExpressionNumMultiply<num>() => '*',
         ExpressionNumDivide<num>() => '/',
+        ExpressionBlobConcat() => throw AssertionError(
+            'ExpressionBlobConcat must be explicitly handled',
+          ),
       };
 }
 

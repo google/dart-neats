@@ -453,6 +453,7 @@ final class _MysqlRowReader extends RowReader {
     }
     // If we do CAST(? AS BINARY) the database won't return it as a BLOB, but as
     // a binary string instead.
+    // This is plausibly an issue with package:mysql1
     if (value is String) {
       return latin1.encode(value);
     }
