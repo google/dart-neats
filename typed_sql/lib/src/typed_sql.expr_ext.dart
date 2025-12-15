@@ -14,6 +14,31 @@
 
 part of 'typed_sql.dart';
 
+/// Deprecation notice for `.isNull()` on non-nullable `Expr<T>`.
+///
+/// We have `.isNull()` on `Expr<T?>` which also matches `Expr<T>`, so we
+/// overwrite `.isNull()` on `Expr<T>`, such that we can warn users from using
+/// it. There is nothing dangerous about using `.isNull()` on a non-nullable
+/// expression, it's the same as an unnecessary null-check in Dart.
+const _isNullOnNonNullableDeprecation =
+    'Avoid using `.isNull()` on a non-nullable `Expr<T>`, '
+    'this will always evaluate to `TRUE`';
+
+/// Deprecation notice for `.isNotNull()` on non-nullable `Expr<T>`.
+const _isNotNullOnNonNullableDeprecation =
+    'Avoid using `.isNotNull()` on a non-nullable `Expr<T>`, '
+    'this will always evaluate to `FALSE`';
+
+/// Deprecation notice for `.orElse()` on non-nullable `Expr<T>`.
+const _orElseOnNonNullableDeprecation =
+    'Avoid using `.orElse(value)` on a non-nullable `Expr<T>`, '
+    'this will never evaluate to `value`, because `this` cannot be `NULL`';
+
+/// Deprecation notice for `.orValueElse()` on non-nullable `Expr<T>`.
+const _orElseValueOnNonNullableDeprecation =
+    'Avoid using `.orElseValue(value)` on a non-nullable `Expr<T>`, '
+    'this will never evaluate to `value`, because `this` cannot be `NULL`';
+
 /// Extension methods for accessing the encoded value of a custom data type
 /// expression.
 extension CustomTypeExt<S> on Expr<CustomDataType<S>> {
@@ -386,6 +411,53 @@ extension ExpressionBool on Expr<bool> {
   /// {@macro notEquals}
   Expr<bool> notEqualsValue(bool? other) => notEquals(toExpr(other));
 
+  /// {@macro isNull}
+  ///
+  /// {@template isNull-non-nullable-deprecation}
+  /// > [!WARNING]
+  /// > This will **always returns `TRUE`** because `this` is a
+  /// > _non-nullable expression_.
+  /// >
+  /// > **Avoid** using this method, it is always unnecessary.
+  /// {@endtemplate}
+  /// @nodoc
+  @Deprecated(_isNullOnNonNullableDeprecation)
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+
+  /// {@macro isNotNull}
+  ///
+  /// {@template isNotNull-non-nullable-deprecation}
+  /// > [!WARNING]
+  /// > This will **always returns `FALSE`** because `this` is a
+  /// > _non-nullable expression_.
+  /// >
+  /// > **Avoid** using this method, it is always unnecessary.
+  /// {@endtemplate}
+  /// @nodoc
+  @Deprecated(_isNotNullOnNonNullableDeprecation)
+  Expr<bool> isNotNull() => isNull().not();
+
+  /// {@macro orElse}
+  ///
+  /// {@template orElse-non-nullable-deprecation}
+  ///
+  /// > [!WARNING]
+  /// > This will **never return [value]** because `this` is a
+  /// > _non-nullable expression_.
+  /// >
+  /// > **Avoid** using this method, it is always unnecessary.
+  /// {@endtemplate}
+  /// @nodoc
+  @Deprecated(_orElseOnNonNullableDeprecation)
+  Expr<bool> orElse(Expr<bool> value) => OrElseExpression._(this, value);
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseValueOnNonNullableDeprecation)
+  Expr<bool> orElseValue(bool value) => orElse(toExpr(value));
+
   /// Negate this expression.
   ///
   /// This is equivalent to `NOT this` in SQL.
@@ -469,6 +541,34 @@ extension ExpressionString on Expr<String> {
 
   /// {@macro notEquals}
   Expr<bool> notEqualsValue(String? other) => notEquals(toExpr(other));
+
+  /// {@macro isNull}
+  ///
+  /// {@macro isNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNullOnNonNullableDeprecation)
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+
+  /// {@macro isNotNull}
+  ///
+  /// {@macro isNotNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNotNullOnNonNullableDeprecation)
+  Expr<bool> isNotNull() => isNull().not();
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseOnNonNullableDeprecation)
+  Expr<String> orElse(Expr<String> value) => OrElseExpression._(this, value);
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseValueOnNonNullableDeprecation)
+  Expr<String> orElseValue(String value) => orElse(toExpr(value));
 
   /// Check if the string is empty.
   ///
@@ -855,6 +955,34 @@ extension ExpressionNum<T extends num> on Expr<T> {
   /// {@macro notEquals}
   Expr<bool> notEqualsValue(T? other) => notEquals(toExpr(other));
 
+  /// {@macro isNull}
+  ///
+  /// {@macro isNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNullOnNonNullableDeprecation)
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+
+  /// {@macro isNotNull}
+  ///
+  /// {@macro isNotNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNotNullOnNonNullableDeprecation)
+  Expr<bool> isNotNull() => isNull().not();
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseOnNonNullableDeprecation)
+  Expr<T> orElse(Expr<T> value) => OrElseExpression._(this, value);
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseValueOnNonNullableDeprecation)
+  Expr<T> orElseValue(T value) => orElse(toExpr(value));
+
   /// {@macro lessThan}
   Expr<bool> operator <(Expr<T> other) => ExpressionLessThan(this, other);
 
@@ -915,6 +1043,35 @@ extension ExpressionDateTime on Expr<DateTime> {
   /// {@macro notEquals}
   Expr<bool> notEqualsValue(DateTime? other) => notEquals(toExpr(other));
 
+  /// {@macro isNull}
+  ///
+  /// {@macro isNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNullOnNonNullableDeprecation)
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+
+  /// {@macro isNotNull}
+  ///
+  /// {@macro isNotNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNotNullOnNonNullableDeprecation)
+  Expr<bool> isNotNull() => isNull().not();
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseOnNonNullableDeprecation)
+  Expr<DateTime> orElse(Expr<DateTime> value) =>
+      OrElseExpression._(this, value);
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseValueOnNonNullableDeprecation)
+  Expr<DateTime> orElseValue(DateTime value) => orElse(toExpr(value));
+
   // TODO: Decide if we want to support storing a Duration
   // Expression<bool> difference(Expression<DateTime> value) =>
 
@@ -959,4 +1116,37 @@ extension ExpressionDateTime on Expr<DateTime> {
   Expr<bool> isAfterValue(DateTime value) => isAfter(toExpr(value));
 
   // TODO: More features... maybe there is a duration in SQL?
+}
+
+/// Extension methods for [JsonValue] expressions.
+extension ExpressionJsonValue on Expr<JsonValue> {
+  /// {@macro isNull}
+  ///
+  /// {@macro isNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNullOnNonNullableDeprecation)
+  Expr<bool> isNull() =>
+      ExpressionIsNotDistinctFrom<JsonValue>(this, Expr.null$);
+
+  /// {@macro isNotNull}
+  ///
+  /// {@macro isNotNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNotNullOnNonNullableDeprecation)
+  Expr<bool> isNotNull() => isNull().not();
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseOnNonNullableDeprecation)
+  Expr<JsonValue> orElse(Expr<JsonValue> value) =>
+      OrElseExpression._(this, value);
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseValueOnNonNullableDeprecation)
+  Expr<JsonValue> orElseValue(JsonValue value) => orElse(toExpr(value));
 }
