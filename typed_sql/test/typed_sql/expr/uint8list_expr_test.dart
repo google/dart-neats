@@ -268,6 +268,23 @@ final _cases = <({
     expr: toExpr(Uint8List.fromList([])) + toExpr(Uint8List.fromList([3, 4])),
     expected: Uint8List.fromList([3, 4]),
   ),
+  (
+    name: '[0xFF] + [0xFF] (Invalid UTF-8 preservation)',
+    expr:
+        toExpr(Uint8List.fromList([0xFF])) + toExpr(Uint8List.fromList([0xFF])),
+    expected: Uint8List.fromList([0xFF, 0xFF]),
+  ),
+  (
+    name: 'Invalid UTF-8 sequence [0xC3] (lonely start byte) + [0x28]',
+    expr:
+        toExpr(Uint8List.fromList([0xC3])) + toExpr(Uint8List.fromList([0x28])),
+    expected: Uint8List.fromList([0xC3, 0x28]),
+  ),
+  (
+    name: 'Null byte check [0] + [0]',
+    expr: toExpr(Uint8List.fromList([0])) + toExpr(Uint8List.fromList([0])),
+    expected: Uint8List.fromList([0, 0]),
+  ),
 
   // Tests for .subList(start)
   (
@@ -293,6 +310,29 @@ final _cases = <({
   (
     name: '[1,2,3,4].subList(5)',
     expr: toExpr(Uint8List.fromList([1, 2, 3, 4])).subList(toExpr(5)),
+    expected: Uint8List.fromList([]),
+  ),
+  (
+    name: '[1, 2, 3].subList(0) (Full list)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3])).subList(toExpr(0)),
+    expected: Uint8List.fromList([1, 2, 3]),
+  ),
+  (
+    name: '[1, 2, 3].subList(1) (Skip first)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3])).subList(toExpr(1)),
+    expected: Uint8List.fromList([2, 3]),
+  ),
+  (
+    name: '[1, 2, 3].subList(2, length: 1) (Last item)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3]))
+        .subList(toExpr(2), length: toExpr(1)),
+    expected: Uint8List.fromList([3]),
+  ),
+  (
+    name: '[1, 2, 3].subList(10) (Out of bounds start)',
+    // SQL behavior for out-of-bounds varies (usually empty string/blob),
+    // ensuring it doesn't crash is valuable.
+    expr: toExpr(Uint8List.fromList([1, 2, 3])).subList(toExpr(10)),
     expected: Uint8List.fromList([]),
   ),
 

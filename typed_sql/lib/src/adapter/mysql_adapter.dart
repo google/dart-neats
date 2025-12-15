@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert' show json, latin1, utf8;
+import 'dart:convert' show Latin1Codec, json, latin1, utf8;
 import 'dart:io';
 import 'dart:typed_data' show Uint8List;
 
@@ -454,7 +454,8 @@ final class _MysqlRowReader extends RowReader {
     // If we do CAST(? AS BINARY) the database won't return it as a BLOB, but as
     // a binary string instead.
     if (value is String) {
-      return latin1.encode(value);
+      return const Latin1Codec(allowInvalid: true).encode(value);
+      //return latin1.encode(value);
     }
     if (value == null) {
       return null;
