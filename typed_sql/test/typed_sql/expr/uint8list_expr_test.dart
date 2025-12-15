@@ -192,6 +192,159 @@ final _cases = <({
     expr: toExpr(Uint8List.fromList([1, 2, 3])).notEqualsValue(null),
     expected: true,
   ),
+
+  // Tests for .length
+  (
+    name: '[].length',
+    expr: toExpr(Uint8List.fromList([])).length,
+    expected: 0,
+  ),
+  (
+    name: '[1,2,3].length',
+    expr: toExpr(Uint8List.fromList([1, 2, 3])).length,
+    expected: 3,
+  ),
+  // Tests for .toHex()
+  (
+    name: '[].toHex()',
+    expr: toExpr(Uint8List.fromList([])).toHex(),
+    expected: '',
+  ),
+  (
+    name: '[1,2,3].toHex()',
+    expr: toExpr(Uint8List.fromList([1, 2, 3])).toHex(),
+    expected: '010203',
+  ),
+  (
+    name: '[255].toHex()',
+    expr: toExpr(Uint8List.fromList([255])).toHex(),
+    expected: 'FF',
+  ),
+
+  // Tests for .concat(...)
+  (
+    name: '[].concat([])',
+    expr: toExpr(Uint8List.fromList([])).concat(toExpr(Uint8List.fromList([]))),
+    expected: Uint8List.fromList([]),
+  ),
+  (
+    name: '[1,2].concat([3,4])',
+    expr: toExpr(Uint8List.fromList([1, 2]))
+        .concat(toExpr(Uint8List.fromList([3, 4]))),
+    expected: Uint8List.fromList([1, 2, 3, 4]),
+  ),
+  (
+    name: '[1,2].concat([])',
+    expr: toExpr(Uint8List.fromList([1, 2]))
+        .concat(toExpr(Uint8List.fromList([]))),
+    expected: Uint8List.fromList([1, 2]),
+  ),
+  (
+    name: '[].concat([3,4])',
+    expr: toExpr(Uint8List.fromList([]))
+        .concat(toExpr(Uint8List.fromList([3, 4]))),
+    expected: Uint8List.fromList([3, 4]),
+  ),
+
+  // Tests for .operator+
+  (
+    name: '[].operator+([])',
+    expr: toExpr(Uint8List.fromList([])) + toExpr(Uint8List.fromList([])),
+    expected: Uint8List.fromList([]),
+  ),
+  (
+    name: '[1,2].operator+([3,4])',
+    expr:
+        toExpr(Uint8List.fromList([1, 2])) + toExpr(Uint8List.fromList([3, 4])),
+    expected: Uint8List.fromList([1, 2, 3, 4]),
+  ),
+  (
+    name: '[1,2].operator+([])',
+    expr: toExpr(Uint8List.fromList([1, 2])) + toExpr(Uint8List.fromList([])),
+    expected: Uint8List.fromList([1, 2]),
+  ),
+  (
+    name: '[].operator+([3,4])',
+    expr: toExpr(Uint8List.fromList([])) + toExpr(Uint8List.fromList([3, 4])),
+    expected: Uint8List.fromList([3, 4]),
+  ),
+
+  // Tests for .subList(start)
+  (
+    name: '[1,2,3,4].subList(0)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4])).subList(toExpr(0)),
+    expected: Uint8List.fromList([1, 2, 3, 4]),
+  ),
+  (
+    name: '[1,2,3,4].subList(1)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4])).subList(toExpr(1)),
+    expected: Uint8List.fromList([2, 3, 4]),
+  ),
+  (
+    name: '[1,2,3,4].subList(3)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4])).subList(toExpr(3)),
+    expected: Uint8List.fromList([4]),
+  ),
+  (
+    name: '[1,2,3,4].subList(4)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4])).subList(toExpr(4)),
+    expected: Uint8List.fromList([]),
+  ),
+  (
+    name: '[1,2,3,4].subList(5)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4])).subList(toExpr(5)),
+    expected: Uint8List.fromList([]),
+  ),
+
+  // Tests for .subList(start, length: length)
+  (
+    name: '[1,2,3,4].subList(0, length: 2)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
+        .subList(toExpr(0), length: toExpr(2)),
+    expected: Uint8List.fromList([1, 2]),
+  ),
+  (
+    name: '[1,2,3,4].subList(1, length: 2)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
+        .subList(toExpr(1), length: toExpr(2)),
+    expected: Uint8List.fromList([2, 3]),
+  ),
+  (
+    name: '[1,2,3,4].subList(2, length: 2)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
+        .subList(toExpr(2), length: toExpr(2)),
+    expected: Uint8List.fromList([3, 4]),
+  ),
+  (
+    name: '[1,2,3,4].subList(3, length: 2)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
+        .subList(toExpr(3), length: toExpr(2)),
+    expected: Uint8List.fromList([4]),
+  ),
+  (
+    name: '[1,2,3,4].subList(4, length: 2)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
+        .subList(toExpr(4), length: toExpr(2)),
+    expected: Uint8List.fromList([]),
+  ),
+  (
+    name: '[1,2,3,4].subList(0, length: 0)',
+    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
+        .subList(toExpr(0), length: toExpr(0)),
+    expected: Uint8List.fromList([]),
+  ),
+
+  // Tests for .decodeUtf8()
+  (
+    name: 'Uint8List.fromList([72, 101, 108, 108, 111]).decodeUtf8()',
+    expr: toExpr(Uint8List.fromList([72, 101, 108, 108, 111])).decodeUtf8(),
+    expected: 'Hello',
+  ),
+  (
+    name: 'Uint8List.fromList([]).decodeUtf8()',
+    expr: toExpr(Uint8List.fromList([])).decodeUtf8(),
+    expected: '',
+  ),
 ];
 
 void main() {

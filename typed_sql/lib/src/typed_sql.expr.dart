@@ -231,7 +231,6 @@ base mixin _ExprDateTime implements _ExprTyped<DateTime> {
   final _type = ColumnType.dateTime;
 }
 
-// ignore: unused_element
 base mixin _ExprBlob implements _ExprTyped<Uint8List> {
   @override
   final _type = ColumnType.blob;
@@ -682,4 +681,36 @@ final class ExpressionNumMultiply<T extends num>
 final class ExpressionNumDivide<T extends num>
     extends BinaryOperationExpression<T, double> with _ExprReal {
   ExpressionNumDivide(super.left, super.right);
+}
+
+final class ExpressionBlobLength extends SingleValueExpr<int>
+    with _ExprInteger {
+  final Expr<Uint8List> value;
+  ExpressionBlobLength(this.value) : super._();
+}
+
+final class ExpressionBlobConcat
+    extends BinaryOperationExpression<Uint8List, Uint8List> with _ExprBlob {
+  ExpressionBlobConcat(super.left, super.right);
+}
+
+final class ExpressionBlobToHex extends SingleValueExpr<String> with _ExprText {
+  final Expr<Uint8List> value;
+  ExpressionBlobToHex(this.value) : super._();
+}
+
+final class ExpressionBlobSublist extends SingleValueExpr<Uint8List>
+    with _ExprBlob {
+  final Expr<Uint8List> value;
+
+  /// Start index of the substring, zero-indexed (like in Dart).
+  final Expr<int> start;
+  final Expr<int>? length;
+  ExpressionBlobSublist(this.value, this.start, [this.length]) : super._();
+}
+
+final class ExpressionBlobDecodeUtf8 extends SingleValueExpr<String>
+    with _ExprText {
+  final Expr<Uint8List> value;
+  ExpressionBlobDecodeUtf8(this.value) : super._();
 }

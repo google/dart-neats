@@ -499,6 +499,14 @@ extension on ExpressionResolver<SqlContext> {
         Literal<CustomDataType?>(value: final value) =>
           context.addParameter(value?.toDatabase()),
         Literal<T>(value: final value) => context.addParameter(value),
+        ExpressionBlobSublist(:final value, :final start, :final length) =>
+          'SUBSTRING(${expr(value)} FROM CAST(${expr(start)} AS INTEGER) + 1 '
+              '${length != null ? 'FOR CAST(${expr(length)} AS INTEGER)' : ''})',
+        ExpressionBlobLength(:final value) => 'OCTET_LENGTH(${expr(value)})',
+        ExpressionBlobToHex(:final value) =>
+          'UPPER(ENCODE(${expr(value)}, \'hex\'))',
+        ExpressionBlobDecodeUtf8(:final value) =>
+          'CONVERT_FROM(${expr(value)}, \'UTF8\')',
         final ExpressionNumDivide e =>
           '( CAST(${expr(e.left)} AS NUMERIC) ${e.operator} ${expr(e.right)} )',
         final BinaryOperationExpression e =>
@@ -595,6 +603,7 @@ extension on BinaryOperationExpression {
         ExpressionNumSubtract<num>() => '-',
         ExpressionNumMultiply<num>() => '*',
         ExpressionNumDivide<num>() => '/',
+        ExpressionBlobConcat() => '||',
       };
 }
 
