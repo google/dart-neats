@@ -14,28 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e
-
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ROOT="${SCRIPT_DIR}/.."
 
-# Create directory for exposing sockets
-SOCKET_DIR="${ROOT}/.dart_tool/run/mariadb/"
-mkdir -p "$SOCKET_DIR"
+cleanup() {
+  echo "🛑 Shutting down all test databases"
+  kill $(jobs -p) 2>/dev/null
+  wait
+  echo "✅ All test databases stopped"
+}
 
-trap "docker stop typed_sql_mariadb 2>/dev/null || true" EXIT
+trap cleanup SIGINT EXIT
 
-docker run \
-  -t --rm \
-  --name typed_sql_mariadb \
-  -e MARIADB_ROOT_PASSWORD=root \
-  -v "$SOCKET_DIR":/run/mysqld/ \
-  --mount type=tmpfs,destination=/var/lib/mysql \
-  mariadb:11 \
-  --skip-log-bin \
-  --innodb-doublewrite=0 \
-  --innodb-flush-log-at-trx_commit=0 \
-  --sync-binlog=0 \
-  --skip-name-resolve &
+echo "🚀 Launching all test databases"
+
+"$ROOT/tool/run_postgres_test_server.sh" 2>&1 | sed "s/^/[Postgres] /" &
+"$ROOT/tool/run_mariadb_test_server.sh"  2>&1 | sed "s/^/[MariaDB]  /" &
 
 wait

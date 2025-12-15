@@ -50,7 +50,6 @@ jobs:
         image: mariadb:11
         env:
           MARIADB_ROOT_PASSWORD: root
-        # We cannot use healthcheck.sh for mysql
         options: >-
           --health-cmd "healthcheck.sh --connect --innodb_initialized"
           --health-interval 10s
@@ -75,3 +74,6 @@ jobs:
       if: always() && steps.install.outcome == 'success'
     - name: Run tests
       run: dart test -j 1
+      env:
+        MARIADB_PORT: 3306
+        POSTGRES_PORT: 5432

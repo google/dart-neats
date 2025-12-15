@@ -71,8 +71,7 @@ final class TestRunner<T extends Schema> {
     }
     return null;
   }();
-
-  late final String? _getMysqlSocket = () {
+  late final String? _getMariadbSocket = () {
     final socketFile = File('.dart_tool/run/mariadb/mysqld.sock');
     if (socketFile.existsSync()) {
       return socketFile.absolute.path;
@@ -81,22 +80,28 @@ final class TestRunner<T extends Schema> {
   }();
 
   DatabaseAdapter _getPostgres() {
-    return DatabaseAdapter.postgresTestDatabase(host: _getPostgresSocket);
+    return DatabaseAdapter.postgresTestDatabase(
+      host: _getPostgresSocket,
+      port: int.tryParse(Platform.environment['POSTGRES_PORT'] ?? ''),
+    );
   }
 
-  DatabaseAdapter _getMysql() {
-    return mysqlTestingAdapter(host: _getMysqlSocket);
+  DatabaseAdapter _getMariadb() {
+    return mysqlTestingAdapter(
+      host: _getMariadbSocket,
+      port: int.tryParse(Platform.environment['MARIADB_PORT'] ?? ''),
+    );
   }
 
   void run() {
     DatabaseAdapter Function() getSqlite;
     DatabaseAdapter Function() getPostgres;
-    DatabaseAdapter Function() getMysql;
+    DatabaseAdapter Function() getMariadb;
 
     if (_resetDatabaseForEachTest) {
       getSqlite = DatabaseAdapter.sqlite3TestDatabase;
       getPostgres = _getPostgres;
-      getMysql = _getMysql;
+      getMariadb = _getMariadb;
     } else {
       late DatabaseAdapter sqlite;
       getSqlite = () => DatabaseAdapter.withNopClose(sqlite);
@@ -104,18 +109,18 @@ final class TestRunner<T extends Schema> {
       late DatabaseAdapter postgres;
       getPostgres = () => DatabaseAdapter.withNopClose(postgres);
 
-      late DatabaseAdapter mysql;
-      getMysql = () => DatabaseAdapter.withNopClose(mysql);
+      late DatabaseAdapter mariadb;
+      getMariadb = () => DatabaseAdapter.withNopClose(mariadb);
 
       setUpAll(() async {
         sqlite = DatabaseAdapter.sqlite3TestDatabase();
         postgres = _getPostgres();
-        mysql = _getMysql();
+        mariadb = _getMariadb();
       });
       tearDownAll(() async {
         await sqlite.close();
         await postgres.close();
-        await mysql.close();
+        await mariadb.close();
       });
     }
 
@@ -174,13 +179,14 @@ final class TestRunner<T extends Schema> {
     }
 
     for (final testcase in _tests) {
-      test('${testcase.name} (variant: mysql)', () async {
+      test('${testcase.name} (variant: mariadb)', () async {
         if (testcase.skipMysql != null) {
           markTestSkipped(testcase.skipMysql!);
           return;
         }
 
-        final adapter = DatabaseAdapter.withLogging(getMysql(), printOnFailure);
+        final adapter =
+            DatabaseAdapter.withLogging(getMariadb(), printOnFailure);
         final db = Database<T>(adapter, mysqlDialect());
 
         try {

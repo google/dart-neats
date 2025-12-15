@@ -67,6 +67,12 @@ extension Uint8ListExt<T extends Uint8List?> on T {
   Expr<T> get asExpr => toExpr(this);
 }
 
+/// Extension methods for wrapping a [JsonValue] as an expression.
+extension JsonValueExt<T extends JsonValue?> on T {
+  /// Wrap [JsonValue] as an [Expr] expression for use with `package:typed_sql`.
+  Expr<T> get asExpr => toExpr(this);
+}
+
 /// Extension methods for casting `NULL` to other types.
 extension ExpressionNull on Expr<Null> {
   /// Cast as [Expr<int?>] using `CAST(NULL AS BIGINT)`.
@@ -110,6 +116,14 @@ extension ExpressionNull on Expr<Null> {
   /// to any method expecting an `Expr<Uint8List?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
   Expr<Uint8List?> asBlob() => CastExpression._(this, ColumnType.blob);
+
+  /// Cast as [Expr<JsonValue?>] using `CAST(NULL AS JSONB)`.
+  ///
+  /// This method is rarely necessary, as you can generally pass `toExpr(null)`
+  /// to any method expecting an `Expr<JsonValue?>`. But in some complex scenarios
+  /// this can alleviate type inference issues.
+  Expr<JsonValue?> asJsonValue() =>
+      CastExpression._(this, ColumnType.jsonValue);
 
   // TODO: Generate cast for CustomDataType!
 }
@@ -319,6 +333,41 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
   Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
 
   /// {@macro isNotNull}
+  Expr<bool> isNotNull() => isNull().not();
+}
+
+/// Extension methods for nullable [JsonValue] expressions.
+extension ExpressionNullableJsonValue on Expr<JsonValue?> {
+  /// {@macro orElse}
+  /// {@template orElse-not-json-null}
+  ///
+  /// > [!IMPORTANT]
+  /// > This method only returns the _orElse [value]_, if `this` is an
+  /// > SQL `NULL`.
+  /// > If `this` is an `JsonValue(null)`, then `this` will be returned.
+  /// {@endtemplate}
+  Expr<JsonValue> orElse(Expr<JsonValue> value) =>
+      OrElseExpression._(this, value);
+
+  /// {@macro orElse}
+  /// {@macro orElse-not-json-null}
+  Expr<JsonValue> orElseValue(JsonValue value) => orElse(toExpr(value));
+
+  /// {@macro isNull}
+  ///
+  /// > [!IMPORTANT]
+  /// > This method only returns `true` if `this` is an SQL `NULL`, meaning:
+  /// >  * `toExpr(null as JsonValue?).isNull()` evaluates  to `true`, and,
+  /// >  * `toExpr(JsonValue(null) as JsonValue?).isNull()` evaluates  to `false`.
+  Expr<bool> isNull() =>
+      ExpressionIsNotDistinctFrom<JsonValue>(this, Expr.null$);
+
+  /// {@macro isNotNull}
+  ///
+  /// > [!IMPORTANT]
+  /// > This method only returns `true` if `this` is not an SQL `NULL`, meaning:
+  /// >  * `toExpr(null as JsonValue?).isNull()` evaluates  to `false`, and,
+  /// >  * `toExpr(JsonValue(null) as JsonValue?).isNull()` evaluates  to `true`.
   Expr<bool> isNotNull() => isNull().not();
 }
 
