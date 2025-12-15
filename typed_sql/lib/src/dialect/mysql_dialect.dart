@@ -527,14 +527,12 @@ extension on ExpressionResolver<SqlContext> {
         Literal<T>(value: final value) => context.addParameter(value),
         ExpressionBlobLength(:final value) => 'LENGTH(${expr(value)})',
         ExpressionBlobToHex(:final value) => 'HEX(${expr(value)})',
-        ExpressionBlobSublist(:final value, :final start, :final length) =>
-          'CAST(SUBSTRING(${expr(value)}, '
-              '${expr(start)} + 1 ${length != null ? ', ${expr(length)}' : ''}) '
-              'AS CHAR CHARACTER SET latin1)',
         ExpressionBlobDecodeUtf8(:final value) =>
           'CONVERT(${expr(value)} USING utf8mb4)',
+        ExpressionBlobSublist(:final value, :final start, :final length) =>
+          'CAST(SUBSTRING(${expr(value)}, ${expr(start)} + 1 ${length != null ? ', ${expr(length)}' : ''}) AS BINARY)',
         ExpressionBlobConcat(left: final l, right: final r) =>
-          'CAST(CONCAT(${expr(l)}, ${expr(r)}) AS CHAR CHARACTER SET latin1)',
+          'CAST(CONCAT(${expr(l)}, ${expr(r)}) AS BINARY)',
         final ExpressionNumDivide e =>
           '( CAST(${expr(e.left)} AS DOUBLE) ${e.operator} ${expr(e.right)} )',
         final BinaryOperationExpression e =>
