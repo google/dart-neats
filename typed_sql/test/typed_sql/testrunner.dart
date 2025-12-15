@@ -131,7 +131,7 @@ final class TestRunner<T extends Schema> {
       getMysql = () => DatabaseAdapter.withNopClose(mysql);
 
       late DatabaseAdapter mariadb;
-      getMariadb = () => DatabaseAdapter.withNopClose(mysql);
+      getMariadb = () => DatabaseAdapter.withNopClose(mariadb);
 
       setUpAll(() async {
         sqlite = DatabaseAdapter.sqlite3TestDatabase();
