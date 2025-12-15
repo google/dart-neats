@@ -78,23 +78,16 @@ class NodeSanitizer {
     if (text.isEmpty) return false;
 
     final lower = text.toLowerCase();
-    final parentTag = node.parent?.localName?.toLowerCase();
 
-    // CDATA-like patterns after HTML parsing
+    // Strip literal CDATA markers (especially inside SVG)
+     if (lower.contains('<![cdata[') || lower.contains(']]>')) {
+       return true;
+     }
+
+    // Parser-breaking patterns
     if (lower.contains('<script') ||
-        lower.contains(']]>') ||
-        lower.contains(']]&gt;') ||
-        lower.contains('document.cookie')) {
-      return true;
-    }
-
-    // Text inside SVG treated as CDATA-like script
-    if (parentTag == 'svg') {
-      if (lower.contains('alert(') ||
-          lower.contains('function(') ||
-          lower.contains('document.cookie')) {
-        return true;
-      }
+    lower.contains(']]&gt;')) {
+    return true;
     }
 
     // Strip encoded JS payloads

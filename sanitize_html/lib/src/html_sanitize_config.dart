@@ -422,7 +422,6 @@ class HtmlSanitizeConfig {
     'behavior',
     '-moz-binding',
     '-webkit-binding',
-    '@import',
   ];
 
   //
@@ -461,7 +460,7 @@ class HtmlSanitizeConfig {
   static final RegExp base64ValuePattern = RegExp(r'^[A-Za-z0-9+/=]+$');
 
   static final RegExp dangerousMarkupRegex = RegExp(
-    r'(<script|</script|<!\[CDATA\[)',
+    r'(<script|</script)',
     caseSensitive: false,
   );
 

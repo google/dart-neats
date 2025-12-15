@@ -839,24 +839,6 @@ void main() {
         expect(out.contains('Bad'), true);
       });
 
-      test('strip CDATA containing JS inside SVG', () {
-        const html = '''
-      <svg>
-        <![CDATA[
-          alert("XSS");
-        ]]>
-        <circle cx="50" cy="50" r="40"/>
-      </svg>
-    ''';
-
-        final out = validator.sanitize(html);
-
-        expect(out.contains('CDATA'), false);
-        expect(out.contains('alert'), false);
-        expect(out.contains('<svg'), true);
-        expect(out.contains('<circle'), true);
-      });
-
       test('meta refresh removed entirely', () {
         const html = '''
       <meta http-equiv="refresh" content="0;url=javascript:alert(1)">
@@ -1709,6 +1691,115 @@ void main() {
         expect(out, contains('<rect'));
         expect(out, contains('width="100"'));
         expect(out, contains('height="100"'));
+      });
+    });
+
+    group('Text nodes with JS-like content (non-executable)', () {
+      late SaneHtmlValidator validator;
+
+      setUp(() {
+        validator = SaneHtmlValidator(
+          allowElementId: (_) => true,
+          allowClassName: (_) => true,
+          addLinkRel: (_) => ['nofollow'],
+          allowAttributes: null,
+          allowTags: null,
+        );
+      });
+
+      test('KEEPS plain text containing document.cookie', () {
+        const html = 'hello <p>document.cookie</p> world';
+        expect(
+          validator.sanitize(html),
+          equals('hello <p>document.cookie</p> world'),
+        );
+      });
+
+      test('KEEPS plain text containing document.location', () {
+        const html = 'see <p>document.location</p> for details';
+        expect(
+          validator.sanitize(html),
+          equals('see <p>document.location</p> for details'),
+        );
+      });
+
+      test('KEEPS plain text containing window.location', () {
+        const html = '<p>window.location.href</p>';
+        expect(
+          validator.sanitize(html),
+          equals('<p>window.location.href</p>'),
+        );
+      });
+
+      test('KEEPS plain text containing document.write reference', () {
+        const html = '<p>Avoid using document.write in production</p>';
+        expect(
+          validator.sanitize(html),
+          equals('<p>Avoid using document.write in production</p>'),
+        );
+      });
+
+      test('KEEPS plain text that looks like JS function call', () {
+        const html = '<p>alert("test")</p>';
+        expect(
+          validator.sanitize(html),
+          equals('<p>alert("test")</p>'),
+        );
+      });
+
+      test('KEEPS plain text with function keyword', () {
+        const html = '<p>function test() { return 1; }</p>';
+        expect(
+          validator.sanitize(html),
+          equals('<p>function test() { return 1; }</p>'),
+        );
+      });
+
+      test('KEEPS JS keywords inside code tag', () {
+        const html = '<code>document.cookie</code>';
+        expect(
+          validator.sanitize(html),
+          equals('<code>document.cookie</code>'),
+        );
+      });
+
+      test('KEEPS JS keywords inside preformatted text', () {
+        const html = '<pre>if (document.cookie) { /* ... */ }</pre>';
+        expect(
+          validator.sanitize(html),
+          equals('<pre>if (document.cookie) { /* ... */ }</pre>'),
+        );
+      });
+
+      test('KEEPS plain text JS keywords inside SVG text node', () {
+        const html = '''
+<svg>
+  <text>document.cookie</text>
+</svg>
+''';
+
+        expect(
+          validator.sanitize(html).contains('document.cookie'),
+          true,
+        );
+      });
+
+      // Control cases: executable contexts must still be removed
+
+      test('REMOVES document.cookie inside script tag', () {
+        const html = '<script>document.cookie</script>';
+        expect(
+          validator.sanitize(html),
+          equals(''),
+        );
+      });
+
+      test('REMOVES document.cookie inside onclick attribute', () {
+        const html = '<button onclick="document.cookie">Click</button>';
+        expect(
+          validator.sanitize(html).contains('onclick'),
+          false,
+        );
       });
     });
   });
