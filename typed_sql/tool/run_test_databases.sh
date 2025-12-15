@@ -30,6 +30,5 @@ echo "🚀 Launching all test databases"
 
 "$ROOT/tool/run_postgres_test_server.sh" 2>&1 | sed "s/^/[Postgres] /" &
 "$ROOT/tool/run_mariadb_test_server.sh"  2>&1 | sed "s/^/[MariaDB]  /" &
-"$ROOT/tool/run_mysql_test_server.sh"    2>&1 | sed "s/^/[MySQL]    /" &
 
 wait
