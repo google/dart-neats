@@ -361,6 +361,43 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
   Expr<bool> isNotNull() => isNull().not();
 }
 
+/// Extension methods for nullable [Uint8List] expressions.
+extension ExpressionNullableUint8List on Expr<Uint8List?> {
+  /// {@macro orElse}
+  Expr<Uint8List> orElse(Expr<Uint8List> value) =>
+      OrElseExpression._(this, value);
+
+  /// {@macro orElse}
+  Expr<Uint8List> orElseValue(Uint8List value) => orElse(toExpr(value));
+
+  /// {@macro equals}
+  Expr<bool> equals(Expr<Uint8List> other) =>
+      ExpressionEquals(this, other).orElseValue(false);
+
+  /// {@macro equals}
+  Expr<bool> equalsValue(Uint8List other) => equals(toExpr(other));
+
+  /// {@macro notEquals}
+  Expr<bool> notEquals(Expr<Uint8List> other) => equals(other).not();
+
+  /// {@macro notEquals}
+  Expr<bool> notEqualsValue(Uint8List other) => notEquals(toExpr(other));
+
+  /// {@macro isNotDistinctFrom}
+  Expr<bool> isNotDistinctFrom(Expr<Uint8List?> other) =>
+      ExpressionIsNotDistinctFrom(this, other);
+
+  /// {@macro equalsUnlessNull}
+  Expr<bool?> equalsUnlessNull(Expr<Uint8List?> other) =>
+      ExpressionEquals(this, other);
+
+  /// {@macro isNull}
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+
+  /// {@macro isNotNull}
+  Expr<bool> isNotNull() => isNull().not();
+}
+
 /// Extension methods for nullable [JsonValue] expressions.
 extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// {@macro orElse}
@@ -1116,6 +1153,51 @@ extension ExpressionDateTime on Expr<DateTime> {
   Expr<bool> isAfterValue(DateTime value) => isAfter(toExpr(value));
 
   // TODO: More features... maybe there is a duration in SQL?
+}
+
+/// Extension methods for [Uint8List] expressions.
+extension ExpressionUint8List on Expr<Uint8List> {
+  /// {@macro equals}
+  Expr<bool> equals(Expr<Uint8List?> other) =>
+      ExpressionEquals(this, other).orElseValue(false);
+
+  /// {@macro equals}
+  Expr<bool> equalsValue(Uint8List? other) => equals(toExpr(other));
+
+  /// {@macro notEquals}
+  Expr<bool> notEquals(Expr<Uint8List?> other) => equals(other).not();
+
+  /// {@macro notEquals}
+  Expr<bool> notEqualsValue(Uint8List? other) => notEquals(toExpr(other));
+
+  /// {@macro isNull}
+  ///
+  /// {@macro isNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNullOnNonNullableDeprecation)
+  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+
+  /// {@macro isNotNull}
+  ///
+  /// {@macro isNotNull-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_isNotNullOnNonNullableDeprecation)
+  Expr<bool> isNotNull() => isNull().not();
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseOnNonNullableDeprecation)
+  Expr<Uint8List> orElse(Expr<Uint8List> value) =>
+      OrElseExpression._(this, value);
+
+  /// {@macro orElse}
+  ///
+  /// {@macro orElse-non-nullable-deprecation}
+  /// @nodoc
+  @Deprecated(_orElseValueOnNonNullableDeprecation)
+  Expr<Uint8List> orElseValue(Uint8List value) => orElse(toExpr(value));
 }
 
 /// Extension methods for [JsonValue] expressions.
