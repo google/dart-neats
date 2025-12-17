@@ -516,7 +516,57 @@ extension on ExpressionResolver<SqlContext> {
         EncodedCustomDataTypeExpression(:final value) => expr(value),
         CurrentTimestampExpression _ =>
           'strftime(\'%Y-%m-%dT%H:%M:%SZ\', \'now\')',
+        ExpressionJsonRef e => _extract(e, ColumnType.jsonValue),
+        ExpressionJsonExtract(:final ref, :final type) => _extract(ref, type),
       };
+
+  String _extract(ExpressionJsonRef ref, ColumnType type) {
+    final (root, path) = jsonPath(ref);
+    final rootSql = expr(root);
+    final pathSql = context.addParameter(path);
+
+    String strictExtract(String condition) =>
+        '(SELECT CASE WHEN json_type(v, $pathSql) $condition'
+        ' THEN jsonb_extract(v, $pathSql)'
+        ' ELSE NULL END'
+        ' FROM (SELECT $rootSql AS v))';
+
+    return switch (type) {
+      ColumnType.jsonValue =>
+        '(SELECT CASE WHEN json_type(v, $pathSql) = \'null\''
+            ' THEN jsonb(\'null\')'
+            ' ELSE jsonb_extract(v, $pathSql) END'
+            ' FROM (SELECT $rootSql AS v))',
+      ColumnType.integer => strictExtract("= 'integer'"),
+      ColumnType.real => strictExtract("IN ('real', 'integer')"),
+      ColumnType.text => strictExtract("= 'text'"),
+      ColumnType.boolean =>
+        '(SELECT CASE json_type(v, $pathSql) WHEN \'true\' THEN 1 WHEN \'false\' THEN 0 ELSE NULL END FROM (SELECT $rootSql AS v))',
+      _ => throw UnsupportedError('Unsupported JSON extract type'),
+    };
+  }
+
+  /// Get root and path from [ref].
+  (Expr<JsonValue?>, String) jsonPath(ExpressionJsonRef ref) {
+    switch (ref) {
+      case ExpressionJsonRefRoot(:final value):
+        return (value, r'$');
+      case ExpressionJsonRefKey(:final value, :final key):
+        final (root, path) = jsonPath(value);
+        return (root, '$path.${_escapeJsonPathKey(key)}');
+      case ExpressionJsonRefIndex(:final value, :final index):
+        final (root, path) = jsonPath(value);
+        return (root, '$path[$index]');
+    }
+  }
+
+  String _escapeJsonPathKey(String key) {
+    // SQLite allows "key" for keys with spaces/special chars.
+    if (RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$').hasMatch(key)) {
+      return key;
+    }
+    return '"${key.replaceAll(r'\', r'\u005c').replaceAll('"', r'\u0022')}"';
+  }
 }
 
 final class _RangeTracker {

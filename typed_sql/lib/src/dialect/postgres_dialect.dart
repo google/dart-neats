@@ -547,7 +547,75 @@ extension on ExpressionResolver<SqlContext> {
         final CastExpression e => 'CAST(${expr(e.value)} AS ${e.type.sqlType})',
         EncodedCustomDataTypeExpression(:final value) => expr(value),
         CurrentTimestampExpression _ => '(NOW() AT TIME ZONE \'UTC\')',
+        ExpressionJsonRef e => extract(e, ColumnType.jsonValue),
+        ExpressionJsonExtract(:final ref, :final type) => extract(ref, type),
       };
+
+  /// Extracts a value from a JSON reference using `jsonb_path_query_first`.
+  ///
+  /// This implementation ensures type safety by embedding a type check
+  /// directly into the JSON path (e.g., `? (@.type() == "number")`).
+  /// If the type does not match, the query returns NULL, avoiding SQL cast errors.
+  ///
+  /// FUTURE: When targeting strictly PostgreSQL 17+, this can be simplified to:
+  /// ```sql
+  /// JSON_VALUE(root, 'path ? (@.type() == "type")' RETURNING sqlType)
+  /// ```
+  /// This would handle the extraction and casting natively.
+  String extract(ExpressionJsonRef ref, ColumnType type) {
+    final (root, path) = jsonPath(ref);
+    final rootSql = expr(root);
+
+    // If we want a JsonValue, return the jsonb object directly.
+    if (type == ColumnType.jsonValue) {
+      final pathParam = context.addParameter(path);
+      return 'jsonb_path_query_first($rootSql, $pathParam)';
+    }
+
+    // JSONPath with type check included
+    final pathParam = context.addParameter(
+      '$path ? (@.type() == "${type.jsonType}")',
+    );
+
+    final extract = '(jsonb_path_query_first($rootSql, $pathParam) #>> \'{}\')';
+    return switch (type) {
+      // Cast to NUMERIC first to handle floating point JSON numbers (e.g. 12.0)
+      // gracefully before casting to BIGINT.
+      ColumnType.integer =>
+        'CAST(CAST($extract AS NUMERIC) AS ${type.sqlType})',
+      ColumnType.real ||
+      ColumnType.boolean =>
+        'CAST($extract AS ${type.sqlType})',
+      ColumnType.text => extract,
+      _ => throw UnsupportedError('Unsupported JSON extract type'),
+    };
+  }
+
+  /// Recursively builds the root expression and the JSON path string.
+  (Expr<JsonValue?>, String) jsonPath(ExpressionJsonRef ref) {
+    switch (ref) {
+      case ExpressionJsonRefRoot(:final value):
+        return (value, r'$');
+      case ExpressionJsonRefKey(:final value, :final key):
+        final (root, path) = jsonPath(value);
+        return (root, '$path.${_escapeJsonPathKey(key)}');
+      case ExpressionJsonRefIndex(:final value, :final index):
+        final (root, path) = jsonPath(value);
+        return (root, '$path[$index]');
+    }
+  }
+
+  /// Escapes a key for use in a Postgres JSONPath.
+  ///
+  /// Keys with special characters must be enclosed in double quotes.
+  String _escapeJsonPathKey(String key) {
+    // Simple identifier check: strictly alphanumeric + underscore
+    if (RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$').hasMatch(key)) {
+      return key;
+    }
+    // Escape double quotes within the key
+    return '"${key.replaceAll('"', '\\"')}"';
+  }
 }
 
 final class _RangeTracker {
@@ -619,6 +687,13 @@ extension on ColumnType {
         ColumnType<Null> _ => throw UnsupportedError(
             'Null type cannot be used as column type',
           ),
+      };
+
+  String get jsonType => switch (this) {
+        ColumnType.integer || ColumnType.real => 'number',
+        ColumnType.boolean => 'boolean',
+        ColumnType.text => 'string',
+        _ => throw UnsupportedError('Unsupported JSON type: $this'),
       };
 }
 

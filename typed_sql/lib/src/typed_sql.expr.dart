@@ -236,6 +236,12 @@ base mixin _ExprBlob implements _ExprTyped<Uint8List> {
   final _type = ColumnType.blob;
 }
 
+// ignore: unused_element
+base mixin _ExprJsonValue implements _ExprTyped<JsonValue> {
+  @override
+  final _type = ColumnType.jsonValue;
+}
+
 /// Create an [Expr<T>] wrapping [value].
 ///
 /// The type of [value] must be one of:
@@ -713,4 +719,49 @@ final class ExpressionBlobDecodeUtf8 extends SingleValueExpr<String>
     with _ExprText {
   final Expr<Uint8List> value;
   ExpressionBlobDecodeUtf8(this.value) : super._();
+}
+
+/// Base class for JSON expressions reference a property or index in a
+/// [JsonValue].
+sealed class ExpressionJsonRef extends SingleValueExpr<JsonValue?> {
+  ExpressionJsonRef._() : super._();
+
+  @override
+  final _type = ColumnType.jsonValue;
+}
+
+/// The root of a JSON reference.
+final class ExpressionJsonRefRoot extends ExpressionJsonRef {
+  final Expr<JsonValue?> value;
+
+  ExpressionJsonRefRoot._(this.value) : super._();
+}
+
+/// Accessing a key in a JSON object, using `value -> 'key'` in SQL.
+final class ExpressionJsonRefKey extends ExpressionJsonRef {
+  final ExpressionJsonRef value;
+  final String key;
+
+  ExpressionJsonRefKey._(this.value, this.key) : super._();
+}
+
+/// Accessing a key in a JSON object, using `value -> index` in SQL.
+final class ExpressionJsonRefIndex extends ExpressionJsonRef {
+  final ExpressionJsonRef value;
+  final int index;
+
+  ExpressionJsonRefIndex._(this.value, this.index) : super._();
+}
+
+/// Extract a value from a reference into a [JsonValue] expressiong and casts it
+/// to [type].
+final class ExpressionJsonExtract<T extends Object>
+    extends SingleValueExpr<T?> {
+  final ExpressionJsonRef ref;
+  final ColumnType<T> type;
+
+  ExpressionJsonExtract._(this.ref, this.type) : super._();
+
+  @override
+  _ExprType<T> get _type => type;
 }

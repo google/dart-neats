@@ -431,6 +431,62 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// >  * `toExpr(null as JsonValue?).isNull()` evaluates  to `false`, and,
   /// >  * `toExpr(JsonValue(null) as JsonValue?).isNull()` evaluates  to `true`.
   Expr<bool> isNotNull() => isNull().not();
+
+  /// Access a key or index in this JSON value.
+  ///
+  /// Returns `NULL` if:
+  /// * The parent expression is `NULL`, or,
+  /// * The key/index does not exist.
+  ///
+  /// This will return `JsonValue(null)` if the key/index referenced is `null`
+  /// in the [JsonValue] represented by this expression.
+  Expr<JsonValue?> operator [](Object keyOrIndex) {
+    final ref = this is ExpressionJsonRef
+        ? this as ExpressionJsonRef
+        : ExpressionJsonRefRoot._(this);
+
+    if (keyOrIndex is String) {
+      return ExpressionJsonRefKey._(ref, keyOrIndex);
+    } else if (keyOrIndex is int) {
+      return ExpressionJsonRefIndex._(ref, keyOrIndex);
+    }
+    throw ArgumentError.value(
+      keyOrIndex,
+      'keyOrIndex',
+      'Must be String or int',
+    );
+  }
+
+  /// Convert this expression from JSON to [Expr<int?>].
+  ///
+  /// Returns `NULL`, if this expression is `NULL` or not a valid integer.
+  Expr<int?> asInt() => ExpressionJsonExtract._(
+        this is ExpressionJsonRef
+            ? this as ExpressionJsonRef
+            : ExpressionJsonRefRoot._(this),
+        ColumnType.integer,
+      );
+
+  Expr<String?> asString() => ExpressionJsonExtract._(
+        this is ExpressionJsonRef
+            ? this as ExpressionJsonRef
+            : ExpressionJsonRefRoot._(this),
+        ColumnType.text,
+      );
+
+  Expr<double?> asDouble() => ExpressionJsonExtract._(
+        this is ExpressionJsonRef
+            ? this as ExpressionJsonRef
+            : ExpressionJsonRefRoot._(this),
+        ColumnType.real,
+      );
+
+  Expr<bool?> asBool() => ExpressionJsonExtract._(
+        this is ExpressionJsonRef
+            ? this as ExpressionJsonRef
+            : ExpressionJsonRefRoot._(this),
+        ColumnType.boolean,
+      );
 }
 
 /// Extension methods for [bool] expressions.

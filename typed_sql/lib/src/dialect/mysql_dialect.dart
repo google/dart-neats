@@ -575,7 +575,75 @@ extension on ExpressionResolver<SqlContext> {
           'CAST(${expr(e.value)} AS ${e.type.sqlCastType})',
         EncodedCustomDataTypeExpression(:final value) => expr(value),
         CurrentTimestampExpression _ => 'UTC_TIMESTAMP()',
+        ExpressionJsonRef e => _extract(e, ColumnType.jsonValue),
+        ExpressionJsonExtract(:final ref, type: final t) => _extract(ref, t),
       };
+
+  /// Extract JSON using JSON_EXTRACT for objects or JSON_VALUE for scalars.
+  String _extract(ExpressionJsonRef ref, ColumnType type) {
+    final (root, path) = jsonPath(ref);
+    final rootSql = expr(root);
+    final pathSql = context.addParameter(path);
+    final extract = 'JSON_EXTRACT($rootSql, $pathSql)';
+
+    if (type == ColumnType.jsonValue) {
+      return extract;
+    }
+
+    // For MySQL (not MariaDB, yet) we should be able to use JSON_VALUE:
+    // final returningType = switch (type) {
+    //   ColumnType.integer => 'SIGNED',
+    //   ColumnType.real => 'DOUBLE',
+    //   ColumnType.boolean => 'SIGNED', // Maps bools to 1/0
+    //   ColumnType.text =>
+    //     'CHAR', // CHAR/TEXT depending on version, CHAR implies string
+    //   _ => throw UnsupportedError('Unsupported JSON extract type: $type'),
+    // };
+    // return 'JSON_VALUE($rootSql, $pathSql RETURNING $returningType)'
+    String strictExtract(String condition, String result) =>
+        '(SELECT IF(JSON_TYPE(v) $condition, $result, NULL) FROM (SELECT $extract AS v) AS sub)';
+
+    return switch (type) {
+      ColumnType.jsonValue => extract,
+      ColumnType.integer => strictExtract(
+          "= 'INTEGER'",
+          'CAST(v AS SIGNED)',
+        ),
+      ColumnType.real => strictExtract(
+          "IN ('INTEGER', 'DOUBLE')",
+          'CAST(v AS DOUBLE)',
+        ),
+      ColumnType.boolean => strictExtract(
+          "= 'BOOLEAN'",
+          "JSON_UNQUOTE(v) = 'true'",
+        ),
+      ColumnType.text => strictExtract(
+          "= 'STRING'",
+          'JSON_UNQUOTE(v)',
+        ),
+      _ => throw UnsupportedError('Unsupported JSON extract type: $type'),
+    };
+  }
+
+  (Expr<JsonValue?>, String) jsonPath(ExpressionJsonRef ref) {
+    switch (ref) {
+      case ExpressionJsonRefRoot(:final value):
+        return (value, r'$');
+      case ExpressionJsonRefKey(:final value, :final key):
+        final (root, path) = jsonPath(value);
+        return (root, '$path.${_escapeJsonPathKey(key)}');
+      case ExpressionJsonRefIndex(:final value, :final index):
+        final (root, path) = jsonPath(value);
+        return (root, '$path[$index]');
+    }
+  }
+
+  String _escapeJsonPathKey(String key) {
+    if (RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$').hasMatch(key)) {
+      return key;
+    }
+    return '"${key.replaceAll('"', '\\"')}"';
+  }
 }
 
 final class _RangeTracker {
