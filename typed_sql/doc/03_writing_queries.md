@@ -643,7 +643,7 @@ can sometimes be nice to have an idea of what methods are available on
 The following is a high-level reference of _some_ of the available
 _extension methods_:
 
- * `Expr<T?>`, when `T` is one of `bool`, `int`, `double`, `String`, `DateTime`, has:
+ * `Expr<T?>`, when `T` is one of `bool`, `int`, `double`, `String`, `DateTime`, `JsonValue`, has:
     * `.equals(Expr<T> other) -> Expr<bool>`
     * `.equalsUnlessNull(Expr<T?> other) -> Expr<bool?>`
     * `.isNotDistinctFrom(Expr<T?> other) -> Expr<bool>`
@@ -693,6 +693,12 @@ _extension methods_:
     * `.concat(Expr<UintList> other) -> Expr<UintList>`,
     * `.subList(Expr<int> start, {Expr<int>? length}) -> Expr<UintList>`
     * `.decodeUtf8() -> Expr<String>`
+ * `Expr<JsonValue?>`, has:
+    * `operator [](Object keyOrIndex) -> Expr<JsonValue?>`
+    * `.asInt() -> Expr<int?>`
+    * `.asDouble() -> Expr<double?>`
+    * `.asBool() -> Expr<bool?>`
+    * `.asString() -> Expr<String?>`
 
 > [!NOTE]
 > The reference above is not exhaustive, this is a quick reference, it'll not be
