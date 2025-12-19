@@ -432,6 +432,46 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// >  * `toExpr(JsonValue(null) as JsonValue?).isNull()` evaluates  to `true`.
   Expr<bool> isNotNull() => isNull().not();
 
+  /// Access a key in this JSON value.
+  ///
+  /// Returns `NULL` if:
+  /// * The parent expression is `NULL`, or,
+  /// * The key does not exist.
+  ///
+  /// This will return `JsonValue(null)` if the key referenced is `null`
+  /// in the [JsonValue] represented by this expression.
+  ///
+  /// In SQL this is conceptually similar to:
+  /// ```sql
+  /// this -> key
+  /// ```
+  Expr<JsonValue?> field(String key) => ExpressionJsonRefKey._(
+        this is ExpressionJsonRef
+            ? this as ExpressionJsonRef
+            : ExpressionJsonRefRoot._(this),
+        key,
+      );
+
+  /// Access an index in this JSON value.
+  ///
+  /// Returns `NULL` if:
+  /// * The parent expression is `NULL`, or,
+  /// * The index does not exist.
+  ///
+  /// This will return `JsonValue(null)` if the index referenced is `null`
+  /// in the [JsonValue] represented by this expression.
+  ///
+  /// In SQL this is conceptually similar to:
+  /// ```sql
+  /// this -> index
+  /// ```
+  Expr<JsonValue?> elementAt(int index) => ExpressionJsonRefIndex._(
+        this is ExpressionJsonRef
+            ? this as ExpressionJsonRef
+            : ExpressionJsonRefRoot._(this),
+        index,
+      );
+
   /// Access a key or index in this JSON value.
   ///
   /// Returns `NULL` if:
