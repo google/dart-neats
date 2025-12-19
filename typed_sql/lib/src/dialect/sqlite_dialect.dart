@@ -516,7 +516,54 @@ extension on ExpressionResolver<SqlContext> {
         EncodedCustomDataTypeExpression(:final value) => expr(value),
         CurrentTimestampExpression _ =>
           'strftime(\'%Y-%m-%dT%H:%M:%SZ\', \'now\')',
+        ExpressionJsonRef e => extractJsonRef(e),
+        ExpressionJsonExtract(:final ExpressionJsonRef value) =>
+          extractJsonRefAsText(value),
+        ExpressionJsonExtract(:final value) =>
+          'json_extract(${expr(value)}, \'\$\')',
       };
+
+  String extractJsonRef(ExpressionJsonRef ref) {
+    final (root, path) = jsonPath(ref);
+    // There is no way to follow a JSON Path from JSONB and get JSONB in sqlite.
+    // There is jsonb_extract, but it returns scalars as raw values instead of
+    // JSONB, so we can't use that here.
+    //
+    // This follows the JSON Path returns string encoded JSON and then
+    // re-encodes as JSONB.
+    return 'jsonb(${expr(root)} -> ${context.addParameter(path)})';
+  }
+
+  String extractJsonRefAsText(ExpressionJsonRef ref) {
+    final (root, path) = jsonPath(ref);
+    // This is an efficient implementation of ExpressionJsonExtract for
+    // ExpressionJsonRef, since ExpressionJsonRef otherwise has to be converted
+    // to JSON string and then re-encoded as JSONB.
+    return '(${expr(root)} ->> ${context.addParameter(path)})';
+  }
+
+  /// Get root and path from [ref].
+  (Expr<JsonValue?>, String) jsonPath(ExpressionJsonRef ref) {
+    switch (ref) {
+      case ExpressionJsonRefRoot(:final value):
+        return (value, r'$');
+      case ExpressionJsonRefKey(:final value, :final key):
+        final (root, path) = jsonPath(value);
+        return (root, '$path.${_escapeJsonPathKey(key)}');
+      case ExpressionJsonRefIndex(:final value, :final index):
+        final (root, path) = jsonPath(value);
+        return (root, '$path[$index]');
+    }
+  }
+
+  String _escapeJsonPathKey(String key) {
+    if (RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$').hasMatch(key)) {
+      return key;
+    }
+    // Escape backslash first, then quote
+    final escaped = key.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
+    return '"$escaped"';
+  }
 }
 
 final class _RangeTracker {

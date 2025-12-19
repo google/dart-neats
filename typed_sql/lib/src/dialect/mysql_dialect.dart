@@ -571,11 +571,49 @@ extension on ExpressionResolver<SqlContext> {
         OrElseExpression<T>(:final value, :final orElse) =>
           'COALESCE(${expr(value)}, ${expr(orElse)})',
         NotNullExpression<T>(:final value) => expr(value),
+        // We need CAST true|false TO BOOLEAN to work for JSON extraction!
+        CastExpression(:final Expr<String?> value, type: ColumnType.boolean) =>
+          'CASE LOWER(${expr(value)}) WHEN \'true\' THEN 1 WHEN \'false\' THEN 0 ELSE CAST(${expr(value)} AS SIGNED) END',
         final CastExpression e =>
           'CAST(${expr(e.value)} AS ${e.type.sqlCastType})',
         EncodedCustomDataTypeExpression(:final value) => expr(value),
         CurrentTimestampExpression _ => 'UTC_TIMESTAMP()',
+        ExpressionJsonRef e => extractJsonRef(e),
+        ExpressionJsonExtract(:final value) => 'JSON_UNQUOTE(${expr(value)})',
       };
+
+  String extractJsonRef(ExpressionJsonRef ref) {
+    final (root, path) = _compileJsonPath(ref);
+    return 'JSON_EXTRACT(${expr(root)}, ${context.addParameter(path)})';
+  }
+
+  /// Recursively builds the root expression and the MySQL JSON path string.
+  (Expr<JsonValue?>, String) _compileJsonPath(ExpressionJsonRef ref) {
+    switch (ref) {
+      case ExpressionJsonRefRoot(:final value):
+        return (value, r'$');
+
+      case ExpressionJsonRefKey(:final value, :final key):
+        final (root, path) = _compileJsonPath(value);
+        // MySQL requires double quotes for keys with spaces, dots, etc.
+        // We strictly quote all keys for safety.
+        return (root, '$path.${_escapeJsonPathKey(key)}');
+
+      case ExpressionJsonRefIndex(:final value, :final index):
+        final (root, path) = _compileJsonPath(value);
+        return (root, '$path[$index]');
+    }
+  }
+
+  String _escapeJsonPathKey(String key) {
+    // Simple identifier check: strictly alphanumeric + underscore
+    if (RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$').hasMatch(key)) {
+      return key;
+    }
+    // Escape backslash first, then quote.
+    final escaped = key.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
+    return '"$escaped"';
+  }
 }
 
 final class _RangeTracker {

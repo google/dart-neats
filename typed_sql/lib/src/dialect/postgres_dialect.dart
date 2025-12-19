@@ -547,7 +547,32 @@ extension on ExpressionResolver<SqlContext> {
         final CastExpression e => 'CAST(${expr(e.value)} AS ${e.type.sqlType})',
         EncodedCustomDataTypeExpression(:final value) => expr(value),
         CurrentTimestampExpression _ => '(NOW() AT TIME ZONE \'UTC\')',
+        ExpressionJsonRef e => extractJsonRef(e),
+        ExpressionJsonExtract(:final value) => '(${expr(value)} #>> \'{}\')',
       };
+
+  String extractJsonRef(ExpressionJsonRef ref) {
+    final (root, path) = _unwindJsonRef(ref);
+    if (path.isEmpty) {
+      return expr(root);
+    }
+    return '(${expr(root)} #> ARRAY[${path.map(context.addParameter).join(', ')}])';
+  }
+
+  /// Unwinds the recursive reference into a flat list of path segments.
+  (Expr<JsonValue?>, List<String>) _unwindJsonRef(ExpressionJsonRef ref) {
+    switch (ref) {
+      case ExpressionJsonRefRoot(:final value):
+        return (value, []);
+      case ExpressionJsonRefKey(:final value, :final key):
+        final (root, path) = _unwindJsonRef(value);
+        return (root, [...path, key]);
+      case ExpressionJsonRefIndex(:final value, :final index):
+        final (root, path) = _unwindJsonRef(value);
+        // Postgres path arrays use strings for both keys and indices
+        return (root, [...path, index.toString()]);
+    }
+  }
 }
 
 final class _RangeTracker {

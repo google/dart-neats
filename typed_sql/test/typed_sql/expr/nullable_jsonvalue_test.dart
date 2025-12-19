@@ -18,6 +18,25 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
+// Complex JSON object for traversal tests
+final testData = JsonValue({
+  'int': 42,
+  'float': 3.14,
+  'string': 'hello',
+  'bool_true': true,
+  'bool_false': false,
+  'obj': {
+    'nested': 'world',
+    'id': 100,
+  },
+  'arr': [1, 2, 3],
+  'complex_arr': [
+    {'x': 10},
+    {'x': 20}
+  ],
+  'null_val': null,
+});
+
 final _cases = <({
   String name,
   Expr expr,
@@ -111,6 +130,136 @@ final _cases = <({
     name: 'JsonValue(null).isNotNull()',
     expr: toExpr(JsonValue(null) as JsonValue?).isNotNull(),
     expected: true,
+  ),
+
+  // Expr<JsonValue?>[]
+  (
+    name: "data['int'] -> JsonValue(42)",
+    expr: toExpr(testData)['int'],
+    expected: JsonValue(42),
+  ),
+  (
+    name: "data['string'] -> JsonValue('hello')",
+    expr: toExpr(testData)['string'],
+    expected: JsonValue('hello'),
+  ),
+  (
+    name: "data['obj'] -> JsonValue({...})",
+    expr: toExpr(testData)['obj'],
+    expected: JsonValue({
+      'nested': 'world',
+      'id': 100,
+    }),
+  ),
+  (
+    name: "data['obj']['nested'] -> JsonValue('world')",
+    expr: toExpr(testData)['obj']['nested'],
+    expected: JsonValue('world'),
+  ),
+  (
+    name: "data['arr'][1] -> JsonValue(2)",
+    expr: toExpr(testData)['arr'][1],
+    expected: JsonValue(2),
+  ),
+  (
+    name: "data['complex_arr'][0]['x'] -> JsonValue(10)",
+    expr: toExpr(testData)['complex_arr'][0]['x'],
+    expected: JsonValue(10),
+  ),
+  (
+    name: "data['complex_arr'][1]['x'] -> JsonValue(20)",
+    expr: toExpr(testData)['complex_arr'][1]['x'],
+    expected: JsonValue(20),
+  ),
+  (
+    name: "data['missing'] -> NULL",
+    expr: toExpr(testData)['missing'],
+    expected: null,
+  ),
+  (
+    name: "data['complex_arr'][3] -> NULL",
+    expr: toExpr(testData)['complex_arr'][3],
+    expected: null,
+  ),
+  (
+    name: "data['obj']['missing'] -> NULL",
+    expr: toExpr(testData)['obj']['missing'],
+    expected: null,
+  ),
+  (
+    name: "data['null_val'] -> JsonValue(null)",
+    expr: toExpr(testData)['null_val'],
+    expected: JsonValue(null),
+  ),
+
+  // Expr<JsonValue?>.asInt()
+  (
+    name: "data['int'].asInt()",
+    expr: toExpr(testData)['int'].asInt(),
+    expected: 42,
+  ),
+  (
+    name: "data['obj']['id'].asInt()",
+    expr: toExpr(testData)['obj']['id'].asInt(),
+    expected: 100,
+  ),
+  (
+    name: "data['missing'].asInt() -> NULL",
+    expr: toExpr(testData)['missing'].asInt(),
+    expected: null,
+  ),
+
+  // Expr<JsonValue?>.asDouble()
+  (
+    name: "data['float'].asDouble()",
+    expr: toExpr(testData)['float'].asDouble(),
+    expected: 3.14,
+  ),
+  (
+    name: "data['int'].asDouble()",
+    // Ints usually cast to double fine in SQL
+    expr: toExpr(testData)['int'].asDouble(),
+    expected: 42.0,
+  ),
+  (
+    name: "data['missing'].asDouble() -> NULL",
+    expr: toExpr(testData)['missing'].asDouble(),
+    expected: null,
+  ),
+
+  // Expr<JsonValue?>.asString()
+  (
+    name: "data['string'].asString()",
+    expr: toExpr(testData)['string'].asString(),
+    expected: 'hello',
+  ),
+  (
+    name: "data['int'].asString()",
+    // Numbers should be castable to string "42"
+    expr: toExpr(testData)['int'].asString(),
+    expected: '42',
+  ),
+  (
+    name: "data['missing'].asString() -> NULL",
+    expr: toExpr(testData)['missing'].asString(),
+    expected: null,
+  ),
+
+  // Expr<JsonValue?>.asBool()
+  (
+    name: "data['bool_true'].asBool()",
+    expr: toExpr(testData)['bool_true'].asBool(),
+    expected: true,
+  ),
+  (
+    name: "data['bool_false'].asBool()",
+    expr: toExpr(testData)['bool_false'].asBool(),
+    expected: false,
+  ),
+  (
+    name: "data['missing'].asBool() -> NULL",
+    expr: toExpr(testData)['missing'].asBool(),
+    expected: null,
   ),
 ];
 
