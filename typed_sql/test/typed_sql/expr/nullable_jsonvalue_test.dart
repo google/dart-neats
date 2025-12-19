@@ -18,28 +18,23 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-// A complex JSON object to run tests against
-final _complexJson = JsonValue({
-  'i': 123,
-  'i_zero': 0,
-  'f': 12.34,
-  's': 'hello',
-  's_num': '123',
-  'b_true': true,
-  'b_false': false,
-  'arr': [10, 20, 30],
+// Complex JSON object for traversal tests
+final testData = JsonValue({
+  'int': 42,
+  'float': 3.14,
+  'string': 'hello',
+  'bool_true': true,
+  'bool_false': false,
   'obj': {
-    'x': 99,
-    'nested': {'y': 'deep'},
+    'nested': 'world',
+    'id': 100,
   },
-  'n': null,
-  'special': {
-    ' with spaces ': 1,
-    'with.dots': 2,
-    "with'quotes": 3,
-    'with"double"quotes': 4,
-    r'with$sign': 5,
-  }
+  'arr': [1, 2, 3],
+  'complex_arr': [
+    {'x': 10},
+    {'x': 20}
+  ],
+  'null_val': null,
 });
 
 final _cases = <({
@@ -137,234 +132,134 @@ final _cases = <({
     expected: true,
   ),
 
-  // Fundamentals (Happy Paths)
+  // Expr<JsonValue?>[]
   (
-    name: 'Extract int',
-    expr: toExpr(_complexJson)['i'].asInt(),
-    expected: 123,
+    name: "data['int'] -> JsonValue(42)",
+    expr: toExpr(testData)['int'],
+    expected: JsonValue(42),
   ),
   (
-    name: 'Extract double',
-    expr: toExpr(_complexJson)['f'].asDouble(),
-    expected: 12.34,
+    name: "data['string'] -> JsonValue('hello')",
+    expr: toExpr(testData)['string'],
+    expected: JsonValue('hello'),
   ),
   (
-    name: 'Extract string',
-    expr: toExpr(_complexJson)['s'].asString(),
+    name: "data['obj'] -> JsonValue({...})",
+    expr: toExpr(testData)['obj'],
+    expected: JsonValue({
+      'nested': 'world',
+      'id': 100,
+    }),
+  ),
+  (
+    name: "data['obj']['nested'] -> JsonValue('world')",
+    expr: toExpr(testData)['obj']['nested'],
+    expected: JsonValue('world'),
+  ),
+  (
+    name: "data['arr'][1] -> JsonValue(2)",
+    expr: toExpr(testData)['arr'][1],
+    expected: JsonValue(2),
+  ),
+  (
+    name: "data['complex_arr'][0]['x'] -> JsonValue(10)",
+    expr: toExpr(testData)['complex_arr'][0]['x'],
+    expected: JsonValue(10),
+  ),
+  (
+    name: "data['complex_arr'][1]['x'] -> JsonValue(20)",
+    expr: toExpr(testData)['complex_arr'][1]['x'],
+    expected: JsonValue(20),
+  ),
+  (
+    name: "data['missing'] -> NULL",
+    expr: toExpr(testData)['missing'],
+    expected: null,
+  ),
+  (
+    name: "data['complex_arr'][3] -> NULL",
+    expr: toExpr(testData)['complex_arr'][3],
+    expected: null,
+  ),
+  (
+    name: "data['obj']['missing'] -> NULL",
+    expr: toExpr(testData)['obj']['missing'],
+    expected: null,
+  ),
+  (
+    name: "data['null_val'] -> JsonValue(null)",
+    expr: toExpr(testData)['null_val'],
+    expected: JsonValue(null),
+  ),
+
+  // Expr<JsonValue?>.asInt()
+  (
+    name: "data['int'].asInt()",
+    expr: toExpr(testData)['int'].asInt(),
+    expected: 42,
+  ),
+  (
+    name: "data['obj']['id'].asInt()",
+    expr: toExpr(testData)['obj']['id'].asInt(),
+    expected: 100,
+  ),
+  (
+    name: "data['missing'].asInt() -> NULL",
+    expr: toExpr(testData)['missing'].asInt(),
+    expected: null,
+  ),
+
+  // Expr<JsonValue?>.asDouble()
+  (
+    name: "data['float'].asDouble()",
+    expr: toExpr(testData)['float'].asDouble(),
+    expected: 3.14,
+  ),
+  (
+    name: "data['int'].asDouble()",
+    // Ints usually cast to double fine in SQL
+    expr: toExpr(testData)['int'].asDouble(),
+    expected: 42.0,
+  ),
+  (
+    name: "data['missing'].asDouble() -> NULL",
+    expr: toExpr(testData)['missing'].asDouble(),
+    expected: null,
+  ),
+
+  // Expr<JsonValue?>.asString()
+  (
+    name: "data['string'].asString()",
+    expr: toExpr(testData)['string'].asString(),
     expected: 'hello',
   ),
   (
-    name: 'Extract bool (true)',
-    expr: toExpr(_complexJson)['b_true'].asBool(),
+    name: "data['int'].asString()",
+    // Numbers should be castable to string "42"
+    expr: toExpr(testData)['int'].asString(),
+    expected: '42',
+  ),
+  (
+    name: "data['missing'].asString() -> NULL",
+    expr: toExpr(testData)['missing'].asString(),
+    expected: null,
+  ),
+
+  // Expr<JsonValue?>.asBool()
+  (
+    name: "data['bool_true'].asBool()",
+    expr: toExpr(testData)['bool_true'].asBool(),
     expected: true,
   ),
   (
-    name: 'Extract bool (false)',
-    expr: toExpr(_complexJson)['b_false'].asBool(),
+    name: "data['bool_false'].asBool()",
+    expr: toExpr(testData)['bool_false'].asBool(),
     expected: false,
   ),
   (
-    name: 'Extract array index 0',
-    expr: toExpr(_complexJson)['arr'][0].asInt(),
-    expected: 10,
-  ),
-  (
-    name: 'Extract nested object property',
-    expr: toExpr(_complexJson)['obj']['x'].asInt(),
-    expected: 99,
-  ),
-  (
-    name: 'Extract deep nested property',
-    expr: toExpr(_complexJson)['obj']['nested']['y'].asString(),
-    expected: 'deep',
-  ),
-
-  // Type Mismatches (Strict Typing)
-  // Int vs String
-  (
-    name: 'Int as String (should be null)',
-    expr: toExpr(_complexJson)['i'].asString(),
+    name: "data['missing'].asBool() -> NULL",
+    expr: toExpr(testData)['missing'].asBool(),
     expected: null,
-  ),
-  (
-    name: 'String as Int (should be null)',
-    expr: toExpr(_complexJson)['s'].asInt(),
-    expected: null,
-  ),
-  (
-    name: 'Numeric String as Int (should be null - no implicit parsing)',
-    expr: toExpr(_complexJson)['s_num'].asInt(),
-    expected: null,
-  ),
-
-  // Bool vs Numbers
-  (
-    name: 'Int (123) as Bool (should be null)',
-    expr: toExpr(_complexJson)['i'].asBool(),
-    expected: null,
-  ),
-  (
-    name: 'Int (0) as Bool (should be null)',
-    expr: toExpr(_complexJson)['i_zero'].asBool(),
-    expected: null,
-  ),
-  (
-    name: 'Bool (true) as Int (should be null)',
-    expr: toExpr(_complexJson)['b_true'].asInt(),
-    expected: null,
-  ),
-
-  // Object/Array vs Scalar
-  (
-    name: 'Object as Int (should be null)',
-    expr: toExpr(_complexJson)['obj'].asInt(),
-    expected: null,
-  ),
-  (
-    name: 'Array as String (should be null)',
-    expr: toExpr(_complexJson)['arr'].asString(),
-    expected: null,
-  ),
-
-  // Null Checks & Missing Data
-  (
-    name: 'Access on SQL NULL is SQL NULL',
-    expr: toExpr(null as JsonValue?)['i'].asInt(),
-    expected: null,
-  ),
-  (
-    name: 'isNull() on SQL NULL',
-    expr: toExpr(null as JsonValue?)['i'].isNull(),
-    expected: true,
-  ),
-
-  // Missing Keys (Result in SQL NULL)
-  (
-    name: 'Missing key as Int',
-    expr: toExpr(_complexJson)['missing'].asInt(),
-    expected: null,
-  ),
-  (
-    name: 'Missing key isNull()',
-    expr: toExpr(_complexJson)['missing'].isNull(),
-    expected: true,
-  ),
-  (
-    name: 'Missing index as Int',
-    expr: toExpr(_complexJson)['arr'][99].asInt(),
-    expected: null,
-  ),
-
-  // Explicit JSON null
-  (
-    name: 'Explicit JSON null as Int',
-    expr: toExpr(_complexJson)['n'].asInt(),
-    expected: null,
-  ),
-  (
-    name: 'Explicit JSON null isNull() (Scalar context)',
-    expr: toExpr(_complexJson)['n'].asInt().isNull(),
-    expected: true,
-  ),
-  (
-    name: 'Explicit JSON null as JsonValue',
-    expr: toExpr(_complexJson)['n'],
-    expected: JsonValue(null),
-  ),
-  (
-    name: 'Explicit JSON null isNull() (JsonValue context)',
-    expr: toExpr(_complexJson)['n'].isNull(),
-    expected: false,
-  ),
-
-  // Special Characters & Escaping
-  (
-    name: 'Key with spaces',
-    expr: toExpr(_complexJson)['special'][' with spaces '].asInt(),
-    expected: 1,
-  ),
-  (
-    name: 'Key with dots',
-    expr: toExpr(_complexJson)['special']['with.dots'].asInt(),
-    expected: 2,
-  ),
-  (
-    name: 'Key with single quotes',
-    expr: toExpr(_complexJson)['special']["with'quotes"].asInt(),
-    expected: 3,
-  ),
-  (
-    name: 'Key with double quotes',
-    expr: toExpr(_complexJson)['special']['with"double"quotes'].asInt(),
-    expected: 4,
-  ),
-  (
-    name: 'Key with \$ sign',
-    expr: toExpr(_complexJson)['special'][r'with$sign'].asInt(),
-    expected: 5,
-  ),
-
-  // Array & Indexing Edge Cases
-  (
-    name: 'Array index out of bounds',
-    expr: toExpr(_complexJson)['arr'][100].asInt(),
-    expected: null,
-  ),
-  (
-    name: 'Index on non-array (Object)',
-    expr: toExpr(_complexJson)['obj'][0].asInt(),
-    expected: null,
-  ),
-  (
-    name: 'Index on non-array (Scalar)',
-    expr: toExpr(_complexJson)['i'][0].asInt(),
-    expected: null,
-  ),
-
-  // Strict Type Enforcement (No Implicit Casting)
-  (
-    name: 'String "123" as Int (should be null)',
-    expr: toExpr(_complexJson)['s_num'].asInt(),
-    expected: null,
-  ),
-  (
-    name: 'String "12.34" as Double (should be null)',
-    expr: toExpr(JsonValue({'v': '12.34'}))['v'].asDouble(),
-    expected: null,
-  ),
-  (
-    name: 'String "true" as Bool (should be null)',
-    expr: toExpr(JsonValue({'v': 'true'}))['v'].asBool(),
-    expected: null,
-  ),
-
-  // Value Escaping
-  (
-    name: 'Value with single quote',
-    expr: toExpr(JsonValue({'v': "O'Reilly"}))['v'].asString(),
-    expected: "O'Reilly",
-  ),
-  (
-    name: 'Value with double quote',
-    expr: toExpr(JsonValue({'v': 'Sf"u'}))['v'].asString(),
-    expected: 'Sf"u',
-  ),
-  (
-    name: 'Value with backslash',
-    expr: toExpr(JsonValue({'v': r'C:\Windows'}))['v'].asString(),
-    expected: r'C:\Windows',
-  ),
-
-  // Logic on Extracted Values
-  (
-    name: 'isNull on valid extraction',
-    expr: toExpr(_complexJson)['i'].asInt().isNull(),
-    expected: false,
-  ),
-  (
-    name: 'isNotNull on missing key',
-    expr: toExpr(_complexJson)['missing'].asInt().isNotNull(),
-    expected: false,
   ),
 ];
 

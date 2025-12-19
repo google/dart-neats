@@ -440,6 +440,11 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   ///
   /// This will return `JsonValue(null)` if the key/index referenced is `null`
   /// in the [JsonValue] represented by this expression.
+  ///
+  /// In SQL this is conceptually similar to:
+  /// ```sql
+  /// this -> keyOrIndex
+  /// ```
   Expr<JsonValue?> operator [](Object keyOrIndex) {
     final ref = this is ExpressionJsonRef
         ? this as ExpressionJsonRef
@@ -457,36 +462,96 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
     );
   }
 
-  /// Convert this expression from JSON to [Expr<int?>].
+  /// Extract the value as _unquoted text_ and cast it to an integer.
   ///
-  /// Returns `NULL`, if this expression is `NULL` or not a valid integer.
-  Expr<int?> asInt() => ExpressionJsonExtract._(
-        this is ExpressionJsonRef
-            ? this as ExpressionJsonRef
-            : ExpressionJsonRefRoot._(this),
-        ColumnType.integer,
-      );
+  /// This method performs a two-step conversion:
+  /// 1. The value is extracted as its **unquoted text** representation (e.g. `->>`).
+  /// 2. The resulting text is cast to an integer using standard SQL casting rules.
+  ///
+  /// In SQL this is conceptually similar to:
+  /// ```sql
+  /// CAST(JSON_VALUE(this, '$') AS BIGINT)
+  /// ```
+  ///
+  /// {@template json-extraction-behavior}
+  /// **Extraction Behavior:**
+  /// * JSON Number `42` becomes text `"42"`.
+  /// * JSON Number `3.14` becomes text `"3.14"`.
+  /// * JSON String `"123"` becomes text `"123"`.
+  /// * JSON String `"hello"` becomes text `"hello"`.
+  /// * JSON Boolean `true` becomes text `"true"`.
+  /// * JSON Object/Array becomes the JSON string representation (e.g. `'{"a":1}'`).
+  /// {@endtemplate}
+  ///
+  /// **Casting Behavior:**
+  /// * **PostgreSQL:** Throws a runtime exception if the text is not a valid integer.
+  /// * **SQLite:** Returns `0` if the text is not a number.
+  ///
+  /// {@template unsafe-json-cast}
+  /// > [!WARNING]
+  /// > This is **unsafe** and may cause runtime errors.
+  /// >
+  /// > If the JSON data does not match your expectations, the cast may cause
+  /// > runtime failures or silently return zero/false.
+  /// {@endtemplate}
+  Expr<int?> asInt() =>
+      CastExpression._(ExpressionJsonExtract._(this), ColumnType.integer);
 
-  Expr<String?> asString() => ExpressionJsonExtract._(
-        this is ExpressionJsonRef
-            ? this as ExpressionJsonRef
-            : ExpressionJsonRefRoot._(this),
-        ColumnType.text,
-      );
+  /// Extract the value as unquoted text.
+  ///
+  /// This returns the direct text representation of the JSON value, removing
+  /// quotes from scalars (i.e. strings, numbers and booleans).
+  ///
+  /// In SQL this is conceptually similar to:
+  /// ```sql
+  /// CAST(JSON_VALUE(this, '$') AS TEXT)
+  /// ```
+  ///
+  /// {@macro json-extraction-behavior}
+  Expr<String?> asString() =>
+      CastExpression._(ExpressionJsonExtract._(this), ColumnType.text);
 
-  Expr<double?> asDouble() => ExpressionJsonExtract._(
-        this is ExpressionJsonRef
-            ? this as ExpressionJsonRef
-            : ExpressionJsonRefRoot._(this),
-        ColumnType.real,
-      );
+  /// Extract the value as unquoted text and cast it to a double.
+  ///
+  /// This method performs a two-step conversion:
+  /// 1. The value is extracted as its **unquoted text** representation (e.g. `->>`).
+  /// 2. The resulting text is cast to a double using standard SQL casting rules.
+  ///
+  /// In SQL this is conceptually similar to:
+  /// ```sql
+  /// CAST(JSON_VALUE(this, '$') AS DOUBLE PRECISION)
+  /// ```
+  ///
+  /// {@macro json-extraction-behavior}
+  ///
+  /// **Casting Behavior:**
+  /// * **PostgreSQL:** Throws a runtime exception if the text is not a valid number.
+  /// * **SQLite:** Returns `0.0` if the text is not a number.
+  ///
+  /// {@macro unsafe-json-cast}
+  Expr<double?> asDouble() =>
+      CastExpression._(ExpressionJsonExtract._(this), ColumnType.real);
 
-  Expr<bool?> asBool() => ExpressionJsonExtract._(
-        this is ExpressionJsonRef
-            ? this as ExpressionJsonRef
-            : ExpressionJsonRefRoot._(this),
-        ColumnType.boolean,
-      );
+  /// Extract the value as unquoted text and cast it to a boolean.
+  ///
+  /// This method performs a two-step conversion:
+  /// 1. The value is extracted as its **unquoted text** representation (e.g. `->>`).
+  /// 2. The resulting text is cast to a boolean.
+  ///
+  /// In SQL this is conceptually similar to:
+  /// ```sql
+  /// CAST(JSON_VALUE(this, '$') AS BOOLEAN)
+  /// ```
+  ///
+  /// {@macro json-extraction-behavior}
+  ///
+  /// **Casting Behavior:**
+  /// * **PostgreSQL:** Throws a runtime exception if the text is not valid boolean.
+  /// * **SQLite:** Returns `TRUE` if the text is `true`, otherwise `FALSE`.
+  ///
+  /// {@macro unsafe-json-cast}
+  Expr<bool?> asBool() =>
+      CastExpression._(ExpressionJsonExtract._(this), ColumnType.boolean);
 }
 
 /// Extension methods for [bool] expressions.

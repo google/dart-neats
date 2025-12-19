@@ -753,15 +753,13 @@ final class ExpressionJsonRefIndex extends ExpressionJsonRef {
   ExpressionJsonRefIndex._(this.value, this.index) : super._();
 }
 
-/// Extract a value from a reference into a [JsonValue] expressiong and casts it
-/// to [type].
-final class ExpressionJsonExtract<T extends Object>
-    extends SingleValueExpr<T?> {
-  final ExpressionJsonRef ref;
-  final ColumnType<T> type;
+/// Extract a raw TEXT representation from a ExpressionJsonRef into a
+/// [JsonValue]
+final class ExpressionJsonExtract extends SingleValueExpr<String?> {
+  final Expr<JsonValue?> value;
 
-  ExpressionJsonExtract._(this.ref, this.type) : super._();
+  ExpressionJsonExtract._(this.value) : super._();
 
   @override
-  _ExprType<T> get _type => type;
+  _ExprType<String?> get _type => ColumnType.text;
 }

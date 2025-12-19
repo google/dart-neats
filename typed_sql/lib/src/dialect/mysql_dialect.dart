@@ -571,78 +571,48 @@ extension on ExpressionResolver<SqlContext> {
         OrElseExpression<T>(:final value, :final orElse) =>
           'COALESCE(${expr(value)}, ${expr(orElse)})',
         NotNullExpression<T>(:final value) => expr(value),
+        // We need CAST true|false TO BOOLEAN to work for JSON extraction!
+        CastExpression(:final Expr<String?> value, type: ColumnType.boolean) =>
+          'CASE LOWER(${expr(value)}) WHEN \'true\' THEN 1 WHEN \'false\' THEN 0 ELSE CAST(${expr(value)} AS SIGNED) END',
         final CastExpression e =>
           'CAST(${expr(e.value)} AS ${e.type.sqlCastType})',
         EncodedCustomDataTypeExpression(:final value) => expr(value),
         CurrentTimestampExpression _ => 'UTC_TIMESTAMP()',
-        ExpressionJsonRef e => _extract(e, ColumnType.jsonValue),
-        ExpressionJsonExtract(:final ref, type: final t) => _extract(ref, t),
+        ExpressionJsonRef e => extractJsonRef(e),
+        ExpressionJsonExtract(:final value) => 'JSON_UNQUOTE(${expr(value)})',
       };
 
-  /// Extract JSON using JSON_EXTRACT for objects or JSON_VALUE for scalars.
-  String _extract(ExpressionJsonRef ref, ColumnType type) {
-    final (root, path) = jsonPath(ref);
-    final rootSql = expr(root);
-    final pathSql = context.addParameter(path);
-    final extract = 'JSON_EXTRACT($rootSql, $pathSql)';
-
-    if (type == ColumnType.jsonValue) {
-      return extract;
-    }
-
-    // For MySQL (not MariaDB, yet) we should be able to use JSON_VALUE:
-    // final returningType = switch (type) {
-    //   ColumnType.integer => 'SIGNED',
-    //   ColumnType.real => 'DOUBLE',
-    //   ColumnType.boolean => 'SIGNED', // Maps bools to 1/0
-    //   ColumnType.text =>
-    //     'CHAR', // CHAR/TEXT depending on version, CHAR implies string
-    //   _ => throw UnsupportedError('Unsupported JSON extract type: $type'),
-    // };
-    // return 'JSON_VALUE($rootSql, $pathSql RETURNING $returningType)'
-    String strictExtract(String condition, String result) =>
-        '(SELECT IF(JSON_TYPE(v) $condition, $result, NULL) FROM (SELECT $extract AS v) AS sub)';
-
-    return switch (type) {
-      ColumnType.jsonValue => extract,
-      ColumnType.integer => strictExtract(
-          "= 'INTEGER'",
-          'CAST(v AS SIGNED)',
-        ),
-      ColumnType.real => strictExtract(
-          "IN ('INTEGER', 'DOUBLE')",
-          'CAST(v AS DOUBLE)',
-        ),
-      ColumnType.boolean => strictExtract(
-          "= 'BOOLEAN'",
-          "JSON_UNQUOTE(v) = 'true'",
-        ),
-      ColumnType.text => strictExtract(
-          "= 'STRING'",
-          'JSON_UNQUOTE(v)',
-        ),
-      _ => throw UnsupportedError('Unsupported JSON extract type: $type'),
-    };
+  String extractJsonRef(ExpressionJsonRef ref) {
+    final (root, path) = _compileJsonPath(ref);
+    return 'JSON_EXTRACT(${expr(root)}, ${context.addParameter(path)})';
   }
 
-  (Expr<JsonValue?>, String) jsonPath(ExpressionJsonRef ref) {
+  /// Recursively builds the root expression and the MySQL JSON path string.
+  (Expr<JsonValue?>, String) _compileJsonPath(ExpressionJsonRef ref) {
     switch (ref) {
       case ExpressionJsonRefRoot(:final value):
         return (value, r'$');
+
       case ExpressionJsonRefKey(:final value, :final key):
-        final (root, path) = jsonPath(value);
+        final (root, path) = _compileJsonPath(value);
+        // MySQL requires double quotes for keys with spaces, dots, etc.
+        // We strictly quote all keys for safety.
         return (root, '$path.${_escapeJsonPathKey(key)}');
+
       case ExpressionJsonRefIndex(:final value, :final index):
-        final (root, path) = jsonPath(value);
+        final (root, path) = _compileJsonPath(value);
         return (root, '$path[$index]');
     }
   }
 
   String _escapeJsonPathKey(String key) {
+    // Simple identifier check: strictly alphanumeric + underscore
     if (RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$').hasMatch(key)) {
       return key;
     }
-    return '"${key.replaceAll('"', '\\"')}"';
+    // Escape backslash first, then quote.
+    final escaped = key.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
+    return '"$escaped"';
   }
 }
 

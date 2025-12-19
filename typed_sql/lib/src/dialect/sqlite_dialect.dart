@@ -516,34 +516,30 @@ extension on ExpressionResolver<SqlContext> {
         EncodedCustomDataTypeExpression(:final value) => expr(value),
         CurrentTimestampExpression _ =>
           'strftime(\'%Y-%m-%dT%H:%M:%SZ\', \'now\')',
-        ExpressionJsonRef e => _extract(e, ColumnType.jsonValue),
-        ExpressionJsonExtract(:final ref, :final type) => _extract(ref, type),
+        ExpressionJsonRef e => extractJsonRef(e),
+        ExpressionJsonExtract(:final ExpressionJsonRef value) =>
+          extractJsonRefAsText(value),
+        ExpressionJsonExtract(:final value) =>
+          'json_extract(${expr(value)}, \'\$\')',
       };
 
-  String _extract(ExpressionJsonRef ref, ColumnType type) {
+  String extractJsonRef(ExpressionJsonRef ref) {
     final (root, path) = jsonPath(ref);
-    final rootSql = expr(root);
-    final pathSql = context.addParameter(path);
+    // There is no way to follow a JSON Path from JSONB and get JSONB in sqlite.
+    // There is jsonb_extract, but it returns scalars as raw values instead of
+    // JSONB, so we can't use that here.
+    //
+    // This follows the JSON Path returns string encoded JSON and then
+    // re-encodes as JSONB.
+    return 'jsonb(${expr(root)} -> ${context.addParameter(path)})';
+  }
 
-    String strictExtract(String condition) =>
-        '(SELECT CASE WHEN json_type(v, $pathSql) $condition'
-        ' THEN jsonb_extract(v, $pathSql)'
-        ' ELSE NULL END'
-        ' FROM (SELECT $rootSql AS v))';
-
-    return switch (type) {
-      ColumnType.jsonValue =>
-        '(SELECT CASE WHEN json_type(v, $pathSql) = \'null\''
-            ' THEN jsonb(\'null\')'
-            ' ELSE jsonb_extract(v, $pathSql) END'
-            ' FROM (SELECT $rootSql AS v))',
-      ColumnType.integer => strictExtract("= 'integer'"),
-      ColumnType.real => strictExtract("IN ('real', 'integer')"),
-      ColumnType.text => strictExtract("= 'text'"),
-      ColumnType.boolean =>
-        '(SELECT CASE json_type(v, $pathSql) WHEN \'true\' THEN 1 WHEN \'false\' THEN 0 ELSE NULL END FROM (SELECT $rootSql AS v))',
-      _ => throw UnsupportedError('Unsupported JSON extract type'),
-    };
+  String extractJsonRefAsText(ExpressionJsonRef ref) {
+    final (root, path) = jsonPath(ref);
+    // This is an efficient implementation of ExpressionJsonExtract for
+    // ExpressionJsonRef, since ExpressionJsonRef otherwise has to be converted
+    // to JSON string and then re-encoded as JSONB.
+    return '(${expr(root)} ->> ${context.addParameter(path)})';
   }
 
   /// Get root and path from [ref].
@@ -561,11 +557,12 @@ extension on ExpressionResolver<SqlContext> {
   }
 
   String _escapeJsonPathKey(String key) {
-    // SQLite allows "key" for keys with spaces/special chars.
     if (RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$').hasMatch(key)) {
       return key;
     }
-    return '"${key.replaceAll(r'\', r'\u005c').replaceAll('"', r'\u0022')}"';
+    // Escape backslash first, then quote
+    final escaped = key.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
+    return '"$escaped"';
   }
 }
 
