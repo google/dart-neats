@@ -479,20 +479,20 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// * JSON Number `3.14` becomes text `"3.14"`.
   /// * JSON String `"123"` becomes text `"123"`.
   /// * JSON String `"hello"` becomes text `"hello"`.
-  /// * JSON Boolean `true` becomes text `"true"`.
+  /// * JSON Boolean `true` becomes text `"true"` (or `"1"` on SQLite)..
   /// * JSON Object/Array becomes the JSON string representation (e.g. `'{"a":1}'`).
   /// {@endtemplate}
   ///
   /// **Casting Behavior:**
   /// * **PostgreSQL:** Throws a runtime exception if the text is not a valid integer.
-  /// * **SQLite:** Returns `0` if the text is not a number.
+  /// * **SQLite:** Parses the integer prefix of the string (e.g. `"12abc"` becomes `12`). Returns `0` if no valid prefix exists.
   ///
   /// {@template unsafe-json-cast}
   /// > [!WARNING]
   /// > This is **unsafe** and may cause runtime errors.
   /// >
   /// > If the JSON data does not match your expectations, the cast may cause
-  /// > runtime failures or silently return zero/false.
+  /// > runtime failures or silently return unexpected values (like `0`).
   /// {@endtemplate}
   Expr<int?> asInt() =>
       CastExpression._(ExpressionJsonExtract._(this), ColumnType.integer);
@@ -526,7 +526,7 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   ///
   /// **Casting Behavior:**
   /// * **PostgreSQL:** Throws a runtime exception if the text is not a valid number.
-  /// * **SQLite:** Returns `0.0` if the text is not a number.
+  /// * **SQLite:** Parses the numeric prefix of the string (e.g. `"3.14abc"` becomes `3.14`). Returns `0.0` if no valid prefix exists.
   ///
   /// {@macro unsafe-json-cast}
   Expr<double?> asDouble() =>
