@@ -6,8 +6,9 @@ class that implements `CustomDataType<T>`, where `T` is one of:
  * `int`,
  * `double`,
  * `String`,
- * `DateTime`, or,
- * `Uint8List`.
+ * `DateTime`,
+ * `Uint8List`, or,
+ * `JsonValue`.
 
 > [!NOTE]
 > A _custom types_ does not give rise to a _User Defined Type (UDT)_ in SQL.

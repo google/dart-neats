@@ -484,6 +484,7 @@ final class Literal<T> extends SingleValueExpr<T> {
       CustomDataType<double> _ => ColumnType.real as ColumnType<S>,
       CustomDataType<Uint8List> _ => ColumnType.blob as ColumnType<S>,
       CustomDataType<DateTime> _ => ColumnType.dateTime as ColumnType<S>,
+      CustomDataType<JsonValue> _ => ColumnType.jsonValue as ColumnType<S>,
       _ => throw ArgumentError.value(
           value,
           'value',

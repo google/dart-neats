@@ -94,6 +94,13 @@ final instances = [
     'updatedValue': 'Uint8List.fromList([1, 2, 3, 4])',
     'equality': 'deepEquals',
   },
+  {
+    'name': 'json',
+    'type': 'JsonValue',
+    'initialValue': 'JsonValue({"foo": [1, 2, 3]})',
+    'updatedValue': 'JsonValue({"foo": [1, 2, 3, 4]})',
+    'equality': 'deepEquals',
+  },
 ];
 
 final template = '''

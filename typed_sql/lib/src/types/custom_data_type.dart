@@ -15,6 +15,7 @@
 /// @docImport 'dart:typed_data';
 /// @docImport 'package:meta/meta.dart';
 /// @docImport '../typed_sql.dart';
+/// @docImport 'json_value.dart';
 library;
 
 /// Interface to be implemented by custom types that can be stored in a [Row]
@@ -26,8 +27,9 @@ library;
 ///    - [Uint8List],
 ///    - [bool],
 ///    - [int],
-///    - [double], or,
-///    - [DateTime].
+///    - [double],
+///    - [DateTime], or,
+///    - [JsonValue].
 ///  * have a `fromDatabase(T value)` constructor.
 ///
 /// If a subclass implements [Comparable] then the encoded values returned by
