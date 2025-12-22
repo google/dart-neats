@@ -118,15 +118,27 @@ final class RetryOptions {
   /// If no [retryIf] function is given this will retry any for any [Exception]
   /// thrown. To retry on an [Error], the error must be caught and _rethrown_
   /// as an [Exception].
+  /// Optional callback invoked on every attempt, starting from 1.
+  ///
+  /// This is called before executing [fn] and receives the current attempt
+  /// number. This can be useful for logging or instrumentation without
+  /// requiring changes to the main retry function signature.
+  ///
+  /// This callback does not affect retry behavior; it is purely informational.
   Future<T> retry<T>(
     FutureOr<T> Function() fn, {
     FutureOr<bool> Function(Exception)? retryIf,
     FutureOr<void> Function(Exception)? onRetry,
+    FutureOr<void> Function(int attempt)? onAttempt,
   }) async {
     var attempt = 0;
     // ignore: literal_only_boolean_expressions
     while (true) {
       attempt++; // first invocation is the first attempt
+
+      if (onAttempt != null) {
+        await onAttempt(attempt);
+      }
       try {
         return await fn();
       } on Exception catch (e) {
@@ -179,10 +191,11 @@ Future<T> retry<T>(
   int maxAttempts = 8,
   FutureOr<bool> Function(Exception)? retryIf,
   FutureOr<void> Function(Exception)? onRetry,
+  FutureOr<void> Function(int attempt)? onAttempt,
 }) =>
     RetryOptions(
       delayFactor: delayFactor,
       randomizationFactor: randomizationFactor,
       maxDelay: maxDelay,
       maxAttempts: maxAttempts,
-    ).retry(fn, retryIf: retryIf, onRetry: onRetry);
+    ).retry(fn, retryIf: retryIf, onRetry: onRetry, onAttempt: onAttempt);

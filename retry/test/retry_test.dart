@@ -131,5 +131,53 @@ void main() {
       await expectLater(f, throwsA(isException));
       expect(count, equals(2));
     });
+    test('retry (onAttempt called for every attempt)', () async {
+      final attempts = <int>[];
+
+      final r = RetryOptions(
+        maxAttempts: 3,
+        maxDelay: Duration(),
+      );
+
+      final f = r.retry(
+        () {
+          // main callback does not take attempt anymore
+          throw Exception('fail');
+        },
+        retryIf: (e) => true,
+        onAttempt: (attempt) {
+          attempts.add(attempt);
+        },
+      );
+
+      await expectLater(f, throwsA(isException));
+
+      expect(attempts, equals([1, 2, 3]));
+    });
+
+    test('retry (onAttempt stops after success)', () async {
+      int count = 0;
+      final attempts = <int>[];
+
+      final r = RetryOptions(
+        maxAttempts: 5,
+        maxDelay: Duration(),
+      );
+
+      final f = r.retry(
+        () {
+          count++;
+          if (count < 2) throw Exception('fail');
+          return true;
+        },
+        retryIf: (e) => true,
+        onAttempt: (attempt) {
+          attempts.add(attempt);
+        },
+      );
+
+      await expectLater(f, completion(isTrue));
+      expect(attempts, equals([1, 2]));
+    });
   });
 }
