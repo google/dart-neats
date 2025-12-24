@@ -130,9 +130,18 @@ class SaneHtmlValidator {
     if (styles.isEmpty) return '';
 
     return styles.map((s) {
-      final mediaAttr = s.media != null ? ' media="${s.media}"' : '';
+      final mediaAttr =
+          s.media != null ? ' media="${_escapeAttribute(s.media!)}"' : '';
       return '<style$mediaAttr>${s.css}</style>';
     }).join('\n');
+  }
+
+  String _escapeAttribute(String value) {
+    return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('"', '&quot;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
   }
 
   /// Sanitizes HTML:
@@ -156,10 +165,13 @@ class SaneHtmlValidator {
     _nodeSanitizer.sanitize(body, allowUnwrap: false);
 
     // Sanitize CSS
-    final safeStyles = extractedStyles.map((s) {
-      final safeCss = CssSanitizer.sanitizeStylesheet(s.css);
-      return ExtractedStyle(css: safeCss, media: s.media);
-    }).toList();
+    final safeStyles = extractedStyles
+        .map((s) {
+          final safeCss = CssSanitizer.sanitizeStylesheet(s.css);
+          return ExtractedStyle(css: safeCss, media: s.media);
+        })
+        .where((s) => s.css.isNotEmpty)
+        .toList();
 
     // Rebuild HTML
     final styleBlock = rebuildStyleBlock(safeStyles);

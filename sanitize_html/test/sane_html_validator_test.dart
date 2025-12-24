@@ -1900,7 +1900,7 @@ void main() {
 
         final result = sanitizer.sanitize(html);
 
-        expect(result, contains('<style>'));
+        expect(result, isNot(contains('<style>')));
         expect(result, isNot(contains('javascript:')));
       });
 
@@ -1973,7 +1973,7 @@ void main() {
 
         final result = sanitizer.sanitize(html);
 
-        expect(result, contains('<style>'));
+        expect(result, isNot(contains('<style>')));
         expect(result, isNot(contains('javascript:')));
         expect(result, contains('<div class="x">Test</div>'));
       });
