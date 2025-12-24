@@ -1,3 +1,4 @@
+import 'package:sanitize_html/src/css_dangerous_patterns.dart';
 import 'package:sanitize_html/src/html_sanitize_config.dart';
 
 class CssSanitizer {
@@ -317,6 +318,40 @@ class CssSanitizer {
     }
 
     return sb.toString();
+  }
+
+  static String stripDangerousTokens(String css) {
+    var out = css;
+
+    // Remove @import rules
+    out = out.replaceAll(CssDangerousPatterns.import, '');
+
+    // Remove dangerous protocols
+    out = out.replaceAll(CssDangerousPatterns.javascript, '');
+    out = out.replaceAll(CssDangerousPatterns.vbscript, '');
+
+    // Remove legacy CSS execution vectors
+    out = out.replaceAll(CssDangerousPatterns.expression, '');
+
+    // Strip SVG / HTML event handlers (onload=, onclick=, ...)
+    out = out.replaceAll(CssDangerousPatterns.eventHandler, '');
+
+    // Block data:text/* explicitly
+    out = out.replaceAll(CssDangerousPatterns.dataText, '');
+
+    // Block non-image data:* (preserve only data:image/*)
+    out = out.replaceAllMapped(
+      CssDangerousPatterns.dataAny,
+          (m) {
+        final type = (m.group(1) ?? '').toLowerCase().trim();
+        return type == 'image' ? m.group(0)! : '';
+      },
+    );
+
+    // Remove angle brackets to prevent tag / SVG injection
+    out = out.replaceAll('<', '').replaceAll('>', '');
+
+    return out.trim();
   }
 
   /// NOTE ON PARSING LIMITATION

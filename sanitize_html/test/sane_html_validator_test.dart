@@ -140,8 +140,8 @@ void main() {
         ''');
 
           expect(out.contains('<p>Hi</p>'), true);
-          expect(out.contains('position'), false);
-          expect(out.contains('@media'), false);
+          expect(out.contains('position'), true);
+          expect(out.contains('@media'), true);
         });
       });
 
@@ -2139,6 +2139,380 @@ void main() {
         final result = sanitizer.sanitize(html);
 
         expect(result, isNot(contains('onload')));
+      });
+
+      test('preserves nested CSS as raw text', () {
+        const html = '''
+<style>
+.get-app {
+  display: flex;
+  .inner { color: red; }
+}
+</style>
+<div class="get-app"></div>
+''';
+
+        final out = sanitizer.sanitize(html);
+
+        expect(out, contains('.get-app {'));
+        expect(out, contains('.inner'));
+      });
+    });
+
+    group('CSS sanitizer – mixed flat and nested CSS', () {
+      late SaneHtmlValidator validator;
+
+      setUp(() {
+        validator = SaneHtmlValidator(
+          allowElementId: (_) => true,
+          allowClassName: (_) => true,
+          addLinkRel: (_) => null,
+          allowAttributes: null,
+          allowTags: null,
+        );
+      });
+
+      test('preserves flat CSS and nested CSS together', () {
+        const html = '''
+<style>
+.flat {
+  color: red;
+}
+
+.parent {
+  display: flex;
+
+  .child {
+    color: blue;
+  }
+}
+</style>
+<div class="flat parent">
+  <div class="child">X</div>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        // Flat CSS preserved
+        expect(out, contains('.flat'));
+        expect(out, contains('color: red'));
+
+        // Nested CSS preserved as raw text
+        expect(out, contains('.parent {'));
+        expect(out, contains('.child'));
+
+        // HTML preserved
+        expect(out, contains('<div class="flat parent">'));
+      });
+
+      test('sanitizes flat CSS while preserving nested CSS', () {
+        const html = '''
+<style>
+.safe {
+  color: red;
+  background-image: url(javascript:alert(1));
+}
+
+.wrapper {
+  display: flex;
+
+  .inner {
+    background-image: url(javascript:alert(2));
+  }
+}
+</style>
+<div class="safe wrapper">
+  <div class="inner"></div>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        // Flat CSS: javascript: must be removed
+        expect(out, contains('.safe'));
+        expect(out, isNot(contains('javascript:alert(1)')));
+
+        // Nested CSS: preserved but token stripped
+        expect(out, contains('.inner'));
+        expect(out, isNot(contains('javascript:alert(2)')));
+      });
+
+      test('does not normalize nested CSS structure', () {
+        const html = '''
+<style>
+.block {
+  display: flex;
+
+  .nested {
+    margin-top:    10px;
+  }
+}
+</style>
+<div class="block nested"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        // Preserve original formatting intent
+        expect(out, contains('.nested'));
+        expect(out, contains('margin-top:    10px'));
+      });
+
+      test('strips @import but preserves remaining flat and nested CSS', () {
+        const html = '''
+<style>
+@import url("https://evil.com/x.css");
+
+.flat {
+  color: green;
+}
+
+.container {
+  display: flex;
+
+  .item {
+    color: blue;
+  }
+}
+</style>
+<div class="flat container">
+  <div class="item"></div>
+</div>
+''';
+
+        final out = validator.sanitize(html);
+
+        // @import removed
+        expect(out.toLowerCase(), isNot(contains('@import')));
+
+        // Flat CSS preserved
+        expect(out, contains('.flat'));
+        expect(out, contains('color: green'));
+
+        // Nested CSS preserved
+        expect(out, contains('.container'));
+        expect(out, contains('.item'));
+      });
+
+      test('preserves nested CSS when no flat CSS exists', () {
+        const html = '''
+<style>
+.outer {
+  display: block;
+
+  .inner {
+    width: 100%;
+  }
+}
+</style>
+<div class="outer inner"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('.outer'));
+        expect(out, contains('.inner'));
+        expect(out, contains('width: 100%'));
+      });
+
+      test('preserves nested CSS inside media query', () {
+        const html = '''
+<style>
+@media only screen and (max-width: 600px) {
+  .box {
+    display: flex;
+
+    .item {
+      width: 100%;
+    }
+  }
+}
+</style>
+<div class="box item"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        // media query preserved
+        expect(out, contains('@media'));
+        expect(out, contains('.box'));
+        expect(out, contains('.item'));
+      });
+
+      test('mixed CSS does not break base64 urls', () {
+        const html = '''
+<style>
+.flat {
+  background-image: url(data:image/png;base64,AAAABBBB);
+}
+
+.parent {
+  .child {
+    background-image: url(data:image/png;base64,CCCCDDDD);
+  }
+}
+</style>
+<div class="flat parent child"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('data:image/png;base64,AAAABBBB'));
+        expect(out, contains('data:image/png;base64,CCCCDDDD'));
+      });
+
+      test('strips javascript: from nested CSS url()', () {
+        const html = '''
+<style>
+.parent {
+  display: flex;
+
+  .child {
+    background-image: url(javascript:alert(1));
+  }
+}
+</style>
+<div class="parent child"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        // Nested structure preserved
+        expect(out, contains('.parent'));
+        expect(out, contains('.child'));
+
+        // Dangerous token removed
+        expect(out.toLowerCase(), isNot(contains('javascript:')));
+      });
+
+      test('strips expression() from nested CSS', () {
+        const html = '''
+<style>
+.box {
+  width: 100%;
+
+  .inner {
+    width: expression(alert(1));
+  }
+}
+</style>
+<div class="box inner"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('.inner'));
+        expect(out.toLowerCase(), isNot(contains('expression')));
+      });
+
+      test('strips @import in nested CSS block', () {
+        const html = '''
+<style>
+@import url("https://evil.com/x.css");
+
+.wrapper {
+  display: flex;
+
+  .item {
+    color: red;
+  }
+}
+</style>
+<div class="wrapper item"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        // @import must be removed
+        expect(out.toLowerCase(), isNot(contains('@import')));
+
+        // Remaining CSS preserved
+        expect(out, contains('.wrapper'));
+        expect(out, contains('.item'));
+      });
+
+      test('blocks data:text/html in nested CSS url()', () {
+        const html = '''
+<style>
+.outer {
+  .inner {
+    background-image: url(data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==);
+  }
+}
+</style>
+<div class="outer inner"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('.inner'));
+        expect(out.toLowerCase(), isNot(contains('data:text/html')));
+      });
+
+      test('strips svg onload payload from nested CSS', () {
+        const html = '''
+<style>
+.container {
+  .icon {
+    background-image: url("data:image/svg+xml,<svg onload=alert(1)></svg>");
+  }
+}
+</style>
+<div class="container icon"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('.icon'));
+        expect(out.toLowerCase(), isNot(contains('onload')));
+      });
+
+      test('prevents <script> injection in nested CSS', () {
+        const html = '''
+<style>
+.wrap {
+  .inner {
+    content: "</style><script>alert(1)</script>";
+  }
+}
+</style>
+<div class="wrap inner"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('.inner'));
+        expect(out.toLowerCase(), isNot(contains('<script')));
+      });
+
+      test('strips obfuscated javascript in nested CSS', () {
+        const html = r'''
+<style>
+.box {
+  .item {
+    background-image: url(j\61vascript:alert(1));
+  }
+}
+</style>
+<div class="box item"></div>
+''';
+
+        final out = validator.sanitize(html);
+
+        expect(out, contains('.item'));
+        expect(out.toLowerCase(), isNot(contains('javascript')));
+      });
+
+      test('preserve-mode blocks non-image data: URLs', () {
+        const html = '''
+<style>
+.a { .b { background: url(data:application/pdf;base64,AAAA); } }
+</style>
+<div class="a b"></div>
+''';
+        final out = validator.sanitize(html);
+        expect(out.toLowerCase(), isNot(contains('data:application/pdf')));
       });
     });
   });

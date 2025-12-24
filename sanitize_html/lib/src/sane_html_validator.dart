@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:developer';
+
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:sanitize_html/src/css_sanitizer.dart';
@@ -99,6 +101,12 @@ class SaneHtmlValidator {
     return buffer.toString();
   }
 
+  bool containsNestedCss(String css) {
+    // Detect `{ ... {` pattern outside comments
+    return RegExp(r'\{[^}]*\{', dotAll: true).hasMatch(css);
+  }
+
+
   /// Extracts raw CSS text from all <style> tags.
   /// - Preserves order
   /// - Removes <style> nodes from DOM after extraction
@@ -167,8 +175,18 @@ class SaneHtmlValidator {
     // Sanitize CSS
     final safeStyles = extractedStyles
         .map((s) {
-          final safeCss = CssSanitizer.sanitizeStylesheet(s.css);
-          return ExtractedStyle(css: safeCss, media: s.media);
+          final css = s.css;
+          // Nested CSS → PRESERVE
+          if (containsNestedCss(css)) {
+            return ExtractedStyle(
+              css: CssSanitizer.stripDangerousTokens(css),
+              media: s.media,
+            );
+          }
+
+          // Flat CSS → SANITIZE
+          final sanitized = CssSanitizer.sanitizeStylesheet(css);
+          return ExtractedStyle(css: sanitized, media: s.media);
         })
         .where((s) => s.css.isNotEmpty)
         .toList();
@@ -186,6 +204,8 @@ class SaneHtmlValidator {
       output,
     ];
 
-    return pieces.join('\n').trim();
+    final result = pieces.join('\n').trim();
+    log('');
+    return result;
   }
 }
