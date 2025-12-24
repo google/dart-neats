@@ -80,14 +80,13 @@ class NodeSanitizer {
     final lower = text.toLowerCase();
 
     // Strip literal CDATA markers (especially inside SVG)
-     if (lower.contains('<![cdata[') || lower.contains(']]>')) {
-       return true;
-     }
+    if (lower.contains('<![cdata[') || lower.contains(']]>')) {
+      return true;
+    }
 
     // Parser-breaking patterns
-    if (lower.contains('<script') ||
-    lower.contains(']]&gt;')) {
-    return true;
+    if (lower.contains('<script') || lower.contains(']]&gt;')) {
+      return true;
     }
 
     // Strip encoded JS payloads

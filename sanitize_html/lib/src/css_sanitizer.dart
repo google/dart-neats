@@ -344,6 +344,12 @@ class CssSanitizer {
     // Remove top-level comments (outside declaration blocks)
     css = _stripTopLevelCssComments(css).trim();
 
+    // Strip @import statements safely
+    css = css.replaceAll(
+      RegExp(r'@import\s+[^;]+;', caseSensitive: false),
+      '',
+    );
+
     final buffer = StringBuffer();
 
     // Split by block }

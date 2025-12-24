@@ -1802,5 +1802,344 @@ void main() {
         );
       });
     });
+
+    group('SaneHtmlValidator – internal CSS', () {
+      late SaneHtmlValidator sanitizer;
+
+      setUp(() {
+        sanitizer = SaneHtmlValidator(
+          allowElementId: (_) => true,
+          allowClassName: (_) => true,
+          addLinkRel: (_) => null,
+          allowAttributes: null,
+          allowTags: null,
+        );
+      });
+
+      test('preserves internal <style> and body content', () {
+        const html = '''
+<html>
+  <head>
+    <style>
+      .title { color: red; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <div class="title">Hello</div>
+  </body>
+</html>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, contains('<style>'));
+        expect(result, contains('.title'));
+        expect(result, contains('color: red'));
+        expect(result, contains('<div class="title">Hello</div>'));
+      });
+
+      test('preserves multiple <style> tags in order', () {
+        const html = '''
+<html>
+  <head>
+    <style>.a { color: red; }</style>
+    <style>.b { color: blue; }</style>
+  </head>
+  <body>
+    <div class="a b">Text</div>
+  </body>
+</html>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        final firstIndex = result.indexOf('.a { color: red }');
+        final secondIndex = result.indexOf('.b { color: blue }');
+
+        expect(firstIndex, isNot(-1));
+        expect(secondIndex, isNot(-1));
+        expect(firstIndex < secondIndex, isTrue);
+      });
+
+      test('preserves <style media> attribute', () {
+        const html = '''
+<html>
+  <head>
+    <style media="screen and (max-width:600px)">
+      .mobile { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="mobile">Hidden</div>
+  </body>
+</html>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(
+          result,
+          contains('<style media="screen and (max-width:600px)">'),
+        );
+        expect(result, contains('.mobile'));
+      });
+
+      test('removes dangerous CSS values', () {
+        const html = '''
+<html>
+  <head>
+    <style>
+      .x { background-image: url(javascript:alert(1)); }
+    </style>
+  </head>
+  <body>
+    <div class="x">Test</div>
+  </body>
+</html>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, contains('<style>'));
+        expect(result, isNot(contains('javascript:')));
+      });
+
+      test('<style> is not duplicated inside body', () {
+        const html = '''
+<html>
+  <head>
+    <style>.x { color: red; }</style>
+  </head>
+  <body>
+    <p>Hello</p>
+  </body>
+</html>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        final styleCount = RegExp('<style').allMatches(result).length;
+
+        expect(styleCount, equals(1));
+      });
+
+      test('works when HTML has no <head>', () {
+        const html = '''
+<body>
+  <style>.x { color: red; }</style>
+  <div class="x">Hello</div>
+</body>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, contains('<style>'));
+        expect(result, contains('.x'));
+        expect(result, contains('Hello'));
+      });
+
+      test('ignores empty <style>', () {
+        const html = '''
+<html>
+  <head>
+    <style>   </style>
+  </head>
+  <body>
+    <div>Hello</div>
+  </body>
+</html>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('<style>')));
+      });
+
+      test('CSS XSS: removes javascript: in url()', () {
+        const html = '''
+<html>
+  <head>
+    <style>
+      .x {
+        background-image: url(javascript:alert(1));
+      }
+    </style>
+  </head>
+  <body>
+    <div class="x">Test</div>
+  </body>
+</html>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, contains('<style>'));
+        expect(result, isNot(contains('javascript:')));
+        expect(result, contains('<div class="x">Test</div>'));
+      });
+
+      test('CSS XSS: removes obfuscated javascript url', () {
+        const html = '''
+<style>
+  .x {
+    background: url(  JaVaScRiPt:alert(1)  );
+  }
+</style>
+<div class="x">X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('javascript')));
+      });
+
+      test('CSS XSS: removes expression()', () {
+        const html = '''
+<style>
+  .x {
+    width: expression(alert(1));
+  }
+</style>
+<div class="x">X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('expression')));
+      });
+
+      test('CSS XSS: removes @import remote css', () {
+        const html = '''
+<style>
+  @import url("https://evil.com/x.css");
+  .x { color: red; }
+</style>
+<div class="x">X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('@import')));
+        expect(result, contains('.x'));
+      });
+
+      test('CSS XSS: removes obfuscated @import', () {
+        const html = '''
+<style>
+  @iMpOrT "https://evil.com/x.css";
+</style>
+<div>X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result.toLowerCase(), isNot(contains('@import')));
+      });
+
+      test('CSS XSS: removes behavior property', () {
+        const html = '''
+<style>
+  .x {
+    behavior: url(xss.htc);
+  }
+</style>
+<div class="x">X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('behavior')));
+      });
+
+      test('CSS XSS: removes -moz-binding', () {
+        const html = '''
+<style>
+  .x {
+    -moz-binding: url("http://evil.com/xss.xml#xss");
+  }
+</style>
+<div class="x">X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('-moz-binding')));
+      });
+
+      test('CSS XSS: blocks data:text/html', () {
+        const html = '''
+<style>
+  .x {
+    background-image: url(data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==);
+  }
+</style>
+<div class="x">X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('data:text/html')));
+      });
+
+      test('CSS XSS: allows data:image/png when configured', () {
+        const html = '''
+<style>
+  .x {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA);
+  }
+</style>
+<div class="x">X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, contains('data:image/png'));
+      });
+
+      test('CSS XSS: strips escaped javascript sequences', () {
+        const html = r'''
+<style>
+  .x {
+    background-image: url(j\61vascript:alert(1));
+  }
+</style>
+<div class="x">X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('javascript')));
+      });
+
+      test('CSS XSS: prevents </style> injection', () {
+        const html = '''
+<style>
+  .x { color: red; }
+</style><script>alert(1)</script>
+<div>X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('<script')));
+        expect(result, contains('<style>'));
+        expect(result, contains('color: red'));
+      });
+
+      test('CSS XSS: blocks svg javascript in css url()', () {
+        const html = '''
+<style>
+  .x {
+    background: url("data:image/svg+xml,<svg onload=alert(1)></svg>");
+  }
+</style>
+<div class="x">X</div>
+''';
+
+        final result = sanitizer.sanitize(html);
+
+        expect(result, isNot(contains('onload')));
+      });
+    });
   });
 }

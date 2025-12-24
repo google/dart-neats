@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:sanitize_html/src/css_sanitizer.dart';
+import 'package:sanitize_html/src/extracted_style.dart';
 import 'package:sanitize_html/src/node_sanitizer.dart';
 
 /// An implementation of [html.NodeValidator] that only allows sane HTML tags
@@ -96,6 +99,42 @@ class SaneHtmlValidator {
     return buffer.toString();
   }
 
+  /// Extracts raw CSS text from all <style> tags.
+  /// - Preserves order
+  /// - Removes <style> nodes from DOM after extraction
+  List<ExtractedStyle> extractStyleTags(Document document) {
+    final result = <ExtractedStyle>[];
+
+    final styleElements = document.querySelectorAll('style');
+    for (final style in styleElements) {
+      final css = style.text.trim();
+      if (css.isEmpty) {
+        style.remove();
+        continue;
+      }
+
+      result.add(
+        ExtractedStyle(
+          css: css,
+          media: style.attributes['media'],
+        ),
+      );
+
+      style.remove();
+    }
+
+    return result;
+  }
+
+  String rebuildStyleBlock(List<ExtractedStyle> styles) {
+    if (styles.isEmpty) return '';
+
+    return styles.map((s) {
+      final mediaAttr = s.media != null ? ' media="${s.media}"' : '';
+      return '<style$mediaAttr>${s.css}</style>';
+    }).join('\n');
+  }
+
   /// Sanitizes HTML:
   /// - strips comments
   /// - parses DOM
@@ -107,12 +146,34 @@ class SaneHtmlValidator {
     final noComments = _stripHtmlComments(html);
     final document = html_parser.parse(noComments);
 
+    // Extract internal CSS
+    final extractedStyles = extractStyleTags(document);
+
+    // Sanitize body
     final body = document.body;
     if (body == null) return '';
 
     _nodeSanitizer.sanitize(body, allowUnwrap: false);
 
+    // Sanitize CSS
+    final safeStyles = extractedStyles.map((s) {
+      final safeCss = CssSanitizer.sanitizeStylesheet(s.css);
+      return ExtractedStyle(css: safeCss, media: s.media);
+    }).toList();
+
+    // Rebuild HTML
+    final styleBlock = rebuildStyleBlock(safeStyles);
+
     final output = body.innerHtml.trim();
-    return output.isEmpty ? '' : output;
+    if (output.isEmpty) return '';
+
+    // Avoid triple-quote indentation artifacts.
+    // Keep styleBlock only when non-empty and always return a trimmed result.
+    final pieces = <String>[
+      if (styleBlock.trim().isNotEmpty) styleBlock.trim(),
+      output,
+    ];
+
+    return pieces.join('\n').trim();
   }
 }
