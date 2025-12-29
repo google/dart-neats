@@ -101,11 +101,26 @@ class SaneHtmlValidator {
     return buffer.toString();
   }
 
+  // Detect nested CSS blocks using a single-pass scan to avoid
+  // regex backtracking on malformed or attacker-controlled input.
   bool containsNestedCss(String css) {
-    // Detect `{ ... {` pattern outside comments
-    return RegExp(r'\{[^}]*\{', dotAll: true).hasMatch(css);
-  }
+    bool insideBlock = false;
 
+    for (var i = 0; i < css.length; i++) {
+      final c = css.codeUnitAt(i);
+
+      if (c == 0x7B /* { */) {
+        if (insideBlock) {
+          return true; // Found nested {
+        }
+        insideBlock = true;
+      } else if (c == 0x7D /* } */) {
+        insideBlock = false;
+      }
+    }
+
+    return false;
+  }
 
   /// Extracts raw CSS text from all <style> tags.
   /// - Preserves order

@@ -191,7 +191,7 @@ class NodeSanitizer {
 
         // strip CSS-style comments (to block ja/*x*/vascript:)
         normalized =
-            normalized.replaceAll(RegExp(r'/\*.*?\*/', dotAll: true), '');
+            normalized.replaceAll(HtmlSanitizeConfig.cssCommentPattern, '');
         lower = normalized.toLowerCase().trim();
 
         // block dangerous schemes

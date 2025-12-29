@@ -68,7 +68,7 @@ class AttributePolicy {
       final original = node.className;
       if (original.isEmpty) return false;
 
-      final parts = original.split(RegExp(r'\s+'));
+      final parts = original.split(HtmlSanitizeConfig.whitespacePattern);
       node.classes.clear();
 
       for (final c in parts) {

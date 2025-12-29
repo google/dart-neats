@@ -12,7 +12,7 @@ class CssSanitizer {
     String inside = clean.substring(4, clean.length - 1).trim();
 
     // Remove comments to avoid bypass
-    inside = inside.replaceAll(RegExp(r'/\*.*?\*/', dotAll: true), '').trim();
+    inside = inside.replaceAll(HtmlSanitizeConfig.cssCommentPattern, '').trim();
 
     // Strip optional wrapping quotes: url("...") or url('...')
     if ((inside.startsWith('"') && inside.endsWith('"')) ||
@@ -135,7 +135,7 @@ class CssSanitizer {
 
   /// Normalize whitespace: "0px   20px\n  " → "0px 20px"
   static String _normalizeWhitespace(String value) =>
-      value.replaceAll(RegExp(r'\s+'), ' ').trim();
+      value.replaceAll(HtmlSanitizeConfig.whitespacePattern, ' ').trim();
 
   /// Add px to pure integer width/height values:
   /// height: 10   → height: 10px
@@ -342,7 +342,7 @@ class CssSanitizer {
     // Block non-image data:* (preserve only data:image/*)
     out = out.replaceAllMapped(
       CssDangerousPatterns.dataAny,
-          (m) {
+      (m) {
         final type = (m.group(1) ?? '').toLowerCase().trim();
         return type == 'image' ? m.group(0)! : '';
       },
@@ -380,10 +380,7 @@ class CssSanitizer {
     css = _stripTopLevelCssComments(css).trim();
 
     // Strip @import statements safely
-    css = css.replaceAll(
-      RegExp(r'@import\s+[^;]+;', caseSensitive: false),
-      '',
-    );
+    css = css.replaceAll(CssDangerousPatterns.import, '');
 
     final buffer = StringBuffer();
 

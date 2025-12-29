@@ -444,7 +444,10 @@ class HtmlSanitizeConfig {
     'revert',
   };
 
-  static final RegExp cssCommentPattern = RegExp(r'/\*.*?\*/', dotAll: true);
+  // Note: Regexes are either anchored, literal, or strictly bounded.
+  // cssCommentPattern is length-bounded to avoid excessive backtracking
+  // on malformed or attacker-controlled CSS input.
+  static final RegExp cssCommentPattern = RegExp(r'/\*[\s\S]{0,2000}?\*/');
 
   static final RegExp unicodeEscapeReg =
       RegExp(r'\\[0-9a-f]{2}', caseSensitive: false);
