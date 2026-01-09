@@ -1,3 +1,8 @@
+## v3.0.1
+* Preserve and safely sanitize internal CSS
+* Preserve nested CSS with token-level sanitization
+* Mitigate potential ReDoS in regex patterns
+
 ## v3.0.0
 * Add secure, high-performance HTML sanitization engine
 
