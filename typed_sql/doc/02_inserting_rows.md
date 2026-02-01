@@ -73,7 +73,7 @@ The `toExpr<T>(T value)` function works for the following types:
  * `int` (e.g. `toExpr(42)`),
  * `double` (e.g. `toExpr(3.14)`),
  * `String` (e.g. `toExpr('hello world')`),
- * `DateTime` (e.g. `toExpr(DateTime.now().toUtc())`),
+ * `DateTime` (e.g. `toExpr(DateTime.now())`),
  * `Uint8List` (e.g. `toExpr(Uint8List.from([1, 2, 3]))`), and,
  * `Null` (e.g. `toExpr(null)`).
 
@@ -82,6 +82,9 @@ distinguish between an omitted value (default value), and intentional decision t
 insert `NULL`. Because `NULL` is always represented as `toExpr(null)`.
 As we will explore later, this also enables us to insert values directly
 from a subquery.
+
+When wrapping a `DateTime` value, `toExpr` will normalize it to UTC before
+encoding it for the database.
 
 
 ## Insert with `RETURNING` clause

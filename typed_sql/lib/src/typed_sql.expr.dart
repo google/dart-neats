@@ -174,11 +174,12 @@ sealed class Expr<T extends Object?> implements _ExprTyped<T> {
   /// This [Expr<DateTime>] will be evaluated in the database. Semantically,
   /// it's supposed to be equivalent to:
   /// ```dart
-  /// final currentTimestamp = toExpr(DateTime.now().toUtc());
+  /// final currentTimestamp = toExpr(DateTime.now());
   /// ```
+  /// where [toExpr] will normalize [DateTime] values to UTC.
   ///
   /// However, in practice many databases will render timestamps with fewer
-  /// decimals than `DateTime.now().toUtc()` in Dart.
+  /// decimals than `DateTime.now()` in Dart.
   ///
   /// This is mainly intended if you want to use the database clock.
   /// For example, this is how [DefaultValue.now] is encoded.
@@ -249,7 +250,7 @@ base mixin _ExprJsonValue implements _ExprTyped<JsonValue> {
 ///  * [int],
 ///  * [double],
 ///  * [bool],
-///  * [DateTime] (consider using [DateTime.toUtc]),
+///  * [DateTime] (will be normalized to UTC),
 ///  * [Uint8List],
 ///  * `null`
 ///
@@ -257,9 +258,8 @@ base mixin _ExprJsonValue implements _ExprTyped<JsonValue> {
 /// > If you want to use a [CustomDataType], use the `.asExpr`
 /// > _extension method_ instead.
 ///
-/// When wrapping a [DateTime] object using [toExpr], do consider converting to
-/// UTC first using [DateTime.toUtc], some database adapters may already do so
-/// implicitly.
+/// When wrapping a [DateTime] object using [toExpr], it will be normalized to
+/// UTC before encoding to the database.
 ///
 /// {@category inserting_rows}
 /// {@category writing_queries}
@@ -518,7 +518,11 @@ final class Literal<T> extends SingleValueExpr<T> {
       case Uint8List _:
         return Literal._(value, ColumnType.blob as _ExprType<T>);
       case DateTime _:
-        return Literal._(value, ColumnType.dateTime as _ExprType<T>);
+        final dateTime = value as DateTime;
+        return Literal._(
+          dateTime.toUtc() as T,
+          ColumnType.dateTime as _ExprType<T>,
+        );
       case JsonValue _:
         return Literal._(value, ColumnType.jsonValue as _ExprType<T>);
 
