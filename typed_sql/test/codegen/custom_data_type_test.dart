@@ -250,4 +250,40 @@ void main() {
     ''',
     error: contains('Field types may not have type arguments'),
   );
+
+  testCodeGeneration(
+    name: 'CustomDataType<JsonValue> cannot implement Comparable',
+    source: r'''
+      import 'package:typed_sql/typed_sql.dart';
+
+      part 'schema.g.dart';
+
+      abstract final class TestDatabase extends Schema {
+        Table<Item> get items;
+      }
+
+      @PrimaryKey(['id'])
+      abstract final class Item extends Row {
+        int get id;
+        MyCustomType get value;
+      }
+
+      final class MyCustomType implements CustomDataType<JsonValue>, Comparable<MyCustomType> {
+        final JsonValue value;
+
+        MyCustomType(this.value);
+
+        factory MyCustomType.fromDatabase(JsonValue value) => MyCustomType(value);
+
+        @override
+        JsonValue toDatabase() => value;
+
+        @override
+        int compareTo(MyCustomType other) => 0;
+      }
+    ''',
+    error: contains(
+      'CustomDataType<JsonValue> classes cannot implement Comparable',
+    ),
+  );
 }
