@@ -579,7 +579,8 @@ extension on ExpressionResolver<SqlContext> {
         EncodedCustomDataTypeExpression(:final value) => expr(value),
         CurrentTimestampExpression _ => 'UTC_TIMESTAMP()',
         ExpressionJsonRef e => extractJsonRef(e),
-        ExpressionJsonExtract(:final value) => 'JSON_UNQUOTE(${expr(value)})',
+        ExpressionJsonExtract(:final value) =>
+          'CASE WHEN JSON_TYPE(${expr(value)}) = \'NULL\' THEN NULL ELSE JSON_UNQUOTE(${expr(value)}) END',
       };
 
   String extractJsonRef(ExpressionJsonRef ref) {

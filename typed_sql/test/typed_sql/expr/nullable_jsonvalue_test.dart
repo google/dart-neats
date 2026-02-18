@@ -261,6 +261,39 @@ final _cases = <({
     expr: toExpr(testData)['missing'].asBool(),
     expected: null,
   ),
+
+  // JsonValue(null) vs JsonValue('null') asString()
+  (
+    name: 'JsonValue(null).asString() -> NULL',
+    expr: toExpr(JsonValue(null)).asString(),
+    expected: null,
+  ),
+  (
+    name: "JsonValue('null').asString() -> 'null'",
+    expr: toExpr(JsonValue('null')).asString(),
+    expected: 'null',
+  ),
+
+  // JsonValue(null).asInt() -> NULL
+  (
+    name: 'JsonValue(null).asInt() -> NULL',
+    expr: toExpr(JsonValue(null)).asInt(),
+    expected: null,
+  ),
+
+  // JsonValue(null).asDouble() -> NULL
+  (
+    name: 'JsonValue(null).asDouble() -> NULL',
+    expr: toExpr(JsonValue(null)).asDouble(),
+    expected: null,
+  ),
+
+  // JsonValue(null).asBool() -> NULL
+  (
+    name: 'JsonValue(null).asBool() -> NULL',
+    expr: toExpr(JsonValue(null)).asBool(),
+    expected: null,
+  ),
 ];
 
 void main() {
