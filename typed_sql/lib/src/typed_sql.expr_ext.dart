@@ -521,6 +521,7 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// * JSON String `"hello"` becomes text `"hello"`.
   /// * JSON Boolean `true` becomes text `"true"` (or `"1"` on SQLite)..
   /// * JSON Object/Array becomes the JSON string representation (e.g. `'{"a":1}'`).
+  /// * JSON Null `null` becomes SQL `NULL`.
   /// {@endtemplate}
   ///
   /// **Casting Behavior:**
