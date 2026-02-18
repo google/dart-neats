@@ -517,10 +517,9 @@ final class Literal<T> extends SingleValueExpr<T> {
         return Literal._(value, ColumnType.real as _ExprType<T>);
       case Uint8List _:
         return Literal._(value, ColumnType.blob as _ExprType<T>);
-      case DateTime _:
-        final dateTime = value as DateTime;
+      case DateTime v:
         return Literal._(
-          dateTime.toUtc() as T,
+          v.toUtc() as T,
           ColumnType.dateTime as _ExprType<T>,
         );
       case JsonValue _:
