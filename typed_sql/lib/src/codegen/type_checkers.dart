@@ -64,3 +64,4 @@ final dateTimeTypeChecker = const TypeChecker.fromUrl('dart:core#DateTime');
 final uint8ListTypeChecker = const TypeChecker.fromUrl(
   'dart:typed_data#Uint8List',
 );
+final comparableTypeChecker = const TypeChecker.fromUrl('dart:core#Comparable');

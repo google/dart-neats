@@ -390,6 +390,17 @@ Future<ParsedRowClass> _parseRowClass(
           );
         }
 
+        if (backingType == 'JsonValue') {
+          if (aReturnTypeElement.allSupertypes.any(
+            (e) => comparableTypeChecker.isExactly(e.element),
+          )) {
+            throw InvalidGenerationSource(
+              'CustomDataType<JsonValue> classes cannot implement Comparable',
+              element: a,
+            );
+          }
+        }
+
         var returnType = a.returnType as InterfaceType;
 
         // Check that there is a fromDatabase constructor
