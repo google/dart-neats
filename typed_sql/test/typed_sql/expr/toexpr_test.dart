@@ -66,10 +66,11 @@ void main() {
     check(result).equals(today);
   }, skipMysql: 'MySQL driver does not support microseconds');
 
-  r.addTest('toExpr(yearNoUtc) (allow for conversion to UTC)', (db) async {
+  r.addTest('toExpr(yearNoUtc) normalizes to UTC', (db) async {
     final result = await db.select((toExpr(yearNoUtc),)).fetch();
-    // We allow for conversion to UTC
-    check(result!.isAtSameMomentAs(yearNoUtc)).isTrue();
+    check(result).isNotNull();
+    check(result!.isUtc).isTrue();
+    check(result.isAtSameMomentAs(yearNoUtc.toUtc())).isTrue();
   });
 
   r.addTest('toExpr(UintList)', (db) async {
