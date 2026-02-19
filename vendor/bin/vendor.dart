@@ -78,7 +78,6 @@ class _Context extends Context {
   @override
   final Uri defaultHostedUrl;
 
-  @override
   _Context({
     required this.rootPackageFolder,
     required this.client,
