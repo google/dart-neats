@@ -9,7 +9,7 @@ environment:
   sdk: ^3.6.1
 
 dependencies:
-  analyzer: ^8.0.0
+  analyzer: ^10.0.0
   build: '>=3.0.0 <5.0.0'
   code_builder: ^4.5.0
   collection: ^1.19.0
@@ -18,7 +18,7 @@ dependencies:
   meta: ^1.9.1
   postgres: ^3.5.4
   source_gen: ^4.0.0
-  sqlite3: ^2.7.2
+  sqlite3: ^3.1.0
 
 dev_dependencies:
   build_runner: ^2.1.9
