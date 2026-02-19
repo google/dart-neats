@@ -93,7 +93,7 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
 
     if (force) {
       for (final conn in _connections) {
-        conn.close();
+        conn.dispose();
       }
       _connections.clear();
       _idleConnections.clear();
@@ -109,7 +109,7 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
       if (_pendingConnectionRequests == 0 && _idleConnections.isNotEmpty) {
         for (final conn in _idleConnections) {
           _connections.remove(conn);
-          conn.close();
+          conn.dispose();
         }
         _idleConnections.clear();
         _stateChanged.notify();
@@ -148,7 +148,7 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
           yield _SqliteRowReader(cursor.current);
         }
       } finally {
-        stmt.close();
+        stmt.dispose();
       }
     } on SqliteException catch (e) {
       _throwSqliteException(e);
@@ -176,7 +176,7 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
       } finally {
         for (final statement in statements) {
           try {
-            statement.close();
+            statement.dispose();
           } catch (e) {
             // ignore errors, we always have to dispose!
           }
