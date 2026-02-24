@@ -421,8 +421,9 @@ final class GroupByClause extends FromClause implements ExpressionContext {
   final List<Expr> _groupBy;
   final List<Expr> _projection;
 
-  Iterable<Expr> get groupBy => _groupBy.expand((e) => e._explode());
-  Iterable<Expr> get projection => _projection.expand((e) => e._explode());
+  late final List<Expr> groupBy = _groupBy.expand((e) => e._explode()).toList();
+  late final List<Expr> projection =
+      _projection.expand((e) => e._explode()).toList();
 
   GroupByClause._(
     super.from,
