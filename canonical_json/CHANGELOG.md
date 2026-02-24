@@ -1,3 +1,6 @@
+## v1.1.3
+ * Updated dependencies (`package:analyzer`).
+
 ## v1.1.2
  * Added `topics` to `pubspec.yaml`.
 
