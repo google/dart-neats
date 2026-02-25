@@ -1358,8 +1358,8 @@ Spec _buildGroupByExtension(int i, int j) {
             (e) => GroupByClause._(
               _from._from(_from._expressions.toList()),
               _handle,
-              _group.toList(),
-              e,
+              e.take($i).toList(),
+              e.skip($i).toList(),
             ),
           );
         '''),

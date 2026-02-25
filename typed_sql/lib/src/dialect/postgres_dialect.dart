@@ -442,7 +442,8 @@ extension on ExpressionResolver<SqlContext> {
       selection = g.projection
           .mapIndexed((i, e) => '(${ctx.expr(e)}) AS ${resultColumns[i]}')
           .join(', ');
-      grouping = g.groupBy.map(ctx.expr).join(', ');
+      // g.groupBy is always a prefix of g.projection
+      grouping = g.groupBy.mapIndexed((i, _) => '${i + 1}').join(', ');
     } else {
       throw AssertionError('unreachable');
     }
