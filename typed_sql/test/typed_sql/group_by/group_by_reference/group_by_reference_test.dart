@@ -328,5 +328,66 @@ void main() {
     ]);
   });
 
+  r.addTest('books.groupBy(.author.name).aggregate(sum(.stock))', (db) async {
+    final result = await db.books
+        .groupBy((b) => (b.author.name,))
+        .aggregate((agg) => agg.sum((book) => book.stock))
+        .fetch();
+
+    check(result).unorderedEquals([
+      ('Easter Bunny', 22),
+      ('Bucks Bunny', 45),
+    ]);
+  });
+
+  r.addTest(
+      'books.groupBy(.author.name).aggregate(sum(.stock)).select(uppercase)',
+      (db) async {
+    final query = db.books
+        .groupBy((b) => (b.author.name,))
+        .aggregate((agg) => agg.sum((book) => book.stock))
+        .select((authorName, sumStock) => (authorName.toUpperCase(), sumStock));
+
+    final result = await query.fetch();
+
+    check(result).unorderedEquals([
+      ('EASTER BUNNY', 22),
+      ('BUCKS BUNNY', 45),
+    ]);
+  },
+      skipMysql:
+          'MariaDB returns NULL for the subquery column in this specific nested structure');
+
+  r.addTest('books.groupBy(.author).aggregate(sum(.stock))', (db) async {
+    final result = await db.books
+        .groupBy((b) => (b.author,))
+        .aggregate((agg) => agg.sum((book) => book.stock))
+        .fetch();
+
+    check(result).length.equals(2);
+  });
+
+  r.addTest('books.groupBy(.author).aggregate(count)', (db) async {
+    // This will group by the whole author row (id, name)
+    // Identity is lost due to explode(), so we expect GROUP BY (subquery), (subquery)
+    final result = await db.books
+        .groupBy((b) => (b.author,))
+        .aggregate((agg) => agg.count())
+        .fetch();
+
+    check(result).length.equals(2);
+  });
+
+  r.addTest('books.select().groupBy().aggregate() identity check', (db) async {
+    // Identity is preserved here because we are grouping by a SingleValueExpr
+    final result = await db.books
+        .select((b) => (b.authorId, b.stock))
+        .groupBy((authorId, stock) => (authorId,))
+        .aggregate((agg) => agg.count())
+        .fetch();
+
+    check(result).length.equals(2);
+  });
+
   r.run();
 }

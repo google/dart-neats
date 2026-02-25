@@ -418,18 +418,26 @@ final class GroupByClause extends FromClause implements ExpressionContext {
   @override
   final Object _handle;
 
-  final List<Expr> _groupBy;
-  final List<Expr> _projection;
+  final List<Expr> _group;
+  final List<Expr> _aggregation;
 
-  late final List<Expr> groupBy = _groupBy.expand((e) => e._explode()).toList();
-  late final List<Expr> projection =
-      _projection.expand((e) => e._explode()).toList();
+  /// The grouped columns (exploded).
+  late final List<Expr> groupBy = _group.expand((e) => e._explode()).toList();
+
+  /// The projection is made up of the grouped columns followed by the
+  /// aggregations.
+  ///
+  /// We promise that [groupBy] is a prefix of [projection].
+  late final List<Expr> projection = [
+    ...groupBy,
+    ..._aggregation.expand((e) => e._explode()),
+  ];
 
   GroupByClause._(
     super.from,
     this._handle,
-    this._groupBy,
-    this._projection,
+    this._group,
+    this._aggregation,
   ) : super._();
 }
 

@@ -12152,8 +12152,8 @@ extension Group1By1<A, B> on Group<(Expr<A>,), (Expr<B>,)> {
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(1).toList(),
+        e.skip(1).toList(),
       ),
     );
   }
@@ -12265,8 +12265,8 @@ extension Group2By1<A, B, C> on Group<(Expr<A>,), (Expr<B>, Expr<C>)> {
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(1).toList(),
+        e.skip(1).toList(),
       ),
     );
   }
@@ -12383,8 +12383,8 @@ extension Group3By1<A, B, C, D>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(1).toList(),
+        e.skip(1).toList(),
       ),
     );
   }
@@ -12502,8 +12502,8 @@ extension Group4By1<A, B, C, D, E>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(1).toList(),
+        e.skip(1).toList(),
       ),
     );
   }
@@ -12625,8 +12625,8 @@ extension Group5By1<A, B, C, D, E, F>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(1).toList(),
+        e.skip(1).toList(),
       ),
     );
   }
@@ -12755,8 +12755,8 @@ extension Group6By1<A, B, C, D, E, F, G> on Group<(Expr<A>,),
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(1).toList(),
+        e.skip(1).toList(),
       ),
     );
   }
@@ -12895,8 +12895,8 @@ extension Group7By1<A, B, C, D, E, F, G, H> on Group<(Expr<A>,),
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(1).toList(),
+        e.skip(1).toList(),
       ),
     );
   }
@@ -13080,8 +13080,8 @@ extension Group1By2<A, B, C> on Group<(Expr<A>, Expr<B>), (Expr<C>,)> {
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(2).toList(),
+        e.skip(2).toList(),
       ),
     );
   }
@@ -13198,8 +13198,8 @@ extension Group2By2<A, B, C, D>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(2).toList(),
+        e.skip(2).toList(),
       ),
     );
   }
@@ -13319,8 +13319,8 @@ extension Group3By2<A, B, C, D, E>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(2).toList(),
+        e.skip(2).toList(),
       ),
     );
   }
@@ -13444,8 +13444,8 @@ extension Group4By2<A, B, C, D, E, F>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(2).toList(),
+        e.skip(2).toList(),
       ),
     );
   }
@@ -13571,8 +13571,8 @@ extension Group5By2<A, B, C, D, E, F, G> on Group<(Expr<A>, Expr<B>),
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(2).toList(),
+        e.skip(2).toList(),
       ),
     );
   }
@@ -13704,8 +13704,8 @@ extension Group6By2<A, B, C, D, E, F, G, H> on Group<(Expr<A>, Expr<B>),
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(2).toList(),
+        e.skip(2).toList(),
       ),
     );
   }
@@ -13837,8 +13837,8 @@ extension Group1By3<A, B, C, D>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(3).toList(),
+        e.skip(3).toList(),
       ),
     );
   }
@@ -13962,8 +13962,8 @@ extension Group2By3<A, B, C, D, E>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(3).toList(),
+        e.skip(3).toList(),
       ),
     );
   }
@@ -14091,8 +14091,8 @@ extension Group3By3<A, B, C, D, E, F>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(3).toList(),
+        e.skip(3).toList(),
       ),
     );
   }
@@ -14222,8 +14222,8 @@ extension Group4By3<A, B, C, D, E, F, G> on Group<(Expr<A>, Expr<B>, Expr<C>),
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(3).toList(),
+        e.skip(3).toList(),
       ),
     );
   }
@@ -14355,8 +14355,8 @@ extension Group5By3<A, B, C, D, E, F, G, H> on Group<
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(3).toList(),
+        e.skip(3).toList(),
       ),
     );
   }
@@ -14491,8 +14491,8 @@ extension Group1By4<A, B, C, D, E>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(4).toList(),
+        e.skip(4).toList(),
       ),
     );
   }
@@ -14621,8 +14621,8 @@ extension Group2By4<A, B, C, D, E, F>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(4).toList(),
+        e.skip(4).toList(),
       ),
     );
   }
@@ -14753,8 +14753,8 @@ extension Group3By4<A, B, C, D, E, F, G> on Group<
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(4).toList(),
+        e.skip(4).toList(),
       ),
     );
   }
@@ -14887,8 +14887,8 @@ extension Group4By4<A, B, C, D, E, F, G, H> on Group<
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(4).toList(),
+        e.skip(4).toList(),
       ),
     );
   }
@@ -15022,8 +15022,8 @@ extension Group1By5<A, B, C, D, E, F>
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(5).toList(),
+        e.skip(5).toList(),
       ),
     );
   }
@@ -15158,8 +15158,8 @@ extension Group2By5<A, B, C, D, E, F, G> on Group<
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(5).toList(),
+        e.skip(5).toList(),
       ),
     );
   }
@@ -15296,8 +15296,8 @@ extension Group3By5<A, B, C, D, E, F, G, H> on Group<
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(5).toList(),
+        e.skip(5).toList(),
       ),
     );
   }
@@ -15435,8 +15435,8 @@ extension Group1By6<A, B, C, D, E, F, G> on Group<
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(6).toList(),
+        e.skip(6).toList(),
       ),
     );
   }
@@ -15574,8 +15574,8 @@ extension Group2By6<A, B, C, D, E, F, G, H> on Group<
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(6).toList(),
+        e.skip(6).toList(),
       ),
     );
   }
@@ -15724,8 +15724,8 @@ extension Group1By7<A, B, C, D, E, F, G, H> on Group<
       (e) => GroupByClause._(
         _from._from(_from._expressions.toList()),
         _handle,
-        _group.toList(),
-        e,
+        e.take(7).toList(),
+        e.skip(7).toList(),
       ),
     );
   }
