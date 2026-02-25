@@ -12,193 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:developer';
+
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
-
-final _allowedElements = <String>{
-  'H1',
-  'H2',
-  'H3',
-  'H4',
-  'H5',
-  'H6',
-  'H7',
-  'H8',
-  'BR',
-  'B',
-  'I',
-  'STRONG',
-  'EM',
-  'A',
-  'PRE',
-  'CODE',
-  'IMG',
-  'TT',
-  'DIV',
-  'INS',
-  'DEL',
-  'SUP',
-  'SUB',
-  'P',
-  'OL',
-  'UL',
-  'TABLE',
-  'THEAD',
-  'TBODY',
-  'TFOOT',
-  'BLOCKQUOTE',
-  'DL',
-  'DT',
-  'DD',
-  'KBD',
-  'Q',
-  'SAMP',
-  'VAR',
-  'HR',
-  'RUBY',
-  'RT',
-  'RP',
-  'LI',
-  'TR',
-  'TD',
-  'TH',
-  'S',
-  'STRIKE',
-  'SUMMARY',
-  'DETAILS',
-  'CAPTION',
-  'FIGURE',
-  'FIGCAPTION',
-  'ABBR',
-  'BDO',
-  'CITE',
-  'DFN',
-  'MARK',
-  'SMALL',
-  'SPAN',
-  'TIME',
-  'WBR',
-};
-
-final _alwaysAllowedAttributes = <String>{
-  'abbr',
-  'accept',
-  'accept-charset',
-  'accesskey',
-  'action',
-  'align',
-  'alt',
-  'aria-describedby',
-  'aria-hidden',
-  'aria-label',
-  'aria-labelledby',
-  'axis',
-  'border',
-  'cellpadding',
-  'cellspacing',
-  'char',
-  'charoff',
-  'charset',
-  'checked',
-  'clear',
-  'cols',
-  'colspan',
-  'color',
-  'compact',
-  'coords',
-  'datetime',
-  'dir',
-  'disabled',
-  'enctype',
-  'for',
-  'frame',
-  'headers',
-  'height',
-  'hreflang',
-  'hspace',
-  'ismap',
-  'label',
-  'lang',
-  'maxlength',
-  'media',
-  'method',
-  'multiple',
-  'name',
-  'nohref',
-  'noshade',
-  'nowrap',
-  'open',
-  'prompt',
-  'readonly',
-  'rel',
-  'rev',
-  'rows',
-  'rowspan',
-  'rules',
-  'scope',
-  'selected',
-  'shape',
-  'size',
-  'span',
-  'start',
-  'summary',
-  'tabindex',
-  'target',
-  'title',
-  'type',
-  'usemap',
-  'valign',
-  'value',
-  'vspace',
-  'width',
-  'itemprop',
-};
-
-bool _alwaysAllowed(String _) => true;
-
-bool _validLink(String url) {
-  try {
-    final uri = Uri.parse(url);
-    return uri.isScheme('https') ||
-        uri.isScheme('http') ||
-        uri.isScheme('mailto') ||
-        !uri.hasScheme;
-  } on FormatException {
-    return false;
-  }
-}
-
-bool _validUrl(String url) {
-  try {
-    final uri = Uri.parse(url);
-    return uri.isScheme('https') || uri.isScheme('http') || !uri.hasScheme;
-  } on FormatException {
-    return false;
-  }
-}
-
-final _citeAttributeValidator = <String, bool Function(String)>{
-  'cite': _validUrl,
-};
-
-final _elementAttributeValidators =
-    <String, Map<String, bool Function(String)>>{
-  'A': {
-    'href': _validLink,
-  },
-  'IMG': {
-    'src': _validUrl,
-    'longdesc': _validUrl,
-  },
-  'DIV': {
-    'itemscope': _alwaysAllowed,
-    'itemtype': _alwaysAllowed,
-  },
-  'BLOCKQUOTE': _citeAttributeValidator,
-  'DEL': _citeAttributeValidator,
-  'INS': _citeAttributeValidator,
-  'Q': _citeAttributeValidator,
-};
+import 'package:sanitize_html/src/css_sanitizer.dart';
+import 'package:sanitize_html/src/extracted_style.dart';
+import 'package:sanitize_html/src/node_sanitizer.dart';
 
 /// An implementation of [html.NodeValidator] that only allows sane HTML tags
 /// and attributes protecting against XSS.
@@ -208,80 +28,199 @@ final _elementAttributeValidators =
 /// easily interferes with the rest of the page.
 ///
 /// [1]: https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb
+///
+///
+/// Sanitizes HTML nodes using a DOM-based filtering approach
+/// to mitigate XSS vectors.
+///
+/// This validator:
+/// - removes all HTML comments (normal or malformed)
+/// - filters elements and attributes based on NodeSanitizer rules
+/// - returns only safe HTML content
+///
+/// Behavior follows common HTML email sanitization principles.
 class SaneHtmlValidator {
   final bool Function(String)? allowElementId;
   final bool Function(String)? allowClassName;
   final Iterable<String>? Function(String)? addLinkRel;
+  final List<String>? allowAttributes;
+  final List<String>? allowTags;
+
+  late final NodeSanitizer _nodeSanitizer;
 
   SaneHtmlValidator({
     required this.allowElementId,
     required this.allowClassName,
     required this.addLinkRel,
-  });
-
-  String sanitize(String htmlString) {
-    final root = html_parser.parseFragment(htmlString);
-    _sanitize(root);
-    return root.outerHtml;
+    required this.allowAttributes,
+    required this.allowTags,
+  }) {
+    _nodeSanitizer = NodeSanitizer(
+      allowId: allowElementId,
+      allowClass: allowClassName,
+      addLinkRel: addLinkRel,
+      allowAttributes: allowAttributes,
+      allowTags: allowTags,
+    );
   }
 
-  void _sanitize(Node node) {
-    if (node is Element) {
-      final tagName = node.localName!.toUpperCase();
-      if (!_allowedElements.contains(tagName)) {
-        node.remove();
-        return;
+  /// Remove all HTML comments, including malformed cases:
+  /// - Standard comment: <!-- ... -->
+  /// - Broken comment missing '-->'
+  ///   → treat the first '>' after '<!--' as the end of the comment
+  ///
+  /// If no closing '>' is found, the remainder of the string is discarded.
+  String _stripHtmlComments(String html) {
+    final buffer = StringBuffer();
+    var index = 0;
+
+    while (index < html.length) {
+      final start = html.indexOf('<!--', index);
+      if (start == -1) {
+        buffer.write(html.substring(index));
+        break;
       }
-      node.attributes.removeWhere((k, v) {
-        final attrName = k.toString();
-        if (attrName == 'id') {
-          return allowElementId == null || !allowElementId!(v);
+
+      // Write text before comment
+      buffer.write(html.substring(index, start));
+
+      final commentStart = start + 4;
+      final normalEnd = html.indexOf('-->', commentStart);
+
+      if (normalEnd != -1) {
+        index = normalEnd + 3;
+        continue;
+      }
+
+      final fallback = html.indexOf('>', commentStart);
+      if (fallback == -1) break;
+
+      index = fallback + 1;
+    }
+
+    return buffer.toString();
+  }
+
+  // Detect nested CSS blocks using a single-pass scan to avoid
+  // regex backtracking on malformed or attacker-controlled input.
+  bool containsNestedCss(String css) {
+    bool insideBlock = false;
+
+    for (var i = 0; i < css.length; i++) {
+      final c = css.codeUnitAt(i);
+
+      if (c == 0x7B /* { */) {
+        if (insideBlock) {
+          return true; // Found nested {
         }
-        if (attrName == 'class') {
-          if (allowClassName == null) return true;
-          node.classes.removeWhere((cn) => !allowClassName!(cn));
-          return node.classes.isEmpty;
-        }
-        return !_isAttributeAllowed(tagName, attrName, v);
-      });
-      if (tagName == 'A') {
-        final href = node.attributes['href'];
-        if (href != null && addLinkRel != null) {
-          final rels = addLinkRel!(href);
-          if (rels != null && rels.isNotEmpty) {
-            final currentRel = node.attributes['rel'] ?? '';
-            final allRels = <String>{
-              ...currentRel.split(' ').where((e) => e.isNotEmpty),
-              ...rels,
-            };
-            node.attributes['rel'] = allRels.join(' ');
+        insideBlock = true;
+      } else if (c == 0x7D /* } */) {
+        insideBlock = false;
+      }
+    }
+
+    return false;
+  }
+
+  /// Extracts raw CSS text from all <style> tags.
+  /// - Preserves order
+  /// - Removes <style> nodes from DOM after extraction
+  List<ExtractedStyle> extractStyleTags(Document document) {
+    final result = <ExtractedStyle>[];
+
+    final styleElements = document.querySelectorAll('style');
+    for (final style in styleElements) {
+      final css = style.text.trim();
+      if (css.isEmpty) {
+        style.remove();
+        continue;
+      }
+
+      result.add(
+        ExtractedStyle(
+          css: css,
+          media: style.attributes['media'],
+        ),
+      );
+
+      style.remove();
+    }
+
+    return result;
+  }
+
+  String rebuildStyleBlock(List<ExtractedStyle> styles) {
+    if (styles.isEmpty) return '';
+
+    return styles.map((s) {
+      final mediaAttr =
+          s.media != null ? ' media="${_escapeAttribute(s.media!)}"' : '';
+      return '<style$mediaAttr>${s.css}</style>';
+    }).join('\n');
+  }
+
+  String _escapeAttribute(String value) {
+    return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('"', '&quot;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
+  }
+
+  /// Sanitizes HTML:
+  /// - strips comments
+  /// - parses DOM
+  /// - applies NodeSanitizer to <body>
+  /// - returns sanitized inner HTML
+  String sanitize(String html) {
+    if (html.isEmpty) return '';
+
+    final noComments = _stripHtmlComments(html);
+    final document = html_parser.parse(noComments);
+
+    // Extract internal CSS
+    final extractedStyles = extractStyleTags(document);
+
+    // Sanitize body
+    final body = document.body;
+    if (body == null) return '';
+
+    _nodeSanitizer.sanitize(body, allowUnwrap: false);
+
+    // Sanitize CSS
+    final safeStyles = extractedStyles
+        .map((s) {
+          final css = s.css;
+          // Nested CSS → PRESERVE
+          if (containsNestedCss(css)) {
+            return ExtractedStyle(
+              css: CssSanitizer.stripDangerousTokens(css),
+              media: s.media,
+            );
           }
-        }
-      }
-    }
-    if (node.hasChildNodes()) {
-      // doing it in reverse order, because we could otherwise skip one, when a
-      // node is removed...
-      for (var i = node.nodes.length - 1; i >= 0; i--) {
-        _sanitize(node.nodes[i]);
-      }
-    }
-  }
 
-  bool _isAttributeAllowed(String tagName, String attrName, String value) {
-    if (_alwaysAllowedAttributes.contains(attrName)) return true;
+          // Flat CSS → SANITIZE
+          final sanitized = CssSanitizer.sanitizeStylesheet(css);
+          return ExtractedStyle(css: sanitized, media: s.media);
+        })
+        .where((s) => s.css.isNotEmpty)
+        .toList();
 
-    // Special validators for special attributes on special tags (href/src/cite)
-    final attributeValidators = _elementAttributeValidators[tagName];
-    if (attributeValidators == null) {
-      return false;
-    }
+    // Rebuild HTML
+    final styleBlock = rebuildStyleBlock(safeStyles);
 
-    final validator = attributeValidators[attrName];
-    if (validator == null) {
-      return false;
-    }
+    final output = body.innerHtml.trim();
+    if (output.isEmpty) return '';
 
-    return validator(value);
+    // Avoid triple-quote indentation artifacts.
+    // Keep styleBlock only when non-empty and always return a trimmed result.
+    final pieces = <String>[
+      if (styleBlock.trim().isNotEmpty) styleBlock.trim(),
+      output,
+    ];
+
+    final result = pieces.join('\n').trim();
+    log('');
+    return result;
   }
 }
