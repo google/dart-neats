@@ -1,3 +1,6 @@
+## 0.1.7
+ * Removed the debug use of `package:test` from mysql adapter.
+
 ## 0.1.6
  * Fixed dependencies in `pubspec.yaml`.
 
