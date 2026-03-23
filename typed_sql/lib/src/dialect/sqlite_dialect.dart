@@ -77,6 +77,7 @@ final class _Sqlite extends SqlDialect {
           // Foreign keys
           ...table.foreignKeys.map(
             (fk) => [
+              'CONSTRAINT ${escape(fk.name)}',
               'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
               'REFERENCES ${escape(fk.referencedTable)}',
               '(${fk.referencedColumns.map(escape).join(', ')})',

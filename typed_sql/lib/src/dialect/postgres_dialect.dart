@@ -52,7 +52,7 @@ final class _PostgresDialect extends SqlDialect {
                   table.primaryKey.contains(c.name) &&
                   table.primaryKey.length > 1) {
                 throw UnsupportedError(
-                  'sqlite does not support AUTOINCREMENT in composite primary keys',
+                  'Postgresql does not support AUTOINCREMENT in composite primary keys',
                 );
               }
 
@@ -82,6 +82,7 @@ final class _PostgresDialect extends SqlDialect {
           (fk) => [
             'ALTER TABLE ${escape(table.tableName)}',
             'ADD',
+            'CONSTRAINT ${escape(fk.name)}',
             'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
             'REFERENCES ${escape(fk.referencedTable)}',
             '(${fk.referencedColumns.map(escape).join(', ')});',

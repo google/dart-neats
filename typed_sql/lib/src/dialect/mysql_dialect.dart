@@ -111,6 +111,7 @@ final class _MysqlSqlDialect extends SqlDialect {
           (fk) => [
             'ALTER TABLE ${escape(table.tableName)}',
             'ADD',
+            'CONSTRAINT ${escape(fk.name)}',
             'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
             'REFERENCES ${escape(fk.referencedTable)}',
             '(${fk.referencedColumns.map(escape).join(', ')})',
