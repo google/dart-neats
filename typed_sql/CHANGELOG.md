@@ -1,3 +1,6 @@
+## 0.1.8
+ * Add constraint name to FOREIGN KEY DDLs.
+
 ## 0.1.7
  * Removed the debug use of `package:test` from mysql adapter.
 
