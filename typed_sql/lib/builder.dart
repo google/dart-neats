@@ -38,10 +38,10 @@ import 'src/codegen/record_parser.dart';
 
 /// A [Builder] that generates extension methods and classes for typed_sql.
 Builder typedSqlBuilder(BuilderOptions options) => g.SharedPartBuilder(
-      [_TypedSqlBuilder(options)],
-      'typed_sql',
-      allowSyntaxErrors: false,
-    );
+  [_TypedSqlBuilder(options)],
+  'typed_sql',
+  allowSyntaxErrors: false,
+);
 
 final class _TypedSqlBuilder extends g.Generator {
   final BuilderOptions options;
@@ -62,7 +62,9 @@ final class _TypedSqlBuilder extends g.Generator {
 
     // Check if Subjects from package:checks is imported!
     final hasSubjectFromChecks = targetLibrary
-        .element.firstFragment.importedLibraries
+        .element
+        .firstFragment
+        .importedLibraries
         .map((l) => l.exportNamespace.get2('Subject')?.library?.identifier)
         .nonNulls
         .any((id) => id.startsWith('package:checks/'));
@@ -74,8 +76,9 @@ final class _TypedSqlBuilder extends g.Generator {
         final library = await buildStep.resolver.libraryFor(input);
         // We only consider libraries that are importing the library we are
         // generating for!
-        if (!library.firstFragment.importedLibraries
-            .contains(targetLibrary.element)) {
+        if (!library.firstFragment.importedLibraries.contains(
+          targetLibrary.element,
+        )) {
           continue;
         }
         final astNode = await buildStep.resolver.astNodeFor(
@@ -92,11 +95,13 @@ final class _TypedSqlBuilder extends g.Generator {
 
     return code.Library(
       (b) => b.body
-        ..addAll(buildCode(
-          library,
-          recordParser.canonicalizedParsedRecords(),
-          createChecksExtensions: hasSubjectFromChecks,
-        )),
+        ..addAll(
+          buildCode(
+            library,
+            recordParser.canonicalizedParsedRecords(),
+            createChecksExtensions: hasSubjectFromChecks,
+          ),
+        ),
     ).accept(code.DartEmitter(useNullSafetySyntax: true)).toString();
   }
 }

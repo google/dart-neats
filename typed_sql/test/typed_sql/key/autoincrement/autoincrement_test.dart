@@ -38,12 +38,7 @@ void main() {
   );
 
   r.addTest('.insert() with explicit ID', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr('hello'),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr('hello')).execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals('hello');
@@ -59,17 +54,9 @@ void main() {
   });
 
   r.addTest('.insert() auto-incremented IDs', (db) async {
-    await db.items
-        .insert(
-          value: toExpr('hello'),
-        )
-        .execute();
+    await db.items.insert(value: toExpr('hello')).execute();
 
-    await db.items
-        .insert(
-          value: toExpr('world'),
-        )
-        .execute();
+    await db.items.insert(value: toExpr('world')).execute();
 
     final items = await db.items.fetch();
     check(items).length.equals(2);

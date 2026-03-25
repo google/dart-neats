@@ -71,11 +71,7 @@ void main() {
     // Y: 1
     // Z: 1
 
-    check(result).unorderedEquals([
-      ('X', 3),
-      ('Y', 1),
-      ('Z', 1),
-    ]);
+    check(result).unorderedEquals([('X', 3), ('Y', 1), ('Z', 1)]);
   });
 
   r.addTest('groupBy(category).aggregate(sum(score * score))', (db) async {
@@ -87,10 +83,7 @@ void main() {
     // A: 100^2 + 200^2 + 300^2 = 10000 + 40000 + 90000 = 140000
     // B: 400^2 + 500^2 = 160000 + 250000 = 410000
 
-    check(result).unorderedEquals([
-      ('A', 140000),
-      ('B', 410000),
-    ]);
+    check(result).unorderedEquals([('A', 140000), ('B', 410000)]);
   });
 
   r.addTest('groupBy.aggregate.orderBy.limit', (db) async {
@@ -104,19 +97,19 @@ void main() {
     // A sum: 100+200+300 = 600
     // B sum: 400+500 = 900
 
-    check(result).unorderedEquals([
-      ('B', 900),
-    ]);
+    check(result).unorderedEquals([('B', 900)]);
   });
 
   r.addTest('groupBy(subquery count)', (db) async {
     // This is a crazy query: group items by how many items are in their category
     final result = await db.items
-        .groupBy((i) => (
-              db.items.asSubQuery
-                  .where((i2) => i2.category.equals(i.category))
-                  .count(),
-            ))
+        .groupBy(
+          (i) => (
+            db.items.asSubQuery
+                .where((i2) => i2.category.equals(i.category))
+                .count(),
+          ),
+        )
         .aggregate((agg) => agg.count())
         .fetch();
 
@@ -125,10 +118,7 @@ void main() {
     // Group 3 has 3 rows (from category A).
     // Group 2 has 2 rows (from category B).
 
-    check(result).unorderedEquals([
-      (3, 3),
-      (2, 2),
-    ]);
+    check(result).unorderedEquals([(3, 3), (2, 2)]);
   });
 
   r.addTest('nested aggregation', (db) async {
@@ -146,10 +136,7 @@ void main() {
     // Group by 600 -> count 1
     // Group by 900 -> count 1
 
-    check(result).unorderedEquals([
-      (600, 1),
-      (900, 1),
-    ]);
+    check(result).unorderedEquals([(600, 1), (900, 1)]);
   });
 
   r.run();

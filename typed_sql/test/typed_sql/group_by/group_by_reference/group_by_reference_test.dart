@@ -69,10 +69,7 @@ void main() {
       // Insert test Authors and books
       for (final v in initialAuthors) {
         await db.authors
-            .insert(
-              authorId: toExpr(v.authorId),
-              name: toExpr(v.name),
-            )
+            .insert(authorId: toExpr(v.authorId), name: toExpr(v.name))
             .execute();
       }
       for (final v in initialBooks) {
@@ -98,11 +95,8 @@ void main() {
               .count(),
         )
         .select(
-          (authorId, stock, countBooksByAuthor) => (
-            authorId,
-            stock,
-            countBooksByAuthor,
-          ),
+          (authorId, stock, countBooksByAuthor) =>
+              (authorId, stock, countBooksByAuthor),
         )
         .fetch();
 
@@ -123,11 +117,8 @@ void main() {
               .count(),
         )
         .select(
-          (author, stock, countBooksByAuthor) => (
-            author.authorId,
-            stock,
-            countBooksByAuthor,
-          ),
+          (author, stock, countBooksByAuthor) =>
+              (author.authorId, stock, countBooksByAuthor),
         )
         .fetch();
 
@@ -139,119 +130,111 @@ void main() {
   });
 
   r.addTest(
-      'books.groupBy(.author).aggregate(sum(.stock)).select(.author, ...)',
-      (db) async {
-    final result = await db.books
-        .groupBy((b) => (b.author,))
-        .aggregate(
-          (agg) => agg
-              // aggregates:
-              .sum((book) => book.stock)
-              .count(),
-        )
-        .select(
-          (author, stock, countBooksByAuthor) => (
-            author,
-            stock,
-            countBooksByAuthor,
-          ),
-        )
-        .fetch();
+    'books.groupBy(.author).aggregate(sum(.stock)).select(.author, ...)',
+    (db) async {
+      final result = await db.books
+          .groupBy((b) => (b.author,))
+          .aggregate(
+            (agg) => agg
+                // aggregates:
+                .sum((book) => book.stock)
+                .count(),
+          )
+          .select(
+            (author, stock, countBooksByAuthor) =>
+                (author, stock, countBooksByAuthor),
+          )
+          .fetch();
 
-    check(result).length.equals(2);
-  });
+      check(result).length.equals(2);
+    },
+  );
 
   r.addTest(
-      'books.groupBy(.author).aggregate(sum(.stock)).select(.author, ...).where(...)',
-      (db) async {
-    final result = await db.books
-        .groupBy((b) => (b.author,))
-        .aggregate(
-          (agg) => agg
-              // aggregates:
-              .sum((book) => book.stock)
-              .count(),
-        )
-        .select(
-          (author, stock, countBooksByAuthor) => (
-            author,
-            stock,
-            countBooksByAuthor,
-          ),
-        )
-        .where(
-          (author, stock, countBooksByAuthor) =>
-              author.name.equalsValue('Bucks Bunny'),
-        )
-        .fetch();
+    'books.groupBy(.author).aggregate(sum(.stock)).select(.author, ...).where(...)',
+    (db) async {
+      final result = await db.books
+          .groupBy((b) => (b.author,))
+          .aggregate(
+            (agg) => agg
+                // aggregates:
+                .sum((book) => book.stock)
+                .count(),
+          )
+          .select(
+            (author, stock, countBooksByAuthor) =>
+                (author, stock, countBooksByAuthor),
+          )
+          .where(
+            (author, stock, countBooksByAuthor) =>
+                author.name.equalsValue('Bucks Bunny'),
+          )
+          .fetch();
 
-    check(result).length.equals(1);
-  });
+      check(result).length.equals(1);
+    },
+  );
 
   r.addTest(
-      'books.groupBy(.author).aggregate(sum(.stock)).select(.author, ...).where(...).first',
-      (db) async {
-    final (author, stock, countBooksByAuthor) = await db.books
-        .groupBy((b) => (b.author,))
-        .aggregate(
-          (agg) => agg
-              // aggregates:
-              .sum((book) => book.stock)
-              .count(),
-        )
-        .select(
-          (author, stock, countBooksByAuthor) => (
-            author,
-            stock,
-            countBooksByAuthor,
-          ),
-        )
-        .where(
-          (author, stock, countBooksByAuthor) =>
-              author.name.equalsValue('Bucks Bunny'),
-        )
-        .first
-        .fetchOrNulls();
+    'books.groupBy(.author).aggregate(sum(.stock)).select(.author, ...).where(...).first',
+    (db) async {
+      final (author, stock, countBooksByAuthor) = await db.books
+          .groupBy((b) => (b.author,))
+          .aggregate(
+            (agg) => agg
+                // aggregates:
+                .sum((book) => book.stock)
+                .count(),
+          )
+          .select(
+            (author, stock, countBooksByAuthor) =>
+                (author, stock, countBooksByAuthor),
+          )
+          .where(
+            (author, stock, countBooksByAuthor) =>
+                author.name.equalsValue('Bucks Bunny'),
+          )
+          .first
+          .fetchOrNulls();
 
-    check(author).isNotNull()
-      ..name.equals('Bucks Bunny')
-      ..authorId.equals(2);
-    check(stock).isNotNull().equals(45);
-    check(countBooksByAuthor).isNotNull().equals(2);
-  });
+      check(author).isNotNull()
+        ..name.equals('Bucks Bunny')
+        ..authorId.equals(2);
+      check(stock).isNotNull().equals(45);
+      check(countBooksByAuthor).isNotNull().equals(2);
+    },
+  );
 
   r.addTest(
-      'books.groupBy(.author, .authorId).aggregate(sum(.stock)).select(.author, ...).where(...).first',
-      (db) async {
-    final (author, stock, countBooksByAuthor) = await db.books
-        // This doesn't really make sense, but it's nice to exercise that it works
-        .groupBy((b) => (b.author, b.authorId))
-        .aggregate(
-          (agg) => agg
-              // aggregates:
-              .sum((book) => book.stock)
-              .count(),
-        )
-        .select(
-          (author, authorId, stock, countBooksByAuthor) => (
-            author,
-            stock,
-            countBooksByAuthor,
-          ),
-        )
-        .where(
-          (author, stock, countBooksByAuthor) =>
-              author.name.equalsValue('Bucks Bunny'),
-        )
-        .first
-        .fetchOrNulls();
+    'books.groupBy(.author, .authorId).aggregate(sum(.stock)).select(.author, ...).where(...).first',
+    (db) async {
+      final (author, stock, countBooksByAuthor) = await db.books
+          // This doesn't really make sense, but it's nice to exercise that it works
+          .groupBy((b) => (b.author, b.authorId))
+          .aggregate(
+            (agg) => agg
+                // aggregates:
+                .sum((book) => book.stock)
+                .count(),
+          )
+          .select(
+            (author, authorId, stock, countBooksByAuthor) =>
+                (author, stock, countBooksByAuthor),
+          )
+          .where(
+            (author, stock, countBooksByAuthor) =>
+                author.name.equalsValue('Bucks Bunny'),
+          )
+          .first
+          .fetchOrNulls();
 
-    check(author).isNotNull()
-      ..name.equals('Bucks Bunny')
-      ..authorId.equals(2);
-    check(stock).isNotNull().equals(45);
-    check(countBooksByAuthor).isNotNull().equals(2);
-  });
+      check(author).isNotNull()
+        ..name.equals('Bucks Bunny')
+        ..authorId.equals(2);
+      check(stock).isNotNull().equals(45);
+      check(countBooksByAuthor).isNotNull().equals(2);
+    },
+  );
 
   r.addTest('authors.groupBy(.books.first)', (db) async {
     final result = await db.authors
@@ -264,8 +247,9 @@ void main() {
           ),
         )
         .aggregate(
-          (agg) => agg //
-              .count(), // should always be 1
+          (agg) =>
+              agg //
+                  .count(), // should always be 1
         )
         .orderBy((author, firstBook) => [(author.authorId, Order.ascending)])
         .fetch();
@@ -276,31 +260,30 @@ void main() {
     check(result[1].$2).isNotNull().equals(1);
   });
 
-  r.addTest('books.groupBy(.author).aggregate(sum(.stock)).select(subquery...)',
-      (db) async {
-    final result = await db.books
-        .groupBy((b) => (b.author,))
-        .aggregate(
-          (agg) => agg
-              // aggregates:
-              .sum((book) => book.stock)
-              .count(),
-        )
-        .select(
-          (author, stock, countBooksByAuthor) => (
-            author.books.count(),
-            stock,
-            countBooksByAuthor,
-          ),
-        )
-        .fetch();
+  r.addTest(
+    'books.groupBy(.author).aggregate(sum(.stock)).select(subquery...)',
+    (db) async {
+      final result = await db.books
+          .groupBy((b) => (b.author,))
+          .aggregate(
+            (agg) => agg
+                // aggregates:
+                .sum((book) => book.stock)
+                .count(),
+          )
+          .select(
+            (author, stock, countBooksByAuthor) =>
+                (author.books.count(), stock, countBooksByAuthor),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      // AuthorId, total stock, count of books
-      (3, 22, 3),
-      (2, 45, 2),
-    ]);
-  });
+      check(result).unorderedEquals([
+        // AuthorId, total stock, count of books
+        (3, 22, 3),
+        (2, 45, 2),
+      ]);
+    },
+  );
 
   r.addTest('books.groupBy(.author).aggregate(min(subquery))', (db) async {
     final result = await db.books
@@ -313,11 +296,8 @@ void main() {
               .count(),
         )
         .select(
-          (author, minBooksCountByAuthor, countBooksByAuthor) => (
-            author.name,
-            minBooksCountByAuthor,
-            countBooksByAuthor,
-          ),
+          (author, minBooksCountByAuthor, countBooksByAuthor) =>
+              (author.name, minBooksCountByAuthor, countBooksByAuthor),
         )
         .fetch();
 
@@ -334,29 +314,28 @@ void main() {
         .aggregate((agg) => agg.sum((book) => book.stock))
         .fetch();
 
-    check(result).unorderedEquals([
-      ('Easter Bunny', 22),
-      ('Bucks Bunny', 45),
-    ]);
+    check(result).unorderedEquals([('Easter Bunny', 22), ('Bucks Bunny', 45)]);
   });
 
   r.addTest(
-      'books.groupBy(.author.name).aggregate(sum(.stock)).select(uppercase)',
-      (db) async {
-    final query = db.books
-        .groupBy((b) => (b.author.name,))
-        .aggregate((agg) => agg.sum((book) => book.stock))
-        .select((authorName, sumStock) => (authorName.toUpperCase(), sumStock));
+    'books.groupBy(.author.name).aggregate(sum(.stock)).select(uppercase)',
+    (db) async {
+      final query = db.books
+          .groupBy((b) => (b.author.name,))
+          .aggregate((agg) => agg.sum((book) => book.stock))
+          .select(
+            (authorName, sumStock) => (authorName.toUpperCase(), sumStock),
+          );
 
-    final result = await query.fetch();
+      final result = await query.fetch();
 
-    check(result).unorderedEquals([
-      ('EASTER BUNNY', 22),
-      ('BUCKS BUNNY', 45),
-    ]);
-  },
-      skipMysql:
-          'MariaDB returns NULL for the subquery column in this specific nested structure');
+      check(
+        result,
+      ).unorderedEquals([('EASTER BUNNY', 22), ('BUCKS BUNNY', 45)]);
+    },
+    skipMysql:
+        'MariaDB returns NULL for the subquery column in this specific nested structure',
+  );
 
   r.addTest('books.groupBy(.author).aggregate(sum(.stock))', (db) async {
     final result = await db.books

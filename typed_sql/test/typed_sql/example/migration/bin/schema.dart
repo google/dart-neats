@@ -21,4 +21,5 @@ void main() {
   final ddl = createBankVaultTables(SqlDialect.sqlite());
   print(ddl);
 }
+
 // #endregion

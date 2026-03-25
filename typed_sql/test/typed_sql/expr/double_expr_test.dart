@@ -250,36 +250,12 @@ final _cases = [
   ),
 
   // Test for <
-  (
-    name: '0.0 < 0.0',
-    expr: toExpr(0.0) < toExpr(0.0),
-    expected: false,
-  ),
-  (
-    name: '1.2 < 1.5',
-    expr: toExpr(1.2) < toExpr(1.5),
-    expected: true,
-  ),
-  (
-    name: '1.5 < 1.2',
-    expr: toExpr(1.5) < toExpr(1.2),
-    expected: false,
-  ),
-  (
-    name: '1.5 < 1.5',
-    expr: toExpr(1.5) < toExpr(1.5),
-    expected: false,
-  ),
-  (
-    name: '-1.5 < 3.14',
-    expr: toExpr(-1.5) < toExpr(3.14),
-    expected: true,
-  ),
-  (
-    name: '3.14 < 3.14',
-    expr: toExpr(3.14) < toExpr(3.14),
-    expected: false,
-  ),
+  (name: '0.0 < 0.0', expr: toExpr(0.0) < toExpr(0.0), expected: false),
+  (name: '1.2 < 1.5', expr: toExpr(1.2) < toExpr(1.5), expected: true),
+  (name: '1.5 < 1.2', expr: toExpr(1.5) < toExpr(1.2), expected: false),
+  (name: '1.5 < 1.5', expr: toExpr(1.5) < toExpr(1.5), expected: false),
+  (name: '-1.5 < 3.14', expr: toExpr(-1.5) < toExpr(3.14), expected: true),
+  (name: '3.14 < 3.14', expr: toExpr(3.14) < toExpr(3.14), expected: false),
 
   // Test for .lessThanOrEqual
   (
@@ -346,36 +322,12 @@ final _cases = [
   ),
 
   // Test for <=
-  (
-    name: '0.0 <= 0.0',
-    expr: toExpr(0.0) <= toExpr(0.0),
-    expected: true,
-  ),
-  (
-    name: '1.2 <= 1.5',
-    expr: toExpr(1.2) <= toExpr(1.5),
-    expected: true,
-  ),
-  (
-    name: '1.5 <= 1.2',
-    expr: toExpr(1.5) <= toExpr(1.2),
-    expected: false,
-  ),
-  (
-    name: '1.5 <= 1.5',
-    expr: toExpr(1.5) <= toExpr(1.5),
-    expected: true,
-  ),
-  (
-    name: '-1.5 <= 3.14',
-    expr: toExpr(-1.5) <= toExpr(3.14),
-    expected: true,
-  ),
-  (
-    name: '3.14 <= 3.14',
-    expr: toExpr(3.14) <= toExpr(3.14),
-    expected: true,
-  ),
+  (name: '0.0 <= 0.0', expr: toExpr(0.0) <= toExpr(0.0), expected: true),
+  (name: '1.2 <= 1.5', expr: toExpr(1.2) <= toExpr(1.5), expected: true),
+  (name: '1.5 <= 1.2', expr: toExpr(1.5) <= toExpr(1.2), expected: false),
+  (name: '1.5 <= 1.5', expr: toExpr(1.5) <= toExpr(1.5), expected: true),
+  (name: '-1.5 <= 3.14', expr: toExpr(-1.5) <= toExpr(3.14), expected: true),
+  (name: '3.14 <= 3.14', expr: toExpr(3.14) <= toExpr(3.14), expected: true),
 
   // Test for .greaterThan
   (
@@ -442,36 +394,12 @@ final _cases = [
   ),
 
   // Test for >
-  (
-    name: '0.0 > 0.0',
-    expr: toExpr(0.0) > toExpr(0.0),
-    expected: false,
-  ),
-  (
-    name: '1.2 > 1.5',
-    expr: toExpr(1.2) > toExpr(1.5),
-    expected: false,
-  ),
-  (
-    name: '1.5 > 1.2',
-    expr: toExpr(1.5) > toExpr(1.2),
-    expected: true,
-  ),
-  (
-    name: '1.5 > 1.5',
-    expr: toExpr(1.5) > toExpr(1.5),
-    expected: false,
-  ),
-  (
-    name: '-1.5 > 3.14',
-    expr: toExpr(-1.5) > toExpr(3.14),
-    expected: false,
-  ),
-  (
-    name: '3.14 > 3.14',
-    expr: toExpr(3.14) > toExpr(3.14),
-    expected: false,
-  ),
+  (name: '0.0 > 0.0', expr: toExpr(0.0) > toExpr(0.0), expected: false),
+  (name: '1.2 > 1.5', expr: toExpr(1.2) > toExpr(1.5), expected: false),
+  (name: '1.5 > 1.2', expr: toExpr(1.5) > toExpr(1.2), expected: true),
+  (name: '1.5 > 1.5', expr: toExpr(1.5) > toExpr(1.5), expected: false),
+  (name: '-1.5 > 3.14', expr: toExpr(-1.5) > toExpr(3.14), expected: false),
+  (name: '3.14 > 3.14', expr: toExpr(3.14) > toExpr(3.14), expected: false),
 
   // Test for .greaterThanOrEqual
   (
@@ -538,188 +466,52 @@ final _cases = [
   ),
 
   // Test for >=
-  (
-    name: '0.0 >= 0.0',
-    expr: toExpr(0.0) >= toExpr(0.0),
-    expected: true,
-  ),
-  (
-    name: '1.2 >= 1.5',
-    expr: toExpr(1.2) >= toExpr(1.5),
-    expected: false,
-  ),
-  (
-    name: '1.5 >= 1.2',
-    expr: toExpr(1.5) >= toExpr(1.2),
-    expected: true,
-  ),
-  (
-    name: '1.5 >= 1.5',
-    expr: toExpr(1.5) >= toExpr(1.5),
-    expected: true,
-  ),
-  (
-    name: '-1.5 >= 3.14',
-    expr: toExpr(-1.5) >= toExpr(3.14),
-    expected: false,
-  ),
-  (
-    name: '3.14 >= 3.14',
-    expr: toExpr(3.14) >= toExpr(3.14),
-    expected: true,
-  ),
+  (name: '0.0 >= 0.0', expr: toExpr(0.0) >= toExpr(0.0), expected: true),
+  (name: '1.2 >= 1.5', expr: toExpr(1.2) >= toExpr(1.5), expected: false),
+  (name: '1.5 >= 1.2', expr: toExpr(1.5) >= toExpr(1.2), expected: true),
+  (name: '1.5 >= 1.5', expr: toExpr(1.5) >= toExpr(1.5), expected: true),
+  (name: '-1.5 >= 3.14', expr: toExpr(-1.5) >= toExpr(3.14), expected: false),
+  (name: '3.14 >= 3.14', expr: toExpr(3.14) >= toExpr(3.14), expected: true),
 ];
 
 final _closeCases = [
   // Test for +
-  (
-    name: '0.0 + 0.0',
-    expr: toExpr(0.0) + toExpr(0.0),
-    expected: 0.0,
-  ),
-  (
-    name: '0.0 + 1.0',
-    expr: toExpr(0.0) + toExpr(1.0),
-    expected: 1.0,
-  ),
-  (
-    name: '1.0 + 0.0',
-    expr: toExpr(1.0) + toExpr(0.0),
-    expected: 1.0,
-  ),
-  (
-    name: '1.5 + 1.2',
-    expr: toExpr(1.5) + toExpr(1.2),
-    expected: 2.7,
-  ),
-  (
-    name: '-1.0 + -1.0',
-    expr: toExpr(-1.0) + toExpr(-1.0),
-    expected: -2.0,
-  ),
-  (
-    name: '3.14 + 3.14',
-    expr: toExpr(3.14) + toExpr(3.14),
-    expected: 6.28,
-  ),
+  (name: '0.0 + 0.0', expr: toExpr(0.0) + toExpr(0.0), expected: 0.0),
+  (name: '0.0 + 1.0', expr: toExpr(0.0) + toExpr(1.0), expected: 1.0),
+  (name: '1.0 + 0.0', expr: toExpr(1.0) + toExpr(0.0), expected: 1.0),
+  (name: '1.5 + 1.2', expr: toExpr(1.5) + toExpr(1.2), expected: 2.7),
+  (name: '-1.0 + -1.0', expr: toExpr(-1.0) + toExpr(-1.0), expected: -2.0),
+  (name: '3.14 + 3.14', expr: toExpr(3.14) + toExpr(3.14), expected: 6.28),
 
   // Test for -
-  (
-    name: '0.0 - 0.0',
-    expr: toExpr(0.0) - toExpr(0.0),
-    expected: 0.0,
-  ),
-  (
-    name: '0.0 - 1.0',
-    expr: toExpr(0.0) - toExpr(1.0),
-    expected: -1.0,
-  ),
-  (
-    name: '1.0 - 0.0',
-    expr: toExpr(1.0) - toExpr(0.0),
-    expected: 1.0,
-  ),
-  (
-    name: '1.5 - 1.2',
-    expr: toExpr(1.5) - toExpr(1.2),
-    expected: 0.3,
-  ),
-  (
-    name: '-1.0 - -1.0',
-    expr: toExpr(-1.0) - toExpr(-1.0),
-    expected: 0.0,
-  ),
-  (
-    name: '3.14 - 3.14',
-    expr: toExpr(3.14) - toExpr(3.14),
-    expected: 0.0,
-  ),
+  (name: '0.0 - 0.0', expr: toExpr(0.0) - toExpr(0.0), expected: 0.0),
+  (name: '0.0 - 1.0', expr: toExpr(0.0) - toExpr(1.0), expected: -1.0),
+  (name: '1.0 - 0.0', expr: toExpr(1.0) - toExpr(0.0), expected: 1.0),
+  (name: '1.5 - 1.2', expr: toExpr(1.5) - toExpr(1.2), expected: 0.3),
+  (name: '-1.0 - -1.0', expr: toExpr(-1.0) - toExpr(-1.0), expected: 0.0),
+  (name: '3.14 - 3.14', expr: toExpr(3.14) - toExpr(3.14), expected: 0.0),
 
   // Test for *
-  (
-    name: '0.0 * 0.0',
-    expr: toExpr(0.0) * toExpr(0.0),
-    expected: 0.0,
-  ),
-  (
-    name: '0.0 * 1.0',
-    expr: toExpr(0.0) * toExpr(1.0),
-    expected: 0.0,
-  ),
-  (
-    name: '1.0 * 0.0',
-    expr: toExpr(1.0) * toExpr(0.0),
-    expected: 0.0,
-  ),
-  (
-    name: '1.5 * 1.2',
-    expr: toExpr(1.5) * toExpr(1.2),
-    expected: 1.8,
-  ),
-  (
-    name: '-1.0 * -1.0',
-    expr: toExpr(-1.0) * toExpr(-1.0),
-    expected: 1.0,
-  ),
-  (
-    name: '3.14 * 3.14',
-    expr: toExpr(3.14) * toExpr(3.14),
-    expected: 9.8596,
-  ),
+  (name: '0.0 * 0.0', expr: toExpr(0.0) * toExpr(0.0), expected: 0.0),
+  (name: '0.0 * 1.0', expr: toExpr(0.0) * toExpr(1.0), expected: 0.0),
+  (name: '1.0 * 0.0', expr: toExpr(1.0) * toExpr(0.0), expected: 0.0),
+  (name: '1.5 * 1.2', expr: toExpr(1.5) * toExpr(1.2), expected: 1.8),
+  (name: '-1.0 * -1.0', expr: toExpr(-1.0) * toExpr(-1.0), expected: 1.0),
+  (name: '3.14 * 3.14', expr: toExpr(3.14) * toExpr(3.14), expected: 9.8596),
 
   // Test for /
-  (
-    name: '0.0 / 1.0',
-    expr: toExpr(0.0) / toExpr(1.0),
-    expected: 0.0,
-  ),
-  (
-    name: '1.0 / 1.0',
-    expr: toExpr(1.0) / toExpr(1.0),
-    expected: 1.0,
-  ),
-  (
-    name: '-1.0 / -1.0',
-    expr: toExpr(-1.0) / toExpr(-1.0),
-    expected: 1.0,
-  ),
-  (
-    name: '3.14 / 3.14',
-    expr: toExpr(3.14) / toExpr(3.14),
-    expected: 1.0,
-  ),
-  (
-    name: '3.14 / 2.0',
-    expr: toExpr(3.14) / toExpr(2.0),
-    expected: 1.57,
-  ),
-  (
-    name: '3.15 / 2.0',
-    expr: toExpr(3.15) / toExpr(2.0),
-    expected: 1.575,
-  ),
+  (name: '0.0 / 1.0', expr: toExpr(0.0) / toExpr(1.0), expected: 0.0),
+  (name: '1.0 / 1.0', expr: toExpr(1.0) / toExpr(1.0), expected: 1.0),
+  (name: '-1.0 / -1.0', expr: toExpr(-1.0) / toExpr(-1.0), expected: 1.0),
+  (name: '3.14 / 3.14', expr: toExpr(3.14) / toExpr(3.14), expected: 1.0),
+  (name: '3.14 / 2.0', expr: toExpr(3.14) / toExpr(2.0), expected: 1.57),
+  (name: '3.15 / 2.0', expr: toExpr(3.15) / toExpr(2.0), expected: 1.575),
 
   // Tests for .add
-  (
-    name: '0.0.add(0.0)',
-    expr: toExpr(0.0).add(toExpr(0.0)),
-    expected: 0.0,
-  ),
-  (
-    name: '0.0.add(1.0)',
-    expr: toExpr(0.0).add(toExpr(1.0)),
-    expected: 1.0,
-  ),
-  (
-    name: '1.0.add(0.0)',
-    expr: toExpr(1.0).add(toExpr(0.0)),
-    expected: 1.0,
-  ),
-  (
-    name: '1.5.add(1.2)',
-    expr: toExpr(1.5).add(toExpr(1.2)),
-    expected: 2.7,
-  ),
+  (name: '0.0.add(0.0)', expr: toExpr(0.0).add(toExpr(0.0)), expected: 0.0),
+  (name: '0.0.add(1.0)', expr: toExpr(0.0).add(toExpr(1.0)), expected: 1.0),
+  (name: '1.0.add(0.0)', expr: toExpr(1.0).add(toExpr(0.0)), expected: 1.0),
+  (name: '1.5.add(1.2)', expr: toExpr(1.5).add(toExpr(1.2)), expected: 2.7),
   (
     name: '-1.0.add(-1.0)',
     expr: toExpr(-1.0).add(toExpr(-1.0)),
@@ -732,26 +524,10 @@ final _closeCases = [
   ),
 
   // Tests for .addValue
-  (
-    name: '0.0.addValue(0.0)',
-    expr: toExpr(0.0).addValue(0.0),
-    expected: 0.0,
-  ),
-  (
-    name: '0.0.addValue(1.0)',
-    expr: toExpr(0.0).addValue(1.0),
-    expected: 1.0,
-  ),
-  (
-    name: '1.0.addValue(0.0)',
-    expr: toExpr(1.0).addValue(0.0),
-    expected: 1.0,
-  ),
-  (
-    name: '1.5.addValue(1.2)',
-    expr: toExpr(1.5).addValue(1.2),
-    expected: 2.7,
-  ),
+  (name: '0.0.addValue(0.0)', expr: toExpr(0.0).addValue(0.0), expected: 0.0),
+  (name: '0.0.addValue(1.0)', expr: toExpr(0.0).addValue(1.0), expected: 1.0),
+  (name: '1.0.addValue(0.0)', expr: toExpr(1.0).addValue(0.0), expected: 1.0),
+  (name: '1.5.addValue(1.2)', expr: toExpr(1.5).addValue(1.2), expected: 2.7),
   (
     name: '-1.0.addValue(-1.0)',
     expr: toExpr(-1.0).addValue(-1.0),
@@ -958,31 +734,19 @@ final _closeCases = [
 
 final _oneOfCases = [
   // Tests for asString()
-  (
-    name: '3.14.asString()',
-    expr: toExpr(3.14).asString(),
-    expected: ['3.14'],
-  ),
+  (name: '3.14.asString()', expr: toExpr(3.14).asString(), expected: ['3.14']),
   (
     name: '0.0.asString()',
     expr: toExpr(0.0).asString(),
     expected: ['0', '0.0'],
   ),
-  (
-    name: '-1.5.asString()',
-    expr: toExpr(-1.5).asString(),
-    expected: ['-1.5'],
-  ),
+  (name: '-1.5.asString()', expr: toExpr(-1.5).asString(), expected: ['-1.5']),
   (
     name: '1.0.asString()',
     expr: toExpr(1.0).asString(),
     expected: ['1', '1.0'],
   ),
-  (
-    name: '1.5.asString()',
-    expr: toExpr(1.5).asString(),
-    expected: ['1.5'],
-  ),
+  (name: '1.5.asString()', expr: toExpr(1.5).asString(), expected: ['1.5']),
   (
     name: '-1.0.asString()',
     expr: toExpr(-1.0).asString(),
@@ -990,36 +754,12 @@ final _oneOfCases = [
   ),
 
   // Tests for asInt()
-  (
-    name: '3.14.asInt()',
-    expr: toExpr(3.14).asInt(),
-    expected: [3],
-  ),
-  (
-    name: '0.0.asInt()',
-    expr: toExpr(0.0).asInt(),
-    expected: [0],
-  ),
-  (
-    name: '-1.5.asInt()',
-    expr: toExpr(-1.5).asInt(),
-    expected: [-1, -2],
-  ),
-  (
-    name: '1.0.asInt()',
-    expr: toExpr(1.0).asInt(),
-    expected: [1],
-  ),
-  (
-    name: '1.5.asInt()',
-    expr: toExpr(1.5).asInt(),
-    expected: [1, 2],
-  ),
-  (
-    name: '-1.0.asInt()',
-    expr: toExpr(-1.0).asInt(),
-    expected: [-1],
-  ),
+  (name: '3.14.asInt()', expr: toExpr(3.14).asInt(), expected: [3]),
+  (name: '0.0.asInt()', expr: toExpr(0.0).asInt(), expected: [0]),
+  (name: '-1.5.asInt()', expr: toExpr(-1.5).asInt(), expected: [-1, -2]),
+  (name: '1.0.asInt()', expr: toExpr(1.0).asInt(), expected: [1]),
+  (name: '1.5.asInt()', expr: toExpr(1.5).asInt(), expected: [1, 2]),
+  (name: '-1.0.asInt()', expr: toExpr(-1.0).asInt(), expected: [-1]),
 ];
 
 void main() {
@@ -1027,30 +767,27 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).isNotNull().equals(c.expected);
     });
   }
 
   for (final c in _closeCases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).isNotNull().isCloseTo(c.expected, 0.00000000000001);
     });
   }
 
   for (final c in _oneOfCases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
-      check(result)
-          .isNotNull()
-          .anyOf(c.expected.map((v) => (l) => l.equals(v)));
+      final result = await db.select((c.expr,)).fetch();
+      check(result).isNotNull().anyOf(
+        c.expected.map(
+          (v) =>
+              (l) => l.equals(v),
+        ),
+      );
     });
   }
 

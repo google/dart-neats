@@ -39,10 +39,10 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
   int _savePointIndex = 0;
 
   Database _createConnection() => sqlite3.open(
-        _uri.toString(),
-        uri: true,
-        mutex: true, // playing it safe for now!
-      );
+    _uri.toString(),
+    uri: true,
+    mutex: true, // playing it safe for now!
+  );
 
   void _throwIfClosing() {
     _throwIfClosed();
@@ -204,15 +204,11 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
   ) async {
     await _query(conn, sql, params).toList();
     final affectedRows = conn.updatedRows;
-    return QueryResult(
-      affectedRows: affectedRows,
-    );
+    return QueryResult(affectedRows: affectedRows);
   }
 
   @override
-  Future<T> transact<T>(
-    Future<T> Function(DatabaseTransaction tx) fn,
-  ) async {
+  Future<T> transact<T>(Future<T> Function(DatabaseTransaction tx) fn) async {
     final conn = await _getConnection();
     _throwIfClosed();
     try {
@@ -414,7 +410,8 @@ final class _SqliteRowReader extends RowReader {
     final value = _row.values[_i++];
     if (value is! Uint8List?) {
       throw AssertionError(
-          'readUint8List() expected a Uint8List, got "$value"');
+        'readUint8List() expected a Uint8List, got "$value"',
+      );
     }
     return value;
   }
@@ -427,7 +424,8 @@ final class _SqliteRowReader extends RowReader {
     }
     if (rawValue is! Uint8List) {
       throw AssertionError(
-          'readJsonValue() expected a Uint8List raw value, got "$rawValue"');
+        'readJsonValue() expected a Uint8List raw value, got "$rawValue"',
+      );
     }
     final value = jsonb.decode(rawValue);
     if (value == null ||
@@ -452,21 +450,23 @@ final class _SqliteRowReader extends RowReader {
 }
 
 List<Object?> _paramsForSqlite(List<Object?> params) => params
-    .map((p) => switch (p) {
-          DateTime d => d.toIso8601String(),
-          String s => s,
-          null => null,
-          bool b => b,
-          int i => i,
-          double d => d,
-          Uint8List u => u,
-          // TODO: Consider if package:sqlite3 could have a normalizing JSONB
-          //       encoder, or if we should write one here.
-          //       This could offer better performance and more reliable
-          //       normalization.
-          JsonValue v => jsonb.encode(normalizeJson(v.value)),
-          _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
-        })
+    .map(
+      (p) => switch (p) {
+        DateTime d => d.toIso8601String(),
+        String s => s,
+        null => null,
+        bool b => b,
+        int i => i,
+        double d => d,
+        Uint8List u => u,
+        // TODO: Consider if package:sqlite3 could have a normalizing JSONB
+        //       encoder, or if we should write one here.
+        //       This could offer better performance and more reliable
+        //       normalization.
+        JsonValue v => jsonb.encode(normalizeJson(v.value)),
+        _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
+      },
+    )
     .toList();
 
 Never _throwSqliteException(SqliteException e) {
@@ -483,12 +483,14 @@ Never _throwSqliteException(SqliteException e) {
 mixin SqliteDatabaseException implements Exception {}
 
 final class SqliteConstraintViolationException
-    extends ConstraintViolationException with SqliteDatabaseException {
+    extends ConstraintViolationException
+    with SqliteDatabaseException {
   SqliteConstraintViolationException._();
 }
 
 final class SqliteUnspecifiedOperationException
-    extends UnspecifiedOperationException with SqliteDatabaseException {
+    extends UnspecifiedOperationException
+    with SqliteDatabaseException {
   final SqliteException _e;
 
   SqliteUnspecifiedOperationException._(this._e);
@@ -504,6 +506,7 @@ final class SqliteDatabaseConnectionForceClosedException
 }
 
 final class SqliteDatabaseConnectionRefusedException
-    extends DatabaseConnectionRefusedException with SqliteDatabaseException {
+    extends DatabaseConnectionRefusedException
+    with SqliteDatabaseException {
   SqliteDatabaseConnectionRefusedException._();
 }

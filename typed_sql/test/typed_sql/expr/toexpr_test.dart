@@ -60,11 +60,15 @@ void main() {
     check(result).equals(today);
   });
 
-  r.addTest('toExpr(today) with microseconds', (db) async {
-    final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
-    final result = await db.select((toExpr(today),)).fetch();
-    check(result).equals(today);
-  }, skipMysql: 'MySQL driver does not support microseconds');
+  r.addTest(
+    'toExpr(today) with microseconds',
+    (db) async {
+      final today = DateTime.parse('2025-03-10T11:34:36.164006Z');
+      final result = await db.select((toExpr(today),)).fetch();
+      check(result).equals(today);
+    },
+    skipMysql: 'MySQL driver does not support microseconds',
+  );
 
   r.addTest('toExpr(yearNoUtc) normalizes to UTC', (db) async {
     final result = await db.select((toExpr(yearNoUtc),)).fetch();
@@ -74,16 +78,16 @@ void main() {
   });
 
   r.addTest('toExpr(UintList)', (db) async {
-    final result = await db.select(
-      (toExpr(Uint8List.fromList([1, 2, 3])),),
-    ).fetch();
+    final result = await db.select((
+      toExpr(Uint8List.fromList([1, 2, 3])),
+    )).fetch();
     check(result).isNotNull().deepEquals(Uint8List.fromList([1, 2, 3]));
   });
 
   r.addTest('toExpr(JsonValue)', (db) async {
-    final result = await db.select(
-      (toExpr(const JsonValue([1, 2, 3])),),
-    ).fetch();
+    final result = await db.select((
+      toExpr(const JsonValue([1, 2, 3])),
+    )).fetch();
     check(result).isNotNull().deepEquals(const JsonValue([1, 2, 3]));
   });
 

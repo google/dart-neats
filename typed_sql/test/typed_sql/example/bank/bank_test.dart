@@ -126,29 +126,33 @@ void main() {
     // #endregion
   }, skipMysql: 'RETURNING not supported in mysql');
 
-  r.addTest('transfer 100 conditional update', (db) async {
-    // #region transfer-100-with-conditional-update
-    await db.transact(() async {
-      // Withdraw 100 from account 0000-01
-      final newBalance = await db.accounts
-          .byAccountNumber('0001')
-          .where((a) => a.balance >= toExpr(100))
-          .update((a, set) => set(balance: a.balance - toExpr(100)))
-          .returning((a) => (a.balance,))
-          .executeAndFetch();
-      if (newBalance == null) {
-        print('account not found or insufficient balance');
-        return;
-      }
+  r.addTest(
+    'transfer 100 conditional update',
+    (db) async {
+      // #region transfer-100-with-conditional-update
+      await db.transact(() async {
+        // Withdraw 100 from account 0000-01
+        final newBalance = await db.accounts
+            .byAccountNumber('0001')
+            .where((a) => a.balance >= toExpr(100))
+            .update((a, set) => set(balance: a.balance - toExpr(100)))
+            .returning((a) => (a.balance,))
+            .executeAndFetch();
+        if (newBalance == null) {
+          print('account not found or insufficient balance');
+          return;
+        }
 
-      // Deposit 100 to account 0000-02
-      await db.accounts
-          .byAccountNumber('0002')
-          .update((a, set) => set(balance: a.balance + toExpr(100)))
-          .execute();
-    });
-    // #endregion
-  }, skipMysql: 'RETURNING not supported in mysql');
+        // Deposit 100 to account 0000-02
+        await db.accounts
+            .byAccountNumber('0002')
+            .update((a, set) => set(balance: a.balance + toExpr(100)))
+            .execute();
+      });
+      // #endregion
+    },
+    skipMysql: 'RETURNING not supported in mysql',
+  );
 
   r.addTest('insert or update using nested transaction', (db) async {
     // #region insert-or-update-using-nested-transaction
@@ -161,10 +165,7 @@ void main() {
       try {
         await db.transact(() async {
           await db.accounts
-              .insert(
-                accountNumber: toExpr('0002'),
-                balance: toExpr(100),
-              )
+              .insert(accountNumber: toExpr('0002'), balance: toExpr(100))
               .execute();
         });
       } on TransactionAbortedException {

@@ -23,44 +23,16 @@ final today = DateTime.parse('2025-03-10T11:34:36.000000Z');
 /// Test cases with a single value in each column.
 final _cases = [
   // Test with single character strings
-  (
-    name: 'A, B, C',
-    values: ['A', 'B', 'C'],
-    count: 3,
-  ),
-  (
-    name: 'A, B, C, A',
-    values: ['A', 'B', 'C', 'A'],
-    count: 3,
-  ),
+  (name: 'A, B, C', values: ['A', 'B', 'C'], count: 3),
+  (name: 'A, B, C, A', values: ['A', 'B', 'C', 'A'], count: 3),
   // Test with simple numbers
-  (
-    name: '1, 2, 3',
-    values: [1, 2, 3],
-    count: 3,
-  ),
-  (
-    name: '1, 2, 3, 1, 2',
-    values: [1, 2, 3, 1, 2],
-    count: 3,
-  ),
+  (name: '1, 2, 3', values: [1, 2, 3], count: 3),
+  (name: '1, 2, 3, 1, 2', values: [1, 2, 3, 1, 2], count: 3),
   // Test with double
-  (
-    name: '3.14, 2.71, 1.61',
-    values: [3.14, 2.71, 1.61],
-    count: 3,
-  ),
-  (
-    name: '3.14, 2.71, 1.61, 2.71,',
-    values: [3.14, 2.71, 1.61, 2.71],
-    count: 3,
-  ),
+  (name: '3.14, 2.71, 1.61', values: [3.14, 2.71, 1.61], count: 3),
+  (name: '3.14, 2.71, 1.61, 2.71,', values: [3.14, 2.71, 1.61, 2.71], count: 3),
   // Test with longer strings
-  (
-    name: 'hello, world, dart',
-    values: ['hello', 'world', 'dart'],
-    count: 3,
-  ),
+  (name: 'hello, world, dart', values: ['hello', 'world', 'dart'], count: 3),
   (
     name: 'hello, world, dart, dart, dart',
     values: ['hello', 'world', 'dart', 'dart', 'dart'],
@@ -78,21 +50,9 @@ final _cases = [
     count: 3,
   ),
   // Test with bool
-  (
-    name: 'true, false, true',
-    values: [true, false, true],
-    count: 2,
-  ),
-  (
-    name: 'true, true',
-    values: [true, true],
-    count: 1,
-  ),
-  (
-    name: 'false, false',
-    values: [false, false],
-    count: 1,
-  ),
+  (name: 'true, false, true', values: [true, false, true], count: 2),
+  (name: 'true, true', values: [true, true], count: 1),
+  (name: 'false, false', values: [false, false], count: 1),
 ];
 
 void main() {

@@ -22,17 +22,17 @@ import 'dialect.dart';
 SqlDialect postgresDialect() => _PostgresDialect();
 
 String _literal(Object? value) => switch (value) {
-      null => 'NULL',
-      true => 'TRUE',
-      false => 'TRUE',
-      int i => i.toString(),
-      double d => d.toString(),
-      String s => '\'${s.replaceAll("'", "''").replaceAll("\\", "\\\\")}\'',
-      DateTime d => '\'${d.toIso8601String()}\'',
-      JsonValue j =>
-        '\'${json.encode(j.value).replaceAll("'", "''").replaceAll("\\", "\\\\")}\'::jsonb',
-      _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
-    };
+  null => 'NULL',
+  true => 'TRUE',
+  false => 'TRUE',
+  int i => i.toString(),
+  double d => d.toString(),
+  String s => '\'${s.replaceAll("'", "''").replaceAll("\\", "\\\\")}\'',
+  DateTime d => '\'${d.toIso8601String()}\'',
+  JsonValue j =>
+    '\'${json.encode(j.value).replaceAll("'", "''").replaceAll("\\", "\\\\")}\'::jsonb',
+  _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
+};
 
 final class _PostgresDialect extends SqlDialect {
   @override
@@ -45,7 +45,8 @@ final class _PostgresDialect extends SqlDialect {
           [
             // Columns
             ...table.columns.map((c) {
-              final isPrimaryKey = table.primaryKey.contains(c.name) &&
+              final isPrimaryKey =
+                  table.primaryKey.contains(c.name) &&
                   table.primaryKey.length == 1;
 
               if (c.autoIncrement &&
@@ -198,9 +199,7 @@ final class _PostgresDialect extends SqlDialect {
   }
 
   @override
-  (String sql, List<Object?> params) select(
-    SelectStatement statement,
-  ) {
+  (String sql, List<Object?> params) select(SelectStatement statement) {
     final resolver = ExpressionResolver(StatmentContext());
     final (sql, columns) = resolver.selectExpression(statement.query);
     return (sql, resolver.context.parameters);
@@ -279,7 +278,7 @@ extension on ExpressionResolver<SqlContext> {
       final (sql2, _) = tableExpression(q.right);
       return (
         '(SELECT * FROM ($sql1) ${q.operator} SELECT * FROM ($sql2))',
-        columns
+        columns,
       );
     }
     if (q is JoinClause) {
@@ -293,9 +292,7 @@ extension on ExpressionResolver<SqlContext> {
         ...columns1.map((c) => (a1, c)),
         ...columns2.map((c) => (a2, c)),
       ]);
-      final columns = columnAliases(
-        columns1.length + columns2.length,
-      );
+      final columns = columnAliases(columns1.length + columns2.length);
       return (
         [
           '(SELECT',
@@ -320,10 +317,7 @@ extension on ExpressionResolver<SqlContext> {
   (String sql, List<String> columns) selectExpression(QueryClause q) {
     if (q is TableClause || q is CompositeQueryClause || q is JoinClause) {
       final (sql, columns) = tableExpression(q);
-      return (
-        'SELECT ${columns.map(escape).join(', ')} FROM $sql',
-        columns,
-      );
+      return ('SELECT ${columns.map(escape).join(', ')} FROM $sql', columns);
     }
 
     if (q is SelectClause) {
@@ -452,18 +446,22 @@ extension on ExpressionResolver<SqlContext> {
     String? ordering;
     if (order != null) {
       final ctx = withScope(order, columnsAndAlias);
-      ordering = order.orderBy.map((key) {
-        final (e, order) = key;
-        return '${ctx.expr(e)} ${order == Order.descending ? 'DESC' : 'ASC'} NULLS LAST';
-      }).join(', ');
+      ordering = order.orderBy
+          .map((key) {
+            final (e, order) = key;
+            return '${ctx.expr(e)} ${order == Order.descending ? 'DESC' : 'ASC'} NULLS LAST';
+          })
+          .join(', ');
     }
 
     String? where;
     if (filters.isNotEmpty) {
-      where = filters.map((w) {
-        final ctx = withScope(w, columnsAndAlias);
-        return '( ${ctx.expr(w.where)} )';
-      }).join(' AND ');
+      where = filters
+          .map((w) {
+            final ctx = withScope(w, columnsAndAlias);
+            return '( ${ctx.expr(w.where)} )';
+          })
+          .join(' AND ');
     }
 
     return (
@@ -492,66 +490,63 @@ extension on ExpressionResolver<SqlContext> {
   }
 
   String expr<T>(Expr<T> e) => switch (e) {
-        FieldExpression<T>() => resolveField(e),
-        SubQueryExpression<T>(:final query) =>
-          '(${selectExpression(query).$1})',
-        Literal.false$ => 'FALSE',
-        Literal.true$ => 'TRUE',
-        Literal.null$ => '(NULL)::unknown',
-        Literal<CustomDataType?>(value: final value) =>
-          context.addParameter(value?.toDatabase()),
-        Literal<T>(value: final value) => context.addParameter(value),
-        ExpressionBlobSublist(:final value, :final start, :final length) =>
-          'SUBSTRING(${expr(value)} FROM CAST(${expr(start)} AS INTEGER) + 1 '
-              '${length != null ? 'FOR CAST(${expr(length)} AS INTEGER)' : ''})',
-        ExpressionBlobLength(:final value) => 'OCTET_LENGTH(${expr(value)})',
-        ExpressionBlobToHex(:final value) =>
-          'UPPER(ENCODE(${expr(value)}, \'hex\'))',
-        ExpressionBlobDecodeUtf8(:final value) =>
-          'CONVERT_FROM(${expr(value)}, \'UTF8\')',
-        final ExpressionNumDivide e =>
-          '( CAST(${expr(e.left)} AS NUMERIC) ${e.operator} ${expr(e.right)} )',
-        final BinaryOperationExpression e =>
-          '( ${expr(e.left)} ${e.operator} ${expr(e.right)} )',
-        ExpressionBoolNot(value: final value) => '( NOT ${expr(value)} )',
-        ExpressionStringIsEmpty(value: final value) =>
-          '( ${expr(value)} = \'\' )',
-        ExpressionStringLength(value: final value) =>
-          'LENGTH( ${expr(value)} )',
-        ExpressionStringStartsWith(value: final value, prefix: final prefix) =>
-          'STARTS_WITH(${expr(value)}, ${expr(prefix)})',
-        ExpressionStringEndsWith(value: final value, suffix: final suffix) =>
-          'STARTS_WITH(REVERSE(${expr(value)}), REVERSE(${expr(suffix)}))',
-        ExpressionStringLike(value: final value, pattern: final pattern) =>
-          '( ${expr(value)} LIKE ${context.addParameter(pattern)} )',
-        ExpressionStringContains(value: final value, needle: final needle) =>
-          '( STRPOS( ${expr(value)} , ${expr(needle)} ) > 0 )',
-        ExpressionStringToUpperCase(value: final value) =>
-          'UPPER( ${expr(value)} )',
-        ExpressionStringToLowerCase(value: final value) =>
-          'LOWER( ${expr(value)} )',
-        RowExpression<Row>() => throw AssertionError(
-            'RowExpression exist in a context where they are rendered',
-          ),
-        ExistsExpression(:final query) =>
-          'EXISTS (${selectExpression(query).$1})',
-        SumExpression<num>(:final value) => 'COALESCE(SUM(${expr(value)}), 0)',
-        AvgExpression(:final value) => 'AVG(${expr(value)})',
-        MinExpression<Comparable>(:final value) => 'MIN(${expr(value)})',
-        MaxExpression<Comparable>(:final value) => 'MAX(${expr(value)})',
-        CountAllExpression() => 'COUNT(*)',
-        OrElseExpression<T>(:final value, :final orElse) =>
-          'COALESCE(${expr(value)}, ${expr(orElse)})',
-        NotNullExpression<T>(:final value) => expr(value),
-        // Postgres doesn't allow casting BOOL to BIGINT but we can to INTEGER
-        CastExpression(:final Expr<bool> value, type: ColumnType.integer) =>
-          'CAST(CAST(${expr(value)} AS INTEGER) AS ${e.type.sqlType})',
-        final CastExpression e => 'CAST(${expr(e.value)} AS ${e.type.sqlType})',
-        EncodedCustomDataTypeExpression(:final value) => expr(value),
-        CurrentTimestampExpression _ => '(NOW() AT TIME ZONE \'UTC\')',
-        ExpressionJsonRef e => extractJsonRef(e),
-        ExpressionJsonExtract(:final value) => '(${expr(value)} #>> \'{}\')',
-      };
+    FieldExpression<T>() => resolveField(e),
+    SubQueryExpression<T>(:final query) => '(${selectExpression(query).$1})',
+    Literal.false$ => 'FALSE',
+    Literal.true$ => 'TRUE',
+    Literal.null$ => '(NULL)::unknown',
+    Literal<CustomDataType?>(value: final value) => context.addParameter(
+      value?.toDatabase(),
+    ),
+    Literal<T>(value: final value) => context.addParameter(value),
+    ExpressionBlobSublist(:final value, :final start, :final length) =>
+      'SUBSTRING(${expr(value)} FROM CAST(${expr(start)} AS INTEGER) + 1 '
+          '${length != null ? 'FOR CAST(${expr(length)} AS INTEGER)' : ''})',
+    ExpressionBlobLength(:final value) => 'OCTET_LENGTH(${expr(value)})',
+    ExpressionBlobToHex(:final value) =>
+      'UPPER(ENCODE(${expr(value)}, \'hex\'))',
+    ExpressionBlobDecodeUtf8(:final value) =>
+      'CONVERT_FROM(${expr(value)}, \'UTF8\')',
+    final ExpressionNumDivide e =>
+      '( CAST(${expr(e.left)} AS NUMERIC) ${e.operator} ${expr(e.right)} )',
+    final BinaryOperationExpression e =>
+      '( ${expr(e.left)} ${e.operator} ${expr(e.right)} )',
+    ExpressionBoolNot(value: final value) => '( NOT ${expr(value)} )',
+    ExpressionStringIsEmpty(value: final value) => '( ${expr(value)} = \'\' )',
+    ExpressionStringLength(value: final value) => 'LENGTH( ${expr(value)} )',
+    ExpressionStringStartsWith(value: final value, prefix: final prefix) =>
+      'STARTS_WITH(${expr(value)}, ${expr(prefix)})',
+    ExpressionStringEndsWith(value: final value, suffix: final suffix) =>
+      'STARTS_WITH(REVERSE(${expr(value)}), REVERSE(${expr(suffix)}))',
+    ExpressionStringLike(value: final value, pattern: final pattern) =>
+      '( ${expr(value)} LIKE ${context.addParameter(pattern)} )',
+    ExpressionStringContains(value: final value, needle: final needle) =>
+      '( STRPOS( ${expr(value)} , ${expr(needle)} ) > 0 )',
+    ExpressionStringToUpperCase(value: final value) =>
+      'UPPER( ${expr(value)} )',
+    ExpressionStringToLowerCase(value: final value) =>
+      'LOWER( ${expr(value)} )',
+    RowExpression<Row>() => throw AssertionError(
+      'RowExpression exist in a context where they are rendered',
+    ),
+    ExistsExpression(:final query) => 'EXISTS (${selectExpression(query).$1})',
+    SumExpression<num>(:final value) => 'COALESCE(SUM(${expr(value)}), 0)',
+    AvgExpression(:final value) => 'AVG(${expr(value)})',
+    MinExpression<Comparable>(:final value) => 'MIN(${expr(value)})',
+    MaxExpression<Comparable>(:final value) => 'MAX(${expr(value)})',
+    CountAllExpression() => 'COUNT(*)',
+    OrElseExpression<T>(:final value, :final orElse) =>
+      'COALESCE(${expr(value)}, ${expr(orElse)})',
+    NotNullExpression<T>(:final value) => expr(value),
+    // Postgres doesn't allow casting BOOL to BIGINT but we can to INTEGER
+    CastExpression(:final Expr<bool> value, type: ColumnType.integer) =>
+      'CAST(CAST(${expr(value)} AS INTEGER) AS ${e.type.sqlType})',
+    final CastExpression e => 'CAST(${expr(e.value)} AS ${e.type.sqlType})',
+    EncodedCustomDataTypeExpression(:final value) => expr(value),
+    CurrentTimestampExpression _ => '(NOW() AT TIME ZONE \'UTC\')',
+    ExpressionJsonRef e => extractJsonRef(e),
+    ExpressionJsonExtract(:final value) => '(${expr(value)} #>> \'{}\')',
+  };
 
   String extractJsonRef(ExpressionJsonRef ref) {
     final (root, path) = _unwindJsonRef(ref);
@@ -607,52 +602,52 @@ final class _RangeTracker {
 
 extension on CompositeQueryClause {
   String get operator => switch (this) {
-        UnionClause() => 'UNION',
-        UnionAllClause() => 'UNION ALL',
-        IntersectClause() => 'INTERSECT',
-        ExceptClause() => 'EXCEPT',
-      };
+    UnionClause() => 'UNION',
+    UnionAllClause() => 'UNION ALL',
+    IntersectClause() => 'INTERSECT',
+    ExceptClause() => 'EXCEPT',
+  };
 }
 
 extension on BinaryOperationExpression {
   String get operator => switch (this) {
-        // TODO: Consider if some sort of type hierachy could possibly make this
-        //       even smarter.
-        ExpressionBoolAnd() => 'AND',
-        ExpressionBoolOr() => 'OR',
-        ExpressionEquals() => '=',
-        ExpressionIsNotDistinctFrom() => 'IS NOT DISTINCT FROM',
-        ExpressionLessThan() => '<',
-        ExpressionLessThanOrEqual() => '<=',
-        ExpressionGreaterThan() => '>',
-        ExpressionGreaterThanOrEqual() => '>=',
-        ExpressionNumAdd<num>() => '+',
-        ExpressionNumSubtract<num>() => '-',
-        ExpressionNumMultiply<num>() => '*',
-        ExpressionNumDivide<num>() => '/',
-        ExpressionBlobConcat() => '||',
-      };
+    // TODO: Consider if some sort of type hierachy could possibly make this
+    //       even smarter.
+    ExpressionBoolAnd() => 'AND',
+    ExpressionBoolOr() => 'OR',
+    ExpressionEquals() => '=',
+    ExpressionIsNotDistinctFrom() => 'IS NOT DISTINCT FROM',
+    ExpressionLessThan() => '<',
+    ExpressionLessThanOrEqual() => '<=',
+    ExpressionGreaterThan() => '>',
+    ExpressionGreaterThanOrEqual() => '>=',
+    ExpressionNumAdd<num>() => '+',
+    ExpressionNumSubtract<num>() => '-',
+    ExpressionNumMultiply<num>() => '*',
+    ExpressionNumDivide<num>() => '/',
+    ExpressionBlobConcat() => '||',
+  };
 }
 
 extension on ColumnType {
   String get sqlType => switch (this) {
-        ColumnType<Uint8List> _ => 'BYTEA',
-        ColumnType<bool> _ => 'BOOLEAN',
-        ColumnType<DateTime> _ => 'TIMESTAMP WITH TIME ZONE',
-        ColumnType<int> _ => 'BIGINT',
-        ColumnType<double> _ => 'DOUBLE PRECISION',
-        ColumnType<String> _ => 'TEXT',
-        ColumnType<JsonValue> _ => 'JSONB',
-        ColumnType<Null> _ => throw UnsupportedError(
-            'Null type cannot be used as column type',
-          ),
-      };
+    ColumnType<Uint8List> _ => 'BYTEA',
+    ColumnType<bool> _ => 'BOOLEAN',
+    ColumnType<DateTime> _ => 'TIMESTAMP WITH TIME ZONE',
+    ColumnType<int> _ => 'BIGINT',
+    ColumnType<double> _ => 'DOUBLE PRECISION',
+    ColumnType<String> _ => 'TEXT',
+    ColumnType<JsonValue> _ => 'JSONB',
+    ColumnType<Null> _ => throw UnsupportedError(
+      'Null type cannot be used as column type',
+    ),
+  };
 }
 
 extension on JoinType {
   String get kind => switch (this) {
-        JoinType.inner => 'INNER',
-        JoinType.left => 'LEFT',
-        JoinType.right => 'RIGHT',
-      };
+    JoinType.inner => 'INNER',
+    JoinType.left => 'LEFT',
+    JoinType.right => 'RIGHT',
+  };
 }

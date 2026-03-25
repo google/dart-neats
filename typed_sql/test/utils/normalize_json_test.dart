@@ -8,27 +8,19 @@ import '../typed_sql/testrunner.dart';
 final _cases = [
   (
     name: 'Normalize key ordering',
-    inputs: [
-      '{"a": 1, "b": 2}',
-      '{"b": 2, "a": 1}',
-    ],
+    inputs: ['{"a": 1, "b": 2}', '{"b": 2, "a": 1}'],
     count: 1,
     output: null,
   ),
   (
     name: 'Normalize int-compatible doubles',
-    inputs: [
-      '1.0',
-      '1',
-    ],
+    inputs: ['1.0', '1'],
     count: 1,
     output: null,
   ),
   (
     name: 'Do not normalize non-int-compatible doubles',
-    inputs: [
-      '1.1',
-    ],
+    inputs: ['1.1'],
     count: 1,
     output: '1.1',
   ),
@@ -43,84 +35,40 @@ final _cases = [
   ),
   (
     name: 'Handle lists of numbers',
-    inputs: [
-      '[1.0, 2.0, 3.0]',
-      '[1, 2, 3]',
-    ],
+    inputs: ['[1.0, 2.0, 3.0]', '[1, 2, 3]'],
     count: 1,
     output: null,
   ),
   (
     name: 'Handle lists of mixed types',
-    inputs: [
-      '[1.0, "a", {"b": 2.0}]',
-      '[1, "a", {"b": 2}]',
-    ],
+    inputs: ['[1.0, "a", {"b": 2.0}]', '[1, "a", {"b": 2}]'],
     count: 1,
     output: null,
   ),
-  (
-    name: 'Empty map',
-    inputs: [
-      '{}',
-      '{ }',
-      ' { }',
-    ],
-    count: 1,
-    output: null,
-  ),
-  (
-    name: 'Empty list',
-    inputs: [
-      '[]',
-      '[ ]',
-      ' [ ]',
-    ],
-    count: 1,
-    output: null,
-  ),
-  (
-    name: 'Null value',
-    inputs: [
-      'null',
-      ' null ',
-    ],
-    count: 1,
-    output: null,
-  ),
+  (name: 'Empty map', inputs: ['{}', '{ }', ' { }'], count: 1, output: null),
+  (name: 'Empty list', inputs: ['[]', '[ ]', ' [ ]'], count: 1, output: null),
+  (name: 'Null value', inputs: ['null', ' null '], count: 1, output: null),
   (
     name: 'String value',
-    inputs: [
-      '"test"',
-      ' "test" ',
-    ],
+    inputs: ['"test"', ' "test" '],
     count: 1,
     output: null,
   ),
   (
     name: 'String escapings',
-    inputs: [
-      r'"\n"',
-      r'"\u000a"',
-    ],
+    inputs: [r'"\n"', r'"\u000a"'],
     count: 1,
     output: null,
   ),
   (
     name: 'Boolean value (true)',
-    inputs: [
-      'true',
-      ' true ',
-    ],
+    inputs: ['true', ' true '],
     count: 1,
     output: null,
   ),
   (
     name: 'Boolean value (false)',
-    inputs: [
-      'false',
-      ' false ',
-    ],
+    inputs: ['false', ' false '],
     count: 1,
     output: null,
   ),
@@ -135,57 +83,37 @@ final _cases = [
   ),
   (
     name: 'Different types',
-    inputs: [
-      '{"a": 1}',
-      '{"a": "1"}',
-    ],
+    inputs: ['{"a": 1}', '{"a": "1"}'],
     count: 2,
     output: null,
   ),
   (
     name: 'Different types (int vs double)',
-    inputs: [
-      '1',
-      '1.0',
-    ],
+    inputs: ['1', '1.0'],
     count: 1,
     output: null,
   ),
   (
     name: 'Different types (int vs double, negative)',
-    inputs: [
-      '-1',
-      '-1.0',
-    ],
+    inputs: ['-1', '-1.0'],
     count: 1,
     output: null,
   ),
   (
     name: 'Different types (0 vs 0.0)',
-    inputs: [
-      '0',
-      '0.0',
-    ],
+    inputs: ['0', '0.0'],
     count: 1,
     output: null,
   ),
   (
     name: 'Whitespace in objects',
-    inputs: [
-      '{"a":1, "b":2}',
-      '{ "a": 1, "b": 2 }',
-      ' { "a" : 1 , "b" : 2 } ',
-    ],
+    inputs: ['{"a":1, "b":2}', '{ "a": 1, "b": 2 }', ' { "a" : 1 , "b" : 2 } '],
     count: 1,
     output: null,
   ),
   (
     name: 'Whitespace in arrays',
-    inputs: [
-      '[1,2,3]',
-      '[ 1, 2, 3 ]',
-      '[ 1 , 2 , 3 ]',
-    ],
+    inputs: ['[1,2,3]', '[ 1, 2, 3 ]', '[ 1 , 2 , 3 ]'],
     count: 1,
     output: null,
   ),
@@ -200,10 +128,7 @@ final _cases = [
   ),
   (
     name: 'Unicode keys',
-    inputs: [
-      '{"你好": 1}',
-      '{"\u4F60\u597D": 1}',
-    ],
+    inputs: ['{"你好": 1}', '{"\u4F60\u597D": 1}'],
     count: 1,
     output: null,
   ),
@@ -220,9 +145,7 @@ final _cases = [
     name: 'Double with decimal precision preserved',
     // 9007199254740991.1 loses precision in IEEE 754 and becomes 9007199254740991.0
     // We use a smaller number where .1 is significant.
-    inputs: [
-      '123456789.1',
-    ],
+    inputs: ['123456789.1'],
     count: 1,
     output: '123456789.1',
   ),
@@ -237,18 +160,13 @@ final _cases = [
   ),
   (
     name: 'Keys with spaces',
-    inputs: [
-      '{"key with space": 1}',
-    ],
+    inputs: ['{"key with space": 1}'],
     count: 1,
     output: '{"key with space":1}',
   ),
   (
     name: 'Empty string, and single space string',
-    inputs: [
-      '""',
-      '" "',
-    ],
+    inputs: ['""', '" "'],
     count: 2,
     output: null,
   ),
@@ -283,29 +201,20 @@ final _cases = [
   ),
   (
     name: 'Lists containing nulls',
-    inputs: [
-      '[null, 1.0, null]',
-      '[null, 1, null]',
-    ],
+    inputs: ['[null, 1.0, null]', '[null, 1, null]'],
     count: 1,
     output: '[null,1,null]',
   ),
   (
     name: 'Map with null values',
-    inputs: [
-      '{"a": null, "b": 1.0}',
-      '{"b": 1, "a": null}',
-    ],
+    inputs: ['{"a": null, "b": 1.0}', '{"b": 1, "a": null}'],
     count: 1,
     output: '{"a":null,"b":1}',
   ),
   (
     name: 'Empty Key',
     // An empty string is a valid JSON key
-    inputs: [
-      '{"": 1, "a": 2}',
-      '{"a": 2, "": 1}',
-    ],
+    inputs: ['{"": 1, "a": 2}', '{"a": 2, "": 1}'],
     count: 1,
     output: '{"":1,"a":2}', // Empty string sorts before "a"
   ),

@@ -177,8 +177,9 @@ void main() {
   // a single column, two columns and 3 columns.
 
   // Test .real for sum(), avg(), min(), max(), count(), grouped by text, integer
-  r.addTest('groupBy(.text).aggregate(sum/avg/min/max(.real), count)',
-      (db) async {
+  r.addTest('groupBy(.text).aggregate(sum/avg/min/max(.real), count)', (
+    db,
+  ) async {
     final result = await db.items
         .groupBy((i) => (i.text,))
         .aggregate(
@@ -199,235 +200,245 @@ void main() {
     ]);
   });
 
-  r.addTest('groupBy(.text, .integer).aggregate(sum/avg/min/max(.real), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.text, i.integer))
-        .aggregate(
-          (agg) => agg
-              //
-              .sum((i) => i.real)
-              .avg((i) => i.real)
-              .min((i) => i.real)
-              .max((i) => i.real)
-              .count(),
-        )
-        .fetch();
+  r.addTest(
+    'groupBy(.text, .integer).aggregate(sum/avg/min/max(.real), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.text, i.integer))
+          .aggregate(
+            (agg) => agg
+                //
+                .sum((i) => i.real)
+                .avg((i) => i.real)
+                .min((i) => i.real)
+                .max((i) => i.real)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, 1.0, 1.0, 1.0, 1.0, 1),
-      ('a', 2, 2.0, 2.0, 2.0, 2.0, 1),
-      ('a', 3, 3.0, 3.0, 3.0, 3.0, 1),
-      ('b', 1, 1.0, 1.0, 1.0, 1.0, 1),
-      ('b', 2, 2.0, 2.0, 2.0, 2.0, 1),
-      ('b', 3, 3.0, 3.0, 3.0, 3.0, 1),
-      ('c', 1, 1.0, 1.0, 1.0, 1.0, 1),
-      ('c', 2, 2.0, 2.0, 2.0, 2.0, 1),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, 1.0, 1.0, 1.0, 1.0, 1),
+        ('a', 2, 2.0, 2.0, 2.0, 2.0, 1),
+        ('a', 3, 3.0, 3.0, 3.0, 3.0, 1),
+        ('b', 1, 1.0, 1.0, 1.0, 1.0, 1),
+        ('b', 2, 2.0, 2.0, 2.0, 2.0, 1),
+        ('b', 3, 3.0, 3.0, 3.0, 3.0, 1),
+        ('c', 1, 1.0, 1.0, 1.0, 1.0, 1),
+        ('c', 2, 2.0, 2.0, 2.0, 2.0, 1),
+      ]);
+    },
+  );
 
   // Test .real for sum(), avg(), min(), max(), count(), grouped by optText, optInteger
   r.addTest(
-      'groupBy(.optText, .optInteger).aggregate(sum/avg/min/max(.real), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.optText, i.optInteger))
-        .aggregate(
-          (agg) => agg
-              //
-              .sum((i) => i.real)
-              .avg((i) => i.real)
-              .min((i) => i.real)
-              .max((i) => i.real)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.optText, .optInteger).aggregate(sum/avg/min/max(.real), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.optText, i.optInteger))
+          .aggregate(
+            (agg) => agg
+                //
+                .sum((i) => i.real)
+                .avg((i) => i.real)
+                .min((i) => i.real)
+                .max((i) => i.real)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, 1.0, 1.0, 1.0, 1.0, 1),
-      ('a', 2, 2.0, 2.0, 2.0, 2.0, 1),
-      ('a', 3, 3.0, 3.0, 3.0, 3.0, 1),
-      ('b', 1, 1.0, 1.0, 1.0, 1.0, 1),
-      ('b', 2, 2.0, 2.0, 2.0, 2.0, 1),
-      ('b', 3, 3.0, 3.0, 3.0, 3.0, 1),
-      (null, null, 3.0, 1.5, 1.0, 2.0, 2),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, 1.0, 1.0, 1.0, 1.0, 1),
+        ('a', 2, 2.0, 2.0, 2.0, 2.0, 1),
+        ('a', 3, 3.0, 3.0, 3.0, 3.0, 1),
+        ('b', 1, 1.0, 1.0, 1.0, 1.0, 1),
+        ('b', 2, 2.0, 2.0, 2.0, 2.0, 1),
+        ('b', 3, 3.0, 3.0, 3.0, 3.0, 1),
+        (null, null, 3.0, 1.5, 1.0, 2.0, 2),
+      ]);
+    },
+  );
 
   // Test .optReal for sum(), avg(), min(), max(), count(), grouped by text, integer
   r.addTest(
-      'groupBy(.text, .integer).aggregate(sum/avg/min/max(.optReal), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.text, i.integer))
-        .aggregate(
-          (agg) => agg
-              //
-              .sum((i) => i.optReal)
-              .avg((i) => i.optReal)
-              .min((i) => i.optReal)
-              .max((i) => i.optReal)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.text, .integer).aggregate(sum/avg/min/max(.optReal), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.text, i.integer))
+          .aggregate(
+            (agg) => agg
+                //
+                .sum((i) => i.optReal)
+                .avg((i) => i.optReal)
+                .min((i) => i.optReal)
+                .max((i) => i.optReal)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, 1.0, 1.0, 1.0, 1.0, 1),
-      ('a', 2, 2.0, 2.0, 2.0, 2.0, 1),
-      ('a', 3, 3.0, 3.0, 3.0, 3.0, 1),
-      ('b', 1, 1.0, 1.0, 1.0, 1.0, 1),
-      ('b', 2, 2.0, 2.0, 2.0, 2.0, 1),
-      ('b', 3, 3.0, 3.0, 3.0, 3.0, 1),
-      ('c', 1, 0, null, null, null, 1),
-      ('c', 2, 0, null, null, null, 1),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, 1.0, 1.0, 1.0, 1.0, 1),
+        ('a', 2, 2.0, 2.0, 2.0, 2.0, 1),
+        ('a', 3, 3.0, 3.0, 3.0, 3.0, 1),
+        ('b', 1, 1.0, 1.0, 1.0, 1.0, 1),
+        ('b', 2, 2.0, 2.0, 2.0, 2.0, 1),
+        ('b', 3, 3.0, 3.0, 3.0, 3.0, 1),
+        ('c', 1, 0, null, null, null, 1),
+        ('c', 2, 0, null, null, null, 1),
+      ]);
+    },
+  );
 
   // Test .optReal for sum(), avg(), min(), max(), count(), grouped by optText, optInteger
   r.addTest(
-      'groupBy(.optText, .optInteger).aggregate(sum/avg/min/max(.optReal), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.optText, i.optInteger))
-        .aggregate(
-          (agg) => agg
-              //
-              .sum((i) => i.optReal)
-              .avg((i) => i.optReal)
-              .min((i) => i.optReal)
-              .max((i) => i.optReal)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.optText, .optInteger).aggregate(sum/avg/min/max(.optReal), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.optText, i.optInteger))
+          .aggregate(
+            (agg) => agg
+                //
+                .sum((i) => i.optReal)
+                .avg((i) => i.optReal)
+                .min((i) => i.optReal)
+                .max((i) => i.optReal)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, 1.0, 1.0, 1.0, 1.0, 1),
-      ('a', 2, 2.0, 2.0, 2.0, 2.0, 1),
-      ('a', 3, 3.0, 3.0, 3.0, 3.0, 1),
-      ('b', 1, 1.0, 1.0, 1.0, 1.0, 1),
-      ('b', 2, 2.0, 2.0, 2.0, 2.0, 1),
-      ('b', 3, 3.0, 3.0, 3.0, 3.0, 1),
-      (null, null, 0, null, null, null, 2),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, 1.0, 1.0, 1.0, 1.0, 1),
+        ('a', 2, 2.0, 2.0, 2.0, 2.0, 1),
+        ('a', 3, 3.0, 3.0, 3.0, 3.0, 1),
+        ('b', 1, 1.0, 1.0, 1.0, 1.0, 1),
+        ('b', 2, 2.0, 2.0, 2.0, 2.0, 1),
+        ('b', 3, 3.0, 3.0, 3.0, 3.0, 1),
+        (null, null, 0, null, null, null, 2),
+      ]);
+    },
+  );
 
   // Test .integer for sum(), avg(), min(), max(), count(), grouped by text, integer
   r.addTest(
-      'groupBy(.text, .integer).aggregate(sum/avg/min/max(.integer), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.text, i.integer))
-        .aggregate(
-          (agg) => agg
-              //
-              .sum((i) => i.integer)
-              .avg((i) => i.integer)
-              .min((i) => i.integer)
-              .max((i) => i.integer)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.text, .integer).aggregate(sum/avg/min/max(.integer), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.text, i.integer))
+          .aggregate(
+            (agg) => agg
+                //
+                .sum((i) => i.integer)
+                .avg((i) => i.integer)
+                .min((i) => i.integer)
+                .max((i) => i.integer)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, 1, 1.0, 1, 1, 1),
-      ('a', 2, 2, 2.0, 2, 2, 1),
-      ('a', 3, 3, 3.0, 3, 3, 1),
-      ('b', 1, 1, 1.0, 1, 1, 1),
-      ('b', 2, 2, 2.0, 2, 2, 1),
-      ('b', 3, 3, 3.0, 3, 3, 1),
-      ('c', 1, 1, 1.0, 1, 1, 1),
-      ('c', 2, 2, 2.0, 2, 2, 1),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, 1, 1.0, 1, 1, 1),
+        ('a', 2, 2, 2.0, 2, 2, 1),
+        ('a', 3, 3, 3.0, 3, 3, 1),
+        ('b', 1, 1, 1.0, 1, 1, 1),
+        ('b', 2, 2, 2.0, 2, 2, 1),
+        ('b', 3, 3, 3.0, 3, 3, 1),
+        ('c', 1, 1, 1.0, 1, 1, 1),
+        ('c', 2, 2, 2.0, 2, 2, 1),
+      ]);
+    },
+  );
 
   // Test .integer for sum(), avg(), min(), max(), count(), grouped by optText, optInteger
   r.addTest(
-      'groupBy(.optText, .optInteger).aggregate(sum/avg/min/max(.integer), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.optText, i.optInteger))
-        .aggregate(
-          (agg) => agg
-              //
-              .sum((i) => i.integer)
-              .avg((i) => i.integer)
-              .min((i) => i.integer)
-              .max((i) => i.integer)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.optText, .optInteger).aggregate(sum/avg/min/max(.integer), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.optText, i.optInteger))
+          .aggregate(
+            (agg) => agg
+                //
+                .sum((i) => i.integer)
+                .avg((i) => i.integer)
+                .min((i) => i.integer)
+                .max((i) => i.integer)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, 1, 1.0, 1, 1, 1),
-      ('a', 2, 2, 2.0, 2, 2, 1),
-      ('a', 3, 3, 3.0, 3, 3, 1),
-      ('b', 1, 1, 1.0, 1, 1, 1),
-      ('b', 2, 2, 2.0, 2, 2, 1),
-      ('b', 3, 3, 3.0, 3, 3, 1),
-      (null, null, 3, 1.5, 1, 2, 2),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, 1, 1.0, 1, 1, 1),
+        ('a', 2, 2, 2.0, 2, 2, 1),
+        ('a', 3, 3, 3.0, 3, 3, 1),
+        ('b', 1, 1, 1.0, 1, 1, 1),
+        ('b', 2, 2, 2.0, 2, 2, 1),
+        ('b', 3, 3, 3.0, 3, 3, 1),
+        (null, null, 3, 1.5, 1, 2, 2),
+      ]);
+    },
+  );
 
   // Test .optInteger for sum(), avg(), min(), max(), count(), grouped by text, integer
   r.addTest(
-      'groupBy(.text, .integer).aggregate(sum/avg/min/max(.optInteger), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.text, i.integer))
-        .aggregate(
-          (agg) => agg
-              //
-              .sum((i) => i.optInteger)
-              .avg((i) => i.optInteger)
-              .min((i) => i.optInteger)
-              .max((i) => i.optInteger)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.text, .integer).aggregate(sum/avg/min/max(.optInteger), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.text, i.integer))
+          .aggregate(
+            (agg) => agg
+                //
+                .sum((i) => i.optInteger)
+                .avg((i) => i.optInteger)
+                .min((i) => i.optInteger)
+                .max((i) => i.optInteger)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, 1, 1.0, 1, 1, 1),
-      ('a', 2, 2, 2.0, 2, 2, 1),
-      ('a', 3, 3, 3.0, 3, 3, 1),
-      ('b', 1, 1, 1.0, 1, 1, 1),
-      ('b', 2, 2, 2.0, 2, 2, 1),
-      ('b', 3, 3, 3.0, 3, 3, 1),
-      ('c', 1, 0, null, null, null, 1),
-      ('c', 2, 0, null, null, null, 1),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, 1, 1.0, 1, 1, 1),
+        ('a', 2, 2, 2.0, 2, 2, 1),
+        ('a', 3, 3, 3.0, 3, 3, 1),
+        ('b', 1, 1, 1.0, 1, 1, 1),
+        ('b', 2, 2, 2.0, 2, 2, 1),
+        ('b', 3, 3, 3.0, 3, 3, 1),
+        ('c', 1, 0, null, null, null, 1),
+        ('c', 2, 0, null, null, null, 1),
+      ]);
+    },
+  );
 
   // Test .optInteger for sum(), avg(), min(), max(), count(), grouped by optText, optInteger
   r.addTest(
-      'groupBy(.optText, .optInteger).aggregate(sum/avg/min/max(.optInteger), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.optText, i.optInteger))
-        .aggregate(
-          (agg) => agg
-              //
-              .sum((i) => i.optInteger)
-              .avg((i) => i.optInteger)
-              .min((i) => i.optInteger)
-              .max((i) => i.optInteger)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.optText, .optInteger).aggregate(sum/avg/min/max(.optInteger), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.optText, i.optInteger))
+          .aggregate(
+            (agg) => agg
+                //
+                .sum((i) => i.optInteger)
+                .avg((i) => i.optInteger)
+                .min((i) => i.optInteger)
+                .max((i) => i.optInteger)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, 1, 1.0, 1, 1, 1),
-      ('a', 2, 2, 2.0, 2, 2, 1),
-      ('a', 3, 3, 3.0, 3, 3, 1),
-      ('b', 1, 1, 1.0, 1, 1, 1),
-      ('b', 2, 2, 2.0, 2, 2, 1),
-      ('b', 3, 3, 3.0, 3, 3, 1),
-      (null, null, 0, null, null, null, 2),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, 1, 1.0, 1, 1, 1),
+        ('a', 2, 2, 2.0, 2, 2, 1),
+        ('a', 3, 3, 3.0, 3, 3, 1),
+        ('b', 1, 1, 1.0, 1, 1, 1),
+        ('b', 2, 2, 2.0, 2, 2, 1),
+        ('b', 3, 3, 3.0, 3, 3, 1),
+        (null, null, 0, null, null, null, 2),
+      ]);
+    },
+  );
 
   // Test .text for min(), max(), count(), grouped by text, integer
-  r.addTest('groupBy(.text, .integer).aggregate(min/max(.text), count)',
-      (db) async {
+  r.addTest('groupBy(.text, .integer).aggregate(min/max(.text), count)', (
+    db,
+  ) async {
     final result = await db.items
         .groupBy((i) => (i.text, i.integer))
         .aggregate(
@@ -452,8 +463,9 @@ void main() {
   });
 
   // Test .text for min(), max(), count(), grouped by optText, optInteger
-  r.addTest('groupBy(.optText, .optInteger).aggregate(min/max(.text), count)',
-      (db) async {
+  r.addTest('groupBy(.optText, .optInteger).aggregate(min/max(.text), count)', (
+    db,
+  ) async {
     final result = await db.items
         .groupBy((i) => (i.optText, i.optInteger))
         .aggregate(
@@ -477,8 +489,9 @@ void main() {
   });
 
   // Test .optText for min(), max(), count(), grouped by text, integer
-  r.addTest('groupBy(.text, .integer).aggregate(min/max(.optText), count)',
-      (db) async {
+  r.addTest('groupBy(.text, .integer).aggregate(min/max(.optText), count)', (
+    db,
+  ) async {
     final result = await db.items
         .groupBy((i) => (i.text, i.integer))
         .aggregate(
@@ -504,33 +517,35 @@ void main() {
 
   // Test .optText for min(), max(), count(), grouped by optText, optInteger
   r.addTest(
-      'groupBy(.optText, .optInteger).aggregate(min/max(.optText), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.optText, i.optInteger))
-        .aggregate(
-          (agg) => agg
-              //
-              .min((i) => i.optText)
-              .max((i) => i.optText)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.optText, .optInteger).aggregate(min/max(.optText), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.optText, i.optInteger))
+          .aggregate(
+            (agg) => agg
+                //
+                .min((i) => i.optText)
+                .max((i) => i.optText)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, 'a', 'a', 1),
-      ('a', 2, 'a', 'a', 1),
-      ('a', 3, 'a', 'a', 1),
-      ('b', 1, 'b', 'b', 1),
-      ('b', 2, 'b', 'b', 1),
-      ('b', 3, 'b', 'b', 1),
-      (null, null, null, null, 2),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, 'a', 'a', 1),
+        ('a', 2, 'a', 'a', 1),
+        ('a', 3, 'a', 'a', 1),
+        ('b', 1, 'b', 'b', 1),
+        ('b', 2, 'b', 'b', 1),
+        ('b', 3, 'b', 'b', 1),
+        (null, null, null, null, 2),
+      ]);
+    },
+  );
 
   // Test .timestamp for min(), max(), count(), grouped by text, integer
-  r.addTest('groupBy(.text, .integer).aggregate(min/max(.timestamp), count)',
-      (db) async {
+  r.addTest('groupBy(.text, .integer).aggregate(min/max(.timestamp), count)', (
+    db,
+  ) async {
     final result = await db.items
         .groupBy((i) => (i.text, i.integer))
         .aggregate(
@@ -556,81 +571,85 @@ void main() {
 
   // Test .timestamp for min(), max(), count(), grouped by optText, optInteger
   r.addTest(
-      'groupBy(.optText, .optInteger).aggregate(min/max(.timestamp), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.optText, i.optInteger))
-        .aggregate(
-          (agg) => agg
-              //
-              .min((i) => i.timestamp)
-              .max((i) => i.timestamp)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.optText, .optInteger).aggregate(min/max(.timestamp), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.optText, i.optInteger))
+          .aggregate(
+            (agg) => agg
+                //
+                .min((i) => i.timestamp)
+                .max((i) => i.timestamp)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, yesterday, yesterday, 1),
-      ('a', 2, today, today, 1),
-      ('a', 3, tomorrow, tomorrow, 1),
-      ('b', 1, yesterday, yesterday, 1),
-      ('b', 2, today, today, 1),
-      ('b', 3, tomorrow, tomorrow, 1),
-      (null, null, yesterday, today, 2),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, yesterday, yesterday, 1),
+        ('a', 2, today, today, 1),
+        ('a', 3, tomorrow, tomorrow, 1),
+        ('b', 1, yesterday, yesterday, 1),
+        ('b', 2, today, today, 1),
+        ('b', 3, tomorrow, tomorrow, 1),
+        (null, null, yesterday, today, 2),
+      ]);
+    },
+  );
 
   // Test .optTimestamp for min(), max(), count(), grouped by text, integer
-  r.addTest('groupBy(.text, .integer).aggregate(min/max(.optTimestamp), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.text, i.integer))
-        .aggregate(
-          (agg) => agg
-              //
-              .min((i) => i.optTimestamp)
-              .max((i) => i.optTimestamp)
-              .count(),
-        )
-        .fetch();
+  r.addTest(
+    'groupBy(.text, .integer).aggregate(min/max(.optTimestamp), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.text, i.integer))
+          .aggregate(
+            (agg) => agg
+                //
+                .min((i) => i.optTimestamp)
+                .max((i) => i.optTimestamp)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, yesterday, yesterday, 1),
-      ('a', 2, today, today, 1),
-      ('a', 3, tomorrow, tomorrow, 1),
-      ('b', 1, yesterday, yesterday, 1),
-      ('b', 2, today, today, 1),
-      ('b', 3, tomorrow, tomorrow, 1),
-      ('c', 1, null, null, 1),
-      ('c', 2, null, null, 1),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, yesterday, yesterday, 1),
+        ('a', 2, today, today, 1),
+        ('a', 3, tomorrow, tomorrow, 1),
+        ('b', 1, yesterday, yesterday, 1),
+        ('b', 2, today, today, 1),
+        ('b', 3, tomorrow, tomorrow, 1),
+        ('c', 1, null, null, 1),
+        ('c', 2, null, null, 1),
+      ]);
+    },
+  );
 
   // Test .optTimestamp for min(), max(), count(), grouped by optText, optInteger
   r.addTest(
-      'groupBy(.optText, .optInteger).aggregate(min/max(.optTimestamp), count)',
-      (db) async {
-    final result = await db.items
-        .groupBy((i) => (i.optText, i.optInteger))
-        .aggregate(
-          (agg) => agg
-              //
-              .min((i) => i.optTimestamp)
-              .max((i) => i.optTimestamp)
-              .count(),
-        )
-        .fetch();
+    'groupBy(.optText, .optInteger).aggregate(min/max(.optTimestamp), count)',
+    (db) async {
+      final result = await db.items
+          .groupBy((i) => (i.optText, i.optInteger))
+          .aggregate(
+            (agg) => agg
+                //
+                .min((i) => i.optTimestamp)
+                .max((i) => i.optTimestamp)
+                .count(),
+          )
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('a', 1, yesterday, yesterday, 1),
-      ('a', 2, today, today, 1),
-      ('a', 3, tomorrow, tomorrow, 1),
-      ('b', 1, yesterday, yesterday, 1),
-      ('b', 2, today, today, 1),
-      ('b', 3, tomorrow, tomorrow, 1),
-      (null, null, null, null, 2),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('a', 1, yesterday, yesterday, 1),
+        ('a', 2, today, today, 1),
+        ('a', 3, tomorrow, tomorrow, 1),
+        ('b', 1, yesterday, yesterday, 1),
+        ('b', 2, today, today, 1),
+        ('b', 3, tomorrow, tomorrow, 1),
+        (null, null, null, null, 2),
+      ]);
+    },
+  );
 
   // Test .sum(), count(), grouped by json
   r.addTest('groupBy(.json).aggregate(sum(1), count)', (db) async {
@@ -642,20 +661,12 @@ void main() {
               .sum((i) => toExpr(1))
               .count(),
         )
-        .select((json, sum, count) => (
-              sum,
-              count,
-            ))
+        .select((json, sum, count) => (sum, count))
         .fetch();
 
-    check(result).unorderedEquals([
-      (2, 2),
-      (2, 2),
-      (1, 1),
-      (1, 1),
-      (1, 1),
-      (1, 1),
-    ]);
+    check(
+      result,
+    ).unorderedEquals([(2, 2), (2, 2), (1, 1), (1, 1), (1, 1), (1, 1)]);
   });
 
   // Test .sum(), count(), grouped by optJson
@@ -668,19 +679,10 @@ void main() {
               .sum((i) => toExpr(1))
               .count(),
         )
-        .select((json, sum, count) => (
-              sum,
-              count,
-            ))
+        .select((json, sum, count) => (sum, count))
         .fetch();
 
-    check(result).unorderedEquals([
-      (3, 3),
-      (2, 2),
-      (1, 1),
-      (1, 1),
-      (1, 1),
-    ]);
+    check(result).unorderedEquals([(3, 3), (2, 2), (1, 1), (1, 1), (1, 1)]);
   });
 
   r.run();

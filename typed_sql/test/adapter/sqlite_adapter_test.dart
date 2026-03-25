@@ -23,7 +23,8 @@ void _test(String name, Future<void> Function(DatabaseAdapter db) fn) async {
     final db = DatabaseAdapter.sqlite3(u);
     try {
       await db
-          .query('CREATE TABLE users (id INT, name TEXT)', []).drain<void>();
+          .query('CREATE TABLE users (id INT, name TEXT)', [])
+          .drain<void>();
       await fn(db);
     } finally {
       await db.close();
@@ -32,14 +33,14 @@ void _test(String name, Future<void> Function(DatabaseAdapter db) fn) async {
 }
 
 Future<void> insertAliceBob(DatabaseAdapter db) async {
-  await db.query(
-    'INSERT INTO users (id, name) VALUES (?, ?)',
-    [1, 'Alice'],
-  ).drain<void>();
-  await db.query(
-    'INSERT INTO users (id, name) VALUES (?, ?)',
-    [2, 'Bob'],
-  ).drain<void>();
+  await db.query('INSERT INTO users (id, name) VALUES (?, ?)', [
+    1,
+    'Alice',
+  ]).drain<void>();
+  await db.query('INSERT INTO users (id, name) VALUES (?, ?)', [
+    2,
+    'Bob',
+  ]).drain<void>();
 }
 
 extension on Stream<RowReader> {
@@ -63,10 +64,10 @@ void main() {
   _test('update', (db) async {
     await insertAliceBob(db);
 
-    await db.query(
-      'UPDATE users SET name = ? WHERE id = ?',
-      ['Bob Builder', 2],
-    ).drain<void>();
+    await db.query('UPDATE users SET name = ? WHERE id = ?', [
+      'Bob Builder',
+      2,
+    ]).drain<void>();
 
     final users = await db.query('SELECT id, name FROM users', []).toIntStr();
     expect(users.firstWhere((u) => u[0] == 1), [1, 'Alice']);
@@ -108,10 +109,10 @@ void main() {
             c1.complete();
             await c2.future;
 
-            await tx.query(
-              'UPDATE users SET name = ? WHERE id = ?',
-              ['Alice1', 1],
-            ).drain<void>();
+            await tx.query('UPDATE users SET name = ? WHERE id = ?', [
+              'Alice1',
+              1,
+            ]).drain<void>();
           });
         }(),
         () async {
@@ -119,10 +120,10 @@ void main() {
             c2.complete();
             await c1.future;
 
-            await tx.query(
-              'UPDATE users SET name = ? WHERE id = ?',
-              ['Alice2', 1],
-            ).drain<void>();
+            await tx.query('UPDATE users SET name = ? WHERE id = ?', [
+              'Alice2',
+              1,
+            ]).drain<void>();
           });
         }(),
       ]),
@@ -160,10 +161,10 @@ void main() {
             c1started.complete();
 
             await tx.transact((sp) async {
-              await sp.query(
-                'UPDATE users SET name = ? WHERE id = ?',
-                ['Alice1', 1],
-              ).drain<void>();
+              await sp.query('UPDATE users SET name = ? WHERE id = ?', [
+                'Alice1',
+                1,
+              ]).drain<void>();
             });
           });
         }(),
@@ -173,10 +174,10 @@ void main() {
             await c1started.future;
 
             await tx.transact((sp) async {
-              await sp.query(
-                'UPDATE users SET name = ? WHERE id = ?',
-                ['Alice2', 1],
-              ).drain<void>();
+              await sp.query('UPDATE users SET name = ? WHERE id = ?', [
+                'Alice2',
+                1,
+              ]).drain<void>();
             });
           });
         }(),

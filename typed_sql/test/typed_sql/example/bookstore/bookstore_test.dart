@@ -59,10 +59,7 @@ abstract final class Book extends Row {
 // #endregion
 
 // #region initial-data
-final initialAuthors = [
-  (name: 'Easter Bunny',),
-  (name: 'Bucks Bunny',),
-];
+final initialAuthors = [(name: 'Easter Bunny'), (name: 'Bucks Bunny')];
 
 final initialBooks = [
   // By Easter Bunny
@@ -90,9 +87,7 @@ void main() {
 
     // Insert an author and return the authorId!
     final authorId = await db.authors
-        .insert(
-          name: toExpr('Bucks Bunny'),
-        )
+        .insert(name: toExpr('Bucks Bunny'))
         .returning((author) => (author.authorId,))
         .executeAndFetch();
 
@@ -108,9 +103,7 @@ void main() {
     // Decrease stock for 'Vegan Dining', return update stock
     final updatedStock = await db.books
         .where((b) => b.title.equals(toExpr('Vegan Dining')))
-        .update((b, set) => set(
-              stock: b.stock - toExpr(1),
-            ))
+        .update((b, set) => set(stock: b.stock - toExpr(1)))
         .returning((b) => (b.stock,))
         .executeAndFetch();
     check(updatedStock).deepEquals([2]);
@@ -129,11 +122,7 @@ void main() {
 
       // Insert test Authors and books
       for (final v in initialAuthors) {
-        await db.authors
-            .insert(
-              name: toExpr(v.name),
-            )
-            .execute();
+        await db.authors.insert(name: toExpr(v.name)).execute();
       }
       for (final v in initialBooks) {
         await db.books
@@ -201,10 +190,7 @@ void main() {
 
     // We can also compute this with subqueries using the @Reference annotation
     final stockByAuthorUsingSubquery = await db.authors
-        .select((a) => (
-              a.name,
-              a.books.select((b) => (b.stock,)).sum(),
-            ))
+        .select((a) => (a.name, a.books.select((b) => (b.stock,)).sum()))
         .fetch();
     check(stockByAuthorUsingSubquery).unorderedEquals([
       // name, totalStock
@@ -216,21 +202,14 @@ void main() {
 
   r.addTest('authors.insert', (db) async {
     // #region authors-insert
-    await db.authors
-        .insert(
-          name: toExpr('Roger Rabbit'),
-        )
-        .execute();
+    await db.authors.insert(name: toExpr('Roger Rabbit')).execute();
     // #endregion
   });
 
   r.addTest('authors.insert w. authorId', (db) async {
     // #region authors-insert-with-id
     await db.authors
-        .insert(
-          authorId: toExpr(42),
-          name: toExpr('Roger Rabbit'),
-        )
+        .insert(authorId: toExpr(42), name: toExpr('Roger Rabbit'))
         .execute();
     // #endregion
   });
@@ -238,9 +217,7 @@ void main() {
   r.addTest('authors.insert().returnInserted', (db) async {
     // #region authors-insert-returnInserted
     final author = await db.authors
-        .insert(
-          name: toExpr('Roger Rabbit'),
-        )
+        .insert(name: toExpr('Roger Rabbit'))
         .returnInserted()
         .executeAndFetch();
 
@@ -253,9 +230,7 @@ void main() {
   r.addTest('authors.insert().returning', (db) async {
     // #region authors-insert-returning-authorId
     final authorId = await db.authors
-        .insert(
-          name: toExpr('Roger Rabbit'),
-        )
+        .insert(name: toExpr('Roger Rabbit'))
         .returning((author) => (author.authorId,))
         .executeAndFetch();
 
@@ -277,10 +252,7 @@ void main() {
     }
 
     await db.books
-        .insert(
-          title: toExpr('How to hide eggs'),
-          authorId: toExpr(authorId),
-        )
+        .insert(title: toExpr('How to hide eggs'), authorId: toExpr(authorId))
         .execute();
     // #endregion
   });
@@ -302,11 +274,7 @@ void main() {
 
   r.addTest('books.where(stock > 3)', (db) async {
     // #region books.where-stock-gt-3
-    final result = await db.books
-        .where(
-          (b) => b.stock > toExpr(3),
-        )
-        .fetch();
+    final result = await db.books.where((b) => b.stock > toExpr(3)).fetch();
 
     check(result).length.equals(3);
     for (final book in result) {
@@ -318,11 +286,7 @@ void main() {
   r.addTest('books.select(.title, .stock, .stock > 3)', (db) async {
     // #region books-select-title-stock
     final result = await db.books
-        .select((b) => (
-              b.title,
-              b.stock,
-              b.stock > toExpr(3),
-            ))
+        .select((b) => (b.title, b.stock, b.stock > toExpr(3)))
         // .select() returns Query<(Expr<String>, Expr<int>, Expr<bool>)>,
         .fetch();
 
@@ -360,41 +324,44 @@ void main() {
     // #endregion
   });
 
-  r.addTest('books.select().where().select()', (db) async {
-    // #region books-select-where-select
-    final titles = await db.books
-        .select((b) => (
+  r.addTest(
+    'books.select().where().select()',
+    (db) async {
+      // #region books-select-where-select
+      final titles = await db.books
+          .select(
+            (b) => (
               b.title, // Expr<String?>, because Book.title is nullable
               b.stock, // Expr<int>, because Book.stock is non-nullable
-            ))
-        // This .where extension method takes a callback with two arguments
-        // Expr<String?> and Expr<int>.
-        .where((title, stock) => stock > toExpr(3))
-        .select((title, stock) => (title,))
-        // Remove null rows, we cannot do type promotion so the result is still
-        // a Query<(Expr<String?>,)>
-        .where((title) => title.isNotNull())
-        // But we can use .orElse to callback to '', which gives us an
-        // Query<(Expr<String>,)>, not that there is anything wrong with
-        // returning a nullable expression.
-        .select((title) => (title.orElse(toExpr('')),))
-        .fetch();
+            ),
+          )
+          // This .where extension method takes a callback with two arguments
+          // Expr<String?> and Expr<int>.
+          .where((title, stock) => stock > toExpr(3))
+          .select((title, stock) => (title,))
+          // Remove null rows, we cannot do type promotion so the result is still
+          // a Query<(Expr<String?>,)>
+          .where((title) => title.isNotNull())
+          // But we can use .orElse to callback to '', which gives us an
+          // Query<(Expr<String>,)>, not that there is anything wrong with
+          // returning a nullable expression.
+          .select((title) => (title.orElse(toExpr('')),))
+          .fetch();
 
-    check(titles).unorderedEquals([
-      'Are Bunnies Unhealthy?',
-      'Hiding Eggs for dummies',
-      'Vegetarian Dining',
-    ]);
-    // #endregion
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
+      check(titles).unorderedEquals([
+        'Are Bunnies Unhealthy?',
+        'Hiding Eggs for dummies',
+        'Vegetarian Dining',
+      ]);
+      // #endregion
+    },
+    skipMysql: 'TODO: Fix nested subqueries in mysql',
+  );
 
   r.addTest('Query.stream()', (db) async {
     // #region query-stream
     final q = db.books
-        .select((b) => (
-              b.title,
-              b.stock,
-            ))
+        .select((b) => (b.title, b.stock))
         .where((title, stock) => stock > toExpr(3));
 
     // Use await-for to process the stream one row at the time.
@@ -543,9 +510,7 @@ void main() {
     // #region update-book-bykey
     await db.books
         .byKey(1)
-        .update((book, set) => set(
-              stock: book.stock - toExpr(1),
-            ))
+        .update((book, set) => set(stock: book.stock - toExpr(1)))
         .execute();
     // #endregion
   });
@@ -554,9 +519,7 @@ void main() {
     // #region update-book-bykey-set-null
     await db.books
         .byKey(1)
-        .update((book, set) => set(
-              title: toExpr(null),
-            ))
+        .update((book, set) => set(title: toExpr(null)))
         .execute();
     // #endregion
   });
@@ -565,49 +528,46 @@ void main() {
     // #region update-books-where-stock-gt-5
     await db.books
         .where((book) => book.stock > toExpr(5))
-        .update((book, set) => set(
-              stock: (book.stock / toExpr(2)).asInt(),
-            ))
+        .update((book, set) => set(stock: (book.stock / toExpr(2)).asInt()))
         .execute();
     // #endregion
   });
 
-  r.addTest('books.byKey().update().returnUpdated', (db) async {
-    // #region update-book-bykey-returnUpdated
-    final updatedBook = await db.books
-        .byKey(1)
-        .update((book, set) => set(
-              stock: book.stock - toExpr(1),
-            ))
-        .returnUpdated() // return the updated row
-        .executeAndFetch();
+  r.addTest(
+    'books.byKey().update().returnUpdated',
+    (db) async {
+      // #region update-book-bykey-returnUpdated
+      final updatedBook = await db.books
+          .byKey(1)
+          .update((book, set) => set(stock: book.stock - toExpr(1)))
+          .returnUpdated() // return the updated row
+          .executeAndFetch();
 
-    if (updatedBook == null) {
-      throw Exception('Book not found');
-    }
-    check(updatedBook.stock).equals(9);
-    // #endregion
-  }, skipMysql: 'RETURNING not supported in MySQL');
+      if (updatedBook == null) {
+        throw Exception('Book not found');
+      }
+      check(updatedBook.stock).equals(9);
+      // #endregion
+    },
+    skipMysql: 'RETURNING not supported in MySQL',
+  );
 
-  r.addTest('books.where(.stock > 5).update(stock = stock / 2).returning',
-      (db) async {
-    // #region update-books-where-returning
-    final updatedStock = await db.books
-        .where((book) => book.stock > toExpr(5))
-        .update((book, set) => set(
-              stock: (book.stock / toExpr(2)).asInt(),
-            ))
-        .returning((book) => (book.stock,))
-        .executeAndFetch();
+  r.addTest(
+    'books.where(.stock > 5).update(stock = stock / 2).returning',
+    (db) async {
+      // #region update-books-where-returning
+      final updatedStock = await db.books
+          .where((book) => book.stock > toExpr(5))
+          .update((book, set) => set(stock: (book.stock / toExpr(2)).asInt()))
+          .returning((book) => (book.stock,))
+          .executeAndFetch();
 
-    // We get 3 values because we updated 3 rows.
-    check(updatedStock).unorderedEquals([
-      21,
-      5,
-      6,
-    ]);
-    // #endregion
-  }, skipMysql: 'RETURNING not supported in MySQL');
+      // We get 3 values because we updated 3 rows.
+      check(updatedStock).unorderedEquals([21, 5, 6]);
+      // #endregion
+    },
+    skipMysql: 'RETURNING not supported in MySQL',
+  );
 
   r.addTest('books.byKey().delete()', (db) async {
     // #region books-byKey-delete
@@ -620,10 +580,7 @@ void main() {
     final deletedBooks = await db.books
         .where((book) => book.authorId.equals(toExpr(1)))
         .delete()
-        .returning((b) => (
-              b.title,
-              b.stock,
-            ))
+        .returning((b) => (b.title, b.stock))
         .executeAndFetch();
 
     check(deletedBooks).unorderedEquals([
@@ -639,10 +596,12 @@ void main() {
     // #region books-follow-reference-by-name
     final bookAndAuthor = await db.books
         .byKey(1)
-        .select((book) => (
-              book,
-              book.author, // <-- use the 'author' subquery property
-            ))
+        .select(
+          (book) => (
+            book,
+            book.author, // <-- use the 'author' subquery property
+          ),
+        )
         .fetch(); // return Future<(Book, Author)?>
 
     if (bookAndAuthor == null) {
@@ -654,15 +613,13 @@ void main() {
     // #endregion
   });
 
-  r.addTest('books.where(.author.name = ..).select(.title, .author.name)',
-      (db) async {
+  r.addTest('books.where(.author.name = ..).select(.title, .author.name)', (
+    db,
+  ) async {
     // #region books-use-reference-in-where
     final titleAndAuthor = await db.books
         .where((book) => book.author.name.equals(toExpr('Easter Bunny')))
-        .select((book) => (
-              book.title,
-              book.author.name,
-            ))
+        .select((book) => (book.title, book.author.name))
         .fetch();
 
     check(titleAndAuthor).unorderedEquals([
@@ -678,10 +635,7 @@ void main() {
     // #region authors-bykey-count-books
     final authorAndCount = await db.authors
         .byKey(1)
-        .select((author) => (
-              author,
-              author.books.count(),
-            ))
+        .select((author) => (author, author.books.count()))
         .fetch();
 
     if (authorAndCount == null) {
@@ -696,10 +650,7 @@ void main() {
   r.addTest('authors.select(.name, .books.count())', (db) async {
     // #region authors-count-books
     final authorAndCount = await db.authors
-        .select((author) => (
-              author.name,
-              author.books.count(),
-            ))
+        .select((author) => (author.name, author.books.count()))
         .fetch();
 
     check(authorAndCount).unorderedEquals([
@@ -712,12 +663,7 @@ void main() {
 
   r.addTest('books.select(title, book.author.name)', (db) async {
     final result = await db.books
-        .select(
-          (b) => (
-            b.title,
-            b.author.name,
-          ),
-        )
+        .select((b) => (b.title, b.author.name))
         .fetch();
     check(result).unorderedEquals([
       ('Are Bunnies Unhealthy?', 'Easter Bunny'),
@@ -743,12 +689,10 @@ void main() {
 
   r.addTest('.select(books.select(.stock).sum(), books.count())', (db) async {
     // #region sum-books-and-count-books-in-inventory
-    final (totalStock, countDifferntBooks) = await db.select(
-      (
-        db.books.asSubQuery.select((book) => (book.stock,)).sum(),
-        db.books.asSubQuery.count(),
-      ),
-    ).fetchOrNulls();
+    final (totalStock, countDifferntBooks) = await db.select((
+      db.books.asSubQuery.select((book) => (book.stock,)).sum(),
+      db.books.asSubQuery.count(),
+    )).fetchOrNulls();
 
     check(totalStock).equals(67);
     check(countDifferntBooks).equals(5);
@@ -756,20 +700,19 @@ void main() {
   });
 
   r.addTest(
-      '.select(books.asSubQuery.select(.stock).sum(), books.asSubQuery.count())',
-      (db) async {
-    // #region sum-books-and-count-books-in-inventory-as-expr
-    final (totalStock, countDifferntBooks) = await db.select(
-      (
+    '.select(books.asSubQuery.select(.stock).sum(), books.asSubQuery.count())',
+    (db) async {
+      // #region sum-books-and-count-books-in-inventory-as-expr
+      final (totalStock, countDifferntBooks) = await db.select((
         db.books.select((book) => (book.stock,)).sum().asExpr,
         db.books.count().asExpr,
-      ),
-    ).fetchOrNulls();
+      )).fetchOrNulls();
 
-    check(totalStock).equals(67);
-    check(countDifferntBooks).equals(5);
-    // #endregion
-  });
+      check(totalStock).equals(67);
+      check(countDifferntBooks).equals(5);
+      // #endregion
+    },
+  );
 
   r.addTest('books.groupBy(null).aggregate(sum(.stock))', (db) async {
     final (totalStock, countDifferntBooks) = await db.books
@@ -778,9 +721,7 @@ void main() {
           (agg) => //
               agg.sum((book) => book.stock).count(),
         )
-        .select(
-          (_, stock, count) => (stock, count),
-        )
+        .select((_, stock, count) => (stock, count))
         .first // since there is only one group
         .fetchOrNulls();
 
@@ -799,11 +740,8 @@ void main() {
               .count(),
         )
         .select(
-          (author, stock, countBooksByAuthor) => (
-            author.name,
-            stock,
-            countBooksByAuthor,
-          ),
+          (author, stock, countBooksByAuthor) =>
+              (author.name, stock, countBooksByAuthor),
         )
         .fetch();
 
@@ -826,11 +764,8 @@ void main() {
               .count(),
         )
         .select(
-          (authorId, stock, countBooksByAuthor) => (
-            authorId,
-            stock,
-            countBooksByAuthor,
-          ),
+          (authorId, stock, countBooksByAuthor) =>
+              (authorId, stock, countBooksByAuthor),
         )
         .fetch();
 
@@ -842,74 +777,71 @@ void main() {
     // #endregion
   });
 
-  r.addTest('authors.select(.name, .books.sum(.stock))', (db) async {
-    // #region sum-books-by-author-with-subquery
-    final result = await db.authors
-        .select(
-          (author) => (
-            author.name,
-            author.books.select((b) => (b.stock,)).sum(),
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals([
-      ('Easter Bunny', 22),
-      ('Bucks Bunny', 45),
-    ]);
-    // #endregion
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
+  r.addTest(
+    'authors.select(.name, .books.sum(.stock))',
+    (db) async {
+      // #region sum-books-by-author-with-subquery
+      final result = await db.authors
+          .select(
+            (author) =>
+                (author.name, author.books.select((b) => (b.stock,)).sum()),
+          )
+          .fetch();
+      check(
+        result,
+      ).unorderedEquals([('Easter Bunny', 22), ('Bucks Bunny', 45)]);
+      // #endregion
+    },
+    skipMysql: 'TODO: Fix nested subqueries in mysql',
+  );
 
   r.addTest(
-      'authors.select(.firstname, .lastname, db.where(...).books.sum(.stock))',
-      (db) async {
-    final result = await db.authors
-        .select(
-          (author) => (
-            author.name,
-            db.books
-                .where((b) => b.authorId.equals(author.authorId))
-                .select((b) => (b.stock,))
-                .sum()
-                .asExpr,
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals([
-      ('Easter Bunny', 22),
-      ('Bucks Bunny', 45),
-    ]);
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
+    'authors.select(.firstname, .lastname, db.where(...).books.sum(.stock))',
+    (db) async {
+      final result = await db.authors
+          .select(
+            (author) => (
+              author.name,
+              db.books
+                  .where((b) => b.authorId.equals(author.authorId))
+                  .select((b) => (b.stock,))
+                  .sum()
+                  .asExpr,
+            ),
+          )
+          .fetch();
+      check(
+        result,
+      ).unorderedEquals([('Easter Bunny', 22), ('Bucks Bunny', 45)]);
+    },
+    skipMysql: 'TODO: Fix nested subqueries in mysql',
+  );
 
   r.addTest(
-      'authors.join(books).groupBy(.author).aggregate(sum(.stock), count())',
-      (db) async {
-    // #region sum-books-group-by-using-join
-    final result = await db.authors
-        .join(db.books)
-        .on((author, book) => author.authorId.equals(book.authorId))
-        .groupBy((author, book) => (author,))
-        .aggregate(
-          (agg) => agg
-              // aggregates:
-              .sum((author, book) => book.stock)
-              .count(),
-        )
-        .select(
-          (author, stock, count) => (
-            author.name,
-            stock,
-            count,
-          ),
-        )
-        .fetch();
+    'authors.join(books).groupBy(.author).aggregate(sum(.stock), count())',
+    (db) async {
+      // #region sum-books-group-by-using-join
+      final result = await db.authors
+          .join(db.books)
+          .on((author, book) => author.authorId.equals(book.authorId))
+          .groupBy((author, book) => (author,))
+          .aggregate(
+            (agg) => agg
+                // aggregates:
+                .sum((author, book) => book.stock)
+                .count(),
+          )
+          .select((author, stock, count) => (author.name, stock, count))
+          .fetch();
 
-    check(result).unorderedEquals([
-      // Author, total stock, count of books
-      ('Easter Bunny', 22, 3),
-      ('Bucks Bunny', 45, 2),
-    ]);
-    // #endregion
-  });
+      check(result).unorderedEquals([
+        // Author, total stock, count of books
+        ('Easter Bunny', 22, 3),
+        ('Bucks Bunny', 45, 2),
+      ]);
+      // #endregion
+    },
+  );
 
   r.run();
 }

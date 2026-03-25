@@ -78,16 +78,10 @@ void _test(
         )
         .execute();
     await db.likes
-        .insert(
-          userId: toExpr(1),
-          packageName: toExpr('foo'),
-        )
+        .insert(userId: toExpr(1), packageName: toExpr('foo'))
         .execute();
     await db.likes
-        .insert(
-          userId: toExpr(2),
-          packageName: toExpr('foo'),
-        )
+        .insert(userId: toExpr(2), packageName: toExpr('foo'))
         .execute();
 
     try {
@@ -140,9 +134,7 @@ void main() {
     }
     await db.packages
         .where((p) => p.packageName.equalsValue('foo'))
-        .update((p, set) => set(
-              ownerId: toExpr(2),
-            ))
+        .update((p, set) => set(ownerId: toExpr(2)))
         .execute();
     {
       final p = await db.packages.byKey('foo').fetch();
@@ -158,9 +150,7 @@ void main() {
 
     await db.packages
         .byKey('foo')
-        .update((u, set) => set(
-              likes: u.likes + toExpr(1),
-            ))
+        .update((u, set) => set(likes: u.likes + toExpr(1)))
         .execute();
 
     expect(
@@ -170,9 +160,7 @@ void main() {
 
     await db.packages
         .byKey('foo')
-        .update((u, set) => set(
-              likes: u.likes.addValue(1),
-            ))
+        .update((u, set) => set(likes: u.likes.addValue(1)))
         .execute();
 
     expect(
@@ -182,16 +170,12 @@ void main() {
 
     await db.packages
         .byKey('foo')
-        .update((u, set) => set(
-              likes: u.likes.subtractValue(1),
-            ))
+        .update((u, set) => set(likes: u.likes.subtractValue(1)))
         .execute();
 
     await db.packages
         .byKey('foo')
-        .update((u, set) => set(
-              likes: u.likes - toExpr(1),
-            ))
+        .update((u, set) => set(likes: u.likes - toExpr(1)))
         .execute();
 
     expect(
@@ -374,8 +358,9 @@ void main() {
     expect(ownerId, equals(1));
   });
 
-  _test('db.users.join(db.packages.select().where().select()).on()',
-      (db) async {
+  _test('db.users.join(db.packages.select().where().select()).on()', (
+    db,
+  ) async {
     final result = await db.users
         .join(
           db.packages
@@ -401,7 +386,7 @@ void main() {
                 .where((u) => u.userId.equals(p.ownerId))
                 .select((u) => (u.name,))
                 .first
-                .asExpr
+                .asExpr,
           ),
         )
         .fetch();
@@ -438,79 +423,57 @@ void main() {
   });
 
   _test('db.select(true && false)', (db) async {
-    final result = await db.select(
-      (toExpr(true) & toExpr(false),),
-    ).fetch();
+    final result = await db.select((toExpr(true) & toExpr(false),)).fetch();
     expect(result, isFalse);
   });
 
   _test('db.select(true || false)', (db) async {
-    final result = await db.select(
-      (toExpr(true) | toExpr(false),),
-    ).fetch();
+    final result = await db.select((toExpr(true) | toExpr(false),)).fetch();
     expect(result, isTrue);
   });
 
   _test('db.select(true.not)', (db) async {
-    final result = await db.select(
-      (toExpr(true).not(),),
-    ).fetch();
+    final result = await db.select((toExpr(true).not(),)).fetch();
     expect(result, isFalse);
   });
 
   _test('db.select(true.not())', (db) async {
-    final result = await db.select(
-      (toExpr(true).not(),),
-    ).fetch();
+    final result = await db.select((toExpr(true).not(),)).fetch();
     expect(result, isFalse);
   });
 
   _test('db.select(true.and(false))', (db) async {
-    final result = await db.select(
-      (toExpr(true).and(toExpr(false)),),
-    ).fetch();
+    final result = await db.select((toExpr(true).and(toExpr(false)),)).fetch();
     expect(result, isFalse);
   });
 
   _test('db.select(true.or(false))', (db) async {
-    final result = await db.select(
-      (toExpr(true).or(toExpr(false)),),
-    ).fetch();
+    final result = await db.select((toExpr(true).or(toExpr(false)),)).fetch();
     expect(result, isTrue);
   });
 
   _test('db.select(42.add(1))', (db) async {
-    final result = await db.select(
-      (toExpr(42).add(toExpr(1)),),
-    ).fetch();
+    final result = await db.select((toExpr(42).add(toExpr(1)),)).fetch();
     expect(result, equals(43));
   });
 
   _test('db.select(42.subtract(1))', (db) async {
-    final result = await db.select(
-      (toExpr(42).subtract(toExpr(1)),),
-    ).fetch();
+    final result = await db.select((toExpr(42).subtract(toExpr(1)),)).fetch();
     expect(result, equals(41));
   });
 
   _test('db.select(42.multiply(2))', (db) async {
-    final result = await db.select(
-      (toExpr(42).multiply(toExpr(2)),),
-    ).fetch();
+    final result = await db.select((toExpr(42).multiply(toExpr(2)),)).fetch();
     expect(result, equals(84));
   });
 
   _test('db.select(42.divide(2))', (db) async {
-    final result = await db.select(
-      (toExpr(42).divide(toExpr(2)),),
-    ).fetch();
+    final result = await db.select((toExpr(42).divide(toExpr(2)),)).fetch();
     expect(result, equals(21));
   });
 
   _test('db.select(42.equals(42))', (db) async {
-    final result = await db.select(
-      (toExpr(42).equals(toExpr(42)),),
-    ).fetch();
+    final result = await db.select((toExpr(42).equals(toExpr(42)),)).fetch();
     expect(result, isTrue);
   });
 
@@ -525,8 +488,9 @@ void main() {
   });
 
   _test('db.packages.exists().asExpr.not()', (db) async {
-    final result = await db
-        .select((db.packages.exists().asExpr.asNotNull().not(),)).fetch();
+    final result = await db.select((
+      db.packages.exists().asExpr.asNotNull().not(),
+    )).fetch();
     expect(result, isFalse);
   });
 
@@ -605,15 +569,13 @@ void main() {
     expect(result, contains('Alice'));
   });
 
-  _test('select((u, p) => (owner: u.name, packages: p.packageName))',
-      (db) async {
+  _test('select((u, p) => (owner: u.name, packages: p.packageName))', (
+    db,
+  ) async {
     final result = await db.users
         .join(db.packages)
         .on((u, p) => p.ownerId.equals(u.userId))
-        .select((u, p) => (
-              owner: u.name,
-              package: p.packageName,
-            ))
+        .select((u, p) => (owner: u.name, package: p.packageName))
         .fetch();
     expect(result, hasLength(2));
     expect(result[0].owner, equals('Alice'));
@@ -646,8 +608,10 @@ void main() {
   });
 
   _test('db.likes.select().count()', (db) async {
-    final result =
-        await db.likes.select((l) => (l.packageName,)).count().fetch();
+    final result = await db.likes
+        .select((l) => (l.packageName,))
+        .count()
+        .fetch();
     expect(result, equals(2));
   });
 
@@ -661,8 +625,10 @@ void main() {
   });
 
   _test('db.packages.select(ownerId).distinct()', (db) async {
-    final result =
-        await db.packages.select((p) => (p.ownerId,)).distinct().fetch();
+    final result = await db.packages
+        .select((p) => (p.ownerId,))
+        .distinct()
+        .fetch();
     expect(result, hasLength(1));
     expect(result, contains(1));
   });
@@ -715,21 +681,13 @@ void main() {
   });*/
 
   _test('db.packages.select((p) => p, p.owner)', (db) async {
-    final result = await db.packages
-        .select((p) => (
-              p,
-              p.owner,
-            ))
-        .fetch();
+    final result = await db.packages.select((p) => (p, p.owner)).fetch();
     expect(result, hasLength(2));
   });
 
   _test('db.packages.select((p) => p.packageName, p.owner.name)', (db) async {
     final result = await db.packages
-        .select((p) => (
-              p.packageName,
-              p.owner.name,
-            ))
+        .select((p) => (p.packageName, p.owner.name))
         .fetch();
     expect(result, hasLength(2));
     expect(result, contains(('foo', 'Alice')));

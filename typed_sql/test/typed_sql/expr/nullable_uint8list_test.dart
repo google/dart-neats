@@ -18,11 +18,7 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-final _cases = <({
-  String name,
-  Expr expr,
-  Object? expected,
-})>[
+final _cases = <({String name, Expr expr, Object? expected})>[
   // Tests for null and Uint8List
   (
     name: '[1,2,3] as Uint8List?',
@@ -36,8 +32,9 @@ final _cases = <({
   ),
   (
     name: '(null as Uint8List?).orElse([1,2,3])',
-    expr: toExpr(null as Uint8List?)
-        .orElse(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      null as Uint8List?,
+    ).orElse(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: Uint8List.fromList([1, 2, 3]),
   ),
   (
@@ -47,21 +44,19 @@ final _cases = <({
   ),
   (
     name: '([4,5,6] as Uint8List?).orElse([1,2,3])',
-    expr: toExpr(Uint8List.fromList([4, 5, 6]) as Uint8List?)
-        .orElse(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      Uint8List.fromList([4, 5, 6]) as Uint8List?,
+    ).orElse(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: Uint8List.fromList([4, 5, 6]),
   ),
   (
     name: '([4,5,6] as Uint8List?).orElseValue([1,2,3])',
-    expr: toExpr(Uint8List.fromList([4, 5, 6]) as Uint8List?)
-        .orElseValue(Uint8List.fromList([1, 2, 3])),
+    expr: toExpr(
+      Uint8List.fromList([4, 5, 6]) as Uint8List?,
+    ).orElseValue(Uint8List.fromList([1, 2, 3])),
     expected: Uint8List.fromList([4, 5, 6]),
   ),
-  (
-    name: 'null.asBlob()',
-    expr: toExpr(null).asBlob(),
-    expected: null,
-  ),
+  (name: 'null.asBlob()', expr: toExpr(null).asBlob(), expected: null),
   (
     name: 'null.asBlob().orElse([1,2,3])',
     expr: toExpr(null).asBlob().orElse(toExpr(Uint8List.fromList([1, 2, 3]))),
@@ -81,14 +76,16 @@ final _cases = <({
   ),
   (
     name: '[1,2,3].equals([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .equals(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).equals(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: true,
   ),
   (
     name: '[1,2,3].equals([3,2,1])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .equals(toExpr(Uint8List.fromList([3, 2, 1]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).equals(toExpr(Uint8List.fromList([3, 2, 1]))),
     expected: false,
   ),
   (
@@ -98,8 +95,9 @@ final _cases = <({
   ),
   (
     name: '[].equals([])',
-    expr: toExpr(Uint8List.fromList([]) as Uint8List?)
-        .equals(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      Uint8List.fromList([]) as Uint8List?,
+    ).equals(toExpr(Uint8List.fromList([]))),
     expected: true,
   ),
 
@@ -111,39 +109,44 @@ final _cases = <({
   ),
   (
     name: 'null.asBlob().isNotDistinctFrom([1,2,3])',
-    expr: toExpr(null)
-        .asBlob()
-        .isNotDistinctFrom(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      null,
+    ).asBlob().isNotDistinctFrom(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: false,
   ),
   (
     name: '[1,2,3].isNotDistinctFrom(null)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .isNotDistinctFrom(toExpr(null)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).isNotDistinctFrom(toExpr(null)),
     expected: false,
   ),
   (
     name: '[1,2,3].isNotDistinctFrom([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .isNotDistinctFrom(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).isNotDistinctFrom(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: true,
   ),
   (
     name: 'null.asBlob().isNotDistinctFrom([])',
-    expr:
-        toExpr(null).asBlob().isNotDistinctFrom(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      null,
+    ).asBlob().isNotDistinctFrom(toExpr(Uint8List.fromList([]))),
     expected: false,
   ),
   (
     name: '[].isNotDistinctFrom(null)',
-    expr: toExpr(Uint8List.fromList([]) as Uint8List?)
-        .isNotDistinctFrom(toExpr(null)),
+    expr: toExpr(
+      Uint8List.fromList([]) as Uint8List?,
+    ).isNotDistinctFrom(toExpr(null)),
     expected: false,
   ),
   (
     name: '[].isNotDistinctFrom([])',
-    expr: toExpr(Uint8List.fromList([]) as Uint8List?)
-        .isNotDistinctFrom(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      Uint8List.fromList([]) as Uint8List?,
+    ).isNotDistinctFrom(toExpr(Uint8List.fromList([]))),
     expected: true,
   ),
 
@@ -155,59 +158,67 @@ final _cases = <({
   ),
   (
     name: 'null.asBlob().equalsUnlessNull([1,2,3])',
-    expr: toExpr(null)
-        .asBlob()
-        .equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      null,
+    ).asBlob().equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: null,
   ),
   (
     name: '[1,2,3].equalsUnlessNull(null)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .equalsUnlessNull(toExpr(null)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).equalsUnlessNull(toExpr(null)),
     expected: null,
   ),
   (
     name: '[1,2,3].equalsUnlessNull([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: true,
   ),
   (
     name: 'null.asBlob().equalsUnlessNull([])',
-    expr:
-        toExpr(null).asBlob().equalsUnlessNull(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      null,
+    ).asBlob().equalsUnlessNull(toExpr(Uint8List.fromList([]))),
     expected: null,
   ),
   (
     name: '[].equalsUnlessNull(null)',
-    expr: toExpr(Uint8List.fromList([]) as Uint8List?)
-        .equalsUnlessNull(toExpr(null)),
+    expr: toExpr(
+      Uint8List.fromList([]) as Uint8List?,
+    ).equalsUnlessNull(toExpr(null)),
     expected: null,
   ),
   (
     name: '[].equalsUnlessNull([])',
-    expr: toExpr(Uint8List.fromList([]) as Uint8List?)
-        .equalsUnlessNull(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      Uint8List.fromList([]) as Uint8List?,
+    ).equalsUnlessNull(toExpr(Uint8List.fromList([]))),
     expected: true,
   ),
 
   // Expr<Uint8List?>.notEquals
   (
     name: 'null.asBlob().notEquals([1,2,3])',
-    expr:
-        toExpr(null).asBlob().notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      null,
+    ).asBlob().notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: true,
   ),
   (
     name: '[1,2,3].notEquals([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: false,
   ),
   (
     name: '[1,2,3].notEquals([3,2,1])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .notEquals(toExpr(Uint8List.fromList([3, 2, 1]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).notEquals(toExpr(Uint8List.fromList([3, 2, 1]))),
     expected: true,
   ),
   (
@@ -217,8 +228,9 @@ final _cases = <({
   ),
   (
     name: '[].notEquals([])',
-    expr: toExpr(Uint8List.fromList([]) as Uint8List?)
-        .notEquals(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      Uint8List.fromList([]) as Uint8List?,
+    ).notEquals(toExpr(Uint8List.fromList([]))),
     expected: false,
   ),
 
@@ -230,14 +242,16 @@ final _cases = <({
   ),
   (
     name: '[1,2,3].equalsValue([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .equalsValue(Uint8List.fromList([1, 2, 3])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).equalsValue(Uint8List.fromList([1, 2, 3])),
     expected: true,
   ),
   (
     name: '[1,2,3].equalsValue([3,2,1])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .equalsValue(Uint8List.fromList([3, 2, 1])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).equalsValue(Uint8List.fromList([3, 2, 1])),
     expected: false,
   ),
   (
@@ -247,8 +261,9 @@ final _cases = <({
   ),
   (
     name: '[].equalsValue([])',
-    expr: toExpr(Uint8List.fromList([]) as Uint8List?)
-        .equalsValue(Uint8List.fromList([])),
+    expr: toExpr(
+      Uint8List.fromList([]) as Uint8List?,
+    ).equalsValue(Uint8List.fromList([])),
     expected: true,
   ),
 
@@ -260,14 +275,16 @@ final _cases = <({
   ),
   (
     name: '[1,2,3].notEqualsValue([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .notEqualsValue(Uint8List.fromList([1, 2, 3])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).notEqualsValue(Uint8List.fromList([1, 2, 3])),
     expected: false,
   ),
   (
     name: '[1,2,3].notEqualsValue([3,2,1])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]) as Uint8List?)
-        .notEqualsValue(Uint8List.fromList([3, 2, 1])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]) as Uint8List?,
+    ).notEqualsValue(Uint8List.fromList([3, 2, 1])),
     expected: true,
   ),
   (
@@ -277,8 +294,9 @@ final _cases = <({
   ),
   (
     name: '[].notEqualsValue([])',
-    expr: toExpr(Uint8List.fromList([]) as Uint8List?)
-        .notEqualsValue(Uint8List.fromList([])),
+    expr: toExpr(
+      Uint8List.fromList([]) as Uint8List?,
+    ).notEqualsValue(Uint8List.fromList([])),
     expected: false,
   ),
 
@@ -322,9 +340,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       final expected = c.expected;
       if (expected == null) {
         check(result).isNull();

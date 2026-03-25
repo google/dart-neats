@@ -17,26 +17,10 @@ import 'package:typed_sql/typed_sql.dart';
 import '../testrunner.dart';
 
 final _cases = [
-  (
-    name: 'true',
-    expr: toExpr(true as bool?),
-    expected: true,
-  ),
-  (
-    name: 'false',
-    expr: toExpr(false as bool?),
-    expected: false,
-  ),
-  (
-    name: 'null',
-    expr: toExpr(null as bool?),
-    expected: null,
-  ),
-  (
-    name: 'null.asBool()',
-    expr: toExpr(null).asBool(),
-    expected: null,
-  ),
+  (name: 'true', expr: toExpr(true as bool?), expected: true),
+  (name: 'false', expr: toExpr(false as bool?), expected: false),
+  (name: 'null', expr: toExpr(null as bool?), expected: null),
+  (name: 'null.asBool()', expr: toExpr(null).asBool(), expected: null),
   // Test for .orElse
   (
     name: 'null.orElse(true)',
@@ -328,11 +312,7 @@ final _cases = [
     expr: toExpr(null as bool?).isTrue(),
     expected: false,
   ),
-  (
-    name: 'true.isTrue()',
-    expr: toExpr(true as bool?).isTrue(),
-    expected: true,
-  ),
+  (name: 'true.isTrue()', expr: toExpr(true as bool?).isTrue(), expected: true),
   (
     name: 'false.isTrue()',
     expr: toExpr(false as bool?).isTrue(),
@@ -357,11 +337,7 @@ final _cases = [
   ),
 
   // Tests for .isNull
-  (
-    name: 'null.isNull()',
-    expr: toExpr(null as bool?).isNull(),
-    expected: true,
-  ),
+  (name: 'null.isNull()', expr: toExpr(null as bool?).isNull(), expected: true),
   (
     name: 'true.isNull()',
     expr: toExpr(true as bool?).isNull(),
@@ -396,9 +372,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).equals(c.expected);
     });
   }

@@ -23,139 +23,109 @@ void main() {
 
   r.addTest('bool.asExpr', (db) async {
     final value = true;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
   r.addTest('bool?.asExpr', (db) async {
     final value = true as bool?;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
   r.addTest('int.asExpr', (db) async {
     final value = 42;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
   r.addTest('int?.asExpr', (db) async {
     final value = 42 as int?;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
   r.addTest('double.asExpr', (db) async {
     final value = 3.14;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
   r.addTest('double?.asExpr', (db) async {
     final value = 3.14 as double?;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
   r.addTest('String.asExpr', (db) async {
     final value = 'hello world';
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
   r.addTest('String?.asExpr', (db) async {
     final value = 'hello world' as String?;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
   r.addTest('DateTime.asExpr', (db) async {
     final value = DateTime.now()
-        .copyWith(
-          microsecond: 0,
-          millisecond: 0,
-        )
+        .copyWith(microsecond: 0, millisecond: 0)
         .toUtc();
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
   r.addTest('DateTime?.asExpr', (db) async {
-    final value = DateTime.now()
-        .copyWith(
-          microsecond: 0,
-          millisecond: 0,
-        )
-        .toUtc() as DateTime?;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final value =
+        DateTime.now().copyWith(microsecond: 0, millisecond: 0).toUtc()
+            as DateTime?;
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).equals(value);
   });
 
-  r.addTest('DateTime.asExpr (with microseconds)', (db) async {
-    final value = DateTime.now().toUtc();
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
-    check(result).equals(value);
-  }, skipMysql: 'MySQL driver does not support microseconds');
+  r.addTest(
+    'DateTime.asExpr (with microseconds)',
+    (db) async {
+      final value = DateTime.now().toUtc();
+      final result = await db.select((value.asExpr,)).fetch();
+      check(result).equals(value);
+    },
+    skipMysql: 'MySQL driver does not support microseconds',
+  );
 
-  r.addTest('DateTime?.asExpr (with microseconds)', (db) async {
-    final value = DateTime.now().toUtc() as DateTime?;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
-    check(result).equals(value);
-  }, skipMysql: 'MySQL driver does not support microseconds');
+  r.addTest(
+    'DateTime?.asExpr (with microseconds)',
+    (db) async {
+      final value = DateTime.now().toUtc() as DateTime?;
+      final result = await db.select((value.asExpr,)).fetch();
+      check(result).equals(value);
+    },
+    skipMysql: 'MySQL driver does not support microseconds',
+  );
 
   r.addTest('Uint8List.asExpr', (db) async {
     final value = Uint8List.fromList([1, 2, 3]);
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).isNotNull().deepEquals(value);
   });
 
   r.addTest('Uint8List?.asExpr', (db) async {
     final value = Uint8List.fromList([1, 2, 3]) as Uint8List?;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).isNotNull().deepEquals(value!);
   });
 
   r.addTest('JsonValue.asExpr', (db) async {
     final value = const JsonValue('hello world');
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).isNotNull().deepEquals(value);
   });
 
   r.addTest('JsonValue?.asExpr', (db) async {
     final value = const JsonValue('hello world') as JsonValue?;
-    final result = await db.select(
-      (value.asExpr,),
-    ).fetch();
+    final result = await db.select((value.asExpr,)).fetch();
     check(result).isNotNull().deepEquals(value!);
   });
 

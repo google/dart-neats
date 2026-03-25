@@ -48,9 +48,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
-      'Only one `PrimaryKey` annotation is allowed',
-    ),
+    error: contains('Only one `PrimaryKey` annotation is allowed'),
   );
 
   testCodeGeneration(
@@ -122,9 +120,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
-      'PrimaryKey fields cannot be nullable',
-    ),
+    error: contains('PrimaryKey fields cannot be nullable'),
   );
 
   testCodeGeneration(

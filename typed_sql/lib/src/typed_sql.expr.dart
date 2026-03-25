@@ -95,20 +95,18 @@ final class _NullExprType extends ColumnType<Null> {
   @override
   Null _read(RowReader r) => r.tryReadNull()
       ? null
-      : throw AssertionError(
-          'Expr<Null> should always be `null`!',
-        );
+      : throw AssertionError('Expr<Null> should always be `null`!');
 
   static Iterable<Expr> _explodedCastAs<T, S>(
     Expr<T> value,
     _ExprType<S> type,
-  ) =>
-      switch (type) {
-        _RowExprType<Row> type =>
-          type.fields.map((f) => CastExpression._(value, f)),
-        CustomExprType type => [CastExpression._(value, type._backingType)],
-        ColumnType type => [CastExpression._(value, type)],
-      };
+  ) => switch (type) {
+    _RowExprType<Row> type => type.fields.map(
+      (f) => CastExpression._(value, f),
+    ),
+    CustomExprType type => [CastExpression._(value, type._backingType)],
+    ColumnType type => [CastExpression._(value, type)],
+  };
 }
 
 final class CustomExprType<S, T extends CustomDataType<S>>
@@ -135,9 +133,9 @@ final class _RowExprType<T extends Row> extends _ExprType<T> {
   // TODO: This class should probably be part of a table
   // definition, instead of this way around, but we can refactor that later.
   _RowExprType._(TableDefinition<T> table)
-      : _readRow = table.readRow,
-        fields = table.columnInfo.map((c) => c.type).toList(),
-        super._();
+    : _readRow = table.readRow,
+      fields = table.columnInfo.map((c) => c.type).toList(),
+      super._();
 
   @override
   T? _read(RowReader r) => _readRow(r);
@@ -293,9 +291,9 @@ final class RowExpression<T extends Row> extends Expr<T> {
 
   @override
   Iterable<Expr<Object?>> _explode() => Iterable.generate(
-        _columns,
-        (index) => _field<void>(index, _type.fields[index]),
-      );
+    _columns,
+    (index) => _field<void>(index, _type.fields[index]),
+  );
 
   RowExpression._(this._index, this._table, this._handle) : super._();
 
@@ -323,22 +321,20 @@ final class SubQueryExpression<T> extends Expr<T> {
 
   @override
   Iterable<Expr<Object?>> _explode() => switch (_type) {
-        _RowExprType<Row> type => Iterable.generate(
-            _columns,
-            (index) => _field<void>(index, type.fields[index]),
-          ),
-        _ => [this],
-      };
+    _RowExprType<Row> type => Iterable.generate(
+      _columns,
+      (index) => _field<void>(index, type.fields[index]),
+    ),
+    _ => [this],
+  };
 
   @override
   Expr<R> _field<R>(int index, FieldType<R> type) {
     final handle = Object();
     return SubQueryExpression._(
-      SelectFromClause._(
-        query,
-        handle,
-        [FieldExpression._(index, handle, type)],
-      ),
+      SelectFromClause._(query, handle, [
+        FieldExpression._(index, handle, type),
+      ]),
       _value._field<R>(index, type), // TODO: Is this correct?
     );
   }
@@ -486,10 +482,10 @@ final class Literal<T> extends SingleValueExpr<T> {
       CustomDataType<DateTime> _ => ColumnType.dateTime as ColumnType<S>,
       CustomDataType<JsonValue> _ => ColumnType.jsonValue as ColumnType<S>,
       _ => throw ArgumentError.value(
-          value,
-          'value',
-          'T in CustomDataType<T> must be String, int, double, bool, or DateTime!',
-        ),
+        value,
+        'value',
+        'T in CustomDataType<T> must be String, int, double, bool, or DateTime!',
+      ),
     };
     return Literal._(value, CustomExprType._(backingType, fromDatabase));
   }
@@ -518,10 +514,7 @@ final class Literal<T> extends SingleValueExpr<T> {
       case Uint8List _:
         return Literal._(value, ColumnType.blob as _ExprType<T>);
       case DateTime v:
-        return Literal._(
-          v.toUtc() as T,
-          ColumnType.dateTime as _ExprType<T>,
-        );
+        return Literal._(v.toUtc() as T, ColumnType.dateTime as _ExprType<T>);
       case JsonValue _:
         return Literal._(value, ColumnType.jsonValue as _ExprType<T>);
 
@@ -584,31 +577,36 @@ final class ExpressionEquals<T extends Object>
 
 /// SQL Expression using `IS NOT DISTINCT FROM`.
 final class ExpressionIsNotDistinctFrom<T extends Object>
-    extends BinaryOperationExpression<T?, bool> with _ExprBoolean {
+    extends BinaryOperationExpression<T?, bool>
+    with _ExprBoolean {
   ExpressionIsNotDistinctFrom(super.left, super.right);
 }
 
 /// SQL Expression using `<`.
 final class ExpressionLessThan<T extends Object>
-    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
+    extends BinaryOperationExpression<T, bool>
+    with _ExprBoolean {
   ExpressionLessThan(super.left, super.right);
 }
 
 /// SQL Expression using `<=`.
 final class ExpressionLessThanOrEqual<T extends Object>
-    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
+    extends BinaryOperationExpression<T, bool>
+    with _ExprBoolean {
   ExpressionLessThanOrEqual(super.left, super.right);
 }
 
 /// SQL Expression using `>`.
 final class ExpressionGreaterThan<T extends Object>
-    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
+    extends BinaryOperationExpression<T, bool>
+    with _ExprBoolean {
   ExpressionGreaterThan(super.left, super.right);
 }
 
 /// SQL Expression using `>=`.
 final class ExpressionGreaterThanOrEqual<T extends Object>
-    extends BinaryOperationExpression<T, bool> with _ExprBoolean {
+    extends BinaryOperationExpression<T, bool>
+    with _ExprBoolean {
   ExpressionGreaterThanOrEqual(super.left, super.right);
 }
 
@@ -689,7 +687,8 @@ final class ExpressionNumMultiply<T extends num>
 }
 
 final class ExpressionNumDivide<T extends num>
-    extends BinaryOperationExpression<T, double> with _ExprReal {
+    extends BinaryOperationExpression<T, double>
+    with _ExprReal {
   ExpressionNumDivide(super.left, super.right);
 }
 
@@ -700,7 +699,8 @@ final class ExpressionBlobLength extends SingleValueExpr<int>
 }
 
 final class ExpressionBlobConcat
-    extends BinaryOperationExpression<Uint8List, Uint8List> with _ExprBlob {
+    extends BinaryOperationExpression<Uint8List, Uint8List>
+    with _ExprBlob {
   ExpressionBlobConcat(super.left, super.right);
 }
 

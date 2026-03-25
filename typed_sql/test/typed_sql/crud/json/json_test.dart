@@ -36,36 +36,21 @@ void main() {
   final otherValue = const JsonValue(true);
 
   r.addTest('.insert()', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(initialValue),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(initialValue)).execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.deepEquals(initialValue);
   });
 
   r.addTest('.insert(value: empty)', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(emptyValue),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(emptyValue)).execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.deepEquals(emptyValue);
   });
 
   r.addTest('.insert(value: other)', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(otherValue),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(otherValue)).execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.deepEquals(otherValue);
@@ -73,10 +58,7 @@ void main() {
 
   r.addTest('.insert().returnInserted()', (db) async {
     final item = await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(initialValue),
-        )
+        .insert(id: toExpr(1), value: toExpr(initialValue))
         .returnInserted()
         .executeAndFetch();
     check(item).isNotNull().value.deepEquals(initialValue);
@@ -84,27 +66,17 @@ void main() {
 
   r.addTest('.insert().returning(.value)', (db) async {
     final value = await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(initialValue),
-        )
+        .insert(id: toExpr(1), value: toExpr(initialValue))
         .returning((item) => (item.value,))
         .executeAndFetch();
     check(value).isNotNull().deepEquals(initialValue);
   });
 
   r.addTest('.update()', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(initialValue),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(initialValue)).execute();
 
     await db.items
-        .update((item, set) => set(
-              value: toExpr(updatedValue),
-            ))
+        .update((item, set) => set(value: toExpr(updatedValue)))
         .execute();
 
     final item = await db.items.first.fetch();
@@ -112,17 +84,10 @@ void main() {
   });
 
   r.addTest('.update().returnUpdated()', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(initialValue),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(initialValue)).execute();
 
     final updatedItems = await db.items
-        .update((item, set) => set(
-              value: toExpr(updatedValue),
-            ))
+        .update((item, set) => set(value: toExpr(updatedValue)))
         .returnUpdated()
         .executeAndFetch();
 
@@ -135,17 +100,10 @@ void main() {
   }, skipMysql: 'UPDATE RETURNING not supported');
 
   r.addTest('.update().returning(.value)', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(initialValue),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(initialValue)).execute();
 
     final values = await db.items
-        .update((item, set) => set(
-              value: toExpr(updatedValue),
-            ))
+        .update((item, set) => set(value: toExpr(updatedValue)))
         .returning((item) => (item.value,))
         .executeAndFetch();
 
@@ -158,12 +116,7 @@ void main() {
   }, skipMysql: 'UPDATE RETURNING not supported');
 
   r.addTest('.delete()', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(initialValue),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(initialValue)).execute();
 
     final item1 = await db.items.first.fetch();
     check(item1).isNotNull();
@@ -175,12 +128,7 @@ void main() {
   });
 
   r.addTest('.delete().returnDeleted()', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(initialValue),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(initialValue)).execute();
 
     final item1 = await db.items.first.fetch();
     check(item1).isNotNull();
@@ -199,12 +147,7 @@ void main() {
   });
 
   r.addTest('.delete().returning(.value)', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(initialValue),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(initialValue)).execute();
 
     final item1 = await db.items.first.fetch();
     check(item1).isNotNull();

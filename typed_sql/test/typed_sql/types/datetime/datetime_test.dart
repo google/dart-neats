@@ -42,10 +42,7 @@ void main() {
 
   r.addTest('.insert(year zero)', (db) async {
     await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(DateTime.utc(0)),
-        )
+        .insert(id: toExpr(1), value: toExpr(DateTime.utc(0)))
         .execute();
 
     final item = await db.items.first.fetch();
@@ -54,10 +51,7 @@ void main() {
 
   r.addTest('.insert(5 BC)', (db) async {
     await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(DateTime.utc(-5)),
-        )
+        .insert(id: toExpr(1), value: toExpr(DateTime.utc(-5)))
         .execute();
 
     final item = await db.items.first.fetch();

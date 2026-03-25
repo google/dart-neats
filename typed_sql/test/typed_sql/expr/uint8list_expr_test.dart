@@ -18,11 +18,7 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-final _cases = <({
-  String name,
-  Expr expr,
-  Object? expected,
-})>[
+final _cases = <({String name, Expr expr, Object? expected})>[
   // Tests for .equals
   (
     name: '[].equals([])',
@@ -31,38 +27,44 @@ final _cases = <({
   ),
   (
     name: '[1,2,3].equals([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .equals(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).equals(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: true,
   ),
   (
     name: '[1,2,3].equals([1,2])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .equals(toExpr(Uint8List.fromList([1, 2]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).equals(toExpr(Uint8List.fromList([1, 2]))),
     expected: false,
   ),
   (
     name: '[1,2,3].equals([])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .equals(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).equals(toExpr(Uint8List.fromList([]))),
     expected: false,
   ),
   (
     name: '[].equals([1,2,3])',
-    expr: toExpr(Uint8List.fromList([]))
-        .equals(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      Uint8List.fromList([]),
+    ).equals(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: false,
   ),
   (
     name: 'null.equals([1,2,3])',
-    expr: toExpr(null as Uint8List?)
-        .equals(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      null as Uint8List?,
+    ).equals(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: false,
   ),
   (
     name: '[1,2,3].equals(null)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .equals(toExpr(null as Uint8List?)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).equals(toExpr(null as Uint8List?)),
     expected: false,
   ),
 
@@ -74,26 +76,30 @@ final _cases = <({
   ),
   (
     name: '[1,2,3].equalsValue([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .equalsValue(Uint8List.fromList([1, 2, 3])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).equalsValue(Uint8List.fromList([1, 2, 3])),
     expected: true,
   ),
   (
     name: '[1,2,3].equalsValue([1,2])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .equalsValue(Uint8List.fromList([1, 2])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).equalsValue(Uint8List.fromList([1, 2])),
     expected: false,
   ),
   (
     name: '[1,2,3].equalsValue([])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .equalsValue(Uint8List.fromList([])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).equalsValue(Uint8List.fromList([])),
     expected: false,
   ),
   (
     name: '[].equalsValue([1,2,3])',
-    expr: toExpr(Uint8List.fromList([]))
-        .equalsValue(Uint8List.fromList([1, 2, 3])),
+    expr: toExpr(
+      Uint8List.fromList([]),
+    ).equalsValue(Uint8List.fromList([1, 2, 3])),
     expected: false,
   ),
   (
@@ -110,44 +116,51 @@ final _cases = <({
   // Tests for .notEquals
   (
     name: '[].notEquals([])',
-    expr: toExpr(Uint8List.fromList([]))
-        .notEquals(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      Uint8List.fromList([]),
+    ).notEquals(toExpr(Uint8List.fromList([]))),
     expected: false,
   ),
   (
     name: '[1,2,3].notEquals([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: false,
   ),
   (
     name: '[1,2,3].notEquals([1,2])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .notEquals(toExpr(Uint8List.fromList([1, 2]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).notEquals(toExpr(Uint8List.fromList([1, 2]))),
     expected: true,
   ),
   (
     name: '[1,2,3].notEquals([])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .notEquals(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).notEquals(toExpr(Uint8List.fromList([]))),
     expected: true,
   ),
   (
     name: '[].notEquals([1,2,3])',
-    expr: toExpr(Uint8List.fromList([]))
-        .notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      Uint8List.fromList([]),
+    ).notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: true,
   ),
   (
     name: 'null.notEquals([1,2,3])',
-    expr: toExpr(null as Uint8List?)
-        .notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
+    expr: toExpr(
+      null as Uint8List?,
+    ).notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
     expected: true,
   ),
   (
     name: '[1,2,3].notEquals(null)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .notEquals(toExpr(null as Uint8List?)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).notEquals(toExpr(null as Uint8List?)),
     expected: true,
   ),
 
@@ -159,32 +172,37 @@ final _cases = <({
   ),
   (
     name: '[1,2,3].notEqualsValue([1,2,3])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .notEqualsValue(Uint8List.fromList([1, 2, 3])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).notEqualsValue(Uint8List.fromList([1, 2, 3])),
     expected: false,
   ),
   (
     name: '[1,2,3].notEqualsValue([1,2])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .notEqualsValue(Uint8List.fromList([1, 2])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).notEqualsValue(Uint8List.fromList([1, 2])),
     expected: true,
   ),
   (
     name: '[1,2,3].notEqualsValue([])',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .notEqualsValue(Uint8List.fromList([])),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).notEqualsValue(Uint8List.fromList([])),
     expected: true,
   ),
   (
     name: '[].notEqualsValue([1,2,3])',
-    expr: toExpr(Uint8List.fromList([]))
-        .notEqualsValue(Uint8List.fromList([1, 2, 3])),
+    expr: toExpr(
+      Uint8List.fromList([]),
+    ).notEqualsValue(Uint8List.fromList([1, 2, 3])),
     expected: true,
   ),
   (
     name: 'null.notEqualsValue([1,2,3])',
-    expr: toExpr(null as Uint8List?)
-        .notEqualsValue(Uint8List.fromList([1, 2, 3])),
+    expr: toExpr(
+      null as Uint8List?,
+    ).notEqualsValue(Uint8List.fromList([1, 2, 3])),
     expected: true,
   ),
   (
@@ -194,11 +212,7 @@ final _cases = <({
   ),
 
   // Tests for .length
-  (
-    name: '[].length',
-    expr: toExpr(Uint8List.fromList([])).length,
-    expected: 0,
-  ),
+  (name: '[].length', expr: toExpr(Uint8List.fromList([])).length, expected: 0),
   (
     name: '[1,2,3].length',
     expr: toExpr(Uint8List.fromList([1, 2, 3])).length,
@@ -229,20 +243,23 @@ final _cases = <({
   ),
   (
     name: '[1,2].concat([3,4])',
-    expr: toExpr(Uint8List.fromList([1, 2]))
-        .concat(toExpr(Uint8List.fromList([3, 4]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2]),
+    ).concat(toExpr(Uint8List.fromList([3, 4]))),
     expected: Uint8List.fromList([1, 2, 3, 4]),
   ),
   (
     name: '[1,2].concat([])',
-    expr: toExpr(Uint8List.fromList([1, 2]))
-        .concat(toExpr(Uint8List.fromList([]))),
+    expr: toExpr(
+      Uint8List.fromList([1, 2]),
+    ).concat(toExpr(Uint8List.fromList([]))),
     expected: Uint8List.fromList([1, 2]),
   ),
   (
     name: '[].concat([3,4])',
-    expr: toExpr(Uint8List.fromList([]))
-        .concat(toExpr(Uint8List.fromList([3, 4]))),
+    expr: toExpr(
+      Uint8List.fromList([]),
+    ).concat(toExpr(Uint8List.fromList([3, 4]))),
     expected: Uint8List.fromList([3, 4]),
   ),
 
@@ -307,8 +324,9 @@ final _cases = <({
   ),
   (
     name: '[1, 2, 3].subList(2, length: 1) (Last item)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .subList(toExpr(2), length: toExpr(1)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).subList(toExpr(2), length: toExpr(1)),
     expected: Uint8List.fromList([3]),
   ),
   (
@@ -322,38 +340,44 @@ final _cases = <({
   // Tests for .subList(start, length: length)
   (
     name: '[1,2,3,4].subList(0, length: 2)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
-        .subList(toExpr(0), length: toExpr(2)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3, 4]),
+    ).subList(toExpr(0), length: toExpr(2)),
     expected: Uint8List.fromList([1, 2]),
   ),
   (
     name: '[1,2,3,4].subList(1, length: 2)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
-        .subList(toExpr(1), length: toExpr(2)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3, 4]),
+    ).subList(toExpr(1), length: toExpr(2)),
     expected: Uint8List.fromList([2, 3]),
   ),
   (
     name: '[1,2,3,4].subList(2, length: 2)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
-        .subList(toExpr(2), length: toExpr(2)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3, 4]),
+    ).subList(toExpr(2), length: toExpr(2)),
     expected: Uint8List.fromList([3, 4]),
   ),
   (
     name: '[1,2,3,4].subList(3, length: 2)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
-        .subList(toExpr(3), length: toExpr(2)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3, 4]),
+    ).subList(toExpr(3), length: toExpr(2)),
     expected: Uint8List.fromList([4]),
   ),
   (
     name: '[1,2,3,4].subList(4, length: 2)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
-        .subList(toExpr(4), length: toExpr(2)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3, 4]),
+    ).subList(toExpr(4), length: toExpr(2)),
     expected: Uint8List.fromList([]),
   ),
   (
     name: '[1,2,3,4].subList(0, length: 0)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3, 4]))
-        .subList(toExpr(0), length: toExpr(0)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3, 4]),
+    ).subList(toExpr(0), length: toExpr(0)),
     expected: Uint8List.fromList([]),
   ),
 
@@ -370,11 +394,7 @@ final _cases = <({
   ),
 ];
 
-final _casesToSkipMysql = <({
-  String name,
-  Expr expr,
-  Object? expected,
-})>[
+final _casesToSkipMysql = <({String name, Expr expr, Object? expected})>[
   // Complex concat tests, covering cases where databases casting to text
   // might have issues.
   (
@@ -396,18 +416,20 @@ final _casesToSkipMysql = <({
   ),
   (
     name: 'Simple concat equality: [A] + [B] == [AB]',
-    expr: (toExpr(Uint8List.fromList([0x41])) +
-            toExpr(Uint8List.fromList([0x42])))
-        .equals(toExpr(Uint8List.fromList([0x41, 0x42]))),
+    expr:
+        (toExpr(Uint8List.fromList([0x41])) +
+                toExpr(Uint8List.fromList([0x42])))
+            .equals(toExpr(Uint8List.fromList([0x41, 0x42]))),
     expected: true,
   ),
   (
     name: 'Binary safe equality: [255] + [255] == [255, 255]',
     // If "latin1_bin" collation was missing, or if string conversion happened,
     // this would likely fail or error.
-    expr: (toExpr(Uint8List.fromList([0xFF])) +
-            toExpr(Uint8List.fromList([0xFF])))
-        .equals(toExpr(Uint8List.fromList([0xFF, 0xFF]))),
+    expr:
+        (toExpr(Uint8List.fromList([0xFF])) +
+                toExpr(Uint8List.fromList([0xFF])))
+            .equals(toExpr(Uint8List.fromList([0xFF, 0xFF]))),
     expected: true,
   ),
   (
@@ -415,26 +437,33 @@ final _casesToSkipMysql = <({
     // SQL: SUBSTR(CONCAT(?, ?), 2, 2)
     // This tests that the inner CONCAT result (which is cast/collated)
     // is correctly accepted by the outer SUBSTR function.
-    expr: (toExpr(Uint8List.fromList([1, 2])) +
-            toExpr(Uint8List.fromList([3, 4])))
-        .subList(toExpr(1), length: toExpr(2))
-        .equals(toExpr(Uint8List.fromList([2, 3]))),
+    expr:
+        (toExpr(Uint8List.fromList([1, 2])) +
+                toExpr(Uint8List.fromList([3, 4])))
+            .subList(toExpr(1), length: toExpr(2))
+            .equals(toExpr(Uint8List.fromList([2, 3]))),
     expected: true,
   ),
   (
     name: 'Precedence: ([A] + [B]) == ([A] + [B])',
-    expr: (toExpr(Uint8List.fromList([0xAA])) +
-            toExpr(Uint8List.fromList([0xBB])))
-        .equals(toExpr(Uint8List.fromList([0xAA])) +
-            toExpr(Uint8List.fromList([0xBB]))),
+    expr:
+        (toExpr(Uint8List.fromList([0xAA])) +
+                toExpr(Uint8List.fromList([0xBB])))
+            .equals(
+              toExpr(Uint8List.fromList([0xAA])) +
+                  toExpr(Uint8List.fromList([0xBB])),
+            ),
     expected: true,
   ),
   (
     name: 'Precedence Negative: ([A] + [B]) != ([A] + [C])',
-    expr: (toExpr(Uint8List.fromList([0xAA])) +
-            toExpr(Uint8List.fromList([0xBB])))
-        .notEquals(toExpr(Uint8List.fromList([0xAA])) +
-            toExpr(Uint8List.fromList([0xCC]))),
+    expr:
+        (toExpr(Uint8List.fromList([0xAA])) +
+                toExpr(Uint8List.fromList([0xBB])))
+            .notEquals(
+              toExpr(Uint8List.fromList([0xAA])) +
+                  toExpr(Uint8List.fromList([0xCC])),
+            ),
     expected: true,
   ),
   (
@@ -442,16 +471,18 @@ final _casesToSkipMysql = <({
     // 0x61 ('a') is valid. 0xFF is invalid.
     // If the driver treats this as a generic string, it might preserve 'a'
     // but mangle 0xFF. We need both back intact.
-    expr: (toExpr(Uint8List.fromList([0x61])) +
-            toExpr(Uint8List.fromList([0xFF])))
-        .equals(toExpr(Uint8List.fromList([0x61, 0xFF]))),
+    expr:
+        (toExpr(Uint8List.fromList([0x61])) +
+                toExpr(Uint8List.fromList([0xFF])))
+            .equals(toExpr(Uint8List.fromList([0x61, 0xFF]))),
     expected: true,
   ),
   (
     name: 'Case Sensitivity: [a] + [b] != [A] + [B]',
-    expr: (toExpr(Uint8List.fromList([0x61])) +
-            toExpr(Uint8List.fromList([0x62])))
-        .equals(toExpr(Uint8List.fromList([0x41, 0x42]))),
+    expr:
+        (toExpr(Uint8List.fromList([0x61])) +
+                toExpr(Uint8List.fromList([0x62])))
+            .equals(toExpr(Uint8List.fromList([0x41, 0x42]))),
     expected: false,
   ),
 
@@ -459,38 +490,44 @@ final _casesToSkipMysql = <({
   // databases treating blobs as text
   (
     name: 'Slice Emoji: First byte of \u{1F600} [0xF0]',
-    expr: toExpr(Uint8List.fromList([0xF0, 0x9F, 0x98, 0x80]))
-        .subList(toExpr(0), length: toExpr(1)),
+    expr: toExpr(
+      Uint8List.fromList([0xF0, 0x9F, 0x98, 0x80]),
+    ).subList(toExpr(0), length: toExpr(1)),
     expected: Uint8List.fromList([0xF0]),
   ),
   (
     name: 'Slice Emoji: Middle bytes of \u{1F600} [0x9F, 0x98]',
-    expr: toExpr(Uint8List.fromList([0xF0, 0x9F, 0x98, 0x80]))
-        .subList(toExpr(1), length: toExpr(2)),
+    expr: toExpr(
+      Uint8List.fromList([0xF0, 0x9F, 0x98, 0x80]),
+    ).subList(toExpr(1), length: toExpr(2)),
     expected: Uint8List.fromList([0x9F, 0x98]),
   ),
   (
     name: 'Slice Emoji: Last byte of \u{1F600} [0x80]',
-    expr: toExpr(Uint8List.fromList([0xF0, 0x9F, 0x98, 0x80]))
-        .subList(toExpr(3), length: toExpr(1)),
+    expr: toExpr(
+      Uint8List.fromList([0xF0, 0x9F, 0x98, 0x80]),
+    ).subList(toExpr(3), length: toExpr(1)),
     expected: Uint8List.fromList([0x80]),
   ),
   (
     name: 'Slice Invalid: Extract [0xFF] from [0x61, 0xFF, 0x62]',
-    expr: toExpr(Uint8List.fromList([0x61, 0xFF, 0x62]))
-        .subList(toExpr(1), length: toExpr(1)),
+    expr: toExpr(
+      Uint8List.fromList([0x61, 0xFF, 0x62]),
+    ).subList(toExpr(1), length: toExpr(1)),
     expected: Uint8List.fromList([0xFF]),
   ),
   (
     name: 'Slice Null: Extract [0] from [1, 0, 2]',
-    expr: toExpr(Uint8List.fromList([1, 0, 2]))
-        .subList(toExpr(1), length: toExpr(1)),
+    expr: toExpr(
+      Uint8List.fromList([1, 0, 2]),
+    ).subList(toExpr(1), length: toExpr(1)),
     expected: Uint8List.fromList([0]),
   ),
   (
     name: 'Slice Empty: [1,2,3].subList(0, 0)',
-    expr: toExpr(Uint8List.fromList([1, 2, 3]))
-        .subList(toExpr(0), length: toExpr(0)),
+    expr: toExpr(
+      Uint8List.fromList([1, 2, 3]),
+    ).subList(toExpr(0), length: toExpr(0)),
     expected: Uint8List.fromList([]),
   ),
 ];
@@ -499,9 +536,7 @@ void main() {
   final r = TestRunner<Schema>(resetDatabaseForEachTest: false);
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
 
       final expected = c.expected;
       if (expected == null) {
@@ -515,22 +550,22 @@ void main() {
   }
 
   for (final c in _casesToSkipMysql) {
-    r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+    r.addTest(
+      c.name,
+      (db) async {
+        final result = await db.select((c.expr,)).fetch();
 
-      final expected = c.expected;
-      if (expected == null) {
-        check(result).isNull();
-      } else if (expected is List) {
-        check(result).isA<List>().deepEquals(expected);
-      } else {
-        check(result).equals(expected);
-      }
-    },
-        skipMysql:
-            'TODO: Fix binary handling in MySQL adapter, try new driver!');
+        final expected = c.expected;
+        if (expected == null) {
+          check(result).isNull();
+        } else if (expected is List) {
+          check(result).isA<List>().deepEquals(expected);
+        } else {
+          check(result).equals(expected);
+        }
+      },
+      skipMysql: 'TODO: Fix binary handling in MySQL adapter, try new driver!',
+    );
   }
 
   r.run();

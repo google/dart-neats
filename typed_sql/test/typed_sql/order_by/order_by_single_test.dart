@@ -30,12 +30,7 @@ final _integerCases = [
     ascending: [1, 2, 3],
     descending: [3, 2, 1],
   ),
-  (
-    name: '42',
-    values: [toExpr(42)],
-    ascending: [42],
-    descending: [42],
-  ),
+  (name: '42', values: [toExpr(42)], ascending: [42], descending: [42]),
   (
     name: '0, 0, 0',
     values: [toExpr(0), toExpr(0), toExpr(0)],
@@ -101,12 +96,7 @@ final _doubleCases = [
     ascending: [1.0, 2.0, 3.0],
     descending: [3.0, 2.0, 1.0],
   ),
-  (
-    name: '42.0',
-    values: [toExpr(42.0)],
-    ascending: [42.0],
-    descending: [42.0],
-  ),
+  (name: '42.0', values: [toExpr(42.0)], ascending: [42.0], descending: [42.0]),
   (
     name: '0.0, 0.0, 0.0',
     values: [toExpr(0.0), toExpr(0.0), toExpr(0.0)],
@@ -143,12 +133,7 @@ final _doubleCases = [
     ascending: [3.14, 6.28, 9.42],
     descending: [9.42, 6.28, 3.14],
   ),
-  (
-    name: '3.14',
-    values: [toExpr(3.14)],
-    ascending: [3.14],
-    descending: [3.14],
-  ),
+  (name: '3.14', values: [toExpr(3.14)], ascending: [3.14], descending: [3.14]),
   (
     name: '0.0, 3.14, 6.28',
     values: [toExpr(0.0), toExpr(3.14), toExpr(6.28)],
@@ -446,9 +431,7 @@ void main() {
 
   r.addTest('{null}.orderBy(.ascending).first', (db) async {
     final result = await db
-        .select(
-          (toExpr(null).asDouble(),),
-        )
+        .select((toExpr(null).asDouble(),))
         .asQuery
         .orderBy((v) => [(v, Order.ascending)])
         .first
@@ -469,9 +452,7 @@ void main() {
 
   r.addTest('{null}.orderBy(.descending).first', (db) async {
     final result = await db
-        .select(
-          (toExpr(null).asDouble(),),
-        )
+        .select((toExpr(null).asDouble(),))
         .asQuery
         .orderBy((v) => [(v, Order.descending)])
         .first

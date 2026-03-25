@@ -40,10 +40,7 @@ abstract final class Employee extends Row {
   int get salary;
 }
 
-final _depts = [
-  (id: 1, name: 'Engineering'),
-  (id: 2, name: 'Sales'),
-];
+final _depts = [(id: 1, name: 'Engineering'), (id: 2, name: 'Sales')];
 
 final _employees = [
   (name: 'Alice', deptId: 1, salary: 100000),
@@ -83,10 +80,9 @@ void main() {
         .aggregate((agg) => agg.avg((e, d) => e.salary))
         .fetch();
 
-    check(result).unorderedEquals([
-      ('Engineering', 110000.0),
-      ('Sales', 90000.0),
-    ]);
+    check(
+      result,
+    ).unorderedEquals([('Engineering', 110000.0), ('Sales', 90000.0)]);
   });
 
   r.addTest('join.select().groupBy().aggregate()', (db) async {
@@ -98,10 +94,7 @@ void main() {
         .aggregate((agg) => agg.sum((deptName, salary) => salary))
         .fetch();
 
-    check(result).unorderedEquals([
-      ('Engineering', 220000),
-      ('Sales', 270000),
-    ]);
+    check(result).unorderedEquals([('Engineering', 220000), ('Sales', 270000)]);
   });
 
   r.addTest('groupBy(expression in join).aggregate()', (db) async {
@@ -149,10 +142,7 @@ void main() {
     // Eve (100000 + 2) = 100002
     // Total: 270006
 
-    check(result).unorderedEquals([
-      ('Engineering', 220002),
-      ('Sales', 270006),
-    ]);
+    check(result).unorderedEquals([('Engineering', 220002), ('Sales', 270006)]);
   });
 
   r.run();

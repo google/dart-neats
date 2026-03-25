@@ -117,11 +117,7 @@ void main() {
   });
 
   r.addTest('books.select(book, book.author)', (db) async {
-    final result = await db.books
-        .select(
-          (b) => (b, b.author),
-        )
-        .fetch();
+    final result = await db.books.select((b) => (b, b.author)).fetch();
     check(result).length.equals(9);
     for (final (book, author) in result) {
       check(book.authorId).equals(author.authorId);
@@ -130,12 +126,7 @@ void main() {
 
   r.addTest('books.select(title, book.author.firstname)', (db) async {
     final result = await db.books
-        .select(
-          (b) => (
-            b.title,
-            b.author.firstname,
-          ),
-        )
+        .select((b) => (b.title, b.author.firstname))
         .fetch();
     check(result).unorderedEquals([
       ('The Mystery of John Doe', 'John'),
@@ -153,13 +144,9 @@ void main() {
   r.addTest('authors.where(.books.count() >= 3)', (db) async {
     final result = await db.authors
         .where((a) => a.books.count() >= toExpr(3))
-        .select(
-          (a) => (a.firstname, a.lastname),
-        )
+        .select((a) => (a.firstname, a.lastname))
         .fetch();
-    check(result).unorderedEquals([
-      ('Easter', 'Bunny'),
-    ]);
+    check(result).unorderedEquals([('Easter', 'Bunny')]);
   });
 
   r.addTest('books.groupBy(.author).aggregate(sum(.stock))', (db) async {
@@ -169,13 +156,7 @@ void main() {
           (agg) => //
               agg.sum((book) => book.stock),
         )
-        .select(
-          (author, stock) => (
-            author.firstname,
-            author.lastname,
-            stock,
-          ),
-        )
+        .select((author, stock) => (author.firstname, author.lastname, stock))
         .fetch();
     check(result).unorderedEquals([
       ('John', 'Doe', 5),
@@ -185,51 +166,57 @@ void main() {
     ]);
   });
 
-  r.addTest('authors.select(.firstname, .lastname, .books.sum(.stock))',
-      (db) async {
-    final result = await db.authors
-        .select(
-          (author) => (
-            author.firstname,
-            author.lastname,
-            author.books.select((b) => (b.stock,)).sum(),
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals([
-      ('John', 'Doe', 5),
-      ('Jane', 'Doe', 7),
-      ('Easter', 'Bunny', 22),
-      ('Bucks', 'Bunny', 45),
-    ]);
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
+  r.addTest(
+    'authors.select(.firstname, .lastname, .books.sum(.stock))',
+    (db) async {
+      final result = await db.authors
+          .select(
+            (author) => (
+              author.firstname,
+              author.lastname,
+              author.books.select((b) => (b.stock,)).sum(),
+            ),
+          )
+          .fetch();
+      check(result).unorderedEquals([
+        ('John', 'Doe', 5),
+        ('Jane', 'Doe', 7),
+        ('Easter', 'Bunny', 22),
+        ('Bucks', 'Bunny', 45),
+      ]);
+    },
+    skipMysql: 'TODO: Fix nested subqueries in mysql',
+  );
 
   r.addTest(
-      'authors.select(.firstname, .lastname, db.where(...).books.sum(.stock))',
-      (db) async {
-    final result = await db.authors
-        .select(
-          (author) => (
-            author.firstname,
-            author.lastname,
-            db.books
-                .where((b) => b.authorId.equals(author.authorId))
-                .select((b) => (b.stock,))
-                .sum()
-                .asExpr,
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals([
-      ('John', 'Doe', 5),
-      ('Jane', 'Doe', 7),
-      ('Easter', 'Bunny', 22),
-      ('Bucks', 'Bunny', 45),
-    ]);
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
+    'authors.select(.firstname, .lastname, db.where(...).books.sum(.stock))',
+    (db) async {
+      final result = await db.authors
+          .select(
+            (author) => (
+              author.firstname,
+              author.lastname,
+              db.books
+                  .where((b) => b.authorId.equals(author.authorId))
+                  .select((b) => (b.stock,))
+                  .sum()
+                  .asExpr,
+            ),
+          )
+          .fetch();
+      check(result).unorderedEquals([
+        ('John', 'Doe', 5),
+        ('Jane', 'Doe', 7),
+        ('Easter', 'Bunny', 22),
+        ('Bucks', 'Bunny', 45),
+      ]);
+    },
+    skipMysql: 'TODO: Fix nested subqueries in mysql',
+  );
 
-  r.addTest('authors.join(books).groupBy(.author).aggregate(sum(.stock))',
-      (db) async {
+  r.addTest('authors.join(books).groupBy(.author).aggregate(sum(.stock))', (
+    db,
+  ) async {
     final result = await db.authors
         .join(db.books)
         .on((author, book) => author.authorId.equals(book.authorId))
@@ -238,13 +225,7 @@ void main() {
           (agg) => //
               agg.sum((author, book) => book.stock),
         )
-        .select(
-          (author, stock) => (
-            author.firstname,
-            author.lastname,
-            stock,
-          ),
-        )
+        .select((author, stock) => (author.firstname, author.lastname, stock))
         .fetch();
 
     check(result).unorderedEquals([
@@ -256,32 +237,27 @@ void main() {
   });
 
   r.addTest(
-      'authors.join(books).usingAuthor().groupBy(.author).aggregate(sum(.stock))',
-      (db) async {
-    final result = await db.authors
-        .join(db.books)
-        .usingAuthor()
-        .groupBy((author, book) => (author,))
-        .aggregate(
-          (agg) => //
-              agg.sum((author, book) => book.stock),
-        )
-        .select(
-          (author, stock) => (
-            author.firstname,
-            author.lastname,
-            stock,
-          ),
-        )
-        .fetch();
+    'authors.join(books).usingAuthor().groupBy(.author).aggregate(sum(.stock))',
+    (db) async {
+      final result = await db.authors
+          .join(db.books)
+          .usingAuthor()
+          .groupBy((author, book) => (author,))
+          .aggregate(
+            (agg) => //
+                agg.sum((author, book) => book.stock),
+          )
+          .select((author, stock) => (author.firstname, author.lastname, stock))
+          .fetch();
 
-    check(result).unorderedEquals([
-      ('John', 'Doe', 5),
-      ('Jane', 'Doe', 7),
-      ('Easter', 'Bunny', 22),
-      ('Bucks', 'Bunny', 45),
-    ]);
-  });
+      check(result).unorderedEquals([
+        ('John', 'Doe', 5),
+        ('Jane', 'Doe', 7),
+        ('Easter', 'Bunny', 22),
+        ('Bucks', 'Bunny', 45),
+      ]);
+    },
+  );
 
   r.run();
 }

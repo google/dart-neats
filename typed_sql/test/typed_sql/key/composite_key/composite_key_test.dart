@@ -40,48 +40,23 @@ void main() {
   );
 
   r.addTest('.insert() two with same ID, differnet name', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          name: toExpr('foo'),
-        )
-        .execute();
-    await db.items
-        .insert(
-          id: toExpr(1),
-          name: toExpr('bar'),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), name: toExpr('foo')).execute();
+    await db.items.insert(id: toExpr(1), name: toExpr('bar')).execute();
 
     final items = await db.items.fetch();
     check(items).length.equals(2);
   });
 
   r.addTest('.insert() two with different ID, same name', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          name: toExpr('foo'),
-        )
-        .execute();
-    await db.items
-        .insert(
-          id: toExpr(2),
-          name: toExpr('foo'),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), name: toExpr('foo')).execute();
+    await db.items.insert(id: toExpr(2), name: toExpr('foo')).execute();
 
     final items = await db.items.fetch();
     check(items).length.equals(2);
   });
 
   r.addTest('.byKey()', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          name: toExpr('foo'),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), name: toExpr('foo')).execute();
 
     final item = await db.items.byKey(1, 'foo').fetch();
     check(item).isNotNull().name.equals('foo');
@@ -89,11 +64,7 @@ void main() {
 
   r.addTest('.update()', (db) async {
     await db.items
-        .insert(
-          id: toExpr(1),
-          name: toExpr('foo'),
-          value: toExpr('old-value'),
-        )
+        .insert(id: toExpr(1), name: toExpr('foo'), value: toExpr('old-value'))
         .execute();
 
     await db.items
@@ -107,11 +78,7 @@ void main() {
 
   r.addTest('.delete()', (db) async {
     await db.items
-        .insert(
-          id: toExpr(1),
-          name: toExpr('foo'),
-          value: toExpr('old-value'),
-        )
+        .insert(id: toExpr(1), name: toExpr('foo'), value: toExpr('old-value'))
         .execute();
 
     await db.items.byKey(1, 'foo').delete().execute();

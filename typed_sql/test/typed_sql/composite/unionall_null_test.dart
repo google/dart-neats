@@ -21,13 +21,9 @@ void main() {
 
   r.addTest('(A).unionAll(null)', (db) async {
     // Convoluted way of creating Query<(Expr<String?>,)>
-    final q1 = db.select(
-      (db.select((toExpr('A'),)).asExpr,),
-    ).asQuery;
+    final q1 = db.select((db.select((toExpr('A'),)).asExpr,)).asQuery;
 
-    final q2 = db.select(
-      (toExpr(null),),
-    ).asQuery;
+    final q2 = db.select((toExpr(null),)).asQuery;
 
     final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
@@ -36,13 +32,9 @@ void main() {
 
   r.addTest('(42).unionAll(null)', (db) async {
     // Convoluted way of creating Query<(Expr<int?>,)>
-    final q1 = db.select(
-      (db.select((toExpr(42),)).asExpr,),
-    ).asQuery;
+    final q1 = db.select((db.select((toExpr(42),)).asExpr,)).asQuery;
 
-    final q2 = db.select(
-      (toExpr(null),),
-    ).asQuery;
+    final q2 = db.select((toExpr(null),)).asQuery;
 
     final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
@@ -51,13 +43,9 @@ void main() {
 
   r.addTest('(3.14).unionAll(null)', (db) async {
     // Convoluted way of creating Query<(Expr<double?>,)>
-    final q1 = db.select(
-      (db.select((toExpr(3.14),)).asExpr,),
-    ).asQuery;
+    final q1 = db.select((db.select((toExpr(3.14),)).asExpr,)).asQuery;
 
-    final q2 = db.select(
-      (toExpr(null),),
-    ).asQuery;
+    final q2 = db.select((toExpr(null),)).asQuery;
 
     final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);
@@ -67,9 +55,7 @@ void main() {
   r.addTest('(3.14 as double?).unionAll(null)', (db) async {
     final q1 = db.select((toExpr(3.14 as double?),)).asQuery;
 
-    final q2 = db.select(
-      (toExpr(null),),
-    ).asQuery;
+    final q2 = db.select((toExpr(null),)).asQuery;
 
     final result = await q1.unionAll(q2).fetch();
     check(result).length.equals(2);

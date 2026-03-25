@@ -18,57 +18,21 @@ import '../testrunner.dart';
 
 /// Test cases with a single value in each column.
 final _integerCases = [
-  (
-    name: '2, 2, 2',
-    values: [toExpr(2), toExpr(2), toExpr(2)],
-    count: 3,
-  ),
-  (
-    name: '1, 2, 3',
-    values: [toExpr(1), toExpr(2), toExpr(3)],
-    count: 3,
-  ),
-  (
-    name: '42',
-    values: [toExpr(42)],
-    count: 1,
-  ),
-  (
-    name: '0, 0, 0',
-    values: [toExpr(0), toExpr(0), toExpr(0)],
-    count: 3,
-  ),
-  (
-    name: '-1, 0, 1',
-    values: [toExpr(-1), toExpr(0), toExpr(1)],
-    count: 3,
-  ),
-  (
-    name: '-1, -2, -3',
-    values: [toExpr(-1), toExpr(-2), toExpr(-3)],
-    count: 3,
-  ),
-  (
-    name: '2, 1',
-    values: [toExpr(2), toExpr(1)],
-    count: 2,
-  ),
+  (name: '2, 2, 2', values: [toExpr(2), toExpr(2), toExpr(2)], count: 3),
+  (name: '1, 2, 3', values: [toExpr(1), toExpr(2), toExpr(3)], count: 3),
+  (name: '42', values: [toExpr(42)], count: 1),
+  (name: '0, 0, 0', values: [toExpr(0), toExpr(0), toExpr(0)], count: 3),
+  (name: '-1, 0, 1', values: [toExpr(-1), toExpr(0), toExpr(1)], count: 3),
+  (name: '-1, -2, -3', values: [toExpr(-1), toExpr(-2), toExpr(-3)], count: 3),
+  (name: '2, 1', values: [toExpr(2), toExpr(1)], count: 2),
   // Important to test that nulls are counted!
-  (
-    name: '2, null',
-    values: [toExpr(2), toExpr(null)],
-    count: 2,
-  ),
+  (name: '2, null', values: [toExpr(2), toExpr(null)], count: 2),
   (
     name: '2, null, null',
     values: [toExpr(2), toExpr(null), toExpr(null)],
     count: 3,
   ),
-  (
-    name: '2, null, 1',
-    values: [toExpr(2), toExpr(null), toExpr(1)],
-    count: 3,
-  ),
+  (name: '2, null, 1', values: [toExpr(2), toExpr(null), toExpr(1)], count: 3),
   (
     name: 'null, null, null',
     // cast here is necessary for the first expression
@@ -88,11 +52,7 @@ final _doubleCases = [
     values: [toExpr(1.0), toExpr(2.0), toExpr(3.0)],
     count: 3,
   ),
-  (
-    name: '42.0',
-    values: [toExpr(42.0)],
-    count: 1,
-  ),
+  (name: '42.0', values: [toExpr(42.0)], count: 1),
   (
     name: '0.0, 0.0, 0.0',
     values: [toExpr(0.0), toExpr(0.0), toExpr(0.0)],
@@ -108,11 +68,7 @@ final _doubleCases = [
     values: [toExpr(-1.0), toExpr(-2.0), toExpr(-3.0)],
     count: 3,
   ),
-  (
-    name: '2.0, 1.0',
-    values: [toExpr(2.0), toExpr(1.0)],
-    count: 2,
-  ),
+  (name: '2.0, 1.0', values: [toExpr(2.0), toExpr(1.0)], count: 2),
   (
     name: '3.14, 3.14, 3.14',
     values: [toExpr(3.14), toExpr(3.14), toExpr(3.14)],
@@ -123,11 +79,7 @@ final _doubleCases = [
     values: [toExpr(3.14), toExpr(6.28), toExpr(9.42)],
     count: 3,
   ),
-  (
-    name: '3.14',
-    values: [toExpr(3.14)],
-    count: 1,
-  ),
+  (name: '3.14', values: [toExpr(3.14)], count: 1),
   (
     name: '0.0, 3.14, 6.28',
     values: [toExpr(0.0), toExpr(3.14), toExpr(6.28)],
@@ -143,17 +95,9 @@ final _doubleCases = [
     values: [toExpr(-3.14), toExpr(-6.28), toExpr(-9.42)],
     count: 3,
   ),
-  (
-    name: '3.14, 6.28',
-    values: [toExpr(3.14), toExpr(6.28)],
-    count: 2,
-  ),
+  (name: '3.14, 6.28', values: [toExpr(3.14), toExpr(6.28)], count: 2),
   // Important to test that nulls are counted!
-  (
-    name: '3.14, null',
-    values: [toExpr(3.14), toExpr(null)],
-    count: 2,
-  ),
+  (name: '3.14, null', values: [toExpr(3.14), toExpr(null)], count: 2),
   (
     name: '3.14, null, null',
     values: [toExpr(3.14), toExpr(null), toExpr(null)],
@@ -173,47 +117,15 @@ final _doubleCases = [
 ];
 
 final _stringCases = [
-  (
-    name: 'a, a, a',
-    values: [toExpr('a'), toExpr('a'), toExpr('a')],
-    count: 3,
-  ),
-  (
-    name: 'a, b, c',
-    values: [toExpr('a'), toExpr('b'), toExpr('c')],
-    count: 3,
-  ),
-  (
-    name: 'abc',
-    values: [toExpr('abc')],
-    count: 1,
-  ),
-  (
-    name: '',
-    values: [toExpr(''), toExpr(''), toExpr('')],
-    count: 3,
-  ),
-  (
-    name: 'a, , b',
-    values: [toExpr('a'), toExpr(''), toExpr('b')],
-    count: 3,
-  ),
-  (
-    name: 'c, b, a',
-    values: [toExpr('c'), toExpr('b'), toExpr('a')],
-    count: 3,
-  ),
-  (
-    name: 'b, a',
-    values: [toExpr('b'), toExpr('a')],
-    count: 2,
-  ),
+  (name: 'a, a, a', values: [toExpr('a'), toExpr('a'), toExpr('a')], count: 3),
+  (name: 'a, b, c', values: [toExpr('a'), toExpr('b'), toExpr('c')], count: 3),
+  (name: 'abc', values: [toExpr('abc')], count: 1),
+  (name: '', values: [toExpr(''), toExpr(''), toExpr('')], count: 3),
+  (name: 'a, , b', values: [toExpr('a'), toExpr(''), toExpr('b')], count: 3),
+  (name: 'c, b, a', values: [toExpr('c'), toExpr('b'), toExpr('a')], count: 3),
+  (name: 'b, a', values: [toExpr('b'), toExpr('a')], count: 2),
   // Important to test that nulls are counted
-  (
-    name: 'b, null',
-    values: [toExpr('b'), toExpr(null)],
-    count: 2,
-  ),
+  (name: 'b, null', values: [toExpr('b'), toExpr(null)], count: 2),
   (
     name: 'b, null, null',
     values: [toExpr('b'), toExpr(null), toExpr(null)],
@@ -248,11 +160,7 @@ final _dateTimeCases = [
     values: [toExpr(yesterday), toExpr(today), toExpr(tomorrow)],
     count: 3,
   ),
-  (
-    name: 'today',
-    values: [toExpr(today)],
-    count: 1,
-  ),
+  (name: 'today', values: [toExpr(today)], count: 1),
   (
     name: 'epoch, epoch, today',
     values: [toExpr(epoch), toExpr(epoch), toExpr(today)],
@@ -269,11 +177,7 @@ final _dateTimeCases = [
     count: 2,
   ),
   // Important to test that nulls are ignored when computing MAX / MIN
-  (
-    name: 'today, null',
-    values: [toExpr(today), toExpr(null)],
-    count: 2,
-  ),
+  (name: 'today, null', values: [toExpr(today), toExpr(null)], count: 2),
   (
     name: 'today, null, null',
     values: [toExpr(today), toExpr(null), toExpr(null)],
@@ -355,9 +259,7 @@ void main() {
 
   r.addTest('{null}.count()', (db) async {
     final result = await db
-        .select(
-          (toExpr(null).asDouble(),),
-        )
+        .select((toExpr(null).asDouble(),))
         .asQuery
         .count()
         .fetch();

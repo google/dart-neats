@@ -43,9 +43,7 @@ void main() {
   );
 
   r.addTest('db.select(items.exists())', (db) async {
-    final exists = await db.select(
-      (db.items.exists().asExpr,),
-    ).fetch();
+    final exists = await db.select((db.items.exists().asExpr,)).fetch();
     check(exists).isNotNull().isTrue();
   });
 
@@ -65,14 +63,15 @@ void main() {
     check(exists).isNotNull().isFalse();
   });
 
-  r.addTest('db.items.select(..., db.items.where(.value < value).exists())',
-      (db) async {
+  r.addTest('db.items.select(..., db.items.where(.value < value).exists())', (
+    db,
+  ) async {
     final result = await db.items
         .select(
           (item) => (
             item.id,
             item.value,
-            db.items.where((i) => i.value.lessThan(item.value)).exists().asExpr
+            db.items.where((i) => i.value.lessThan(item.value)).exists().asExpr,
           ),
         )
         .fetch();
@@ -85,8 +84,9 @@ void main() {
     });
   });
 
-  r.addTest('db.items.where(db.items.where(.value < value).exists()))',
-      (db) async {
+  r.addTest('db.items.where(db.items.where(.value < value).exists()))', (
+    db,
+  ) async {
     final result = await db.items
         .where(
           (item) => db.items
@@ -95,44 +95,25 @@ void main() {
               .asExpr
               .orElseValue(false),
         )
-        .select(
-          (item) => (
-            item.id,
-            item.value,
-          ),
-        )
+        .select((item) => (item.id, item.value))
         .fetch();
-    check(result).unorderedEquals({
-      (2, 'b'),
-      (3, 'c'),
-      (4, 'c'),
-      (5, 'c'),
-    });
+    check(result).unorderedEquals({(2, 'b'), (3, 'c'), (4, 'c'), (5, 'c')});
   });
 
   r.addTest(
-      'db.items.where(db.items.asSubQuery.where(.value < value).exists()))',
-      (db) async {
-    final result = await db.items
-        .where(
-          (item) => db.items.asSubQuery
-              .where((i) => i.value.lessThan(item.value))
-              .exists(),
-        )
-        .select(
-          (item) => (
-            item.id,
-            item.value,
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals({
-      (2, 'b'),
-      (3, 'c'),
-      (4, 'c'),
-      (5, 'c'),
-    });
-  });
+    'db.items.where(db.items.asSubQuery.where(.value < value).exists()))',
+    (db) async {
+      final result = await db.items
+          .where(
+            (item) => db.items.asSubQuery
+                .where((i) => i.value.lessThan(item.value))
+                .exists(),
+          )
+          .select((item) => (item.id, item.value))
+          .fetch();
+      check(result).unorderedEquals({(2, 'b'), (3, 'c'), (4, 'c'), (5, 'c')});
+    },
+  );
 
   r.run();
 }

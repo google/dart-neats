@@ -34,11 +34,8 @@ final class Color implements CustomDataType<int> {
   Color.blue() : this(0, 0, 255);
 
   /// Factory constructor `fromDatabase(T value)` is required by code-generator!
-  factory Color.fromDatabase(int value) => Color(
-        (value >> 16) & 0xFF,
-        (value >> 8) & 0xFF,
-        value & 0xFF,
-      );
+  factory Color.fromDatabase(int value) =>
+      Color((value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF);
 
   /// `toDatabase` serialization method is also required!
   @override
@@ -130,10 +127,7 @@ void main() {
   r.addTest('db.cars.select()', (db) async {
     // #region available-colors
     final List<(String, Color)> modelAndColor = await db.cars
-        .select((car) => (
-              car.model,
-              car.color,
-            ))
+        .select((car) => (car.model, car.color))
         .distinct()
         .fetch();
     // #endregion
@@ -144,16 +138,12 @@ void main() {
     // #region where-blue-cars
     final modelsAndLicense = await db.cars
         .where((car) => car.color.isBlue)
-        .select((car) => (
-              car.model,
-              car.licensePlate,
-            ))
+        .select((car) => (car.model, car.licensePlate))
         .fetch();
 
-    check(modelsAndLicense).unorderedEquals([
-      ('Beetle', 'GHI-789'),
-      ('Cooper', 'DEF-456'),
-    ]);
+    check(
+      modelsAndLicense,
+    ).unorderedEquals([('Beetle', 'GHI-789'), ('Cooper', 'DEF-456')]);
     // #endregion
   });
 

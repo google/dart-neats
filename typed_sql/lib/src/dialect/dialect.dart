@@ -141,7 +141,5 @@ abstract base class SqlDialect {
   (String, List<Object?>) delete(DeleteStatement statement);
 
   /// Create select statment from [statement].
-  (String sql, List<Object?> params) select(
-    SelectStatement statement,
-  );
+  (String sql, List<Object?> params) select(SelectStatement statement);
 }

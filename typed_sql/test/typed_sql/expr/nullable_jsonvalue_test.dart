@@ -25,23 +25,16 @@ final testData = JsonValue({
   'string': 'hello',
   'bool_true': true,
   'bool_false': false,
-  'obj': {
-    'nested': 'world',
-    'id': 100,
-  },
+  'obj': {'nested': 'world', 'id': 100},
   'arr': [1, 2, 3],
   'complex_arr': [
     {'x': 10},
-    {'x': 20}
+    {'x': 20},
   ],
   'null_val': null,
 });
 
-final _cases = <({
-  String name,
-  Expr expr,
-  Object? expected,
-})>[
+final _cases = <({String name, Expr expr, Object? expected})>[
   // Tests for null and JsonValue
   (
     name: 'JsonValue(42) as JsonValue?',
@@ -146,10 +139,7 @@ final _cases = <({
   (
     name: "data['obj'] -> JsonValue({...})",
     expr: toExpr(testData)['obj'],
-    expected: JsonValue({
-      'nested': 'world',
-      'id': 100,
-    }),
+    expected: JsonValue({'nested': 'world', 'id': 100}),
   ),
   (
     name: "data['obj']['nested'] -> JsonValue('world')",
@@ -301,9 +291,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       final expected = c.expected;
       if (expected == null) {
         check(result).isNull();

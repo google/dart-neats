@@ -24,22 +24,14 @@ final _cases = [
   // Check that 3 distinct strings are distinct
   (
     name: '"A", "B", "C"',
-    values: [
-      JsonValue('A'),
-      JsonValue('B'),
-      JsonValue('C'),
-    ],
+    values: [JsonValue('A'), JsonValue('B'), JsonValue('C')],
     distinct: ['A', 'B', 'C'],
   ),
 
   // Check that duplicate strings are not distinct
   (
     name: '"A", "B", "A"',
-    values: [
-      JsonValue('A'),
-      JsonValue('B'),
-      JsonValue('A'),
-    ],
+    values: [JsonValue('A'), JsonValue('B'), JsonValue('A')],
     distinct: ['A', 'B'],
   ),
 
@@ -59,63 +51,33 @@ final _cases = [
   // Check with int vs double
   (
     name: '1, 1.0, 2, 2.0',
-    values: [
-      JsonValue(1),
-      JsonValue(1.0),
-      JsonValue(2),
-      JsonValue(2.0),
-    ],
-    distinct: [
-      1,
-      2,
-    ],
+    values: [JsonValue(1), JsonValue(1.0), JsonValue(2), JsonValue(2.0)],
+    distinct: [1, 2],
   ),
 
   // Check with negative int vs double
   (
     name: '-1, -1.0, -2, -2.0',
-    values: [
-      JsonValue(-1),
-      JsonValue(-1.0),
-      JsonValue(-2),
-      JsonValue(-2.0),
-    ],
-    distinct: [
-      -1,
-      -2,
-    ],
+    values: [JsonValue(-1), JsonValue(-1.0), JsonValue(-2), JsonValue(-2.0)],
+    distinct: [-1, -2],
   ),
 
   // Check with booleans
   (
     name: 'true, false, true',
-    values: [
-      JsonValue(true),
-      JsonValue(false),
-      JsonValue(true),
-    ],
+    values: [JsonValue(true), JsonValue(false), JsonValue(true)],
     distinct: [true, false],
   ),
 
   // Check with null
   (
     name: 'null, null',
-    values: [
-      JsonValue(null),
-      JsonValue(null),
-    ],
+    values: [JsonValue(null), JsonValue(null)],
     distinct: [null],
   ),
 
   // Check with empty string
-  (
-    name: '"" and ""',
-    values: [
-      JsonValue(''),
-      JsonValue(''),
-    ],
-    distinct: [''],
-  ),
+  (name: '"" and ""', values: [JsonValue(''), JsonValue('')], distinct: ['']),
 
   // Check with simple lists
   (
@@ -127,7 +89,7 @@ final _cases = [
     ],
     distinct: [
       [1, 2],
-      [2, 1]
+      [2, 1],
     ],
   ),
 
@@ -141,7 +103,7 @@ final _cases = [
     ],
     distinct: [
       {'a': 1},
-      {'b': 2}
+      {'b': 2},
     ],
   ),
 
@@ -153,7 +115,7 @@ final _cases = [
       JsonValue({'b': 2, 'a': 1}),
     ],
     distinct: [
-      {'a': 1, 'b': 2}
+      {'a': 1, 'b': 2},
     ],
   ),
 
@@ -163,45 +125,36 @@ final _cases = [
     values: [
       JsonValue({
         'a': [1, 2],
-        'b': {'c': 'hello'}
+        'b': {'c': 'hello'},
       }),
       JsonValue({
         'b': {'c': 'hello'},
-        'a': [1, 2]
+        'a': [1, 2],
       }),
     ],
     distinct: [
       {
         'a': [1, 2],
-        'b': {'c': 'hello'}
-      }
+        'b': {'c': 'hello'},
+      },
     ],
   ),
   // Check with empty list
   (
     name: '[], []',
-    values: [
-      JsonValue([]),
-      JsonValue([]),
-    ],
+    values: [JsonValue([]), JsonValue([])],
     distinct: [<Object?>[]],
   ),
   // Check with empty map
   (
     name: '{}, {}',
-    values: [
-      JsonValue({}),
-      JsonValue({}),
-    ],
+    values: [JsonValue({}), JsonValue({})],
     distinct: [<String, Object?>{}],
   ),
   // Check empty list and empty map
   (
     name: '[], {}',
-    values: [
-      JsonValue([]),
-      JsonValue({}),
-    ],
+    values: [JsonValue([]), JsonValue({})],
     distinct: [<Object?>[], <String, Object?>{}],
   ),
   // Check with nested empty structures
@@ -214,7 +167,7 @@ final _cases = [
     ],
     distinct: [
       [<Object?>[]],
-      [<String, Object?>{}]
+      [<String, Object?>{}],
     ],
   ),
   // Check with a mix of many different things
@@ -241,14 +194,7 @@ final _cases = [
   ),
 
   // Check with int vs double
-  (
-    name: '1, 1.0',
-    values: [
-      JsonValue(1),
-      JsonValue(1.0),
-    ],
-    distinct: [1],
-  ),
+  (name: '1, 1.0', values: [JsonValue(1), JsonValue(1.0)], distinct: [1]),
 
   // Check with map with null value
   (
@@ -258,7 +204,7 @@ final _cases = [
       JsonValue({'a': null}),
     ],
     distinct: [
-      {'a': null}
+      {'a': null},
     ],
   ),
   // Check with list with null value
@@ -269,7 +215,7 @@ final _cases = [
       JsonValue([null]),
     ],
     distinct: [
-      [null]
+      [null],
     ],
   ),
   // Check with lists of maps
@@ -278,21 +224,21 @@ final _cases = [
     values: [
       JsonValue([
         {'a': 1},
-        {'b': 2}
+        {'b': 2},
       ]),
       JsonValue([
         {'b': 2},
-        {'a': 1}
+        {'a': 1},
       ]),
     ],
     distinct: [
       [
         {'a': 1},
-        {'b': 2}
+        {'b': 2},
       ],
       [
         {'b': 2},
-        {'a': 1}
+        {'a': 1},
       ],
     ],
   ),
@@ -301,18 +247,18 @@ final _cases = [
     name: 'map of lists with different order',
     values: [
       JsonValue({
-        'key': [1, 2]
+        'key': [1, 2],
       }),
       JsonValue({
-        'key': [2, 1]
+        'key': [2, 1],
       }),
     ],
     distinct: [
       {
-        'key': [1, 2]
+        'key': [1, 2],
       },
       {
-        'key': [2, 1]
+        'key': [2, 1],
       },
     ],
   ),
@@ -325,18 +271,18 @@ final _cases = [
           1,
           {
             'b': 'c',
-            'd': [null, true]
-          }
-        ]
+            'd': [null, true],
+          },
+        ],
       }),
       JsonValue({
         'a': [
           1,
           {
             'd': [null, true],
-            'b': 'c'
-          }
-        ]
+            'b': 'c',
+          },
+        ],
       }),
     ],
     distinct: [
@@ -345,10 +291,10 @@ final _cases = [
           1,
           {
             'b': 'c',
-            'd': [null, true]
-          }
-        ]
-      }
+            'd': [null, true],
+          },
+        ],
+      },
     ],
   ),
   // Check JSON string vs native type

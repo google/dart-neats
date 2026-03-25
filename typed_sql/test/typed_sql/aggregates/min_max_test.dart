@@ -18,30 +18,10 @@ import '../testrunner.dart';
 
 /// Test cases with a single value in each column.
 final _integerCases = [
-  (
-    name: '2, 2, 2',
-    values: [toExpr(2), toExpr(2), toExpr(2)],
-    max: 2,
-    min: 2,
-  ),
-  (
-    name: '1, 2, 3',
-    values: [toExpr(1), toExpr(2), toExpr(3)],
-    max: 3,
-    min: 1,
-  ),
-  (
-    name: '42',
-    values: [toExpr(42)],
-    max: 42,
-    min: 42,
-  ),
-  (
-    name: '0, 0, 0',
-    values: [toExpr(0), toExpr(0), toExpr(0)],
-    max: 0,
-    min: 0,
-  ),
+  (name: '2, 2, 2', values: [toExpr(2), toExpr(2), toExpr(2)], max: 2, min: 2),
+  (name: '1, 2, 3', values: [toExpr(1), toExpr(2), toExpr(3)], max: 3, min: 1),
+  (name: '42', values: [toExpr(42)], max: 42, min: 42),
+  (name: '0, 0, 0', values: [toExpr(0), toExpr(0), toExpr(0)], max: 0, min: 0),
   (
     name: '-1, 0, 1',
     values: [toExpr(-1), toExpr(0), toExpr(1)],
@@ -54,19 +34,9 @@ final _integerCases = [
     max: -1,
     min: -3,
   ),
-  (
-    name: '2, 1',
-    values: [toExpr(2), toExpr(1)],
-    max: 2,
-    min: 1,
-  ),
+  (name: '2, 1', values: [toExpr(2), toExpr(1)], max: 2, min: 1),
   // Important to test that nulls are ignored when computing MAX / MIN
-  (
-    name: '2, null',
-    values: [toExpr(2), toExpr(null)],
-    max: 2,
-    min: 2,
-  ),
+  (name: '2, null', values: [toExpr(2), toExpr(null)], max: 2, min: 2),
   (
     name: '2, null, null',
     values: [toExpr(2), toExpr(null), toExpr(null)],
@@ -101,12 +71,7 @@ final _doubleCases = [
     max: 3.0,
     min: 1.0,
   ),
-  (
-    name: '42.0',
-    values: [toExpr(42.0)],
-    max: 42.0,
-    min: 42.0,
-  ),
+  (name: '42.0', values: [toExpr(42.0)], max: 42.0, min: 42.0),
   (
     name: '0.0, 0.0, 0.0',
     values: [toExpr(0.0), toExpr(0.0), toExpr(0.0)],
@@ -125,12 +90,7 @@ final _doubleCases = [
     max: -1.0,
     min: -3.0,
   ),
-  (
-    name: '2.0, 1.0',
-    values: [toExpr(2.0), toExpr(1.0)],
-    max: 2.0,
-    min: 1.0,
-  ),
+  (name: '2.0, 1.0', values: [toExpr(2.0), toExpr(1.0)], max: 2.0, min: 1.0),
   (
     name: '3.14, 3.14, 3.14',
     values: [toExpr(3.14), toExpr(3.14), toExpr(3.14)],
@@ -143,12 +103,7 @@ final _doubleCases = [
     max: 9.42,
     min: 3.14,
   ),
-  (
-    name: '3.14',
-    values: [toExpr(3.14)],
-    max: 3.14,
-    min: 3.14,
-  ),
+  (name: '3.14', values: [toExpr(3.14)], max: 3.14, min: 3.14),
   (
     name: '0.0, 3.14, 6.28',
     values: [toExpr(0.0), toExpr(3.14), toExpr(6.28)],
@@ -214,18 +169,8 @@ final _stringCases = [
     max: 'c',
     min: 'a',
   ),
-  (
-    name: 'abc',
-    values: [toExpr('abc')],
-    max: 'abc',
-    min: 'abc',
-  ),
-  (
-    name: '',
-    values: [toExpr(''), toExpr(''), toExpr('')],
-    max: '',
-    min: '',
-  ),
+  (name: 'abc', values: [toExpr('abc')], max: 'abc', min: 'abc'),
+  (name: '', values: [toExpr(''), toExpr(''), toExpr('')], max: '', min: ''),
   (
     name: 'a, , b',
     values: [toExpr('a'), toExpr(''), toExpr('b')],
@@ -238,19 +183,9 @@ final _stringCases = [
     max: 'c',
     min: 'a',
   ),
-  (
-    name: 'b, a',
-    values: [toExpr('b'), toExpr('a')],
-    max: 'b',
-    min: 'a',
-  ),
+  (name: 'b, a', values: [toExpr('b'), toExpr('a')], max: 'b', min: 'a'),
   // Important to test that nulls are ignored when computing MAX / MIN
-  (
-    name: 'b, null',
-    values: [toExpr('b'), toExpr(null)],
-    max: 'b',
-    min: 'b',
-  ),
+  (name: 'b, null', values: [toExpr('b'), toExpr(null)], max: 'b', min: 'b'),
   (
     name: 'b, null, null',
     values: [toExpr('b'), toExpr(null), toExpr(null)],
@@ -290,12 +225,7 @@ final _dateTimeCases = [
     max: tomorrow,
     min: yesterday,
   ),
-  (
-    name: 'today',
-    values: [toExpr(today)],
-    max: today,
-    min: today,
-  ),
+  (name: 'today', values: [toExpr(today)], max: today, min: today),
   (
     name: 'epoch, epoch, today',
     values: [toExpr(epoch), toExpr(epoch), toExpr(today)],
@@ -445,9 +375,7 @@ void main() {
 
   r.addTest('{null}.min()', (db) async {
     final result = await db
-        .select(
-          (toExpr(null).asDouble(),),
-        )
+        .select((toExpr(null).asDouble(),))
         .asQuery
         .min()
         .fetch();
@@ -466,9 +394,7 @@ void main() {
 
   r.addTest('{null}.max()', (db) async {
     final result = await db
-        .select(
-          (toExpr(null).asDouble(),),
-        )
+        .select((toExpr(null).asDouble(),))
         .asQuery
         .max()
         .fetch();

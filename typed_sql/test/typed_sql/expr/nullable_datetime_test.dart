@@ -19,22 +19,14 @@ import '../testrunner.dart';
 final epoch = DateTime.fromMicrosecondsSinceEpoch(0).toUtc();
 final today = DateTime.parse('2025-03-10T11:34:36.000000Z');
 
-final _cases = <({
-  String name,
-  Expr expr,
-  Object? expected,
-})>[
+final _cases = <({String name, Expr expr, Object? expected})>[
   // Tests for null and DateTime
   (
     name: 'epoch as DateTime?',
     expr: toExpr(epoch as DateTime?),
     expected: epoch,
   ),
-  (
-    name: 'null as DateTime?',
-    expr: toExpr(null as DateTime?),
-    expected: null,
-  ),
+  (name: 'null as DateTime?', expr: toExpr(null as DateTime?), expected: null),
   (
     name: '(null as DateTime?).orElse(epoch)',
     expr: toExpr(null as DateTime?).orElse(toExpr(epoch)),
@@ -55,11 +47,7 @@ final _cases = <({
     expr: toExpr(today as DateTime?).orElseValue(epoch),
     expected: today,
   ),
-  (
-    name: 'null.asDateTime()',
-    expr: toExpr(null).asDateTime(),
-    expected: null,
-  ),
+  (name: 'null.asDateTime()', expr: toExpr(null).asDateTime(), expected: null),
   (
     name: 'null.asDateTime().orElse(epoch)',
     expr: toExpr(null).asDateTime().orElse(toExpr(epoch)),
@@ -265,9 +253,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).equals(c.expected);
     });
   }

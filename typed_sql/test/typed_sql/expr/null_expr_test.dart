@@ -21,22 +21,10 @@ import '../testrunner.dart';
 final epoch = DateTime.fromMicrosecondsSinceEpoch(0).toUtc();
 final today = DateTime.parse('2025-03-10T11:34:36.000000Z');
 
-final _cases = <({
-  String name,
-  Expr expr,
-  Object? expected,
-})>[
+final _cases = <({String name, Expr expr, Object? expected})>[
   // Tests for null and bool
-  (
-    name: 'true as bool?',
-    expr: toExpr(true as bool?),
-    expected: true,
-  ),
-  (
-    name: 'null as bool?',
-    expr: toExpr(null as bool?),
-    expected: null,
-  ),
+  (name: 'true as bool?', expr: toExpr(true as bool?), expected: true),
+  (name: 'null as bool?', expr: toExpr(null as bool?), expected: null),
   (
     name: '(null as bool?).orElse(true)',
     expr: toExpr(null as bool?).orElse(toExpr(true)),
@@ -57,11 +45,7 @@ final _cases = <({
     expr: toExpr(false as bool?).orElseValue(true),
     expected: false,
   ),
-  (
-    name: 'null.asBool()',
-    expr: toExpr(null).asBool(),
-    expected: null,
-  ),
+  (name: 'null.asBool()', expr: toExpr(null).asBool(), expected: null),
   (
     name: 'null.asBool().orElse(true)',
     expr: toExpr(null).asBool().orElse(toExpr(true)),
@@ -73,16 +57,8 @@ final _cases = <({
     expected: true,
   ),
   // Test for null and int
-  (
-    name: '42 as int?',
-    expr: toExpr(42 as int?),
-    expected: 42,
-  ),
-  (
-    name: 'null as int?',
-    expr: toExpr(null as int?),
-    expected: null,
-  ),
+  (name: '42 as int?', expr: toExpr(42 as int?), expected: 42),
+  (name: 'null as int?', expr: toExpr(null as int?), expected: null),
   (
     name: '(null as int?).orElse(42)',
     expr: toExpr(null as int?).orElse(toExpr(42)),
@@ -103,11 +79,7 @@ final _cases = <({
     expr: toExpr(21 as int?).orElseValue(42),
     expected: 21,
   ),
-  (
-    name: 'null.asInt()',
-    expr: toExpr(null).asInt(),
-    expected: null,
-  ),
+  (name: 'null.asInt()', expr: toExpr(null).asInt(), expected: null),
   (
     name: 'null.asInt().orElse(42)',
     expr: toExpr(null).asInt().orElse(toExpr(42)),
@@ -119,16 +91,8 @@ final _cases = <({
     expected: 42,
   ),
   // Test for null and double
-  (
-    name: '3.14 as double?',
-    expr: toExpr(3.14 as double?),
-    expected: 3.14,
-  ),
-  (
-    name: 'null as double?',
-    expr: toExpr(null as double?),
-    expected: null,
-  ),
+  (name: '3.14 as double?', expr: toExpr(3.14 as double?), expected: 3.14),
+  (name: 'null as double?', expr: toExpr(null as double?), expected: null),
   (
     name: '(null as double?).orElse(3.14)',
     expr: toExpr(null as double?).orElse(toExpr(3.14)),
@@ -149,11 +113,7 @@ final _cases = <({
     expr: toExpr(1.23 as double?).orElseValue(3.14),
     expected: 1.23,
   ),
-  (
-    name: 'null.asDouble()',
-    expr: toExpr(null).asDouble(),
-    expected: null,
-  ),
+  (name: 'null.asDouble()', expr: toExpr(null).asDouble(), expected: null),
   (
     name: 'null.asDouble().orElse(3.14)',
     expr: toExpr(null).asDouble().orElse(toExpr(3.14)),
@@ -170,11 +130,7 @@ final _cases = <({
     expr: toExpr('hello world' as String?),
     expected: 'hello world',
   ),
-  (
-    name: 'null as String?',
-    expr: toExpr(null as String?),
-    expected: null,
-  ),
+  (name: 'null as String?', expr: toExpr(null as String?), expected: null),
   (
     name: "(null as String?).orElse('hello world')",
     expr: toExpr(null as String?).orElse(toExpr('hello world')),
@@ -195,11 +151,7 @@ final _cases = <({
     expr: toExpr('foo' as String?).orElseValue('hello world'),
     expected: 'foo',
   ),
-  (
-    name: 'null.asString()',
-    expr: toExpr(null).asString(),
-    expected: null,
-  ),
+  (name: 'null.asString()', expr: toExpr(null).asString(), expected: null),
   (
     name: "null.asString().orElse('hello world')",
     expr: toExpr(null).asString().orElse(toExpr('hello world')),
@@ -216,11 +168,7 @@ final _cases = <({
     expr: toExpr(epoch as DateTime?),
     expected: epoch,
   ),
-  (
-    name: 'null as DateTime?',
-    expr: toExpr(null as DateTime?),
-    expected: null,
-  ),
+  (name: 'null as DateTime?', expr: toExpr(null as DateTime?), expected: null),
   (
     name: '(null as DateTime?).orElse(epoch)',
     expr: toExpr(null as DateTime?).orElse(toExpr(epoch)),
@@ -241,11 +189,7 @@ final _cases = <({
     expr: toExpr(today as DateTime?).orElseValue(epoch),
     expected: today,
   ),
-  (
-    name: 'null.asDateTime()',
-    expr: toExpr(null).asDateTime(),
-    expected: null,
-  ),
+  (name: 'null.asDateTime()', expr: toExpr(null).asDateTime(), expected: null),
   (
     name: 'null.asDateTime().orElse(epoch)',
     expr: toExpr(null).asDateTime().orElse(toExpr(epoch)),
@@ -267,11 +211,7 @@ final _cases = <({
     expr: toExpr(null as Uint8List?),
     expected: null,
   ),
-  (
-    name: 'null.asBlob()',
-    expr: toExpr(null).asBlob(),
-    expected: null,
-  ),
+  (name: 'null.asBlob()', expr: toExpr(null).asBlob(), expected: null),
   // Test for null and JsonValue
   (
     name: 'JsonValue("hello") as JsonValue?',
@@ -295,14 +235,16 @@ final _cases = <({
   ),
   (
     name: '(JsonValue("world") as JsonValue?).orElse(JsonValue("hello"))',
-    expr: toExpr(const JsonValue('world') as JsonValue?)
-        .orElse(toExpr(const JsonValue('hello'))),
+    expr: toExpr(
+      const JsonValue('world') as JsonValue?,
+    ).orElse(toExpr(const JsonValue('hello'))),
     expected: const JsonValue('world'),
   ),
   (
     name: '(JsonValue("world") as JsonValue?).orElseValue(JsonValue("hello"))',
-    expr: toExpr(const JsonValue('world') as JsonValue?)
-        .orElseValue(const JsonValue('hello')),
+    expr: toExpr(
+      const JsonValue('world') as JsonValue?,
+    ).orElseValue(const JsonValue('hello')),
     expected: const JsonValue('world'),
   ),
   (
@@ -327,9 +269,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
 
       switch (c.expected) {
         case null:

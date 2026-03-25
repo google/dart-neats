@@ -59,7 +59,6 @@ abstract final class Book extends Row {
     // The reference is _named_ "author", this gives rise to a
     // Expr<Book>.author property when building queries.
     name: 'author', // optional
-
     // This is referenced _as_ "books", this gives rise to a
     // Expr<Author>.books property when building queries.
     as: 'books', // optional
@@ -89,9 +88,7 @@ void main() {
     // #region insert-data
     // Insert a row into the "authors" table
     final author = await db.authors
-        .insert(
-          name: toExpr('Easter Bunny'),
-        )
+        .insert(name: toExpr('Easter Bunny'))
         .returnInserted()
         .executeAndFetch(); // returns Future<Author?>
 
@@ -123,9 +120,9 @@ void main() {
         .fetch();
 
     // Compare the results
-    check(titleAndAuthor).unorderedEquals([
-      ('How to hide eggs', 'Easter Bunny'),
-    ]);
+    check(
+      titleAndAuthor,
+    ).unorderedEquals([('How to hide eggs', 'Easter Bunny')]);
     // #endregion
   });
 

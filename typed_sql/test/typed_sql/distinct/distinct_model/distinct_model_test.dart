@@ -36,48 +36,13 @@ abstract final class Item extends Row {
 }
 
 final _testData = [
-  (
-    text: 'A',
-    integer: 0,
-    real: 0.0,
-    json: JsonValue({'real': 0}),
-  ),
-  (
-    text: 'A',
-    integer: 22,
-    real: 0.0,
-    json: JsonValue({'real': 0}),
-  ),
-  (
-    text: 'A',
-    integer: 22,
-    real: 0.0,
-    json: JsonValue({'real': 0.0}),
-  ),
-  (
-    text: 'B',
-    integer: 22,
-    real: 0.0,
-    json: JsonValue({'real': 0.0}),
-  ),
-  (
-    text: 'C',
-    integer: 22,
-    real: 3.14,
-    json: JsonValue({'real': 3.14}),
-  ),
-  (
-    text: 'D',
-    integer: 0,
-    real: 3.14,
-    json: JsonValue({'real': 3.14}),
-  ),
-  (
-    text: 'D',
-    integer: 0,
-    real: 1.2,
-    json: JsonValue({'real': 1.2}),
-  ),
+  (text: 'A', integer: 0, real: 0.0, json: JsonValue({'real': 0})),
+  (text: 'A', integer: 22, real: 0.0, json: JsonValue({'real': 0})),
+  (text: 'A', integer: 22, real: 0.0, json: JsonValue({'real': 0.0})),
+  (text: 'B', integer: 22, real: 0.0, json: JsonValue({'real': 0.0})),
+  (text: 'C', integer: 22, real: 3.14, json: JsonValue({'real': 3.14})),
+  (text: 'D', integer: 0, real: 3.14, json: JsonValue({'real': 3.14})),
+  (text: 'D', integer: 0, real: 1.2, json: JsonValue({'real': 1.2})),
 ];
 
 void main() {
@@ -108,20 +73,13 @@ void main() {
   });
 
   r.addTest('items.select(.text).distinct()', (db) async {
-    final items = await db.items
-        .select(
-          (i) => (i.text,),
-        )
-        .distinct()
-        .fetch();
+    final items = await db.items.select((i) => (i.text,)).distinct().fetch();
     check(items).length.equals(4);
   });
 
   r.addTest('items.select(.text).distinct().count()', (db) async {
     final count = await db.items
-        .select(
-          (i) => (i.text,),
-        )
+        .select((i) => (i.text,))
         .distinct()
         .count()
         .fetch();
@@ -129,20 +87,13 @@ void main() {
   });
 
   r.addTest('items.select(.integer).distinct()', (db) async {
-    final items = await db.items
-        .select(
-          (i) => (i.integer,),
-        )
-        .distinct()
-        .fetch();
+    final items = await db.items.select((i) => (i.integer,)).distinct().fetch();
     check(items).length.equals(2);
   });
 
   r.addTest('items.select(.integer).distinct().count()', (db) async {
     final count = await db.items
-        .select(
-          (i) => (i.integer,),
-        )
+        .select((i) => (i.integer,))
         .distinct()
         .count()
         .fetch();
@@ -150,30 +101,18 @@ void main() {
   });
 
   r.addTest('items.select(.real).distinct()', (db) async {
-    final items = await db.items
-        .select(
-          (i) => (i.real,),
-        )
-        .distinct()
-        .fetch();
+    final items = await db.items.select((i) => (i.real,)).distinct().fetch();
     check(items).length.equals(3);
   });
 
   r.addTest('items.select(.json).distinct()', (db) async {
-    final items = await db.items
-        .select(
-          (i) => (i.json,),
-        )
-        .distinct()
-        .fetch();
+    final items = await db.items.select((i) => (i.json,)).distinct().fetch();
     check(items).length.equals(3);
   });
 
   r.addTest('items.select(.value).distinct().count()', (db) async {
     final count = await db.items
-        .select(
-          (i) => (i.real,),
-        )
+        .select((i) => (i.real,))
         .distinct()
         .count()
         .fetch();
@@ -181,20 +120,13 @@ void main() {
   });
 
   r.addTest('items.select(.id).distinct()', (db) async {
-    final items = await db.items
-        .select(
-          (i) => (i.id,),
-        )
-        .distinct()
-        .fetch();
+    final items = await db.items.select((i) => (i.id,)).distinct().fetch();
     check(items).length.equals(7);
   });
 
   r.addTest('items.select(.id).distinct().count()', (db) async {
     final count = await db.items
-        .select(
-          (i) => (i.id,),
-        )
+        .select((i) => (i.id,))
         .distinct()
         .count()
         .fetch();
@@ -203,12 +135,7 @@ void main() {
 
   r.addTest('items.select(.text, .integer).distinct()', (db) async {
     final items = await db.items
-        .select(
-          (i) => (
-            i.text,
-            i.integer,
-          ),
-        )
+        .select((i) => (i.text, i.integer))
         .distinct()
         .fetch();
     check(items).length.equals(5);
@@ -216,12 +143,7 @@ void main() {
 
   r.addTest('items.select(.text, .integer).distinct().count()', (db) async {
     final count = await db.items
-        .select(
-          (i) => (
-            i.text,
-            i.integer,
-          ),
-        )
+        .select((i) => (i.text, i.integer))
         .distinct()
         .count()
         .fetch();
@@ -230,28 +152,17 @@ void main() {
 
   r.addTest('items.select(.text, .integer, real).distinct()', (db) async {
     final items = await db.items
-        .select(
-          (i) => (
-            i.text,
-            i.integer,
-            i.real,
-          ),
-        )
+        .select((i) => (i.text, i.integer, i.real))
         .distinct()
         .fetch();
     check(items).length.equals(6);
   });
 
-  r.addTest('items.select(.text, .integer, real).distinct().count()',
-      (db) async {
+  r.addTest('items.select(.text, .integer, real).distinct().count()', (
+    db,
+  ) async {
     final count = await db.items
-        .select(
-          (i) => (
-            i.text,
-            i.integer,
-            i.real,
-          ),
-        )
+        .select((i) => (i.text, i.integer, i.real))
         .distinct()
         .count()
         .fetch();

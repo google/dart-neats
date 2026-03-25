@@ -50,10 +50,7 @@ void main() {
 
       for (final v in _testData) {
         await db.employees
-            .insert(
-              surname: toExpr(v.surname),
-              salary: toExpr(v.salary),
-            )
+            .insert(surname: toExpr(v.surname), salary: toExpr(v.salary))
             .execute();
       }
     },
@@ -71,11 +68,7 @@ void main() {
     // Williams: 1 (filtered out)
     // Brown: 3
 
-    check(result).unorderedEquals([
-      ('Smith', 2),
-      ('Jones', 2),
-      ('Brown', 3),
-    ]);
+    check(result).unorderedEquals([('Smith', 2), ('Jones', 2), ('Brown', 3)]);
   });
 
   r.addTest('groupBy.aggregate.where.select', (db) async {
@@ -86,11 +79,7 @@ void main() {
         .select((surname, count) => (surname,))
         .fetch();
 
-    check(result).unorderedEquals([
-      'Smith',
-      'Jones',
-      'Brown',
-    ]);
+    check(result).unorderedEquals(['Smith', 'Jones', 'Brown']);
   });
 
   r.addTest('groupBy.aggregate.select.where', (db) async {
@@ -101,9 +90,7 @@ void main() {
         .where((surname, count) => count.equals(toExpr(3)))
         .fetch();
 
-    check(result).unorderedEquals([
-      ('Brown', 3),
-    ]);
+    check(result).unorderedEquals([('Brown', 3)]);
   });
 
   r.run();

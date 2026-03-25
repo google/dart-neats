@@ -37,28 +37,28 @@ Iterable<String> _documentationCommentLines(String content) =>
         .toList()
         .reversed
         .map((l) {
-      l = l.trimRight();
-      if (l.isEmpty) {
-        return '///';
-      }
-      return '/// $l';
-    });
+          l = l.trimRight();
+          if (l.isEmpty) {
+            return '///';
+          }
+          return '/// $l';
+        });
 
 /// Trim whitespace at the start of lines in [content]
 String _trimLines(String content) {
   final indentation = content
       .split('\n')
       .where((line) => line.contains(RegExp(r'[^ \t]')))
-      .map(
-        (line) => line.indexOf(RegExp(r'[^ ]')),
-      )
+      .map((line) => line.indexOf(RegExp(r'[^ ]')))
       .min;
   return content
       .split('\n')
-      .map((line) => line.substring(switch (indentation) {
-            -1 => 0,
-            int i when (i < line.length) => i,
-            int _ => line.length,
-          }))
+      .map(
+        (line) => line.substring(switch (indentation) {
+          -1 => 0,
+          int i when (i < line.length) => i,
+          int _ => line.length,
+        }),
+      )
       .join('\n');
 }

@@ -74,9 +74,7 @@ void testCodeGeneration({
 
     final result = await testBuilderFactories(
       [typedSqlBuilder],
-      {
-        'test_package|lib/src/schema.dart': source,
-      },
+      {'test_package|lib/src/schema.dart': source},
       readerWriter: readerWriter,
       visibleOutputBuilderFactories: {typedSqlBuilder},
       onLog: (log) => printOnFailure('build_runner: $log'),
@@ -115,17 +113,17 @@ String _stripIndentation(String source) {
   final indentation = source
       .split('\n')
       .where((line) => line.contains(RegExp(r'[^ \t]')))
-      .map(
-        (line) => line.indexOf(RegExp(r'[^ ]')),
-      )
+      .map((line) => line.indexOf(RegExp(r'[^ ]')))
       .min;
   // Strip minimum indentation from all lines
   return source
       .split('\n')
-      .map((line) => line.substring(switch (indentation) {
-            -1 => 0,
-            int i when (i < line.length) => i,
-            int _ => line.length,
-          }))
+      .map(
+        (line) => line.substring(switch (indentation) {
+          -1 => 0,
+          int i when (i < line.length) => i,
+          int _ => line.length,
+        }),
+      )
       .join('\n');
 }

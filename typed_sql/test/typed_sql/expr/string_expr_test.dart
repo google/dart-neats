@@ -22,23 +22,11 @@ import '../testrunner.dart';
 
 final _cases = [
   // Test for .length
-  (
-    name: '"".length',
-    expr: toExpr('').length,
-    expected: 0,
-  ),
-  (
-    name: '"hello".length',
-    expr: toExpr('hello').length,
-    expected: 5,
-  ),
+  (name: '"".length', expr: toExpr('').length, expected: 0),
+  (name: '"hello".length', expr: toExpr('hello').length, expected: 5),
 
   // Tests for .toLowerCase() case
-  (
-    name: '"".toLowerCase()',
-    expr: toExpr('').toLowerCase(),
-    expected: '',
-  ),
+  (name: '"".toLowerCase()', expr: toExpr('').toLowerCase(), expected: ''),
   (
     name: '"hello".toLowerCase()',
     expr: toExpr('hello').toLowerCase(),
@@ -56,11 +44,7 @@ final _cases = [
   ),
 
   // Tests for .toUpperCase() case
-  (
-    name: '"".toUpperCase()',
-    expr: toExpr('').toUpperCase(),
-    expected: '',
-  ),
+  (name: '"".toUpperCase()', expr: toExpr('').toUpperCase(), expected: ''),
   (
     name: '"hello".toUpperCase()',
     expr: toExpr('hello').toUpperCase(),
@@ -78,11 +62,7 @@ final _cases = [
   ),
 
   // Tests for .equals
-  (
-    name: '"".equals("")',
-    expr: toExpr('').equals(toExpr('')),
-    expected: true,
-  ),
+  (name: '"".equals("")', expr: toExpr('').equals(toExpr('')), expected: true),
   (
     name: '"".equals("hello")',
     expr: toExpr('').equals(toExpr('hello')),
@@ -226,23 +206,11 @@ final _cases = [
   ),
 
   // Tests for .isEmpty
-  (
-    name: '"".isEmpty',
-    expr: toExpr('').isEmpty,
-    expected: true,
-  ),
-  (
-    name: '"hello".isEmpty',
-    expr: toExpr('hello').isEmpty,
-    expected: false,
-  ),
+  (name: '"".isEmpty', expr: toExpr('').isEmpty, expected: true),
+  (name: '"hello".isEmpty', expr: toExpr('hello').isEmpty, expected: false),
 
   // Tests for .isNotEmpty
-  (
-    name: '"".isNotEmpty',
-    expr: toExpr('').isNotEmpty,
-    expected: false,
-  ),
+  (name: '"".isNotEmpty', expr: toExpr('').isNotEmpty, expected: false),
   (
     name: '"hello".isNotEmpty',
     expr: toExpr('hello').isNotEmpty,
@@ -378,21 +346,9 @@ final _cases = [
   ),
 
   // Tests for .like
-  (
-    name: '"".like("")',
-    expr: toExpr('').like(''),
-    expected: true,
-  ),
-  (
-    name: '"".like("hello")',
-    expr: toExpr('').like('hello'),
-    expected: false,
-  ),
-  (
-    name: '"hello".like("")',
-    expr: toExpr('hello').like(''),
-    expected: false,
-  ),
+  (name: '"".like("")', expr: toExpr('').like(''), expected: true),
+  (name: '"".like("hello")', expr: toExpr('').like('hello'), expected: false),
+  (name: '"hello".like("")', expr: toExpr('hello').like(''), expected: false),
   (
     name: '"hello".like("hello")',
     expr: toExpr('hello').like('hello'),
@@ -408,11 +364,7 @@ final _cases = [
     expr: toExpr('hello').like('world'),
     expected: false,
   ),
-  (
-    name: '"hello".like("%")',
-    expr: toExpr('hello').like('%'),
-    expected: true,
-  ),
+  (name: '"hello".like("%")', expr: toExpr('hello').like('%'), expected: true),
   (
     name: '"hello".like("h%")',
     expr: toExpr('hello').like('h%'),
@@ -598,31 +550,11 @@ final _cases = [
   ),
 
   // Tests for <
-  (
-    name: '"" < ""',
-    expr: toExpr('') < toExpr(''),
-    expected: false,
-  ),
-  (
-    name: '"" < "A"',
-    expr: toExpr('') < toExpr('A'),
-    expected: true,
-  ),
-  (
-    name: '"A" < ""',
-    expr: toExpr('A') < toExpr(''),
-    expected: false,
-  ),
-  (
-    name: '"A" < "A"',
-    expr: toExpr('A') < toExpr('A'),
-    expected: false,
-  ),
-  (
-    name: '"A" < "B"',
-    expr: toExpr('A') < toExpr('B'),
-    expected: true,
-  ),
+  (name: '"" < ""', expr: toExpr('') < toExpr(''), expected: false),
+  (name: '"" < "A"', expr: toExpr('') < toExpr('A'), expected: true),
+  (name: '"A" < ""', expr: toExpr('A') < toExpr(''), expected: false),
+  (name: '"A" < "A"', expr: toExpr('A') < toExpr('A'), expected: false),
+  (name: '"A" < "B"', expr: toExpr('A') < toExpr('B'), expected: true),
 
   // Tests for .greaterThan
   (
@@ -679,31 +611,11 @@ final _cases = [
   ),
 
   // Tests for >
-  (
-    name: '"" > ""',
-    expr: toExpr('') > toExpr(''),
-    expected: false,
-  ),
-  (
-    name: '"" > "A"',
-    expr: toExpr('') > toExpr('A'),
-    expected: false,
-  ),
-  (
-    name: '"A" > ""',
-    expr: toExpr('A') > toExpr(''),
-    expected: true,
-  ),
-  (
-    name: '"A" > "A"',
-    expr: toExpr('A') > toExpr('A'),
-    expected: false,
-  ),
-  (
-    name: '"A" > "B"',
-    expr: toExpr('A') > toExpr('B'),
-    expected: false,
-  ),
+  (name: '"" > ""', expr: toExpr('') > toExpr(''), expected: false),
+  (name: '"" > "A"', expr: toExpr('') > toExpr('A'), expected: false),
+  (name: '"A" > ""', expr: toExpr('A') > toExpr(''), expected: true),
+  (name: '"A" > "A"', expr: toExpr('A') > toExpr('A'), expected: false),
+  (name: '"A" > "B"', expr: toExpr('A') > toExpr('B'), expected: false),
 
   // Tests for .lessThanOrEqual
   (
@@ -760,31 +672,11 @@ final _cases = [
   ),
 
   // Tests for <=
-  (
-    name: '"" <= ""',
-    expr: toExpr('') <= toExpr(''),
-    expected: true,
-  ),
-  (
-    name: '"" <= "A"',
-    expr: toExpr('') <= toExpr('A'),
-    expected: true,
-  ),
-  (
-    name: '"A" <= ""',
-    expr: toExpr('A') <= toExpr(''),
-    expected: false,
-  ),
-  (
-    name: '"A" <= "A"',
-    expr: toExpr('A') <= toExpr('A'),
-    expected: true,
-  ),
-  (
-    name: '"A" <= "B"',
-    expr: toExpr('A') <= toExpr('B'),
-    expected: true,
-  ),
+  (name: '"" <= ""', expr: toExpr('') <= toExpr(''), expected: true),
+  (name: '"" <= "A"', expr: toExpr('') <= toExpr('A'), expected: true),
+  (name: '"A" <= ""', expr: toExpr('A') <= toExpr(''), expected: false),
+  (name: '"A" <= "A"', expr: toExpr('A') <= toExpr('A'), expected: true),
+  (name: '"A" <= "B"', expr: toExpr('A') <= toExpr('B'), expected: true),
 
   // Tests for .greaterThanOrEqual
   (
@@ -841,74 +733,28 @@ final _cases = [
   ),
 
   // Tests for >=
-  (
-    name: '"" >= ""',
-    expr: toExpr('') >= toExpr(''),
-    expected: true,
-  ),
-  (
-    name: '"" >= "A"',
-    expr: toExpr('') >= toExpr('A'),
-    expected: false,
-  ),
-  (
-    name: '"A" >= ""',
-    expr: toExpr('A') >= toExpr(''),
-    expected: true,
-  ),
-  (
-    name: '"A" >= "A"',
-    expr: toExpr('A') >= toExpr('A'),
-    expected: true,
-  ),
-  (
-    name: '"A" >= "B"',
-    expr: toExpr('A') >= toExpr('B'),
-    expected: false,
-  ),
+  (name: '"" >= ""', expr: toExpr('') >= toExpr(''), expected: true),
+  (name: '"" >= "A"', expr: toExpr('') >= toExpr('A'), expected: false),
+  (name: '"A" >= ""', expr: toExpr('A') >= toExpr(''), expected: true),
+  (name: '"A" >= "A"', expr: toExpr('A') >= toExpr('A'), expected: true),
+  (name: '"A" >= "B"', expr: toExpr('A') >= toExpr('B'), expected: false),
 
   // Tests for asInt()
-  (
-    name: '"42".asInt()',
-    expr: toExpr('42').asInt(),
-    expected: 42,
-  ),
-  (
-    name: '"0".asInt()',
-    expr: toExpr('0').asInt(),
-    expected: 0,
-  ),
-  (
-    name: '"-1".asInt()',
-    expr: toExpr('-1').asInt(),
-    expected: -1,
-  ),
+  (name: '"42".asInt()', expr: toExpr('42').asInt(), expected: 42),
+  (name: '"0".asInt()', expr: toExpr('0').asInt(), expected: 0),
+  (name: '"-1".asInt()', expr: toExpr('-1').asInt(), expected: -1),
 
   // Tests for asDouble()
-  (
-    name: '"42.0".asDouble()',
-    expr: toExpr('42.0').asDouble(),
-    expected: 42.0,
-  ),
-  (
-    name: '"0.0".asDouble()',
-    expr: toExpr('0.0').asDouble(),
-    expected: 0.0,
-  ),
-  (
-    name: '"-1.0".asDouble()',
-    expr: toExpr('-1.0').asDouble(),
-    expected: -1.0,
-  ),
+  (name: '"42.0".asDouble()', expr: toExpr('42.0').asDouble(), expected: 42.0),
+  (name: '"0.0".asDouble()', expr: toExpr('0.0').asDouble(), expected: 0.0),
+  (name: '"-1.0".asDouble()', expr: toExpr('-1.0').asDouble(), expected: -1.0),
 ];
 
 void main() {
   final r = TestRunner<Schema>(resetDatabaseForEachTest: false);
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).isNotNull().equals(c.expected);
     });
   }

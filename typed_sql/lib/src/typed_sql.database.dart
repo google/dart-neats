@@ -17,8 +17,8 @@ part of 'typed_sql.dart';
 /// {@category transactions}
 final class Database<T extends Schema> {
   Database(DatabaseAdapter adapter, SqlDialect dialect)
-      : _adapter = adapter,
-        _dialect = dialect;
+    : _adapter = adapter,
+      _dialect = dialect;
 
   final SqlDialect _dialect;
   final DatabaseAdapter _adapter;
@@ -46,13 +46,9 @@ final class Database<T extends Schema> {
   /// > operations inside the transaction [Zone] will throw!
   /// >
   /// > Avoid using [unawaited] and [scheduleMicrotask] inside [fn].
-  Future<R> transact<R>(
-    Future<R> Function() fn,
-  ) async {
+  Future<R> transact<R>(Future<R> Function() fn) async {
     return await _executor.transact((tx) async {
-      return await runZoned(fn, zoneValues: {
-        _zoneKey: tx,
-      });
+      return await runZoned(fn, zoneValues: {_zoneKey: tx});
     });
   }
 

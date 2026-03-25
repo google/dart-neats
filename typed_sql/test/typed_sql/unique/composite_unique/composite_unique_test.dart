@@ -44,26 +44,17 @@ void main() {
 
   r.addTest('db.users.insert', (db) async {
     await db.users
-        .insert(
-          firstName: toExpr('Bucks'),
-          lastName: toExpr('Bunny'),
-        )
+        .insert(firstName: toExpr('Bucks'), lastName: toExpr('Bunny'))
         .execute();
   });
 
   r.addTest('db.users.insert (unique violation)', (db) async {
     await db.users
-        .insert(
-          firstName: toExpr('Bucks'),
-          lastName: toExpr('Bunny'),
-        )
+        .insert(firstName: toExpr('Bucks'), lastName: toExpr('Bunny'))
         .execute();
     try {
       await db.users
-          .insert(
-            firstName: toExpr('Bucks'),
-            lastName: toExpr('Bunny'),
-          )
+          .insert(firstName: toExpr('Bucks'), lastName: toExpr('Bunny'))
           .execute();
       fail('expected violation of unique constraint!');
     } on OperationException {
@@ -73,16 +64,10 @@ void main() {
 
   r.addTest('db.users.byFullname()', (db) async {
     await db.users
-        .insert(
-          firstName: toExpr('Bucks'),
-          lastName: toExpr('Bunny'),
-        )
+        .insert(firstName: toExpr('Bucks'), lastName: toExpr('Bunny'))
         .execute();
     await db.users
-        .insert(
-          firstName: toExpr('Donald'),
-          lastName: toExpr('Duck'),
-        )
+        .insert(firstName: toExpr('Donald'), lastName: toExpr('Duck'))
         .execute();
 
     final users = await db.users.byFullname('Bucks', 'Bunny').fetch();
@@ -93,16 +78,10 @@ void main() {
 
   r.addTest('db.users.byFullname() - not found', (db) async {
     await db.users
-        .insert(
-          firstName: toExpr('Bucks'),
-          lastName: toExpr('Bunny'),
-        )
+        .insert(firstName: toExpr('Bucks'), lastName: toExpr('Bunny'))
         .execute();
     await db.users
-        .insert(
-          firstName: toExpr('Easter'),
-          lastName: toExpr('Bunny'),
-        )
+        .insert(firstName: toExpr('Easter'), lastName: toExpr('Bunny'))
         .execute();
 
     final users = await db.users.byFullname('Donald', 'Duck').fetch();

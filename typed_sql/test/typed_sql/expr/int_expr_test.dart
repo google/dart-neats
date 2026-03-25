@@ -18,36 +18,12 @@ import '../testrunner.dart';
 
 final _cases = [
   // Test for .equals
-  (
-    name: '0.equals(0)',
-    expr: toExpr(0).equals(toExpr(0)),
-    expected: true,
-  ),
-  (
-    name: '0.equals(1)',
-    expr: toExpr(0).equals(toExpr(1)),
-    expected: false,
-  ),
-  (
-    name: '1.equals(0)',
-    expr: toExpr(1).equals(toExpr(0)),
-    expected: false,
-  ),
-  (
-    name: '1.equals(1)',
-    expr: toExpr(1).equals(toExpr(1)),
-    expected: true,
-  ),
-  (
-    name: '-1.equals(-1)',
-    expr: toExpr(-1).equals(toExpr(-1)),
-    expected: true,
-  ),
-  (
-    name: '42.equals(42)',
-    expr: toExpr(42).equals(toExpr(42)),
-    expected: true,
-  ),
+  (name: '0.equals(0)', expr: toExpr(0).equals(toExpr(0)), expected: true),
+  (name: '0.equals(1)', expr: toExpr(0).equals(toExpr(1)), expected: false),
+  (name: '1.equals(0)', expr: toExpr(1).equals(toExpr(0)), expected: false),
+  (name: '1.equals(1)', expr: toExpr(1).equals(toExpr(1)), expected: true),
+  (name: '-1.equals(-1)', expr: toExpr(-1).equals(toExpr(-1)), expected: true),
+  (name: '42.equals(42)', expr: toExpr(42).equals(toExpr(42)), expected: true),
   (
     name: '0.equals(null)',
     expr: toExpr(0).equals(toExpr(null)),
@@ -60,26 +36,10 @@ final _cases = [
   ),
 
   // Test for .equalsValue
-  (
-    name: '0.equalsValue(0)',
-    expr: toExpr(0).equalsValue(0),
-    expected: true,
-  ),
-  (
-    name: '0.equalsValue(1)',
-    expr: toExpr(0).equalsValue(1),
-    expected: false,
-  ),
-  (
-    name: '1.equalsValue(0)',
-    expr: toExpr(1).equalsValue(0),
-    expected: false,
-  ),
-  (
-    name: '1.equalsValue(1)',
-    expr: toExpr(1).equalsValue(1),
-    expected: true,
-  ),
+  (name: '0.equalsValue(0)', expr: toExpr(0).equalsValue(0), expected: true),
+  (name: '0.equalsValue(1)', expr: toExpr(0).equalsValue(1), expected: false),
+  (name: '1.equalsValue(0)', expr: toExpr(1).equalsValue(0), expected: false),
+  (name: '1.equalsValue(1)', expr: toExpr(1).equalsValue(1), expected: true),
   (
     name: '-1.equalsValue(-1)',
     expr: toExpr(-1).equalsValue(-1),
@@ -186,250 +146,66 @@ final _cases = [
   ),
 
   // Test for +
-  (
-    name: '0 + 0',
-    expr: toExpr(0) + toExpr(0),
-    expected: 0,
-  ),
-  (
-    name: '0 + 1',
-    expr: toExpr(0) + toExpr(1),
-    expected: 1,
-  ),
-  (
-    name: '1 + 0',
-    expr: toExpr(1) + toExpr(0),
-    expected: 1,
-  ),
-  (
-    name: '1 + 1',
-    expr: toExpr(1) + toExpr(1),
-    expected: 2,
-  ),
-  (
-    name: '-1 + -1',
-    expr: toExpr(-1) + toExpr(-1),
-    expected: -2,
-  ),
-  (
-    name: '42 + 42',
-    expr: toExpr(42) + toExpr(42),
-    expected: 84,
-  ),
+  (name: '0 + 0', expr: toExpr(0) + toExpr(0), expected: 0),
+  (name: '0 + 1', expr: toExpr(0) + toExpr(1), expected: 1),
+  (name: '1 + 0', expr: toExpr(1) + toExpr(0), expected: 1),
+  (name: '1 + 1', expr: toExpr(1) + toExpr(1), expected: 2),
+  (name: '-1 + -1', expr: toExpr(-1) + toExpr(-1), expected: -2),
+  (name: '42 + 42', expr: toExpr(42) + toExpr(42), expected: 84),
 
   // Test for -
-  (
-    name: '0 - 0',
-    expr: toExpr(0) - toExpr(0),
-    expected: 0,
-  ),
-  (
-    name: '0 - 1',
-    expr: toExpr(0) - toExpr(1),
-    expected: -1,
-  ),
-  (
-    name: '1 - 0',
-    expr: toExpr(1) - toExpr(0),
-    expected: 1,
-  ),
-  (
-    name: '1 - 1',
-    expr: toExpr(1) - toExpr(1),
-    expected: 0,
-  ),
-  (
-    name: '-1 - -1',
-    expr: toExpr(-1) - toExpr(-1),
-    expected: 0,
-  ),
-  (
-    name: '42 - 42',
-    expr: toExpr(42) - toExpr(42),
-    expected: 0,
-  ),
+  (name: '0 - 0', expr: toExpr(0) - toExpr(0), expected: 0),
+  (name: '0 - 1', expr: toExpr(0) - toExpr(1), expected: -1),
+  (name: '1 - 0', expr: toExpr(1) - toExpr(0), expected: 1),
+  (name: '1 - 1', expr: toExpr(1) - toExpr(1), expected: 0),
+  (name: '-1 - -1', expr: toExpr(-1) - toExpr(-1), expected: 0),
+  (name: '42 - 42', expr: toExpr(42) - toExpr(42), expected: 0),
 
   // Test for *
-  (
-    name: '0 * 0',
-    expr: toExpr(0) * toExpr(0),
-    expected: 0,
-  ),
-  (
-    name: '0 * 1',
-    expr: toExpr(0) * toExpr(1),
-    expected: 0,
-  ),
-  (
-    name: '1 * 0',
-    expr: toExpr(1) * toExpr(0),
-    expected: 0,
-  ),
-  (
-    name: '1 * 1',
-    expr: toExpr(1) * toExpr(1),
-    expected: 1,
-  ),
-  (
-    name: '-1 * -1',
-    expr: toExpr(-1) * toExpr(-1),
-    expected: 1,
-  ),
-  (
-    name: '42 * 42',
-    expr: toExpr(42) * toExpr(42),
-    expected: 1764,
-  ),
+  (name: '0 * 0', expr: toExpr(0) * toExpr(0), expected: 0),
+  (name: '0 * 1', expr: toExpr(0) * toExpr(1), expected: 0),
+  (name: '1 * 0', expr: toExpr(1) * toExpr(0), expected: 0),
+  (name: '1 * 1', expr: toExpr(1) * toExpr(1), expected: 1),
+  (name: '-1 * -1', expr: toExpr(-1) * toExpr(-1), expected: 1),
+  (name: '42 * 42', expr: toExpr(42) * toExpr(42), expected: 1764),
 
   // Test for /
-  (
-    name: '0 / 1',
-    expr: toExpr(0) / toExpr(1),
-    expected: 0,
-  ),
-  (
-    name: '1 / 1',
-    expr: toExpr(1) / toExpr(1),
-    expected: 1,
-  ),
-  (
-    name: '-1 / -1',
-    expr: toExpr(-1) / toExpr(-1),
-    expected: 1,
-  ),
-  (
-    name: '42 / 42',
-    expr: toExpr(42) / toExpr(42),
-    expected: 1,
-  ),
-  (
-    name: '42 / 2',
-    expr: toExpr(42) / toExpr(2),
-    expected: 21,
-  ),
-  (
-    name: '41 / 2',
-    expr: toExpr(41) / toExpr(2),
-    expected: 20.5,
-  ),
+  (name: '0 / 1', expr: toExpr(0) / toExpr(1), expected: 0),
+  (name: '1 / 1', expr: toExpr(1) / toExpr(1), expected: 1),
+  (name: '-1 / -1', expr: toExpr(-1) / toExpr(-1), expected: 1),
+  (name: '42 / 42', expr: toExpr(42) / toExpr(42), expected: 1),
+  (name: '42 / 2', expr: toExpr(42) / toExpr(2), expected: 21),
+  (name: '41 / 2', expr: toExpr(41) / toExpr(2), expected: 20.5),
 
   // Tests for .add
-  (
-    name: '0.add(0)',
-    expr: toExpr(0).add(toExpr(0)),
-    expected: 0,
-  ),
-  (
-    name: '0.add(1)',
-    expr: toExpr(0).add(toExpr(1)),
-    expected: 1,
-  ),
-  (
-    name: '1.add(0)',
-    expr: toExpr(1).add(toExpr(0)),
-    expected: 1,
-  ),
-  (
-    name: '1.add(1)',
-    expr: toExpr(1).add(toExpr(1)),
-    expected: 2,
-  ),
-  (
-    name: '-1.add(-1)',
-    expr: toExpr(-1).add(toExpr(-1)),
-    expected: -2,
-  ),
-  (
-    name: '42.add(42)',
-    expr: toExpr(42).add(toExpr(42)),
-    expected: 84,
-  ),
+  (name: '0.add(0)', expr: toExpr(0).add(toExpr(0)), expected: 0),
+  (name: '0.add(1)', expr: toExpr(0).add(toExpr(1)), expected: 1),
+  (name: '1.add(0)', expr: toExpr(1).add(toExpr(0)), expected: 1),
+  (name: '1.add(1)', expr: toExpr(1).add(toExpr(1)), expected: 2),
+  (name: '-1.add(-1)', expr: toExpr(-1).add(toExpr(-1)), expected: -2),
+  (name: '42.add(42)', expr: toExpr(42).add(toExpr(42)), expected: 84),
 
   // Tests for .addValue
-  (
-    name: '0.addValue(0)',
-    expr: toExpr(0).addValue(0),
-    expected: 0,
-  ),
-  (
-    name: '0.addValue(1)',
-    expr: toExpr(0).addValue(1),
-    expected: 1,
-  ),
-  (
-    name: '1.addValue(0)',
-    expr: toExpr(1).addValue(0),
-    expected: 1,
-  ),
-  (
-    name: '1.addValue(1)',
-    expr: toExpr(1).addValue(1),
-    expected: 2,
-  ),
-  (
-    name: '-1.addValue(-1)',
-    expr: toExpr(-1).addValue(-1),
-    expected: -2,
-  ),
-  (
-    name: '42.addValue(42)',
-    expr: toExpr(42).addValue(42),
-    expected: 84,
-  ),
+  (name: '0.addValue(0)', expr: toExpr(0).addValue(0), expected: 0),
+  (name: '0.addValue(1)', expr: toExpr(0).addValue(1), expected: 1),
+  (name: '1.addValue(0)', expr: toExpr(1).addValue(0), expected: 1),
+  (name: '1.addValue(1)', expr: toExpr(1).addValue(1), expected: 2),
+  (name: '-1.addValue(-1)', expr: toExpr(-1).addValue(-1), expected: -2),
+  (name: '42.addValue(42)', expr: toExpr(42).addValue(42), expected: 84),
 
   // Tests for .subtract
-  (
-    name: '0.subtract(0)',
-    expr: toExpr(0).subtract(toExpr(0)),
-    expected: 0,
-  ),
-  (
-    name: '0.subtract(1)',
-    expr: toExpr(0).subtract(toExpr(1)),
-    expected: -1,
-  ),
-  (
-    name: '1.subtract(0)',
-    expr: toExpr(1).subtract(toExpr(0)),
-    expected: 1,
-  ),
-  (
-    name: '1.subtract(1)',
-    expr: toExpr(1).subtract(toExpr(1)),
-    expected: 0,
-  ),
-  (
-    name: '-1.subtract(-1)',
-    expr: toExpr(-1).subtract(toExpr(-1)),
-    expected: 0,
-  ),
-  (
-    name: '42.subtract(42)',
-    expr: toExpr(42).subtract(toExpr(42)),
-    expected: 0,
-  ),
+  (name: '0.subtract(0)', expr: toExpr(0).subtract(toExpr(0)), expected: 0),
+  (name: '0.subtract(1)', expr: toExpr(0).subtract(toExpr(1)), expected: -1),
+  (name: '1.subtract(0)', expr: toExpr(1).subtract(toExpr(0)), expected: 1),
+  (name: '1.subtract(1)', expr: toExpr(1).subtract(toExpr(1)), expected: 0),
+  (name: '-1.subtract(-1)', expr: toExpr(-1).subtract(toExpr(-1)), expected: 0),
+  (name: '42.subtract(42)', expr: toExpr(42).subtract(toExpr(42)), expected: 0),
 
   // Tests for .subtractValue
-  (
-    name: '0.subtractValue(0)',
-    expr: toExpr(0).subtractValue(0),
-    expected: 0,
-  ),
-  (
-    name: '0.subtractValue(1)',
-    expr: toExpr(0).subtractValue(1),
-    expected: -1,
-  ),
-  (
-    name: '1.subtractValue(0)',
-    expr: toExpr(1).subtractValue(0),
-    expected: 1,
-  ),
-  (
-    name: '1.subtractValue(1)',
-    expr: toExpr(1).subtractValue(1),
-    expected: 0,
-  ),
+  (name: '0.subtractValue(0)', expr: toExpr(0).subtractValue(0), expected: 0),
+  (name: '0.subtractValue(1)', expr: toExpr(0).subtractValue(1), expected: -1),
+  (name: '1.subtractValue(0)', expr: toExpr(1).subtractValue(0), expected: 1),
+  (name: '1.subtractValue(1)', expr: toExpr(1).subtractValue(1), expected: 0),
   (
     name: '-1.subtractValue(-1)',
     expr: toExpr(-1).subtractValue(-1),
@@ -442,31 +218,11 @@ final _cases = [
   ),
 
   // Tests for .multiply
-  (
-    name: '0.multiply(0)',
-    expr: toExpr(0).multiply(toExpr(0)),
-    expected: 0,
-  ),
-  (
-    name: '0.multiply(1)',
-    expr: toExpr(0).multiply(toExpr(1)),
-    expected: 0,
-  ),
-  (
-    name: '1.multiply(0)',
-    expr: toExpr(1).multiply(toExpr(0)),
-    expected: 0,
-  ),
-  (
-    name: '1.multiply(1)',
-    expr: toExpr(1).multiply(toExpr(1)),
-    expected: 1,
-  ),
-  (
-    name: '-1.multiply(-1)',
-    expr: toExpr(-1).multiply(toExpr(-1)),
-    expected: 1,
-  ),
+  (name: '0.multiply(0)', expr: toExpr(0).multiply(toExpr(0)), expected: 0),
+  (name: '0.multiply(1)', expr: toExpr(0).multiply(toExpr(1)), expected: 0),
+  (name: '1.multiply(0)', expr: toExpr(1).multiply(toExpr(0)), expected: 0),
+  (name: '1.multiply(1)', expr: toExpr(1).multiply(toExpr(1)), expected: 1),
+  (name: '-1.multiply(-1)', expr: toExpr(-1).multiply(toExpr(-1)), expected: 1),
   (
     name: '42.multiply(42)',
     expr: toExpr(42).multiply(toExpr(42)),
@@ -474,26 +230,10 @@ final _cases = [
   ),
 
   // Tests for .multiplyValue
-  (
-    name: '0.multiplyValue(0)',
-    expr: toExpr(0).multiplyValue(0),
-    expected: 0,
-  ),
-  (
-    name: '0.multiplyValue(1)',
-    expr: toExpr(0).multiplyValue(1),
-    expected: 0,
-  ),
-  (
-    name: '1.multiplyValue(0)',
-    expr: toExpr(1).multiplyValue(0),
-    expected: 0,
-  ),
-  (
-    name: '1.multiplyValue(1)',
-    expr: toExpr(1).multiplyValue(1),
-    expected: 1,
-  ),
+  (name: '0.multiplyValue(0)', expr: toExpr(0).multiplyValue(0), expected: 0),
+  (name: '0.multiplyValue(1)', expr: toExpr(0).multiplyValue(1), expected: 0),
+  (name: '1.multiplyValue(0)', expr: toExpr(1).multiplyValue(0), expected: 0),
+  (name: '1.multiplyValue(1)', expr: toExpr(1).multiplyValue(1), expected: 1),
   (
     name: '-1.multiplyValue(-1)',
     expr: toExpr(-1).multiplyValue(-1),
@@ -506,90 +246,26 @@ final _cases = [
   ),
 
   // Tests for .divide
-  (
-    name: '0.divide(1)',
-    expr: toExpr(0).divide(toExpr(1)),
-    expected: 0,
-  ),
-  (
-    name: '1.divide(1)',
-    expr: toExpr(1).divide(toExpr(1)),
-    expected: 1,
-  ),
-  (
-    name: '-1.divide(-1)',
-    expr: toExpr(-1).divide(toExpr(-1)),
-    expected: 1,
-  ),
-  (
-    name: '42.divide(42)',
-    expr: toExpr(42).divide(toExpr(42)),
-    expected: 1,
-  ),
-  (
-    name: '42.divide(2)',
-    expr: toExpr(42).divide(toExpr(2)),
-    expected: 21,
-  ),
-  (
-    name: '41.divide(2)',
-    expr: toExpr(41).divide(toExpr(2)),
-    expected: 20.5,
-  ),
+  (name: '0.divide(1)', expr: toExpr(0).divide(toExpr(1)), expected: 0),
+  (name: '1.divide(1)', expr: toExpr(1).divide(toExpr(1)), expected: 1),
+  (name: '-1.divide(-1)', expr: toExpr(-1).divide(toExpr(-1)), expected: 1),
+  (name: '42.divide(42)', expr: toExpr(42).divide(toExpr(42)), expected: 1),
+  (name: '42.divide(2)', expr: toExpr(42).divide(toExpr(2)), expected: 21),
+  (name: '41.divide(2)', expr: toExpr(41).divide(toExpr(2)), expected: 20.5),
 
   // Tests for .divideValue
-  (
-    name: '0.divideValue(1)',
-    expr: toExpr(0).divideValue(1),
-    expected: 0,
-  ),
-  (
-    name: '1.divideValue(1)',
-    expr: toExpr(1).divideValue(1),
-    expected: 1,
-  ),
-  (
-    name: '-1.divideValue(-1)',
-    expr: toExpr(-1).divideValue(-1),
-    expected: 1,
-  ),
-  (
-    name: '42.divideValue(42)',
-    expr: toExpr(42).divideValue(42),
-    expected: 1,
-  ),
-  (
-    name: '42.divideValue(2)',
-    expr: toExpr(42).divideValue(2),
-    expected: 21,
-  ),
-  (
-    name: '41.divideValue(2)',
-    expr: toExpr(41).divideValue(2),
-    expected: 20.5,
-  ),
+  (name: '0.divideValue(1)', expr: toExpr(0).divideValue(1), expected: 0),
+  (name: '1.divideValue(1)', expr: toExpr(1).divideValue(1), expected: 1),
+  (name: '-1.divideValue(-1)', expr: toExpr(-1).divideValue(-1), expected: 1),
+  (name: '42.divideValue(42)', expr: toExpr(42).divideValue(42), expected: 1),
+  (name: '42.divideValue(2)', expr: toExpr(42).divideValue(2), expected: 21),
+  (name: '41.divideValue(2)', expr: toExpr(41).divideValue(2), expected: 20.5),
 
   // Test for .lessThan
-  (
-    name: '0.lessThan(0)',
-    expr: toExpr(0).lessThan(toExpr(0)),
-    expected: false,
-  ),
-  (
-    name: '0.lessThan(1)',
-    expr: toExpr(0).lessThan(toExpr(1)),
-    expected: true,
-  ),
-  (
-    name: '1.lessThan(0)',
-    expr: toExpr(1).lessThan(toExpr(0)),
-    expected: false,
-  ),
-  (
-    name: '1.lessThan(1)',
-    expr: toExpr(1).lessThan(toExpr(1)),
-    expected: false,
-  ),
+  (name: '0.lessThan(0)', expr: toExpr(0).lessThan(toExpr(0)), expected: false),
+  (name: '0.lessThan(1)', expr: toExpr(0).lessThan(toExpr(1)), expected: true),
+  (name: '1.lessThan(0)', expr: toExpr(1).lessThan(toExpr(0)), expected: false),
+  (name: '1.lessThan(1)', expr: toExpr(1).lessThan(toExpr(1)), expected: false),
   (
     name: '-1.lessThan(-1)',
     expr: toExpr(-1).lessThan(toExpr(-1)),
@@ -654,46 +330,14 @@ final _cases = [
   ),
 
   // Test for <
-  (
-    name: '0 < 0',
-    expr: toExpr(0) < toExpr(0),
-    expected: false,
-  ),
-  (
-    name: '0 < 1',
-    expr: toExpr(0) < toExpr(1),
-    expected: true,
-  ),
-  (
-    name: '1 < 0',
-    expr: toExpr(1) < toExpr(0),
-    expected: false,
-  ),
-  (
-    name: '1 < 1',
-    expr: toExpr(1) < toExpr(1),
-    expected: false,
-  ),
-  (
-    name: '-1 < -1',
-    expr: toExpr(-1) < toExpr(-1),
-    expected: false,
-  ),
-  (
-    name: '-1 < 0',
-    expr: toExpr(-1) < toExpr(0),
-    expected: true,
-  ),
-  (
-    name: '0 < -1',
-    expr: toExpr(0) < toExpr(-1),
-    expected: false,
-  ),
-  (
-    name: '42 < 42',
-    expr: toExpr(42) < toExpr(42),
-    expected: false,
-  ),
+  (name: '0 < 0', expr: toExpr(0) < toExpr(0), expected: false),
+  (name: '0 < 1', expr: toExpr(0) < toExpr(1), expected: true),
+  (name: '1 < 0', expr: toExpr(1) < toExpr(0), expected: false),
+  (name: '1 < 1', expr: toExpr(1) < toExpr(1), expected: false),
+  (name: '-1 < -1', expr: toExpr(-1) < toExpr(-1), expected: false),
+  (name: '-1 < 0', expr: toExpr(-1) < toExpr(0), expected: true),
+  (name: '0 < -1', expr: toExpr(0) < toExpr(-1), expected: false),
+  (name: '42 < 42', expr: toExpr(42) < toExpr(42), expected: false),
 
   // Test for .lessThanOrEqual
   (
@@ -780,46 +424,14 @@ final _cases = [
   ),
 
   // Test for <=
-  (
-    name: '0 <= 0',
-    expr: toExpr(0) <= toExpr(0),
-    expected: true,
-  ),
-  (
-    name: '0 <= 1',
-    expr: toExpr(0) <= toExpr(1),
-    expected: true,
-  ),
-  (
-    name: '1 <= 0',
-    expr: toExpr(1) <= toExpr(0),
-    expected: false,
-  ),
-  (
-    name: '1 <= 1',
-    expr: toExpr(1) <= toExpr(1),
-    expected: true,
-  ),
-  (
-    name: '-1 <= -1',
-    expr: toExpr(-1) <= toExpr(-1),
-    expected: true,
-  ),
-  (
-    name: '-1 <= 0',
-    expr: toExpr(-1) <= toExpr(0),
-    expected: true,
-  ),
-  (
-    name: '0 <= -1',
-    expr: toExpr(0) <= toExpr(-1),
-    expected: false,
-  ),
-  (
-    name: '42 <= 42',
-    expr: toExpr(42) <= toExpr(42),
-    expected: true,
-  ),
+  (name: '0 <= 0', expr: toExpr(0) <= toExpr(0), expected: true),
+  (name: '0 <= 1', expr: toExpr(0) <= toExpr(1), expected: true),
+  (name: '1 <= 0', expr: toExpr(1) <= toExpr(0), expected: false),
+  (name: '1 <= 1', expr: toExpr(1) <= toExpr(1), expected: true),
+  (name: '-1 <= -1', expr: toExpr(-1) <= toExpr(-1), expected: true),
+  (name: '-1 <= 0', expr: toExpr(-1) <= toExpr(0), expected: true),
+  (name: '0 <= -1', expr: toExpr(0) <= toExpr(-1), expected: false),
+  (name: '42 <= 42', expr: toExpr(42) <= toExpr(42), expected: true),
 
   // Test for .greaterThan
   (
@@ -906,46 +518,14 @@ final _cases = [
   ),
 
   // Test for >
-  (
-    name: '0 > 0',
-    expr: toExpr(0) > toExpr(0),
-    expected: false,
-  ),
-  (
-    name: '0 > 1',
-    expr: toExpr(0) > toExpr(1),
-    expected: false,
-  ),
-  (
-    name: '1 > 0',
-    expr: toExpr(1) > toExpr(0),
-    expected: true,
-  ),
-  (
-    name: '1 > 1',
-    expr: toExpr(1) > toExpr(1),
-    expected: false,
-  ),
-  (
-    name: '-1 > -1',
-    expr: toExpr(-1) > toExpr(-1),
-    expected: false,
-  ),
-  (
-    name: '-1 > 0',
-    expr: toExpr(-1) > toExpr(0),
-    expected: false,
-  ),
-  (
-    name: '0 > -1',
-    expr: toExpr(0) > toExpr(-1),
-    expected: true,
-  ),
-  (
-    name: '42 > 42',
-    expr: toExpr(42) > toExpr(42),
-    expected: false,
-  ),
+  (name: '0 > 0', expr: toExpr(0) > toExpr(0), expected: false),
+  (name: '0 > 1', expr: toExpr(0) > toExpr(1), expected: false),
+  (name: '1 > 0', expr: toExpr(1) > toExpr(0), expected: true),
+  (name: '1 > 1', expr: toExpr(1) > toExpr(1), expected: false),
+  (name: '-1 > -1', expr: toExpr(-1) > toExpr(-1), expected: false),
+  (name: '-1 > 0', expr: toExpr(-1) > toExpr(0), expected: false),
+  (name: '0 > -1', expr: toExpr(0) > toExpr(-1), expected: true),
+  (name: '42 > 42', expr: toExpr(42) > toExpr(42), expected: false),
 
   // Test for .greaterThanOrEqual
   (
@@ -1032,80 +612,24 @@ final _cases = [
   ),
 
   // Test for >=
-  (
-    name: '0 >= 0',
-    expr: toExpr(0) >= toExpr(0),
-    expected: true,
-  ),
-  (
-    name: '0 >= 1',
-    expr: toExpr(0) >= toExpr(1),
-    expected: false,
-  ),
-  (
-    name: '1 >= 0',
-    expr: toExpr(1) >= toExpr(0),
-    expected: true,
-  ),
-  (
-    name: '1 >= 1',
-    expr: toExpr(1) >= toExpr(1),
-    expected: true,
-  ),
-  (
-    name: '-1 >= -1',
-    expr: toExpr(-1) >= toExpr(-1),
-    expected: true,
-  ),
-  (
-    name: '-1 >= 0',
-    expr: toExpr(-1) >= toExpr(0),
-    expected: false,
-  ),
-  (
-    name: '0 >= -1',
-    expr: toExpr(0) >= toExpr(-1),
-    expected: true,
-  ),
-  (
-    name: '42 >= 42',
-    expr: toExpr(42) >= toExpr(42),
-    expected: true,
-  ),
+  (name: '0 >= 0', expr: toExpr(0) >= toExpr(0), expected: true),
+  (name: '0 >= 1', expr: toExpr(0) >= toExpr(1), expected: false),
+  (name: '1 >= 0', expr: toExpr(1) >= toExpr(0), expected: true),
+  (name: '1 >= 1', expr: toExpr(1) >= toExpr(1), expected: true),
+  (name: '-1 >= -1', expr: toExpr(-1) >= toExpr(-1), expected: true),
+  (name: '-1 >= 0', expr: toExpr(-1) >= toExpr(0), expected: false),
+  (name: '0 >= -1', expr: toExpr(0) >= toExpr(-1), expected: true),
+  (name: '42 >= 42', expr: toExpr(42) >= toExpr(42), expected: true),
 
   // Test for asString()
-  (
-    name: '42.asString()',
-    expr: toExpr(42).asString(),
-    expected: '42',
-  ),
-  (
-    name: '0.asString()',
-    expr: toExpr(0).asString(),
-    expected: '0',
-  ),
-  (
-    name: '-1.asString()',
-    expr: toExpr(-1).asString(),
-    expected: '-1',
-  ),
+  (name: '42.asString()', expr: toExpr(42).asString(), expected: '42'),
+  (name: '0.asString()', expr: toExpr(0).asString(), expected: '0'),
+  (name: '-1.asString()', expr: toExpr(-1).asString(), expected: '-1'),
 
   // Test for asDouble()
-  (
-    name: '42.asDouble()',
-    expr: toExpr(42).asDouble(),
-    expected: 42.0,
-  ),
-  (
-    name: '0.asDouble()',
-    expr: toExpr(0).asDouble(),
-    expected: 0.0,
-  ),
-  (
-    name: '-1.asDouble()',
-    expr: toExpr(-1).asDouble(),
-    expected: -1.0,
-  ),
+  (name: '42.asDouble()', expr: toExpr(42).asDouble(), expected: 42.0),
+  (name: '0.asDouble()', expr: toExpr(0).asDouble(), expected: 0.0),
+  (name: '-1.asDouble()', expr: toExpr(-1).asDouble(), expected: -1.0),
 ];
 
 void main() {
@@ -1113,9 +637,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).isNotNull().equals(c.expected);
     });
   }

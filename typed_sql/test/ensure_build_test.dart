@@ -25,9 +25,7 @@ void main() {
   test(
     'ensure_build',
     () async {
-      await expectBuildClean(
-        packageRelativeDirectory: 'typed_sql',
-      );
+      await expectBuildClean(packageRelativeDirectory: 'typed_sql');
     },
     skip: isCI ? null : 'Only runs with CI=true',
     timeout: const Timeout(Duration(minutes: 5)),

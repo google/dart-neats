@@ -19,34 +19,24 @@ final class ParsedLibrary {
   final List<ParsedSchema> schemas;
   final List<ParsedRowClass> rowClasses;
 
-  ParsedLibrary({
-    required this.schemas,
-    required this.rowClasses,
-  });
+  ParsedLibrary({required this.schemas, required this.rowClasses});
 
   bool get isEmpty => schemas.isEmpty && rowClasses.isEmpty;
 
   @override
-  String toString() => 'ParsedLibrary(${[
-        'schemas: [${schemas.join(', ')}]',
-        'rowClasses: [${rowClasses.join(', ')}]',
-      ].join(', ')})';
+  String toString() =>
+      'ParsedLibrary(${['schemas: [${schemas.join(', ')}]', 'rowClasses: [${rowClasses.join(', ')}]'].join(', ')})';
 }
 
 final class ParsedSchema {
   final String name;
   final List<ParsedTable> tables;
 
-  ParsedSchema({
-    required this.name,
-    required this.tables,
-  });
+  ParsedSchema({required this.name, required this.tables});
 
   @override
-  String toString() => 'ParsedSchema(${[
-        'name: "$name"',
-        'tables: [${tables.join(', ')}]',
-      ].join(', ')})';
+  String toString() =>
+      'ParsedSchema(${['name: "$name"', 'tables: [${tables.join(', ')}]'].join(', ')})';
 }
 
 final class ParsedTable {
@@ -61,10 +51,8 @@ final class ParsedTable {
   });
 
   @override
-  String toString() => 'ParsedTable(${[
-        'name: "$name"',
-        'rowClass: $rowClass',
-      ].join(', ')})';
+  String toString() =>
+      'ParsedTable(${['name: "$name"', 'rowClass: $rowClass'].join(', ')})';
 }
 
 final class ParsedRowClass {
@@ -83,7 +71,8 @@ final class ParsedRowClass {
   });
 
   @override
-  String toString() => 'ParsedRowClass(${[
+  String toString() =>
+      'ParsedRowClass(${[
         'name: "$name"',
         'primaryKey: [${primaryKey.map((f) => '"${f.name}"').join(', ')}]',
         'fields: [${fields.map((f) => '"${f.name}"').join(', ')}]',
@@ -95,10 +84,7 @@ final class ParsedUniqueConstraint {
   final String? name;
   final List<ParsedField> fields;
 
-  ParsedUniqueConstraint({
-    required this.name,
-    required this.fields,
-  });
+  ParsedUniqueConstraint({required this.name, required this.fields});
 }
 
 final class ParsedForeignKey {
@@ -120,13 +106,8 @@ final class ParsedForeignKey {
   late final ParsedTable referencedTable;
 
   @override
-  String toString() => 'ParsedForeignKey(${[
-        'foreignKey: [${foreignKey.map((k) => k.name).join(', ')}]',
-        'table: "$table"',
-        'fields: [${fields.map((f) => '"$f"').join(', ')}]',
-        'as: ${as != null ? '"$as"' : 'null'}',
-        'name: ${name != null ? '"$name"' : 'null'}',
-      ].join(', ')})';
+  String toString() =>
+      'ParsedForeignKey(${['foreignKey: [${foreignKey.map((k) => k.name).join(', ')}]', 'table: "$table"', 'fields: [${fields.map((f) => '"$f"').join(', ')}]', 'as: ${as != null ? '"$as"' : 'null'}', 'name: ${name != null ? '"$name"' : 'null'}'].join(', ')})';
 }
 
 final class ParsedField {
@@ -151,25 +132,16 @@ final class ParsedField {
   });
 
   @override
-  String toString() => 'ParsedField(${[
-        'name: "$name"',
-        'typeName: "$typeName"',
-        'isNullable: $isNullable',
-        'backingType: "$backingType"',
-        'defaultValue: ${defaultValue != null ? '"$defaultValue"' : 'null'}',
-        'autoIncrement: $autoIncrement',
-      ].join(', ')})';
+  String toString() =>
+      'ParsedField(${['name: "$name"', 'typeName: "$typeName"', 'isNullable: $isNullable', 'backingType: "$backingType"', 'defaultValue: ${defaultValue != null ? '"$defaultValue"' : 'null'}', 'autoIncrement: $autoIncrement'].join(', ')})';
 }
 
 final class ParsedRecord {
   final List<String> fields;
 
-  ParsedRecord({
-    required this.fields,
-  });
+  ParsedRecord({required this.fields});
 
   @override
-  String toString() => 'ParsedRecord(${[
-        'fields: [${fields.map((f) => '"$f"').join(', ')}]',
-      ].join(', ')})';
+  String toString() =>
+      'ParsedRecord(${['fields: [${fields.map((f) => '"$f"').join(', ')}]'].join(', ')})';
 }

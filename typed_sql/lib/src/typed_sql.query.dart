@@ -67,15 +67,10 @@ final class RightJoin<T extends Record, S extends Record> {
 final class Table<T extends Row> extends Query<(Expr<T>,)> {
   final TableClause _tableClause;
 
-  Table._(
-    Database context,
-    this._tableClause,
-    TableDefinition<T> definition,
-  ) : super._(
-          context,
-          (RowExpression._(0, definition, Object()),),
-          (_) => _tableClause,
-        );
+  Table._(Database context, this._tableClause, TableDefinition<T> definition)
+    : super._(context, (
+        RowExpression._(0, definition, Object()),
+      ), (_) => _tableClause);
 }
 
 /// A [Query] which can return at-most a single row.
@@ -344,11 +339,7 @@ final class OrderByClause extends FromClause implements ExpressionContext {
   final Object _handle;
   final List<(Expr<Comparable?>, Order)> orderBy;
 
-  OrderByClause._(
-    super.from,
-    this._handle,
-    this.orderBy,
-  ) : super._() {
+  OrderByClause._(super.from, this._handle, this.orderBy) : super._() {
     if (orderBy.any((e) => e.$1._columns > 1)) {
       // This shouldn't be possible!
       throw AssertionError(
@@ -360,10 +351,7 @@ final class OrderByClause extends FromClause implements ExpressionContext {
 }
 
 /// {@category writing_queries}
-enum Order {
-  ascending,
-  descending,
-}
+enum Order { ascending, descending }
 
 final class JoinClause extends FromClause implements ExpressionContext {
   @override
@@ -372,13 +360,8 @@ final class JoinClause extends FromClause implements ExpressionContext {
   final QueryClause join;
   final Expr<bool> on;
 
-  JoinClause._(
-    this._handle,
-    this.type,
-    super.from,
-    this.join,
-    this.on,
-  ) : super._();
+  JoinClause._(this._handle, this.type, super.from, this.join, this.on)
+    : super._();
 }
 
 enum JoinType {
@@ -433,12 +416,8 @@ final class GroupByClause extends FromClause implements ExpressionContext {
     ..._aggregation.expand((e) => e._explode()),
   ];
 
-  GroupByClause._(
-    super.from,
-    this._handle,
-    this._group,
-    this._aggregation,
-  ) : super._();
+  GroupByClause._(super.from, this._handle, this._group, this._aggregation)
+    : super._();
 }
 
 sealed class CompositeQueryClause extends QueryClause {
@@ -488,14 +467,7 @@ final class ExpressionResolver<T> {
   ExpressionResolver<T> withScope(
     ExpressionContext ctx,
     List<(String?, String)> columns,
-  ) =>
-      ExpressionResolver._(
-        context,
-        this,
-        ctx._handle,
-        columns,
-        depth + 1,
-      );
+  ) => ExpressionResolver._(context, this, ctx._handle, columns, depth + 1);
 
   (String?, String) resolve(FieldExpression field) {
     if (_handle == field._handle) {

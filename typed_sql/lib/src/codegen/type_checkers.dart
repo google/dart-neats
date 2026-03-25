@@ -27,12 +27,8 @@ final customDataTypeSrcUri = Uri.parse(
 final schemaTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#Schema'),
 );
-final rowTypeChecker = TypeChecker.fromUrl(
-  typedSqlSrcUri.resolve('#Row'),
-);
-final tableTypeChecker = TypeChecker.fromUrl(
-  typedSqlSrcUri.resolve('#Table'),
-);
+final rowTypeChecker = TypeChecker.fromUrl(typedSqlSrcUri.resolve('#Row'));
+final tableTypeChecker = TypeChecker.fromUrl(typedSqlSrcUri.resolve('#Table'));
 final uniqueTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#Unique'),
 );

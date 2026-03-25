@@ -39,43 +39,28 @@ void main() {
   );
 
   r.addTest('.insert() without default', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-          value: toExpr(3.14),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1), value: toExpr(3.14)).execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(3.14);
   });
 
   r.addTest('.insert() with default', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1)).execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(0.0);
   });
 
   r.addTest('.update() default value', (db) async {
-    await db.items
-        .insert(
-          id: toExpr(1),
-        )
-        .execute();
+    await db.items.insert(id: toExpr(1)).execute();
 
     final item = await db.items.first.fetch();
     check(item).isNotNull().value.equals(0.0);
 
     await db.items
         .byKey(1)
-        .update((item, set) => set(
-              value: toExpr(3.14),
-            ))
+        .update((item, set) => set(value: toExpr(3.14)))
         .execute();
 
     final updateItem = await db.items.first.fetch();

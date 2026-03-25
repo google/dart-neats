@@ -68,7 +68,7 @@ final _cases = [
       toExpr('world'),
       toExpr('dart'),
       toExpr('dart'),
-      toExpr('dart')
+      toExpr('dart'),
     ],
     distinct: {'hello', 'world', 'dart'},
   ),
@@ -85,7 +85,7 @@ final _cases = [
       toExpr(yesterday),
       toExpr(today),
       toExpr(today),
-      toExpr(today)
+      toExpr(today),
     ],
     distinct: {epoch, yesterday, today},
   ),
@@ -95,11 +95,7 @@ final _cases = [
     values: [toExpr(true), toExpr(false), toExpr(true)],
     distinct: {true, false},
   ),
-  (
-    name: 'true, true',
-    values: [toExpr(true), toExpr(true)],
-    distinct: {true},
-  ),
+  (name: 'true, true', values: [toExpr(true), toExpr(true)], distinct: {true}),
   (
     name: 'false, false',
     values: [toExpr(false), toExpr(false)],

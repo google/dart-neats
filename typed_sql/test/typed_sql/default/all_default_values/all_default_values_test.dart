@@ -57,9 +57,7 @@ void main() {
         .execute();
 
     final item = await db.items
-        .where(
-          (i) => i.name.equalsValue('Charlie'),
-        )
+        .where((i) => i.name.equalsValue('Charlie'))
         .first
         .fetch();
 

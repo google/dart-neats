@@ -39,54 +39,14 @@ final today = DateTime.parse('2025-03-10T11:34:36.000000Z');
 final tomorrow = DateTime.parse('2025-03-11T11:34:36.000000Z');
 
 final initialItems = [
-  (
-    text: 'a',
-    real: 1.0,
-    integer: 1,
-    timestamp: yesterday,
-  ),
-  (
-    text: 'a',
-    real: 2.0,
-    integer: 2,
-    timestamp: today,
-  ),
-  (
-    text: 'a',
-    real: 3.0,
-    integer: 3,
-    timestamp: tomorrow,
-  ),
-  (
-    text: 'b',
-    real: 3.0,
-    integer: 1,
-    timestamp: yesterday,
-  ),
-  (
-    text: 'b',
-    real: 2.0,
-    integer: 2,
-    timestamp: today,
-  ),
-  (
-    text: 'b',
-    real: 1.0,
-    integer: 3,
-    timestamp: tomorrow,
-  ),
-  (
-    text: 'c',
-    real: 1.0,
-    integer: null,
-    timestamp: yesterday,
-  ),
-  (
-    text: 'c',
-    real: 2.0,
-    integer: null,
-    timestamp: today,
-  ),
+  (text: 'a', real: 1.0, integer: 1, timestamp: yesterday),
+  (text: 'a', real: 2.0, integer: 2, timestamp: today),
+  (text: 'a', real: 3.0, integer: 3, timestamp: tomorrow),
+  (text: 'b', real: 3.0, integer: 1, timestamp: yesterday),
+  (text: 'b', real: 2.0, integer: 2, timestamp: today),
+  (text: 'b', real: 1.0, integer: 3, timestamp: tomorrow),
+  (text: 'c', real: 1.0, integer: null, timestamp: yesterday),
+  (text: 'c', real: 2.0, integer: null, timestamp: today),
 ];
 
 void main() {
@@ -114,50 +74,41 @@ void main() {
   });
 
   r.addTest('items.asSubQuery.count()', (db) async {
-    final result = await db.select(
-      (db.items.asSubQuery.count(),),
-    ).fetch();
+    final result = await db.select((db.items.asSubQuery.count(),)).fetch();
     check(result).equals(8);
   });
 
   r.addTest('items.where(.integer.isNotNull).count()', (db) async {
-    final result =
-        await db.items.where((i) => i.integer.isNotNull()).count().fetch();
+    final result = await db.items
+        .where((i) => i.integer.isNotNull())
+        .count()
+        .fetch();
     check(result).equals(6);
   });
 
   r.addTest('items.asSubQuery.where(.integer.isNotNull).count()', (db) async {
-    final result = await db.select(
-      (db.items.asSubQuery.where((i) => i.integer.isNotNull()).count(),),
-    ).fetch();
+    final result = await db.select((
+      db.items.asSubQuery.where((i) => i.integer.isNotNull()).count(),
+    )).fetch();
     check(result).equals(6);
   });
 
   r.addTest('items.select(.integer, .text).count()', (db) async {
     final result = await db.items
-        .select(
-          (i) => (i.integer, i.text),
-        )
+        .select((i) => (i.integer, i.text))
         .count()
         .fetch();
     check(result).equals(8);
   });
 
   r.addTest('items.select(.text).count()', (db) async {
-    final result = await db.items
-        .select(
-          (i) => (i.text,),
-        )
-        .count()
-        .fetch();
+    final result = await db.items.select((i) => (i.text,)).count().fetch();
     check(result).equals(8);
   });
 
   r.addTest('items.select(.text).distinct().count()', (db) async {
     final result = await db.items
-        .select(
-          (i) => (i.text,),
-        )
+        .select((i) => (i.text,))
         .distinct()
         .count()
         .fetch();
@@ -166,9 +117,7 @@ void main() {
 
   r.addTest('items.select(.integer, .text).distinct().count()', (db) async {
     final result = await db.items
-        .select(
-          (i) => (i.integer, i.text),
-        )
+        .select((i) => (i.integer, i.text))
         .distinct()
         .count()
         .fetch();

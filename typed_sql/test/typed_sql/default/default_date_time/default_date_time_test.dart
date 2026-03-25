@@ -46,9 +46,7 @@ void main() {
     final after = DateTime.now().toUtc().add(const Duration(seconds: 1));
 
     final item = await db.items
-        .where(
-          (i) => i.name.equalsValue('Alice'),
-        )
+        .where((i) => i.name.equalsValue('Alice'))
         .first
         .fetch();
 
@@ -77,9 +75,7 @@ void main() {
         .execute();
 
     final item = await db.items
-        .where(
-          (i) => i.name.equalsValue('Charlie'),
-        )
+        .where((i) => i.name.equalsValue('Charlie'))
         .first
         .fetch();
 

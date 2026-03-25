@@ -72,9 +72,7 @@ Future<DatabaseAdapter> postgresTestingDatabaseAdapter({
   var closing = false;
   final closed = Completer<void>();
   final adapter = DatabaseAdapter.postgres(pool);
-  return withOnCloseDatabaseAdapter(adapter, ({
-    required bool force,
-  }) async {
+  return withOnCloseDatabaseAdapter(adapter, ({required bool force}) async {
     try {
       await adapter.close(force: force);
     } finally {

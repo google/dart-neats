@@ -43,29 +43,26 @@ void main() {
   );
 
   r.addTest('db.select(db.items.asSubQuery.where().first)', (db) async {
-    final (itemA, itemB) = await db.select(
-      (
-        db.items.asSubQuery.where((i) => i.id.equals(toExpr(1))).first,
-        db.items.asSubQuery.where((i) => i.id.equals(toExpr(2))).first,
-      ),
-    ).fetchOrNulls();
+    final (itemA, itemB) = await db.select((
+      db.items.asSubQuery.where((i) => i.id.equals(toExpr(1))).first,
+      db.items.asSubQuery.where((i) => i.id.equals(toExpr(2))).first,
+    )).fetchOrNulls();
     check(itemA).isNotNull().value.equals('a');
     check(itemB).isNotNull().value.equals('b');
   });
 
   r.addTest('db.select(db.items.asSubQuery.where(false).first)', (db) async {
-    final (itemA, itemB) = await db.select(
-      (
-        db.items.asSubQuery.where((i) => i.id.equals(toExpr(1))).first,
-        db.items.asSubQuery.where((i) => toExpr(false)).first,
-      ),
-    ).fetchOrNulls();
+    final (itemA, itemB) = await db.select((
+      db.items.asSubQuery.where((i) => i.id.equals(toExpr(1))).first,
+      db.items.asSubQuery.where((i) => toExpr(false)).first,
+    )).fetchOrNulls();
     check(itemA).isNotNull().value.equals('a');
     check(itemB).isNull();
   });
 
-  r.addTest('.where(items.where(.value = value).exists()).delete()',
-      (db) async {
+  r.addTest('.where(items.where(.value = value).exists()).delete()', (
+    db,
+  ) async {
     await db.items
         .where(
           (item) => db.items.asSubQuery
@@ -77,86 +74,83 @@ void main() {
         .delete()
         .execute();
     final remaining = await db.items.select((i) => (i.id, i.value)).fetch();
-    check(remaining).unorderedEquals([
-      (1, 'a'),
-      (2, 'b'),
-    ]);
+    check(remaining).unorderedEquals([(1, 'a'), (2, 'b')]);
   });
 
   r.addTest(
-      'db.items.select(.value, db.items.asSubQuery.where(.value = value).orderBy(.id).first.id)',
-      (db) async {
-    final result = await db.items
-        .select(
-          (item) => (
-            item.value,
-            db.items.asSubQuery
-                .where((i) => i.value.equals(item.value))
-                .orderBy((i) => [(i.id, Order.ascending)])
-                .first // test .first on SubQuery!
-                .id,
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals([
-      ('a', 1),
-      ('b', 2),
-      ('c', 3),
-      ('c', 3),
-      ('c', 3),
-    ]);
-  });
+    'db.items.select(.value, db.items.asSubQuery.where(.value = value).orderBy(.id).first.id)',
+    (db) async {
+      final result = await db.items
+          .select(
+            (item) => (
+              item.value,
+              db.items.asSubQuery
+                  .where((i) => i.value.equals(item.value))
+                  .orderBy((i) => [(i.id, Order.ascending)])
+                  .first // test .first on SubQuery!
+                  .id,
+            ),
+          )
+          .fetch();
+      check(
+        result,
+      ).unorderedEquals([('a', 1), ('b', 2), ('c', 3), ('c', 3), ('c', 3)]);
+    },
+  );
 
   r.addTest(
-      'db.items.select(.value, db.items.where(.value = value).orderBy(.id).first.asExpr.id)',
-      (db) async {
-    final result = await db.items
-        .select(
-          (item) => (
-            item.value,
-            db.items
-                .where((i) => i.value.equals(item.value))
-                .orderBy((i) => [(i.id, Order.ascending)])
-                .first
-                .asExpr // test QuerySingle.first
-                .id,
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals([
-      ('a', 1),
-      ('b', 2),
-      ('c', 3),
-      ('c', 3),
-      ('c', 3),
-    ]);
-  });
+    'db.items.select(.value, db.items.where(.value = value).orderBy(.id).first.asExpr.id)',
+    (db) async {
+      final result = await db.items
+          .select(
+            (item) => (
+              item.value,
+              db.items
+                  .where((i) => i.value.equals(item.value))
+                  .orderBy((i) => [(i.id, Order.ascending)])
+                  .first
+                  .asExpr // test QuerySingle.first
+                  .id,
+            ),
+          )
+          .fetch();
+      check(
+        result,
+      ).unorderedEquals([('a', 1), ('b', 2), ('c', 3), ('c', 3), ('c', 3)]);
+    },
+  );
 
   r.addTest('count() in a subquery', (db) async {
     await db.items
-        .select((i) => (
-              i.id,
-              db.items.where((item) => item.id.equals(i.id)).count().asExpr,
-            ))
+        .select(
+          (i) => (
+            i.id,
+            db.items.where((item) => item.id.equals(i.id)).count().asExpr,
+          ),
+        )
         .fetch();
   });
 
   r.addTest('double nested subquery', (db) async {
     await db.items
-        .select((i) => (
-              i.id,
-              db.items
-                  .where((item) => db.items
+        .select(
+          (i) => (
+            i.id,
+            db.items
+                .where(
+                  (item) => db.items
                       .where(
                         (item2) =>
                             item2.id.equals(i.id) & item2.id.equals(item.id),
                       )
                       .exists()
                       .asExpr
-                      .isTrue())
-                  .count()
-                  .asExpr,
-            ))
+                      .isTrue(),
+                )
+                .count()
+                .asExpr,
+          ),
+        )
         .fetch();
   });
 

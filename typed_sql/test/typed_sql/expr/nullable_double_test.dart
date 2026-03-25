@@ -16,22 +16,10 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-final _cases = <({
-  String name,
-  Expr expr,
-  Object? expected,
-})>[
+final _cases = <({String name, Expr expr, Object? expected})>[
   // Tests for null and double
-  (
-    name: '3.14 as double?',
-    expr: toExpr(3.14 as double?),
-    expected: 3.14,
-  ),
-  (
-    name: 'null as double?',
-    expr: toExpr(null as double?),
-    expected: null,
-  ),
+  (name: '3.14 as double?', expr: toExpr(3.14 as double?), expected: 3.14),
+  (name: 'null as double?', expr: toExpr(null as double?), expected: null),
   (
     name: '(null as double?).orElse(3.14)',
     expr: toExpr(null as double?).orElse(toExpr(3.14)),
@@ -52,11 +40,7 @@ final _cases = <({
     expr: toExpr(2.71 as double?).orElseValue(3.14),
     expected: 2.71,
   ),
-  (
-    name: 'null.asDouble()',
-    expr: toExpr(null).asDouble(),
-    expected: null,
-  ),
+  (name: 'null.asDouble()', expr: toExpr(null).asDouble(), expected: null),
   (
     name: 'null.asDouble().orElse(3.14)',
     expr: toExpr(null).asDouble().orElse(toExpr(3.14)),
@@ -223,8 +207,8 @@ final _cases = <({
     expr: toExpr(0.0 as double?).notEqualsValue(0.0),
     expected: false,
   ),
-  // Expr<double?>.isNull()
 
+  // Expr<double?>.isNull()
   (
     name: 'null.asDouble().isNull()',
     expr: toExpr(null).asDouble().isNull(),
@@ -263,9 +247,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).equals(c.expected);
     });
   }

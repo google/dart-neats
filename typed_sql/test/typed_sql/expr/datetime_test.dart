@@ -112,8 +112,9 @@ final _cases = [
   ),
   (
     name: 'DateTime(2025).toUtc().notEquals(DateTime(2025).toUtc())',
-    expr: toExpr(DateTime(2025).toUtc())
-        .notEquals(toExpr(DateTime(2025).toUtc())),
+    expr: toExpr(
+      DateTime(2025).toUtc(),
+    ).notEquals(toExpr(DateTime(2025).toUtc())),
     expected: false,
   ),
   (
@@ -269,21 +270,9 @@ final _cases = [
     expr: toExpr(DateTime(2025)) < toExpr(DateTime(2025)),
     expected: false,
   ),
-  (
-    name: 'epoch < today',
-    expr: toExpr(epoch) < toExpr(today),
-    expected: true,
-  ),
-  (
-    name: 'today < epoch',
-    expr: toExpr(today) < toExpr(epoch),
-    expected: false,
-  ),
-  (
-    name: 'epoch < epoch',
-    expr: toExpr(epoch) < toExpr(epoch),
-    expected: false,
-  ),
+  (name: 'epoch < today', expr: toExpr(epoch) < toExpr(today), expected: true),
+  (name: 'today < epoch', expr: toExpr(today) < toExpr(epoch), expected: false),
+  (name: 'epoch < epoch', expr: toExpr(epoch) < toExpr(epoch), expected: false),
 
   // Test for .isAfter
   (
@@ -365,21 +354,9 @@ final _cases = [
     expr: toExpr(DateTime(2025)) > toExpr(DateTime(2025)),
     expected: false,
   ),
-  (
-    name: 'epoch > today',
-    expr: toExpr(epoch) > toExpr(today),
-    expected: false,
-  ),
-  (
-    name: 'today > epoch',
-    expr: toExpr(today) > toExpr(epoch),
-    expected: true,
-  ),
-  (
-    name: 'epoch > epoch',
-    expr: toExpr(epoch) > toExpr(epoch),
-    expected: false,
-  ),
+  (name: 'epoch > today', expr: toExpr(epoch) > toExpr(today), expected: false),
+  (name: 'today > epoch', expr: toExpr(today) > toExpr(epoch), expected: true),
+  (name: 'epoch > epoch', expr: toExpr(epoch) > toExpr(epoch), expected: false),
 
   // Test for <=
   (
@@ -477,9 +454,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).isNotNull().equals(c.expected);
     });
   }

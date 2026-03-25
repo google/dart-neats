@@ -16,22 +16,14 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-final _cases = <({
-  String name,
-  Expr expr,
-  Object? expected,
-})>[
+final _cases = <({String name, Expr expr, Object? expected})>[
   // Tests for null and String
   (
     name: 'hello as String?',
     expr: toExpr('hello' as String?),
     expected: 'hello',
   ),
-  (
-    name: 'null as String?',
-    expr: toExpr(null as String?),
-    expected: null,
-  ),
+  (name: 'null as String?', expr: toExpr(null as String?), expected: null),
   (
     name: '(null as String?).orElse(\'hello\')',
     expr: toExpr(null as String?).orElse(toExpr('hello')),
@@ -52,11 +44,7 @@ final _cases = <({
     expr: toExpr('world' as String?).orElseValue('hello'),
     expected: 'world',
   ),
-  (
-    name: 'null.asString()',
-    expr: toExpr(null).asString(),
-    expected: null,
-  ),
+  (name: 'null.asString()', expr: toExpr(null).asString(), expected: null),
   (
     name: 'null.asString().orElse(\'hello\')',
     expr: toExpr(null).asString().orElse(toExpr('hello')),
@@ -235,11 +223,7 @@ final _cases = <({
     expr: toExpr('hello' as String?).isNull(),
     expected: false,
   ),
-  (
-    name: '"".isNull()',
-    expr: toExpr('' as String?).isNull(),
-    expected: false,
-  ),
+  (name: '"".isNull()', expr: toExpr('' as String?).isNull(), expected: false),
   // Expr<String?>.isNotNull()
   (
     name: 'null.asString().isNotNull()',
@@ -263,9 +247,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).equals(c.expected);
     });
   }

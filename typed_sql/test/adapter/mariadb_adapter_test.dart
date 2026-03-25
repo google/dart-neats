@@ -38,20 +38,20 @@ void main() {
   test('create table, insert and select, drop table', () async {
     await adapter.execute('CREATE TABLE users (id INT, name TEXT)', []);
 
-    await adapter.execute(
-      'INSERT INTO users (id, name) VALUES (?1, ?2)',
-      [1, 'Alice'],
-    );
+    await adapter.execute('INSERT INTO users (id, name) VALUES (?1, ?2)', [
+      1,
+      'Alice',
+    ]);
 
-    final result = await adapter.query(
-      'SELECT id, name FROM users',
-      [],
-    ).toIntStr();
+    final result = await adapter
+        .query('SELECT id, name FROM users', [])
+        .toIntStr();
     expect(
-        result,
-        equals([
-          [1, 'Alice']
-        ]));
+      result,
+      equals([
+        [1, 'Alice'],
+      ]),
+    );
 
     await adapter.execute('DROP TABLE users', []);
   });

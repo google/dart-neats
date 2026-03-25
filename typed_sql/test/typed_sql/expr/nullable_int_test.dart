@@ -16,22 +16,10 @@ import 'package:typed_sql/typed_sql.dart';
 
 import '../testrunner.dart';
 
-final _cases = <({
-  String name,
-  Expr expr,
-  Object? expected,
-})>[
+final _cases = <({String name, Expr expr, Object? expected})>[
   // Tests for null and int
-  (
-    name: '42 as int?',
-    expr: toExpr(42 as int?),
-    expected: 42,
-  ),
-  (
-    name: 'null as int?',
-    expr: toExpr(null as int?),
-    expected: null,
-  ),
+  (name: '42 as int?', expr: toExpr(42 as int?), expected: 42),
+  (name: 'null as int?', expr: toExpr(null as int?), expected: null),
   (
     name: '(null as int?).orElse(42)',
     expr: toExpr(null as int?).orElse(toExpr(42)),
@@ -52,11 +40,7 @@ final _cases = <({
     expr: toExpr(21 as int?).orElseValue(42),
     expected: 21,
   ),
-  (
-    name: 'null.asInt()',
-    expr: toExpr(null).asInt(),
-    expected: null,
-  ),
+  (name: 'null.asInt()', expr: toExpr(null).asInt(), expected: null),
   (
     name: 'null.asInt().orElse(42)',
     expr: toExpr(null).asInt().orElse(toExpr(42)),
@@ -229,16 +213,8 @@ final _cases = <({
     expr: toExpr(null).asInt().isNull(),
     expected: true,
   ),
-  (
-    name: '42.isNull()',
-    expr: toExpr(42 as int?).isNull(),
-    expected: false,
-  ),
-  (
-    name: '0.isNull()',
-    expr: toExpr(0 as int?).isNull(),
-    expected: false,
-  ),
+  (name: '42.isNull()', expr: toExpr(42 as int?).isNull(), expected: false),
+  (name: '0.isNull()', expr: toExpr(0 as int?).isNull(), expected: false),
   // Expr<int?>.isNotNull()
   (
     name: 'null.asInt().isNotNull()',
@@ -250,11 +226,7 @@ final _cases = <({
     expr: toExpr(42 as int?).isNotNull(),
     expected: true,
   ),
-  (
-    name: '0.isNotNull()',
-    expr: toExpr(0 as int?).isNotNull(),
-    expected: true,
-  ),
+  (name: '0.isNotNull()', expr: toExpr(0 as int?).isNotNull(), expected: true),
 ];
 
 void main() {
@@ -262,9 +234,7 @@ void main() {
 
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      final result = await db.select(
-        (c.expr,),
-      ).fetch();
+      final result = await db.select((c.expr,)).fetch();
       check(result).equals(c.expected);
     });
   }

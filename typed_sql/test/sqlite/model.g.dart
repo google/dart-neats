@@ -10,20 +10,12 @@ part of 'model.dart';
 extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   static const _$tables = [_$User._$table, _$Package._$table, _$Like._$table];
 
-  Table<User> get users => $ForGeneratedCode.declareTable(
-        this,
-        _$User._$table,
-      );
+  Table<User> get users => $ForGeneratedCode.declareTable(this, _$User._$table);
 
-  Table<Package> get packages => $ForGeneratedCode.declareTable(
-        this,
-        _$Package._$table,
-      );
+  Table<Package> get packages =>
+      $ForGeneratedCode.declareTable(this, _$Package._$table);
 
-  Table<Like> get likes => $ForGeneratedCode.declareTable(
-        this,
-        _$Like._$table,
-      );
+  Table<Like> get likes => $ForGeneratedCode.declareTable(this, _$Like._$table);
 
   /// Create tables defined in [PrimaryDatabase].
   ///
@@ -37,10 +29,8 @@ extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [PrimaryDatabase].
@@ -61,11 +51,7 @@ String createPrimaryDatabaseTables(SqlDialect dialect) =>
     );
 
 final class _$User extends User {
-  _$User._(
-    this.userId,
-    this.name,
-    this.email,
-  );
+  _$User._(this.userId, this.name, this.email);
 
   @override
   final int userId;
@@ -79,45 +65,51 @@ final class _$User extends User {
   static const _$table = (
     tableName: 'users',
     columns: <String>['userId', 'name', 'email'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: true,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+        ],
     primaryKey: <String>['userId'],
     unique: <List<String>>[
-      ['email']
+      ['email'],
     ],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$User._$fromDatabase,
   );
 
@@ -147,14 +139,7 @@ extension TableUserExt on Table<User> {
     required Expr<String> name,
     required Expr<String> email,
   }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          userId,
-          name,
-          email,
-        ],
-      );
+      $ForGeneratedCode.insertInto(table: this, values: [userId, name, email]);
 
   /// Delete a single row from the `users` table, specified by
   /// _primary key_.
@@ -165,10 +150,8 @@ extension TableUserExt on Table<User> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<User> delete(int userId) => $ForGeneratedCode.deleteSingle(
-        byKey(userId),
-        _$User._$table,
-      );
+  DeleteSingle<User> delete(int userId) =>
+      $ForGeneratedCode.deleteSingle(byKey(userId), _$User._$table);
 }
 
 /// Extension methods for building queries against the `users` table.
@@ -208,31 +191,25 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<User> update(
-          UpdateSet<User> Function(
-            Expr<User> user,
-            UpdateSet<User> Function({
-              Expr<int> userId,
-              Expr<String> name,
-              Expr<String> email,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<User>(
-        this,
-        _$User._$table,
-        (user) => updateBuilder(
-          user,
-          ({
-            Expr<int>? userId,
-            Expr<String>? name,
-            Expr<String>? email,
-          }) =>
-              $ForGeneratedCode.buildUpdate<User>([
-            userId,
-            name,
-            email,
-          ]),
-        ),
-      );
+    UpdateSet<User> Function(
+      Expr<User> user,
+      UpdateSet<User> Function({
+        Expr<int> userId,
+        Expr<String> name,
+        Expr<String> email,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<User>(
+    this,
+    _$User._$table,
+    (user) => updateBuilder(
+      user,
+      ({Expr<int>? userId, Expr<String>? name, Expr<String>? email}) =>
+          $ForGeneratedCode.buildUpdate<User>([userId, name, email]),
+    ),
+  );
 
   /// Lookup a single row in `users` table using the
   /// `email` field
@@ -284,31 +261,25 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<User> update(
-          UpdateSet<User> Function(
-            Expr<User> user,
-            UpdateSet<User> Function({
-              Expr<int> userId,
-              Expr<String> name,
-              Expr<String> email,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<User>(
-        this,
-        _$User._$table,
-        (user) => updateBuilder(
-          user,
-          ({
-            Expr<int>? userId,
-            Expr<String>? name,
-            Expr<String>? email,
-          }) =>
-              $ForGeneratedCode.buildUpdate<User>([
-            userId,
-            name,
-            email,
-          ]),
-        ),
-      );
+    UpdateSet<User> Function(
+      Expr<User> user,
+      UpdateSet<User> Function({
+        Expr<int> userId,
+        Expr<String> name,
+        Expr<String> email,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<User>(
+    this,
+    _$User._$table,
+    (user) => updateBuilder(
+      user,
+      ({Expr<int>? userId, Expr<String>? name, Expr<String>? email}) =>
+          $ForGeneratedCode.buildUpdate<User>([userId, name, email]),
+    ),
+  );
 
   /// Delete the row (if any) in the `users` table matching this [QuerySingle].
   ///
@@ -417,12 +388,7 @@ extension RightJoinUserPackageExt
 }
 
 final class _$Package extends Package {
-  _$Package._(
-    this.packageName,
-    this.likes,
-    this.ownerId,
-    this.publisher,
-  );
+  _$Package._(this.packageName, this.likes, this.ownerId, this.publisher);
 
   @override
   final String packageName;
@@ -439,57 +405,63 @@ final class _$Package extends Package {
   static const _$table = (
     tableName: 'packages',
     columns: <String>['packageName', 'likes', 'ownerId', 'publisher'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: (kind: 'raw', value: 0),
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: false,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: (kind: 'raw', value: 0),
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: false,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+        ],
     primaryKey: <String>['packageName'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[
-      (
-        name: 'owner',
-        columns: ['ownerId'],
-        referencedTable: 'users',
-        referencedColumns: ['userId'],
-      )
-    ],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[
+          (
+            name: 'owner',
+            columns: ['ownerId'],
+            referencedTable: 'users',
+            referencedColumns: ['userId'],
+          ),
+        ],
     readRow: _$Package._$fromDatabase,
   );
 
@@ -523,16 +495,10 @@ extension TablePackageExt on Table<Package> {
     Expr<int>? likes,
     required Expr<int> ownerId,
     Expr<String?>? publisher,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          packageName,
-          likes,
-          ownerId,
-          publisher,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [packageName, likes, ownerId, publisher],
+  );
 
   /// Delete a single row from the `packages` table, specified by
   /// _primary key_.
@@ -544,10 +510,7 @@ extension TablePackageExt on Table<Package> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Package> delete(String packageName) =>
-      $ForGeneratedCode.deleteSingle(
-        byKey(packageName),
-        _$Package._$table,
-      );
+      $ForGeneratedCode.deleteSingle(byKey(packageName), _$Package._$table);
 }
 
 /// Extension methods for building queries against the `packages` table.
@@ -587,34 +550,35 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Package> update(
-          UpdateSet<Package> Function(
-            Expr<Package> package,
-            UpdateSet<Package> Function({
-              Expr<String> packageName,
-              Expr<int> likes,
-              Expr<int> ownerId,
-              Expr<String?> publisher,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Package>(
-        this,
-        _$Package._$table,
-        (package) => updateBuilder(
-          package,
-          ({
-            Expr<String>? packageName,
-            Expr<int>? likes,
-            Expr<int>? ownerId,
-            Expr<String?>? publisher,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Package>([
-            packageName,
-            likes,
-            ownerId,
-            publisher,
-          ]),
-        ),
-      );
+    UpdateSet<Package> Function(
+      Expr<Package> package,
+      UpdateSet<Package> Function({
+        Expr<String> packageName,
+        Expr<int> likes,
+        Expr<int> ownerId,
+        Expr<String?> publisher,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Package>(
+    this,
+    _$Package._$table,
+    (package) => updateBuilder(
+      package,
+      ({
+        Expr<String>? packageName,
+        Expr<int>? likes,
+        Expr<int>? ownerId,
+        Expr<String?>? publisher,
+      }) => $ForGeneratedCode.buildUpdate<Package>([
+        packageName,
+        likes,
+        ownerId,
+        publisher,
+      ]),
+    ),
+  );
 
   /// Delete all rows in the `packages` table matching this [Query].
   ///
@@ -655,34 +619,35 @@ extension QuerySinglePackageExt on QuerySingle<(Expr<Package>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Package> update(
-          UpdateSet<Package> Function(
-            Expr<Package> package,
-            UpdateSet<Package> Function({
-              Expr<String> packageName,
-              Expr<int> likes,
-              Expr<int> ownerId,
-              Expr<String?> publisher,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Package>(
-        this,
-        _$Package._$table,
-        (package) => updateBuilder(
-          package,
-          ({
-            Expr<String>? packageName,
-            Expr<int>? likes,
-            Expr<int>? ownerId,
-            Expr<String?>? publisher,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Package>([
-            packageName,
-            likes,
-            ownerId,
-            publisher,
-          ]),
-        ),
-      );
+    UpdateSet<Package> Function(
+      Expr<Package> package,
+      UpdateSet<Package> Function({
+        Expr<String> packageName,
+        Expr<int> likes,
+        Expr<int> ownerId,
+        Expr<String?> publisher,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Package>(
+    this,
+    _$Package._$table,
+    (package) => updateBuilder(
+      package,
+      ({
+        Expr<String>? packageName,
+        Expr<int>? likes,
+        Expr<int>? ownerId,
+        Expr<String?>? publisher,
+      }) => $ForGeneratedCode.buildUpdate<Package>([
+        packageName,
+        likes,
+        ownerId,
+        publisher,
+      ]),
+    ),
+  );
 
   /// Delete the row (if any) in the `packages` table matching this [QuerySingle].
   ///
@@ -792,10 +757,7 @@ extension RightJoinPackageUserExt
 }
 
 final class _$Like extends Like {
-  _$Like._(
-    this.userId,
-    this.packageName,
-  );
+  _$Like._(this.userId, this.packageName);
 
   @override
   final int userId;
@@ -806,36 +768,42 @@ final class _$Like extends Like {
   static const _$table = (
     tableName: 'likes',
     columns: <String>['userId', 'packageName'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+        ],
     primaryKey: <String>['userId', 'packageName'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$Like._$fromDatabase,
   );
 
@@ -862,13 +830,7 @@ extension TableLikeExt on Table<Like> {
     required Expr<int> userId,
     required Expr<String> packageName,
   }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          userId,
-          packageName,
-        ],
-      );
+      $ForGeneratedCode.insertInto(table: this, values: [userId, packageName]);
 
   /// Delete a single row from the `likes` table, specified by
   /// _primary key_.
@@ -879,14 +841,8 @@ extension TableLikeExt on Table<Like> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Like> delete(
-    int userId,
-    String packageName,
-  ) =>
-      $ForGeneratedCode.deleteSingle(
-        byKey(userId, packageName),
-        _$Like._$table,
-      );
+  DeleteSingle<Like> delete(int userId, String packageName) => $ForGeneratedCode
+      .deleteSingle(byKey(userId, packageName), _$Like._$table);
 }
 
 /// Extension methods for building queries against the `likes` table.
@@ -895,13 +851,11 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Like>,)> byKey(
-    int userId,
-    String packageName,
-  ) =>
-      where((like) =>
-          like.userId.equalsValue(userId) &
-          like.packageName.equalsValue(packageName)).first;
+  QuerySingle<(Expr<Like>,)> byKey(int userId, String packageName) => where(
+    (like) =>
+        like.userId.equalsValue(userId) &
+        like.packageName.equalsValue(packageName),
+  ).first;
 
   /// Update all rows in the `likes` table matching this [Query].
   ///
@@ -931,28 +885,21 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Like> update(
-          UpdateSet<Like> Function(
-            Expr<Like> like,
-            UpdateSet<Like> Function({
-              Expr<int> userId,
-              Expr<String> packageName,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Like>(
-        this,
-        _$Like._$table,
-        (like) => updateBuilder(
-          like,
-          ({
-            Expr<int>? userId,
-            Expr<String>? packageName,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Like>([
-            userId,
-            packageName,
-          ]),
-        ),
-      );
+    UpdateSet<Like> Function(
+      Expr<Like> like,
+      UpdateSet<Like> Function({Expr<int> userId, Expr<String> packageName})
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Like>(
+    this,
+    _$Like._$table,
+    (like) => updateBuilder(
+      like,
+      ({Expr<int>? userId, Expr<String>? packageName}) =>
+          $ForGeneratedCode.buildUpdate<Like>([userId, packageName]),
+    ),
+  );
 
   /// Delete all rows in the `likes` table matching this [Query].
   ///
@@ -993,28 +940,21 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Like> update(
-          UpdateSet<Like> Function(
-            Expr<Like> like,
-            UpdateSet<Like> Function({
-              Expr<int> userId,
-              Expr<String> packageName,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Like>(
-        this,
-        _$Like._$table,
-        (like) => updateBuilder(
-          like,
-          ({
-            Expr<int>? userId,
-            Expr<String>? packageName,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Like>([
-            userId,
-            packageName,
-          ]),
-        ),
-      );
+    UpdateSet<Like> Function(
+      Expr<Like> like,
+      UpdateSet<Like> Function({Expr<int> userId, Expr<String> packageName})
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Like>(
+    this,
+    _$Like._$table,
+    (like) => updateBuilder(
+      like,
+      ({Expr<int>? userId, Expr<String>? packageName}) =>
+          $ForGeneratedCode.buildUpdate<Like>([userId, packageName]),
+    ),
+  );
 
   /// Delete the row (if any) in the `likes` table matching this [QuerySingle].
   ///
@@ -1059,84 +999,41 @@ extension ExpressionNullableLikeExt on Expr<Like?> {
 }
 
 /// Extension methods for building queries projected to a named record.
-extension QueryOwnerPackageNamed<A, B> on Query<
-    ({
-      Expr<A> owner,
-      Expr<B> package,
-    })> {
+extension QueryOwnerPackageNamed<A, B>
+    on Query<({Expr<A> owner, Expr<B> package})> {
   Query<(Expr<A>, Expr<B>)> get _asPositionalQuery =>
-      $ForGeneratedCode.renamedRecord(
-          this,
-          (e) => (
-                e.owner,
-                e.package,
-              ));
+      $ForGeneratedCode.renamedRecord(this, (e) => (e.owner, e.package));
 
-  static Query<
-      ({
-        Expr<A> owner,
-        Expr<B> package,
-      })> _fromPositionalQuery<A, B>(
-          Query<(Expr<A>, Expr<B>)> query) =>
-      $ForGeneratedCode.renamedRecord(
-          query,
-          (e) => (
-                owner: e.$1,
-                package: e.$2,
-              ));
+  static Query<({Expr<A> owner, Expr<B> package})> _fromPositionalQuery<A, B>(
+    Query<(Expr<A>, Expr<B>)> query,
+  ) => $ForGeneratedCode.renamedRecord(
+    query,
+    (e) => (owner: e.$1, package: e.$2),
+  );
 
   static T Function(Expr<A> a, Expr<B> b) _wrapBuilder<T, A, B>(
-          T Function(
-                  ({
-                    Expr<A> owner,
-                    Expr<B> package,
-                  }) e)
-              builder) =>
-      (a, b) => builder((
-            owner: a,
-            package: b,
-          ));
+    T Function(({Expr<A> owner, Expr<B> package}) e) builder,
+  ) =>
+      (a, b) => builder((owner: a, package: b));
 
   /// Query the database for rows in this [Query] as a [Stream].
-  Stream<
-      ({
-        A owner,
-        B package,
-      })> stream() async* {
-    yield* _asPositionalQuery.stream().map((e) => (
-          owner: e.$1,
-          package: e.$2,
-        ));
+  Stream<({A owner, B package})> stream() async* {
+    yield* _asPositionalQuery.stream().map((e) => (owner: e.$1, package: e.$2));
   }
 
   /// Query the database for rows in this [Query] as a [List].
-  Future<
-      List<
-          ({
-            A owner,
-            B package,
-          })>> fetch() async => await stream().toList();
+  Future<List<({A owner, B package})>> fetch() async => await stream().toList();
 
   /// Offset [Query] using `OFFSET` clause.
   ///
   /// The resulting [Query] will skip the first [offset] rows.
-  Query<
-      ({
-        Expr<A> owner,
-        Expr<B> package,
-      })> offset(
-          int offset) =>
+  Query<({Expr<A> owner, Expr<B> package})> offset(int offset) =>
       _fromPositionalQuery(_asPositionalQuery.offset(offset));
 
   /// Limit [Query] using `LIMIT` clause.
   ///
   /// The resulting [Query] will only return the first [limit] rows.
-  Query<
-      ({
-        Expr<A> owner,
-        Expr<B> package,
-      })> limit(
-          int limit) =>
+  Query<({Expr<A> owner, Expr<B> package})> limit(int limit) =>
       _fromPositionalQuery(_asPositionalQuery.limit(limit));
 
   /// Create a projection of this [Query] using `SELECT` clause.
@@ -1149,29 +1046,17 @@ extension QueryOwnerPackageNamed<A, B> on Query<
   /// they are only defined for records `T` where all the values are
   /// [Expr] objects.
   Query<T> select<T extends Record>(
-          T Function(
-                  ({
-                    Expr<A> owner,
-                    Expr<B> package,
-                  }) expr)
-              projectionBuilder) =>
-      _asPositionalQuery.select(_wrapBuilder(projectionBuilder));
+    T Function(({Expr<A> owner, Expr<B> package}) expr) projectionBuilder,
+  ) => _asPositionalQuery.select(_wrapBuilder(projectionBuilder));
 
   /// Filter [Query] using `WHERE` clause.
   ///
   /// Returns a [Query] retaining rows from this [Query] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
-  Query<
-      ({
-        Expr<A> owner,
-        Expr<B> package,
-      })> where(
-          Expr<bool> Function(
-                  ({
-                    Expr<A> owner,
-                    Expr<B> package,
-                  }) expr)
-              conditionBuilder) =>
-      _fromPositionalQuery(
-          _asPositionalQuery.where(_wrapBuilder(conditionBuilder)));
+  Query<({Expr<A> owner, Expr<B> package})> where(
+    Expr<bool> Function(({Expr<A> owner, Expr<B> package}) expr)
+    conditionBuilder,
+  ) => _fromPositionalQuery(
+    _asPositionalQuery.where(_wrapBuilder(conditionBuilder)),
+  );
 }

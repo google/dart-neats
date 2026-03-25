@@ -51,10 +51,7 @@ void main() {
 
       for (final v in _testData) {
         await db.employees
-            .insert(
-              surname: toExpr(v.surname),
-              salary: toExpr(v.salary),
-            )
+            .insert(surname: toExpr(v.surname), salary: toExpr(v.salary))
             .execute();
       }
     },

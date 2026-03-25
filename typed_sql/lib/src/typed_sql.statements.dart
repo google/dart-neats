@@ -20,22 +20,26 @@ final class CreateTableStatement extends SqlStatement {
   final String tableName;
   final List<String> primaryKey;
   final List<
-      ({
-        String name,
-        ColumnType type,
-        bool isNotNull,
-        Expr<Object>? defaultValue,
-        bool autoIncrement,
-        List<SqlOverride> overrides,
-      })> columns;
+    ({
+      String name,
+      ColumnType type,
+      bool isNotNull,
+      Expr<Object>? defaultValue,
+      bool autoIncrement,
+      List<SqlOverride> overrides,
+    })
+  >
+  columns;
   final List<List<String>> unique;
   final List<
-      ({
-        List<String> columns,
-        String referencedTable,
-        List<String> referencedColumns,
-        String name,
-      })> foreignKeys;
+    ({
+      List<String> columns,
+      String referencedTable,
+      List<String> referencedColumns,
+      String name,
+    })
+  >
+  foreignKeys;
 
   CreateTableStatement._({
     required this.tableName,

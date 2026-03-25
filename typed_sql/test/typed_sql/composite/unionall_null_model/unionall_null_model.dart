@@ -50,11 +50,10 @@ void main() {
   });
 
   r.addTest('.unionAll((NULL, 42))', (db) async {
-    final q1 =
-        db.select((db.items.byKey(42).asExpr,)).asQuery.select((item) => (
-              item,
-              toExpr(42),
-            ));
+    final q1 = db
+        .select((db.items.byKey(42).asExpr,))
+        .asQuery
+        .select((item) => (item, toExpr(42)));
     final q2 = db.select((toExpr(null), toExpr(42))).asQuery;
 
     final result = await q1.unionAll(q2).fetch();
@@ -64,11 +63,10 @@ void main() {
 
   r.addTest('.insert + .unionAll((NULL, 42))', (db) async {
     await db.items.insert(id: toExpr(42), value: toExpr('hello')).execute();
-    final q1 =
-        db.select((db.items.byKey(42).asExpr,)).asQuery.select((item) => (
-              item,
-              toExpr(42),
-            ));
+    final q1 = db
+        .select((db.items.byKey(42).asExpr,))
+        .asQuery
+        .select((item) => (item, toExpr(42)));
     final q2 = db.select((toExpr(null), toExpr(42))).asQuery;
 
     final result = await q1.unionAll(q2).fetch();

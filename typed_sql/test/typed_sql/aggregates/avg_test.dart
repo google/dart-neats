@@ -18,57 +18,21 @@ import '../testrunner.dart';
 
 /// Test cases with a single value in each column.
 final _integerCases = [
-  (
-    name: '2, 2, 2',
-    values: [toExpr(2), toExpr(2), toExpr(2)],
-    avg: 2,
-  ),
-  (
-    name: '1, 2, 3',
-    values: [toExpr(1), toExpr(2), toExpr(3)],
-    avg: 2,
-  ),
-  (
-    name: '42',
-    values: [toExpr(42)],
-    avg: 42,
-  ),
-  (
-    name: '0, 0, 0',
-    values: [toExpr(0), toExpr(0), toExpr(0)],
-    avg: 0,
-  ),
-  (
-    name: '-1, 0, 1',
-    values: [toExpr(-1), toExpr(0), toExpr(1)],
-    avg: 0,
-  ),
-  (
-    name: '-1, -2, -3',
-    values: [toExpr(-1), toExpr(-2), toExpr(-3)],
-    avg: -2,
-  ),
-  (
-    name: '2, 1',
-    values: [toExpr(2), toExpr(1)],
-    avg: 1.5,
-  ),
+  (name: '2, 2, 2', values: [toExpr(2), toExpr(2), toExpr(2)], avg: 2),
+  (name: '1, 2, 3', values: [toExpr(1), toExpr(2), toExpr(3)], avg: 2),
+  (name: '42', values: [toExpr(42)], avg: 42),
+  (name: '0, 0, 0', values: [toExpr(0), toExpr(0), toExpr(0)], avg: 0),
+  (name: '-1, 0, 1', values: [toExpr(-1), toExpr(0), toExpr(1)], avg: 0),
+  (name: '-1, -2, -3', values: [toExpr(-1), toExpr(-2), toExpr(-3)], avg: -2),
+  (name: '2, 1', values: [toExpr(2), toExpr(1)], avg: 1.5),
   // Important to test that nulls are ignored when computing AVG
-  (
-    name: '2, null',
-    values: [toExpr(2), toExpr(null)],
-    avg: 2,
-  ),
+  (name: '2, null', values: [toExpr(2), toExpr(null)], avg: 2),
   (
     name: '2, null, null',
     values: [toExpr(2), toExpr(null), toExpr(null)],
     avg: 2,
   ),
-  (
-    name: '2, null, 1',
-    values: [toExpr(2), toExpr(null), toExpr(1)],
-    avg: 1.5,
-  ),
+  (name: '2, null, 1', values: [toExpr(2), toExpr(null), toExpr(1)], avg: 1.5),
   (
     name: 'null, null, null',
     // cast here is necessary for the first expression
@@ -88,11 +52,7 @@ final _doubleCases = [
     values: [toExpr(1.0), toExpr(2.0), toExpr(3.0)],
     avg: 2.0,
   ),
-  (
-    name: '42.0',
-    values: [toExpr(42.0)],
-    avg: 42.0,
-  ),
+  (name: '42.0', values: [toExpr(42.0)], avg: 42.0),
   (
     name: '0.0, 0.0, 0.0',
     values: [toExpr(0.0), toExpr(0.0), toExpr(0.0)],
@@ -108,11 +68,7 @@ final _doubleCases = [
     values: [toExpr(-1.0), toExpr(-2.0), toExpr(-3.0)],
     avg: -2.0,
   ),
-  (
-    name: '2.0, 1.0',
-    values: [toExpr(2.0), toExpr(1.0)],
-    avg: 1.5,
-  ),
+  (name: '2.0, 1.0', values: [toExpr(2.0), toExpr(1.0)], avg: 1.5),
   (
     name: '3.14, 3.14, 3.14',
     values: [toExpr(3.14), toExpr(3.14), toExpr(3.14)],
@@ -123,11 +79,7 @@ final _doubleCases = [
     values: [toExpr(3.14), toExpr(6.28), toExpr(9.42)],
     avg: 6.28,
   ),
-  (
-    name: '3.14',
-    values: [toExpr(3.14)],
-    avg: 3.14,
-  ),
+  (name: '3.14', values: [toExpr(3.14)], avg: 3.14),
   (
     name: '0.0, 3.14, 6.28',
     values: [toExpr(0.0), toExpr(3.14), toExpr(6.28)],
@@ -143,17 +95,9 @@ final _doubleCases = [
     values: [toExpr(-3.14), toExpr(-6.28), toExpr(-9.42)],
     avg: -6.28,
   ),
-  (
-    name: '3.14, 6.28',
-    values: [toExpr(3.14), toExpr(6.28)],
-    avg: 4.71,
-  ),
+  (name: '3.14, 6.28', values: [toExpr(3.14), toExpr(6.28)], avg: 4.71),
   // Important to test that nulls are ignored when computing AVG
-  (
-    name: '3.14, null',
-    values: [toExpr(3.14), toExpr(null)],
-    avg: 3.14,
-  ),
+  (name: '3.14, null', values: [toExpr(3.14), toExpr(null)], avg: 3.14),
   (
     name: '3.14, null, null',
     values: [toExpr(3.14), toExpr(null), toExpr(null)],
@@ -219,9 +163,7 @@ void main() {
 
   r.addTest('{null}.avg()', (db) async {
     final avg = await db
-        .select(
-          (toExpr(null).asDouble(),),
-        )
+        .select((toExpr(null).asDouble(),))
         .asQuery
         .avg()
         .fetch();

@@ -38,38 +38,18 @@ void main() {
   );
 
   r.addTest('.insert() two with differnet keys', (db) async {
-    await db.items
-        .insert(
-          key: toExpr('A'),
-          value: toExpr('hello'),
-        )
-        .execute();
-    await db.items
-        .insert(
-          key: toExpr('B'),
-          value: toExpr('world'),
-        )
-        .execute();
+    await db.items.insert(key: toExpr('A'), value: toExpr('hello')).execute();
+    await db.items.insert(key: toExpr('B'), value: toExpr('world')).execute();
 
     final items = await db.items.fetch();
     check(items).length.equals(2);
   });
 
   r.addTest('.insert() two same keys (conflict)', (db) async {
-    await db.items
-        .insert(
-          key: toExpr('A'),
-          value: toExpr('hello'),
-        )
-        .execute();
+    await db.items.insert(key: toExpr('A'), value: toExpr('hello')).execute();
 
     try {
-      await db.items
-          .insert(
-            key: toExpr('A'),
-            value: toExpr('world'),
-          )
-          .execute();
+      await db.items.insert(key: toExpr('A'), value: toExpr('world')).execute();
     } on Exception {
       return;
     }
@@ -77,12 +57,7 @@ void main() {
   });
 
   r.addTest('.byKey()', (db) async {
-    await db.items
-        .insert(
-          key: toExpr('A'),
-          value: toExpr('hello'),
-        )
-        .execute();
+    await db.items.insert(key: toExpr('A'), value: toExpr('hello')).execute();
 
     final item = await db.items.byKey('A').fetch();
     check(item).isNotNull().value.equals('hello');

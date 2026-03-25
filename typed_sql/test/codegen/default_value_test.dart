@@ -195,9 +195,7 @@ void main() {
         double get value;
       }
     ''',
-    error: contains(
-      'DefaultValue(int) cannot be cast to double',
-    ),
+    error: contains('DefaultValue(int) cannot be cast to double'),
   );
 
   testCodeGeneration(
@@ -235,8 +233,6 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
-      'DefaultValue(double) is only allowed for double fields',
-    ),
+    error: contains('DefaultValue(double) is only allowed for double fields'),
   );
 }
