@@ -112,7 +112,7 @@ void main() {
 
   r.addTest('orderBy(.id)', (db) async {
     final result = await db.items
-        .orderBy((i) => [(i.id, Order.ascending)])
+        .orderBy((i) => [(i.id, .ascending)])
         .select((i) => (i.id,))
         .fetch();
     check(result).deepEquals([1, 2, 3, 4, 5, 6, 7, 8]);
@@ -123,9 +123,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.text, Order.ascending),
-            (i.real, Order.ascending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.text, .ascending),
+            (i.real, .ascending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.text, i.real))
@@ -146,9 +146,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.text, Order.ascending),
-            (i.real, Order.descending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.text, .ascending),
+            (i.real, .descending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.text, i.real))
@@ -169,9 +169,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.text, Order.descending),
-            (i.real, Order.ascending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.text, .descending),
+            (i.real, .ascending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.text, i.real))
@@ -192,9 +192,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.text, Order.descending),
-            (i.real, Order.descending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.text, .descending),
+            (i.real, .descending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.text, i.real))
@@ -216,9 +216,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.text, Order.ascending),
-            (i.integer, Order.ascending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.text, .ascending),
+            (i.integer, .ascending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.text, i.integer))
@@ -239,9 +239,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.text, Order.ascending),
-            (i.integer, Order.descending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.text, .ascending),
+            (i.integer, .descending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.text, i.integer))
@@ -262,9 +262,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.text, Order.descending),
-            (i.integer, Order.ascending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.text, .descending),
+            (i.integer, .ascending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.text, i.integer))
@@ -285,9 +285,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.text, Order.descending),
-            (i.integer, Order.descending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.text, .descending),
+            (i.integer, .descending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.text, i.integer))
@@ -309,9 +309,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.integer, Order.ascending),
-            (i.text, Order.ascending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.integer, .ascending),
+            (i.text, .ascending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.integer, i.text))
@@ -332,9 +332,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.integer, Order.ascending),
-            (i.text, Order.descending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.integer, .ascending),
+            (i.text, .descending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.integer, i.text))
@@ -355,9 +355,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.integer, Order.descending),
-            (i.text, Order.ascending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.integer, .descending),
+            (i.text, .ascending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.integer, i.text))
@@ -378,9 +378,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.integer, Order.descending),
-            (i.text, Order.descending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.integer, .descending),
+            (i.text, .descending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.integer, i.text))
@@ -402,9 +402,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.timestamp, Order.ascending),
-            (i.text, Order.ascending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.timestamp, .ascending),
+            (i.text, .ascending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.timestamp, i.text))
@@ -425,9 +425,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.timestamp, Order.ascending),
-            (i.text, Order.descending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.timestamp, .ascending),
+            (i.text, .descending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.timestamp, i.text))
@@ -448,9 +448,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.timestamp, Order.descending),
-            (i.text, Order.ascending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.timestamp, .descending),
+            (i.text, .ascending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.timestamp, i.text))
@@ -471,9 +471,9 @@ void main() {
     final result = await db.items
         .orderBy(
           (i) => [
-            (i.timestamp, Order.descending),
-            (i.text, Order.descending),
-            (i.id, Order.ascending), // ensure consistent tests
+            (i.timestamp, .descending),
+            (i.text, .descending),
+            (i.id, .ascending), // ensure consistent tests
           ],
         )
         .select((i) => (i.id, i.timestamp, i.text))

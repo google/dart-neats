@@ -432,7 +432,7 @@ void main() {
   r.addTest('Query.orderBy', (db) async {
     // #region query-orderby
     final result = await db.books
-        .orderBy((b) => [(b.stock, Order.descending)])
+        .orderBy((b) => [(b.stock, .descending)])
         .select((b) => (b.title, b.stock))
         .fetch();
 
@@ -450,7 +450,7 @@ void main() {
   r.addTest('Query.orderBy.offset.limit', (db) async {
     // #region query-orderby-offset
     final result = await db.books
-        .orderBy((b) => [(b.stock, Order.descending)])
+        .orderBy((b) => [(b.stock, .descending)])
         .select((b) => (b.title, b.stock))
         // The order in which .orderBy, .offset, .limit appears is significant.
         .offset(2)
@@ -469,11 +469,11 @@ void main() {
   r.addTest('Query.orderBy.limit.where', (db) async {
     // #region query-orderby-limit-where
     final result = await db.books
-        .orderBy((b) => [(b.stock, Order.descending)])
+        .orderBy((b) => [(b.stock, .descending)])
         .limit(3)
         .asQuery // allow the ordering to be discarded!
         .where((b) => b.authorId.equalsValue(2))
-        .orderBy((b) => [(b.stock, Order.descending)])
+        .orderBy((b) => [(b.stock, .descending)])
         .select((b) => (b.title, b.stock))
         .fetch();
 
@@ -488,7 +488,7 @@ void main() {
     // #region query-where-orderby-limit
     final result = await db.books
         .where((b) => b.authorId.equalsValue(2))
-        .orderBy((b) => [(b.stock, Order.descending)])
+        .orderBy((b) => [(b.stock, .descending)])
         .limit(3)
         .select((b) => (b.title, b.stock))
         .fetch();

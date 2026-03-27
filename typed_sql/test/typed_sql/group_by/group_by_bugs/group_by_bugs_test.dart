@@ -97,7 +97,7 @@ void main() {
     final result = await db.items
         .groupBy((i) => (i.category,))
         .aggregate((agg) => agg.sum((i) => i.score))
-        .orderBy((category, sumScore) => [(sumScore, Order.descending)])
+        .orderBy((category, sumScore) => [(sumScore, .descending)])
         .limit(1)
         .fetch();
 

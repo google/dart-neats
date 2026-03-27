@@ -350,7 +350,7 @@ void main() {
       final result = await c.values
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2))
-          .orderBy((v) => [(v, Order.ascending)])
+          .orderBy((v) => [(v, .ascending)])
           .fetch();
 
       check(result).deepEquals(c.ascending);
@@ -360,7 +360,7 @@ void main() {
       final result = await c.values
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2))
-          .orderBy((v) => [(v, Order.descending)])
+          .orderBy((v) => [(v, .descending)])
           .fetch();
 
       check(result).deepEquals(c.descending);
@@ -372,7 +372,7 @@ void main() {
       final result = await c.values
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2))
-          .orderBy((v) => [(v, Order.ascending)])
+          .orderBy((v) => [(v, .ascending)])
           .fetch();
 
       check(result).deepEquals(c.ascending);
@@ -382,7 +382,7 @@ void main() {
       final result = await c.values
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2))
-          .orderBy((v) => [(v, Order.descending)])
+          .orderBy((v) => [(v, .descending)])
           .fetch();
 
       check(result).deepEquals(c.descending);
@@ -394,7 +394,7 @@ void main() {
       final result = await c.values
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2))
-          .orderBy((v) => [(v, Order.ascending)])
+          .orderBy((v) => [(v, .ascending)])
           .fetch();
 
       check(result).deepEquals(c.ascending);
@@ -404,7 +404,7 @@ void main() {
       final result = await c.values
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2))
-          .orderBy((v) => [(v, Order.descending)])
+          .orderBy((v) => [(v, .descending)])
           .fetch();
 
       check(result).deepEquals(c.descending);
@@ -416,7 +416,7 @@ void main() {
       final result = await c.values
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2))
-          .orderBy((v) => [(v, Order.ascending)])
+          .orderBy((v) => [(v, .ascending)])
           .fetch();
 
       check(result).deepEquals(c.ascending);
@@ -426,7 +426,7 @@ void main() {
       final result = await c.values
           .map((v) => db.select((v,)).asQuery)
           .reduce((q1, q2) => q1.unionAll(q2))
-          .orderBy((v) => [(v, Order.descending)])
+          .orderBy((v) => [(v, .descending)])
           .fetch();
 
       check(result).deepEquals(c.descending);
@@ -438,7 +438,7 @@ void main() {
         .select((toExpr(42.0),))
         .asQuery
         .where((v) => v.equalsValue(3.0))
-        .orderBy((v) => [(v, Order.ascending)])
+        .orderBy((v) => [(v, .ascending)])
         .first
         .fetch();
     check(result).isNull();
@@ -450,7 +450,7 @@ void main() {
           (toExpr(null).asDouble(),),
         )
         .asQuery
-        .orderBy((v) => [(v, Order.ascending)])
+        .orderBy((v) => [(v, .ascending)])
         .first
         .fetch();
     check(result).isNull();
@@ -461,7 +461,7 @@ void main() {
         .select((toExpr(42.0),))
         .asQuery
         .where((v) => v.equalsValue(3.0))
-        .orderBy((v) => [(v, Order.descending)])
+        .orderBy((v) => [(v, .descending)])
         .first
         .fetch();
     check(result).isNull();
@@ -473,7 +473,7 @@ void main() {
           (toExpr(null).asDouble(),),
         )
         .asQuery
-        .orderBy((v) => [(v, Order.descending)])
+        .orderBy((v) => [(v, .descending)])
         .first
         .fetch();
     check(result).isNull();

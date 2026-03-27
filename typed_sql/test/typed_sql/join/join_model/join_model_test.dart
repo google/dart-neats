@@ -577,7 +577,7 @@ void main() {
             rowCount,
           ),
         )
-        .orderBy((deptName, rowCount) => [(deptName, Order.ascending)])
+        .orderBy((deptName, rowCount) => [(deptName, .ascending)])
         .fetch();
 
     check(result).deepEquals([
