@@ -10,15 +10,10 @@ part of 'blog_test.dart';
 extension BlogDatabaseSchema on Database<BlogDatabase> {
   static const _$tables = [_$Post._$table, _$Comment._$table];
 
-  Table<Post> get posts => $ForGeneratedCode.declareTable(
-    this,
-    _$Post._$table,
-  );
+  Table<Post> get posts => $ForGeneratedCode.declareTable(this, _$Post._$table);
 
-  Table<Comment> get comments => $ForGeneratedCode.declareTable(
-    this,
-    _$Comment._$table,
-  );
+  Table<Comment> get comments =>
+      $ForGeneratedCode.declareTable(this, _$Comment._$table);
 
   /// Create tables defined in [BlogDatabase].
   ///
@@ -32,10 +27,8 @@ extension BlogDatabaseSchema on Database<BlogDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [BlogDatabase].
@@ -49,18 +42,11 @@ extension BlogDatabaseSchema on Database<BlogDatabase> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBlogDatabaseTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: BlogDatabaseSchema._$tables,
-    );
+String createBlogDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: BlogDatabaseSchema._$tables);
 
 final class _$Post extends Post {
-  _$Post._(
-    this.author,
-    this.slug,
-    this.content,
-  );
+  _$Post._(this.author, this.slug, this.content);
 
   @override
   final String author;
@@ -151,11 +137,7 @@ extension TablePostExt on Table<Post> {
     required Expr<String> content,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      author,
-      slug,
-      content,
-    ],
+    values: [author, slug, content],
   );
 
   /// Delete a single row from the `posts` table, specified by
@@ -167,13 +149,8 @@ extension TablePostExt on Table<Post> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Post> delete(
-    String author,
-    String slug,
-  ) => $ForGeneratedCode.deleteSingle(
-    byKey(author, slug),
-    _$Post._$table,
-  );
+  DeleteSingle<Post> delete(String author, String slug) =>
+      $ForGeneratedCode.deleteSingle(byKey(author, slug), _$Post._$table);
 }
 
 /// Extension methods for building queries against the `posts` table.
@@ -182,10 +159,7 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Post>,)> byKey(
-    String author,
-    String slug,
-  ) => where(
+  QuerySingle<(Expr<Post>,)> byKey(String author, String slug) => where(
     (post) => post.author.equalsValue(author) & post.slug.equalsValue(slug),
   ).first;
 
@@ -232,15 +206,8 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
     _$Post._$table,
     (post) => updateBuilder(
       post,
-      ({
-        Expr<String>? author,
-        Expr<String>? slug,
-        Expr<String>? content,
-      }) => $ForGeneratedCode.buildUpdate<Post>([
-        author,
-        slug,
-        content,
-      ]),
+      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
+          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
     ),
   );
 
@@ -298,15 +265,8 @@ extension QuerySinglePostExt on QuerySingle<(Expr<Post>,)> {
     _$Post._$table,
     (post) => updateBuilder(
       post,
-      ({
-        Expr<String>? author,
-        Expr<String>? slug,
-        Expr<String>? content,
-      }) => $ForGeneratedCode.buildUpdate<Post>([
-        author,
-        slug,
-        content,
-      ]),
+      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
+          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
     ),
   );
 
@@ -413,12 +373,7 @@ extension RightJoinPostCommentExt
 }
 
 final class _$Comment extends Comment {
-  _$Comment._(
-    this.commentId,
-    this.author,
-    this.postSlug,
-    this.comment,
-  );
+  _$Comment._(this.commentId, this.author, this.postSlug, this.comment);
 
   @override
   final int commentId;
@@ -531,12 +486,7 @@ extension TableCommentExt on Table<Comment> {
     required Expr<String> comment,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      commentId,
-      author,
-      postSlug,
-      comment,
-    ],
+    values: [commentId, author, postSlug, comment],
   );
 
   /// Delete a single row from the `comments` table, specified by
@@ -548,10 +498,8 @@ extension TableCommentExt on Table<Comment> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Comment> delete(int commentId) => $ForGeneratedCode.deleteSingle(
-    byKey(commentId),
-    _$Comment._$table,
-  );
+  DeleteSingle<Comment> delete(int commentId) =>
+      $ForGeneratedCode.deleteSingle(byKey(commentId), _$Comment._$table);
 }
 
 /// Extension methods for building queries against the `comments` table.

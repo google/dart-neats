@@ -10,15 +10,10 @@ part of 'composite_foreign_key_test.dart';
 extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Author._$table, _$Book._$table];
 
-  Table<Author> get authors => $ForGeneratedCode.declareTable(
-    this,
-    _$Author._$table,
-  );
+  Table<Author> get authors =>
+      $ForGeneratedCode.declareTable(this, _$Author._$table);
 
-  Table<Book> get books => $ForGeneratedCode.declareTable(
-    this,
-    _$Book._$table,
-  );
+  Table<Book> get books => $ForGeneratedCode.declareTable(this, _$Book._$table);
 
   /// Create tables defined in [TestDatabase].
   ///
@@ -32,10 +27,8 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
@@ -49,17 +42,11 @@ extension TestDatabaseSchema on Database<TestDatabase> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createTestDatabaseTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: TestDatabaseSchema._$tables,
-    );
+String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
 final class _$Author extends Author {
-  _$Author._(
-    this.firstName,
-    this.lastName,
-  );
+  _$Author._(this.firstName, this.lastName);
 
   @override
   final String firstName;
@@ -135,13 +122,8 @@ extension TableAuthorExt on Table<Author> {
   InsertSingle<Author> insert({
     required Expr<String> firstName,
     required Expr<String> lastName,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [
-      firstName,
-      lastName,
-    ],
-  );
+  }) =>
+      $ForGeneratedCode.insertInto(table: this, values: [firstName, lastName]);
 
   /// Delete a single row from the `authors` table, specified by
   /// _primary key_.
@@ -152,13 +134,11 @@ extension TableAuthorExt on Table<Author> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Author> delete(
-    String firstName,
-    String lastName,
-  ) => $ForGeneratedCode.deleteSingle(
-    byKey(firstName, lastName),
-    _$Author._$table,
-  );
+  DeleteSingle<Author> delete(String firstName, String lastName) =>
+      $ForGeneratedCode.deleteSingle(
+        byKey(firstName, lastName),
+        _$Author._$table,
+      );
 }
 
 /// Extension methods for building queries against the `authors` table.
@@ -167,14 +147,12 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Author>,)> byKey(
-    String firstName,
-    String lastName,
-  ) => where(
-    (author) =>
-        author.firstName.equalsValue(firstName) &
-        author.lastName.equalsValue(lastName),
-  ).first;
+  QuerySingle<(Expr<Author>,)> byKey(String firstName, String lastName) =>
+      where(
+        (author) =>
+            author.firstName.equalsValue(firstName) &
+            author.lastName.equalsValue(lastName),
+      ).first;
 
   /// Update all rows in the `authors` table matching this [Query].
   ///
@@ -218,13 +196,8 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
     _$Author._$table,
     (author) => updateBuilder(
       author,
-      ({
-        Expr<String>? firstName,
-        Expr<String>? lastName,
-      }) => $ForGeneratedCode.buildUpdate<Author>([
-        firstName,
-        lastName,
-      ]),
+      ({Expr<String>? firstName, Expr<String>? lastName}) =>
+          $ForGeneratedCode.buildUpdate<Author>([firstName, lastName]),
     ),
   );
 
@@ -281,13 +254,8 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
     _$Author._$table,
     (author) => updateBuilder(
       author,
-      ({
-        Expr<String>? firstName,
-        Expr<String>? lastName,
-      }) => $ForGeneratedCode.buildUpdate<Author>([
-        firstName,
-        lastName,
-      ]),
+      ({Expr<String>? firstName, Expr<String>? lastName}) =>
+          $ForGeneratedCode.buildUpdate<Author>([firstName, lastName]),
     ),
   );
 
@@ -537,13 +505,7 @@ extension TableBookExt on Table<Book> {
     required Expr<int> stock,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      bookId,
-      title,
-      authorFirstName,
-      authorLastName,
-      stock,
-    ],
+    values: [bookId, title, authorFirstName, authorLastName, stock],
   );
 
   /// Delete a single row from the `books` table, specified by
@@ -555,10 +517,8 @@ extension TableBookExt on Table<Book> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Book> delete(int bookId) => $ForGeneratedCode.deleteSingle(
-    byKey(bookId),
-    _$Book._$table,
-  );
+  DeleteSingle<Book> delete(int bookId) =>
+      $ForGeneratedCode.deleteSingle(byKey(bookId), _$Book._$table);
 }
 
 /// Extension methods for building queries against the `books` table.

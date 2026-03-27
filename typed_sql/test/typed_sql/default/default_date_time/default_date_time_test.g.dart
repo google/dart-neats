@@ -10,10 +10,7 @@ part of 'default_date_time_test.dart';
 extension MySchemaSchema on Database<MySchema> {
   static const _$tables = [_$Item._$table];
 
-  Table<Item> get items => $ForGeneratedCode.declareTable(
-    this,
-    _$Item._$table,
-  );
+  Table<Item> get items => $ForGeneratedCode.declareTable(this, _$Item._$table);
 
   /// Create tables defined in [MySchema].
   ///
@@ -27,10 +24,8 @@ extension MySchemaSchema on Database<MySchema> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [MySchema].
@@ -44,20 +39,11 @@ extension MySchemaSchema on Database<MySchema> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createMySchemaTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: MySchemaSchema._$tables,
-    );
+String createMySchemaTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: MySchemaSchema._$tables);
 
 final class _$Item extends Item {
-  _$Item._(
-    this.id,
-    this.name,
-    this.birthday,
-    this.createdAt,
-    this.expires,
-  );
+  _$Item._(this.id, this.name, this.birthday, this.createdAt, this.expires);
 
   @override
   final int id;
@@ -175,13 +161,7 @@ extension TableItemExt on Table<Item> {
     Expr<DateTime>? expires,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      id,
-      name,
-      birthday,
-      createdAt,
-      expires,
-    ],
+    values: [id, name, birthday, createdAt, expires],
   );
 
   /// Delete a single row from the `items` table, specified by
@@ -193,10 +173,8 @@ extension TableItemExt on Table<Item> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Item> delete(int id) => $ForGeneratedCode.deleteSingle(
-    byKey(id),
-    _$Item._$table,
-  );
+  DeleteSingle<Item> delete(int id) =>
+      $ForGeneratedCode.deleteSingle(byKey(id), _$Item._$table);
 }
 
 /// Extension methods for building queries against the `items` table.

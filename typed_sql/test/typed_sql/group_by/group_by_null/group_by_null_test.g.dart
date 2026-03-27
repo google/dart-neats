@@ -10,10 +10,8 @@ part of 'group_by_null_test.dart';
 extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Employee._$table];
 
-  Table<Employee> get employees => $ForGeneratedCode.declareTable(
-    this,
-    _$Employee._$table,
-  );
+  Table<Employee> get employees =>
+      $ForGeneratedCode.declareTable(this, _$Employee._$table);
 
   /// Create tables defined in [TestDatabase].
   ///
@@ -27,10 +25,8 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
@@ -44,19 +40,11 @@ extension TestDatabaseSchema on Database<TestDatabase> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createTestDatabaseTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: TestDatabaseSchema._$tables,
-    );
+String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
 final class _$Employee extends Employee {
-  _$Employee._(
-    this.id,
-    this.surname,
-    this.seniority,
-    this.salary,
-  );
+  _$Employee._(this.id, this.surname, this.seniority, this.salary);
 
   @override
   final int id;
@@ -155,12 +143,7 @@ extension TableEmployeeExt on Table<Employee> {
     Expr<int?>? salary,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      id,
-      surname,
-      seniority,
-      salary,
-    ],
+    values: [id, surname, seniority, salary],
   );
 
   /// Delete a single row from the `employees` table, specified by
@@ -172,10 +155,8 @@ extension TableEmployeeExt on Table<Employee> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Employee> delete(int id) => $ForGeneratedCode.deleteSingle(
-    byKey(id),
-    _$Employee._$table,
-  );
+  DeleteSingle<Employee> delete(int id) =>
+      $ForGeneratedCode.deleteSingle(byKey(id), _$Employee._$table);
 }
 
 /// Extension methods for building queries against the `employees` table.

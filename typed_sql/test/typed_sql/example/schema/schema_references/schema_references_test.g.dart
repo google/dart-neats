@@ -10,15 +10,10 @@ part of 'schema_references_test.dart';
 extension BookstoreSchema on Database<Bookstore> {
   static const _$tables = [_$Author._$table, _$Book._$table];
 
-  Table<Author> get authors => $ForGeneratedCode.declareTable(
-    this,
-    _$Author._$table,
-  );
+  Table<Author> get authors =>
+      $ForGeneratedCode.declareTable(this, _$Author._$table);
 
-  Table<Book> get books => $ForGeneratedCode.declareTable(
-    this,
-    _$Book._$table,
-  );
+  Table<Book> get books => $ForGeneratedCode.declareTable(this, _$Book._$table);
 
   /// Create tables defined in [Bookstore].
   ///
@@ -32,10 +27,8 @@ extension BookstoreSchema on Database<Bookstore> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [Bookstore].
@@ -49,17 +42,11 @@ extension BookstoreSchema on Database<Bookstore> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBookstoreTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: BookstoreSchema._$tables,
-    );
+String createBookstoreTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: BookstoreSchema._$tables);
 
 final class _$Author extends Author {
-  _$Author._(
-    this.authorId,
-    this.name,
-  );
+  _$Author._(this.authorId, this.name);
 
   @override
   final int authorId;
@@ -135,13 +122,7 @@ extension TableAuthorExt on Table<Author> {
   InsertSingle<Author> insert({
     Expr<int>? authorId,
     required Expr<String> name,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [
-      authorId,
-      name,
-    ],
-  );
+  }) => $ForGeneratedCode.insertInto(table: this, values: [authorId, name]);
 
   /// Delete a single row from the `authors` table, specified by
   /// _primary key_.
@@ -152,10 +133,8 @@ extension TableAuthorExt on Table<Author> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Author> delete(int authorId) => $ForGeneratedCode.deleteSingle(
-    byKey(authorId),
-    _$Author._$table,
-  );
+  DeleteSingle<Author> delete(int authorId) =>
+      $ForGeneratedCode.deleteSingle(byKey(authorId), _$Author._$table);
 }
 
 /// Extension methods for building queries against the `authors` table.
@@ -197,11 +176,7 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   Update<Author> update(
     UpdateSet<Author> Function(
       Expr<Author> author,
-      UpdateSet<Author> Function({
-        Expr<int> authorId,
-        Expr<String> name,
-      })
-      set,
+      UpdateSet<Author> Function({Expr<int> authorId, Expr<String> name}) set,
     )
     updateBuilder,
   ) => $ForGeneratedCode.update<Author>(
@@ -209,13 +184,8 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
     _$Author._$table,
     (author) => updateBuilder(
       author,
-      ({
-        Expr<int>? authorId,
-        Expr<String>? name,
-      }) => $ForGeneratedCode.buildUpdate<Author>([
-        authorId,
-        name,
-      ]),
+      ({Expr<int>? authorId, Expr<String>? name}) =>
+          $ForGeneratedCode.buildUpdate<Author>([authorId, name]),
     ),
   );
 
@@ -271,11 +241,7 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
   UpdateSingle<Author> update(
     UpdateSet<Author> Function(
       Expr<Author> author,
-      UpdateSet<Author> Function({
-        Expr<int> authorId,
-        Expr<String> name,
-      })
-      set,
+      UpdateSet<Author> Function({Expr<int> authorId, Expr<String> name}) set,
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateSingle<Author>(
@@ -283,13 +249,8 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
     _$Author._$table,
     (author) => updateBuilder(
       author,
-      ({
-        Expr<int>? authorId,
-        Expr<String>? name,
-      }) => $ForGeneratedCode.buildUpdate<Author>([
-        authorId,
-        name,
-      ]),
+      ({Expr<int>? authorId, Expr<String>? name}) =>
+          $ForGeneratedCode.buildUpdate<Author>([authorId, name]),
     ),
   );
 
@@ -384,12 +345,7 @@ extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
 }
 
 final class _$Book extends Book {
-  _$Book._(
-    this.bookId,
-    this.title,
-    this.authorId,
-    this.stock,
-  );
+  _$Book._(this.bookId, this.title, this.authorId, this.stock);
 
   @override
   final int bookId;
@@ -495,12 +451,7 @@ extension TableBookExt on Table<Book> {
     Expr<int>? stock,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      bookId,
-      title,
-      authorId,
-      stock,
-    ],
+    values: [bookId, title, authorId, stock],
   );
 
   /// Delete a single row from the `books` table, specified by
@@ -512,10 +463,8 @@ extension TableBookExt on Table<Book> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Book> delete(int bookId) => $ForGeneratedCode.deleteSingle(
-    byKey(bookId),
-    _$Book._$table,
-  );
+  DeleteSingle<Book> delete(int bookId) =>
+      $ForGeneratedCode.deleteSingle(byKey(bookId), _$Book._$table);
 }
 
 /// Extension methods for building queries against the `books` table.
@@ -576,12 +525,8 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
         Expr<String?>? title,
         Expr<int>? authorId,
         Expr<int>? stock,
-      }) => $ForGeneratedCode.buildUpdate<Book>([
-        bookId,
-        title,
-        authorId,
-        stock,
-      ]),
+      }) =>
+          $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
     ),
   );
 
@@ -645,12 +590,8 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
         Expr<String?>? title,
         Expr<int>? authorId,
         Expr<int>? stock,
-      }) => $ForGeneratedCode.buildUpdate<Book>([
-        bookId,
-        title,
-        authorId,
-        stock,
-      ]),
+      }) =>
+          $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
     ),
   );
 

@@ -10,20 +10,12 @@ part of 'model.dart';
 extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   static const _$tables = [_$User._$table, _$Package._$table, _$Like._$table];
 
-  Table<User> get users => $ForGeneratedCode.declareTable(
-    this,
-    _$User._$table,
-  );
+  Table<User> get users => $ForGeneratedCode.declareTable(this, _$User._$table);
 
-  Table<Package> get packages => $ForGeneratedCode.declareTable(
-    this,
-    _$Package._$table,
-  );
+  Table<Package> get packages =>
+      $ForGeneratedCode.declareTable(this, _$Package._$table);
 
-  Table<Like> get likes => $ForGeneratedCode.declareTable(
-    this,
-    _$Like._$table,
-  );
+  Table<Like> get likes => $ForGeneratedCode.declareTable(this, _$Like._$table);
 
   /// Create tables defined in [PrimaryDatabase].
   ///
@@ -37,10 +29,8 @@ extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [PrimaryDatabase].
@@ -61,11 +51,7 @@ String createPrimaryDatabaseTables(SqlDialect dialect) =>
     );
 
 final class _$User extends User {
-  _$User._(
-    this.userId,
-    this.name,
-    this.email,
-  );
+  _$User._(this.userId, this.name, this.email);
 
   @override
   final int userId;
@@ -152,14 +138,8 @@ extension TableUserExt on Table<User> {
     Expr<int>? userId,
     required Expr<String> name,
     required Expr<String> email,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [
-      userId,
-      name,
-      email,
-    ],
-  );
+  }) =>
+      $ForGeneratedCode.insertInto(table: this, values: [userId, name, email]);
 
   /// Delete a single row from the `users` table, specified by
   /// _primary key_.
@@ -170,10 +150,8 @@ extension TableUserExt on Table<User> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<User> delete(int userId) => $ForGeneratedCode.deleteSingle(
-    byKey(userId),
-    _$User._$table,
-  );
+  DeleteSingle<User> delete(int userId) =>
+      $ForGeneratedCode.deleteSingle(byKey(userId), _$User._$table);
 }
 
 /// Extension methods for building queries against the `users` table.
@@ -228,15 +206,8 @@ extension QueryUserExt on Query<(Expr<User>,)> {
     _$User._$table,
     (user) => updateBuilder(
       user,
-      ({
-        Expr<int>? userId,
-        Expr<String>? name,
-        Expr<String>? email,
-      }) => $ForGeneratedCode.buildUpdate<User>([
-        userId,
-        name,
-        email,
-      ]),
+      ({Expr<int>? userId, Expr<String>? name, Expr<String>? email}) =>
+          $ForGeneratedCode.buildUpdate<User>([userId, name, email]),
     ),
   );
 
@@ -305,15 +276,8 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
     _$User._$table,
     (user) => updateBuilder(
       user,
-      ({
-        Expr<int>? userId,
-        Expr<String>? name,
-        Expr<String>? email,
-      }) => $ForGeneratedCode.buildUpdate<User>([
-        userId,
-        name,
-        email,
-      ]),
+      ({Expr<int>? userId, Expr<String>? name, Expr<String>? email}) =>
+          $ForGeneratedCode.buildUpdate<User>([userId, name, email]),
     ),
   );
 
@@ -416,12 +380,7 @@ extension RightJoinUserPackageExt
 }
 
 final class _$Package extends Package {
-  _$Package._(
-    this.packageName,
-    this.likes,
-    this.ownerId,
-    this.publisher,
-  );
+  _$Package._(this.packageName, this.likes, this.ownerId, this.publisher);
 
   @override
   final String packageName;
@@ -530,12 +489,7 @@ extension TablePackageExt on Table<Package> {
     Expr<String?>? publisher,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      packageName,
-      likes,
-      ownerId,
-      publisher,
-    ],
+    values: [packageName, likes, ownerId, publisher],
   );
 
   /// Delete a single row from the `packages` table, specified by
@@ -548,10 +502,7 @@ extension TablePackageExt on Table<Package> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Package> delete(String packageName) =>
-      $ForGeneratedCode.deleteSingle(
-        byKey(packageName),
-        _$Package._$table,
-      );
+      $ForGeneratedCode.deleteSingle(byKey(packageName), _$Package._$table);
 }
 
 /// Extension methods for building queries against the `packages` table.
@@ -798,10 +749,7 @@ extension RightJoinPackageUserExt
 }
 
 final class _$Like extends Like {
-  _$Like._(
-    this.userId,
-    this.packageName,
-  );
+  _$Like._(this.userId, this.packageName);
 
   @override
   final int userId;
@@ -873,13 +821,8 @@ extension TableLikeExt on Table<Like> {
   InsertSingle<Like> insert({
     required Expr<int> userId,
     required Expr<String> packageName,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [
-      userId,
-      packageName,
-    ],
-  );
+  }) =>
+      $ForGeneratedCode.insertInto(table: this, values: [userId, packageName]);
 
   /// Delete a single row from the `likes` table, specified by
   /// _primary key_.
@@ -890,13 +833,8 @@ extension TableLikeExt on Table<Like> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Like> delete(
-    int userId,
-    String packageName,
-  ) => $ForGeneratedCode.deleteSingle(
-    byKey(userId, packageName),
-    _$Like._$table,
-  );
+  DeleteSingle<Like> delete(int userId, String packageName) => $ForGeneratedCode
+      .deleteSingle(byKey(userId, packageName), _$Like._$table);
 }
 
 /// Extension methods for building queries against the `likes` table.
@@ -905,10 +843,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Like>,)> byKey(
-    int userId,
-    String packageName,
-  ) => where(
+  QuerySingle<(Expr<Like>,)> byKey(int userId, String packageName) => where(
     (like) =>
         like.userId.equalsValue(userId) &
         like.packageName.equalsValue(packageName),
@@ -944,10 +879,7 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
   Update<Like> update(
     UpdateSet<Like> Function(
       Expr<Like> like,
-      UpdateSet<Like> Function({
-        Expr<int> userId,
-        Expr<String> packageName,
-      })
+      UpdateSet<Like> Function({Expr<int> userId, Expr<String> packageName})
       set,
     )
     updateBuilder,
@@ -956,13 +888,8 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
     _$Like._$table,
     (like) => updateBuilder(
       like,
-      ({
-        Expr<int>? userId,
-        Expr<String>? packageName,
-      }) => $ForGeneratedCode.buildUpdate<Like>([
-        userId,
-        packageName,
-      ]),
+      ({Expr<int>? userId, Expr<String>? packageName}) =>
+          $ForGeneratedCode.buildUpdate<Like>([userId, packageName]),
     ),
   );
 
@@ -1007,10 +934,7 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
   UpdateSingle<Like> update(
     UpdateSet<Like> Function(
       Expr<Like> like,
-      UpdateSet<Like> Function({
-        Expr<int> userId,
-        Expr<String> packageName,
-      })
+      UpdateSet<Like> Function({Expr<int> userId, Expr<String> packageName})
       set,
     )
     updateBuilder,
@@ -1019,13 +943,8 @@ extension QuerySingleLikeExt on QuerySingle<(Expr<Like>,)> {
     _$Like._$table,
     (like) => updateBuilder(
       like,
-      ({
-        Expr<int>? userId,
-        Expr<String>? packageName,
-      }) => $ForGeneratedCode.buildUpdate<Like>([
-        userId,
-        packageName,
-      ]),
+      ({Expr<int>? userId, Expr<String>? packageName}) =>
+          $ForGeneratedCode.buildUpdate<Like>([userId, packageName]),
     ),
   );
 

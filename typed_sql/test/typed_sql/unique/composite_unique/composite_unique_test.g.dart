@@ -10,10 +10,7 @@ part of 'composite_unique_test.dart';
 extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   static const _$tables = [_$User._$table];
 
-  Table<User> get users => $ForGeneratedCode.declareTable(
-    this,
-    _$User._$table,
-  );
+  Table<User> get users => $ForGeneratedCode.declareTable(this, _$User._$table);
 
   /// Create tables defined in [PrimaryDatabase].
   ///
@@ -27,10 +24,8 @@ extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [PrimaryDatabase].
@@ -51,11 +46,7 @@ String createPrimaryDatabaseTables(SqlDialect dialect) =>
     );
 
 final class _$User extends User {
-  _$User._(
-    this.accountId,
-    this.firstName,
-    this.lastName,
-  );
+  _$User._(this.accountId, this.firstName, this.lastName);
 
   @override
   final int accountId;
@@ -148,11 +139,7 @@ extension TableUserExt on Table<User> {
     required Expr<String> lastName,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      accountId,
-      firstName,
-      lastName,
-    ],
+    values: [accountId, firstName, lastName],
   );
 
   /// Delete a single row from the `users` table, specified by
@@ -164,10 +151,8 @@ extension TableUserExt on Table<User> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<User> delete(int accountId) => $ForGeneratedCode.deleteSingle(
-    byKey(accountId),
-    _$User._$table,
-  );
+  DeleteSingle<User> delete(int accountId) =>
+      $ForGeneratedCode.deleteSingle(byKey(accountId), _$User._$table);
 }
 
 /// Extension methods for building queries against the `users` table.
@@ -226,11 +211,8 @@ extension QueryUserExt on Query<(Expr<User>,)> {
         Expr<int>? accountId,
         Expr<String>? firstName,
         Expr<String>? lastName,
-      }) => $ForGeneratedCode.buildUpdate<User>([
-        accountId,
-        firstName,
-        lastName,
-      ]),
+      }) =>
+          $ForGeneratedCode.buildUpdate<User>([accountId, firstName, lastName]),
     ),
   );
 
@@ -242,14 +224,12 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<User>,)> byFullname(
-    String firstName,
-    String lastName,
-  ) => where(
-    (user) =>
-        user.firstName.equalsValue(firstName) &
-        user.lastName.equalsValue(lastName),
-  ).first;
+  QuerySingle<(Expr<User>,)> byFullname(String firstName, String lastName) =>
+      where(
+        (user) =>
+            user.firstName.equalsValue(firstName) &
+            user.lastName.equalsValue(lastName),
+      ).first;
 
   /// Delete all rows in the `users` table matching this [Query].
   ///
@@ -309,11 +289,8 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
         Expr<int>? accountId,
         Expr<String>? firstName,
         Expr<String>? lastName,
-      }) => $ForGeneratedCode.buildUpdate<User>([
-        accountId,
-        firstName,
-        lastName,
-      ]),
+      }) =>
+          $ForGeneratedCode.buildUpdate<User>([accountId, firstName, lastName]),
     ),
   );
 

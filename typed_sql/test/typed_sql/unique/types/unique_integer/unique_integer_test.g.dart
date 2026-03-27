@@ -10,10 +10,7 @@ part of 'unique_integer_test.dart';
 extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   static const _$tables = [_$Item._$table];
 
-  Table<Item> get items => $ForGeneratedCode.declareTable(
-    this,
-    _$Item._$table,
-  );
+  Table<Item> get items => $ForGeneratedCode.declareTable(this, _$Item._$table);
 
   /// Create tables defined in [PrimaryDatabase].
   ///
@@ -27,10 +24,8 @@ extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [PrimaryDatabase].
@@ -51,10 +46,7 @@ String createPrimaryDatabaseTables(SqlDialect dialect) =>
     );
 
 final class _$Item extends Item {
-  _$Item._(
-    this.id,
-    this.value,
-  );
+  _$Item._(this.id, this.value);
 
   @override
   final int id;
@@ -125,16 +117,8 @@ extension TableItemExt on Table<Item> {
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Item> insert({
-    Expr<int>? id,
-    required Expr<int> value,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [
-      id,
-      value,
-    ],
-  );
+  InsertSingle<Item> insert({Expr<int>? id, required Expr<int> value}) =>
+      $ForGeneratedCode.insertInto(table: this, values: [id, value]);
 
   /// Delete a single row from the `items` table, specified by
   /// _primary key_.
@@ -145,10 +129,8 @@ extension TableItemExt on Table<Item> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Item> delete(int id) => $ForGeneratedCode.deleteSingle(
-    byKey(id),
-    _$Item._$table,
-  );
+  DeleteSingle<Item> delete(int id) =>
+      $ForGeneratedCode.deleteSingle(byKey(id), _$Item._$table);
 }
 
 /// Extension methods for building queries against the `items` table.
@@ -190,11 +172,7 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   Update<Item> update(
     UpdateSet<Item> Function(
       Expr<Item> item,
-      UpdateSet<Item> Function({
-        Expr<int> id,
-        Expr<int> value,
-      })
-      set,
+      UpdateSet<Item> Function({Expr<int> id, Expr<int> value}) set,
     )
     updateBuilder,
   ) => $ForGeneratedCode.update<Item>(
@@ -202,13 +180,8 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
     _$Item._$table,
     (item) => updateBuilder(
       item,
-      ({
-        Expr<int>? id,
-        Expr<int>? value,
-      }) => $ForGeneratedCode.buildUpdate<Item>([
-        id,
-        value,
-      ]),
+      ({Expr<int>? id, Expr<int>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, value]),
     ),
   );
 
@@ -264,11 +237,7 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
   UpdateSingle<Item> update(
     UpdateSet<Item> Function(
       Expr<Item> item,
-      UpdateSet<Item> Function({
-        Expr<int> id,
-        Expr<int> value,
-      })
-      set,
+      UpdateSet<Item> Function({Expr<int> id, Expr<int> value}) set,
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateSingle<Item>(
@@ -276,13 +245,8 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
     _$Item._$table,
     (item) => updateBuilder(
       item,
-      ({
-        Expr<int>? id,
-        Expr<int>? value,
-      }) => $ForGeneratedCode.buildUpdate<Item>([
-        id,
-        value,
-      ]),
+      ({Expr<int>? id, Expr<int>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, value]),
     ),
   );
 

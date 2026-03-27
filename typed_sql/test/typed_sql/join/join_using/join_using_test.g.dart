@@ -10,15 +10,11 @@ part of 'join_using_test.dart';
 extension CompanyDatabaseSchema on Database<CompanyDatabase> {
   static const _$tables = [_$Employee._$table, _$Department._$table];
 
-  Table<Employee> get employees => $ForGeneratedCode.declareTable(
-    this,
-    _$Employee._$table,
-  );
+  Table<Employee> get employees =>
+      $ForGeneratedCode.declareTable(this, _$Employee._$table);
 
-  Table<Department> get departments => $ForGeneratedCode.declareTable(
-    this,
-    _$Department._$table,
-  );
+  Table<Department> get departments =>
+      $ForGeneratedCode.declareTable(this, _$Department._$table);
 
   /// Create tables defined in [CompanyDatabase].
   ///
@@ -32,10 +28,8 @@ extension CompanyDatabaseSchema on Database<CompanyDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [CompanyDatabase].
@@ -56,11 +50,7 @@ String createCompanyDatabaseTables(SqlDialect dialect) =>
     );
 
 final class _$Employee extends Employee {
-  _$Employee._(
-    this.employeeId,
-    this.name,
-    this.departmentId,
-  );
+  _$Employee._(this.employeeId, this.name, this.departmentId);
 
   @override
   final int employeeId;
@@ -154,11 +144,7 @@ extension TableEmployeeExt on Table<Employee> {
     Expr<int?>? departmentId,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      employeeId,
-      name,
-      departmentId,
-    ],
+    values: [employeeId, name, departmentId],
   );
 
   /// Delete a single row from the `employees` table, specified by
@@ -171,10 +157,7 @@ extension TableEmployeeExt on Table<Employee> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Employee> delete(int employeeId) =>
-      $ForGeneratedCode.deleteSingle(
-        byKey(employeeId),
-        _$Employee._$table,
-      );
+      $ForGeneratedCode.deleteSingle(byKey(employeeId), _$Employee._$table);
 }
 
 /// Extension methods for building queries against the `employees` table.
@@ -229,15 +212,12 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
     _$Employee._$table,
     (employee) => updateBuilder(
       employee,
-      ({
-        Expr<int>? employeeId,
-        Expr<String>? name,
-        Expr<int?>? departmentId,
-      }) => $ForGeneratedCode.buildUpdate<Employee>([
-        employeeId,
-        name,
-        departmentId,
-      ]),
+      ({Expr<int>? employeeId, Expr<String>? name, Expr<int?>? departmentId}) =>
+          $ForGeneratedCode.buildUpdate<Employee>([
+            employeeId,
+            name,
+            departmentId,
+          ]),
     ),
   );
 
@@ -296,15 +276,12 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
     _$Employee._$table,
     (employee) => updateBuilder(
       employee,
-      ({
-        Expr<int>? employeeId,
-        Expr<String>? name,
-        Expr<int?>? departmentId,
-      }) => $ForGeneratedCode.buildUpdate<Employee>([
-        employeeId,
-        name,
-        departmentId,
-      ]),
+      ({Expr<int>? employeeId, Expr<String>? name, Expr<int?>? departmentId}) =>
+          $ForGeneratedCode.buildUpdate<Employee>([
+            employeeId,
+            name,
+            departmentId,
+          ]),
     ),
   );
 
@@ -410,11 +387,7 @@ extension RightJoinEmployeeDepartmentExt
 }
 
 final class _$Department extends Department {
-  _$Department._(
-    this.departmentId,
-    this.name,
-    this.location,
-  );
+  _$Department._(this.departmentId, this.name, this.location);
 
   @override
   final int departmentId;
@@ -501,11 +474,7 @@ extension TableDepartmentExt on Table<Department> {
     required Expr<String> location,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      departmentId,
-      name,
-      location,
-    ],
+    values: [departmentId, name, location],
   );
 
   /// Delete a single row from the `departments` table, specified by
@@ -518,10 +487,7 @@ extension TableDepartmentExt on Table<Department> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Department> delete(int departmentId) =>
-      $ForGeneratedCode.deleteSingle(
-        byKey(departmentId),
-        _$Department._$table,
-      );
+      $ForGeneratedCode.deleteSingle(byKey(departmentId), _$Department._$table);
 }
 
 /// Extension methods for building queries against the `departments` table.
@@ -577,15 +543,12 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
     _$Department._$table,
     (department) => updateBuilder(
       department,
-      ({
-        Expr<int>? departmentId,
-        Expr<String>? name,
-        Expr<String>? location,
-      }) => $ForGeneratedCode.buildUpdate<Department>([
-        departmentId,
-        name,
-        location,
-      ]),
+      ({Expr<int>? departmentId, Expr<String>? name, Expr<String>? location}) =>
+          $ForGeneratedCode.buildUpdate<Department>([
+            departmentId,
+            name,
+            location,
+          ]),
     ),
   );
 
@@ -644,15 +607,12 @@ extension QuerySingleDepartmentExt on QuerySingle<(Expr<Department>,)> {
     _$Department._$table,
     (department) => updateBuilder(
       department,
-      ({
-        Expr<int>? departmentId,
-        Expr<String>? name,
-        Expr<String>? location,
-      }) => $ForGeneratedCode.buildUpdate<Department>([
-        departmentId,
-        name,
-        location,
-      ]),
+      ({Expr<int>? departmentId, Expr<String>? name, Expr<String>? location}) =>
+          $ForGeneratedCode.buildUpdate<Department>([
+            departmentId,
+            name,
+            location,
+          ]),
     ),
   );
 

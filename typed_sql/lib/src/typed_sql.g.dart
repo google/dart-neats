@@ -72,20 +72,14 @@ extension Query1<A> on Query<(Expr<A>,)> {
   /// Limit [Query] using `LIMIT` clause.
   ///
   /// The resulting [Query] will only return the first [limit] rows.
-  Query<(Expr<A>,)> limit(int limit) => Query._(
-    _context,
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  Query<(Expr<A>,)> limit(int limit) =>
+      Query._(_context, _expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [Query] using `OFFSET` clause.
   ///
   /// The resulting [Query] will skip the first [offset] rows.
-  Query<(Expr<A>,)> offset(int offset) => Query._(
-    _context,
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  Query<(Expr<A>,)> offset(int offset) =>
+      Query._(_context, _expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Limit [Query] to the first row using `LIMIT` clause.
   ///
@@ -163,11 +157,9 @@ extension Query1<A> on Query<(Expr<A>,)> {
   /// > If you wish to use `.exists()` in a subquery considering
   /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(
-    Query._(
-      _context,
-      (ExistsExpression._(_from(_expressions.toList())),),
-      SelectClause._,
-    ),
+    Query._(_context, (
+      ExistsExpression._(_from(_expressions.toList())),
+    ), SelectClause._),
   );
 
   QueryClause _castAs(Query<(Expr<A>,)> as) {
@@ -179,11 +171,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
           a,
       ],
     );
-    return SelectFromClause._(
-      _from(_expressions.toList()),
-      handle,
-      projection,
-    );
+    return SelectFromClause._(_from(_expressions.toList()), handle, projection);
   }
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -193,10 +181,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
   Query<(Expr<A>,)> union(Query<(Expr<A>,)> other) => Query._(
     _context,
     _expressions,
-    (e) => UnionClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
@@ -206,10 +191,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
   Query<(Expr<A>,)> unionAll(Query<(Expr<A>,)> other) => Query._(
     _context,
     _expressions,
-    (e) => UnionAllClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionAllClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
@@ -219,10 +201,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
   Query<(Expr<A>,)> intersect(Query<(Expr<A>,)> other) => Query._(
     _context,
     _expressions,
-    (e) => IntersectClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => IntersectClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
@@ -233,10 +212,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
   Query<(Expr<A>,)> except(Query<(Expr<A>,)> other) => Query._(
     _context,
     _expressions,
-    (e) => ExceptClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => ExceptClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -361,18 +337,14 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
   /// Limit [SubQuery] using `LIMIT` clause.
   ///
   /// The resulting [SubQuery] will only return the first [limit] rows.
-  SubQuery<(Expr<A>,)> limit(int limit) => SubQuery._(
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  SubQuery<(Expr<A>,)> limit(int limit) =>
+      SubQuery._(_expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [SubQuery] using `OFFSET` clause.
   ///
   /// The resulting [SubQuery] will skip the first [offset] rows.
-  SubQuery<(Expr<A>,)> offset(int offset) => SubQuery._(
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  SubQuery<(Expr<A>,)> offset(int offset) =>
+      SubQuery._(_expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
   /// function.
@@ -948,20 +920,14 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   /// Limit [Query] using `LIMIT` clause.
   ///
   /// The resulting [Query] will only return the first [limit] rows.
-  Query<(Expr<A>, Expr<B>)> limit(int limit) => Query._(
-    _context,
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  Query<(Expr<A>, Expr<B>)> limit(int limit) =>
+      Query._(_context, _expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [Query] using `OFFSET` clause.
   ///
   /// The resulting [Query] will skip the first [offset] rows.
-  Query<(Expr<A>, Expr<B>)> offset(int offset) => Query._(
-    _context,
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  Query<(Expr<A>, Expr<B>)> offset(int offset) =>
+      Query._(_context, _expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Limit [Query] to the first row using `LIMIT` clause.
   ///
@@ -1042,11 +1008,9 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   /// > If you wish to use `.exists()` in a subquery considering
   /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(
-    Query._(
-      _context,
-      (ExistsExpression._(_from(_expressions.toList())),),
-      SelectClause._,
-    ),
+    Query._(_context, (
+      ExistsExpression._(_from(_expressions.toList())),
+    ), SelectClause._),
   );
 
   QueryClause _castAs(Query<(Expr<A>, Expr<B>)> as) {
@@ -1062,11 +1026,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
           b,
       ],
     );
-    return SelectFromClause._(
-      _from(_expressions.toList()),
-      handle,
-      projection,
-    );
+    return SelectFromClause._(_from(_expressions.toList()), handle, projection);
   }
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -1076,10 +1036,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   Query<(Expr<A>, Expr<B>)> union(Query<(Expr<A>, Expr<B>)> other) => Query._(
     _context,
     _expressions,
-    (e) => UnionClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
@@ -1090,10 +1047,8 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
       Query._(
         _context,
         _expressions,
-        (e) => UnionAllClause._(
-          _from(_expressions.toList()),
-          other._castAs(this),
-        ),
+        (e) =>
+            UnionAllClause._(_from(_expressions.toList()), other._castAs(this)),
       );
 
   /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
@@ -1118,10 +1073,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   Query<(Expr<A>, Expr<B>)> except(Query<(Expr<A>, Expr<B>)> other) => Query._(
     _context,
     _expressions,
-    (e) => ExceptClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => ExceptClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -1167,13 +1119,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     T Function(Expr<A> a, Expr<B> b) groupBuilder,
   ) {
     final (handle, (group, standins)) = _build((a, b) {
-      return (
-        groupBuilder(a, b),
-        (
-          a,
-          b,
-        ),
-      );
+      return (groupBuilder(a, b), (a, b));
     });
     return Group._(this, handle, group, standins);
   }
@@ -1261,18 +1207,14 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
   /// Limit [SubQuery] using `LIMIT` clause.
   ///
   /// The resulting [SubQuery] will only return the first [limit] rows.
-  SubQuery<(Expr<A>, Expr<B>)> limit(int limit) => SubQuery._(
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  SubQuery<(Expr<A>, Expr<B>)> limit(int limit) =>
+      SubQuery._(_expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [SubQuery] using `OFFSET` clause.
   ///
   /// The resulting [SubQuery] will skip the first [offset] rows.
-  SubQuery<(Expr<A>, Expr<B>)> offset(int offset) => SubQuery._(
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  SubQuery<(Expr<A>, Expr<B>)> offset(int offset) =>
+      SubQuery._(_expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
   /// function.
@@ -1854,20 +1796,14 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   /// Limit [Query] using `LIMIT` clause.
   ///
   /// The resulting [Query] will only return the first [limit] rows.
-  Query<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => Query._(
-    _context,
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  Query<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      Query._(_context, _expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [Query] using `OFFSET` clause.
   ///
   /// The resulting [Query] will skip the first [offset] rows.
-  Query<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => Query._(
-    _context,
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  Query<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) =>
+      Query._(_context, _expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Limit [Query] to the first row using `LIMIT` clause.
   ///
@@ -1950,11 +1886,9 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   /// > If you wish to use `.exists()` in a subquery considering
   /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(
-    Query._(
-      _context,
-      (ExistsExpression._(_from(_expressions.toList())),),
-      SelectClause._,
-    ),
+    Query._(_context, (
+      ExistsExpression._(_from(_expressions.toList())),
+    ), SelectClause._),
   );
 
   QueryClause _castAs(Query<(Expr<A>, Expr<B>, Expr<C>)> as) {
@@ -1974,11 +1908,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
           c,
       ],
     );
-    return SelectFromClause._(
-      _from(_expressions.toList()),
-      handle,
-      projection,
-    );
+    return SelectFromClause._(_from(_expressions.toList()), handle, projection);
   }
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -1990,10 +1920,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
@@ -2005,10 +1932,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionAllClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionAllClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
@@ -2020,10 +1944,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   ) => Query._(
     _context,
     _expressions,
-    (e) => IntersectClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => IntersectClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
@@ -2036,10 +1957,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   ) => Query._(
     _context,
     _expressions,
-    (e) => ExceptClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => ExceptClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -2089,14 +2007,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     T Function(Expr<A> a, Expr<B> b, Expr<C> c) groupBuilder,
   ) {
     final (handle, (group, standins)) = _build((a, b, c) {
-      return (
-        groupBuilder(a, b, c),
-        (
-          a,
-          b,
-          c,
-        ),
-      );
+      return (groupBuilder(a, b, c), (a, b, c));
     });
     return Group._(this, handle, group, standins);
   }
@@ -2188,18 +2099,14 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
   /// Limit [SubQuery] using `LIMIT` clause.
   ///
   /// The resulting [SubQuery] will only return the first [limit] rows.
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => SubQuery._(
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) =>
+      SubQuery._(_expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [SubQuery] using `OFFSET` clause.
   ///
   /// The resulting [SubQuery] will skip the first [offset] rows.
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => SubQuery._(
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) =>
+      SubQuery._(_expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
   /// function.
@@ -2803,20 +2710,14 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   /// Limit [Query] using `LIMIT` clause.
   ///
   /// The resulting [Query] will only return the first [limit] rows.
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) => Query._(
-    _context,
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) =>
+      Query._(_context, _expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [Query] using `OFFSET` clause.
   ///
   /// The resulting [Query] will skip the first [offset] rows.
-  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(int offset) => Query._(
-    _context,
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(int offset) =>
+      Query._(_context, _expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Limit [Query] to the first row using `LIMIT` clause.
   ///
@@ -2899,11 +2800,9 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   /// > If you wish to use `.exists()` in a subquery considering
   /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(
-    Query._(
-      _context,
-      (ExistsExpression._(_from(_expressions.toList())),),
-      SelectClause._,
-    ),
+    Query._(_context, (
+      ExistsExpression._(_from(_expressions.toList())),
+    ), SelectClause._),
   );
 
   QueryClause _castAs(Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> as) {
@@ -2927,11 +2826,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
           d,
       ],
     );
-    return SelectFromClause._(
-      _from(_expressions.toList()),
-      handle,
-      projection,
-    );
+    return SelectFromClause._(_from(_expressions.toList()), handle, projection);
   }
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -2943,10 +2838,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
@@ -2958,10 +2850,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionAllClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionAllClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
@@ -2973,10 +2862,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   ) => Query._(
     _context,
     _expressions,
-    (e) => IntersectClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => IntersectClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
@@ -2989,10 +2875,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   ) => Query._(
     _context,
     _expressions,
-    (e) => ExceptClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => ExceptClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -3042,15 +2925,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     T Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d) groupBuilder,
   ) {
     final (handle, (group, standins)) = _build((a, b, c, d) {
-      return (
-        groupBuilder(a, b, c, d),
-        (
-          a,
-          b,
-          c,
-          d,
-        ),
-      );
+      return (groupBuilder(a, b, c, d), (a, b, c, d));
     });
     return Group._(this, handle, group, standins);
   }
@@ -3159,19 +3034,14 @@ extension SubQuery4<A, B, C, D>
   /// Limit [SubQuery] using `LIMIT` clause.
   ///
   /// The resulting [SubQuery] will only return the first [limit] rows.
-  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) => SubQuery._(
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> limit(int limit) =>
+      SubQuery._(_expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [SubQuery] using `OFFSET` clause.
   ///
   /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> offset(int offset) =>
-      SubQuery._(
-        _expressions,
-        (e) => OffsetClause._(_from(e), offset),
-      );
+      SubQuery._(_expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
   /// function.
@@ -3831,21 +3701,13 @@ extension Query5<A, B, C, D, E>
   ///
   /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> limit(int limit) =>
-      Query._(
-        _context,
-        _expressions,
-        (e) => LimitClause._(_from(e), limit),
-      );
+      Query._(_context, _expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [Query] using `OFFSET` clause.
   ///
   /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> offset(int offset) =>
-      Query._(
-        _context,
-        _expressions,
-        (e) => OffsetClause._(_from(e), offset),
-      );
+      Query._(_context, _expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Limit [Query] to the first row using `LIMIT` clause.
   ///
@@ -3927,11 +3789,9 @@ extension Query5<A, B, C, D, E>
   /// > If you wish to use `.exists()` in a subquery considering
   /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(
-    Query._(
-      _context,
-      (ExistsExpression._(_from(_expressions.toList())),),
-      SelectClause._,
-    ),
+    Query._(_context, (
+      ExistsExpression._(_from(_expressions.toList())),
+    ), SelectClause._),
   );
 
   QueryClause _castAs(Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> as) {
@@ -3959,11 +3819,7 @@ extension Query5<A, B, C, D, E>
           e,
       ],
     );
-    return SelectFromClause._(
-      _from(_expressions.toList()),
-      handle,
-      projection,
-    );
+    return SelectFromClause._(_from(_expressions.toList()), handle, projection);
   }
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -3975,10 +3831,7 @@ extension Query5<A, B, C, D, E>
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
@@ -3990,10 +3843,7 @@ extension Query5<A, B, C, D, E>
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionAllClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionAllClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
@@ -4005,10 +3855,7 @@ extension Query5<A, B, C, D, E>
   ) => Query._(
     _context,
     _expressions,
-    (e) => IntersectClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => IntersectClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
@@ -4021,10 +3868,7 @@ extension Query5<A, B, C, D, E>
   ) => Query._(
     _context,
     _expressions,
-    (e) => ExceptClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => ExceptClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -4076,16 +3920,7 @@ extension Query5<A, B, C, D, E>
     groupBuilder,
   ) {
     final (handle, (group, standins)) = _build((a, b, c, d, e) {
-      return (
-        groupBuilder(a, b, c, d, e),
-        (
-          a,
-          b,
-          c,
-          d,
-          e,
-        ),
-      );
+      return (groupBuilder(a, b, c, d, e), (a, b, c, d, e));
     });
     return Group._(this, handle, group, standins);
   }
@@ -4200,19 +4035,13 @@ extension SubQuery5<A, B, C, D, E>
   ///
   /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> limit(int limit) =>
-      SubQuery._(
-        _expressions,
-        (e) => LimitClause._(_from(e), limit),
-      );
+      SubQuery._(_expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [SubQuery] using `OFFSET` clause.
   ///
   /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> offset(int offset) =>
-      SubQuery._(
-        _expressions,
-        (e) => OffsetClause._(_from(e), offset),
-      );
+      SubQuery._(_expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
   /// function.
@@ -4905,22 +4734,14 @@ extension Query6<A, B, C, D, E, F>
   /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> limit(
     int limit,
-  ) => Query._(
-    _context,
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  ) => Query._(_context, _expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [Query] using `OFFSET` clause.
   ///
   /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> offset(
     int offset,
-  ) => Query._(
-    _context,
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  ) => Query._(_context, _expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Limit [Query] to the first row using `LIMIT` clause.
   ///
@@ -5002,11 +4823,9 @@ extension Query6<A, B, C, D, E, F>
   /// > If you wish to use `.exists()` in a subquery considering
   /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(
-    Query._(
-      _context,
-      (ExistsExpression._(_from(_expressions.toList())),),
-      SelectClause._,
-    ),
+    Query._(_context, (
+      ExistsExpression._(_from(_expressions.toList())),
+    ), SelectClause._),
   );
 
   QueryClause _castAs(
@@ -5040,11 +4859,7 @@ extension Query6<A, B, C, D, E, F>
           f,
       ],
     );
-    return SelectFromClause._(
-      _from(_expressions.toList()),
-      handle,
-      projection,
-    );
+    return SelectFromClause._(_from(_expressions.toList()), handle, projection);
   }
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -5056,10 +4871,7 @@ extension Query6<A, B, C, D, E, F>
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
@@ -5071,10 +4883,7 @@ extension Query6<A, B, C, D, E, F>
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionAllClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionAllClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
@@ -5086,10 +4895,7 @@ extension Query6<A, B, C, D, E, F>
   ) => Query._(
     _context,
     _expressions,
-    (e) => IntersectClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => IntersectClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
@@ -5102,10 +4908,7 @@ extension Query6<A, B, C, D, E, F>
   ) => Query._(
     _context,
     _expressions,
-    (e) => ExceptClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => ExceptClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -5157,17 +4960,7 @@ extension Query6<A, B, C, D, E, F>
     groupBuilder,
   ) {
     final (handle, (group, standins)) = _build((a, b, c, d, e, f) {
-      return (
-        groupBuilder(a, b, c, d, e, f),
-        (
-          a,
-          b,
-          c,
-          d,
-          e,
-          f,
-        ),
-      );
+      return (groupBuilder(a, b, c, d, e, f), (a, b, c, d, e, f));
     });
     return Group._(this, handle, group, standins);
   }
@@ -5297,20 +5090,14 @@ extension SubQuery6<A, B, C, D, E, F>
   /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> limit(
     int limit,
-  ) => SubQuery._(
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  ) => SubQuery._(_expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [SubQuery] using `OFFSET` clause.
   ///
   /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> offset(
     int offset,
-  ) => SubQuery._(
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  ) => SubQuery._(_expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
   /// function.
@@ -6062,22 +5849,14 @@ extension Query7<A, B, C, D, E, F, G>
   /// The resulting [Query] will only return the first [limit] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> limit(
     int limit,
-  ) => Query._(
-    _context,
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  ) => Query._(_context, _expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [Query] using `OFFSET` clause.
   ///
   /// The resulting [Query] will skip the first [offset] rows.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> offset(
     int offset,
-  ) => Query._(
-    _context,
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  ) => Query._(_context, _expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Limit [Query] to the first row using `LIMIT` clause.
   ///
@@ -6167,11 +5946,9 @@ extension Query7<A, B, C, D, E, F, G>
   /// > If you wish to use `.exists()` in a subquery considering
   /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(
-    Query._(
-      _context,
-      (ExistsExpression._(_from(_expressions.toList())),),
-      SelectClause._,
-    ),
+    Query._(_context, (
+      ExistsExpression._(_from(_expressions.toList())),
+    ), SelectClause._),
   );
 
   QueryClause _castAs(
@@ -6209,11 +5986,7 @@ extension Query7<A, B, C, D, E, F, G>
           g,
       ],
     );
-    return SelectFromClause._(
-      _from(_expressions.toList()),
-      handle,
-      projection,
-    );
+    return SelectFromClause._(_from(_expressions.toList()), handle, projection);
   }
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -6226,10 +5999,7 @@ extension Query7<A, B, C, D, E, F, G>
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
@@ -6243,10 +6013,7 @@ extension Query7<A, B, C, D, E, F, G>
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionAllClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionAllClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
@@ -6260,10 +6027,7 @@ extension Query7<A, B, C, D, E, F, G>
   ) => Query._(
     _context,
     _expressions,
-    (e) => IntersectClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => IntersectClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
@@ -6277,10 +6041,7 @@ extension Query7<A, B, C, D, E, F, G>
   ) => Query._(
     _context,
     _expressions,
-    (e) => ExceptClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => ExceptClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -6348,18 +6109,7 @@ extension Query7<A, B, C, D, E, F, G>
     groupBuilder,
   ) {
     final (handle, (group, standins)) = _build((a, b, c, d, e, f, g) {
-      return (
-        groupBuilder(a, b, c, d, e, f, g),
-        (
-          a,
-          b,
-          c,
-          d,
-          e,
-          f,
-          g,
-        ),
-      );
+      return (groupBuilder(a, b, c, d, e, f, g), (a, b, c, d, e, f, g));
     });
     return Group._(this, handle, group, standins);
   }
@@ -6508,19 +6258,15 @@ extension SubQuery7<A, B, C, D, E, F, G>
   ///
   /// The resulting [SubQuery] will only return the first [limit] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-  limit(int limit) => SubQuery._(
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  limit(int limit) =>
+      SubQuery._(_expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [SubQuery] using `OFFSET` clause.
   ///
   /// The resulting [SubQuery] will skip the first [offset] rows.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
-  offset(int offset) => SubQuery._(
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  offset(int offset) =>
+      SubQuery._(_expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
   /// function.
@@ -7384,11 +7130,8 @@ extension Query8<A, B, C, D, E, F, G, H>
   Query<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
-  limit(int limit) => Query._(
-    _context,
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  limit(int limit) =>
+      Query._(_context, _expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [Query] using `OFFSET` clause.
   ///
@@ -7396,11 +7139,8 @@ extension Query8<A, B, C, D, E, F, G, H>
   Query<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
-  offset(int offset) => Query._(
-    _context,
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  offset(int offset) =>
+      Query._(_context, _expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Limit [Query] to the first row using `LIMIT` clause.
   ///
@@ -7502,11 +7242,9 @@ extension Query8<A, B, C, D, E, F, G, H>
   /// > If you wish to use `.exists()` in a subquery considering
   /// > using `.asSubQuery.exists()` which returns an [Expr<bool>].
   QuerySingle<(Expr<bool>,)> exists() => QuerySingle._(
-    Query._(
-      _context,
-      (ExistsExpression._(_from(_expressions.toList())),),
-      SelectClause._,
-    ),
+    Query._(_context, (
+      ExistsExpression._(_from(_expressions.toList())),
+    ), SelectClause._),
   );
 
   QueryClause _castAs(
@@ -7551,11 +7289,7 @@ extension Query8<A, B, C, D, E, F, G, H>
           h,
       ],
     );
-    return SelectFromClause._(
-      _from(_expressions.toList()),
-      handle,
-      projection,
-    );
+    return SelectFromClause._(_from(_expressions.toList()), handle, projection);
   }
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -7573,10 +7307,7 @@ extension Query8<A, B, C, D, E, F, G, H>
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION ALL` _set operator_.
@@ -7594,10 +7325,7 @@ extension Query8<A, B, C, D, E, F, G, H>
   ) => Query._(
     _context,
     _expressions,
-    (e) => UnionAllClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => UnionAllClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `INTERSECT` _set operator_.
@@ -7615,10 +7343,7 @@ extension Query8<A, B, C, D, E, F, G, H>
   ) => Query._(
     _context,
     _expressions,
-    (e) => IntersectClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => IntersectClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `EXCEPT` _set operator_.
@@ -7637,10 +7362,7 @@ extension Query8<A, B, C, D, E, F, G, H>
   ) => Query._(
     _context,
     _expressions,
-    (e) => ExceptClause._(
-      _from(_expressions.toList()),
-      other._castAs(this),
-    ),
+    (e) => ExceptClause._(_from(_expressions.toList()), other._castAs(this)),
   );
 
   /// Combine this [Query] with [other] using `UNION` _set operator_.
@@ -7728,19 +7450,7 @@ extension Query8<A, B, C, D, E, F, G, H>
     groupBuilder,
   ) {
     final (handle, (group, standins)) = _build((a, b, c, d, e, f, g, h) {
-      return (
-        groupBuilder(a, b, c, d, e, f, g, h),
-        (
-          a,
-          b,
-          c,
-          d,
-          e,
-          f,
-          g,
-          h,
-        ),
-      );
+      return (groupBuilder(a, b, c, d, e, f, g, h), (a, b, c, d, e, f, g, h));
     });
     return Group._(this, handle, group, standins);
   }
@@ -7910,10 +7620,8 @@ extension SubQuery8<A, B, C, D, E, F, G, H>
   SubQuery<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
-  limit(int limit) => SubQuery._(
-    _expressions,
-    (e) => LimitClause._(_from(e), limit),
-  );
+  limit(int limit) =>
+      SubQuery._(_expressions, (e) => LimitClause._(_from(e), limit));
 
   /// Offset [SubQuery] using `OFFSET` clause.
   ///
@@ -7921,10 +7629,8 @@ extension SubQuery8<A, B, C, D, E, F, G, H>
   SubQuery<
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
-  offset(int offset) => SubQuery._(
-    _expressions,
-    (e) => OffsetClause._(_from(e), offset),
-  );
+  offset(int offset) =>
+      SubQuery._(_expressions, (e) => OffsetClause._(_from(e), offset));
 
   /// Count number of rows in this [SubQuery] using `COUNT(*)` aggregate
   /// function.
@@ -8764,10 +8470,7 @@ extension InnerJoin1On1<A, B> on InnerJoin<(Expr<A>,), (Expr<B>,)> {
   /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>)> get all => Query._(
     _from._context,
-    (
-      _from._expressions.$1,
-      _join._expressions.$1,
-    ),
+    (_from._expressions.$1, _join._expressions.$1),
     (_) => JoinClause._(
       Object(),
       JoinType.inner,
@@ -8782,14 +8485,10 @@ extension InnerJoin1On1<A, B> on InnerJoin<(Expr<A>,), (Expr<B>,)> {
     Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -8809,14 +8508,10 @@ extension LeftJoin1On1<A, B> on LeftJoin<(Expr<A>,), (Expr<B>,)> {
     Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -8836,14 +8531,10 @@ extension RightJoin1On1<A, B> on RightJoin<(Expr<A>,), (Expr<B>,)> {
     Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -8863,11 +8554,7 @@ extension InnerJoin1On2<A, B, C> on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
   /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>)> get all => Query._(
     _from._context,
-    (
-      _from._expressions.$1,
-      _join._expressions.$1,
-      _join._expressions.$2,
-    ),
+    (_from._expressions.$1, _join._expressions.$1, _join._expressions.$2),
     (_) => JoinClause._(
       Object(),
       JoinType.inner,
@@ -8882,15 +8569,11 @@ extension InnerJoin1On2<A, B, C> on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -8910,15 +8593,11 @@ extension LeftJoin1On2<A, B, C> on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -8938,15 +8617,11 @@ extension RightJoin1On2<A, B, C> on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -8988,16 +8663,12 @@ extension InnerJoin1On3<A, B, C, D>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9019,16 +8690,12 @@ extension LeftJoin1On3<A, B, C, D>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9050,16 +8717,12 @@ extension RightJoin1On3<A, B, C, D>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9102,17 +8765,13 @@ extension InnerJoin1On4<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9134,17 +8793,13 @@ extension LeftJoin1On4<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9166,17 +8821,13 @@ extension RightJoin1On4<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9228,18 +8879,14 @@ extension InnerJoin1On5<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9268,18 +8915,14 @@ extension LeftJoin1On5<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9308,18 +8951,14 @@ extension RightJoin1On5<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9377,19 +9016,15 @@ extension InnerJoin1On6<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-        _join._expressions.$6,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+      _join._expressions.$6,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9424,19 +9059,15 @@ extension LeftJoin1On6<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-        _join._expressions.$6,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+      _join._expressions.$6,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9470,19 +9101,15 @@ extension RightJoin1On6<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-        _join._expressions.$6,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+      _join._expressions.$6,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9547,20 +9174,16 @@ extension InnerJoin1On7<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-        _join._expressions.$6,
-        _join._expressions.$7,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+      _join._expressions.$6,
+      _join._expressions.$7,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9607,20 +9230,16 @@ extension LeftJoin1On7<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-        _join._expressions.$6,
-        _join._expressions.$7,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+      _join._expressions.$6,
+      _join._expressions.$7,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9658,20 +9277,16 @@ extension RightJoin1On7<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-        _join._expressions.$6,
-        _join._expressions.$7,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+      _join._expressions.$6,
+      _join._expressions.$7,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9691,11 +9306,7 @@ extension InnerJoin2On1<A, B, C> on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
   /// This is equivalent to `... INNER JOIN ... ON TRUE`.
   Query<(Expr<A>, Expr<B>, Expr<C>)> get all => Query._(
     _from._context,
-    (
-      _from._expressions.$1,
-      _from._expressions.$2,
-      _join._expressions.$1,
-    ),
+    (_from._expressions.$1, _from._expressions.$2, _join._expressions.$1),
     (_) => JoinClause._(
       Object(),
       JoinType.inner,
@@ -9710,15 +9321,11 @@ extension InnerJoin2On1<A, B, C> on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9738,15 +9345,11 @@ extension LeftJoin2On1<A, B, C> on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9766,15 +9369,11 @@ extension RightJoin2On1<A, B, C> on RightJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9816,16 +9415,12 @@ extension InnerJoin2On2<A, B, C, D>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9847,16 +9442,12 @@ extension LeftJoin2On2<A, B, C, D>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9878,16 +9469,12 @@ extension RightJoin2On2<A, B, C, D>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9930,17 +9517,13 @@ extension InnerJoin2On3<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9962,17 +9545,13 @@ extension LeftJoin2On3<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -9994,17 +9573,13 @@ extension RightJoin2On3<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10056,18 +9631,14 @@ extension InnerJoin2On4<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10096,18 +9667,14 @@ extension LeftJoin2On4<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10136,18 +9703,14 @@ extension RightJoin2On4<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10205,19 +9768,15 @@ extension InnerJoin2On5<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10252,19 +9811,15 @@ extension LeftJoin2On5<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10298,19 +9853,15 @@ extension RightJoin2On5<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10375,20 +9926,16 @@ extension InnerJoin2On6<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-        _join._expressions.$6,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+      _join._expressions.$6,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10435,20 +9982,16 @@ extension LeftJoin2On6<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-        _join._expressions.$6,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+      _join._expressions.$6,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10486,20 +10029,16 @@ extension RightJoin2On6<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-        _join._expressions.$6,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+      _join._expressions.$6,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10541,16 +10080,12 @@ extension InnerJoin3On1<A, B, C, D>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10572,16 +10107,12 @@ extension LeftJoin3On1<A, B, C, D>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10603,16 +10134,12 @@ extension RightJoin3On1<A, B, C, D>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10655,17 +10182,13 @@ extension InnerJoin3On2<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10687,17 +10210,13 @@ extension LeftJoin3On2<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10719,17 +10238,13 @@ extension RightJoin3On2<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10781,18 +10296,14 @@ extension InnerJoin3On3<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10821,18 +10332,14 @@ extension LeftJoin3On3<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10861,18 +10368,14 @@ extension RightJoin3On3<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10930,19 +10433,15 @@ extension InnerJoin3On4<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -10976,19 +10475,15 @@ extension LeftJoin3On4<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11022,19 +10517,15 @@ extension RightJoin3On4<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11099,20 +10590,16 @@ extension InnerJoin3On5<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11159,20 +10646,16 @@ extension LeftJoin3On5<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11210,20 +10693,16 @@ extension RightJoin3On5<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-        _join._expressions.$5,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+      _join._expressions.$5,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11266,17 +10745,13 @@ extension InnerJoin4On1<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11298,17 +10773,13 @@ extension LeftJoin4On1<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11330,17 +10801,13 @@ extension RightJoin4On1<A, B, C, D, E>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11392,18 +10859,14 @@ extension InnerJoin4On2<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11432,18 +10895,14 @@ extension LeftJoin4On2<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11472,18 +10931,14 @@ extension RightJoin4On2<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11541,19 +10996,15 @@ extension InnerJoin4On3<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11587,19 +11038,15 @@ extension LeftJoin4On3<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11633,19 +11080,15 @@ extension RightJoin4On3<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11710,20 +11153,16 @@ extension InnerJoin4On4<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11761,20 +11200,16 @@ extension LeftJoin4On4<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11812,20 +11247,16 @@ extension RightJoin4On4<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-        _join._expressions.$4,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+      _join._expressions.$4,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11877,18 +11308,14 @@ extension InnerJoin5On1<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11917,18 +11344,14 @@ extension LeftJoin5On1<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -11957,18 +11380,14 @@ extension RightJoin5On1<A, B, C, D, E, F>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12026,19 +11445,15 @@ extension InnerJoin5On2<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12072,19 +11487,15 @@ extension LeftJoin5On2<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12119,19 +11530,15 @@ extension RightJoin5On2<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12196,20 +11603,16 @@ extension InnerJoin5On3<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12247,20 +11650,16 @@ extension LeftJoin5On3<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12307,20 +11706,16 @@ extension RightJoin5On3<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _join._expressions.$1,
-        _join._expressions.$2,
-        _join._expressions.$3,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _join._expressions.$1,
+      _join._expressions.$2,
+      _join._expressions.$3,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12378,19 +11773,15 @@ extension InnerJoin6On1<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _from._expressions.$6,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _from._expressions.$6,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12424,19 +11815,15 @@ extension LeftJoin6On1<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _from._expressions.$6,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _from._expressions.$6,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12471,19 +11858,15 @@ extension RightJoin6On1<A, B, C, D, E, F, G>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _from._expressions.$6,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _from._expressions.$6,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12548,20 +11931,16 @@ extension InnerJoin6On2<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _from._expressions.$6,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _from._expressions.$6,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12599,20 +11978,16 @@ extension LeftJoin6On2<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _from._expressions.$6,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _from._expressions.$6,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12659,20 +12034,16 @@ extension RightJoin6On2<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _from._expressions.$6,
-        _join._expressions.$1,
-        _join._expressions.$2,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _from._expressions.$6,
+      _join._expressions.$1,
+      _join._expressions.$2,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12737,20 +12108,16 @@ extension InnerJoin7On1<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _from._expressions.$6,
-        _from._expressions.$7,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _from._expressions.$6,
+      _from._expressions.$7,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12788,20 +12155,16 @@ extension LeftJoin7On1<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _from._expressions.$6,
-        _from._expressions.$7,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _from._expressions.$6,
+      _from._expressions.$7,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12848,20 +12211,16 @@ extension RightJoin7On1<A, B, C, D, E, F, G, H>
     conditionBuilder,
   ) {
     late JoinClause join;
-    final q = Query._(
-      _from._context,
-      (
-        _from._expressions.$1,
-        _from._expressions.$2,
-        _from._expressions.$3,
-        _from._expressions.$4,
-        _from._expressions.$5,
-        _from._expressions.$6,
-        _from._expressions.$7,
-        _join._expressions.$1,
-      ),
-      (_) => join,
-    );
+    final q = Query._(_from._context, (
+      _from._expressions.$1,
+      _from._expressions.$2,
+      _from._expressions.$3,
+      _from._expressions.$4,
+      _from._expressions.$5,
+      _from._expressions.$6,
+      _from._expressions.$7,
+      _join._expressions.$1,
+    ), (_) => join);
     final (handle, on) = q._build(conditionBuilder);
     join = JoinClause._(
       handle,
@@ -12909,17 +12268,10 @@ extension Aggregate1Project1<A, B> on Aggregation<(Expr<A>,), (Expr<B>,)> {
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>)> _build<C, T>(
     Expr<T> Function(Expr<A> a) aggregateBuilder,
     Expr<C> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    wrap(aggregateBuilder(_standins.$1)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -13026,18 +12378,11 @@ extension Aggregate1Project2<A, B, C>
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> _build<D, T>(
     Expr<T> Function(Expr<A> a) aggregateBuilder,
     Expr<D> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    wrap(aggregateBuilder(_standins.$1)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -13145,19 +12490,12 @@ extension Aggregate1Project3<A, B, C, D>
   Aggregation<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> _build<E, T>(
     Expr<T> Function(Expr<A> a) aggregateBuilder,
     Expr<E> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    wrap(aggregateBuilder(_standins.$1)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -13266,20 +12604,13 @@ extension Aggregate1Project4<A, B, C, D, E>
   _build<F, T>(
     Expr<T> Function(Expr<A> a) aggregateBuilder,
     Expr<F> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    wrap(aggregateBuilder(_standins.$1)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -13392,21 +12723,14 @@ extension Aggregate1Project5<A, B, C, D, E, F>
   _build<G, T>(
     Expr<T> Function(Expr<A> a) aggregateBuilder,
     Expr<G> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      _projection.$5,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    _projection.$5,
+    wrap(aggregateBuilder(_standins.$1)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -13546,22 +12870,15 @@ extension Aggregate1Project6<A, B, C, D, E, F, G>
   _build<H, T>(
     Expr<T> Function(Expr<A> a) aggregateBuilder,
     Expr<H> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      _projection.$5,
-      _projection.$6,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    _projection.$5,
+    _projection.$6,
+    wrap(aggregateBuilder(_standins.$1)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -13704,23 +13021,16 @@ extension Aggregate1Project7<A, B, C, D, E, F, G, H>
   _build<I, T>(
     Expr<T> Function(Expr<A> a) aggregateBuilder,
     Expr<I> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      _projection.$5,
-      _projection.$6,
-      _projection.$7,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    _projection.$5,
+    _projection.$6,
+    _projection.$7,
+    wrap(aggregateBuilder(_standins.$1)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -13851,18 +13161,10 @@ extension Aggregate2Project1<A, B, C>
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> _build<D, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
     Expr<D> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -13972,19 +13274,11 @@ extension Aggregate2Project2<A, B, C, D>
   Aggregation<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> _build<E, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
     Expr<E> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -14097,20 +13391,12 @@ extension Aggregate2Project3<A, B, C, D, E>
   _build<F, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
     Expr<F> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -14223,21 +13509,13 @@ extension Aggregate2Project4<A, B, C, D, E, F>
   _build<G, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
     Expr<G> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -14377,22 +13655,14 @@ extension Aggregate2Project5<A, B, C, D, E, F, G>
   _build<H, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
     Expr<H> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      _projection.$5,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    _projection.$5,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -14536,23 +13806,15 @@ extension Aggregate2Project6<A, B, C, D, E, F, G, H>
   _build<I, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
     Expr<I> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      _projection.$5,
-      _projection.$6,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    _projection.$5,
+    _projection.$6,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -14679,19 +13941,10 @@ extension Aggregate3Project1<A, B, C, D>
   Aggregation<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> _build<E, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
     Expr<E> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2, _standins.$3)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -14804,20 +14057,11 @@ extension Aggregate3Project2<A, B, C, D, E>
   _build<F, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
     Expr<F> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2, _standins.$3)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -14930,21 +14174,12 @@ extension Aggregate3Project3<A, B, C, D, E, F>
   _build<G, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
     Expr<G> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2, _standins.$3)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -15084,22 +14319,13 @@ extension Aggregate3Project4<A, B, C, D, E, F, G>
   _build<H, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
     Expr<H> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2, _standins.$3)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -15242,23 +14468,14 @@ extension Aggregate3Project5<A, B, C, D, E, F, G, H>
   _build<I, T>(
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c) aggregateBuilder,
     Expr<I> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      _projection.$5,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-        ),
-      ),
-    ),
-  );
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    _projection.$5,
+    wrap(aggregateBuilder(_standins.$1, _standins.$2, _standins.$3)),
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -15387,20 +14604,12 @@ extension Aggregate4Project1<A, B, C, D, E>
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     aggregateBuilder,
     Expr<F> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-        ),
-      ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    wrap(
+      aggregateBuilder(_standins.$1, _standins.$2, _standins.$3, _standins.$4),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -15518,21 +14727,13 @@ extension Aggregate4Project2<A, B, C, D, E, F>
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     aggregateBuilder,
     Expr<G> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-        ),
-      ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    wrap(
+      aggregateBuilder(_standins.$1, _standins.$2, _standins.$3, _standins.$4),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -15677,22 +14878,14 @@ extension Aggregate4Project3<A, B, C, D, E, F, G>
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     aggregateBuilder,
     Expr<H> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-        ),
-      ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    wrap(
+      aggregateBuilder(_standins.$1, _standins.$2, _standins.$3, _standins.$4),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -15840,23 +15033,15 @@ extension Aggregate4Project4<A, B, C, D, E, F, G, H>
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     aggregateBuilder,
     Expr<I> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      _projection.$4,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-        ),
-      ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    _projection.$4,
+    wrap(
+      aggregateBuilder(_standins.$1, _standins.$2, _standins.$3, _standins.$4),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -15990,21 +15175,18 @@ extension Aggregate5Project1<A, B, C, D, E, F>
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     aggregateBuilder,
     Expr<G> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-          _standins.$5,
-        ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    wrap(
+      aggregateBuilder(
+        _standins.$1,
+        _standins.$2,
+        _standins.$3,
+        _standins.$4,
+        _standins.$5,
       ),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -16149,22 +15331,19 @@ extension Aggregate5Project2<A, B, C, D, E, F, G>
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     aggregateBuilder,
     Expr<H> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-          _standins.$5,
-        ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    wrap(
+      aggregateBuilder(
+        _standins.$1,
+        _standins.$2,
+        _standins.$3,
+        _standins.$4,
+        _standins.$5,
       ),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -16312,23 +15491,20 @@ extension Aggregate5Project3<A, B, C, D, E, F, G, H>
     Expr<T> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     aggregateBuilder,
     Expr<I> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      _projection.$3,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-          _standins.$5,
-        ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    _projection.$3,
+    wrap(
+      aggregateBuilder(
+        _standins.$1,
+        _standins.$2,
+        _standins.$3,
+        _standins.$4,
+        _standins.$5,
       ),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -16483,22 +15659,19 @@ extension Aggregate6Project1<A, B, C, D, E, F, G>
     )
     aggregateBuilder,
     Expr<H> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-          _standins.$5,
-          _standins.$6,
-        ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    wrap(
+      aggregateBuilder(
+        _standins.$1,
+        _standins.$2,
+        _standins.$3,
+        _standins.$4,
+        _standins.$5,
+        _standins.$6,
       ),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -16681,23 +15854,20 @@ extension Aggregate6Project2<A, B, C, D, E, F, G, H>
     )
     aggregateBuilder,
     Expr<I> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      _projection.$2,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-          _standins.$5,
-          _standins.$6,
-        ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    _projection.$2,
+    wrap(
+      aggregateBuilder(
+        _standins.$1,
+        _standins.$2,
+        _standins.$3,
+        _standins.$4,
+        _standins.$5,
+        _standins.$6,
       ),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///
@@ -16881,23 +16051,20 @@ extension Aggregate7Project1<A, B, C, D, E, F, G, H>
     )
     aggregateBuilder,
     Expr<I> Function(Expr<T> e) wrap,
-  ) => Aggregation._(
-    _standins,
-    (
-      _projection.$1,
-      wrap(
-        aggregateBuilder(
-          _standins.$1,
-          _standins.$2,
-          _standins.$3,
-          _standins.$4,
-          _standins.$5,
-          _standins.$6,
-          _standins.$7,
-        ),
+  ) => Aggregation._(_standins, (
+    _projection.$1,
+    wrap(
+      aggregateBuilder(
+        _standins.$1,
+        _standins.$2,
+        _standins.$3,
+        _standins.$4,
+        _standins.$5,
+        _standins.$6,
+        _standins.$7,
       ),
     ),
-  );
+  ));
 
   /// Add a `SUM` aggregate function to this [Aggregation].
   ///

@@ -10,10 +10,8 @@ part of 'bank_test.dart';
 extension BankVaultSchema on Database<BankVault> {
   static const _$tables = [_$Account._$table];
 
-  Table<Account> get accounts => $ForGeneratedCode.declareTable(
-    this,
-    _$Account._$table,
-  );
+  Table<Account> get accounts =>
+      $ForGeneratedCode.declareTable(this, _$Account._$table);
 
   /// Create tables defined in [BankVault].
   ///
@@ -27,10 +25,8 @@ extension BankVaultSchema on Database<BankVault> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-    context: this,
-    tables: _$tables,
-  );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [BankVault].
@@ -44,18 +40,11 @@ extension BankVaultSchema on Database<BankVault> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBankVaultTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: BankVaultSchema._$tables,
-    );
+String createBankVaultTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: BankVaultSchema._$tables);
 
 final class _$Account extends Account {
-  _$Account._(
-    this.accountId,
-    this.accountNumber,
-    this.balance,
-  );
+  _$Account._(this.accountId, this.accountNumber, this.balance);
 
   @override
   final int accountId;
@@ -146,11 +135,7 @@ extension TableAccountExt on Table<Account> {
     Expr<double>? balance,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [
-      accountId,
-      accountNumber,
-      balance,
-    ],
+    values: [accountId, accountNumber, balance],
   );
 
   /// Delete a single row from the `accounts` table, specified by
@@ -162,10 +147,8 @@ extension TableAccountExt on Table<Account> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Account> delete(int accountId) => $ForGeneratedCode.deleteSingle(
-    byKey(accountId),
-    _$Account._$table,
-  );
+  DeleteSingle<Account> delete(int accountId) =>
+      $ForGeneratedCode.deleteSingle(byKey(accountId), _$Account._$table);
 }
 
 /// Extension methods for building queries against the `accounts` table.
