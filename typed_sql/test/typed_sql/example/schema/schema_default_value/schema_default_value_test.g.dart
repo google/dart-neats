@@ -8,7 +8,7 @@ part of 'schema_default_value_test.dart';
 
 /// Extension methods for a [Database] operating on [Bookstore].
 extension BookstoreSchema on Database<Bookstore> {
-  static const _$tables = [_$Author._$table, _$Book._$table];
+  static final _$tables = [_$Author._$table, _$Book._$table];
 
   Table<Author> get authors =>
       $ForGeneratedCode.declareTable(this, _$Author._$table);
@@ -54,49 +54,32 @@ final class _$Author extends Author {
   @override
   final String name;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'authors',
     columns: <String>['authorId', 'name'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: true,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[
-              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
-            ],
-          ),
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [
+          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
         ],
+      ),
+    ],
     primaryKey: <String>['authorId'],
     unique: <List<String>>[
       ['name'],
     ],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[],
+    foreignKeys: [],
     readRow: _$Author._$fromDatabase,
   );
 
@@ -359,66 +342,49 @@ final class _$Book extends Book {
   @override
   final int stock;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'books',
     columns: <String>['bookId', 'title', 'authorId', 'stock'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: true,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: false,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: (kind: 'raw', value: 0),
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-        ],
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: false,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: (kind: 'raw', value: 0),
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['bookId'],
     unique: <List<String>>[],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[
-          (
-            name: 'author',
-            columns: ['authorId'],
-            referencedTable: 'authors',
-            referencedColumns: ['authorId'],
-          ),
-        ],
+    foreignKeys: [
+      $ForGeneratedCode.foreignKeyDefinition(
+        name: 'author',
+        columns: ['authorId'],
+        referencedTable: 'authors',
+        referencedColumns: ['authorId'],
+      ),
+    ],
     readRow: _$Book._$fromDatabase,
   );
 

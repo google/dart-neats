@@ -8,7 +8,7 @@ part of 'dealership_test.dart';
 
 /// Extension methods for a [Database] operating on [Dealership].
 extension DealershipSchema on Database<Dealership> {
-  static const _$tables = [_$Car._$table];
+  static final _$tables = [_$Car._$table];
 
   Table<Car> get cars => $ForGeneratedCode.declareTable(this, _$Car._$table);
 
@@ -57,63 +57,46 @@ final class _$Car extends Car {
   @override
   final Color color;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'cars',
     columns: <String>['id', 'model', 'licensePlate', 'color'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: true,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[
-              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
-            ],
-          ),
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [
+          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
         ],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['id'],
     unique: <List<String>>[
       ['licensePlate'],
     ],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[],
+    foreignKeys: [],
     readRow: _$Car._$fromDatabase,
   );
 

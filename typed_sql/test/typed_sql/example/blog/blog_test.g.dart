@@ -8,7 +8,7 @@ part of 'blog_test.dart';
 
 /// Extension methods for a [Database] operating on [BlogDatabase].
 extension BlogDatabaseSchema on Database<BlogDatabase> {
-  static const _$tables = [_$Post._$table, _$Comment._$table];
+  static final _$tables = [_$Post._$table, _$Comment._$table];
 
   Table<Post> get posts => $ForGeneratedCode.declareTable(this, _$Post._$table);
 
@@ -57,56 +57,39 @@ final class _$Post extends Post {
   @override
   final String content;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'posts',
     columns: <String>['author', 'slug', 'content'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[
-              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
-            ],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[
-              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
-            ],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [
+          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
         ],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [
+          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+        ],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['author', 'slug'],
     unique: <List<String>>[],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[],
+    foreignKeys: [],
     readRow: _$Post._$fromDatabase,
   );
 
@@ -387,70 +370,53 @@ final class _$Comment extends Comment {
   @override
   final String comment;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'comments',
     columns: <String>['commentId', 'author', 'postSlug', 'comment'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[
-              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
-            ],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[
-              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
-            ],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [
+          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
         ],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [
+          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+        ],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['commentId'],
     unique: <List<String>>[],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[
-          (
-            name: 'post',
-            columns: ['author', 'postSlug'],
-            referencedTable: 'posts',
-            referencedColumns: ['author', 'slug'],
-          ),
-        ],
+    foreignKeys: [
+      $ForGeneratedCode.foreignKeyDefinition(
+        name: 'post',
+        columns: ['author', 'postSlug'],
+        referencedTable: 'posts',
+        referencedColumns: ['author', 'slug'],
+      ),
+    ],
     readRow: _$Comment._$fromDatabase,
   );
 

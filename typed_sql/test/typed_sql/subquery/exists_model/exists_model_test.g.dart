@@ -8,7 +8,7 @@ part of 'exists_model_test.dart';
 
 /// Extension methods for a [Database] operating on [TestDatabase].
 extension TestDatabaseSchema on Database<TestDatabase> {
-  static const _$tables = [_$Item._$table];
+  static final _$tables = [_$Item._$table];
 
   Table<Item> get items => $ForGeneratedCode.declareTable(this, _$Item._$table);
 
@@ -51,45 +51,28 @@ final class _$Item extends Item {
   @override
   final String value;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'items',
     columns: <String>['id', 'value'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: true,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-        ],
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['id'],
     unique: <List<String>>[],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[],
+    foreignKeys: [],
     readRow: _$Item._$fromDatabase,
   );
 
