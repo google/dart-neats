@@ -18,6 +18,7 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 
 import 'dialect.dart';
+import 'shared_dialect.dart';
 
 SqlDialect postgresDialect() => _PostgresDialect();
 
@@ -79,16 +80,27 @@ final class _PostgresDialect extends SqlDialect {
       }),
       ...statements.expand((table) {
         // Foreign keys
-        return table.foreignKeys.map(
-          (fk) => [
+        return table.foreignKeys.map((fk) {
+          final statement = [
             'ALTER TABLE ${escape(table.tableName)}',
             'ADD',
             'CONSTRAINT ${escape(fk.name)}',
             'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
             'REFERENCES ${escape(fk.referencedTable)}',
-            '(${fk.referencedColumns.map(escape).join(', ')});',
-          ].join(' '),
-        );
+            '(${fk.referencedColumns.map(escape).join(', ')})',
+            if (fk.onDelete != null)
+              defaultReferentialActionClause(
+                ReferentialEvent.delete,
+                fk.onDelete!,
+              ),
+            if (fk.onUpdate != null)
+              defaultReferentialActionClause(
+                ReferentialEvent.update,
+                fk.onUpdate!,
+              ),
+          ].join(' ');
+          return '$statement;';
+        });
       }),
     ].join('\n');
   }

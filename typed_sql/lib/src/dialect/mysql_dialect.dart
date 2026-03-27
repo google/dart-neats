@@ -19,6 +19,7 @@ import 'package:collection/collection.dart';
 
 import '../utils/normalize_json.dart';
 import 'dialect.dart';
+import 'shared_dialect.dart';
 
 SqlDialect mysqlDialect() => _MysqlSqlDialect();
 
@@ -118,6 +119,17 @@ final class _MysqlSqlDialect extends SqlDialect {
             'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
             'REFERENCES ${escape(fk.referencedTable)}',
             '(${fk.referencedColumns.map(escape).join(', ')})',
+            if (fk.onDelete != null)
+              defaultReferentialActionClause(
+                ReferentialEvent.delete,
+                fk.onDelete!,
+              ),
+            if (fk.onUpdate != null)
+              defaultReferentialActionClause(
+                ReferentialEvent.update,
+                fk.onUpdate!,
+              ),
+            // note: no support for `DEFERRABLE INITIALLY DEFERRED`
           ].join(' '),
         );
       }),
