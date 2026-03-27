@@ -325,7 +325,7 @@ order:
 
 ```dart bookstore_test.dart#query-orderby
 final result = await db.books
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .select((b) => (b.title, b.stock))
     .fetch();
 
@@ -405,7 +405,7 @@ rows.
 
 ```dart bookstore_test.dart#query-orderby-offset
 final result = await db.books
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .select((b) => (b.title, b.stock))
     // The order in which .orderBy, .offset, .limit appears is significant.
     .offset(2)
@@ -454,11 +454,11 @@ do so with an additional `.orderBy` as illustrated below.
 
 ```dart bookstore_test.dart#query-orderby-limit-where
 final result = await db.books
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .limit(3)
     .asQuery // allow the ordering to be discarded!
     .where((b) => b.authorId.equalsValue(2))
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .select((b) => (b.title, b.stock))
     .fetch();
 
@@ -493,7 +493,7 @@ stock, as illustrated in the example below:
 ```dart bookstore_test.dart#query-where-orderby-limit
 final result = await db.books
     .where((b) => b.authorId.equalsValue(2))
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .limit(3)
     .select((b) => (b.title, b.stock))
     .fetch();
