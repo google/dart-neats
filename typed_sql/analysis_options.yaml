@@ -3,3 +3,5 @@ analyzer:
   errors:
     lines_longer_than_80_chars: ignore
     unreachable_from_main: ignore
+formatter:
+  trailing_commas: preserve
