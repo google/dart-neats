@@ -54,7 +54,7 @@ final class _$Author extends Author {
   @override
   final String lastName;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'authors',
     columns: <String>['firstName', 'lastName'],
     columnInfo: [
@@ -373,7 +373,7 @@ final class _$Book extends Book {
   @override
   final int stock;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'books',
     columns: <String>[
       'bookId',

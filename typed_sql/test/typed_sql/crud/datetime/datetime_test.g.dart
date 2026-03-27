@@ -51,7 +51,7 @@ final class _$Item extends Item {
   @override
   final DateTime value;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'items',
     columns: <String>['id', 'value'],
     columnInfo: [

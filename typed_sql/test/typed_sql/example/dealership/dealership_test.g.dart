@@ -57,7 +57,7 @@ final class _$Car extends Car {
   @override
   final Color color;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'cars',
     columns: <String>['id', 'model', 'licensePlate', 'color'],
     columnInfo: [
