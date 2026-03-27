@@ -230,8 +230,9 @@ void main() {
     check(items).length.equals(6);
   });
 
-  r.addTest('items.select(.text, .integer, real).distinct().count()',
-      (db) async {
+  r.addTest('items.select(.text, .integer, real).distinct().count()', (
+    db,
+  ) async {
     final count = await db.items
         .select(
           (i) => (

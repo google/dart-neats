@@ -112,8 +112,9 @@ final _cases = [
   ),
   (
     name: 'DateTime(2025).toUtc().notEquals(DateTime(2025).toUtc())',
-    expr: toExpr(DateTime(2025).toUtc())
-        .notEquals(toExpr(DateTime(2025).toUtc())),
+    expr: toExpr(
+      DateTime(2025).toUtc(),
+    ).notEquals(toExpr(DateTime(2025).toUtc())),
     expected: false,
   ),
   (

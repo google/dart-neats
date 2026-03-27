@@ -23,20 +23,20 @@ import 'dialect.dart';
 SqlDialect mysqlDialect() => _MysqlSqlDialect();
 
 String _literal(dynamic value) => switch (value) {
-      null => 'NULL',
-      true => 'TRUE',
-      false => 'FALSE',
-      int i => i.toString(),
-      double d => d.toString(),
-      String s => "'${s.replaceAll("'", "''").replaceAll("\\", "\\\\")}'",
-      DateTime d =>
-        "'${d.toIso8601String().substring(0, 19).replaceFirst('T', ' ')}'",
-      Uint8List b =>
-        "X'${b.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}'",
-      JsonValue j =>
-        '(\'${json.encode(normalizeJson(j.value)).replaceAll("'", "''").replaceAll("\\", "\\\\")}\')',
-      _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
-    };
+  null => 'NULL',
+  true => 'TRUE',
+  false => 'FALSE',
+  int i => i.toString(),
+  double d => d.toString(),
+  String s => "'${s.replaceAll("'", "''").replaceAll("\\", "\\\\")}'",
+  DateTime d =>
+    "'${d.toIso8601String().substring(0, 19).replaceFirst('T', ' ')}'",
+  Uint8List b =>
+    "X'${b.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}'",
+  JsonValue j =>
+    '(\'${json.encode(normalizeJson(j.value)).replaceAll("'", "''").replaceAll("\\", "\\\\")}\')',
+  _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
+};
 
 final class _MysqlSqlDialect extends SqlDialect {
   @override
@@ -45,10 +45,12 @@ final class _MysqlSqlDialect extends SqlDialect {
     return [
       ...statements.map((table) {
         final resolvedColumnDefinitions = table.columns.map((c) {
-          final override =
-              c.overrides.firstWhereOrNull((o) => o.dialect == 'mysql');
-          final generic =
-              c.overrides.firstWhereOrNull((o) => o.dialect == null);
+          final override = c.overrides.firstWhereOrNull(
+            (o) => o.dialect == 'mysql',
+          );
+          final generic = c.overrides.firstWhereOrNull(
+            (o) => o.dialect == null,
+          );
           final sqlType =
               override?.columnType ?? generic?.columnType ?? c.type.sqlType;
           return (
@@ -100,8 +102,9 @@ final class _MysqlSqlDialect extends SqlDialect {
             // Primary key (composite)
             'PRIMARY KEY (${table.primaryKey.map(escape).join(', ')})',
             // Unique constraints - MySQL uses UNIQUE KEY syntax
-            ...table.unique
-                .map((u) => 'UNIQUE KEY (${u.map(escape).join(', ')})'),
+            ...table.unique.map(
+              (u) => 'UNIQUE KEY (${u.map(escape).join(', ')})',
+            ),
           ].map((l) => '  $l').join(',\n'),
           ')',
         ].join('\n');
@@ -479,20 +482,24 @@ extension on ExpressionResolver<SqlContext> {
     String? ordering;
     if (order != null) {
       final ctx = withScope(order, columnsAndAlias);
-      ordering = order.orderBy.map((key) {
-        final (e, order) = key;
-        final expr = ctx.expr(e);
-        final direction = order == Order.descending ? 'DESC' : 'ASC';
-        return '($expr IS NULL) ASC, $expr $direction';
-      }).join(', ');
+      ordering = order.orderBy
+          .map((key) {
+            final (e, order) = key;
+            final expr = ctx.expr(e);
+            final direction = order == Order.descending ? 'DESC' : 'ASC';
+            return '($expr IS NULL) ASC, $expr $direction';
+          })
+          .join(', ');
     }
 
     String? where;
     if (filters.isNotEmpty) {
-      where = filters.map((w) {
-        final ctx = withScope(w, columnsAndAlias);
-        return '( ${ctx.expr(w.where)} )';
-      }).join(' AND ');
+      where = filters
+          .map((w) {
+            final ctx = withScope(w, columnsAndAlias);
+            return '( ${ctx.expr(w.where)} )';
+          })
+          .join(' AND ');
     }
 
     return (
@@ -521,69 +528,65 @@ extension on ExpressionResolver<SqlContext> {
   }
 
   String expr<T>(Expr<T> e) => switch (e) {
-        FieldExpression<T>() => resolveField(e),
-        SubQueryExpression<T>(:final query) =>
-          '(${selectExpression(query).$1})',
-        Literal<CustomDataType?>(value: final value) =>
-          context.addParameter(value?.toDatabase()),
-        Literal<T>(value: final value) => context.addParameter(value),
-        ExpressionBlobLength(:final value) => 'LENGTH(${expr(value)})',
-        ExpressionBlobToHex(:final value) => 'HEX(${expr(value)})',
-        ExpressionBlobDecodeUtf8(:final value) =>
-          'CONVERT(${expr(value)} USING utf8mb4)',
-        ExpressionBlobSublist(:final value, :final start, :final length) =>
-          'CAST(SUBSTRING(${expr(value)}, ${expr(start)} + 1 ${length != null ? ', ${expr(length)}' : ''}) AS BINARY)',
-        ExpressionBlobConcat(left: final l, right: final r) =>
-          'CAST(CONCAT(${expr(l)}, ${expr(r)}) AS BINARY)',
-        final ExpressionNumDivide e =>
-          '( CAST(${expr(e.left)} AS DOUBLE) ${e.operator} ${expr(e.right)} )',
-        final BinaryOperationExpression e =>
-          '( ${expr(e.left)} ${e.operator} ${expr(e.right)} )',
-        ExpressionBoolNot(value: final value) => '( NOT ${expr(value)} )',
-        ExpressionStringIsEmpty(value: final value) =>
-          '( ${expr(value)} = \'\' )',
-        ExpressionStringLength(value: final value) =>
-          'LENGTH( ${expr(value)} )',
-        ExpressionStringStartsWith(value: final value, prefix: final prefix) =>
-          'INSTR(${expr(value)}, ${expr(prefix)}) <=> 1',
-        ExpressionStringEndsWith(value: final value, suffix: final suffix) =>
-          'INSTR(REVERSE(${expr(value)}), REVERSE(${expr(suffix)})) <=> 1',
-        ExpressionStringLike(value: final value, pattern: final pattern) =>
-          '( ${expr(value)} LIKE ${context.addParameter(pattern)} )',
-        ExpressionStringContains(value: final value, needle: final needle) =>
-          '( INSTR( ${expr(value)} , ${expr(needle)} ) > 0 )',
-        ExpressionStringToUpperCase(value: final value) =>
-          'UPPER( ${expr(value)} )',
-        ExpressionStringToLowerCase(value: final value) =>
-          'LOWER( ${expr(value)} )',
-        RowExpression<Row>() => throw AssertionError(
-            'RowExpression exist in a context where they are rendered',
-          ),
-        ExistsExpression(:final query) =>
-          'EXISTS (${selectExpression(query).$1})',
-        SumExpression<int>(:final value) =>
-          'CAST(COALESCE(SUM(${expr(value)}), 0.0) AS SIGNED)',
-        SumExpression<num>(:final value) =>
-          'CAST(COALESCE(SUM(${expr(value)}), 0.0) AS DOUBLE)',
-        // database driver can't read DECIMAL so we cast to DOUBLE
-        AvgExpression(:final value) => 'CAST(AVG(${expr(value)}) AS DOUBLE)',
-        MinExpression<Comparable>(:final value) => 'MIN(${expr(value)})',
-        MaxExpression<Comparable>(:final value) => 'MAX(${expr(value)})',
-        CountAllExpression() => 'COUNT(*)',
-        OrElseExpression<T>(:final value, :final orElse) =>
-          'COALESCE(${expr(value)}, ${expr(orElse)})',
-        NotNullExpression<T>(:final value) => expr(value),
-        // We need CAST true|false TO BOOLEAN to work for JSON extraction!
-        CastExpression(:final Expr<String?> value, type: ColumnType.boolean) =>
-          'CASE LOWER(${expr(value)}) WHEN \'true\' THEN 1 WHEN \'false\' THEN 0 ELSE CAST(${expr(value)} AS SIGNED) END',
-        final CastExpression e =>
-          'CAST(${expr(e.value)} AS ${e.type.sqlCastType})',
-        EncodedCustomDataTypeExpression(:final value) => expr(value),
-        CurrentTimestampExpression _ => 'UTC_TIMESTAMP()',
-        ExpressionJsonRef e => extractJsonRef(e),
-        ExpressionJsonExtract(:final value) =>
-          'CASE WHEN JSON_TYPE(${expr(value)}) = \'NULL\' THEN NULL ELSE JSON_UNQUOTE(${expr(value)}) END',
-      };
+    FieldExpression<T>() => resolveField(e),
+    SubQueryExpression<T>(:final query) => '(${selectExpression(query).$1})',
+    Literal<CustomDataType?>(value: final value) => context.addParameter(
+      value?.toDatabase(),
+    ),
+    Literal<T>(value: final value) => context.addParameter(value),
+    ExpressionBlobLength(:final value) => 'LENGTH(${expr(value)})',
+    ExpressionBlobToHex(:final value) => 'HEX(${expr(value)})',
+    ExpressionBlobDecodeUtf8(:final value) =>
+      'CONVERT(${expr(value)} USING utf8mb4)',
+    ExpressionBlobSublist(:final value, :final start, :final length) =>
+      'CAST(SUBSTRING(${expr(value)}, ${expr(start)} + 1 ${length != null ? ', ${expr(length)}' : ''}) AS BINARY)',
+    ExpressionBlobConcat(left: final l, right: final r) =>
+      'CAST(CONCAT(${expr(l)}, ${expr(r)}) AS BINARY)',
+    final ExpressionNumDivide e =>
+      '( CAST(${expr(e.left)} AS DOUBLE) ${e.operator} ${expr(e.right)} )',
+    final BinaryOperationExpression e =>
+      '( ${expr(e.left)} ${e.operator} ${expr(e.right)} )',
+    ExpressionBoolNot(value: final value) => '( NOT ${expr(value)} )',
+    ExpressionStringIsEmpty(value: final value) => '( ${expr(value)} = \'\' )',
+    ExpressionStringLength(value: final value) => 'LENGTH( ${expr(value)} )',
+    ExpressionStringStartsWith(value: final value, prefix: final prefix) =>
+      'INSTR(${expr(value)}, ${expr(prefix)}) <=> 1',
+    ExpressionStringEndsWith(value: final value, suffix: final suffix) =>
+      'INSTR(REVERSE(${expr(value)}), REVERSE(${expr(suffix)})) <=> 1',
+    ExpressionStringLike(value: final value, pattern: final pattern) =>
+      '( ${expr(value)} LIKE ${context.addParameter(pattern)} )',
+    ExpressionStringContains(value: final value, needle: final needle) =>
+      '( INSTR( ${expr(value)} , ${expr(needle)} ) > 0 )',
+    ExpressionStringToUpperCase(value: final value) =>
+      'UPPER( ${expr(value)} )',
+    ExpressionStringToLowerCase(value: final value) =>
+      'LOWER( ${expr(value)} )',
+    RowExpression<Row>() => throw AssertionError(
+      'RowExpression exist in a context where they are rendered',
+    ),
+    ExistsExpression(:final query) => 'EXISTS (${selectExpression(query).$1})',
+    SumExpression<int>(:final value) =>
+      'CAST(COALESCE(SUM(${expr(value)}), 0.0) AS SIGNED)',
+    SumExpression<num>(:final value) =>
+      'CAST(COALESCE(SUM(${expr(value)}), 0.0) AS DOUBLE)',
+    // database driver can't read DECIMAL so we cast to DOUBLE
+    AvgExpression(:final value) => 'CAST(AVG(${expr(value)}) AS DOUBLE)',
+    MinExpression<Comparable>(:final value) => 'MIN(${expr(value)})',
+    MaxExpression<Comparable>(:final value) => 'MAX(${expr(value)})',
+    CountAllExpression() => 'COUNT(*)',
+    OrElseExpression<T>(:final value, :final orElse) =>
+      'COALESCE(${expr(value)}, ${expr(orElse)})',
+    NotNullExpression<T>(:final value) => expr(value),
+    // We need CAST true|false TO BOOLEAN to work for JSON extraction!
+    CastExpression(:final Expr<String?> value, type: ColumnType.boolean) =>
+      'CASE LOWER(${expr(value)}) WHEN \'true\' THEN 1 WHEN \'false\' THEN 0 ELSE CAST(${expr(value)} AS SIGNED) END',
+    final CastExpression e => 'CAST(${expr(e.value)} AS ${e.type.sqlCastType})',
+    EncodedCustomDataTypeExpression(:final value) => expr(value),
+    CurrentTimestampExpression _ => 'UTC_TIMESTAMP()',
+    ExpressionJsonRef e => extractJsonRef(e),
+    ExpressionJsonExtract(:final value) =>
+      'CASE WHEN JSON_TYPE(${expr(value)}) = \'NULL\' THEN NULL ELSE JSON_UNQUOTE(${expr(value)}) END',
+  };
 
   String extractJsonRef(ExpressionJsonRef ref) {
     final (root, path) = _compileJsonPath(ref);
@@ -649,67 +652,67 @@ final class _RangeTracker {
 
 extension on CompositeQueryClause {
   String get operator => switch (this) {
-        UnionClause() => 'UNION',
-        UnionAllClause() => 'UNION ALL',
-        IntersectClause() => 'INTERSECT',
-        ExceptClause() => 'EXCEPT',
-      };
+    UnionClause() => 'UNION',
+    UnionAllClause() => 'UNION ALL',
+    IntersectClause() => 'INTERSECT',
+    ExceptClause() => 'EXCEPT',
+  };
 }
 
 extension on BinaryOperationExpression {
   String get operator => switch (this) {
-        // TODO: Consider if some sort of type hierachy could possibly make this
-        //       even smarter.
-        ExpressionBoolAnd() => 'AND',
-        ExpressionBoolOr() => 'OR',
-        ExpressionEquals() => '=',
-        ExpressionIsNotDistinctFrom() => '<=>',
-        ExpressionLessThan() => '<',
-        ExpressionLessThanOrEqual() => '<=',
-        ExpressionGreaterThan() => '>',
-        ExpressionGreaterThanOrEqual() => '>=',
-        ExpressionNumAdd<num>() => '+',
-        ExpressionNumSubtract<num>() => '-',
-        ExpressionNumMultiply<num>() => '*',
-        ExpressionNumDivide<num>() => '/',
-        ExpressionBlobConcat() => throw AssertionError(
-            'ExpressionBlobConcat must be explicitly handled',
-          ),
-      };
+    // TODO: Consider if some sort of type hierachy could possibly make this
+    //       even smarter.
+    ExpressionBoolAnd() => 'AND',
+    ExpressionBoolOr() => 'OR',
+    ExpressionEquals() => '=',
+    ExpressionIsNotDistinctFrom() => '<=>',
+    ExpressionLessThan() => '<',
+    ExpressionLessThanOrEqual() => '<=',
+    ExpressionGreaterThan() => '>',
+    ExpressionGreaterThanOrEqual() => '>=',
+    ExpressionNumAdd<num>() => '+',
+    ExpressionNumSubtract<num>() => '-',
+    ExpressionNumMultiply<num>() => '*',
+    ExpressionNumDivide<num>() => '/',
+    ExpressionBlobConcat() => throw AssertionError(
+      'ExpressionBlobConcat must be explicitly handled',
+    ),
+  };
 }
 
 extension on ColumnType {
   String get sqlType => switch (this) {
-        ColumnType<Uint8List> _ => 'BLOB',
-        ColumnType<bool> _ => 'BOOLEAN',
-        ColumnType<DateTime> _ => 'DATETIME(6)',
-        ColumnType<int> _ => 'BIGINT',
-        ColumnType<double> _ => 'DOUBLE',
-        ColumnType<String> _ => 'TEXT',
-        ColumnType<JsonValue> _ => 'JSON',
-        ColumnType<Null> _ => throw UnsupportedError(
-            'Null type cannot be used as column type',
-          ),
-      };
+    ColumnType<Uint8List> _ => 'BLOB',
+    ColumnType<bool> _ => 'BOOLEAN',
+    ColumnType<DateTime> _ => 'DATETIME(6)',
+    ColumnType<int> _ => 'BIGINT',
+    ColumnType<double> _ => 'DOUBLE',
+    ColumnType<String> _ => 'TEXT',
+    ColumnType<JsonValue> _ => 'JSON',
+    ColumnType<Null> _ => throw UnsupportedError(
+      'Null type cannot be used as column type',
+    ),
+  };
 
   String get sqlCastType => switch (this) {
-        ColumnType<Uint8List> _ => 'BINARY',
-        ColumnType<bool> _ => 'SIGNED',
-        ColumnType<DateTime> _ => 'DATETIME',
-        ColumnType<int> _ => 'SIGNED',
-        ColumnType<double> _ => 'DOUBLE',
-        ColumnType<String> _ => 'CHAR',
-        ColumnType<JsonValue> _ => 'CHAR',
-        ColumnType<Null> _ => throw UnsupportedError(
-            'Null type cannot be used as column type',
-          ),
-      };
+    ColumnType<Uint8List> _ => 'BINARY',
+    ColumnType<bool> _ => 'SIGNED',
+    ColumnType<DateTime> _ => 'DATETIME',
+    ColumnType<int> _ => 'SIGNED',
+    ColumnType<double> _ => 'DOUBLE',
+    ColumnType<String> _ => 'CHAR',
+    ColumnType<JsonValue> _ => 'CHAR',
+    ColumnType<Null> _ => throw UnsupportedError(
+      'Null type cannot be used as column type',
+    ),
+  };
 }
 
 extension on JoinType {
   String get kind => switch (this) {
-        JoinType.inner => 'INNER',
-        JoinType.left => 'LEFT',
-        JoinType.right => 'RIGHT',
-      };
+    JoinType.inner => 'INNER',
+    JoinType.left => 'LEFT',
+    JoinType.right => 'RIGHT',
+  };
 }

@@ -40,7 +40,7 @@ final class DefaultValue {
   // encodings.
 
   const DefaultValue._(String kind, Object value)
-      : _value = (kind: kind, value: value);
+    : _value = (kind: kind, value: value);
 
   /// Annotate a field with a constant default value.
   ///
@@ -72,18 +72,18 @@ final class DefaultValue {
     int millisecond = 0,
     int microsecond = 0,
   ]) : _value = (
-          kind: 'datetime',
-          value: (
-            year,
-            month,
-            day,
-            hour,
-            minute,
-            second,
-            millisecond,
-            microsecond,
-          ),
-        );
+         kind: 'datetime',
+         value: (
+           year,
+           month,
+           day,
+           hour,
+           minute,
+           second,
+           millisecond,
+           microsecond,
+         ),
+       );
 
   /// Annotate a [DateTime] field with a default value of
   /// `1970-01-01T00:00:00Z`.
@@ -182,8 +182,8 @@ final class Unique {
   /// > If you only want to make a single field `UNIQUE`, you may use the
   /// > [Unique.field] annotation instead.
   const Unique({String? name, required List<String> fields})
-      : _name = name ?? '-',
-        _fields = fields;
+    : _name = name ?? '-',
+      _fields = fields;
 
   /// Add `UNIQUE` constraint to a single field.
   ///
@@ -210,9 +210,7 @@ final class Unique {
   ///   String get accountNumber;
   /// }
   /// ```
-  const Unique.field({String? name})
-      : _name = name,
-        _fields = null;
+  const Unique.field({String? name}) : _name = name, _fields = null;
 }
 
 /// An annotation to provide overrides for SQL schema generation.

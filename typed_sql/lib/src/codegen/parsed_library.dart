@@ -27,7 +27,8 @@ final class ParsedLibrary {
   bool get isEmpty => schemas.isEmpty && rowClasses.isEmpty;
 
   @override
-  String toString() => 'ParsedLibrary(${[
+  String toString() =>
+      'ParsedLibrary(${[
         'schemas: [${schemas.join(', ')}]',
         'rowClasses: [${rowClasses.join(', ')}]',
       ].join(', ')})';
@@ -43,7 +44,8 @@ final class ParsedSchema {
   });
 
   @override
-  String toString() => 'ParsedSchema(${[
+  String toString() =>
+      'ParsedSchema(${[
         'name: "$name"',
         'tables: [${tables.join(', ')}]',
       ].join(', ')})';
@@ -61,7 +63,8 @@ final class ParsedTable {
   });
 
   @override
-  String toString() => 'ParsedTable(${[
+  String toString() =>
+      'ParsedTable(${[
         'name: "$name"',
         'rowClass: $rowClass',
       ].join(', ')})';
@@ -83,7 +86,8 @@ final class ParsedRowClass {
   });
 
   @override
-  String toString() => 'ParsedRowClass(${[
+  String toString() =>
+      'ParsedRowClass(${[
         'name: "$name"',
         'primaryKey: [${primaryKey.map((f) => '"${f.name}"').join(', ')}]',
         'fields: [${fields.map((f) => '"${f.name}"').join(', ')}]',
@@ -120,7 +124,8 @@ final class ParsedForeignKey {
   late final ParsedTable referencedTable;
 
   @override
-  String toString() => 'ParsedForeignKey(${[
+  String toString() =>
+      'ParsedForeignKey(${[
         'foreignKey: [${foreignKey.map((k) => k.name).join(', ')}]',
         'table: "$table"',
         'fields: [${fields.map((f) => '"$f"').join(', ')}]',
@@ -151,7 +156,8 @@ final class ParsedField {
   });
 
   @override
-  String toString() => 'ParsedField(${[
+  String toString() =>
+      'ParsedField(${[
         'name: "$name"',
         'typeName: "$typeName"',
         'isNullable: $isNullable',
@@ -169,7 +175,8 @@ final class ParsedRecord {
   });
 
   @override
-  String toString() => 'ParsedRecord(${[
+  String toString() =>
+      'ParsedRecord(${[
         'fields: [${fields.map((f) => '"$f"').join(', ')}]',
       ].join(', ')})';
 }

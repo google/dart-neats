@@ -43,15 +43,18 @@ void main() {
       [1, 'Alice'],
     );
 
-    final result = await adapter.query(
-      'SELECT id, name FROM users',
-      [],
-    ).toIntStr();
+    final result = await adapter
+        .query(
+          'SELECT id, name FROM users',
+          [],
+        )
+        .toIntStr();
     expect(
-        result,
-        equals([
-          [1, 'Alice']
-        ]));
+      result,
+      equals([
+        [1, 'Alice'],
+      ]),
+    );
 
     await adapter.execute('DROP TABLE users', []);
   });

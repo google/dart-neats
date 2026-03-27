@@ -121,11 +121,13 @@ void main() {
   // Test orderings by .text, .real
   r.addTest('orderBy(.text asc, .real asc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.text, Order.ascending),
-              (i.real, Order.ascending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.text, Order.ascending),
+            (i.real, Order.ascending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.text, i.real))
         .fetch();
     check(result).deepEquals([
@@ -142,11 +144,13 @@ void main() {
 
   r.addTest('orderBy(.text asc, .real desc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.text, Order.ascending),
-              (i.real, Order.descending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.text, Order.ascending),
+            (i.real, Order.descending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.text, i.real))
         .fetch();
     check(result).deepEquals([
@@ -163,11 +167,13 @@ void main() {
 
   r.addTest('orderBy(.text desc, .real asc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.text, Order.descending),
-              (i.real, Order.ascending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.text, Order.descending),
+            (i.real, Order.ascending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.text, i.real))
         .fetch();
     check(result).deepEquals([
@@ -184,11 +190,13 @@ void main() {
 
   r.addTest('orderBy(.text desc, .real desc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.text, Order.descending),
-              (i.real, Order.descending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.text, Order.descending),
+            (i.real, Order.descending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.text, i.real))
         .fetch();
     check(result).deepEquals([
@@ -206,11 +214,13 @@ void main() {
   // Test orderings by .text, .integer
   r.addTest('orderBy(.text asc, .integer asc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.text, Order.ascending),
-              (i.integer, Order.ascending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.text, Order.ascending),
+            (i.integer, Order.ascending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.text, i.integer))
         .fetch();
     check(result).deepEquals([
@@ -227,11 +237,13 @@ void main() {
 
   r.addTest('orderBy(.text asc, .integer desc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.text, Order.ascending),
-              (i.integer, Order.descending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.text, Order.ascending),
+            (i.integer, Order.descending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.text, i.integer))
         .fetch();
     check(result).deepEquals([
@@ -248,11 +260,13 @@ void main() {
 
   r.addTest('orderBy(.text desc, .integer asc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.text, Order.descending),
-              (i.integer, Order.ascending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.text, Order.descending),
+            (i.integer, Order.ascending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.text, i.integer))
         .fetch();
     check(result).deepEquals([
@@ -269,11 +283,13 @@ void main() {
 
   r.addTest('orderBy(.text desc, .integer desc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.text, Order.descending),
-              (i.integer, Order.descending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.text, Order.descending),
+            (i.integer, Order.descending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.text, i.integer))
         .fetch();
     check(result).deepEquals([
@@ -291,11 +307,13 @@ void main() {
   // Test orderings by .integer, .text
   r.addTest('orderBy(.integer asc, .text asc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.integer, Order.ascending),
-              (i.text, Order.ascending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.integer, Order.ascending),
+            (i.text, Order.ascending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.integer, i.text))
         .fetch();
     check(result).deepEquals([
@@ -312,11 +330,13 @@ void main() {
 
   r.addTest('orderBy(.integer asc, .text desc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.integer, Order.ascending),
-              (i.text, Order.descending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.integer, Order.ascending),
+            (i.text, Order.descending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.integer, i.text))
         .fetch();
     check(result).deepEquals([
@@ -333,11 +353,13 @@ void main() {
 
   r.addTest('orderBy(.integer desc, .text asc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.integer, Order.descending),
-              (i.text, Order.ascending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.integer, Order.descending),
+            (i.text, Order.ascending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.integer, i.text))
         .fetch();
     check(result).deepEquals([
@@ -354,11 +376,13 @@ void main() {
 
   r.addTest('orderBy(.integer desc, .text desc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.integer, Order.descending),
-              (i.text, Order.descending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.integer, Order.descending),
+            (i.text, Order.descending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.integer, i.text))
         .fetch();
     check(result).deepEquals([
@@ -376,11 +400,13 @@ void main() {
   // Test orderings by .timestamp, .text
   r.addTest('orderBy(.timestamp asc, .text asc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.timestamp, Order.ascending),
-              (i.text, Order.ascending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.timestamp, Order.ascending),
+            (i.text, Order.ascending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.timestamp, i.text))
         .fetch();
     check(result).deepEquals([
@@ -397,11 +423,13 @@ void main() {
 
   r.addTest('orderBy(.timestamp asc, .text desc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.timestamp, Order.ascending),
-              (i.text, Order.descending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.timestamp, Order.ascending),
+            (i.text, Order.descending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.timestamp, i.text))
         .fetch();
     check(result).deepEquals([
@@ -418,11 +446,13 @@ void main() {
 
   r.addTest('orderBy(.timestamp desc, .text asc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.timestamp, Order.descending),
-              (i.text, Order.ascending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.timestamp, Order.descending),
+            (i.text, Order.ascending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.timestamp, i.text))
         .fetch();
     check(result).deepEquals([
@@ -439,11 +469,13 @@ void main() {
 
   r.addTest('orderBy(.timestamp desc, .text desc)', (db) async {
     final result = await db.items
-        .orderBy((i) => [
-              (i.timestamp, Order.descending),
-              (i.text, Order.descending),
-              (i.id, Order.ascending), // ensure consistent tests
-            ])
+        .orderBy(
+          (i) => [
+            (i.timestamp, Order.descending),
+            (i.text, Order.descending),
+            (i.id, Order.ascending), // ensure consistent tests
+          ],
+        )
         .select((i) => (i.id, i.timestamp, i.text))
         .fetch();
     check(result).deepEquals([

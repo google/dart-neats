@@ -16,8 +16,9 @@ import 'dart:io';
 import 'dart:isolate';
 
 void main() {
-  final outUri = Isolate.resolvePackageUriSync(Uri.parse('package:typed_sql/'))
-      ?.resolve('../test/typed_sql/custom_types/');
+  final outUri = Isolate.resolvePackageUriSync(
+    Uri.parse('package:typed_sql/'),
+  )?.resolve('../test/typed_sql/custom_types/');
   if (outUri == null) {
     print('Cannot resolve package:typed_sql/');
     exit(1);
@@ -31,13 +32,19 @@ void main() {
     print('Creating: ${target.path}');
     target.parent.createSync(recursive: true);
 
-    target.writeAsStringSync(i.entries.fold(
-      template,
-      (template, entry) => template.replaceAll('{{${entry.key}}}', entry.value),
-    ));
+    target.writeAsStringSync(
+      i.entries.fold(
+        template,
+        (template, entry) =>
+            template.replaceAll('{{${entry.key}}}', entry.value),
+      ),
+    );
 
-    if (Process.runSync('dart', ['fix', '--apply', target.absolute.path])
-            .exitCode !=
+    if (Process.runSync('dart', [
+          'fix',
+          '--apply',
+          target.absolute.path,
+        ]).exitCode !=
         0) {
       print('Failed to dart fix: ${target.path}');
       exit(1);

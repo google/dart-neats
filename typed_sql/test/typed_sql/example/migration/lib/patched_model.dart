@@ -34,4 +34,5 @@ abstract final class Account extends Row {
   @DefaultValue(0.0)
   double get balance;
 }
+
 // #endregion

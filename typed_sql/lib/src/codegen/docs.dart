@@ -21,7 +21,8 @@ library;
 /// positional and named records.
 ///
 /// [target] must be either 'Query', 'SubQuery' or 'QuerySingle'.
-String where(String target) => '''
+String where(String target) =>
+    '''
     Filter [$target] using `WHERE` clause.
 
     Returns a [$target] retaining rows from this [$target] where the expression
@@ -32,7 +33,8 @@ String where(String target) => '''
 /// named records.
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
-String orderBy(String target) => '''
+String orderBy(String target) =>
+    '''
     Order [$target] using `ORDER BY` clause.
 
     Returns a [$target] with the same rows as this [$target], but ordered by
@@ -63,7 +65,8 @@ String orderBy(String target) => '''
 /// named records.
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
-String limit(String target) => '''
+String limit(String target) =>
+    '''
     Limit [$target] using `LIMIT` clause.
 
     The resulting [$target] will only return the first [limit] rows.
@@ -73,7 +76,8 @@ String limit(String target) => '''
 /// named records.
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
-String offset(String target) => '''
+String offset(String target) =>
+    '''
     Offset [$target] using `OFFSET` clause.
 
     The resulting [$target] will skip the first [offset] rows.
@@ -117,7 +121,8 @@ final countSubQuery = '''
 ///
 /// [target] must be either 'Query', 'SubQuery' or 'QuerySingle'.
 // TODO: Select documentation needs an example!
-String select(String target) => '''
+String select(String target) =>
+    '''
     Create a projection of this [$target] using `SELECT` clause.
 
     The [projectionBuilder] **must** return a [Record] where all the
@@ -227,7 +232,8 @@ final fetchOrNullsQuerySingle = '''
 /// Documentation for `.union` on [Query] and [SubQuery].
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
-String union(String target) => '''
+String union(String target) =>
+    '''
     Combine this [$target] with [other] using `UNION` _set operator_.
 
     This returns a [$target] containing all the rows from this [$target]
@@ -237,7 +243,8 @@ String union(String target) => '''
 /// Documentation for `.unionAll` on [Query] and [SubQuery].
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
-String unionAll(String target) => '''
+String unionAll(String target) =>
+    '''
     Combine this [$target] with [other] using `UNION ALL` _set operator_.
 
     This returns a [$target] containing all the rows from this [$target] and
@@ -247,7 +254,8 @@ String unionAll(String target) => '''
 /// Documentation for `.intersection` on [Query] and [SubQuery].
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
-String intersection(String target) => '''
+String intersection(String target) =>
+    '''
   Combine this [$target] with [other] using `INTERSECT` _set operator_.
 
   This returns a [$target] containing all the rows that appear in both this
@@ -257,7 +265,8 @@ String intersection(String target) => '''
 /// Documentation for `.except` on [Query] and [SubQuery].
 ///
 /// [target] must be either 'Query' or 'SubQuery'.
-String except(String target) => '''
+String except(String target) =>
+    '''
     Combine this [$target] with [other] using `EXCEPT` _set operator_.
 
     This returns a [$target] containing all the rows that appear in this
@@ -325,7 +334,8 @@ final innerJoinAll = '''
 /// Documentation for `.on` on [InnerJoin], [LeftJoin], [RightJoin].
 ///
 /// [kind] must be either 'INNER', 'LEFT' or 'RIGHT'.
-String joinOn(String kind) => '''
+String joinOn(String kind) =>
+    '''
     Create `$kind JOIN` using [conditionBuilder] in the `ON` clause.
 ''';
 
@@ -412,7 +422,8 @@ final aggregationCount = '''
 /// Documentation for  `.asExpr` on subclasses of [CustomDataType].
 ///
 /// [nullable] must be `''` or `'?'`.
-String customDataTypeAsExpr(String typeName, String nullable) => '''
+String customDataTypeAsExpr(String typeName, String nullable) =>
+    '''
     Wrap this [$typeName] as [Expr<$typeName$nullable>] for use queries with
     `package:typed_sql`.
 ''';

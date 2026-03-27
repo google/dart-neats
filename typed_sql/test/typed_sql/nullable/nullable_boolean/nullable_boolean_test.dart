@@ -79,9 +79,11 @@ void main() {
 
     await db.items
         .byKey(1)
-        .update((item, set) => set(
-              value: toExpr(_value),
-            ))
+        .update(
+          (item, set) => set(
+            value: toExpr(_value),
+          ),
+        )
         .execute();
 
     final updateItem = await db.items.first.fetch();
@@ -101,9 +103,11 @@ void main() {
 
     await db.items
         .byKey(1)
-        .update((item, set) => set(
-              value: toExpr(_value),
-            ))
+        .update(
+          (item, set) => set(
+            value: toExpr(_value),
+          ),
+        )
         .execute();
 
     final updateItem = await db.items.first.fetch();

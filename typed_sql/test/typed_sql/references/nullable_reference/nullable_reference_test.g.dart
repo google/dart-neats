@@ -11,14 +11,14 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Author._$table, _$Book._$table];
 
   Table<Author> get authors => $ForGeneratedCode.declareTable(
-        this,
-        _$Author._$table,
-      );
+    this,
+    _$Author._$table,
+  );
 
   Table<Book> get books => $ForGeneratedCode.declareTable(
-        this,
-        _$Book._$table,
-      );
+    this,
+    _$Book._$table,
+  );
 
   /// Create tables defined in [TestDatabase].
   ///
@@ -33,9 +33,9 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
   Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+    context: this,
+    tables: _$tables,
+  );
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
@@ -74,50 +74,56 @@ final class _$Author extends Author {
   static const _$table = (
     tableName: 'authors',
     columns: <String>['authorId', 'name', 'favoriteBookId'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: false,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: true,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: false,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+        ],
     primaryKey: <String>['authorId'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[
-      (
-        name: 'favoriteBook',
-        columns: ['favoriteBookId'],
-        referencedTable: 'books',
-        referencedColumns: ['bookId'],
-      )
-    ],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[
+          (
+            name: 'favoriteBook',
+            columns: ['favoriteBookId'],
+            referencedTable: 'books',
+            referencedColumns: ['bookId'],
+          ),
+        ],
     readRow: _$Author._$fromDatabase,
   );
 
@@ -146,15 +152,14 @@ extension TableAuthorExt on Table<Author> {
     Expr<int>? authorId,
     required Expr<String> name,
     Expr<int?>? favoriteBookId,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          authorId,
-          name,
-          favoriteBookId,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [
+      authorId,
+      name,
+      favoriteBookId,
+    ],
+  );
 
   /// Delete a single row from the `authors` table, specified by
   /// _primary key_.
@@ -166,9 +171,9 @@ extension TableAuthorExt on Table<Author> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Author> delete(int authorId) => $ForGeneratedCode.deleteSingle(
-        byKey(authorId),
-        _$Author._$table,
-      );
+    byKey(authorId),
+    _$Author._$table,
+  );
 }
 
 /// Extension methods for building queries against the `authors` table.
@@ -208,31 +213,32 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Author> update(
-          UpdateSet<Author> Function(
-            Expr<Author> author,
-            UpdateSet<Author> Function({
-              Expr<int> authorId,
-              Expr<String> name,
-              Expr<int?> favoriteBookId,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Author>(
-        this,
-        _$Author._$table,
-        (author) => updateBuilder(
-          author,
-          ({
-            Expr<int>? authorId,
-            Expr<String>? name,
-            Expr<int?>? favoriteBookId,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Author>([
-            authorId,
-            name,
-            favoriteBookId,
-          ]),
-        ),
-      );
+    UpdateSet<Author> Function(
+      Expr<Author> author,
+      UpdateSet<Author> Function({
+        Expr<int> authorId,
+        Expr<String> name,
+        Expr<int?> favoriteBookId,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Author>(
+    this,
+    _$Author._$table,
+    (author) => updateBuilder(
+      author,
+      ({
+        Expr<int>? authorId,
+        Expr<String>? name,
+        Expr<int?>? favoriteBookId,
+      }) => $ForGeneratedCode.buildUpdate<Author>([
+        authorId,
+        name,
+        favoriteBookId,
+      ]),
+    ),
+  );
 
   /// Delete all rows in the `authors` table matching this [Query].
   ///
@@ -273,31 +279,32 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Author> update(
-          UpdateSet<Author> Function(
-            Expr<Author> author,
-            UpdateSet<Author> Function({
-              Expr<int> authorId,
-              Expr<String> name,
-              Expr<int?> favoriteBookId,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Author>(
-        this,
-        _$Author._$table,
-        (author) => updateBuilder(
-          author,
-          ({
-            Expr<int>? authorId,
-            Expr<String>? name,
-            Expr<int?>? favoriteBookId,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Author>([
-            authorId,
-            name,
-            favoriteBookId,
-          ]),
-        ),
-      );
+    UpdateSet<Author> Function(
+      Expr<Author> author,
+      UpdateSet<Author> Function({
+        Expr<int> authorId,
+        Expr<String> name,
+        Expr<int?> favoriteBookId,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Author>(
+    this,
+    _$Author._$table,
+    (author) => updateBuilder(
+      author,
+      ({
+        Expr<int>? authorId,
+        Expr<String>? name,
+        Expr<int?>? favoriteBookId,
+      }) => $ForGeneratedCode.buildUpdate<Author>([
+        authorId,
+        name,
+        favoriteBookId,
+      ]),
+    ),
+  );
 
   /// Delete the row (if any) in the `authors` table matching this [QuerySingle].
   ///
@@ -508,70 +515,76 @@ final class _$Book extends Book {
   static const _$table = (
     tableName: 'books',
     columns: <String>['bookId', 'title', 'authorId', 'editorId', 'stock'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: false,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: true,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: false,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+        ],
     primaryKey: <String>['bookId'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[
-      (
-        name: 'author',
-        columns: ['authorId'],
-        referencedTable: 'authors',
-        referencedColumns: ['authorId'],
-      ),
-      (
-        name: 'editor',
-        columns: ['editorId'],
-        referencedTable: 'authors',
-        referencedColumns: ['authorId'],
-      )
-    ],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[
+          (
+            name: 'author',
+            columns: ['authorId'],
+            referencedTable: 'authors',
+            referencedColumns: ['authorId'],
+          ),
+          (
+            name: 'editor',
+            columns: ['editorId'],
+            referencedTable: 'authors',
+            referencedColumns: ['authorId'],
+          ),
+        ],
     readRow: _$Book._$fromDatabase,
   );
 
@@ -608,17 +621,16 @@ extension TableBookExt on Table<Book> {
     required Expr<int> authorId,
     Expr<int?>? editorId,
     required Expr<int> stock,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          bookId,
-          title,
-          authorId,
-          editorId,
-          stock,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [
+      bookId,
+      title,
+      authorId,
+      editorId,
+      stock,
+    ],
+  );
 
   /// Delete a single row from the `books` table, specified by
   /// _primary key_.
@@ -630,9 +642,9 @@ extension TableBookExt on Table<Book> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Book> delete(int bookId) => $ForGeneratedCode.deleteSingle(
-        byKey(bookId),
-        _$Book._$table,
-      );
+    byKey(bookId),
+    _$Book._$table,
+  );
 }
 
 /// Extension methods for building queries against the `books` table.
@@ -672,37 +684,38 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Book> update(
-          UpdateSet<Book> Function(
-            Expr<Book> book,
-            UpdateSet<Book> Function({
-              Expr<int> bookId,
-              Expr<String> title,
-              Expr<int> authorId,
-              Expr<int?> editorId,
-              Expr<int> stock,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Book>(
-        this,
-        _$Book._$table,
-        (book) => updateBuilder(
-          book,
-          ({
-            Expr<int>? bookId,
-            Expr<String>? title,
-            Expr<int>? authorId,
-            Expr<int?>? editorId,
-            Expr<int>? stock,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Book>([
-            bookId,
-            title,
-            authorId,
-            editorId,
-            stock,
-          ]),
-        ),
-      );
+    UpdateSet<Book> Function(
+      Expr<Book> book,
+      UpdateSet<Book> Function({
+        Expr<int> bookId,
+        Expr<String> title,
+        Expr<int> authorId,
+        Expr<int?> editorId,
+        Expr<int> stock,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Book>(
+    this,
+    _$Book._$table,
+    (book) => updateBuilder(
+      book,
+      ({
+        Expr<int>? bookId,
+        Expr<String>? title,
+        Expr<int>? authorId,
+        Expr<int?>? editorId,
+        Expr<int>? stock,
+      }) => $ForGeneratedCode.buildUpdate<Book>([
+        bookId,
+        title,
+        authorId,
+        editorId,
+        stock,
+      ]),
+    ),
+  );
 
   /// Delete all rows in the `books` table matching this [Query].
   ///
@@ -743,37 +756,38 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Book> update(
-          UpdateSet<Book> Function(
-            Expr<Book> book,
-            UpdateSet<Book> Function({
-              Expr<int> bookId,
-              Expr<String> title,
-              Expr<int> authorId,
-              Expr<int?> editorId,
-              Expr<int> stock,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Book>(
-        this,
-        _$Book._$table,
-        (book) => updateBuilder(
-          book,
-          ({
-            Expr<int>? bookId,
-            Expr<String>? title,
-            Expr<int>? authorId,
-            Expr<int?>? editorId,
-            Expr<int>? stock,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Book>([
-            bookId,
-            title,
-            authorId,
-            editorId,
-            stock,
-          ]),
-        ),
-      );
+    UpdateSet<Book> Function(
+      Expr<Book> book,
+      UpdateSet<Book> Function({
+        Expr<int> bookId,
+        Expr<String> title,
+        Expr<int> authorId,
+        Expr<int?> editorId,
+        Expr<int> stock,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Book>(
+    this,
+    _$Book._$table,
+    (book) => updateBuilder(
+      book,
+      ({
+        Expr<int>? bookId,
+        Expr<String>? title,
+        Expr<int>? authorId,
+        Expr<int?>? editorId,
+        Expr<int>? stock,
+      }) => $ForGeneratedCode.buildUpdate<Book>([
+        bookId,
+        title,
+        authorId,
+        editorId,
+        stock,
+      ]),
+    ),
+  );
 
   /// Delete the row (if any) in the `books` table matching this [QuerySingle].
   ///

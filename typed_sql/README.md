@@ -109,9 +109,11 @@ await db.books
 // Decrease stock for 'Vegan Dining', return update stock
 final updatedStock = await db.books
     .where((b) => b.title.equals(toExpr('Vegan Dining')))
-    .update((b, set) => set(
-          stock: b.stock - toExpr(1),
-        ))
+    .update(
+      (b, set) => set(
+        stock: b.stock - toExpr(1),
+      ),
+    )
     .returning((b) => (b.stock,))
     .executeAndFetch();
 check(updatedStock).deepEquals([2]);
@@ -176,10 +178,12 @@ check(stockByAuthor).unorderedEquals([
 
 // We can also compute this with subqueries using the @Reference annotation
 final stockByAuthorUsingSubquery = await db.authors
-    .select((a) => (
-          a.name,
-          a.books.select((b) => (b.stock,)).sum(),
-        ))
+    .select(
+      (a) => (
+        a.name,
+        a.books.select((b) => (b.stock,)).sum(),
+      ),
+    )
     .fetch();
 check(stockByAuthorUsingSubquery).unorderedEquals([
   // name, totalStock

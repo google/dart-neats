@@ -35,8 +35,9 @@ final _exclude = [
 ];
 
 void main() {
-  final rootUri = Isolate.resolvePackageUriSync(Uri.parse('package:typed_sql/'))
-      ?.resolve('../');
+  final rootUri = Isolate.resolvePackageUriSync(
+    Uri.parse('package:typed_sql/'),
+  )?.resolve('../');
   if (rootUri == null) {
     print('Cannot resolve package:typed_sql/');
     exit(1);
@@ -49,18 +50,24 @@ void main() {
       .where((f) => !f.uri.toFilePath().startsWith(dotDartTool))
       .toList();
 
-  final allMarkdownFiles =
-      allFiles.where((f) => f.path.endsWith('.md')).toList();
+  final allMarkdownFiles = allFiles
+      .where((f) => f.path.endsWith('.md'))
+      .toList();
   final allDartFiles = allFiles.where((f) => f.path.endsWith('.dart')).toList();
 
   print('Finding regions:');
   final regions = allDartFiles.expand((dartFile) {
-    return regionPattern.allMatches(dartFile.readAsStringSync()).map((m) => (
-          file:
-              dartFile.uri.toFilePath().substring(rootUri.toFilePath().length),
-          regionId: m.group(1)!.trim(),
-          content: extractRegionLines(m.group(2)!),
-        ));
+    return regionPattern
+        .allMatches(dartFile.readAsStringSync())
+        .map(
+          (m) => (
+            file: dartFile.uri.toFilePath().substring(
+              rootUri.toFilePath().length,
+            ),
+            regionId: m.group(1)!.trim(),
+            content: extractRegionLines(m.group(2)!),
+          ),
+        );
   }).toList();
 
   final filesWithRegions = regions.map((r) => r.file).toSet().sorted();
@@ -76,37 +83,41 @@ void main() {
 
   print('Updating markdown files:');
   for (final mdFile in allMarkdownFiles) {
-    final mdFilePath =
-        mdFile.uri.toFilePath().substring(rootUri.toFilePath().length);
+    final mdFilePath = mdFile.uri.toFilePath().substring(
+      rootUri.toFilePath().length,
+    );
     if (_exclude.any((g) => g.matches(mdFilePath))) {
       continue;
     }
 
     final mdContent = mdFile.readAsStringSync();
-    final update = mdContent.splitMapJoin(referencePattern, onMatch: (m) {
-      final line = m.group(1)!;
-      final file = m.group(2)!;
-      final regionId = m.group(3)!;
+    final update = mdContent.splitMapJoin(
+      referencePattern,
+      onMatch: (m) {
+        final line = m.group(1)!;
+        final file = m.group(2)!;
+        final regionId = m.group(3)!;
 
-      final candidateRegions = regions
-          .where((r) => r.regionId == regionId && r.file.endsWith(file))
-          .toList();
+        final candidateRegions = regions
+            .where((r) => r.regionId == regionId && r.file.endsWith(file))
+            .toList();
 
-      if (candidateRegions.isEmpty) {
-        throw Exception('No region for "$file#$regionId" in "$mdFilePath"');
-      }
-      if (candidateRegions.length > 1) {
-        throw Exception(
-          [
-            'Multiple regions for "$file#$regionId" in "$mdFilePath":',
-            ...candidateRegions.map((r) => '  ${r.file}#${r.regionId}'),
-          ].join('\n'),
-        );
-      }
-      final region = candidateRegions.first;
-      usedRegions.add(region);
-      return '$line\n${region.content}\n```';
-    });
+        if (candidateRegions.isEmpty) {
+          throw Exception('No region for "$file#$regionId" in "$mdFilePath"');
+        }
+        if (candidateRegions.length > 1) {
+          throw Exception(
+            [
+              'Multiple regions for "$file#$regionId" in "$mdFilePath":',
+              ...candidateRegions.map((r) => '  ${r.file}#${r.regionId}'),
+            ].join('\n'),
+          );
+        }
+        final region = candidateRegions.first;
+        usedRegions.add(region);
+        return '$line\n${region.content}\n```';
+      },
+    );
 
     if (mdContent != update) {
       print('- Updated $mdFilePath');
@@ -142,11 +153,13 @@ String extractRegionLines(String content) {
   return content
       .split('\n')
       .where((line) => !line.contains('#hide'))
-      .map((line) => line.substring(switch (indentation) {
-            -1 => 0,
-            int i when (i < line.length) => i,
-            int _ => line.length,
-          }))
+      .map(
+        (line) => line.substring(switch (indentation) {
+          -1 => 0,
+          int i when (i < line.length) => i,
+          int _ => line.length,
+        }),
+      )
       .join('\n');
 }
 

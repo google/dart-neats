@@ -23,7 +23,8 @@ void _test(String name, Future<void> Function(DatabaseAdapter db) fn) async {
     final db = DatabaseAdapter.sqlite3(u);
     try {
       await db
-          .query('CREATE TABLE users (id INT, name TEXT)', []).drain<void>();
+          .query('CREATE TABLE users (id INT, name TEXT)', [])
+          .drain<void>();
       await fn(db);
     } finally {
       await db.close();

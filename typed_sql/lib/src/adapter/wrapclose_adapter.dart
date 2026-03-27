@@ -24,8 +24,7 @@ import 'adapter.dart';
 DatabaseAdapter withOnCloseDatabaseAdapter(
   DatabaseAdapter adapter,
   Future<void> Function({required bool force}) onClosed,
-) =>
-    _DatabaseAdapterWithOnClosed(adapter, onClosed);
+) => _DatabaseAdapterWithOnClosed(adapter, onClosed);
 
 final class _DatabaseAdapterWithOnClosed extends DatabaseAdapter {
   final DatabaseAdapter _adapter;

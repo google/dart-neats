@@ -72,10 +72,10 @@ final class Table<T extends Row> extends Query<(Expr<T>,)> {
     this._tableClause,
     TableDefinition<T> definition,
   ) : super._(
-          context,
-          (RowExpression._(0, definition, Object()),),
-          (_) => _tableClause,
-        );
+        context,
+        (RowExpression._(0, definition, Object()),),
+        (_) => _tableClause,
+      );
 }
 
 /// A [Query] which can return at-most a single row.
@@ -488,14 +488,13 @@ final class ExpressionResolver<T> {
   ExpressionResolver<T> withScope(
     ExpressionContext ctx,
     List<(String?, String)> columns,
-  ) =>
-      ExpressionResolver._(
-        context,
-        this,
-        ctx._handle,
-        columns,
-        depth + 1,
-      );
+  ) => ExpressionResolver._(
+    context,
+    this,
+    ctx._handle,
+    columns,
+    depth + 1,
+  );
 
   (String?, String) resolve(FieldExpression field) {
     if (_handle == field._handle) {

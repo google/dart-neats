@@ -11,14 +11,14 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Author._$table, _$Book._$table];
 
   Table<Author> get authors => $ForGeneratedCode.declareTable(
-        this,
-        _$Author._$table,
-      );
+    this,
+    _$Author._$table,
+  );
 
   Table<Book> get books => $ForGeneratedCode.declareTable(
-        this,
-        _$Book._$table,
-      );
+    this,
+    _$Book._$table,
+  );
 
   /// Create tables defined in [TestDatabase].
   ///
@@ -33,9 +33,9 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
   Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+    context: this,
+    tables: _$tables,
+  );
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
@@ -70,40 +70,46 @@ final class _$Author extends Author {
   static const _$table = (
     tableName: 'authors',
     columns: <String>['firstName', 'lastName'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
         ],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
-        ],
-      )
-    ],
     primaryKey: <String>['firstName', 'lastName'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$Author._$fromDatabase,
   );
 
@@ -129,14 +135,13 @@ extension TableAuthorExt on Table<Author> {
   InsertSingle<Author> insert({
     required Expr<String> firstName,
     required Expr<String> lastName,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          firstName,
-          lastName,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [
+      firstName,
+      lastName,
+    ],
+  );
 
   /// Delete a single row from the `authors` table, specified by
   /// _primary key_.
@@ -150,11 +155,10 @@ extension TableAuthorExt on Table<Author> {
   DeleteSingle<Author> delete(
     String firstName,
     String lastName,
-  ) =>
-      $ForGeneratedCode.deleteSingle(
-        byKey(firstName, lastName),
-        _$Author._$table,
-      );
+  ) => $ForGeneratedCode.deleteSingle(
+    byKey(firstName, lastName),
+    _$Author._$table,
+  );
 }
 
 /// Extension methods for building queries against the `authors` table.
@@ -166,10 +170,11 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   QuerySingle<(Expr<Author>,)> byKey(
     String firstName,
     String lastName,
-  ) =>
-      where((author) =>
-          author.firstName.equalsValue(firstName) &
-          author.lastName.equalsValue(lastName)).first;
+  ) => where(
+    (author) =>
+        author.firstName.equalsValue(firstName) &
+        author.lastName.equalsValue(lastName),
+  ).first;
 
   /// Update all rows in the `authors` table matching this [Query].
   ///
@@ -199,28 +204,29 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Author> update(
-          UpdateSet<Author> Function(
-            Expr<Author> author,
-            UpdateSet<Author> Function({
-              Expr<String> firstName,
-              Expr<String> lastName,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Author>(
-        this,
-        _$Author._$table,
-        (author) => updateBuilder(
-          author,
-          ({
-            Expr<String>? firstName,
-            Expr<String>? lastName,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Author>([
-            firstName,
-            lastName,
-          ]),
-        ),
-      );
+    UpdateSet<Author> Function(
+      Expr<Author> author,
+      UpdateSet<Author> Function({
+        Expr<String> firstName,
+        Expr<String> lastName,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Author>(
+    this,
+    _$Author._$table,
+    (author) => updateBuilder(
+      author,
+      ({
+        Expr<String>? firstName,
+        Expr<String>? lastName,
+      }) => $ForGeneratedCode.buildUpdate<Author>([
+        firstName,
+        lastName,
+      ]),
+    ),
+  );
 
   /// Delete all rows in the `authors` table matching this [Query].
   ///
@@ -261,28 +267,29 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Author> update(
-          UpdateSet<Author> Function(
-            Expr<Author> author,
-            UpdateSet<Author> Function({
-              Expr<String> firstName,
-              Expr<String> lastName,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Author>(
-        this,
-        _$Author._$table,
-        (author) => updateBuilder(
-          author,
-          ({
-            Expr<String>? firstName,
-            Expr<String>? lastName,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Author>([
-            firstName,
-            lastName,
-          ]),
-        ),
-      );
+    UpdateSet<Author> Function(
+      Expr<Author> author,
+      UpdateSet<Author> Function({
+        Expr<String> firstName,
+        Expr<String> lastName,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Author>(
+    this,
+    _$Author._$table,
+    (author) => updateBuilder(
+      author,
+      ({
+        Expr<String>? firstName,
+        Expr<String>? lastName,
+      }) => $ForGeneratedCode.buildUpdate<Author>([
+        firstName,
+        lastName,
+      ]),
+    ),
+  );
 
   /// Delete the row (if any) in the `authors` table matching this [QuerySingle].
   ///
@@ -308,10 +315,13 @@ extension ExpressionAuthorExt on Expr<Author> {
   /// where [Book.authorFirstName], [Book.authorLastName]
   /// references [Author.firstName], [Author.lastName]
   /// in this row.
-  SubQuery<(Expr<Book>,)> get books =>
-      $ForGeneratedCode.subqueryTable(_$Book._$table).where((r) =>
-          r.authorFirstName.equals(firstName) &
-          r.authorLastName.equals(lastName));
+  SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
+      .subqueryTable(_$Book._$table)
+      .where(
+        (r) =>
+            r.authorFirstName.equals(firstName) &
+            r.authorLastName.equals(lastName),
+      );
 }
 
 extension ExpressionNullableAuthorExt on Expr<Author?> {
@@ -330,10 +340,13 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   /// in this row, if any.
   ///
   /// If this row is `NULL` the subquery is always be empty.
-  SubQuery<(Expr<Book>,)> get books =>
-      $ForGeneratedCode.subqueryTable(_$Book._$table).where((r) =>
-          r.authorFirstName.equalsUnlessNull(firstName).asNotNull() &
-          r.authorLastName.equalsUnlessNull(lastName).asNotNull());
+  SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
+      .subqueryTable(_$Book._$table)
+      .where(
+        (r) =>
+            r.authorFirstName.equalsUnlessNull(firstName).asNotNull() &
+            r.authorLastName.equalsUnlessNull(lastName).asNotNull(),
+      );
 
   /// Check if the row is not `NULL`.
   ///
@@ -356,27 +369,33 @@ extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
   /// Join using the `author` _foreign key_.
   ///
   /// This will match rows where [Author.firstName] = [Book.authorFirstName] and [Author.lastName] = [Book.authorLastName].
-  Query<(Expr<Author>, Expr<Book>)> usingAuthor() => on((a, b) =>
-      a.firstName.equals(b.authorFirstName) &
-      a.lastName.equals(b.authorLastName));
+  Query<(Expr<Author>, Expr<Book>)> usingAuthor() => on(
+    (a, b) =>
+        a.firstName.equals(b.authorFirstName) &
+        a.lastName.equals(b.authorLastName),
+  );
 }
 
 extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
   /// Join using the `author` _foreign key_.
   ///
   /// This will match rows where [Author.firstName] = [Book.authorFirstName] and [Author.lastName] = [Book.authorLastName].
-  Query<(Expr<Author>, Expr<Book?>)> usingAuthor() => on((a, b) =>
-      a.firstName.equals(b.authorFirstName) &
-      a.lastName.equals(b.authorLastName));
+  Query<(Expr<Author>, Expr<Book?>)> usingAuthor() => on(
+    (a, b) =>
+        a.firstName.equals(b.authorFirstName) &
+        a.lastName.equals(b.authorLastName),
+  );
 }
 
 extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
   /// Join using the `author` _foreign key_.
   ///
   /// This will match rows where [Author.firstName] = [Book.authorFirstName] and [Author.lastName] = [Book.authorLastName].
-  Query<(Expr<Author?>, Expr<Book>)> usingAuthor() => on((a, b) =>
-      a.firstName.equals(b.authorFirstName) &
-      a.lastName.equals(b.authorLastName));
+  Query<(Expr<Author?>, Expr<Book>)> usingAuthor() => on(
+    (a, b) =>
+        a.firstName.equals(b.authorFirstName) &
+        a.lastName.equals(b.authorLastName),
+  );
 }
 
 final class _$Book extends Book {
@@ -410,70 +429,76 @@ final class _$Book extends Book {
       'title',
       'authorFirstName',
       'authorLastName',
-      'stock'
+      'stock',
     ],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: true,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
         ],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
-        ],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
     primaryKey: <String>['bookId'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[
-      (
-        name: 'author',
-        columns: ['authorFirstName', 'authorLastName'],
-        referencedTable: 'authors',
-        referencedColumns: ['firstName', 'lastName'],
-      )
-    ],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[
+          (
+            name: 'author',
+            columns: ['authorFirstName', 'authorLastName'],
+            referencedTable: 'authors',
+            referencedColumns: ['firstName', 'lastName'],
+          ),
+        ],
     readRow: _$Book._$fromDatabase,
   );
 
@@ -510,17 +535,16 @@ extension TableBookExt on Table<Book> {
     required Expr<String> authorFirstName,
     required Expr<String> authorLastName,
     required Expr<int> stock,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          bookId,
-          title,
-          authorFirstName,
-          authorLastName,
-          stock,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [
+      bookId,
+      title,
+      authorFirstName,
+      authorLastName,
+      stock,
+    ],
+  );
 
   /// Delete a single row from the `books` table, specified by
   /// _primary key_.
@@ -532,9 +556,9 @@ extension TableBookExt on Table<Book> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Book> delete(int bookId) => $ForGeneratedCode.deleteSingle(
-        byKey(bookId),
-        _$Book._$table,
-      );
+    byKey(bookId),
+    _$Book._$table,
+  );
 }
 
 /// Extension methods for building queries against the `books` table.
@@ -574,37 +598,38 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Book> update(
-          UpdateSet<Book> Function(
-            Expr<Book> book,
-            UpdateSet<Book> Function({
-              Expr<int> bookId,
-              Expr<String> title,
-              Expr<String> authorFirstName,
-              Expr<String> authorLastName,
-              Expr<int> stock,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Book>(
-        this,
-        _$Book._$table,
-        (book) => updateBuilder(
-          book,
-          ({
-            Expr<int>? bookId,
-            Expr<String>? title,
-            Expr<String>? authorFirstName,
-            Expr<String>? authorLastName,
-            Expr<int>? stock,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Book>([
-            bookId,
-            title,
-            authorFirstName,
-            authorLastName,
-            stock,
-          ]),
-        ),
-      );
+    UpdateSet<Book> Function(
+      Expr<Book> book,
+      UpdateSet<Book> Function({
+        Expr<int> bookId,
+        Expr<String> title,
+        Expr<String> authorFirstName,
+        Expr<String> authorLastName,
+        Expr<int> stock,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Book>(
+    this,
+    _$Book._$table,
+    (book) => updateBuilder(
+      book,
+      ({
+        Expr<int>? bookId,
+        Expr<String>? title,
+        Expr<String>? authorFirstName,
+        Expr<String>? authorLastName,
+        Expr<int>? stock,
+      }) => $ForGeneratedCode.buildUpdate<Book>([
+        bookId,
+        title,
+        authorFirstName,
+        authorLastName,
+        stock,
+      ]),
+    ),
+  );
 
   /// Delete all rows in the `books` table matching this [Query].
   ///
@@ -645,37 +670,38 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Book> update(
-          UpdateSet<Book> Function(
-            Expr<Book> book,
-            UpdateSet<Book> Function({
-              Expr<int> bookId,
-              Expr<String> title,
-              Expr<String> authorFirstName,
-              Expr<String> authorLastName,
-              Expr<int> stock,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Book>(
-        this,
-        _$Book._$table,
-        (book) => updateBuilder(
-          book,
-          ({
-            Expr<int>? bookId,
-            Expr<String>? title,
-            Expr<String>? authorFirstName,
-            Expr<String>? authorLastName,
-            Expr<int>? stock,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Book>([
-            bookId,
-            title,
-            authorFirstName,
-            authorLastName,
-            stock,
-          ]),
-        ),
-      );
+    UpdateSet<Book> Function(
+      Expr<Book> book,
+      UpdateSet<Book> Function({
+        Expr<int> bookId,
+        Expr<String> title,
+        Expr<String> authorFirstName,
+        Expr<String> authorLastName,
+        Expr<int> stock,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Book>(
+    this,
+    _$Book._$table,
+    (book) => updateBuilder(
+      book,
+      ({
+        Expr<int>? bookId,
+        Expr<String>? title,
+        Expr<String>? authorFirstName,
+        Expr<String>? authorLastName,
+        Expr<int>? stock,
+      }) => $ForGeneratedCode.buildUpdate<Book>([
+        bookId,
+        title,
+        authorFirstName,
+        authorLastName,
+        stock,
+      ]),
+    ),
+  );
 
   /// Delete the row (if any) in the `books` table matching this [QuerySingle].
   ///
@@ -712,9 +738,11 @@ extension ExpressionBookExt on Expr<Book> {
   /// is equal to [authorFirstName], [authorLastName].
   Expr<Author> get author => $ForGeneratedCode
       .subqueryTable(_$Author._$table)
-      .where((r) =>
-          r.firstName.equals(authorFirstName) &
-          r.lastName.equals(authorLastName))
+      .where(
+        (r) =>
+            r.firstName.equals(authorFirstName) &
+            r.lastName.equals(authorLastName),
+      )
       .first
       .asNotNull();
 }
@@ -746,9 +774,11 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Author?> get author => $ForGeneratedCode
       .subqueryTable(_$Author._$table)
-      .where((r) =>
-          r.firstName.equalsUnlessNull(authorFirstName).asNotNull() &
-          r.lastName.equalsUnlessNull(authorLastName).asNotNull())
+      .where(
+        (r) =>
+            r.firstName.equalsUnlessNull(authorFirstName).asNotNull() &
+            r.lastName.equalsUnlessNull(authorLastName).asNotNull(),
+      )
       .first;
 
   /// Check if the row is not `NULL`.
@@ -772,27 +802,33 @@ extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
   /// Join using the `author` _foreign key_.
   ///
   /// This will match rows where [Book.authorFirstName] = [Author.firstName] and [Book.authorLastName] = [Author.lastName].
-  Query<(Expr<Book>, Expr<Author>)> usingAuthor() => on((a, b) =>
-      b.firstName.equals(a.authorFirstName) &
-      b.lastName.equals(a.authorLastName));
+  Query<(Expr<Book>, Expr<Author>)> usingAuthor() => on(
+    (a, b) =>
+        b.firstName.equals(a.authorFirstName) &
+        b.lastName.equals(a.authorLastName),
+  );
 }
 
 extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
   /// Join using the `author` _foreign key_.
   ///
   /// This will match rows where [Book.authorFirstName] = [Author.firstName] and [Book.authorLastName] = [Author.lastName].
-  Query<(Expr<Book>, Expr<Author?>)> usingAuthor() => on((a, b) =>
-      b.firstName.equals(a.authorFirstName) &
-      b.lastName.equals(a.authorLastName));
+  Query<(Expr<Book>, Expr<Author?>)> usingAuthor() => on(
+    (a, b) =>
+        b.firstName.equals(a.authorFirstName) &
+        b.lastName.equals(a.authorLastName),
+  );
 }
 
 extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
   /// Join using the `author` _foreign key_.
   ///
   /// This will match rows where [Book.authorFirstName] = [Author.firstName] and [Book.authorLastName] = [Author.lastName].
-  Query<(Expr<Book?>, Expr<Author>)> usingAuthor() => on((a, b) =>
-      b.firstName.equals(a.authorFirstName) &
-      b.lastName.equals(a.authorLastName));
+  Query<(Expr<Book?>, Expr<Author>)> usingAuthor() => on(
+    (a, b) =>
+        b.firstName.equals(a.authorFirstName) &
+        b.lastName.equals(a.authorLastName),
+  );
 }
 
 /// Extension methods for assertions on [Author] using

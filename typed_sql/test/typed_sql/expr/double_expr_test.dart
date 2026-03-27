@@ -1048,9 +1048,12 @@ void main() {
       final result = await db.select(
         (c.expr,),
       ).fetch();
-      check(result)
-          .isNotNull()
-          .anyOf(c.expected.map((v) => (l) => l.equals(v)));
+      check(result).isNotNull().anyOf(
+        c.expected.map(
+          (v) =>
+              (l) => l.equals(v),
+        ),
+      );
     });
   }
 

@@ -29,8 +29,9 @@ import 'package:markdown/markdown.dart';
 final _marker = '<!-- GENERATED DOCUMENTATION LINKS -->';
 
 void main() async {
-  final rootUri = Isolate.resolvePackageUriSync(Uri.parse('package:typed_sql/'))
-      ?.resolve('../');
+  final rootUri = Isolate.resolvePackageUriSync(
+    Uri.parse('package:typed_sql/'),
+  )?.resolve('../');
   if (rootUri == null) {
     print('Cannot resolve package:typed_sql/');
     exit(1);
@@ -61,11 +62,13 @@ void main() async {
   final indexJson = json.decode(await indexFile.readAsString()) as List;
   final index = indexJson
       .whereType<Map<String, Object?>>()
-      .map((e) => (
-            name: e['name'] as String,
-            qualifiedName: e['qualifiedName'] as String,
-            href: e['href'] as String,
-          ))
+      .map(
+        (e) => (
+          name: e['name'] as String,
+          qualifiedName: e['qualifiedName'] as String,
+          href: e['href'] as String,
+        ),
+      )
       .toList();
 
   final markdownFiles = Directory.fromUri(rootUri.resolve('doc'))
@@ -91,10 +94,12 @@ void main() async {
     final oldRefs = parts[1];
     final contentAfterMarker = oldRefs
         .split('\n')
-        .where((line) =>
-            line.isNotEmpty &&
-            !RegExp(r'^\s*$').hasMatch(line) &&
-            !RegExp(r'^\[[A-Za-z0-9_ .-]+\]: .+$').hasMatch(line))
+        .where(
+          (line) =>
+              line.isNotEmpty &&
+              !RegExp(r'^\s*$').hasMatch(line) &&
+              !RegExp(r'^\[[A-Za-z0-9_ .-]+\]: .+$').hasMatch(line),
+        )
         .join('\n');
     if (contentAfterMarker.isNotEmpty) {
       print('- Contains content after marker!');
@@ -105,43 +110,48 @@ void main() async {
     // Collect unresolved references
     final unresolvedLinks = <String>{};
     final parser = Document(
-        extensionSet: ExtensionSet.gitHubWeb,
-        linkResolver: (name, [String? title]) {
-          unresolvedLinks.add(name);
-          return null;
-        });
+      extensionSet: ExtensionSet.gitHubWeb,
+      linkResolver: (name, [String? title]) {
+        unresolvedLinks.add(name);
+        return null;
+      },
+    );
     parser.parse(md);
 
     final references = <String, String>{};
     for (final ref in unresolvedLinks.sorted()) {
       final candidates = index
-          .where((e) =>
-              // Ignore empty references
-              ref.isNotEmpty &&
-              // If name = qualifiedName it's probably a category
-              ((e.name == e.qualifiedName && e.qualifiedName == ref) ||
-                  // If it contains a dot and not equal to qualified name, then
-                  // skip the first dot and compare to qualified name!
-                  (e.name != e.qualifiedName &&
-                      e.qualifiedName.contains('.') &&
-                      e.qualifiedName.split('.').skip(1).join('.') == ref)))
+          .where(
+            (e) =>
+                // Ignore empty references
+                ref.isNotEmpty &&
+                // If name = qualifiedName it's probably a category
+                ((e.name == e.qualifiedName && e.qualifiedName == ref) ||
+                    // If it contains a dot and not equal to qualified name, then
+                    // skip the first dot and compare to qualified name!
+                    (e.name != e.qualifiedName &&
+                        e.qualifiedName.contains('.') &&
+                        e.qualifiedName.split('.').skip(1).join('.') == ref)),
+          )
           .toList();
       if (candidates.isEmpty && ref.isNotEmpty) {
         // we only look at named constructors if we have no other matches!
-        candidates.addAll(index.where((e) {
-          if (e.name == e.qualifiedName) {
-            return false; // ignore categories
-          }
-          final parts = e.qualifiedName.split('.');
-          if (parts.length < 4) {
-            return false;
-          }
-          // only named constructors!
-          if (parts[1] != parts[2]) {
-            return false;
-          }
-          return parts.skip(2).join('.') == ref;
-        }));
+        candidates.addAll(
+          index.where((e) {
+            if (e.name == e.qualifiedName) {
+              return false; // ignore categories
+            }
+            final parts = e.qualifiedName.split('.');
+            if (parts.length < 4) {
+              return false;
+            }
+            // only named constructors!
+            if (parts[1] != parts[2]) {
+              return false;
+            }
+            return parts.skip(2).join('.') == ref;
+          }),
+        );
       }
 
       if (candidates.isEmpty) {

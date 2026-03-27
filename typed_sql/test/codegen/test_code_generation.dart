@@ -122,10 +122,12 @@ String _stripIndentation(String source) {
   // Strip minimum indentation from all lines
   return source
       .split('\n')
-      .map((line) => line.substring(switch (indentation) {
-            -1 => 0,
-            int i when (i < line.length) => i,
-            int _ => line.length,
-          }))
+      .map(
+        (line) => line.substring(switch (indentation) {
+          -1 => 0,
+          int i when (i < line.length) => i,
+          int _ => line.length,
+        }),
+      )
       .join('\n');
 }

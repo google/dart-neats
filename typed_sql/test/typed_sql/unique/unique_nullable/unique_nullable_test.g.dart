@@ -11,9 +11,9 @@ extension BankVaultSchema on Database<BankVault> {
   static const _$tables = [_$Account._$table];
 
   Table<Account> get accounts => $ForGeneratedCode.declareTable(
-        this,
-        _$Account._$table,
-      );
+    this,
+    _$Account._$table,
+  );
 
   /// Create tables defined in [BankVault].
   ///
@@ -28,9 +28,9 @@ extension BankVaultSchema on Database<BankVault> {
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
   Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+    context: this,
+    tables: _$tables,
+  );
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [BankVault].
@@ -69,47 +69,53 @@ final class _$Account extends Account {
   static const _$table = (
     tableName: 'accounts',
     columns: <String>['accountId', 'accountNumber', 'balance'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: false,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: true,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: false,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.real,
+            isNotNull: true,
+            defaultValue: (kind: 'raw', value: 0.0),
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
         ],
-      ),
-      (
-        type: $ForGeneratedCode.real,
-        isNotNull: true,
-        defaultValue: (kind: 'raw', value: 0.0),
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
     primaryKey: <String>['accountId'],
     unique: <List<String>>[
-      ['accountNumber']
+      ['accountNumber'],
     ],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$Account._$fromDatabase,
   );
 
@@ -138,15 +144,14 @@ extension TableAccountExt on Table<Account> {
     Expr<int>? accountId,
     Expr<String?>? accountNumber,
     Expr<double>? balance,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          accountId,
-          accountNumber,
-          balance,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [
+      accountId,
+      accountNumber,
+      balance,
+    ],
+  );
 
   /// Delete a single row from the `accounts` table, specified by
   /// _primary key_.
@@ -158,9 +163,9 @@ extension TableAccountExt on Table<Account> {
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
   DeleteSingle<Account> delete(int accountId) => $ForGeneratedCode.deleteSingle(
-        byKey(accountId),
-        _$Account._$table,
-      );
+    byKey(accountId),
+    _$Account._$table,
+  );
 }
 
 /// Extension methods for building queries against the `accounts` table.
@@ -200,31 +205,32 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Account> update(
-          UpdateSet<Account> Function(
-            Expr<Account> account,
-            UpdateSet<Account> Function({
-              Expr<int> accountId,
-              Expr<String?> accountNumber,
-              Expr<double> balance,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Account>(
-        this,
-        _$Account._$table,
-        (account) => updateBuilder(
-          account,
-          ({
-            Expr<int>? accountId,
-            Expr<String?>? accountNumber,
-            Expr<double>? balance,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Account>([
-            accountId,
-            accountNumber,
-            balance,
-          ]),
-        ),
-      );
+    UpdateSet<Account> Function(
+      Expr<Account> account,
+      UpdateSet<Account> Function({
+        Expr<int> accountId,
+        Expr<String?> accountNumber,
+        Expr<double> balance,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Account>(
+    this,
+    _$Account._$table,
+    (account) => updateBuilder(
+      account,
+      ({
+        Expr<int>? accountId,
+        Expr<String?>? accountNumber,
+        Expr<double>? balance,
+      }) => $ForGeneratedCode.buildUpdate<Account>([
+        accountId,
+        accountNumber,
+        balance,
+      ]),
+    ),
+  );
 
   /// Lookup a single row in `accounts` table using the
   /// `accountNumber` field
@@ -234,9 +240,9 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Account>,)> byAccountNumber(String accountNumber) =>
-      where((account) => account.accountNumber.equalsValue(accountNumber))
-          .first;
+  QuerySingle<(Expr<Account>,)> byAccountNumber(String accountNumber) => where(
+    (account) => account.accountNumber.equalsValue(accountNumber),
+  ).first;
 
   /// Delete all rows in the `accounts` table matching this [Query].
   ///
@@ -277,31 +283,32 @@ extension QuerySingleAccountExt on QuerySingle<(Expr<Account>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Account> update(
-          UpdateSet<Account> Function(
-            Expr<Account> account,
-            UpdateSet<Account> Function({
-              Expr<int> accountId,
-              Expr<String?> accountNumber,
-              Expr<double> balance,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Account>(
-        this,
-        _$Account._$table,
-        (account) => updateBuilder(
-          account,
-          ({
-            Expr<int>? accountId,
-            Expr<String?>? accountNumber,
-            Expr<double>? balance,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Account>([
-            accountId,
-            accountNumber,
-            balance,
-          ]),
-        ),
-      );
+    UpdateSet<Account> Function(
+      Expr<Account> account,
+      UpdateSet<Account> Function({
+        Expr<int> accountId,
+        Expr<String?> accountNumber,
+        Expr<double> balance,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Account>(
+    this,
+    _$Account._$table,
+    (account) => updateBuilder(
+      account,
+      ({
+        Expr<int>? accountId,
+        Expr<String?>? accountNumber,
+        Expr<double>? balance,
+      }) => $ForGeneratedCode.buildUpdate<Account>([
+        accountId,
+        accountNumber,
+        balance,
+      ]),
+    ),
+  );
 
   /// Delete the row (if any) in the `accounts` table matching this [QuerySingle].
   ///
