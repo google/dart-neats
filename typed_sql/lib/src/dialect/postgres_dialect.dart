@@ -98,8 +98,6 @@ final class _PostgresDialect extends SqlDialect {
                 ReferentialEvent.update,
                 fk.onUpdate!,
               ),
-            if (fk.onDelete == .noAction || fk.onUpdate == .noAction)
-              'DEFERRABLE INITIALLY DEFERRED',
           ].join(' ');
           return '$statement;';
         });

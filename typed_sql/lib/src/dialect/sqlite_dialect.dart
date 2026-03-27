@@ -96,8 +96,6 @@ final class _Sqlite extends SqlDialect {
                       ReferentialEvent.update,
                       fk.onUpdate!,
                     ),
-                  if (fk.onDelete == .noAction || fk.onUpdate == .noAction)
-                    'DEFERRABLE INITIALLY DEFERRED',
                 ].join(' '),
               ),
             ].map((l) => '  $l').join(',\n'),
