@@ -57,7 +57,7 @@ final class _$User extends User {
   @override
   final String lastName;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'users',
     columns: <String>['accountId', 'firstName', 'lastName'],
     columnInfo: [

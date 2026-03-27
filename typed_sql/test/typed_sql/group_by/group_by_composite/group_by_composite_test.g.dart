@@ -90,7 +90,7 @@ final class _$Item extends Item {
   @override
   final JsonValue? optJson;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'items',
     columns: <String>[
       'id',

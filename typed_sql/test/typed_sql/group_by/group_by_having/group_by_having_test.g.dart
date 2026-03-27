@@ -55,7 +55,7 @@ final class _$Employee extends Employee {
   @override
   final int salary;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'employees',
     columns: <String>['id', 'surname', 'salary'],
     columnInfo: [

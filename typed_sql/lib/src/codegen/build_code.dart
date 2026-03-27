@@ -364,7 +364,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..static = true
             ..modifier = FieldModifier.final$
             ..assignment = Code('''
-            (
+              \$ForGeneratedCode.tableDefinition(
               tableName: '${table.name}',
               columns: <String>[${rowClass.fields.map((f) => '\'${f.name}\'').join(', ')}],
               columnInfo: [
@@ -376,9 +376,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     autoIncrement: ${f.autoIncrement},
                     overrides: [
                       ${f.sqlOverrides.map(
-                        (o) =>
-                            'const SqlOverride(dialect: ${literal(o.dialect)}, columnType: ${literal(o.columnType)})',
-                      ).join(',')}
+              (o) => 'const SqlOverride(dialect: ${literal(o.dialect)}, columnType: ${literal(o.columnType)})',
+            ).join(',')}
                     ],
                   )
                 ''').join(', ')}

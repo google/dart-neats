@@ -60,7 +60,7 @@ final class _$Item extends Item {
   @override
   final DateTime expires;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'items',
     columns: <String>['id', 'name', 'birthday', 'createdAt', 'expires'],
     columnInfo: [

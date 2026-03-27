@@ -52,7 +52,7 @@ final class _$Account extends Account {
   @override
   final String accountNumber;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'accounts',
     columns: <String>['accountId', 'accountNumber'],
     columnInfo: [

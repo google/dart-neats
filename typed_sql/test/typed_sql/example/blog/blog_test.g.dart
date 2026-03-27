@@ -57,7 +57,7 @@ final class _$Post extends Post {
   @override
   final String content;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'posts',
     columns: <String>['author', 'slug', 'content'],
     columnInfo: [
@@ -370,7 +370,7 @@ final class _$Comment extends Comment {
   @override
   final String comment;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'comments',
     columns: <String>['commentId', 'author', 'postSlug', 'comment'],
     columnInfo: [

@@ -62,7 +62,7 @@ final class _$User extends User {
   @override
   final String email;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'users',
     columns: <String>['userId', 'name', 'email'],
     columnInfo: [
@@ -385,7 +385,7 @@ final class _$Package extends Package {
   @override
   final String? publisher;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'packages',
     columns: <String>['packageName', 'likes', 'ownerId', 'publisher'],
     columnInfo: [
@@ -731,7 +731,7 @@ final class _$Like extends Like {
   @override
   final String packageName;
 
-  static final _$table = (
+  static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'likes',
     columns: <String>['userId', 'packageName'],
     columnInfo: [
