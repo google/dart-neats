@@ -38,11 +38,15 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
   final _idleConnections = <Database>[];
   int _savePointIndex = 0;
 
-  Database _createConnection() => sqlite3.open(
-    _uri.toString(),
-    uri: true,
-    mutex: true, // playing it safe for now!
-  );
+  Database _createConnection() {
+    final conn = sqlite3.open(
+      _uri.toString(),
+      uri: true,
+      mutex: true, // playing it safe for now!
+    );
+    conn.execute('PRAGMA foreign_keys = ON;');
+    return conn;
+  }
 
   void _throwIfClosing() {
     _throwIfClosed();

@@ -1,4 +1,5 @@
 ## 0.1.8
+ * Set `PRAGMA foreign_keys = ON;` on all sqlite connections.
  * Add constraint name to FOREIGN KEY DDLs.
  * Use classes in generated files.
 
