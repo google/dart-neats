@@ -19,6 +19,7 @@ import 'package:collection/collection.dart';
 
 import '../utils/normalize_json.dart';
 import 'dialect.dart';
+import 'shared_dialect.dart';
 
 SqlDialect sqliteDialect() => _Sqlite();
 
@@ -39,7 +40,7 @@ final class _Sqlite extends SqlDialect {
   @override
   String createTables(List<CreateTableStatement> statements) {
     final resolver = ExpressionResolver(PlainSqlContext());
-    return statements
+    final script = statements
         .map((table) {
           return [
             'CREATE TABLE ${escape(table.tableName)} (',
@@ -85,6 +86,18 @@ final class _Sqlite extends SqlDialect {
                   'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
                   'REFERENCES ${escape(fk.referencedTable)}',
                   '(${fk.referencedColumns.map(escape).join(', ')})',
+                  if (fk.onDelete != null)
+                    defaultReferentialActionClause(
+                      ReferentialEvent.delete,
+                      fk.onDelete!,
+                    ),
+                  if (fk.onUpdate != null)
+                    defaultReferentialActionClause(
+                      ReferentialEvent.update,
+                      fk.onUpdate!,
+                    ),
+                  if (fk.onDelete == .noAction || fk.onUpdate == .noAction)
+                    'DEFERRABLE INITIALLY DEFERRED',
                 ].join(' '),
               ),
             ].map((l) => '  $l').join(',\n'),
@@ -92,6 +105,11 @@ final class _Sqlite extends SqlDialect {
           ].join('\n');
         })
         .join('\n');
+    return [
+      if (statements.any((table) => table.foreignKeys.isNotEmpty))
+        'PRAGMA foreign_keys = ON;\n',
+      script,
+    ].join();
   }
 
   @override

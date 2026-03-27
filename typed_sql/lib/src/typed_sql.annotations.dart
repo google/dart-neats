@@ -105,6 +105,44 @@ final class AutoIncrement {
   const AutoIncrement();
 }
 
+/// Represents the referential actions applied to a foreign key
+/// or a reference, during an UPDATE or DELETE operation on the
+/// parent table.
+///
+/// {@category schema}
+/// {@category foreign_keys}
+enum ReferentialAction {
+  /// Delete or update the child table when the referenced row is deleted or updated.
+  ///
+  /// This is the equivalent of `ON DELETE CASCADE` or `ON UPDATE CASCADE` in SQL.
+  cascade,
+
+  /// Prevent the deletion or update of a referenced row.
+  ///
+  /// This is the equivalent of `ON DELETE RESTRICT` or `ON UPDATE RESTRICT` in
+  /// SQL. The check is performed immediately.
+  restrict,
+
+  /// Set the foreign key columns in the child table to `NULL` when the
+  /// referenced row is deleted or updated.
+  ///
+  /// This is the equivalent of `ON DELETE SET NULL` or `ON UPDATE SET NULL` in SQL.
+  setNull,
+
+  /// Set the foreign key columns in the child table to their default values
+  /// when the referenced row is deleted or updated.
+  ///
+  /// This is the equivalent of `ON DELETE SET DEFAULT` or
+  /// `ON UPDATE SET DEFAULT` in SQL.
+  setDefault,
+
+  /// Similar to [restrict], but the check is deferred until the end of the
+  /// transaction.
+  ///
+  /// This is the equivalent of `ON DELETE NO ACTION` or `ON UPDATE NO ACTION` in SQL.
+  noAction,
+}
+
 /// Annotation for fields that references fields from another table.
 ///
 /// {@category schema}
@@ -114,12 +152,16 @@ final class References {
   final String field;
   final String? as;
   final String? name;
+  final ReferentialAction? onDelete;
+  final ReferentialAction? onUpdate;
 
   const References({
     required this.table,
     required this.field,
     this.as,
     this.name,
+    this.onDelete,
+    this.onUpdate,
   });
 }
 
@@ -133,6 +175,8 @@ final class ForeignKey {
   final List<String> fields;
   final String? as;
   final String? name;
+  final ReferentialAction? onDelete;
+  final ReferentialAction? onUpdate;
 
   const ForeignKey(
     this.foreignKey, {
@@ -140,6 +184,8 @@ final class ForeignKey {
     required this.fields,
     this.name,
     this.as,
+    this.onDelete,
+    this.onUpdate,
   });
 }
 

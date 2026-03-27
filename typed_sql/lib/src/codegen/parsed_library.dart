@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import '../typed_sql.dart' show SqlOverride;
+import '../typed_sql.dart' show ReferentialAction, SqlOverride;
 import 'parsed_default_value.dart' show ParsedDefaultValue;
 
 final class ParsedLibrary {
@@ -111,6 +111,8 @@ final class ParsedForeignKey {
   final List<String> fields;
   final String? as;
   final String? name;
+  final ReferentialAction? onDelete;
+  final ReferentialAction? onUpdate;
 
   ParsedForeignKey({
     required this.foreignKey,
@@ -118,6 +120,8 @@ final class ParsedForeignKey {
     required this.fields,
     required this.as,
     required this.name,
+    required this.onDelete,
+    required this.onUpdate,
   });
 
   late final List<ParsedField> referencedFields;
