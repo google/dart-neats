@@ -68,7 +68,7 @@ final _cases = [
       toExpr('world'),
       toExpr('dart'),
       toExpr('dart'),
-      toExpr('dart')
+      toExpr('dart'),
     ],
     distinct: {'hello', 'world', 'dart'},
   ),
@@ -85,7 +85,7 @@ final _cases = [
       toExpr(yesterday),
       toExpr(today),
       toExpr(today),
-      toExpr(today)
+      toExpr(today),
     ],
     distinct: {epoch, yesterday, today},
   ),

@@ -36,8 +36,12 @@ Similarly, examples in this document will assume that the database is loaded
 with the following examples:
 ```dart bookstore_test.dart#initial-data
 final initialAuthors = [
-  (name: 'Easter Bunny',),
-  (name: 'Bucks Bunny',),
+  (
+    name: 'Easter Bunny',
+  ),
+  (
+    name: 'Bucks Bunny',
+  ),
 ];
 
 final initialBooks = [
@@ -125,11 +129,13 @@ We can build the same query using `package:typed_sql` as follows:
 
 ```dart bookstore_test.dart#books-select-title-stock
 final result = await db.books
-    .select((b) => (
-          b.title,
-          b.stock,
-          b.stock > toExpr(3),
-        ))
+    .select(
+      (b) => (
+        b.title,
+        b.stock,
+        b.stock > toExpr(3),
+      ),
+    )
     // .select() returns Query<(Expr<String>, Expr<int>, Expr<bool>)>,
     .fetch();
 
@@ -198,10 +204,12 @@ there are in `T`. This principle is illustrated below:
 
 ```dart bookstore_test.dart#books-select-where-select
 final titles = await db.books
-    .select((b) => (
-          b.title, // Expr<String?>, because Book.title is nullable
-          b.stock, // Expr<int>, because Book.stock is non-nullable
-        ))
+    .select(
+      (b) => (
+        b.title, // Expr<String?>, because Book.title is nullable
+        b.stock, // Expr<int>, because Book.stock is non-nullable
+      ),
+    )
     // This .where extension method takes a callback with two arguments
     // Expr<String?> and Expr<int>.
     .where((title, stock) => stock > toExpr(3))
@@ -275,10 +283,12 @@ using the `.stream()` method, as illustrate below.
 
 ```dart bookstore_test.dart#query-stream
 final q = db.books
-    .select((b) => (
-          b.title,
-          b.stock,
-        ))
+    .select(
+      (b) => (
+        b.title,
+        b.stock,
+      ),
+    )
     .where((title, stock) => stock > toExpr(3));
 
 // Use await-for to process the stream one row at the time.
@@ -315,7 +325,7 @@ order:
 
 ```dart bookstore_test.dart#query-orderby
 final result = await db.books
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .select((b) => (b.title, b.stock))
     .fetch();
 
@@ -395,7 +405,7 @@ rows.
 
 ```dart bookstore_test.dart#query-orderby-offset
 final result = await db.books
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .select((b) => (b.title, b.stock))
     // The order in which .orderBy, .offset, .limit appears is significant.
     .offset(2)
@@ -444,11 +454,11 @@ do so with an additional `.orderBy` as illustrated below.
 
 ```dart bookstore_test.dart#query-orderby-limit-where
 final result = await db.books
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .limit(3)
     .asQuery // allow the ordering to be discarded!
     .where((b) => b.authorId.equalsValue(2))
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .select((b) => (b.title, b.stock))
     .fetch();
 
@@ -483,7 +493,7 @@ stock, as illustrated in the example below:
 ```dart bookstore_test.dart#query-where-orderby-limit
 final result = await db.books
     .where((b) => b.authorId.equalsValue(2))
-    .orderBy((b) => [(b.stock, Order.descending)])
+    .orderBy((b) => [(b.stock, .descending)])
     .limit(3)
     .select((b) => (b.title, b.stock))
     .fetch();

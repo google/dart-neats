@@ -36,8 +36,12 @@ Similarly, examples in this document will assume that the database is loaded
 with the following examples:
 ```dart bookstore_test.dart#initial-data
 final initialAuthors = [
-  (name: 'Easter Bunny',),
-  (name: 'Bucks Bunny',),
+  (
+    name: 'Easter Bunny',
+  ),
+  (
+    name: 'Bucks Bunny',
+  ),
 ];
 
 final initialBooks = [
@@ -64,9 +68,11 @@ we can do this as follows:
 ```dart bookstore_test.dart#update-book-bykey
 await db.books
     .byKey(1)
-    .update((book, set) => set(
-          stock: book.stock - toExpr(1),
-        ))
+    .update(
+      (book, set) => set(
+        stock: book.stock - toExpr(1),
+      ),
+    )
     .execute();
 ```
 
@@ -103,9 +109,11 @@ following example.
 ```dart bookstore_test.dart#update-book-bykey-set-null
 await db.books
     .byKey(1)
-    .update((book, set) => set(
-          title: toExpr(null),
-        ))
+    .update(
+      (book, set) => set(
+        title: toExpr(null),
+      ),
+    )
     .execute();
 ```
 
@@ -121,9 +129,11 @@ The following example shows how to reduce the stock by half for all books with
 ```dart bookstore_test.dart#update-books-where-stock-gt-5
 await db.books
     .where((book) => book.stock > toExpr(5))
-    .update((book, set) => set(
-          stock: (book.stock / toExpr(2)).asInt(),
-        ))
+    .update(
+      (book, set) => set(
+        stock: (book.stock / toExpr(2)).asInt(),
+      ),
+    )
     .execute();
 ```
 
@@ -137,9 +147,11 @@ The following example shows, how to use `.returnUpdated()` in the
 ```dart bookstore_test.dart#update-book-bykey-returnUpdated
 final updatedBook = await db.books
     .byKey(1)
-    .update((book, set) => set(
-          stock: book.stock - toExpr(1),
-        ))
+    .update(
+      (book, set) => set(
+        stock: book.stock - toExpr(1),
+      ),
+    )
     .returnUpdated() // return the updated row
     .executeAndFetch();
 
@@ -157,9 +169,11 @@ similar to the ones you can make with `.select`, as illustrated below:
 ```dart bookstore_test.dart#update-books-where-returning
 final updatedStock = await db.books
     .where((book) => book.stock > toExpr(5))
-    .update((book, set) => set(
-          stock: (book.stock / toExpr(2)).asInt(),
-        ))
+    .update(
+      (book, set) => set(
+        stock: (book.stock / toExpr(2)).asInt(),
+      ),
+    )
     .returning((book) => (book.stock,))
     .executeAndFetch();
 
@@ -218,10 +232,12 @@ the book.
 final deletedBooks = await db.books
     .where((book) => book.authorId.equals(toExpr(1)))
     .delete()
-    .returning((b) => (
-          b.title,
-          b.stock,
-        ))
+    .returning(
+      (b) => (
+        b.title,
+        b.stock,
+      ),
+    )
     .executeAndFetch();
 
 check(deletedBooks).unorderedEquals([

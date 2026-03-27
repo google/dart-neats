@@ -106,9 +106,11 @@ void main() {
       for (final v in _testAuthors) {
         await db.authors
             .byKey(v.authorId)
-            .update((author, set) => set(
-                  favoriteBookId: toExpr(v.favoriteBookId),
-                ))
+            .update(
+              (author, set) => set(
+                favoriteBookId: toExpr(v.favoriteBookId),
+              ),
+            )
             .execute();
       }
     },
@@ -154,8 +156,9 @@ void main() {
     check(result).length.equals(5);
   });
 
-  r.addTest('books.where(.author.name = ...).select(book, .editor)',
-      (db) async {
+  r.addTest('books.where(.author.name = ...).select(book, .editor)', (
+    db,
+  ) async {
     final result = await db.books
         .where((book) => book.author.name.equals(toExpr('Easter Bunny')))
         .select(
@@ -219,102 +222,117 @@ void main() {
     });
   }, skipMysql: 'TODO: Fix unknown mysql dialect issue');
 
-  r.addTest('books.select(..., .editor.books.count())', (db) async {
-    final result = await db.books
-        .select(
-          (book) => (
-            book.title,
-            book.editor.name.orElseValue('No editor'),
-            book.editor.books.count(),
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals({
-      ('Bunny-free?', 'No editor', 0),
-      ('Egg Recipies', 'No editor', 0),
-      ('Eggs for dummies', 'Bucks Bunny', 2),
-      ('Vegetarian Dining', 'Easter Bunny', 3),
-      ('Vegan Dining', 'Easter Bunny', 3),
-    });
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
-
-  r.addTest('books.select(..., .editor.booksEditedBy.count())', (db) async {
-    final result = await db.books
-        .select(
-          (book) => (
-            book.title,
-            book.editor.name.orElseValue('No editor'),
-            // This is an important thing to test, because book.editor may be
-            // NULL, in which case book.editor.booksEditedBy is a subquery
-            // that should return no rows, but if there are rows where the
-            // editor is NULL (which we have), then it will return those rows.
-            // That's obviously, wrong! Which is why the subquery checks if
-            // the book.editor given as argument is NULL!
-            book.editor.booksEditedBy.count(),
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals({
-      ('Bunny-free?', 'No editor', 0),
-      ('Egg Recipies', 'No editor', 0),
-      ('Eggs for dummies', 'Bucks Bunny', 1),
-      ('Vegetarian Dining', 'Easter Bunny', 2),
-      ('Vegan Dining', 'Easter Bunny', 2),
-    });
-  }, skipMysql: 'TODO: Fix nested subqueries in mysql');
-
-  r.addTest('books.select(..., .editor.favoriteBook.title)', (db) async {
-    final result = await db.books
-        .select(
-          (book) => (
-            book.title,
-            book.editor.name.orElseValue('No editor'),
-            book.editor.favoriteBook.title,
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals({
-      ('Bunny-free?', 'No editor', null),
-      ('Egg Recipies', 'No editor', null),
-      ('Eggs for dummies', 'Bucks Bunny', 'Vegetarian Dining'),
-      ('Vegetarian Dining', 'Easter Bunny', null),
-      ('Vegan Dining', 'Easter Bunny', null),
-    });
-  }, skipMysql: 'TODO: Fix unknown issue causing a timeout');
+  r.addTest(
+    'books.select(..., .editor.books.count())',
+    (db) async {
+      final result = await db.books
+          .select(
+            (book) => (
+              book.title,
+              book.editor.name.orElseValue('No editor'),
+              book.editor.books.count(),
+            ),
+          )
+          .fetch();
+      check(result).unorderedEquals({
+        ('Bunny-free?', 'No editor', 0),
+        ('Egg Recipies', 'No editor', 0),
+        ('Eggs for dummies', 'Bucks Bunny', 2),
+        ('Vegetarian Dining', 'Easter Bunny', 3),
+        ('Vegan Dining', 'Easter Bunny', 3),
+      });
+    },
+    skipMysql: 'TODO: Fix nested subqueries in mysql',
+  );
 
   r.addTest(
-      'books.join(authors).on(editorId = authorId).select(..., .editor.name)',
-      (db) async {
-    final result = await db.books
-        .join(db.authors)
-        .on((book, author) => book.editorId.equals(author.authorId))
-        .select(
-          (book, editor) => (
-            book.title,
-            editor.name,
-          ),
-        )
-        .fetch();
-    check(result).unorderedEquals({
-      ('Eggs for dummies', 'Bucks Bunny'),
-      ('Vegetarian Dining', 'Easter Bunny'),
-      ('Vegan Dining', 'Easter Bunny'),
-    });
-  });
+    'books.select(..., .editor.booksEditedBy.count())',
+    (db) async {
+      final result = await db.books
+          .select(
+            (book) => (
+              book.title,
+              book.editor.name.orElseValue('No editor'),
+              // This is an important thing to test, because book.editor may be
+              // NULL, in which case book.editor.booksEditedBy is a subquery
+              // that should return no rows, but if there are rows where the
+              // editor is NULL (which we have), then it will return those rows.
+              // That's obviously, wrong! Which is why the subquery checks if
+              // the book.editor given as argument is NULL!
+              book.editor.booksEditedBy.count(),
+            ),
+          )
+          .fetch();
+      check(result).unorderedEquals({
+        ('Bunny-free?', 'No editor', 0),
+        ('Egg Recipies', 'No editor', 0),
+        ('Eggs for dummies', 'Bucks Bunny', 1),
+        ('Vegetarian Dining', 'Easter Bunny', 2),
+        ('Vegan Dining', 'Easter Bunny', 2),
+      });
+    },
+    skipMysql: 'TODO: Fix nested subqueries in mysql',
+  );
+
+  r.addTest(
+    'books.select(..., .editor.favoriteBook.title)',
+    (db) async {
+      final result = await db.books
+          .select(
+            (book) => (
+              book.title,
+              book.editor.name.orElseValue('No editor'),
+              book.editor.favoriteBook.title,
+            ),
+          )
+          .fetch();
+      check(result).unorderedEquals({
+        ('Bunny-free?', 'No editor', null),
+        ('Egg Recipies', 'No editor', null),
+        ('Eggs for dummies', 'Bucks Bunny', 'Vegetarian Dining'),
+        ('Vegetarian Dining', 'Easter Bunny', null),
+        ('Vegan Dining', 'Easter Bunny', null),
+      });
+    },
+    skipMysql: 'TODO: Fix unknown issue causing a timeout',
+  );
+
+  r.addTest(
+    'books.join(authors).on(editorId = authorId).select(..., .editor.name)',
+    (db) async {
+      final result = await db.books
+          .join(db.authors)
+          .on((book, author) => book.editorId.equals(author.authorId))
+          .select(
+            (book, editor) => (
+              book.title,
+              editor.name,
+            ),
+          )
+          .fetch();
+      check(result).unorderedEquals({
+        ('Eggs for dummies', 'Bucks Bunny'),
+        ('Vegetarian Dining', 'Easter Bunny'),
+        ('Vegan Dining', 'Easter Bunny'),
+      });
+    },
+  );
 
   r.addTest('author.select(.name, .favoriteBook.isNull', (db) async {
     final result = await db.authors
-        .select((author) => (
-              author.name,
-              // This isn't super efficient, because we actually tell the
-              // database to do the query. So it'd have to be pretty smart
-              // to figure it out.
-              author.favoriteBook.isNull(),
-              author.favoriteBook.isNotNull(),
-              // This is faster:
-              author.favoriteBookId.isNull(),
-              author.favoriteBookId.isNotNull(),
-            ))
+        .select(
+          (author) => (
+            author.name,
+            // This isn't super efficient, because we actually tell the
+            // database to do the query. So it'd have to be pretty smart
+            // to figure it out.
+            author.favoriteBook.isNull(),
+            author.favoriteBook.isNotNull(),
+            // This is faster:
+            author.favoriteBookId.isNull(),
+            author.favoriteBookId.isNotNull(),
+          ),
+        )
         .fetch();
     check(result).unorderedEquals({
       ('Easter Bunny', true, false, true, false),

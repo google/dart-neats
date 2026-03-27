@@ -59,22 +59,26 @@ typedef TableDefinition<T extends Row> = ({
   String tableName,
   List<String> columns,
   List<
-      ({
-        ColumnType type,
-        bool isNotNull,
-        Object? defaultValue,
-        bool autoIncrement,
-        List<SqlOverride> overrides,
-      })> columnInfo,
+    ({
+      ColumnType type,
+      bool isNotNull,
+      Object? defaultValue,
+      bool autoIncrement,
+      List<SqlOverride> overrides,
+    })
+  >
+  columnInfo,
   List<String> primaryKey,
   List<List<String>> unique,
   List<
-      ({
-        String name,
-        List<String> columns,
-        String referencedTable,
-        List<String> referencedColumns,
-      })> foreignKeys,
+    ({
+      String name,
+      List<String> columns,
+      String referencedTable,
+      List<String> referencedColumns,
+    })
+  >
+  foreignKeys,
   T? Function(RowReader) readRow,
 });
 
@@ -114,30 +118,31 @@ Expr<Object>? _defaultValueAsExpr(Object? defaultValue) {
     return Expr.currentTimestamp;
   }
 
-  if (defaultValue
-      case (
-        kind: 'datetime',
-        value: (
-          final int year,
-          final int month,
-          final int day,
-          final int hour,
-          final int minute,
-          final int second,
-          final int millisecond,
-          final int microsecond,
-        )
-      )) {
-    return toExpr(DateTime.utc(
-      year,
-      month,
-      day,
-      hour,
-      minute,
-      second,
-      millisecond,
-      microsecond,
-    ));
+  if (defaultValue case (
+    kind: 'datetime',
+    value: (
+      final int year,
+      final int month,
+      final int day,
+      final int hour,
+      final int minute,
+      final int second,
+      final int millisecond,
+      final int microsecond,
+    ),
+  )) {
+    return toExpr(
+      DateTime.utc(
+        year,
+        month,
+        day,
+        hour,
+        minute,
+        second,
+        millisecond,
+        microsecond,
+      ),
+    );
   }
 
   throw AssertionError(
@@ -156,23 +161,28 @@ final class $ForGeneratedCode {
   }) {
     return dialect.createTables(
       tables
-          .map((t) => CreateTableStatement._(
-                tableName: t.tableName,
-                primaryKey: t.primaryKey,
-                columns: t.columns
-                    .mapIndexed((i, c) => (
-                          name: c,
-                          type: t.columnInfo[i].type,
-                          isNotNull: t.columnInfo[i].isNotNull,
-                          defaultValue:
-                              _defaultValueAsExpr(t.columnInfo[i].defaultValue),
-                          autoIncrement: t.columnInfo[i].autoIncrement,
-                          overrides: t.columnInfo[i].overrides,
-                        ))
-                    .toList(),
-                unique: t.unique,
-                foreignKeys: t.foreignKeys,
-              ))
+          .map(
+            (t) => CreateTableStatement._(
+              tableName: t.tableName,
+              primaryKey: t.primaryKey,
+              columns: t.columns
+                  .mapIndexed(
+                    (i, c) => (
+                      name: c,
+                      type: t.columnInfo[i].type,
+                      isNotNull: t.columnInfo[i].isNotNull,
+                      defaultValue: _defaultValueAsExpr(
+                        t.columnInfo[i].defaultValue,
+                      ),
+                      autoIncrement: t.columnInfo[i].autoIncrement,
+                      overrides: t.columnInfo[i].overrides,
+                    ),
+                  )
+                  .toList(),
+              unique: t.unique,
+              foreignKeys: t.foreignKeys,
+            ),
+          )
           .toList(),
     );
   }
@@ -191,18 +201,16 @@ final class $ForGeneratedCode {
   static Table<T> declareTable<T extends Row>(
     Database context,
     TableDefinition<T> table,
-  ) =>
-      Table._(
-        context,
-        TableClause._(table),
-        table,
-      );
+  ) => Table._(
+    context,
+    TableClause._(table),
+    table,
+  );
 
   static InsertSingle<T> insertInto<T extends Row>({
     required Table<T> table,
     required List<Expr?> values,
-  }) =>
-      InsertSingle._(table, values);
+  }) => InsertSingle._(table, values);
 
   static Update<T> update<T extends Row>(
     Query<(Expr<T>,)> query,
@@ -230,25 +238,25 @@ final class $ForGeneratedCode {
     final handle = Object();
     final row = q._expressions.$1._standin(0, handle);
 
-    return UpdateSingle._(Update._(
-      q,
-      table,
-      handle,
-      updateBuilder(row),
-    ));
+    return UpdateSingle._(
+      Update._(
+        q,
+        table,
+        handle,
+        updateBuilder(row),
+      ),
+    );
   }
 
   static Delete<T> delete<T extends Row>(
     Query<(Expr<T>,)> query,
     TableDefinition<T> table,
-  ) =>
-      Delete._(query, table);
+  ) => Delete._(query, table);
 
   static DeleteSingle<T> deleteSingle<T extends Row>(
     QuerySingle<(Expr<T>,)> query,
     TableDefinition<T> table,
-  ) =>
-      DeleteSingle._(Delete._(query.asQuery, table));
+  ) => DeleteSingle._(Delete._(query.asQuery, table));
 
   static UpdateSet<T> buildUpdate<T extends Row>(List<Expr?> values) =>
       UpdateSet._(values);
@@ -257,8 +265,7 @@ final class $ForGeneratedCode {
     Expr<M> row,
     int index,
     FieldType<T> type,
-  ) =>
-      row._field(index, type);
+  ) => row._field(index, type);
 
   static Query<S> renamedRecord<T extends Record, S extends Record>(
     Query<T> query,
@@ -293,14 +300,12 @@ final class $ForGeneratedCode {
   static CustomExprType<S, T> customDataType<S, T extends CustomDataType<S>>(
     ColumnType<S> backingType,
     T Function(S) fromDatabase,
-  ) =>
-      CustomExprType<S, T>._(backingType, fromDatabase);
+  ) => CustomExprType<S, T>._(backingType, fromDatabase);
 
   static Expr<T?> literalCustomDataType<S, T extends CustomDataType<S>>(
     T? value,
     CustomExprType<S, T> type,
-  ) =>
-      Literal<T?>._(value, type);
+  ) => Literal<T?>._(value, type);
 
   static const ColumnType<Uint8List> blob = ColumnType.blob;
   static const ColumnType<bool> boolean = ColumnType.boolean;

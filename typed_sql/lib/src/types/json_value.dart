@@ -33,15 +33,16 @@ final class JsonValue {
   final Object? value;
 
   const JsonValue(this.value)
-      : assert(
-            value == null ||
-                value is bool ||
-                value is int ||
-                value is double ||
-                value is String ||
-                value is List ||
-                value is Map,
-            'Value must be a JSON primitive, List, or Map');
+    : assert(
+        value == null ||
+            value is bool ||
+            value is int ||
+            value is double ||
+            value is String ||
+            value is List ||
+            value is Map,
+        'Value must be a JSON primitive, List, or Map',
+      );
 
   @override
   String toString() => 'JsonValue(${json.encode(value)})';

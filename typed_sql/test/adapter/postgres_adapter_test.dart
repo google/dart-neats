@@ -19,10 +19,12 @@ import 'package:typed_sql/adapter.dart';
 
 extension on Stream<RowReader> {
   Future<List<(int, String)>> toTupleList() async => (await toList())
-      .map((row) => (
-            row.readInt()!,
-            row.readString()!,
-          ))
+      .map(
+        (row) => (
+          row.readInt()!,
+          row.readString()!,
+        ),
+      )
       .toList();
 }
 
@@ -50,8 +52,9 @@ void main() async {
       [2, 'Bob'],
     ).drain<void>();
 
-    final users =
-        await db.query('SELECT id, name FROM users', []).toTupleList();
+    final users = await db
+        .query('SELECT id, name FROM users', [])
+        .toTupleList();
     expect(users.firstWhere((u) => u.$1 == 1), (1, 'Alice'));
     expect(users.firstWhere((u) => u.$1 == 2), (2, 'Bob'));
 

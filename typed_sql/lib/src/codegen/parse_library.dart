@@ -51,32 +51,46 @@ Future<ParsedLibrary> parseLibrary(
   final fieldToElement = <ParsedField, Element>{};
   final foreignKeyToElement = <ParsedForeignKey, Element>{};
 
-  final schemas = await Future.wait(targetLibrary.classes.where((cls) {
-    final supertype = cls.supertype;
-    return supertype != null && schemaTypeChecker.isExactlyType(supertype);
-  }).map((cls) async {
-    final s = await _parseSchema(
-      ctx,
-      cls,
-      rowClassCache,
-      foreignKeyToElement,
-      fieldToElement,
-    );
-    schemaToElement[s] = cls;
-    return s;
-  }).toList());
+  final schemas = await Future.wait(
+    targetLibrary.classes
+        .where((cls) {
+          final supertype = cls.supertype;
+          return supertype != null &&
+              schemaTypeChecker.isExactlyType(supertype);
+        })
+        .map((cls) async {
+          final s = await _parseSchema(
+            ctx,
+            cls,
+            rowClassCache,
+            foreignKeyToElement,
+            fieldToElement,
+          );
+          schemaToElement[s] = cls;
+          return s;
+        })
+        .toList(),
+  );
 
-  final rowClasses = await Future.wait(targetLibrary.classes.where((cls) {
-    final supertype = cls.supertype;
-    return supertype != null && rowTypeChecker.isExactlyType(supertype);
-  }).map((cls) async {
-    final rowClass =
-        await _parseRowClass(ctx, cls, foreignKeyToElement, fieldToElement);
-    return rowClassCache.putIfAbsent(
-      cls,
-      () => rowClass,
-    );
-  }));
+  final rowClasses = await Future.wait(
+    targetLibrary.classes
+        .where((cls) {
+          final supertype = cls.supertype;
+          return supertype != null && rowTypeChecker.isExactlyType(supertype);
+        })
+        .map((cls) async {
+          final rowClass = await _parseRowClass(
+            ctx,
+            cls,
+            foreignKeyToElement,
+            fieldToElement,
+          );
+          return rowClassCache.putIfAbsent(
+            cls,
+            () => rowClass,
+          );
+        }),
+  );
 
   // At this point we only support one schema per library.
   if (schemas.length > 1) {
@@ -462,8 +476,8 @@ Future<ParsedRowClass> _parseRowClass(
 
     // Check for AutoIncrement
     var autoIncrement = false;
-    final autoIncrementAnnotations =
-        autoIncrementTypeChecker.annotationAndValuesOfExact(a);
+    final autoIncrementAnnotations = autoIncrementTypeChecker
+        .annotationAndValuesOfExact(a);
     if (autoIncrementAnnotations.isNotEmpty) {
       if (autoIncrementAnnotations.length > 1) {
         final (elementAnnotation, annotation) = autoIncrementAnnotations[1];
@@ -540,10 +554,12 @@ Future<ParsedRowClass> _parseRowClass(
         );
       }
 
-      uniqueConstraints.add(ParsedUniqueConstraint(
-        name: name == '-' ? null : name,
-        fields: [field],
-      ));
+      uniqueConstraints.add(
+        ParsedUniqueConstraint(
+          name: name == '-' ? null : name,
+          fields: [field],
+        ),
+      );
     }
   }
 
@@ -596,10 +612,12 @@ Future<ParsedRowClass> _parseRowClass(
       constraintFields.add(field);
     }
 
-    uniqueConstraints.add(ParsedUniqueConstraint(
-      name: name == '-' ? null : name,
-      fields: constraintFields,
-    ));
+    uniqueConstraints.add(
+      ParsedUniqueConstraint(
+        name: name == '-' ? null : name,
+        fields: constraintFields,
+      ),
+    );
   }
 
   // Extract @References annotations
@@ -647,8 +665,9 @@ Future<ParsedRowClass> _parseRowClass(
         .toListValue()!
         .map((v) => v.toStringValue()!)
         .map((field) {
-      return fields.firstWhere((f) => f.name == field);
-    }).toList();
+          return fields.firstWhere((f) => f.name == field);
+        })
+        .toList();
 
     final fk = ParsedForeignKey(
       foreignKey: foreignKey,
@@ -683,10 +702,11 @@ Future<ParsedRowClass> _parseRowClass(
   }
   final (pka, pkv) = pks.first;
   final primaryKey = <ParsedField>[];
-  for (final key in pkv
-      .getField('fields')!
-      .toListValue()!
-      .map((v) => v.toStringValue()!)) {
+  for (final key
+      in pkv
+          .getField('fields')!
+          .toListValue()!
+          .map((v) => v.toStringValue()!)) {
     final field = fields.firstWhereOrNull((field) => field.name == key);
     if (field == null) {
       await throwInvalidAnnotationInSource(
@@ -758,18 +778,19 @@ String? _tryGetColumnType(DartType t) {
 Future<Never> _throwInternalDefaultValue(
   Element annotatedElement,
   ElementAnnotation annotation,
-) async =>
-    await throwInvalidAnnotationInSource(
-      'Invalid DefaultValue annotation, internal invariant violated!',
-      annotatedElement: annotatedElement,
-      annotation: annotation,
-    );
+) async => await throwInvalidAnnotationInSource(
+  'Invalid DefaultValue annotation, internal invariant violated!',
+  annotatedElement: annotatedElement,
+  annotation: annotation,
+);
 
 /// Parsed [DefaultValue] annotations from [field] with [type].
 Future<ParsedDefaultValue?> _parseDefaultValue(
-    Element field, String type) async {
-  final defaultValueAnnotations =
-      defaultValueTypeChecker.annotationAndValuesOfExact(field);
+  Element field,
+  String type,
+) async {
+  final defaultValueAnnotations = defaultValueTypeChecker
+      .annotationAndValuesOfExact(field);
 
   if (defaultValueAnnotations.isEmpty) {
     return null;
@@ -876,7 +897,8 @@ Future<ParsedDefaultValue?> _parseDefaultRawValue(
   ElementAnnotation elementAnnotation,
   DartObject value,
 ) async {
-  final defaultValue = value.toBoolValue() ??
+  final defaultValue =
+      value.toBoolValue() ??
       value.toIntValue() ??
       value.toDoubleValue() ??
       value.toStringValue() ??
@@ -1003,16 +1025,18 @@ extension on DartObject {
         return l.map(decodeValue).toList();
       }
       if (v.toMapValue() case final Map<DartObject, DartObject> m) {
-        return Map.fromEntries(m.entries.map((e) {
-          final k = decodeValue(e.key);
-          if (k is! String) {
-            throw const FormatException('Expected String key');
-          }
-          return MapEntry(
-            k,
-            decodeValue(e.value),
-          );
-        }));
+        return Map.fromEntries(
+          m.entries.map((e) {
+            final k = decodeValue(e.key);
+            if (k is! String) {
+              throw const FormatException('Expected String key');
+            }
+            return MapEntry(
+              k,
+              decodeValue(e.value),
+            );
+          }),
+        );
       }
       throw const FormatException('Invalid JSON value');
     }

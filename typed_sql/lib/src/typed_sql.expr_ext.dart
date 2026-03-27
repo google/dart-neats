@@ -446,11 +446,11 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// this -> key
   /// ```
   Expr<JsonValue?> field(String key) => ExpressionJsonRefKey._(
-        this is ExpressionJsonRef
-            ? this as ExpressionJsonRef
-            : ExpressionJsonRefRoot._(this),
-        key,
-      );
+    this is ExpressionJsonRef
+        ? this as ExpressionJsonRef
+        : ExpressionJsonRefRoot._(this),
+    key,
+  );
 
   /// Access an index in this JSON value.
   ///
@@ -466,11 +466,11 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// this -> index
   /// ```
   Expr<JsonValue?> elementAt(int index) => ExpressionJsonRefIndex._(
-        this is ExpressionJsonRef
-            ? this as ExpressionJsonRef
-            : ExpressionJsonRefRoot._(this),
-        index,
-      );
+    this is ExpressionJsonRef
+        ? this as ExpressionJsonRef
+        : ExpressionJsonRefRoot._(this),
+    index,
+  );
 
   /// Access a key or index in this JSON value.
   ///

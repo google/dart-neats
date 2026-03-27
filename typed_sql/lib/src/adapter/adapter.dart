@@ -156,14 +156,15 @@ abstract base class DatabaseAdapter extends Executor {
     String? database,
     String? user,
     String? password,
-  }) =>
-      futureDatabaseAdapter(postgresTestingDatabaseAdapter(
-        host: host,
-        port: port,
-        database: database,
-        user: user,
-        password: password,
-      ));
+  }) => futureDatabaseAdapter(
+    postgresTestingDatabaseAdapter(
+      host: host,
+      port: port,
+      database: database,
+      user: user,
+      password: password,
+    ),
+  );
 
   /// Wrap [adapter] such that [close] calls [onClosed] instead of
   /// `adapter.close`.
@@ -174,8 +175,7 @@ abstract base class DatabaseAdapter extends Executor {
   factory DatabaseAdapter.withOnClose(
     DatabaseAdapter adapter,
     Future<void> Function({required bool force}) onClosed,
-  ) =>
-      withOnCloseDatabaseAdapter(adapter, onClosed);
+  ) => withOnCloseDatabaseAdapter(adapter, onClosed);
 
   /// Wrap [adapter] such that [close] is a no-op!
   ///
@@ -196,8 +196,7 @@ abstract base class DatabaseAdapter extends Executor {
   factory DatabaseAdapter.withLogging(
     DatabaseAdapter adapter,
     void Function(String message) log,
-  ) =>
-      loggingAdapter(adapter, log);
+  ) => loggingAdapter(adapter, log);
 }
 
 /// Interface for executing database operations in a transaction.

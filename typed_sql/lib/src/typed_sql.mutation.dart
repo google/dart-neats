@@ -53,8 +53,7 @@ final class UpdateSingle<T extends Row> {
   /// objects.
   ReturnSingle<S> returning<S extends Record>(
     S Function(Expr<T> updated) projectionBuilder,
-  ) =>
-      _update.returning(projectionBuilder)._first;
+  ) => _update.returning(projectionBuilder)._first;
 
   /// Create a `UPDATE` statement that returns the updated row, using the
   /// `RETURNING` clause.
@@ -108,16 +107,18 @@ final class Update<T extends Row> {
     final table = TableClause._(_table);
 
     return Return._(_query._context, projection, (e) {
-      return _query._context._dialect.update(UpdateStatement._(
-        table,
-        table.columns
-            .whereIndexed((index, value) => _set._values[index] != null)
-            .toList(),
-        _set._values.nonNulls.toList(),
-        _handle,
-        _query._from(_query._expressions.toList()),
-        ReturningClause._(handle, table.columns, e),
-      ));
+      return _query._context._dialect.update(
+        UpdateStatement._(
+          table,
+          table.columns
+              .whereIndexed((index, value) => _set._values[index] != null)
+              .toList(),
+          _set._values.nonNulls.toList(),
+          _handle,
+          _query._from(_query._expressions.toList()),
+          ReturningClause._(handle, table.columns, e),
+        ),
+      );
     });
   }
 
@@ -137,14 +138,16 @@ final class InsertSingle<T extends Row> {
 
   /// Execute this `INSERT` statement in the database.
   Future<void> execute() async {
-    final (sql, params) = _table._context._dialect.insertInto(InsertStatement._(
-      _table._tableClause.name,
-      _table._tableClause.columns
-          .whereIndexed((index, value) => _values[index] != null)
-          .toList(),
-      _values.nonNulls.toList(),
-      null,
-    ));
+    final (sql, params) = _table._context._dialect.insertInto(
+      InsertStatement._(
+        _table._tableClause.name,
+        _table._tableClause.columns
+            .whereIndexed((index, value) => _values[index] != null)
+            .toList(),
+        _values.nonNulls.toList(),
+        null,
+      ),
+    );
     await _table._context._query(sql, params).drain<void>();
   }
 
@@ -163,16 +166,20 @@ final class InsertSingle<T extends Row> {
       _table._expressions.$1._standin(0, handle),
     );
 
-    return ReturnOne._(Return._(_table._context, projection, (e) {
-      return _table._context._dialect.insertInto(InsertStatement._(
-        _table._tableClause.name,
-        _table._tableClause.columns
-            .whereIndexed((index, value) => _values[index] != null)
-            .toList(),
-        _values.nonNulls.toList(),
-        ReturningClause._(handle, _table._tableClause.columns, e),
-      ));
-    }));
+    return ReturnOne._(
+      Return._(_table._context, projection, (e) {
+        return _table._context._dialect.insertInto(
+          InsertStatement._(
+            _table._tableClause.name,
+            _table._tableClause.columns
+                .whereIndexed((index, value) => _values[index] != null)
+                .toList(),
+            _values.nonNulls.toList(),
+            ReturningClause._(handle, _table._tableClause.columns, e),
+          ),
+        );
+      }),
+    );
   }
 
   /// Create a `INSERT` statement that returns the inserted row, using the
@@ -221,11 +228,13 @@ final class Delete<T extends Row> {
     final table = TableClause._(_table);
 
     return Return._(_query._context, projection, (e) {
-      return _query._context._dialect.delete(DeleteStatement._(
-        table,
-        _query._from(_query._expressions.toList()),
-        ReturningClause._(handle, table.columns, e),
-      ));
+      return _query._context._dialect.delete(
+        DeleteStatement._(
+          table,
+          _query._from(_query._expressions.toList()),
+          ReturningClause._(handle, table.columns, e),
+        ),
+      );
     });
   }
 
@@ -253,8 +262,7 @@ final class DeleteSingle<T extends Row> {
   /// objects.
   ReturnSingle<S> returning<S extends Record>(
     S Function(Expr<T> deleted) projectionBuilder,
-  ) =>
-      _delete.returning(projectionBuilder)._first;
+  ) => _delete.returning(projectionBuilder)._first;
 
   /// Create a `DELETE` statement that returns the deleted row, using the
   /// `RETURNING` clause.

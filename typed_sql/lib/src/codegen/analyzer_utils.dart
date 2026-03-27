@@ -59,11 +59,13 @@ Future<Never> throwInvalidAnnotationInSource(
 
     if (result case ResolvedLibraryResult r) {
       for (final u in r.units) {
-        u.unit.accept(_ForEachAnnotationVisitor((a) {
-          if (a.elementAnnotation == annotation) {
-            node = a;
-          }
-        }));
+        u.unit.accept(
+          _ForEachAnnotationVisitor((a) {
+            if (a.elementAnnotation == annotation) {
+              node = a;
+            }
+          }),
+        );
       }
     }
   }

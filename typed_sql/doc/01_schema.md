@@ -111,7 +111,6 @@ abstract final class Book extends Row {
     // The reference is _named_ "author", this gives rise to a
     // Expr<Book>.author property when building queries.
     name: 'author', // optional
-
     // This is referenced _as_ "books", this gives rise to a
     // Expr<Author>.books property when building queries.
     as: 'books', // optional

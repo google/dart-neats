@@ -140,9 +140,11 @@ void main() {
     }
     await db.packages
         .where((p) => p.packageName.equalsValue('foo'))
-        .update((p, set) => set(
-              ownerId: toExpr(2),
-            ))
+        .update(
+          (p, set) => set(
+            ownerId: toExpr(2),
+          ),
+        )
         .execute();
     {
       final p = await db.packages.byKey('foo').fetch();
@@ -158,9 +160,11 @@ void main() {
 
     await db.packages
         .byKey('foo')
-        .update((u, set) => set(
-              likes: u.likes + toExpr(1),
-            ))
+        .update(
+          (u, set) => set(
+            likes: u.likes + toExpr(1),
+          ),
+        )
         .execute();
 
     expect(
@@ -170,9 +174,11 @@ void main() {
 
     await db.packages
         .byKey('foo')
-        .update((u, set) => set(
-              likes: u.likes.addValue(1),
-            ))
+        .update(
+          (u, set) => set(
+            likes: u.likes.addValue(1),
+          ),
+        )
         .execute();
 
     expect(
@@ -182,16 +188,20 @@ void main() {
 
     await db.packages
         .byKey('foo')
-        .update((u, set) => set(
-              likes: u.likes.subtractValue(1),
-            ))
+        .update(
+          (u, set) => set(
+            likes: u.likes.subtractValue(1),
+          ),
+        )
         .execute();
 
     await db.packages
         .byKey('foo')
-        .update((u, set) => set(
-              likes: u.likes - toExpr(1),
-            ))
+        .update(
+          (u, set) => set(
+            likes: u.likes - toExpr(1),
+          ),
+        )
         .execute();
 
     expect(
@@ -374,8 +384,9 @@ void main() {
     expect(ownerId, equals(1));
   });
 
-  _test('db.users.join(db.packages.select().where().select()).on()',
-      (db) async {
+  _test('db.users.join(db.packages.select().where().select()).on()', (
+    db,
+  ) async {
     final result = await db.users
         .join(
           db.packages
@@ -401,7 +412,7 @@ void main() {
                 .where((u) => u.userId.equals(p.ownerId))
                 .select((u) => (u.name,))
                 .first
-                .asExpr
+                .asExpr,
           ),
         )
         .fetch();
@@ -525,8 +536,9 @@ void main() {
   });
 
   _test('db.packages.exists().asExpr.not()', (db) async {
-    final result = await db
-        .select((db.packages.exists().asExpr.asNotNull().not(),)).fetch();
+    final result = await db.select((
+      db.packages.exists().asExpr.asNotNull().not(),
+    )).fetch();
     expect(result, isFalse);
   });
 
@@ -605,15 +617,18 @@ void main() {
     expect(result, contains('Alice'));
   });
 
-  _test('select((u, p) => (owner: u.name, packages: p.packageName))',
-      (db) async {
+  _test('select((u, p) => (owner: u.name, packages: p.packageName))', (
+    db,
+  ) async {
     final result = await db.users
         .join(db.packages)
         .on((u, p) => p.ownerId.equals(u.userId))
-        .select((u, p) => (
-              owner: u.name,
-              package: p.packageName,
-            ))
+        .select(
+          (u, p) => (
+            owner: u.name,
+            package: p.packageName,
+          ),
+        )
         .fetch();
     expect(result, hasLength(2));
     expect(result[0].owner, equals('Alice'));
@@ -646,8 +661,10 @@ void main() {
   });
 
   _test('db.likes.select().count()', (db) async {
-    final result =
-        await db.likes.select((l) => (l.packageName,)).count().fetch();
+    final result = await db.likes
+        .select((l) => (l.packageName,))
+        .count()
+        .fetch();
     expect(result, equals(2));
   });
 
@@ -661,8 +678,10 @@ void main() {
   });
 
   _test('db.packages.select(ownerId).distinct()', (db) async {
-    final result =
-        await db.packages.select((p) => (p.ownerId,)).distinct().fetch();
+    final result = await db.packages
+        .select((p) => (p.ownerId,))
+        .distinct()
+        .fetch();
     expect(result, hasLength(1));
     expect(result, contains(1));
   });
@@ -716,20 +735,24 @@ void main() {
 
   _test('db.packages.select((p) => p, p.owner)', (db) async {
     final result = await db.packages
-        .select((p) => (
-              p,
-              p.owner,
-            ))
+        .select(
+          (p) => (
+            p,
+            p.owner,
+          ),
+        )
         .fetch();
     expect(result, hasLength(2));
   });
 
   _test('db.packages.select((p) => p.packageName, p.owner.name)', (db) async {
     final result = await db.packages
-        .select((p) => (
-              p.packageName,
-              p.owner.name,
-            ))
+        .select(
+          (p) => (
+            p.packageName,
+            p.owner.name,
+          ),
+        )
         .fetch();
     expect(result, hasLength(2));
     expect(result, contains(('foo', 'Alice')));

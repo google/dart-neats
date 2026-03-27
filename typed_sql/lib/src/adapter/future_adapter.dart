@@ -22,8 +22,7 @@ import 'adapter.dart';
 /// calling doing whatever operation was requested.
 DatabaseAdapter futureDatabaseAdapter(
   Future<DatabaseAdapter> adapter,
-) =>
-    _DatabaseAdapterFromFuture(adapter);
+) => _DatabaseAdapterFromFuture(adapter);
 
 final class _DatabaseAdapterFromFuture extends DatabaseAdapter {
   final Future<DatabaseAdapter> _adapter;

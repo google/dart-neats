@@ -10,10 +10,7 @@ part of 'text_key_test.dart';
 extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Item._$table];
 
-  Table<Item> get items => $ForGeneratedCode.declareTable(
-        this,
-        _$Item._$table,
-      );
+  Table<Item> get items => $ForGeneratedCode.declareTable(this, _$Item._$table);
 
   /// Create tables defined in [TestDatabase].
   ///
@@ -27,10 +24,8 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
@@ -44,17 +39,11 @@ extension TestDatabaseSchema on Database<TestDatabase> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createTestDatabaseTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: TestDatabaseSchema._$tables,
-    );
+String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
 final class _$Item extends Item {
-  _$Item._(
-    this.key,
-    this.value,
-  );
+  _$Item._(this.key, this.value);
 
   @override
   final String key;
@@ -65,38 +54,44 @@ final class _$Item extends Item {
   static const _$table = (
     tableName: 'items',
     columns: <String>['key', 'value'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
         ],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
     primaryKey: <String>['key'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$Item._$fromDatabase,
   );
 
@@ -122,14 +117,7 @@ extension TableItemExt on Table<Item> {
   InsertSingle<Item> insert({
     required Expr<String> key,
     required Expr<String> value,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          key,
-          value,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(table: this, values: [key, value]);
 
   /// Delete a single row from the `items` table, specified by
   /// _primary key_.
@@ -140,10 +128,8 @@ extension TableItemExt on Table<Item> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Item> delete(String key) => $ForGeneratedCode.deleteSingle(
-        byKey(key),
-        _$Item._$table,
-      );
+  DeleteSingle<Item> delete(String key) =>
+      $ForGeneratedCode.deleteSingle(byKey(key), _$Item._$table);
 }
 
 /// Extension methods for building queries against the `items` table.
@@ -183,28 +169,20 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Item> update(
-          UpdateSet<Item> Function(
-            Expr<Item> item,
-            UpdateSet<Item> Function({
-              Expr<String> key,
-              Expr<String> value,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Item>(
-        this,
-        _$Item._$table,
-        (item) => updateBuilder(
-          item,
-          ({
-            Expr<String>? key,
-            Expr<String>? value,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Item>([
-            key,
-            value,
-          ]),
-        ),
-      );
+    UpdateSet<Item> Function(
+      Expr<Item> item,
+      UpdateSet<Item> Function({Expr<String> key, Expr<String> value}) set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Item>(
+    this,
+    _$Item._$table,
+    (item) => updateBuilder(
+      item,
+      ({Expr<String>? key, Expr<String>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([key, value]),
+    ),
+  );
 
   /// Delete all rows in the `items` table matching this [Query].
   ///
@@ -245,28 +223,20 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Item> update(
-          UpdateSet<Item> Function(
-            Expr<Item> item,
-            UpdateSet<Item> Function({
-              Expr<String> key,
-              Expr<String> value,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Item>(
-        this,
-        _$Item._$table,
-        (item) => updateBuilder(
-          item,
-          ({
-            Expr<String>? key,
-            Expr<String>? value,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Item>([
-            key,
-            value,
-          ]),
-        ),
-      );
+    UpdateSet<Item> Function(
+      Expr<Item> item,
+      UpdateSet<Item> Function({Expr<String> key, Expr<String> value}) set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Item>(
+    this,
+    _$Item._$table,
+    (item) => updateBuilder(
+      item,
+      ({Expr<String>? key, Expr<String>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([key, value]),
+    ),
+  );
 
   /// Delete the row (if any) in the `items` table matching this [QuerySingle].
   ///

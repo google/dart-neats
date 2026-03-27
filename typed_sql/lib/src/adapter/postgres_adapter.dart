@@ -435,7 +435,8 @@ final class _PostgresRowReader extends RowReader {
     final value = _row[_i++];
     if (value is! Uint8List?) {
       throw AssertionError(
-          'readUint8List() expected a Uint8List, got "$value"');
+        'readUint8List() expected a Uint8List, got "$value"',
+      );
     }
     return value;
   }
@@ -469,21 +470,23 @@ final class _PostgresRowReader extends RowReader {
 }
 
 List<Object?> _paramsForPostgres(List<Object?> params) => params
-    .map((p) => switch (p) {
-          // Negative years and year zero most be written as BC in postgres
-          // https://www.postgresql.org/docs/17/datetime-input-rules.html
-          DateTime d when d.year <= 0 =>
-            '${d.copyWith(year: 1 - d.year).toIso8601String()} BC',
-          DateTime d => d.toIso8601String(),
-          String s => s,
-          null => null,
-          bool b => b,
-          int i => i,
-          double d => d,
-          Uint8List u => TypedValue(Type.byteArray, u, isSqlNull: false),
-          JsonValue v => TypedValue(Type.jsonb, v.value, isSqlNull: false),
-          _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
-        })
+    .map(
+      (p) => switch (p) {
+        // Negative years and year zero most be written as BC in postgres
+        // https://www.postgresql.org/docs/17/datetime-input-rules.html
+        DateTime d when d.year <= 0 =>
+          '${d.copyWith(year: 1 - d.year).toIso8601String()} BC',
+        DateTime d => d.toIso8601String(),
+        String s => s,
+        null => null,
+        bool b => b,
+        int i => i,
+        double d => d,
+        Uint8List u => TypedValue(Type.byteArray, u, isSqlNull: false),
+        JsonValue v => TypedValue(Type.jsonb, v.value, isSqlNull: false),
+        _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
+      },
+    )
     .toList();
 
 mixin PostgresDatabaseException implements Exception {
@@ -494,7 +497,8 @@ mixin PostgresDatabaseException implements Exception {
 }
 
 final class PostgresConstraintViolationException
-    extends ConstraintViolationException with PostgresDatabaseException {
+    extends ConstraintViolationException
+    with PostgresDatabaseException {
   @override
   final String message;
 
@@ -502,7 +506,8 @@ final class PostgresConstraintViolationException
 }
 
 final class PostgresUnspecifiedOperationException
-    extends UnspecifiedOperationException with PostgresDatabaseException {
+    extends UnspecifiedOperationException
+    with PostgresDatabaseException {
   @override
   final String message;
 
@@ -527,7 +532,8 @@ final class PostgresAuthenticationException extends AuthenticationException
 }
 
 final class PostgresDatabaseConnectionRefusedException
-    extends DatabaseConnectionRefusedException with PostgresDatabaseException {
+    extends DatabaseConnectionRefusedException
+    with PostgresDatabaseException {
   @override
   final String message;
 
@@ -535,7 +541,8 @@ final class PostgresDatabaseConnectionRefusedException
 }
 
 final class PostgresDatabaseConnectionBrokenException
-    extends DatabaseConnectionBrokenException with PostgresDatabaseException {
+    extends DatabaseConnectionBrokenException
+    with PostgresDatabaseException {
   @override
   final String message;
 
@@ -543,7 +550,8 @@ final class PostgresDatabaseConnectionBrokenException
 }
 
 final class PostgresDatabaseConnectionTimeoutException
-    extends DatabaseConnectionTimeoutException with PostgresDatabaseException {
+    extends DatabaseConnectionTimeoutException
+    with PostgresDatabaseException {
   @override
   final String message;
 

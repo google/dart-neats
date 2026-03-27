@@ -87,8 +87,9 @@ Future<void> main() async {
     final user = await db.users.byEmail(email).fetch();
     if (user != null) {
       print('${user.email} has liked');
-      final queryLikes =
-          db.likes.where((like) => like.userId.equalsValue(user.userId));
+      final queryLikes = db.likes.where(
+        (like) => like.userId.equalsValue(user.userId),
+      );
       await for (final like in queryLikes.stream()) {
         print(like.packageName);
       }
@@ -105,7 +106,7 @@ Future<void> main() async {
   {
     final users = await db.users
         .where((user) => user.email.endsWithValue('@google.com'))
-        .orderBy((user) => [(user.email, Order.ascending)])
+        .orderBy((user) => [(user.email, .ascending)])
         .offset(5)
         .limit(10)
         .fetch();

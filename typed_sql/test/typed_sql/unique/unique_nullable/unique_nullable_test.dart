@@ -86,15 +86,18 @@ void main() {
     check(account).isNull();
   });
 
-  r.addTest('db.account.byAccountNumber is! QuerySingle Function(String?)',
-      (db) async {
+  r.addTest('db.account.byAccountNumber is! QuerySingle Function(String?)', (
+    db,
+  ) async {
     // This should not be allowed, because multiple rows with NULL is allowed!
-    check(db.accounts.byAccountNumber)
-        .not((s) => s.isA<QuerySingle Function(String?)>());
+    check(
+      db.accounts.byAccountNumber,
+    ).not((s) => s.isA<QuerySingle Function(String?)>());
   });
 
-  r.addTest('db.account.byAccountNumber is QuerySingle Function(String)',
-      (db) async {
+  r.addTest('db.account.byAccountNumber is QuerySingle Function(String)', (
+    db,
+  ) async {
     check(db.accounts.byAccountNumber).isA<QuerySingle Function(String)>();
   });
 

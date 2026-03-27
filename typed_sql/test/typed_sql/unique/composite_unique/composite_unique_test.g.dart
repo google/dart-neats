@@ -10,10 +10,7 @@ part of 'composite_unique_test.dart';
 extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   static const _$tables = [_$User._$table];
 
-  Table<User> get users => $ForGeneratedCode.declareTable(
-        this,
-        _$User._$table,
-      );
+  Table<User> get users => $ForGeneratedCode.declareTable(this, _$User._$table);
 
   /// Create tables defined in [PrimaryDatabase].
   ///
@@ -27,10 +24,8 @@ extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [PrimaryDatabase].
@@ -51,11 +46,7 @@ String createPrimaryDatabaseTables(SqlDialect dialect) =>
     );
 
 final class _$User extends User {
-  _$User._(
-    this.accountId,
-    this.firstName,
-    this.lastName,
-  );
+  _$User._(this.accountId, this.firstName, this.lastName);
 
   @override
   final int accountId;
@@ -69,49 +60,55 @@ final class _$User extends User {
   static const _$table = (
     tableName: 'users',
     columns: <String>['accountId', 'firstName', 'lastName'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: true,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
         ],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
-        ],
-      )
-    ],
     primaryKey: <String>['accountId'],
     unique: <List<String>>[
-      ['firstName', 'lastName']
+      ['firstName', 'lastName'],
     ],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$User._$fromDatabase,
   );
 
@@ -140,15 +137,10 @@ extension TableUserExt on Table<User> {
     Expr<int>? accountId,
     required Expr<String> firstName,
     required Expr<String> lastName,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          accountId,
-          firstName,
-          lastName,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [accountId, firstName, lastName],
+  );
 
   /// Delete a single row from the `users` table, specified by
   /// _primary key_.
@@ -159,10 +151,8 @@ extension TableUserExt on Table<User> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<User> delete(int accountId) => $ForGeneratedCode.deleteSingle(
-        byKey(accountId),
-        _$User._$table,
-      );
+  DeleteSingle<User> delete(int accountId) =>
+      $ForGeneratedCode.deleteSingle(byKey(accountId), _$User._$table);
 }
 
 /// Extension methods for building queries against the `users` table.
@@ -202,31 +192,29 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<User> update(
-          UpdateSet<User> Function(
-            Expr<User> user,
-            UpdateSet<User> Function({
-              Expr<int> accountId,
-              Expr<String> firstName,
-              Expr<String> lastName,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<User>(
-        this,
-        _$User._$table,
-        (user) => updateBuilder(
-          user,
-          ({
-            Expr<int>? accountId,
-            Expr<String>? firstName,
-            Expr<String>? lastName,
-          }) =>
-              $ForGeneratedCode.buildUpdate<User>([
-            accountId,
-            firstName,
-            lastName,
-          ]),
-        ),
-      );
+    UpdateSet<User> Function(
+      Expr<User> user,
+      UpdateSet<User> Function({
+        Expr<int> accountId,
+        Expr<String> firstName,
+        Expr<String> lastName,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<User>(
+    this,
+    _$User._$table,
+    (user) => updateBuilder(
+      user,
+      ({
+        Expr<int>? accountId,
+        Expr<String>? firstName,
+        Expr<String>? lastName,
+      }) =>
+          $ForGeneratedCode.buildUpdate<User>([accountId, firstName, lastName]),
+    ),
+  );
 
   /// Lookup a single row in `users` table using the
   /// `firstName`, `lastName` fields
@@ -236,13 +224,12 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<User>,)> byFullname(
-    String firstName,
-    String lastName,
-  ) =>
-      where((user) =>
-          user.firstName.equalsValue(firstName) &
-          user.lastName.equalsValue(lastName)).first;
+  QuerySingle<(Expr<User>,)> byFullname(String firstName, String lastName) =>
+      where(
+        (user) =>
+            user.firstName.equalsValue(firstName) &
+            user.lastName.equalsValue(lastName),
+      ).first;
 
   /// Delete all rows in the `users` table matching this [Query].
   ///
@@ -283,31 +270,29 @@ extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<User> update(
-          UpdateSet<User> Function(
-            Expr<User> user,
-            UpdateSet<User> Function({
-              Expr<int> accountId,
-              Expr<String> firstName,
-              Expr<String> lastName,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<User>(
-        this,
-        _$User._$table,
-        (user) => updateBuilder(
-          user,
-          ({
-            Expr<int>? accountId,
-            Expr<String>? firstName,
-            Expr<String>? lastName,
-          }) =>
-              $ForGeneratedCode.buildUpdate<User>([
-            accountId,
-            firstName,
-            lastName,
-          ]),
-        ),
-      );
+    UpdateSet<User> Function(
+      Expr<User> user,
+      UpdateSet<User> Function({
+        Expr<int> accountId,
+        Expr<String> firstName,
+        Expr<String> lastName,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<User>(
+    this,
+    _$User._$table,
+    (user) => updateBuilder(
+      user,
+      ({
+        Expr<int>? accountId,
+        Expr<String>? firstName,
+        Expr<String>? lastName,
+      }) =>
+          $ForGeneratedCode.buildUpdate<User>([accountId, firstName, lastName]),
+    ),
+  );
 
   /// Delete the row (if any) in the `users` table matching this [QuerySingle].
   ///

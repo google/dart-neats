@@ -97,7 +97,7 @@ void main() {
     final result = await db.items
         .groupBy((i) => (i.category,))
         .aggregate((agg) => agg.sum((i) => i.score))
-        .orderBy((category, sumScore) => [(sumScore, Order.descending)])
+        .orderBy((category, sumScore) => [(sumScore, .descending)])
         .limit(1)
         .fetch();
 
@@ -112,11 +112,13 @@ void main() {
   r.addTest('groupBy(subquery count)', (db) async {
     // This is a crazy query: group items by how many items are in their category
     final result = await db.items
-        .groupBy((i) => (
-              db.items.asSubQuery
-                  .where((i2) => i2.category.equals(i.category))
-                  .count(),
-            ))
+        .groupBy(
+          (i) => (
+            db.items.asSubQuery
+                .where((i2) => i2.category.equals(i.category))
+                .count(),
+          ),
+        )
         .aggregate((agg) => agg.count())
         .fetch();
 

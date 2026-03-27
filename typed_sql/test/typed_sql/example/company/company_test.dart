@@ -99,8 +99,10 @@ void main() {
     // #region inner-join
     final List<(Employee, Department)> result = await db.employees
         .join(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
         // Now we have a Query<(Expr<Employee>, Expr<Department>)>
         .fetch();
 
@@ -114,13 +116,17 @@ void main() {
     // #region inner-join-select
     final result = await db.employees
         .join(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
         // Now we have a Query<(Expr<Employee>, Expr<Department>)>
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
 
     check(result).unorderedEquals([
@@ -138,10 +144,12 @@ void main() {
         .join(db.departments)
         // Join using the foreign key declared with @References
         .usingDepartment()
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
 
     check(result).unorderedEquals([
@@ -159,10 +167,12 @@ void main() {
         .leftJoin(db.departments)
         .usingDepartment()
         // Now we have a Query<(Expr<Employee>, Expr<Department?>)>
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
 
     check(result).unorderedEquals([
@@ -182,10 +192,12 @@ void main() {
         .rightJoin(db.departments)
         .usingDepartment()
         // Now we have a Query<(Expr<Employee?>, Expr<Department>)>
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
 
     check(result).unorderedEquals([

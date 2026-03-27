@@ -48,9 +48,10 @@ final class JsonValue<T extends Uint8List> implements CustomDataType<T> {
 }
 
 extension on Subject<MyCustomTypeAlias> {
-  void equals(MyCustomTypeAlias other) =>
-      has((e) => json.encode(e.jsonValue), 'jsonValue')
-          .equals(json.encode(other.jsonValue));
+  void equals(MyCustomTypeAlias other) => has(
+    (e) => json.encode(e.jsonValue),
+    'jsonValue',
+  ).equals(json.encode(other.jsonValue));
 }
 
 void main() {
@@ -84,9 +85,11 @@ void main() {
         .execute();
 
     await db.items
-        .update((item, set) => set(
-              value: updatedValue.asExpr,
-            ))
+        .update(
+          (item, set) => set(
+            value: updatedValue.asExpr,
+          ),
+        )
         .execute();
 
     final item = await db.items.first.fetch();

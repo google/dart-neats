@@ -121,8 +121,10 @@ void main() {
   });
 
   r.addTest('items.where(.integer.isNotNull).count()', (db) async {
-    final result =
-        await db.items.where((i) => i.integer.isNotNull()).count().fetch();
+    final result = await db.items
+        .where((i) => i.integer.isNotNull())
+        .count()
+        .fetch();
     check(result).equals(6);
   });
 

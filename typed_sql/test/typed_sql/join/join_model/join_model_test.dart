@@ -85,8 +85,10 @@ void main() {
   r.addTest('employees.join(departments)', (db) async {
     final result = await db.employees
         .join(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
         .fetch();
     check(result).length.equals(3);
   });
@@ -94,8 +96,10 @@ void main() {
   r.addTest('employees.leftJoin(departments)', (db) async {
     final result = await db.employees
         .leftJoin(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
         .fetch();
     check(result).length.equals(5);
   });
@@ -103,8 +107,10 @@ void main() {
   r.addTest('employees.rightJoin(departments)', (db) async {
     final result = await db.employees
         .rightJoin(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
         .fetch();
     check(result).length.equals(4);
   });
@@ -115,13 +121,17 @@ void main() {
   r.addTest('employees.join(departments)', (db) async {
     final result = await db.employees
         .join(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-              department.location,
-            ))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+            department.location,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Engineering', 'Floor 1'),
@@ -134,13 +144,17 @@ void main() {
   r.addTest('employees.leftJoin(departments)', (db) async {
     final result = await db.employees
         .leftJoin(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-              department.location,
-            ))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+            department.location,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Engineering', 'Floor 1'),
@@ -155,13 +169,17 @@ void main() {
   r.addTest('employees.rightJoin(departments)', (db) async {
     final result = await db.employees
         .rightJoin(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-              department.location,
-            ))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+            department.location,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Engineering', 'Floor 1'),
@@ -178,10 +196,12 @@ void main() {
     final result = await db.employees
         .join(db.departments)
         .on((employee, department) => toExpr(true))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Engineering'),
@@ -207,10 +227,12 @@ void main() {
     final result = await db.employees
         .leftJoin(db.departments)
         .on((employee, department) => toExpr(true))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Engineering'),
@@ -236,10 +258,12 @@ void main() {
     final result = await db.employees
         .rightJoin(db.departments)
         .on((employee, department) => toExpr(true))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Engineering'),
@@ -267,10 +291,12 @@ void main() {
     final result = await db.employees
         .join(db.departments)
         .on((employee, department) => toExpr(false))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([]);
   });
@@ -280,10 +306,12 @@ void main() {
     final result = await db.employees
         .leftJoin(db.departments)
         .on((employee, department) => toExpr(false))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', null),
@@ -299,10 +327,12 @@ void main() {
     final result = await db.employees
         .rightJoin(db.departments)
         .on((employee, department) => toExpr(false))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       (null, 'Engineering'),
@@ -317,12 +347,16 @@ void main() {
   r.addTest('employees.join(..).on(notEquals)', (db) async {
     final result = await db.employees
         .join(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.notEquals(department.departmentId))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .on(
+          (employee, department) =>
+              employee.departmentId.notEquals(department.departmentId),
+        )
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Sales'),
@@ -344,12 +378,16 @@ void main() {
   r.addTest('employees.leftJoin(..).on(notEquals)', (db) async {
     final result = await db.employees
         .leftJoin(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.notEquals(department.departmentId))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .on(
+          (employee, department) =>
+              employee.departmentId.notEquals(department.departmentId),
+        )
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     // Result is same as INNER JOIN here because IS DISTINCT FROM always finds matches for all employees
     check(result).unorderedEquals([
@@ -373,11 +411,13 @@ void main() {
     final result = await db.employees
         .leftJoin(db.departments)
         .on((employee, department) => employee.name.equals(department.name))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-              department.location,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+            department.location,
+          ),
+        )
         .fetch();
 
     // Since no employee names match department names in the sample data
@@ -396,15 +436,19 @@ void main() {
   r.addTest('employees.selfJoinFindColleagues', (db) async {
     final result = await db.employees
         .join(db.employees)
-        .on((e1, e2) =>
-            e1.departmentId
-                .equalsUnlessNull(e2.departmentId)
-                .orElseValue(false) &
-            e1.employeeId.notEquals(e2.employeeId))
-        .select((e1, e2) => (
-              e1.name,
-              e2.name,
-            ))
+        .on(
+          (e1, e2) =>
+              e1.departmentId
+                  .equalsUnlessNull(e2.departmentId)
+                  .orElseValue(false) &
+              e1.employeeId.notEquals(e2.employeeId),
+        )
+        .select(
+          (e1, e2) => (
+            e1.name,
+            e2.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Charlie'),
@@ -416,13 +460,17 @@ void main() {
   r.addTest('employees.join(..).on(deptId & DeptName)', (db) async {
     final result = await db.employees
         .join(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId) &
-            department.name.equals(toExpr('Engineering')))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId) &
+              department.name.equals(toExpr('Engineering')),
+        )
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Engineering'),
@@ -431,8 +479,9 @@ void main() {
   });
 
   // Test LEFT JOIN with multiple conditions in the ON clause (OR).
-  r.addTest('employees.leftJoin(..).on(deptId | David & Marketing)',
-      (db) async {
+  r.addTest('employees.leftJoin(..).on(deptId | David & Marketing)', (
+    db,
+  ) async {
     final result = await db.employees
         .leftJoin(db.departments)
         .on(
@@ -441,11 +490,13 @@ void main() {
               (employee.name.equals(toExpr('David')) &
                   department.name.equals(toExpr('Marketing'))),
         )
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-              department.location,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+            department.location,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Engineering', 'Floor 1'),
@@ -460,14 +511,18 @@ void main() {
   r.addTest('employees.leftJoin(..).where(department.isNotNull())', (db) async {
     final result = await db.employees
         .leftJoin(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
         .where((employee, department) => department.departmentId.isNotNull())
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-              department.location,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+            department.location,
+          ),
+        )
         .fetch();
     // Effectively the same result as the INNER JOIN because WHERE filters NULLs
     check(result).unorderedEquals([
@@ -481,14 +536,18 @@ void main() {
   r.addTest('employees.rightJoin(..).where(employee.isNotNull())', (db) async {
     final result = await db.employees
         .rightJoin(db.departments)
-        .on((employee, department) =>
-            employee.departmentId.equals(department.departmentId))
+        .on(
+          (employee, department) =>
+              employee.departmentId.equals(department.departmentId),
+        )
         .where((employee, department) => employee.employeeId.isNotNull())
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-              department.location,
-            ))
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+            department.location,
+          ),
+        )
         .fetch();
     // Effectively the same result as the INNER JOIN because WHERE filters NULLs
     check(result).unorderedEquals([
@@ -512,11 +571,13 @@ void main() {
               // aggregates:
               .count(),
         )
-        .select((deptName, rowCount) => (
-              deptName,
-              rowCount,
-            ))
-        .orderBy((deptName, rowCount) => [(deptName, Order.ascending)])
+        .select(
+          (deptName, rowCount) => (
+            deptName,
+            rowCount,
+          ),
+        )
+        .orderBy((deptName, rowCount) => [(deptName, .ascending)])
         .fetch();
 
     check(result).deepEquals([
@@ -537,10 +598,12 @@ void main() {
                   .orElseValue(false) &
               e1.employeeId.notEquals(e2.employeeId),
         )
-        .select((e1, e2) => (
-              e1.name,
-              e2.name,
-            ))
+        .select(
+          (e1, e2) => (
+            e1.name,
+            e2.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Charlie'),
@@ -555,12 +618,16 @@ void main() {
   r.addTest('employees.join(..).on(employeeId = deptId)', (db) async {
     final result = await db.employees
         .join(db.departments)
-        .on((employee, department) =>
-            employee.employeeId.equals(department.departmentId))
-        .select((employee, department) => (
-              employee.name,
-              department.name,
-            ))
+        .on(
+          (employee, department) =>
+              employee.employeeId.equals(department.departmentId),
+        )
+        .select(
+          (employee, department) => (
+            employee.name,
+            department.name,
+          ),
+        )
         .fetch();
     check(result).unorderedEquals([
       ('Alice', 'Engineering'),

@@ -33,13 +33,15 @@ DatabaseAdapter mysqlTestingAdapter({
   String? user,
   String? password,
 }) {
-  return DatabaseAdapter.fromFuture(_mysqlTestingAdapter(
-    host: host,
-    port: port,
-    database: database,
-    user: user,
-    password: password,
-  ));
+  return DatabaseAdapter.fromFuture(
+    _mysqlTestingAdapter(
+      host: host,
+      port: port,
+      database: database,
+      user: user,
+      password: password,
+    ),
+  );
 }
 
 Future<DatabaseAdapter> _mysqlTestingAdapter({
@@ -496,15 +498,17 @@ final _paramPattern = RegExp(r'\?([0-9]+)');
   });
 
   newParams = newParams
-      .map((p) => switch (p) {
-            DateTime d => d.toUtc(),
-            Uint8List b => Blob.fromBytes(b),
-            // TODO: Consider forking JsonEncoder from 'dart:convert' and
-            //       normalize while we encode for increased performance
-            //       and more reliable normalization.
-            JsonValue v => json.encode(normalizeJson(v.value)),
-            _ => p,
-          })
+      .map(
+        (p) => switch (p) {
+          DateTime d => d.toUtc(),
+          Uint8List b => Blob.fromBytes(b),
+          // TODO: Consider forking JsonEncoder from 'dart:convert' and
+          //       normalize while we encode for increased performance
+          //       and more reliable normalization.
+          JsonValue v => json.encode(normalizeJson(v.value)),
+          _ => p,
+        },
+      )
       .toList();
 
   return (newSql, newParams);
@@ -518,7 +522,8 @@ mixin MysqlDatabaseException implements Exception {
 }
 
 final class MysqlConstraintViolationException
-    extends ConstraintViolationException with MysqlDatabaseException {
+    extends ConstraintViolationException
+    with MysqlDatabaseException {
   @override
   final String message;
 
@@ -526,7 +531,8 @@ final class MysqlConstraintViolationException
 }
 
 final class MysqlUnspecifiedOperationException
-    extends UnspecifiedOperationException with MysqlDatabaseException {
+    extends UnspecifiedOperationException
+    with MysqlDatabaseException {
   @override
   final String message;
 
@@ -534,7 +540,8 @@ final class MysqlUnspecifiedOperationException
 }
 
 final class MysqlDatabaseConnectionForceClosedException
-    extends DatabaseConnectionForceClosedException with MysqlDatabaseException {
+    extends DatabaseConnectionForceClosedException
+    with MysqlDatabaseException {
   @override
   final String message;
 
@@ -550,7 +557,8 @@ final class MysqlAuthenticationException extends AuthenticationException
 }
 
 final class MysqlDatabaseConnectionRefusedException
-    extends DatabaseConnectionRefusedException with MysqlDatabaseException {
+    extends DatabaseConnectionRefusedException
+    with MysqlDatabaseException {
   @override
   final String message;
 
@@ -558,7 +566,8 @@ final class MysqlDatabaseConnectionRefusedException
 }
 
 final class MysqlDatabaseConnectionBrokenException
-    extends DatabaseConnectionBrokenException with MysqlDatabaseException {
+    extends DatabaseConnectionBrokenException
+    with MysqlDatabaseException {
   @override
   final String message;
 
@@ -566,7 +575,8 @@ final class MysqlDatabaseConnectionBrokenException
 }
 
 final class MysqlDatabaseConnectionTimeoutException
-    extends DatabaseConnectionTimeoutException with MysqlDatabaseException {
+    extends DatabaseConnectionTimeoutException
+    with MysqlDatabaseException {
   @override
   final String message;
 

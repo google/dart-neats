@@ -20,9 +20,9 @@ extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
   ///
   /// This is equivalent to `(SELECT * FROM this LIMIT 1)` in SQL.
   Expr<T?> get asExpr => SubQueryExpression._(
-        _query._from(_query._expressions.toList()),
-        _query._expressions.$1,
-      );
+    _query._from(_query._expressions.toList()),
+    _query._expressions.$1,
+  );
 }
 
 /// {@template SubQuery1Ext}
@@ -35,9 +35,9 @@ extension SubQuery1Ext<T> on SubQuery<(Expr<T>,)> {
   /// This is equivalent to `(SELECT * FROM this LIMIT 1)` in SQL.
   /// {@endtemplate}
   Expr<T?> get first => SubQueryExpression._(
-        LimitClause._(_from(_expressions.toList()), 1),
-        _expressions.$1,
-      );
+    LimitClause._(_from(_expressions.toList()), 1),
+    _expressions.$1,
+  );
 }
 
 /// {@macro SubQuery1Ext}

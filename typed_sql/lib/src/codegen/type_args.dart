@@ -66,7 +66,7 @@ const typeArg = [
   'W',
   'X',
   'Y',
-  'Z'
+  'Z',
 ];
 
 final arg = typeArg.map((s) => s.toLowerCase()).toList();

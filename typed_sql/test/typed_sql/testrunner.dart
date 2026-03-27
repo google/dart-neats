@@ -29,13 +29,16 @@ export 'types/checks_helper.dart';
 final class TestRunner<T extends Schema> {
   final bool _resetDatabaseForEachTest;
 
-  final _tests = <({
-    String name,
-    FutureOr<void> Function(Database<T> db) fn,
-    String? skipSqlite,
-    String? skipPostgres,
-    String? skipMysql,
-  })>[];
+  final _tests =
+      <
+        ({
+          String name,
+          FutureOr<void> Function(Database<T> db) fn,
+          String? skipSqlite,
+          String? skipPostgres,
+          String? skipMysql,
+        })
+      >[];
 
   final FutureOr<void> Function(Database<T> db)? _setup;
   final FutureOr<void> Function(Database<T> db)? _validate;
@@ -44,9 +47,9 @@ final class TestRunner<T extends Schema> {
     bool resetDatabaseForEachTest = true,
     FutureOr<void> Function(Database<T> db)? setup,
     FutureOr<void> Function(Database<T> db)? validate,
-  })  : _setup = setup,
-        _validate = validate,
-        _resetDatabaseForEachTest = resetDatabaseForEachTest;
+  }) : _setup = setup,
+       _validate = validate,
+       _resetDatabaseForEachTest = resetDatabaseForEachTest;
 
   @isTest
   void addTest(
@@ -55,14 +58,13 @@ final class TestRunner<T extends Schema> {
     String? skipSqlite,
     String? skipPostgres,
     String? skipMysql,
-  }) =>
-      _tests.add((
-        name: name,
-        fn: fn,
-        skipSqlite: skipSqlite,
-        skipPostgres: skipPostgres,
-        skipMysql: skipMysql,
-      ));
+  }) => _tests.add((
+    name: name,
+    fn: fn,
+    skipSqlite: skipSqlite,
+    skipPostgres: skipPostgres,
+    skipMysql: skipMysql,
+  ));
 
   late final String? _getPostgresSocket = () {
     final socketFile = File('.dart_tool/run/postgresql/.s.PGSQL.5432');
@@ -131,8 +133,10 @@ final class TestRunner<T extends Schema> {
           return;
         }
 
-        final adapter =
-            DatabaseAdapter.withLogging(getSqlite(), printOnFailure);
+        final adapter = DatabaseAdapter.withLogging(
+          getSqlite(),
+          printOnFailure,
+        );
         final db = Database<T>(adapter, SqlDialect.sqlite());
 
         try {
@@ -158,8 +162,10 @@ final class TestRunner<T extends Schema> {
           return;
         }
 
-        final adapter =
-            DatabaseAdapter.withLogging(getPostgres(), printOnFailure);
+        final adapter = DatabaseAdapter.withLogging(
+          getPostgres(),
+          printOnFailure,
+        );
         final db = Database<T>(adapter, SqlDialect.postgres());
 
         try {
@@ -185,8 +191,10 @@ final class TestRunner<T extends Schema> {
           return;
         }
 
-        final adapter =
-            DatabaseAdapter.withLogging(getMariadb(), printOnFailure);
+        final adapter = DatabaseAdapter.withLogging(
+          getMariadb(),
+          printOnFailure,
+        );
         final db = Database<T>(adapter, mysqlDialect());
 
         try {

@@ -70,9 +70,11 @@ void main() {
         .execute();
 
     await db.items
-        .update((item, set) => set(
-              value: updatedValue.asExpr,
-            ))
+        .update(
+          (item, set) => set(
+            value: updatedValue.asExpr,
+          ),
+        )
         .execute();
 
     final item = await db.items.first.fetch();

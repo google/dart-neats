@@ -59,13 +59,19 @@ Object? normalizeJson(Object? value) {
     case List():
       return value.map(normalizeJson).toList();
     case Map():
-      return Map.fromEntries(value.entries.map((e) {
-        final k = e.key;
-        if (k is! String) {
-          throw ArgumentError('Invalid JSON object: keys must be strings!');
-        }
-        return MapEntry(k, normalizeJson(e.value));
-      }).sortedBy((e) => e.key));
+      return Map.fromEntries(
+        value.entries
+            .map((e) {
+              final k = e.key;
+              if (k is! String) {
+                throw ArgumentError(
+                  'Invalid JSON object: keys must be strings!',
+                );
+              }
+              return MapEntry(k, normalizeJson(e.value));
+            })
+            .sortedBy((e) => e.key),
+      );
     default:
       throw ArgumentError('Invalid JSON object: $value');
   }

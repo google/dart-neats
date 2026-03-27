@@ -10,10 +10,8 @@ part of 'group_by_expression_test.dart';
 extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Employee._$table];
 
-  Table<Employee> get employees => $ForGeneratedCode.declareTable(
-        this,
-        _$Employee._$table,
-      );
+  Table<Employee> get employees =>
+      $ForGeneratedCode.declareTable(this, _$Employee._$table);
 
   /// Create tables defined in [TestDatabase].
   ///
@@ -27,10 +25,8 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
@@ -44,18 +40,11 @@ extension TestDatabaseSchema on Database<TestDatabase> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createTestDatabaseTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: TestDatabaseSchema._$tables,
-    );
+String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
 final class _$Employee extends Employee {
-  _$Employee._(
-    this.id,
-    this.surname,
-    this.salary,
-  );
+  _$Employee._(this.id, this.surname, this.salary);
 
   @override
   final int id;
@@ -69,43 +58,49 @@ final class _$Employee extends Employee {
   static const _$table = (
     tableName: 'employees',
     columns: <String>['id', 'surname', 'salary'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: true,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+        ],
     primaryKey: <String>['id'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$Employee._$fromDatabase,
   );
 
@@ -135,14 +130,7 @@ extension TableEmployeeExt on Table<Employee> {
     required Expr<String> surname,
     required Expr<int> salary,
   }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          id,
-          surname,
-          salary,
-        ],
-      );
+      $ForGeneratedCode.insertInto(table: this, values: [id, surname, salary]);
 
   /// Delete a single row from the `employees` table, specified by
   /// _primary key_.
@@ -153,10 +141,8 @@ extension TableEmployeeExt on Table<Employee> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Employee> delete(int id) => $ForGeneratedCode.deleteSingle(
-        byKey(id),
-        _$Employee._$table,
-      );
+  DeleteSingle<Employee> delete(int id) =>
+      $ForGeneratedCode.deleteSingle(byKey(id), _$Employee._$table);
 }
 
 /// Extension methods for building queries against the `employees` table.
@@ -196,31 +182,25 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Employee> update(
-          UpdateSet<Employee> Function(
-            Expr<Employee> employee,
-            UpdateSet<Employee> Function({
-              Expr<int> id,
-              Expr<String> surname,
-              Expr<int> salary,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Employee>(
-        this,
-        _$Employee._$table,
-        (employee) => updateBuilder(
-          employee,
-          ({
-            Expr<int>? id,
-            Expr<String>? surname,
-            Expr<int>? salary,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Employee>([
-            id,
-            surname,
-            salary,
-          ]),
-        ),
-      );
+    UpdateSet<Employee> Function(
+      Expr<Employee> employee,
+      UpdateSet<Employee> Function({
+        Expr<int> id,
+        Expr<String> surname,
+        Expr<int> salary,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Employee>(
+    this,
+    _$Employee._$table,
+    (employee) => updateBuilder(
+      employee,
+      ({Expr<int>? id, Expr<String>? surname, Expr<int>? salary}) =>
+          $ForGeneratedCode.buildUpdate<Employee>([id, surname, salary]),
+    ),
+  );
 
   /// Delete all rows in the `employees` table matching this [Query].
   ///
@@ -262,31 +242,25 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Employee> update(
-          UpdateSet<Employee> Function(
-            Expr<Employee> employee,
-            UpdateSet<Employee> Function({
-              Expr<int> id,
-              Expr<String> surname,
-              Expr<int> salary,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Employee>(
-        this,
-        _$Employee._$table,
-        (employee) => updateBuilder(
-          employee,
-          ({
-            Expr<int>? id,
-            Expr<String>? surname,
-            Expr<int>? salary,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Employee>([
-            id,
-            surname,
-            salary,
-          ]),
-        ),
-      );
+    UpdateSet<Employee> Function(
+      Expr<Employee> employee,
+      UpdateSet<Employee> Function({
+        Expr<int> id,
+        Expr<String> surname,
+        Expr<int> salary,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Employee>(
+    this,
+    _$Employee._$table,
+    (employee) => updateBuilder(
+      employee,
+      ({Expr<int>? id, Expr<String>? surname, Expr<int>? salary}) =>
+          $ForGeneratedCode.buildUpdate<Employee>([id, surname, salary]),
+    ),
+  );
 
   /// Delete the row (if any) in the `employees` table matching this [QuerySingle].
   ///

@@ -17,8 +17,7 @@ import 'adapter.dart';
 DatabaseAdapter loggingAdapter(
   DatabaseAdapter adapter,
   void Function(String message) logDrain,
-) =>
-    _LoggingDatabaseAdapter(adapter, logDrain);
+) => _LoggingDatabaseAdapter(adapter, logDrain);
 
 final class _LoggingDatabaseAdapter extends DatabaseAdapter {
   final DatabaseAdapter _adapter;

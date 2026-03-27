@@ -10,10 +10,7 @@ part of 'dealership_test.dart';
 extension DealershipSchema on Database<Dealership> {
   static const _$tables = [_$Car._$table];
 
-  Table<Car> get cars => $ForGeneratedCode.declareTable(
-        this,
-        _$Car._$table,
-      );
+  Table<Car> get cars => $ForGeneratedCode.declareTable(this, _$Car._$table);
 
   /// Create tables defined in [Dealership].
   ///
@@ -27,10 +24,8 @@ extension DealershipSchema on Database<Dealership> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [Dealership].
@@ -44,19 +39,11 @@ extension DealershipSchema on Database<Dealership> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createDealershipTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: DealershipSchema._$tables,
-    );
+String createDealershipTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: DealershipSchema._$tables);
 
 final class _$Car extends Car {
-  _$Car._(
-    this.id,
-    this.model,
-    this.licensePlate,
-    this.color,
-  );
+  _$Car._(this.id, this.model, this.licensePlate, this.color);
 
   @override
   final int id;
@@ -73,54 +60,60 @@ final class _$Car extends Car {
   static const _$table = (
     tableName: 'cars',
     columns: <String>['id', 'model', 'licensePlate', 'color'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: true,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
         ],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
     primaryKey: <String>['id'],
     unique: <List<String>>[
-      ['licensePlate']
+      ['licensePlate'],
     ],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$Car._$fromDatabase,
   );
 
@@ -154,16 +147,10 @@ extension TableCarExt on Table<Car> {
     required Expr<String> model,
     required Expr<String> licensePlate,
     required Expr<Color> color,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          id,
-          model,
-          licensePlate,
-          color,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [id, model, licensePlate, color],
+  );
 
   /// Delete a single row from the `cars` table, specified by
   /// _primary key_.
@@ -174,10 +161,8 @@ extension TableCarExt on Table<Car> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Car> delete(int id) => $ForGeneratedCode.deleteSingle(
-        byKey(id),
-        _$Car._$table,
-      );
+  DeleteSingle<Car> delete(int id) =>
+      $ForGeneratedCode.deleteSingle(byKey(id), _$Car._$table);
 }
 
 /// Extension methods for building queries against the `cars` table.
@@ -217,34 +202,31 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Car> update(
-          UpdateSet<Car> Function(
-            Expr<Car> car,
-            UpdateSet<Car> Function({
-              Expr<int> id,
-              Expr<String> model,
-              Expr<String> licensePlate,
-              Expr<Color> color,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Car>(
-        this,
-        _$Car._$table,
-        (car) => updateBuilder(
-          car,
-          ({
-            Expr<int>? id,
-            Expr<String>? model,
-            Expr<String>? licensePlate,
-            Expr<Color>? color,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Car>([
-            id,
-            model,
-            licensePlate,
-            color,
-          ]),
-        ),
-      );
+    UpdateSet<Car> Function(
+      Expr<Car> car,
+      UpdateSet<Car> Function({
+        Expr<int> id,
+        Expr<String> model,
+        Expr<String> licensePlate,
+        Expr<Color> color,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Car>(
+    this,
+    _$Car._$table,
+    (car) => updateBuilder(
+      car,
+      ({
+        Expr<int>? id,
+        Expr<String>? model,
+        Expr<String>? licensePlate,
+        Expr<Color>? color,
+      }) =>
+          $ForGeneratedCode.buildUpdate<Car>([id, model, licensePlate, color]),
+    ),
+  );
 
   /// Lookup a single row in `cars` table using the
   /// `licensePlate` field
@@ -296,34 +278,31 @@ extension QuerySingleCarExt on QuerySingle<(Expr<Car>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Car> update(
-          UpdateSet<Car> Function(
-            Expr<Car> car,
-            UpdateSet<Car> Function({
-              Expr<int> id,
-              Expr<String> model,
-              Expr<String> licensePlate,
-              Expr<Color> color,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Car>(
-        this,
-        _$Car._$table,
-        (car) => updateBuilder(
-          car,
-          ({
-            Expr<int>? id,
-            Expr<String>? model,
-            Expr<String>? licensePlate,
-            Expr<Color>? color,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Car>([
-            id,
-            model,
-            licensePlate,
-            color,
-          ]),
-        ),
-      );
+    UpdateSet<Car> Function(
+      Expr<Car> car,
+      UpdateSet<Car> Function({
+        Expr<int> id,
+        Expr<String> model,
+        Expr<String> licensePlate,
+        Expr<Color> color,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Car>(
+    this,
+    _$Car._$table,
+    (car) => updateBuilder(
+      car,
+      ({
+        Expr<int>? id,
+        Expr<String>? model,
+        Expr<String>? licensePlate,
+        Expr<Color>? color,
+      }) =>
+          $ForGeneratedCode.buildUpdate<Car>([id, model, licensePlate, color]),
+    ),
+  );
 
   /// Delete the row (if any) in the `cars` table matching this [QuerySingle].
   ///
@@ -388,12 +367,8 @@ extension ColorExt on Color {
 
   /// Wrap this [Color] as [Expr<Color>] for use queries with
   /// `package:typed_sql`.
-  Expr<Color> get asExpr => $ForGeneratedCode
-      .literalCustomDataType(
-        this,
-        _exprType,
-      )
-      .asNotNull();
+  Expr<Color> get asExpr =>
+      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
 }
 
 /// Wrap this [Color] as [Expr<Color>] for use queries with
@@ -401,10 +376,8 @@ extension ColorExt on Color {
 extension ColorNullableExt on Color? {
   /// Wrap this [Color] as [Expr<Color?>] for use queries with
   /// `package:typed_sql`.
-  Expr<Color?> get asExpr => $ForGeneratedCode.literalCustomDataType(
-        this,
-        ColorExt._exprType,
-      );
+  Expr<Color?> get asExpr =>
+      $ForGeneratedCode.literalCustomDataType(this, ColorExt._exprType);
 }
 
 /// Extension methods for assertions on [Car] using

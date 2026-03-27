@@ -53,10 +53,12 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
   final customTypes = library.rowClasses
       .expand((rowClass) => rowClass.fields)
       .where((field) => field.typeName != field.backingType)
-      .map((field) => (
-            typeName: field.typeName,
-            backingTypeExpr: backingExprType(field.backingType)
-          ))
+      .map(
+        (field) => (
+          typeName: field.typeName,
+          backingTypeExpr: backingExprType(field.backingType),
+        ),
+      )
       .toSet()
       .sortedBy((e) => e.typeName);
 
@@ -73,32 +75,36 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
         ''')
         // We define a static exprType here, and use it in other parts of the
         // generated code!
-        ..fields.add(Field(
-          (b) => b
-            ..name = '_exprType'
-            ..modifier = FieldModifier.final$
-            ..static = true
-            ..assignment = Code('''
+        ..fields.add(
+          Field(
+            (b) => b
+              ..name = '_exprType'
+              ..modifier = FieldModifier.final$
+              ..static = true
+              ..assignment = Code('''
               \$ForGeneratedCode.customDataType(
                 $backingTypeExpr,
                 $typeName.fromDatabase,
               )
             '''),
-        ))
-        ..methods.add(Method(
-          (b) => b
-            ..name = 'asExpr'
-            ..documentation(docs.customDataTypeAsExpr(typeName, ''))
-            ..returns = refer('Expr<$typeName>')
-            ..type = MethodType.getter
-            ..lambda = true
-            ..body = Code('''
+          ),
+        )
+        ..methods.add(
+          Method(
+            (b) => b
+              ..name = 'asExpr'
+              ..documentation(docs.customDataTypeAsExpr(typeName, ''))
+              ..returns = refer('Expr<$typeName>')
+              ..type = MethodType.getter
+              ..lambda = true
+              ..body = Code('''
               \$ForGeneratedCode.literalCustomDataType(
                 this,
                 _exprType,
               ).asNotNull()
             '''),
-        )),
+          ),
+        ),
     );
 
     // Extension for creating an literal Expr<T?> from T, when
@@ -111,20 +117,22 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
           Wrap this [$typeName] as [Expr<$typeName>] for use queries with
           `package:typed_sql`.
         ''')
-        ..methods.add(Method(
-          (b) => b
-            ..name = 'asExpr'
-            ..documentation(docs.customDataTypeAsExpr(typeName, '?'))
-            ..returns = refer('Expr<$typeName?>')
-            ..type = MethodType.getter
-            ..lambda = true
-            ..body = Code('''
+        ..methods.add(
+          Method(
+            (b) => b
+              ..name = 'asExpr'
+              ..documentation(docs.customDataTypeAsExpr(typeName, '?'))
+              ..returns = refer('Expr<$typeName?>')
+              ..type = MethodType.getter
+              ..lambda = true
+              ..body = Code('''
               \$ForGeneratedCode.literalCustomDataType(
                 this,
                 ${typeName}Ext._exprType,
               )
             '''),
-        )),
+          ),
+        ),
     );
 
     //yield Extension();
@@ -134,30 +142,36 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
 /// Generate extensions for use with `package:checks`
 Iterable<Spec> buildChecksForRowClass(ParsedRowClass rowClass) sync* {
   // Create extension for Subject<Row>
-  yield Extension((b) => b
-    ..name = '${rowClass.name}Checks'
-    ..on = TypeReference(
-      (b) => b
-        ..symbol = 'Subject'
-        ..types.add(refer(rowClass.name)),
-    )
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = '${rowClass.name}Checks'
+      ..on = TypeReference(
+        (b) => b
+          ..symbol = 'Subject'
+          ..types.add(refer(rowClass.name)),
+      )
+      ..documentation('''
       Extension methods for assertions on [${rowClass.name}] using
       [`package:checks`][1].
 
       [1]: https://pub.dev/packages/checks
     ''')
-    ..methods.addAll(rowClass.fields.map((field) => Method(
-          (b) => b
-            ..name = field.name
-            ..documentation('''
+      ..methods.addAll(
+        rowClass.fields.map(
+          (field) => Method(
+            (b) => b
+              ..name = field.name
+              ..documentation('''
               Create assertions on [${rowClass.name}.${field.name}].
             ''')
-            ..returns = refer('Subject<${field.type}>')
-            ..type = MethodType.getter
-            ..lambda = true
-            ..body = Code('has((m) => m.${field.name}, \'${field.name}\')'),
-        ))));
+              ..returns = refer('Subject<${field.type}>')
+              ..type = MethodType.getter
+              ..lambda = true
+              ..body = Code('has((m) => m.${field.name}, \'${field.name}\')'),
+          ),
+        ),
+      ),
+  );
 }
 
 /// Generate code for [Schema] subclass, parsed into [schema].
@@ -220,18 +234,20 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
             '''),
         ),
       ])
-      ..fields.add(Field(
-        (b) => b
-          ..name = '_\$tables'
-          ..static = true
-          ..modifier = FieldModifier.constant
-          ..assignment = Code('''[
+      ..fields.add(
+        Field(
+          (b) => b
+            ..name = '_\$tables'
+            ..static = true
+            ..modifier = FieldModifier.constant
+            ..assignment = Code('''[
               ${schema.tables.map(
-                    (table) => '_\$${table.rowClass.name}._\$table',
-                  ).join(', ')}
+              (table) => '_\$${table.rowClass.name}._\$table',
+            ).join(', ')}
             ]
           '''),
-      )),
+        ),
+      ),
   );
 
   // Create tables
@@ -252,11 +268,13 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
         [1]: https://en.wikipedia.org/wiki/Data_definition_language
       ''')
       ..returns = refer('String')
-      ..requiredParameters.add(Parameter(
-        (b) => b
-          ..type = refer('SqlDialect')
-          ..name = 'dialect',
-      ))
+      ..requiredParameters.add(
+        Parameter(
+          (b) => b
+            ..type = refer('SqlDialect')
+            ..name = 'dialect',
+        ),
+      )
       ..lambda = true
       ..body = Code('''
         \$ForGeneratedCode.createTableSchema(
@@ -293,8 +311,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       'Uint8List' => '$rowReader.readUint8List()',
       'JsonValue' => '$rowReader.readJsonValue()',
       _ => throw UnsupportedError(
-          'Unsupported type "${field.typeName}"',
-        ),
+        'Unsupported type "${field.typeName}"',
+      ),
     };
     if (field.backingType == field.typeName) {
       return readBackingType;
@@ -313,28 +331,39 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ..name = '_\$$rowClassName'
       ..modifier = ClassModifier.final$
       ..extend = refer(rowClass.name)
-      ..constructors.add(Constructor(
-        (b) => b
-          ..name = '_'
-          ..requiredParameters.addAll(rowClass.fields.map((field) => Parameter(
-                (b) => b
-                  ..name = field.name
-                  ..toThis = true,
-              ))),
-      ))
-      ..fields.addAll(rowClass.fields.mapIndexed((i, field) => Field(
+      ..constructors.add(
+        Constructor(
+          (b) => b
+            ..name = '_'
+            ..requiredParameters.addAll(
+              rowClass.fields.map(
+                (field) => Parameter(
+                  (b) => b
+                    ..name = field.name
+                    ..toThis = true,
+                ),
+              ),
+            ),
+        ),
+      )
+      ..fields.addAll(
+        rowClass.fields.mapIndexed(
+          (i, field) => Field(
             (b) => b
               ..name = field.name
               ..annotations.add(refer('override'))
               ..type = refer(field.type)
               ..modifier = FieldModifier.final$,
-          )))
-      ..fields.add(Field(
-        (b) => b
-          ..name = '_\$table'
-          ..static = true
-          ..modifier = FieldModifier.constant
-          ..assignment = Code('''
+          ),
+        ),
+      )
+      ..fields.add(
+        Field(
+          (b) => b
+            ..name = '_\$table'
+            ..static = true
+            ..modifier = FieldModifier.constant
+            ..assignment = Code('''
             (
               tableName: '${table.name}',
               columns: <String>[${rowClass.fields.map((f) => '\'${f.name}\'').join(', ')}],
@@ -353,9 +382,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     autoIncrement: ${f.autoIncrement},
                     overrides: <SqlOverride>[
                       ${f.sqlOverrides.map(
-                        (o) =>
-                            'SqlOverride(dialect: ${literal(o.dialect)}, columnType: ${literal(o.columnType)})',
-                      ).join(',')}
+              (o) => 'SqlOverride(dialect: ${literal(o.dialect)}, columnType: ${literal(o.columnType)})',
+            ).join(',')}
                     ],
                   )
                 ''').join(', ')}
@@ -382,7 +410,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               readRow: _\$${rowClass.name}._\$fromDatabase,
             )
           '''),
-      ))
+        ),
+      )
       ..methods.addAll([
         Method(
           (b) => b
@@ -396,14 +425,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   ..type = refer('RowReader'),
               ),
             )
-            ..body = Code([
-              for (final field in rowClass.fields)
-                'final ${field.name} = ${readFromRowReader('row', field)};',
-              'if (${rowClass.fields.map((f) => '${f.name} == null').join(' &&  ')}) {',
-              'return null;',
-              '}',
-              'return _\$$rowClassName._(${rowClass.fields.map((f) => f.name + (f.isNullable ? '' : '!')).join(', ')});',
-            ].join('\n')),
+            ..body = Code(
+              [
+                for (final field in rowClass.fields)
+                  'final ${field.name} = ${readFromRowReader('row', field)};',
+                'if (${rowClass.fields.map((f) => '${f.name} == null').join(' &&  ')}) {',
+                'return null;',
+                '}',
+                'return _\$$rowClassName._(${rowClass.fields.map((f) => f.name + (f.isNullable ? '' : '!')).join(', ')});',
+              ].join('\n'),
+            ),
         ),
         Method(
           (b) => b
@@ -428,31 +459,35 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         Extension methods for table defined in [$rowClassName].
       ''')
       ..on = refer('Table<$rowClassName>')
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'insert'
-          ..documentation('''
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'insert'
+            ..documentation('''
             Insert row into the `${table.name}` table.
 
             Returns a [InsertSingle] statement on which `.execute` must be
             called for the row to be inserted.
           ''')
-          ..optionalParameters.addAll(rowClass.fields.map((field) {
-            final hasDefault = field.defaultValue != null ||
-                field.isNullable ||
-                field.autoIncrement;
-            final nullable = hasDefault ? '?' : '';
-            return Parameter(
-              (b) => b
-                ..name = field.name
-                ..named = true
-                ..required = !hasDefault
-                ..type = refer('Expr<${field.type}>$nullable'),
-            );
-          }))
-          ..returns = refer('InsertSingle<$rowClassName>')
-          ..lambda = true
-          ..body = Code('''
+            ..optionalParameters.addAll(
+              rowClass.fields.map((field) {
+                final hasDefault =
+                    field.defaultValue != null ||
+                    field.isNullable ||
+                    field.autoIncrement;
+                final nullable = hasDefault ? '?' : '';
+                return Parameter(
+                  (b) => b
+                    ..name = field.name
+                    ..named = true
+                    ..required = !hasDefault
+                    ..type = refer('Expr<${field.type}>$nullable'),
+                );
+              }),
+            )
+            ..returns = refer('InsertSingle<$rowClassName>')
+            ..lambda = true
+            ..body = Code('''
             \$ForGeneratedCode.insertInto(
               table: this,
               values: [
@@ -460,11 +495,13 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ],
             )
           '''),
-      ))
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'delete'
-          ..documentation('''
+        ),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'delete'
+            ..documentation('''
             Delete a single row from the `${table.name}` table, specified by
             _primary key_.
 
@@ -475,14 +512,18 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             should be deleted. If you wish to delete all rows, use
             `.where((_) => toExpr(true)).delete()`.
           ''')
-          ..returns = refer('DeleteSingle<$rowClassName>')
-          ..requiredParameters.addAll(rowClass.primaryKey.map((pk) => Parameter(
-                (b) => b
-                  ..name = pk.name
-                  ..type = refer(pk.type),
-              )))
-          ..lambda = true
-          ..body = Code('''
+            ..returns = refer('DeleteSingle<$rowClassName>')
+            ..requiredParameters.addAll(
+              rowClass.primaryKey.map(
+                (pk) => Parameter(
+                  (b) => b
+                    ..name = pk.name
+                    ..type = refer(pk.type),
+                ),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             \$ForGeneratedCode.deleteSingle(
               byKey(
                 ${rowClass.primaryKey.map((f) => f.name).join(', ')}
@@ -490,7 +531,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               _\$${rowClass.name}._\$table,
             )
           '''),
-      )),
+        ),
+      ),
   );
 
   // Extension for Query<(Expr<Row>,)>
@@ -501,30 +543,39 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         Extension methods for building queries against the `${table.name}` table.
       ''')
       ..on = refer('Query<(Expr<$rowClassName>,)>')
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'byKey'
-          ..documentation('''
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'byKey'
+            ..documentation('''
             Lookup a single row in `${table.name}` table using the _primary key_.
 
             Returns a [QuerySingle] object, which returns at-most one row,
             when `.fetch()` is called.
           ''')
-          ..returns = refer('QuerySingle<(Expr<$rowClassName>,)>')
-          ..requiredParameters.addAll(rowClass.primaryKey.map((pk) => Parameter(
-                (b) => b
-                  ..name = pk.name
-                  ..type = refer(pk.type),
-              )))
-          ..lambda = true
-          ..body = Code('where(($rowInstanceName) => ${rowClass.primaryKey.map(
+            ..returns = refer('QuerySingle<(Expr<$rowClassName>,)>')
+            ..requiredParameters.addAll(
+              rowClass.primaryKey.map(
+                (pk) => Parameter(
+                  (b) => b
+                    ..name = pk.name
+                    ..type = refer(pk.type),
+                ),
+              ),
+            )
+            ..lambda = true
+            ..body = Code(
+              'where(($rowInstanceName) => ${rowClass.primaryKey.map(
                 (f) => '$rowInstanceName.${f.name}.equalsValue(${f.name})',
-              ).join(' & ')}).first'),
-      ))
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'update'
-          ..documentation('''
+              ).join(' & ')}).first',
+            ),
+        ),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'update'
+            ..documentation('''
             Update all rows in the `${table.name}` table matching this [Query].
 
             The changes to be applied to each row matching this [Query] are
@@ -553,10 +604,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             > the `set` function more than once, and the result should always
             > be returned immediately.
           ''')
-          ..returns = refer('Update<$rowClassName>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..type = refer('''
+            ..returns = refer('Update<$rowClassName>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..type = refer('''
                   UpdateSet<$rowClassName> Function(
                     Expr<$rowClassName> $rowInstanceName,
                     UpdateSet<$rowClassName> Function({
@@ -564,10 +616,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     }) set,
                   )
                 ''')
-              ..name = 'updateBuilder',
-          ))
-          ..lambda = true
-          ..body = Code('''
+                  ..name = 'updateBuilder',
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             \$ForGeneratedCode.update<$rowClassName>(
               this,
               _\$${rowClass.name}._\$table,
@@ -580,14 +633,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ),
             )
           '''),
-      ))
+        ),
+      )
       ..methods.addAll(
-          rowClass.uniqueConstraints.where((uc) => uc.name != null).map((uc) {
-        final s = uc.fields.length == 1 ? '' : 's';
-        final fields = uc.fields.map((f) => '`${f.name}`').join(', ');
-        return Method((b) => b
-          ..name = 'by${upperCamelCase(uc.name!)}'
-          ..documentation('''
+        rowClass.uniqueConstraints.where((uc) => uc.name != null).map((uc) {
+          final s = uc.fields.length == 1 ? '' : 's';
+          final fields = uc.fields.map((f) => '`${f.name}`').join(', ');
+          return Method(
+            (b) => b
+              ..name = 'by${upperCamelCase(uc.name!)}'
+              ..documentation('''
             Lookup a single row in `${table.name}` table using the
             $fields field$s
 
@@ -597,34 +652,42 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             Returns a [QuerySingle] object, which returns at-most one row,
             when `.fetch()` is called.
           ''')
-          ..returns = refer('QuerySingle<(Expr<$rowClassName>,)>')
-          ..requiredParameters.addAll(uc.fields.map((field) => Parameter(
-                (b) => b
-                  ..name = field.name
-                  ..type = refer(field.typeName),
-              )))
-          ..lambda = true
-          ..body = Code('''
+              ..returns = refer('QuerySingle<(Expr<$rowClassName>,)>')
+              ..requiredParameters.addAll(
+                uc.fields.map(
+                  (field) => Parameter(
+                    (b) => b
+                      ..name = field.name
+                      ..type = refer(field.typeName),
+                  ),
+                ),
+              )
+              ..lambda = true
+              ..body = Code('''
             where(($rowInstanceName) =>
               ${uc.fields.map((field) => '$rowInstanceName.${field.name}.equalsValue(${field.name})').join(' & ')}
             ).first
-          '''));
-      }))
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'delete'
-          ..documentation('''
+          '''),
+          );
+        }),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'delete'
+            ..documentation('''
             Delete all rows in the `${table.name}` table matching this [Query].
 
             Returns a [Delete] statement on which `.execute()` must be called
             for the rows to be deleted.
           ''')
-          ..returns = refer('Delete<$rowClassName>')
-          ..lambda = true
-          ..body = Code('''
+            ..returns = refer('Delete<$rowClassName>')
+            ..lambda = true
+            ..body = Code('''
               \$ForGeneratedCode.delete(this, _\$${rowClass.name}._\$table)
             '''),
-      )),
+        ),
+      ),
   );
 
   // Extension for QuerySingle<(Expr<Row>,)>
@@ -635,10 +698,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         Extension methods for building point queries against the `${table.name}` table.
       ''')
       ..on = refer('QuerySingle<(Expr<$rowClassName>,)>')
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'update'
-          ..documentation('''
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'update'
+            ..documentation('''
             Update the row (if any) in the `${table.name}` table matching this
             [QuerySingle].
 
@@ -669,10 +733,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             > the `set` function more than once, and the result should always
             > be returned immediately.
           ''')
-          ..returns = refer('UpdateSingle<$rowClassName>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..type = refer('''
+            ..returns = refer('UpdateSingle<$rowClassName>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..type = refer('''
                 UpdateSet<$rowClassName> Function(
                   Expr<$rowClassName> $rowInstanceName,
                   UpdateSet<$rowClassName> Function({
@@ -680,10 +745,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   }) set,
                 )
               ''')
-              ..name = 'updateBuilder',
-          ))
-          ..lambda = true
-          ..body = Code('''
+                  ..name = 'updateBuilder',
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             \$ForGeneratedCode.updateSingle<$rowClassName>(
               this,
               _\$${rowClass.name}._\$table,
@@ -696,34 +762,39 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ),
             )
           '''),
-      ))
-      ..methods.add(Method(
-        (b) => b
-          ..name = 'delete'
-          ..documentation('''
+        ),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'delete'
+            ..documentation('''
             Delete the row (if any) in the `${table.name}` table matching this [QuerySingle].
 
             Returns a [DeleteSingle] statement on which `.execute()` must be called
             for the row to be deleted. The resulting statement will **not**
             fail, if there are no rows matching this query exists.
           ''')
-          ..returns = refer('DeleteSingle<$rowClassName>')
-          ..lambda = true
-          ..body = Code(
-            '\$ForGeneratedCode.deleteSingle(this, _\$${rowClass.name}._\$table)',
-          ),
-      )),
+            ..returns = refer('DeleteSingle<$rowClassName>')
+            ..lambda = true
+            ..body = Code(
+              '\$ForGeneratedCode.deleteSingle(this, _\$${rowClass.name}._\$table)',
+            ),
+        ),
+      ),
   );
 
   // Extension for Expression<Row>Ext
-  yield Extension((b) => b
-    ..name = 'Expression${rowClassName}Ext'
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'Expression${rowClassName}Ext'
+      ..documentation('''
       Extension methods for expressions on a row in the `${table.name}` table.
     ''')
-    ..on = refer('Expr<$rowClassName>')
-    ..methods.addAll([
-      ...rowClass.fields.mapIndexed((i, field) => Method(
+      ..on = refer('Expr<$rowClassName>')
+      ..methods.addAll([
+        ...rowClass.fields.mapIndexed(
+          (i, field) => Method(
             (b) => b
               ..name = field.name
               ..docs.add(field.documentation ?? '')
@@ -733,8 +804,10 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..body = Code(
                 '\$ForGeneratedCode.field(this, $i, ${fieldType(field)})',
               ),
-          )),
-      ...referencedFrom.map((ref) => Method(
+          ),
+        ),
+        ...referencedFrom.map(
+          (ref) => Method(
             (b) => b
               ..name = ref.fk.as!
               ..documentation('''
@@ -756,20 +829,21 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   ${ref.fk.foreignKey.mapIndexed((i, fk) => 'r.${fk.name}.equals(${ref.fk.fields[i]})').join(' & ')}
                 )
               '''),
-          )),
-      ...rowClass.foreignKeys.where((fk) => fk.name != null).map((fk) {
-        var nullable = '?';
-        var ifAnyDocs = ', if any';
-        var firstAsNotNull = 'first';
-        if (!fk.foreignKey.any((f) => f.isNullable)) {
-          nullable = '';
-          ifAnyDocs = '';
-          firstAsNotNull = 'first.asNotNull()';
-        }
-        return Method(
-          (b) => b
-            ..name = fk.name
-            ..documentation('''
+          ),
+        ),
+        ...rowClass.foreignKeys.where((fk) => fk.name != null).map((fk) {
+          var nullable = '?';
+          var ifAnyDocs = ', if any';
+          var firstAsNotNull = 'first';
+          if (!fk.foreignKey.any((f) => f.isNullable)) {
+            nullable = '';
+            ifAnyDocs = '';
+            firstAsNotNull = 'first.asNotNull()';
+          }
+          return Method(
+            (b) => b
+              ..name = fk.name
+              ..documentation('''
               Do a subquery lookup of the row from table
               `${fk.referencedTable.name}` referenced in
               ${fk.foreignKey.map((f) => '[${f.name}]').join(', ')}.
@@ -778,11 +852,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ${fk.fields.map((f) => '[${fk.referencedTable.rowClass.name}.$f]').join(', ')}
               is equal to ${fk.foreignKey.map((f) => '[${f.name}]').join(', ')}$ifAnyDocs.
             ''')
-            ..type = MethodType.getter
-            ..returns =
-                refer('Expr<${fk.referencedTable.rowClass.name}$nullable>')
-            ..lambda = true
-            ..body = Code('''
+              ..type = MethodType.getter
+              ..returns = refer(
+                'Expr<${fk.referencedTable.rowClass.name}$nullable>',
+              )
+              ..lambda = true
+              ..body = Code('''
               \$ForGeneratedCode.subqueryTable(
                 _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
@@ -790,16 +865,19 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   ${fk.fields.mapIndexed((i, f) => 'r.$f.equals(${fk.foreignKey[i].name})').join(' & ')}
               ).$firstAsNotNull
             '''),
-        );
-      }),
-    ]));
+          );
+        }),
+      ]),
+  );
 
   // Extension for ExpressionNullable<Row>Ext
-  yield Extension((b) => b
-    ..name = 'ExpressionNullable${rowClassName}Ext'
-    ..on = refer('Expr<$rowClassName?>')
-    ..methods.addAll([
-      ...rowClass.fields.mapIndexed((i, field) => Method(
+  yield Extension(
+    (b) => b
+      ..name = 'ExpressionNullable${rowClassName}Ext'
+      ..on = refer('Expr<$rowClassName?>')
+      ..methods.addAll([
+        ...rowClass.fields.mapIndexed(
+          (i, field) => Method(
             (b) => b
               ..name = field.name
               ..docs.add(field.documentation ?? '')
@@ -809,8 +887,10 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ..body = Code(
                 '\$ForGeneratedCode.field(this, $i, ${fieldType(field)})',
               ),
-          )),
-      ...referencedFrom.map((ref) => Method(
+          ),
+        ),
+        ...referencedFrom.map(
+          (ref) => Method(
             (b) => b
               ..name = ref.fk.as!
               ..documentation('''
@@ -834,12 +914,13 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   ${ref.fk.foreignKey.mapIndexed((i, fk) => 'r.${fk.name}.equalsUnlessNull(${ref.fk.fields[i]}).asNotNull()').join(' & ')}
                 )
               '''),
-          )),
-      ...rowClass.foreignKeys.where((fk) => fk.name != null).map((fk) {
-        return Method(
-          (b) => b
-            ..name = fk.name
-            ..documentation('''
+          ),
+        ),
+        ...rowClass.foreignKeys.where((fk) => fk.name != null).map((fk) {
+          return Method(
+            (b) => b
+              ..name = fk.name
+              ..documentation('''
               Do a subquery lookup of the row from table
               `${fk.referencedTable.name}` referenced in
               ${fk.foreignKey.map((f) => '[${f.name}]').join(', ')}.
@@ -850,10 +931,10 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
 
               If this row is `NULL` the subquery is always return `NULL`.
             ''')
-            ..type = MethodType.getter
-            ..returns = refer('Expr<${fk.referencedTable.rowClass.name}?>')
-            ..lambda = true
-            ..body = Code('''
+              ..type = MethodType.getter
+              ..returns = refer('Expr<${fk.referencedTable.rowClass.name}?>')
+              ..lambda = true
+              ..body = Code('''
               \$ForGeneratedCode.subqueryTable(
                 _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
@@ -861,12 +942,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   ${fk.fields.mapIndexed((i, f) => 'r.$f.equalsUnlessNull(${fk.foreignKey[i].name}).asNotNull()').join(' & ')}
               ).first
             '''),
-        );
-      }),
-      Method(
-        (b) => b
-          ..name = 'isNotNull'
-          ..documentation('''
+          );
+        }),
+        Method(
+          (b) => b
+            ..name = 'isNotNull'
+            ..documentation('''
             Check if the row is not `NULL`.
 
             This will check if _primary key_ fields in this row are `NULL`.
@@ -874,18 +955,18 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             If this is a reference lookup by subquery it might be more efficient
             to check if the referencing field is `NULL`.
           ''')
-          ..returns = refer('Expr<bool>')
-          ..lambda = true
-          ..body = Code(
-            rowClass.primaryKey
-                .map((pk) => '${pk.name}.isNotNull()')
-                .join(' & '),
-          ),
-      ),
-      Method(
-        (b) => b
-          ..name = 'isNull'
-          ..documentation('''
+            ..returns = refer('Expr<bool>')
+            ..lambda = true
+            ..body = Code(
+              rowClass.primaryKey
+                  .map((pk) => '${pk.name}.isNotNull()')
+                  .join(' & '),
+            ),
+        ),
+        Method(
+          (b) => b
+            ..name = 'isNull'
+            ..documentation('''
             Check if the row is `NULL`.
 
             This will check if _primary key_ fields in this row are `NULL`.
@@ -893,11 +974,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             If this is a reference lookup by subquery it might be more efficient
             to check if the referencing field is `NULL`.
           ''')
-          ..returns = refer('Expr<bool>')
-          ..lambda = true
-          ..body = Code('isNotNull().not()'),
-      ),
-    ]));
+            ..returns = refer('Expr<bool>')
+            ..lambda = true
+            ..body = Code('isNotNull().not()'),
+        ),
+      ]),
+  );
 
   // Extension for InnerJoin<...>
   final relatedTables = {
@@ -912,10 +994,12 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
   for (final relatedTable in relatedTables) {
     final T = relatedTable.rowClass.name;
 
-    final relatedForeignKeys =
-        rowClass.foreignKeys.where((fk) => fk.referencedTable == relatedTable);
-    final relatedReferencedFrom =
-        referencedFrom.where((ref) => ref.table == relatedTable);
+    final relatedForeignKeys = rowClass.foreignKeys.where(
+      (fk) => fk.referencedTable == relatedTable,
+    );
+    final relatedReferencedFrom = referencedFrom.where(
+      (ref) => ref.table == relatedTable,
+    );
 
     final kinds = [
       ('Inner', '', ''),
@@ -926,11 +1010,13 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
     for (final (kind, ln, rn) in kinds) {
       final returns = refer('Query<(Expr<$rowClassName$ln>, Expr<$T$rn>)>');
 
-      yield Extension((b) => b
-        ..name = '${kind}Join$rowClassName${T}Ext'
-        ..on = refer('${kind}Join<(Expr<$rowClassName>,), (Expr<$T>,)>')
-        ..methods.addAll([
-          ...relatedReferencedFrom.map((ref) => Method(
+      yield Extension(
+        (b) => b
+          ..name = '${kind}Join$rowClassName${T}Ext'
+          ..on = refer('${kind}Join<(Expr<$rowClassName>,), (Expr<$T>,)>')
+          ..methods.addAll([
+            ...relatedReferencedFrom.map(
+              (ref) => Method(
                 (b) => b
                   ..name = 'using${upperCamelCase(ref.fk.name!)}'
                   ..documentation('''
@@ -945,178 +1031,212 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     ${ref.fk.fields.mapIndexed((i, f) => 'a.$f.equals(b.${ref.fk.foreignKey[i].name})').join(' & ')}
                   )
                 '''),
-              )),
-          ...relatedForeignKeys.where((fk) => fk.name != null).map((fk) {
-            return Method(
-              (b) => b
-                ..name = 'using${upperCamelCase(fk.name!)}'
-                ..documentation('''
+              ),
+            ),
+            ...relatedForeignKeys.where((fk) => fk.name != null).map((fk) {
+              return Method(
+                (b) => b
+                  ..name = 'using${upperCamelCase(fk.name!)}'
+                  ..documentation('''
                 Join using the `${fk.name!}` _foreign key_.
 
                 This will match rows where ${fk.fields.mapIndexed((i, f) => '[$rowClassName.${fk.foreignKey[i].name}] = [$T.$f]').join(' and ')}.
               ''')
-                ..returns = returns
-                ..lambda = true
-                ..body = Code('''
+                  ..returns = returns
+                  ..lambda = true
+                  ..body = Code('''
                 on((a, b) =>
                   ${fk.fields.mapIndexed((i, f) => 'b.$f.equals(a.${fk.foreignKey[i].name})').join(' & ')}
                 )
               '''),
-            );
-          }),
-        ]));
+              );
+            }),
+          ]),
+      );
     }
   }
 }
 
 /// Generate code for using `Query<T>` where `T` is a named record!
 Iterable<Spec> buildRecord(ParsedRecord record) sync* {
-  final positionalQueryType =
-      refer('Query<${typArgedExprTuple(record.fields.length)}>');
+  final positionalQueryType = refer(
+    'Query<${typArgedExprTuple(record.fields.length)}>',
+  );
   final namedQueryType = refer('Query<${record.type}>');
 
-  yield Extension((b) => b
-    ..name = 'Query${record.fields.map(upperCamelCase).join('')}Named'
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'Query${record.fields.map(upperCamelCase).join('')}Named'
+      ..documentation('''
       Extension methods for building queries projected to a named record.
     ''')
-    ..on = namedQueryType
-    ..types.addAll(typeArg.take(record.fields.length).map(refer))
-    ..methods.add(
-      Method(
-        (b) => b
-          ..name = '_asPositionalQuery'
-          ..returns = positionalQueryType
-          ..type = MethodType.getter
-          ..lambda = true
-          ..body = Code('''
+      ..on = namedQueryType
+      ..types.addAll(typeArg.take(record.fields.length).map(refer))
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = '_asPositionalQuery'
+            ..returns = positionalQueryType
+            ..type = MethodType.getter
+            ..lambda = true
+            ..body = Code('''
               \$ForGeneratedCode.renamedRecord(this, (e) => (${record.fields.map(
-                    (f) => 'e.$f',
-                  ).join(', ')},))
+              (f) => 'e.$f',
+            ).join(', ')},))
             '''),
-      ),
-    )
-    ..methods.add(Method(
-      (b) => b
-        ..name = '_fromPositionalQuery'
-        ..returns = namedQueryType
-        ..static = true
-        ..types.addAll(typeArg.take(record.fields.length).map(refer))
-        ..requiredParameters.add(Parameter(
+        ),
+      )
+      ..methods.add(
+        Method(
           (b) => b
-            ..name = 'query'
-            ..type = positionalQueryType,
-        ))
-        ..lambda = true
-        ..body = Code('''
+            ..name = '_fromPositionalQuery'
+            ..returns = namedQueryType
+            ..static = true
+            ..types.addAll(typeArg.take(record.fields.length).map(refer))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'query'
+                  ..type = positionalQueryType,
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             \$ForGeneratedCode.renamedRecord(query, (e) => (${record.fields.mapIndexed(
-                  (i, f) => '$f: e.\$${i + 1}',
-                ).join(', ')},))
+              (i, f) => '$f: e.\$${i + 1}',
+            ).join(', ')},))
           '''),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = '_wrapBuilder'
-        ..returns = refer(
-            'T Function(${typArgedExprArgumentList(record.fields.length)})')
-        ..static = true
-        ..types.add(refer('T'))
-        ..types.addAll(typeArg.take(record.fields.length).map(refer))
-        ..requiredParameters.add(Parameter(
+        ),
+      )
+      ..methods.add(
+        Method(
           (b) => b
-            ..name = 'builder'
-            ..type = refer('T Function(${record.type} e)'),
-        ))
-        ..lambda = true
-        ..body = Code('''
+            ..name = '_wrapBuilder'
+            ..returns = refer(
+              'T Function(${typArgedExprArgumentList(record.fields.length)})',
+            )
+            ..static = true
+            ..types.add(refer('T'))
+            ..types.addAll(typeArg.take(record.fields.length).map(refer))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'builder'
+                  ..type = refer('T Function(${record.type} e)'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             (${arg.take(record.fields.length).join(', ')}) =>
               builder((${record.fields.mapIndexed((i, f) => '$f: ${arg[i]}').join(', ')},))
           '''),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'stream'
-        ..documentation(docs.streamQuery)
-        ..returns = refer('Stream<${record.returnType}>')
-        ..modifier = MethodModifier.asyncStar
-        ..body = Code('''
+        ),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'stream'
+            ..documentation(docs.streamQuery)
+            ..returns = refer('Stream<${record.returnType}>')
+            ..modifier = MethodModifier.asyncStar
+            ..body = Code('''
             yield* _asPositionalQuery.stream().map((e) => (${record.fields.mapIndexed(
-                  (i, f) => '$f: e.\$${i + 1}',
-                ).join(', ')},));
+              (i, f) => '$f: e.\$${i + 1}',
+            ).join(', ')},));
           '''),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'fetch'
-        ..documentation(docs.fetchQuery)
-        ..returns = refer('Future<List<${record.returnType}>>')
-        ..modifier = MethodModifier.async
-        ..lambda = true
-        ..body = Code('await stream().toList()'),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'offset'
-        ..documentation(docs.offset('Query'))
-        ..returns = namedQueryType
-        ..requiredParameters.add(Parameter(
+        ),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'fetch'
+            ..documentation(docs.fetchQuery)
+            ..returns = refer('Future<List<${record.returnType}>>')
+            ..modifier = MethodModifier.async
+            ..lambda = true
+            ..body = Code('await stream().toList()'),
+        ),
+      )
+      ..methods.add(
+        Method(
           (b) => b
             ..name = 'offset'
-            ..type = refer('int'),
-        ))
-        ..lambda = true
-        ..body = Code('''
+            ..documentation(docs.offset('Query'))
+            ..returns = namedQueryType
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'offset'
+                  ..type = refer('int'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             _fromPositionalQuery(_asPositionalQuery.offset(offset))
           '''),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'limit'
-        ..documentation(docs.limit('Query'))
-        ..returns = namedQueryType
-        ..requiredParameters.add(Parameter(
+        ),
+      )
+      ..methods.add(
+        Method(
           (b) => b
             ..name = 'limit'
-            ..type = refer('int'),
-        ))
-        ..lambda = true
-        ..body = Code('''
+            ..documentation(docs.limit('Query'))
+            ..returns = namedQueryType
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'limit'
+                  ..type = refer('int'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             _fromPositionalQuery(_asPositionalQuery.limit(limit))
           '''),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'select'
-        ..documentation(docs.select('Query'))
-        ..returns = refer('Query<T>')
-        ..types.add(refer('T extends Record'))
-        ..requiredParameters.add(Parameter(
-          (b) => b
-            ..name = 'projectionBuilder'
-            ..type = refer('T Function(${record.type} expr)'),
-        ))
-        ..lambda = true
-        ..body = Code(
-          '_asPositionalQuery.select(_wrapBuilder(projectionBuilder))',
         ),
-    ))
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'where'
-        ..documentation(docs.where('Query'))
-        ..returns = namedQueryType
-        ..requiredParameters.add(Parameter(
+      )
+      ..methods.add(
+        Method(
           (b) => b
-            ..name = 'conditionBuilder'
-            ..type = refer('Expr<bool> Function(${record.type} expr)'),
-        ))
-        ..lambda = true
-        ..body = Code('''
+            ..name = 'select'
+            ..documentation(docs.select('Query'))
+            ..returns = refer('Query<T>')
+            ..types.add(refer('T extends Record'))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'projectionBuilder'
+                  ..type = refer('T Function(${record.type} expr)'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code(
+              '_asPositionalQuery.select(_wrapBuilder(projectionBuilder))',
+            ),
+        ),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'where'
+            ..documentation(docs.where('Query'))
+            ..returns = namedQueryType
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'conditionBuilder'
+                  ..type = refer('Expr<bool> Function(${record.type} expr)'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             _fromPositionalQuery(_asPositionalQuery.where(
               _wrapBuilder(conditionBuilder)
             ))
           '''),
-    )));
+        ),
+      ),
+  );
   // TODO: Add first when QuerySingle is supported!
   // TODO: Add orderBy as below, when we have named tuple support for OrderedQuery...
   /*..methods.add(Method(
@@ -1141,11 +1261,13 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
 }
 
 extension on ParsedRecord {
-  String get type => '({${fields.mapIndexed(
+  String get type =>
+      '({${fields.mapIndexed(
         (i, f) => 'Expr<${typeArg[i]}> $f',
       ).join(', ')},})';
 
-  String get returnType => '({${fields.mapIndexed(
+  String get returnType =>
+      '({${fields.mapIndexed(
         (i, f) => '${typeArg[i]} $f',
       ).join(', ')},})';
 }
@@ -1164,8 +1286,8 @@ String backingExprType(String backingType) {
     'Uint8List' => '\$ForGeneratedCode.blob',
     'JsonValue' => '\$ForGeneratedCode.jsonValue',
     _ => throw UnsupportedError(
-        'Unsupported backingType: "$backingType"',
-      ),
+      'Unsupported backingType: "$backingType"',
+    ),
   };
 }
 
@@ -1230,7 +1352,7 @@ extension on ParsedDefaultValue {
             literal(v.second),
             literal(v.millisecond),
             literal(v.microsecond),
-          ], {})
+          ], {}),
         });
 
       case ParsedDefaultDateTimeEpochValue():

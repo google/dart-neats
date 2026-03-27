@@ -66,8 +66,9 @@ void main() {
     },
   );
 
-  r.addTest('.groupBy(null).aggretate(.count, .avg(salary.orElse(0)))',
-      (db) async {
+  r.addTest('.groupBy(null).aggretate(.count, .avg(salary.orElse(0)))', (
+    db,
+  ) async {
     final (count, avgSalary, minSalary, maxSalary) = await db.employees
         .groupBy(
           (employee) => (
@@ -79,11 +80,12 @@ void main() {
           ),
         )
         .aggregate(
-          (agg) => agg //
-              .count()
-              .avg((employee) => employee.salary.orElseValue(0))
-              .min((employee) => employee.salary.orElseValue(0))
-              .max((employee) => employee.salary.orElseValue(0)),
+          (agg) =>
+              agg //
+                  .count()
+                  .avg((employee) => employee.salary.orElseValue(0))
+                  .min((employee) => employee.salary.orElseValue(0))
+                  .max((employee) => employee.salary.orElseValue(0)),
         )
         .select(
           (_, count, avgSalary, minSalary, maxSalary) => (

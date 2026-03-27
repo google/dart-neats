@@ -10,15 +10,10 @@ part of 'blog_test.dart';
 extension BlogDatabaseSchema on Database<BlogDatabase> {
   static const _$tables = [_$Post._$table, _$Comment._$table];
 
-  Table<Post> get posts => $ForGeneratedCode.declareTable(
-        this,
-        _$Post._$table,
-      );
+  Table<Post> get posts => $ForGeneratedCode.declareTable(this, _$Post._$table);
 
-  Table<Comment> get comments => $ForGeneratedCode.declareTable(
-        this,
-        _$Comment._$table,
-      );
+  Table<Comment> get comments =>
+      $ForGeneratedCode.declareTable(this, _$Comment._$table);
 
   /// Create tables defined in [BlogDatabase].
   ///
@@ -32,10 +27,8 @@ extension BlogDatabaseSchema on Database<BlogDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [BlogDatabase].
@@ -49,18 +42,11 @@ extension BlogDatabaseSchema on Database<BlogDatabase> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBlogDatabaseTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: BlogDatabaseSchema._$tables,
-    );
+String createBlogDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: BlogDatabaseSchema._$tables);
 
 final class _$Post extends Post {
-  _$Post._(
-    this.author,
-    this.slug,
-    this.content,
-  );
+  _$Post._(this.author, this.slug, this.content);
 
   @override
   final String author;
@@ -74,47 +60,53 @@ final class _$Post extends Post {
   static const _$table = (
     tableName: 'posts',
     columns: <String>['author', 'slug', 'content'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
         ],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
-        ],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
     primaryKey: <String>['author', 'slug'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$Post._$fromDatabase,
   );
 
@@ -143,15 +135,10 @@ extension TablePostExt on Table<Post> {
     required Expr<String> author,
     required Expr<String> slug,
     required Expr<String> content,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          author,
-          slug,
-          content,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [author, slug, content],
+  );
 
   /// Delete a single row from the `posts` table, specified by
   /// _primary key_.
@@ -162,14 +149,8 @@ extension TablePostExt on Table<Post> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Post> delete(
-    String author,
-    String slug,
-  ) =>
-      $ForGeneratedCode.deleteSingle(
-        byKey(author, slug),
-        _$Post._$table,
-      );
+  DeleteSingle<Post> delete(String author, String slug) =>
+      $ForGeneratedCode.deleteSingle(byKey(author, slug), _$Post._$table);
 }
 
 /// Extension methods for building queries against the `posts` table.
@@ -178,12 +159,9 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Post>,)> byKey(
-    String author,
-    String slug,
-  ) =>
-      where((post) =>
-          post.author.equalsValue(author) & post.slug.equalsValue(slug)).first;
+  QuerySingle<(Expr<Post>,)> byKey(String author, String slug) => where(
+    (post) => post.author.equalsValue(author) & post.slug.equalsValue(slug),
+  ).first;
 
   /// Update all rows in the `posts` table matching this [Query].
   ///
@@ -213,31 +191,25 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Post> update(
-          UpdateSet<Post> Function(
-            Expr<Post> post,
-            UpdateSet<Post> Function({
-              Expr<String> author,
-              Expr<String> slug,
-              Expr<String> content,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Post>(
-        this,
-        _$Post._$table,
-        (post) => updateBuilder(
-          post,
-          ({
-            Expr<String>? author,
-            Expr<String>? slug,
-            Expr<String>? content,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Post>([
-            author,
-            slug,
-            content,
-          ]),
-        ),
-      );
+    UpdateSet<Post> Function(
+      Expr<Post> post,
+      UpdateSet<Post> Function({
+        Expr<String> author,
+        Expr<String> slug,
+        Expr<String> content,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Post>(
+    this,
+    _$Post._$table,
+    (post) => updateBuilder(
+      post,
+      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
+          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
+    ),
+  );
 
   /// Delete all rows in the `posts` table matching this [Query].
   ///
@@ -278,31 +250,25 @@ extension QuerySinglePostExt on QuerySingle<(Expr<Post>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Post> update(
-          UpdateSet<Post> Function(
-            Expr<Post> post,
-            UpdateSet<Post> Function({
-              Expr<String> author,
-              Expr<String> slug,
-              Expr<String> content,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Post>(
-        this,
-        _$Post._$table,
-        (post) => updateBuilder(
-          post,
-          ({
-            Expr<String>? author,
-            Expr<String>? slug,
-            Expr<String>? content,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Post>([
-            author,
-            slug,
-            content,
-          ]),
-        ),
-      );
+    UpdateSet<Post> Function(
+      Expr<Post> post,
+      UpdateSet<Post> Function({
+        Expr<String> author,
+        Expr<String> slug,
+        Expr<String> content,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Post>(
+    this,
+    _$Post._$table,
+    (post) => updateBuilder(
+      post,
+      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
+          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
+    ),
+  );
 
   /// Delete the row (if any) in the `posts` table matching this [QuerySingle].
   ///
@@ -355,10 +321,13 @@ extension ExpressionNullablePostExt on Expr<Post?> {
   /// in this row, if any.
   ///
   /// If this row is `NULL` the subquery is always be empty.
-  SubQuery<(Expr<Comment>,)> get comments =>
-      $ForGeneratedCode.subqueryTable(_$Comment._$table).where((r) =>
-          r.author.equalsUnlessNull(author).asNotNull() &
-          r.postSlug.equalsUnlessNull(slug).asNotNull());
+  SubQuery<(Expr<Comment>,)> get comments => $ForGeneratedCode
+      .subqueryTable(_$Comment._$table)
+      .where(
+        (r) =>
+            r.author.equalsUnlessNull(author).asNotNull() &
+            r.postSlug.equalsUnlessNull(slug).asNotNull(),
+      );
 
   /// Check if the row is not `NULL`.
   ///
@@ -404,12 +373,7 @@ extension RightJoinPostCommentExt
 }
 
 final class _$Comment extends Comment {
-  _$Comment._(
-    this.commentId,
-    this.author,
-    this.postSlug,
-    this.comment,
-  );
+  _$Comment._(this.commentId, this.author, this.postSlug, this.comment);
 
   @override
   final int commentId;
@@ -426,61 +390,67 @@ final class _$Comment extends Comment {
   static const _$table = (
     tableName: 'comments',
     columns: <String>['commentId', 'author', 'postSlug', 'comment'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[
+              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+            ],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
         ],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[
-          SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
-        ],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
     primaryKey: <String>['commentId'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[
-      (
-        name: 'post',
-        columns: ['author', 'postSlug'],
-        referencedTable: 'posts',
-        referencedColumns: ['author', 'slug'],
-      )
-    ],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[
+          (
+            name: 'post',
+            columns: ['author', 'postSlug'],
+            referencedTable: 'posts',
+            referencedColumns: ['author', 'slug'],
+          ),
+        ],
     readRow: _$Comment._$fromDatabase,
   );
 
@@ -514,16 +484,10 @@ extension TableCommentExt on Table<Comment> {
     required Expr<String> author,
     required Expr<String> postSlug,
     required Expr<String> comment,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          commentId,
-          author,
-          postSlug,
-          comment,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [commentId, author, postSlug, comment],
+  );
 
   /// Delete a single row from the `comments` table, specified by
   /// _primary key_.
@@ -534,10 +498,8 @@ extension TableCommentExt on Table<Comment> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Comment> delete(int commentId) => $ForGeneratedCode.deleteSingle(
-        byKey(commentId),
-        _$Comment._$table,
-      );
+  DeleteSingle<Comment> delete(int commentId) =>
+      $ForGeneratedCode.deleteSingle(byKey(commentId), _$Comment._$table);
 }
 
 /// Extension methods for building queries against the `comments` table.
@@ -577,34 +539,35 @@ extension QueryCommentExt on Query<(Expr<Comment>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Comment> update(
-          UpdateSet<Comment> Function(
-            Expr<Comment> comment,
-            UpdateSet<Comment> Function({
-              Expr<int> commentId,
-              Expr<String> author,
-              Expr<String> postSlug,
-              Expr<String> comment,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Comment>(
-        this,
-        _$Comment._$table,
-        (comment) => updateBuilder(
-          comment,
-          ({
-            Expr<int>? commentId,
-            Expr<String>? author,
-            Expr<String>? postSlug,
-            Expr<String>? comment,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Comment>([
-            commentId,
-            author,
-            postSlug,
-            comment,
-          ]),
-        ),
-      );
+    UpdateSet<Comment> Function(
+      Expr<Comment> comment,
+      UpdateSet<Comment> Function({
+        Expr<int> commentId,
+        Expr<String> author,
+        Expr<String> postSlug,
+        Expr<String> comment,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Comment>(
+    this,
+    _$Comment._$table,
+    (comment) => updateBuilder(
+      comment,
+      ({
+        Expr<int>? commentId,
+        Expr<String>? author,
+        Expr<String>? postSlug,
+        Expr<String>? comment,
+      }) => $ForGeneratedCode.buildUpdate<Comment>([
+        commentId,
+        author,
+        postSlug,
+        comment,
+      ]),
+    ),
+  );
 
   /// Delete all rows in the `comments` table matching this [Query].
   ///
@@ -645,34 +608,35 @@ extension QuerySingleCommentExt on QuerySingle<(Expr<Comment>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Comment> update(
-          UpdateSet<Comment> Function(
-            Expr<Comment> comment,
-            UpdateSet<Comment> Function({
-              Expr<int> commentId,
-              Expr<String> author,
-              Expr<String> postSlug,
-              Expr<String> comment,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Comment>(
-        this,
-        _$Comment._$table,
-        (comment) => updateBuilder(
-          comment,
-          ({
-            Expr<int>? commentId,
-            Expr<String>? author,
-            Expr<String>? postSlug,
-            Expr<String>? comment,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Comment>([
-            commentId,
-            author,
-            postSlug,
-            comment,
-          ]),
-        ),
-      );
+    UpdateSet<Comment> Function(
+      Expr<Comment> comment,
+      UpdateSet<Comment> Function({
+        Expr<int> commentId,
+        Expr<String> author,
+        Expr<String> postSlug,
+        Expr<String> comment,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Comment>(
+    this,
+    _$Comment._$table,
+    (comment) => updateBuilder(
+      comment,
+      ({
+        Expr<int>? commentId,
+        Expr<String>? author,
+        Expr<String>? postSlug,
+        Expr<String>? comment,
+      }) => $ForGeneratedCode.buildUpdate<Comment>([
+        commentId,
+        author,
+        postSlug,
+        comment,
+      ]),
+    ),
+  );
 
   /// Delete the row (if any) in the `comments` table matching this [QuerySingle].
   ///
@@ -735,9 +699,11 @@ extension ExpressionNullableCommentExt on Expr<Comment?> {
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Post?> get post => $ForGeneratedCode
       .subqueryTable(_$Post._$table)
-      .where((r) =>
-          r.author.equalsUnlessNull(author).asNotNull() &
-          r.slug.equalsUnlessNull(postSlug).asNotNull())
+      .where(
+        (r) =>
+            r.author.equalsUnlessNull(author).asNotNull() &
+            r.slug.equalsUnlessNull(postSlug).asNotNull(),
+      )
       .first;
 
   /// Check if the row is not `NULL`.

@@ -19,12 +19,14 @@ import '../lib/model.dart';
 void main() {
   test('bin/schema.dart', () {
     expect(
-        createBankVaultTables(SqlDialect.sqlite()), equalsIgnoringWhitespace('''
+      createBankVaultTables(SqlDialect.sqlite()),
+      equalsIgnoringWhitespace('''
 CREATE TABLE "accounts" (
   "accountId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "accountNumber" TEXT NOT NULL,
   UNIQUE ("accountNumber")
 );
-'''));
+'''),
+    );
   });
 }

@@ -102,9 +102,11 @@ void main() {
         .execute();
 
     await db.items
-        .update((item, set) => set(
-              value: toExpr(updatedValue),
-            ))
+        .update(
+          (item, set) => set(
+            value: toExpr(updatedValue),
+          ),
+        )
         .execute();
 
     final item = await db.items.first.fetch();
@@ -120,9 +122,11 @@ void main() {
         .execute();
 
     final updatedItems = await db.items
-        .update((item, set) => set(
-              value: toExpr(updatedValue),
-            ))
+        .update(
+          (item, set) => set(
+            value: toExpr(updatedValue),
+          ),
+        )
         .returnUpdated()
         .executeAndFetch();
 
@@ -143,9 +147,11 @@ void main() {
         .execute();
 
     final values = await db.items
-        .update((item, set) => set(
-              value: toExpr(updatedValue),
-            ))
+        .update(
+          (item, set) => set(
+            value: toExpr(updatedValue),
+          ),
+        )
         .returning((item) => (item.value,))
         .executeAndFetch();
 

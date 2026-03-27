@@ -46,12 +46,16 @@ void main() {
     },
   );
 
-  final initialValue = MyCustomType(const JsonValue({
-    'foo': [1, 2, 3]
-  }));
-  final updatedValue = MyCustomType(const JsonValue({
-    'foo': [1, 2, 3, 4]
-  }));
+  final initialValue = MyCustomType(
+    const JsonValue({
+      'foo': [1, 2, 3],
+    }),
+  );
+  final updatedValue = MyCustomType(
+    const JsonValue({
+      'foo': [1, 2, 3, 4],
+    }),
+  );
 
   r.addTest('insert', (db) async {
     await db.items
@@ -74,9 +78,11 @@ void main() {
         .execute();
 
     await db.items
-        .update((item, set) => set(
-              value: updatedValue.asExpr,
-            ))
+        .update(
+          (item, set) => set(
+            value: updatedValue.asExpr,
+          ),
+        )
         .execute();
 
     final item = await db.items.first.fetch();

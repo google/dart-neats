@@ -27,9 +27,9 @@ import 'type_args.dart';
 
 /// A [Builder] that generates extension methods and classes for typed_sql.
 Builder typedSqlExtensionBuilder(BuilderOptions options) => g.SharedPartBuilder(
-      [_TypedSqlExtensionBuilder(options)],
-      'typed_sql_extensions',
-    );
+  [_TypedSqlExtensionBuilder(options)],
+  'typed_sql_extensions',
+);
 
 final class _TypedSqlExtensionBuilder extends g.Generator {
   final BuilderOptions options;
@@ -103,73 +103,82 @@ Iterable<Spec> _buildExtensions() sync* {
 /// extension QueryABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {...}
 /// ```
 Iterable<Spec> _buildQueryExtension(int i) sync* {
-  yield Extension((b) => b
-    ..name = 'Query$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('Query<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'Query$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('Query<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a query returning zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-
-    //   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b, Expr<C> c) builder) {
-    //     final handle = Object();
-    //     var offset = 0;
-    //     final a = _expressions.$1._standin(offset, handle);
-    //     offset += _expressions.$1._columns;
-    //     final b = _expressions.$2._standin(offset, handle);
-    //     offset += _expressions.$2._columns;
-    //     final c = _expressions.$3._standin(offset, handle);
-    //     return (handle, builder(a, b, c));
-    //   }
-    ..methods.addAll([
-      Method(
-        (b) => b
-          ..name = '_build'
-          ..returns = refer('(Object, T)')
-          ..types.add(refer('T'))
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'builder'
-              ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
-          ))
-          ..body = Code([
-            'final handle = Object();',
-            'var offset = 0;',
-            ...arg
-                .take(i)
-                .mapIndexed((i, a) => [
-                      'final $a = _expressions.\$${i + 1}._standin(offset, handle);',
-                      'offset += _expressions.\$${i + 1}._columns;',
-                    ])
-                .flattened
-                .take(i * 2 - 1),
-            'return (handle, builder(${arg.take(i).join(',')}));',
-          ].join('')),
-      ),
-
-      //   Query<(Expr<A>, Expr<B>, Expr<C>)> where(
-      //     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
-      //   ) {
-      //     final (handle, where) = _build(conditionBuilder);
-      //     return Query._(
-      //       _context,
-      //       _expressions,
-      //       (e) => WhereClause._(_from(e), handle, where),
-      //     );
+      //   (Object, T) _build<T>(T Function(Expr<A> a, Expr<B> b, Expr<C> c) builder) {
+      //     final handle = Object();
+      //     var offset = 0;
+      //     final a = _expressions.$1._standin(offset, handle);
+      //     offset += _expressions.$1._columns;
+      //     final b = _expressions.$2._standin(offset, handle);
+      //     offset += _expressions.$2._columns;
+      //     final c = _expressions.$3._standin(offset, handle);
+      //     return (handle, builder(a, b, c));
       //   }
-      Method(
-        (b) => b
-          ..name = 'where'
-          ..documentation(docs.where('Query'))
-          ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'conditionBuilder'
-              ..type =
-                  refer('Expr<bool> Function(${typArgedExprArgumentList(i)})'),
-          ))
-          ..body = Code('''
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = '_build'
+            ..returns = refer('(Object, T)')
+            ..types.add(refer('T'))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'builder'
+                  ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+              ),
+            )
+            ..body = Code(
+              [
+                'final handle = Object();',
+                'var offset = 0;',
+                ...arg
+                    .take(i)
+                    .mapIndexed(
+                      (i, a) => [
+                        'final $a = _expressions.\$${i + 1}._standin(offset, handle);',
+                        'offset += _expressions.\$${i + 1}._columns;',
+                      ],
+                    )
+                    .flattened
+                    .take(i * 2 - 1),
+                'return (handle, builder(${arg.take(i).join(',')}));',
+              ].join(''),
+            ),
+        ),
+
+        //   Query<(Expr<A>, Expr<B>, Expr<C>)> where(
+        //     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+        //   ) {
+        //     final (handle, where) = _build(conditionBuilder);
+        //     return Query._(
+        //       _context,
+        //       _expressions,
+        //       (e) => WhereClause._(_from(e), handle, where),
+        //     );
+        //   }
+        Method(
+          (b) => b
+            ..name = 'where'
+            ..documentation(docs.where('Query'))
+            ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'conditionBuilder'
+                  ..type = refer(
+                    'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ),
+            )
+            ..body = Code('''
             final (handle, where) = _build(conditionBuilder);
             return Query._(
               _context,
@@ -177,34 +186,36 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
               (e) => WhereClause._(_from(e), handle, where),
             );
           '''),
-      ),
+        ),
 
-      //   Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
-      //     List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c) builder,
-      //   ) {
-      //     final (handle, orderBy) = _build(builder);
-      //     if (orderBy.isEmpty) {
-      //       return this;
-      //     }
-      //     return Query._(
-      //       _context,
-      //       _expressions,
-      //       (e) => OrderByClause._(_from(e), handle, orderBy, descending),
-      //     );
-      //   }
-      Method(
-        (b) => b
-          ..name = 'orderBy'
-          ..documentation(docs.orderBy('Query'))
-          ..returns = refer('OrderedQuery<${typArgedExprTuple(i, 0)}>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'builder'
-              ..type = refer(
-                'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
+        //   Query<(Expr<A>, Expr<B>, Expr<C>)> orderBy(
+        //     List<(Expr<Comparable?>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c) builder,
+        //   ) {
+        //     final (handle, orderBy) = _build(builder);
+        //     if (orderBy.isEmpty) {
+        //       return this;
+        //     }
+        //     return Query._(
+        //       _context,
+        //       _expressions,
+        //       (e) => OrderByClause._(_from(e), handle, orderBy, descending),
+        //     );
+        //   }
+        Method(
+          (b) => b
+            ..name = 'orderBy'
+            ..documentation(docs.orderBy('Query'))
+            ..returns = refer('OrderedQuery<${typArgedExprTuple(i, 0)}>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'builder'
+                  ..type = refer(
+                    'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
+                  ),
               ),
-          ))
-          ..body = Code('''
+            )
+            ..body = Code('''
             final (handle, orderBy) = _build(builder);
             if (orderBy.isEmpty) {
               return OrderedQuery._(this);
@@ -215,105 +226,111 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
               (e) => OrderByClause._(_from(e), handle, orderBy),
             ));
           '''),
-      ),
+        ),
 
-      //   Query<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => Query._(
-      //         _context,
-      //         _expressions,
-      //         (e) => LimitClause._(_from(e), limit),
-      //       );
-      Method(
-        (b) => b
-          ..name = 'limit'
-          ..documentation(docs.limit('Query'))
-          ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'limit'
-              ..type = refer('int'),
-          ))
-          ..lambda = true
-          ..body = Code('''
+        //   Query<(Expr<A>, Expr<B>, Expr<C>)> limit(int limit) => Query._(
+        //         _context,
+        //         _expressions,
+        //         (e) => LimitClause._(_from(e), limit),
+        //       );
+        Method(
+          (b) => b
+            ..name = 'limit'
+            ..documentation(docs.limit('Query'))
+            ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'limit'
+                  ..type = refer('int'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             Query._(
               _context,
               _expressions,
               (e) => LimitClause._(_from(e), limit),
             )
           '''),
-      ),
+        ),
 
-      //   Query<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => Query._(
-      //         _context,
-      //         _expressions,
-      //         (e) => OffsetClause._(_from(e), offset),
-      //       );
-      Method(
-        (b) => b
-          ..name = 'offset'
-          ..documentation(docs.offset('Query'))
-          ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'offset'
-              ..type = refer('int'),
-          ))
-          ..lambda = true
-          ..body = Code('''
+        //   Query<(Expr<A>, Expr<B>, Expr<C>)> offset(int offset) => Query._(
+        //         _context,
+        //         _expressions,
+        //         (e) => OffsetClause._(_from(e), offset),
+        //       );
+        Method(
+          (b) => b
+            ..name = 'offset'
+            ..documentation(docs.offset('Query'))
+            ..returns = refer('Query<${typArgedExprTuple(i, 0)}>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'offset'
+                  ..type = refer('int'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             Query._(
               _context,
               _expressions,
               (e) => OffsetClause._(_from(e), offset),
             )
           '''),
-      ),
+        ),
 
-      //   QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => QuerySingle._(limit(1));
-      Method(
-        (b) => b
-          ..name = 'first'
-          ..documentation(docs.firstQuery)
-          ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
-          ..type = MethodType.getter
-          ..lambda = true
-          ..body = Code('''
+        //   QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> get first => QuerySingle._(limit(1));
+        Method(
+          (b) => b
+            ..name = 'first'
+            ..documentation(docs.firstQuery)
+            ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
+            ..type = MethodType.getter
+            ..lambda = true
+            ..body = Code('''
             QuerySingle._(limit(1))
           '''),
-      ),
+        ),
 
-      //   QuerySingle<(Expr<int>)> count() =>
-      Method(
-        (b) => b
-          ..name = 'count'
-          ..documentation(docs.countQuery)
-          ..returns = refer('QuerySingle<(Expr<int>,)>')
-          ..lambda = true
-          ..body = Code('''
+        //   QuerySingle<(Expr<int>)> count() =>
+        Method(
+          (b) => b
+            ..name = 'count'
+            ..documentation(docs.countQuery)
+            ..returns = refer('QuerySingle<(Expr<int>,)>')
+            ..lambda = true
+            ..body = Code('''
             select((${arg.take(i).join(',')}) => (CountAllExpression._(),)).first
           '''),
-      ),
+        ),
 
-      //   Query<T> select<T extends Record>(
-      //     T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder,
-      //   ) {
-      //     final (handle, projection) = _build(projectionBuilder);
-      //     return Query._(
-      //       _context,
-      //       projection,
-      //       (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
-      //     );
-      //   }
-      Method(
-        (b) => b
-          ..name = 'select'
-          ..documentation(docs.select('Query'))
-          ..types.add(refer('T extends Record'))
-          ..returns = refer('Query<T>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'projectionBuilder'
-              ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
-          ))
-          ..body = Code('''
+        //   Query<T> select<T extends Record>(
+        //     T Function(Expr<A> a, Expr<B> b, Expr<C> c) projectionBuilder,
+        //   ) {
+        //     final (handle, projection) = _build(projectionBuilder);
+        //     return Query._(
+        //       _context,
+        //       projection,
+        //       (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
+        //     );
+        //   }
+        Method(
+          (b) => b
+            ..name = 'select'
+            ..documentation(docs.select('Query'))
+            ..types.add(refer('T extends Record'))
+            ..returns = refer('Query<T>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'projectionBuilder'
+                  ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+              ),
+            )
+            ..body = Code('''
             final (handle, projection) = _build(projectionBuilder);
             return Query._(
               _context,
@@ -321,62 +338,68 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
               (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
             );
           '''),
-      ),
+        ),
 
-      //   Join<(Expr<A>, Expr<B>, Expr<C>), T> join<T extends Record>(Query<T> query) =>
-      //       InnerJoin._(this, query);
-      Method(
-        (b) => b
-          ..name = 'join'
-          ..documentation(docs.innerJoinQuery)
-          ..types.add(refer('T extends Record'))
-          ..returns = refer('InnerJoin<${typArgedExprTuple(i)}, T>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'query'
-              ..type = refer('Query<T>'),
-          ))
-          ..lambda = true
-          ..body = Code('InnerJoin._(this, query)'),
-      ),
+        //   Join<(Expr<A>, Expr<B>, Expr<C>), T> join<T extends Record>(Query<T> query) =>
+        //       InnerJoin._(this, query);
+        Method(
+          (b) => b
+            ..name = 'join'
+            ..documentation(docs.innerJoinQuery)
+            ..types.add(refer('T extends Record'))
+            ..returns = refer('InnerJoin<${typArgedExprTuple(i)}, T>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'query'
+                  ..type = refer('Query<T>'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('InnerJoin._(this, query)'),
+        ),
 
-      Method(
-        (b) => b
-          ..name = 'leftJoin'
-          ..documentation(docs.leftJoinQuery)
-          ..types.add(refer('T extends Record'))
-          ..returns = refer('LeftJoin<${typArgedExprTuple(i)}, T>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'query'
-              ..type = refer('Query<T>'),
-          ))
-          ..lambda = true
-          ..body = Code('LeftJoin._(this, query)'),
-      ),
+        Method(
+          (b) => b
+            ..name = 'leftJoin'
+            ..documentation(docs.leftJoinQuery)
+            ..types.add(refer('T extends Record'))
+            ..returns = refer('LeftJoin<${typArgedExprTuple(i)}, T>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'query'
+                  ..type = refer('Query<T>'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('LeftJoin._(this, query)'),
+        ),
 
-      Method(
-        (b) => b
-          ..name = 'rightJoin'
-          ..documentation(docs.rightJoinQuery)
-          ..types.add(refer('T extends Record'))
-          ..returns = refer('RightJoin<${typArgedExprTuple(i)}, T>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'query'
-              ..type = refer('Query<T>'),
-          ))
-          ..lambda = true
-          ..body = Code('RightJoin._(this, query)'),
-      ),
+        Method(
+          (b) => b
+            ..name = 'rightJoin'
+            ..documentation(docs.rightJoinQuery)
+            ..types.add(refer('T extends Record'))
+            ..returns = refer('RightJoin<${typArgedExprTuple(i)}, T>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'query'
+                  ..type = refer('Query<T>'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('RightJoin._(this, query)'),
+        ),
 
-      Method(
-        (b) => b
-          ..name = 'exists'
-          ..documentation(docs.existsQuery)
-          ..returns = refer('QuerySingle<(Expr<bool>,)>')
-          ..lambda = true
-          ..body = Code('''
+        Method(
+          (b) => b
+            ..name = 'exists'
+            ..documentation(docs.existsQuery)
+            ..returns = refer('QuerySingle<(Expr<bool>,)>')
+            ..lambda = true
+            ..body = Code('''
             QuerySingle._(Query._(
               _context,
               (
@@ -386,19 +409,21 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
               )
             )
           '''),
-      ),
+        ),
 
-      // QueryClause _castAs(Query<(Expr<A>,)> other)
-      Method(
-        (b) => b
-          ..name = '_castAs'
-          ..returns = refer('QueryClause')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'as'
-              ..type = refer('Query<${typArgedExprTuple(i)}>'),
-          ))
-          ..body = Code('''
+        // QueryClause _castAs(Query<(Expr<A>,)> other)
+        Method(
+          (b) => b
+            ..name = '_castAs'
+            ..returns = refer('QueryClause')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'as'
+                  ..type = refer('Query<${typArgedExprTuple(i)}>'),
+              ),
+            )
+            ..body = Code('''
             final (handle, projection) = _build((${arg.take(i).join(',')}) => [
               ${arg.take(i).mapIndexed((i, a) => '''
                 if ($a._type is _ExprType<Null>)
@@ -413,29 +438,31 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
               projection,
             );
           '''),
-      ),
+        ),
 
-      //    Query<(Expr<A>, Expr<B>, Expr<C>)> $op(
-      //      Query<(Expr<A>, Expr<B>, Expr<C>)> other,
-      //    )
-      for (final (method, clause, docs) in [
-        ('union', 'UnionClause', docs.union),
-        ('unionAll', 'UnionAllClause', docs.unionAll),
-        ('intersect', 'IntersectClause', docs.intersection),
-        ('except', 'ExceptClause', docs.except),
-      ])
-        Method(
-          (b) => b
-            ..name = method
-            ..documentation(docs('Query'))
-            ..returns = refer('Query<${typArgedExprTuple(i)}>')
-            ..requiredParameters.add(Parameter(
-              (b) => b
-                ..name = 'other'
-                ..type = refer('Query<${typArgedExprTuple(i)}>'),
-            ))
-            ..lambda = true
-            ..body = Code('''
+        //    Query<(Expr<A>, Expr<B>, Expr<C>)> $op(
+        //      Query<(Expr<A>, Expr<B>, Expr<C>)> other,
+        //    )
+        for (final (method, clause, docs) in [
+          ('union', 'UnionClause', docs.union),
+          ('unionAll', 'UnionAllClause', docs.unionAll),
+          ('intersect', 'IntersectClause', docs.intersection),
+          ('except', 'ExceptClause', docs.except),
+        ])
+          Method(
+            (b) => b
+              ..name = method
+              ..documentation(docs('Query'))
+              ..returns = refer('Query<${typArgedExprTuple(i)}>')
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = 'other'
+                    ..type = refer('Query<${typArgedExprTuple(i)}>'),
+                ),
+              )
+              ..lambda = true
+              ..body = Code('''
             Query._(
               _context,
               _expressions,
@@ -445,342 +472,399 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
               ),
             )
           '''),
-        ),
+          ),
 
-      //    Query<T> operator +(Query<T> other) => unionAll(other);
-      //    Query<T> operator -(Query<T> other) => except(other);
-      //    Query<T> operator &(Query<T> other) => intersect(other);
-      //    Query<T> operator |(Query<T> other) => union(other);
-      for (final (op, method, docs) in [
-        ('-', 'except', docs.union),
-        ('+', 'unionAll', docs.unionAll),
-        ('&', 'intersect', docs.intersection),
-        ('|', 'union', docs.except),
-      ])
+        //    Query<T> operator +(Query<T> other) => unionAll(other);
+        //    Query<T> operator -(Query<T> other) => except(other);
+        //    Query<T> operator &(Query<T> other) => intersect(other);
+        //    Query<T> operator |(Query<T> other) => union(other);
+        for (final (op, method, docs) in [
+          ('-', 'except', docs.union),
+          ('+', 'unionAll', docs.unionAll),
+          ('&', 'intersect', docs.intersection),
+          ('|', 'union', docs.except),
+        ])
+          Method(
+            (b) => b
+              ..name = 'operator $op'
+              ..documentation(docs('Query'))
+              ..returns = refer('Query<${typArgedExprTuple(i)}>')
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = 'other'
+                    ..type = refer('Query<${typArgedExprTuple(i)}>'),
+                ),
+              )
+              ..lambda = true
+              ..body = Code('$method(other)'),
+          ),
+
+        //    Group<T, (Expr<A>, Expr<B>)> groupBy<T extends Record>(
+        //      T Function(Expr<A> a, Expr<B> b) groupBuilder,
+        //    ) {
+        //      final (handle, (group, standins)) = _build((a, b) {
+        //        return (groupBuilder(a, b), (a, b));
+        //      });
+        //      return Group._(this, handle, group, standins);
+        //    }
         Method(
           (b) => b
-            ..name = 'operator $op'
-            ..documentation(docs('Query'))
-            ..returns = refer('Query<${typArgedExprTuple(i)}>')
-            ..requiredParameters.add(Parameter(
-              (b) => b
-                ..name = 'other'
-                ..type = refer('Query<${typArgedExprTuple(i)}>'),
-            ))
-            ..lambda = true
-            ..body = Code('$method(other)'),
-        ),
-
-      //    Group<T, (Expr<A>, Expr<B>)> groupBy<T extends Record>(
-      //      T Function(Expr<A> a, Expr<B> b) groupBuilder,
-      //    ) {
-      //      final (handle, (group, standins)) = _build((a, b) {
-      //        return (groupBuilder(a, b), (a, b));
-      //      });
-      //      return Group._(this, handle, group, standins);
-      //    }
-      Method(
-        (b) => b
-          ..name = 'groupBy'
-          ..documentation(docs.groupBy)
-          ..types.add(refer('T extends Record'))
-          ..returns = refer('Group<T, ${typArgedExprTuple(i)}>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'groupBuilder'
-              ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
-          ))
-          ..body = Code('''
+            ..name = 'groupBy'
+            ..documentation(docs.groupBy)
+            ..types.add(refer('T extends Record'))
+            ..returns = refer('Group<T, ${typArgedExprTuple(i)}>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'groupBuilder'
+                  ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+              ),
+            )
+            ..body = Code('''
             final (handle, (group, standins)) = _build((${arg.take(i).join(',')}) {
               return (groupBuilder(${arg.take(i).join(',')}), (${arg.take(i).join(',')},));
             });
             return Group._(this, handle, group, standins);
           '''),
-      ),
+        ),
 
-      //   Stream<(A, B, C)> stream() async* {
-      //     final from = _from(_expressions.toList());
-      //     final decode1 = _expressions.$1._decode;
-      //     final decode2 = _expressions.$2._decode;
-      //     final decode3 = _expressions.$3._decode;
-      //
-      //     final (sql, columns, params) = _context._dialect.select(
-      //       SelectStatement._(from),
-      //     );
-      //
-      //     await for (final row in _context._query(sql, params)) {
-      //       yield (
-      //         decode1(row) as A,
-      //         decode2(row) as B,
-      //         decode3(row) as C,
-      //       );
-      //     }
-      //   }
-      Method(
-        (b) => b
-          ..name = 'stream'
-          ..documentation(docs.streamQuery)
-          ..returns = refer(
-            // Query1 return A, while Query2 returns (A, B)
-            'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
-          )
-          ..modifier = MethodModifier.asyncStar
-          ..body = Code([
-            'final from = _from(_expressions.toList());',
-            ...List.generate(
-              i,
-              (i) => 'final decode${i + 1} = _expressions.\$${i + 1}._decode;',
+        //   Stream<(A, B, C)> stream() async* {
+        //     final from = _from(_expressions.toList());
+        //     final decode1 = _expressions.$1._decode;
+        //     final decode2 = _expressions.$2._decode;
+        //     final decode3 = _expressions.$3._decode;
+        //
+        //     final (sql, columns, params) = _context._dialect.select(
+        //       SelectStatement._(from),
+        //     );
+        //
+        //     await for (final row in _context._query(sql, params)) {
+        //       yield (
+        //         decode1(row) as A,
+        //         decode2(row) as B,
+        //         decode3(row) as C,
+        //       );
+        //     }
+        //   }
+        Method(
+          (b) => b
+            ..name = 'stream'
+            ..documentation(docs.streamQuery)
+            ..returns = refer(
+              // Query1 return A, while Query2 returns (A, B)
+              'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
+            )
+            ..modifier = MethodModifier.asyncStar
+            ..body = Code(
+              [
+                'final from = _from(_expressions.toList());',
+                ...List.generate(
+                  i,
+                  (i) =>
+                      'final decode${i + 1} = _expressions.\$${i + 1}._decode;',
+                ),
+                'final (sql, params) = _context._dialect.select(SelectStatement._(from));',
+                'await for (final row in _context._query(sql, params)) {',
+                if (i == 1) ...[
+                  'yield decode1(row) as ${typeArg[0]};',
+                ] else ...[
+                  'yield (',
+                  List.generate(
+                    i,
+                    (i) => 'decode${i + 1}(row) as ${typeArg[i]}',
+                  ).join(','),
+                  ');',
+                ],
+                '}',
+              ].join(''),
             ),
-            'final (sql, params) = _context._dialect.select(SelectStatement._(from));',
-            'await for (final row in _context._query(sql, params)) {',
-            if (i == 1) ...[
-              'yield decode1(row) as ${typeArg[0]};',
-            ] else ...[
-              'yield (',
-              List.generate(i, (i) => 'decode${i + 1}(row) as ${typeArg[i]}')
-                  .join(','),
-              ');',
-            ],
-            '}',
-          ].join('')),
-      ),
+        ),
 
-      Method(
-        (b) => b
-          ..name = 'fetch'
-          ..documentation(docs.fetchQuery)
-          ..returns = refer(
-            // Query1 return A, while Query2 returns (A, B)
-            'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>',
-          )
-          ..modifier = MethodModifier.async
-          ..lambda = true
-          ..body = Code('await stream().toList()'),
-      ),
-    ]));
+        Method(
+          (b) => b
+            ..name = 'fetch'
+            ..documentation(docs.fetchQuery)
+            ..returns = refer(
+              // Query1 return A, while Query2 returns (A, B)
+              'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>',
+            )
+            ..modifier = MethodModifier.async
+            ..lambda = true
+            ..body = Code('await stream().toList()'),
+        ),
+      ]),
+  );
 }
 
 Iterable<Spec> _buildOrderedQueryExtensions(int i) sync* {
-  Method where(String targetType, String returnType) => Method((b) => b
-    ..name = 'where'
-    ..documentation(docs.where(targetType))
-    ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
-    ..requiredParameters.add(Parameter(
-      (b) => b
-        ..name = 'conditionBuilder'
-        ..type = refer('Expr<bool> Function(${typArgedExprArgumentList(i)})'),
-    ))
-    ..lambda = true
-    ..body = Code('$returnType._(_query.where(conditionBuilder))'));
-
-  Method select(String targetType, String returnType) => Method((b) => b
-    ..name = 'select'
-    ..documentation(docs.select(targetType))
-    ..types.add(refer('T extends Record'))
-    ..returns = refer('$returnType<T>')
-    ..requiredParameters.add(Parameter(
-      (b) => b
-        ..name = 'projectionBuilder'
-        ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
-    ))
-    ..lambda = true
-    ..body = Code('$returnType._(_query.select(projectionBuilder))'));
-
-  Method orderBy(String targetType, String returnType) => Method((b) => b
-    ..name = 'orderBy'
-    ..documentation(docs.orderBy(targetType))
-    ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
-    ..requiredParameters.add(Parameter(
-      (b) => b
-        ..name = 'builder'
-        ..type = refer(
-          'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
+  Method where(String targetType, String returnType) => Method(
+    (b) => b
+      ..name = 'where'
+      ..documentation(docs.where(targetType))
+      ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
+      ..requiredParameters.add(
+        Parameter(
+          (b) => b
+            ..name = 'conditionBuilder'
+            ..type = refer(
+              'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+            ),
         ),
-    ))
-    ..lambda = true
-    ..body = Code('_query.orderBy(builder)'));
+      )
+      ..lambda = true
+      ..body = Code('$returnType._(_query.where(conditionBuilder))'),
+  );
 
-  Method limit(String targetType, String returnType) => Method((b) => b
-    ..name = 'limit'
-    ..documentation(docs.limit(targetType))
-    ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
-    ..requiredParameters.add(Parameter(
-      (b) => b
-        ..name = 'limit'
-        ..type = refer('int'),
-    ))
-    ..lambda = true
-    ..body = Code('$returnType._(_query.limit(limit))'));
+  Method select(String targetType, String returnType) => Method(
+    (b) => b
+      ..name = 'select'
+      ..documentation(docs.select(targetType))
+      ..types.add(refer('T extends Record'))
+      ..returns = refer('$returnType<T>')
+      ..requiredParameters.add(
+        Parameter(
+          (b) => b
+            ..name = 'projectionBuilder'
+            ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+        ),
+      )
+      ..lambda = true
+      ..body = Code('$returnType._(_query.select(projectionBuilder))'),
+  );
 
-  Method offset(String targetType, String returnType) => Method((b) => b
-    ..name = 'offset'
-    ..documentation(docs.offset(targetType))
-    ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
-    ..requiredParameters.add(Parameter(
-      (b) => b
-        ..name = 'offset'
-        ..type = refer('int'),
-    ))
-    ..lambda = true
-    ..body = Code('$returnType._(_query.offset(offset))'));
+  Method orderBy(String targetType, String returnType) => Method(
+    (b) => b
+      ..name = 'orderBy'
+      ..documentation(docs.orderBy(targetType))
+      ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
+      ..requiredParameters.add(
+        Parameter(
+          (b) => b
+            ..name = 'builder'
+            ..type = refer(
+              'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
+            ),
+        ),
+      )
+      ..lambda = true
+      ..body = Code('_query.orderBy(builder)'),
+  );
 
-  Method fetch() => Method((b) => b
-    ..name = 'fetch'
-    ..documentation(docs.fetchQuery)
-    ..returns = refer(
-      'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>',
-    )
-    ..lambda = true
-    ..body = Code('_query.fetch()'));
+  Method limit(String targetType, String returnType) => Method(
+    (b) => b
+      ..name = 'limit'
+      ..documentation(docs.limit(targetType))
+      ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
+      ..requiredParameters.add(
+        Parameter(
+          (b) => b
+            ..name = 'limit'
+            ..type = refer('int'),
+        ),
+      )
+      ..lambda = true
+      ..body = Code('$returnType._(_query.limit(limit))'),
+  );
 
-  Method stream() => Method((b) => b
-    ..name = 'stream'
-    ..documentation(docs.streamQuery)
-    ..returns = refer(
-      'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
-    )
-    ..lambda = true
-    ..body = Code('_query.stream()'));
+  Method offset(String targetType, String returnType) => Method(
+    (b) => b
+      ..name = 'offset'
+      ..documentation(docs.offset(targetType))
+      ..returns = refer('$returnType<${typArgedExprTuple(i, 0)}>')
+      ..requiredParameters.add(
+        Parameter(
+          (b) => b
+            ..name = 'offset'
+            ..type = refer('int'),
+        ),
+      )
+      ..lambda = true
+      ..body = Code('$returnType._(_query.offset(offset))'),
+  );
 
-  Method first() => Method((b) => b
-    ..name = 'first'
-    ..documentation(docs.firstQuery)
-    ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
-    ..type = MethodType.getter
-    ..lambda = true
-    ..body = Code('_query.first'));
+  Method fetch() => Method(
+    (b) => b
+      ..name = 'fetch'
+      ..documentation(docs.fetchQuery)
+      ..returns = refer(
+        'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>',
+      )
+      ..lambda = true
+      ..body = Code('_query.fetch()'),
+  );
 
-  yield Extension((b) => b
-    ..name = 'OrderedQuery$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('OrderedQuery<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  Method stream() => Method(
+    (b) => b
+      ..name = 'stream'
+      ..documentation(docs.streamQuery)
+      ..returns = refer(
+        'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
+      )
+      ..lambda = true
+      ..body = Code('_query.stream()'),
+  );
+
+  Method first() => Method(
+    (b) => b
+      ..name = 'first'
+      ..documentation(docs.firstQuery)
+      ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
+      ..type = MethodType.getter
+      ..lambda = true
+      ..body = Code('_query.first'),
+  );
+
+  yield Extension(
+    (b) => b
+      ..name = 'OrderedQuery$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('OrderedQuery<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a query returning zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      where('OrderedQuery', 'OrderedQuery'),
-      select('OrderedQuery', 'ProjectedOrderedQuery'),
-      limit('OrderedQuery', 'OrderedQueryRange'),
-      offset('OrderedQuery', 'OrderedQueryRange'),
-      orderBy('OrderedQuery', 'OrderedQuery'),
-      fetch(),
-      stream(),
-      first(),
-    ]));
+      ..methods.addAll([
+        where('OrderedQuery', 'OrderedQuery'),
+        select('OrderedQuery', 'ProjectedOrderedQuery'),
+        limit('OrderedQuery', 'OrderedQueryRange'),
+        offset('OrderedQuery', 'OrderedQueryRange'),
+        orderBy('OrderedQuery', 'OrderedQuery'),
+        fetch(),
+        stream(),
+        first(),
+      ]),
+  );
 
-  yield Extension((b) => b
-    ..name = 'OrderedQueryRange$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('OrderedQueryRange<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'OrderedQueryRange$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('OrderedQueryRange<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a query returning zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      select('OrderedQueryRange', 'ProjectedOrderedQueryRange'),
-      limit('OrderedQueryRange', 'OrderedQueryRange'),
-      offset('OrderedQueryRange', 'OrderedQueryRange'),
-      orderBy('OrderedQueryRange', 'OrderedQuery'),
-      fetch(),
-      stream(),
-      first(),
-    ]));
+      ..methods.addAll([
+        select('OrderedQueryRange', 'ProjectedOrderedQueryRange'),
+        limit('OrderedQueryRange', 'OrderedQueryRange'),
+        offset('OrderedQueryRange', 'OrderedQueryRange'),
+        orderBy('OrderedQueryRange', 'OrderedQuery'),
+        fetch(),
+        stream(),
+        first(),
+      ]),
+  );
 
-  yield Extension((b) => b
-    ..name = 'ProjectedOrderedQuery$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('ProjectedOrderedQuery<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'ProjectedOrderedQuery$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('ProjectedOrderedQuery<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a query returning zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      limit('ProjectedOrderedQuery', 'ProjectedOrderedQueryRange'),
-      offset('ProjectedOrderedQuery', 'ProjectedOrderedQueryRange'),
-      orderBy('ProjectedOrderedQuery', 'OrderedQuery'),
-      fetch(),
-      stream(),
-      first(),
-    ]));
+      ..methods.addAll([
+        limit('ProjectedOrderedQuery', 'ProjectedOrderedQueryRange'),
+        offset('ProjectedOrderedQuery', 'ProjectedOrderedQueryRange'),
+        orderBy('ProjectedOrderedQuery', 'OrderedQuery'),
+        fetch(),
+        stream(),
+        first(),
+      ]),
+  );
 
-  yield Extension((b) => b
-    ..name = 'ProjectedOrderedQueryRange$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('ProjectedOrderedQueryRange<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'ProjectedOrderedQueryRange$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('ProjectedOrderedQueryRange<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a query returning zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      limit('ProjectedOrderedQueryRange', 'ProjectedOrderedQueryRange'),
-      offset('ProjectedOrderedQueryRange', 'ProjectedOrderedQueryRange'),
-      orderBy('ProjectedOrderedQueryRange', 'OrderedQuery'),
-      fetch(),
-      stream(),
-      first(),
-    ]));
+      ..methods.addAll([
+        limit('ProjectedOrderedQueryRange', 'ProjectedOrderedQueryRange'),
+        offset('ProjectedOrderedQueryRange', 'ProjectedOrderedQueryRange'),
+        orderBy('ProjectedOrderedQueryRange', 'OrderedQuery'),
+        fetch(),
+        stream(),
+        first(),
+      ]),
+  );
 
   // OrderedSubQuery
 
-  yield Extension((b) => b
-    ..name = 'OrderedSubQuery$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('OrderedSubQuery<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'OrderedSubQuery$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('OrderedSubQuery<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a ordered subquery of zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      where('OrderedSubQuery', 'OrderedSubQuery'),
-      select('OrderedSubQuery', 'ProjectedOrderedSubQuery'),
-      limit('OrderedSubQuery', 'OrderedSubQueryRange'),
-      offset('OrderedSubQuery', 'OrderedSubQueryRange'),
-      orderBy('OrderedSubQuery', 'OrderedSubQuery'),
-    ]));
+      ..methods.addAll([
+        where('OrderedSubQuery', 'OrderedSubQuery'),
+        select('OrderedSubQuery', 'ProjectedOrderedSubQuery'),
+        limit('OrderedSubQuery', 'OrderedSubQueryRange'),
+        offset('OrderedSubQuery', 'OrderedSubQueryRange'),
+        orderBy('OrderedSubQuery', 'OrderedSubQuery'),
+      ]),
+  );
 
-  yield Extension((b) => b
-    ..name = 'OrderedSubQueryRange$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('OrderedSubQueryRange<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'OrderedSubQueryRange$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('OrderedSubQueryRange<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a ordered subquery of zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      select('OrderedSubQueryRange', 'ProjectedOrderedSubQueryRange'),
-      limit('OrderedSubQueryRange', 'OrderedSubQueryRange'),
-      offset('OrderedSubQueryRange', 'OrderedSubQueryRange'),
-      orderBy('OrderedSubQueryRange', 'OrderedSubQuery'),
-    ]));
+      ..methods.addAll([
+        select('OrderedSubQueryRange', 'ProjectedOrderedSubQueryRange'),
+        limit('OrderedSubQueryRange', 'OrderedSubQueryRange'),
+        offset('OrderedSubQueryRange', 'OrderedSubQueryRange'),
+        orderBy('OrderedSubQueryRange', 'OrderedSubQuery'),
+      ]),
+  );
 
-  yield Extension((b) => b
-    ..name = 'ProjectedOrderedSubQuery$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('ProjectedOrderedSubQuery<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'ProjectedOrderedSubQuery$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('ProjectedOrderedSubQuery<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a ordered subquery of zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      limit('ProjectedOrderedSubQuery', 'ProjectedOrderedSubQueryRange'),
-      offset('ProjectedOrderedSubQuery', 'ProjectedOrderedSubQueryRange'),
-      orderBy('ProjectedOrderedSubQuery', 'OrderedSubQuery'),
-    ]));
+      ..methods.addAll([
+        limit('ProjectedOrderedSubQuery', 'ProjectedOrderedSubQueryRange'),
+        offset('ProjectedOrderedSubQuery', 'ProjectedOrderedSubQueryRange'),
+        orderBy('ProjectedOrderedSubQuery', 'OrderedSubQuery'),
+      ]),
+  );
 
-  yield Extension((b) => b
-    ..name = 'ProjectedOrderedSubQueryRange$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('ProjectedOrderedSubQueryRange<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'ProjectedOrderedSubQueryRange$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('ProjectedOrderedSubQueryRange<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a ordered subquery of zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      limit('ProjectedOrderedSubQueryRange', 'ProjectedOrderedSubQueryRange'),
-      offset('ProjectedOrderedSubQueryRange', 'ProjectedOrderedSubQueryRange'),
-      orderBy('ProjectedOrderedSubQueryRange', 'OrderedSubQuery'),
-    ]));
+      ..methods.addAll([
+        limit('ProjectedOrderedSubQueryRange', 'ProjectedOrderedSubQueryRange'),
+        offset(
+          'ProjectedOrderedSubQueryRange',
+          'ProjectedOrderedSubQueryRange',
+        ),
+        orderBy('ProjectedOrderedSubQueryRange', 'OrderedSubQuery'),
+      ]),
+  );
 }
 
 /// Extension for Query
@@ -789,73 +873,85 @@ Iterable<Spec> _buildOrderedQueryExtensions(int i) sync* {
 /// extension SubQueryABC<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {...}
 /// ```
 Spec _buildSubQueryExtension(int i) {
-  return Extension((b) => b
-    ..name = 'SubQuery$i'
-    ..on = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..documentation('''
+  return Extension(
+    (b) => b
+      ..name = 'SubQuery$i'
+      ..on = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..documentation('''
       Extension methods for a subquery returning zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      Method(
-        (b) => b
-          ..name = '_build'
-          ..returns = refer('(Object, T)')
-          ..types.add(refer('T'))
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'builder'
-              ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
-          ))
-          ..body = Code([
-            'final handle = Object();',
-            'var offset = 0;',
-            ...arg
-                .take(i)
-                .mapIndexed((i, a) => [
-                      'final $a = _expressions.\$${i + 1}._standin(offset, handle);',
-                      'offset += _expressions.\$${i + 1}._columns;',
-                    ])
-                .flattened
-                .take(i * 2 - 1),
-            'return (handle, builder(${arg.take(i).join(',')}));',
-          ].join('')),
-      ),
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = '_build'
+            ..returns = refer('(Object, T)')
+            ..types.add(refer('T'))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'builder'
+                  ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+              ),
+            )
+            ..body = Code(
+              [
+                'final handle = Object();',
+                'var offset = 0;',
+                ...arg
+                    .take(i)
+                    .mapIndexed(
+                      (i, a) => [
+                        'final $a = _expressions.\$${i + 1}._standin(offset, handle);',
+                        'offset += _expressions.\$${i + 1}._columns;',
+                      ],
+                    )
+                    .flattened
+                    .take(i * 2 - 1),
+                'return (handle, builder(${arg.take(i).join(',')}));',
+              ].join(''),
+            ),
+        ),
 
-      Method(
-        (b) => b
-          ..name = 'where'
-          ..documentation(docs.where('SubQuery'))
-          ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'conditionBuilder'
-              ..type =
-                  refer('Expr<bool> Function(${typArgedExprArgumentList(i)})'),
-          ))
-          ..body = Code('''
+        Method(
+          (b) => b
+            ..name = 'where'
+            ..documentation(docs.where('SubQuery'))
+            ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'conditionBuilder'
+                  ..type = refer(
+                    'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ),
+            )
+            ..body = Code('''
             final (handle, where) = _build(conditionBuilder);
             return SubQuery._(
               _expressions,
               (e) => WhereClause._(_from(e), handle, where),
             );
           '''),
-      ),
+        ),
 
-      Method(
-        (b) => b
-          ..name = 'orderBy'
-          ..documentation(docs.orderBy('SubQuery'))
-          ..returns = refer('OrderedSubQuery<${typArgedExprTuple(i, 0)}>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'builder'
-              ..type = refer(
-                'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
+        Method(
+          (b) => b
+            ..name = 'orderBy'
+            ..documentation(docs.orderBy('SubQuery'))
+            ..returns = refer('OrderedSubQuery<${typArgedExprTuple(i, 0)}>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'builder'
+                  ..type = refer(
+                    'List<(Expr<Comparable?>, Order)> Function(${typArgedExprArgumentList(i)})',
+                  ),
               ),
-          ))
-          ..body = Code('''
+            )
+            ..body = Code('''
             final (handle, orderBy) = _build(builder);
             if (orderBy.isEmpty) {
               return OrderedSubQuery._(this);
@@ -865,94 +961,99 @@ Spec _buildSubQueryExtension(int i) {
               (e) => OrderByClause._(_from(e), handle, orderBy),
             ));
           '''),
-      ),
+        ),
 
-      Method(
-        (b) => b
-          ..name = 'limit'
-          ..documentation(docs.limit('SubQuery'))
-          ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'limit'
-              ..type = refer('int'),
-          ))
-          ..lambda = true
-          ..body = Code('''
+        Method(
+          (b) => b
+            ..name = 'limit'
+            ..documentation(docs.limit('SubQuery'))
+            ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'limit'
+                  ..type = refer('int'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             SubQuery._(
               _expressions,
               (e) => LimitClause._(_from(e), limit),
             )
           '''),
-      ),
+        ),
 
-      Method(
-        (b) => b
-          ..name = 'offset'
-          ..documentation(docs.offset('SubQuery'))
-          ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'offset'
-              ..type = refer('int'),
-          ))
-          ..lambda = true
-          ..body = Code('''
+        Method(
+          (b) => b
+            ..name = 'offset'
+            ..documentation(docs.offset('SubQuery'))
+            ..returns = refer('SubQuery<${typArgedExprTuple(i, 0)}>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'offset'
+                  ..type = refer('int'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
             SubQuery._(
               _expressions,
               (e) => OffsetClause._(_from(e), offset),
             )
           '''),
-      ),
+        ),
 
-      // TODO: Consider a .first method that returns Expr<(A, B, C, ...)>
-
-      Method(
-        (b) => b
-          ..name = 'count'
-          ..documentation(docs.countSubQuery)
-          ..returns = refer('Expr<int>')
-          ..lambda = true
-          ..body = Code('''
+        // TODO: Consider a .first method that returns Expr<(A, B, C, ...)>
+        Method(
+          (b) => b
+            ..name = 'count'
+            ..documentation(docs.countSubQuery)
+            ..returns = refer('Expr<int>')
+            ..lambda = true
+            ..body = Code('''
             select((${arg.take(i).join(',')}) => (CountAllExpression._(),)).first.asNotNull()
           '''),
-      ),
+        ),
 
-      Method(
-        (b) => b
-          ..name = 'select'
-          ..documentation(docs.select('SubQuery'))
-          ..types.add(refer('T extends Record'))
-          ..returns = refer('SubQuery<T>')
-          ..requiredParameters.add(Parameter(
-            (b) => b
-              ..name = 'projectionBuilder'
-              ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
-          ))
-          ..body = Code('''
+        Method(
+          (b) => b
+            ..name = 'select'
+            ..documentation(docs.select('SubQuery'))
+            ..types.add(refer('T extends Record'))
+            ..returns = refer('SubQuery<T>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'projectionBuilder'
+                  ..type = refer('T Function(${typArgedExprArgumentList(i)})'),
+              ),
+            )
+            ..body = Code('''
             final (handle, projection) = _build(projectionBuilder);
             return SubQuery._(
               projection,
               (e) => SelectFromClause._(_from(_expressions.toList()), handle, e),
             );
           '''),
-      ),
+        ),
 
-      // TODO: Consider introducing support for .union, .intersect, .except
-      // TODO: Consider introducing support for .groupBy
-      // TODO: Consider introducing SubJoin
-
-      Method(
-        (b) => b
-          ..name = 'exists'
-          ..documentation(docs.existsSubQuery)
-          ..returns = refer('Expr<bool>')
-          ..lambda = true
-          ..body = Code('''
+        // TODO: Consider introducing support for .union, .intersect, .except
+        // TODO: Consider introducing support for .groupBy
+        // TODO: Consider introducing SubJoin
+        Method(
+          (b) => b
+            ..name = 'exists'
+            ..documentation(docs.existsSubQuery)
+            ..returns = refer('Expr<bool>')
+            ..lambda = true
+            ..body = Code('''
             ExistsExpression._(_from(_expressions.toList()))
           '''),
-      ),
-    ]));
+        ),
+      ]),
+  );
 }
 
 /// Build extension for `QuerySingle`.
@@ -1000,13 +1101,15 @@ Spec _buildSingleQueryExtension(int i) {
               ..name = 'where'
               ..documentation(docs.where('QuerySingle'))
               ..returns = refer('QuerySingle<${typArgedExprTuple(i, 0)}>')
-              ..requiredParameters.add(Parameter(
-                (b) => b
-                  ..name = 'conditionBuilder'
-                  ..type = refer(
-                    'Expr<bool> Function(${typArgedExprArgumentList(i)})',
-                  ),
-              ))
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = 'conditionBuilder'
+                    ..type = refer(
+                      'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+                    ),
+                ),
+              )
               ..lambda = true
               ..body = Code('asQuery.where(conditionBuilder).first'),
           ),
@@ -1016,22 +1119,26 @@ Spec _buildSingleQueryExtension(int i) {
               ..documentation(docs.select('QuerySingle'))
               ..types.add(refer('T extends Record'))
               ..returns = refer('QuerySingle<T>')
-              ..requiredParameters.add(Parameter(
-                (b) => b
-                  ..name = 'projectionBuilder'
-                  ..type = refer(
-                    'T Function(${typArgedExprArgumentList(i)})',
-                  ),
-              ))
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = 'projectionBuilder'
+                    ..type = refer(
+                      'T Function(${typArgedExprArgumentList(i)})',
+                    ),
+                ),
+              )
               ..lambda = true
               ..body = Code('QuerySingle._(asQuery.select(projectionBuilder))'),
           ),
           Method(
             (b) => b
               ..name = 'fetch'
-              ..documentation(i > 1
-                  ? docs.fetchQuerySingleWithFetchOrNullsTip
-                  : docs.fetchQuerySingle)
+              ..documentation(
+                i > 1
+                    ? docs.fetchQuerySingleWithFetchOrNullsTip
+                    : docs.fetchQuerySingle,
+              )
               ..returns = refer(
                 'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}?>',
               )
@@ -1082,98 +1189,106 @@ Spec _buildSingleQueryExtension(int i) {
 /// }
 /// ```
 Iterable<Spec> _buildReturnExtension(int i) sync* {
-  yield Extension((b) => b
-    ..name = 'Return$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('Return<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'Return$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('Return<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a statement returning zero or more rows with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      Method(
-        (b) => b
-          ..name = 'executeAndStream'
-          ..documentation(docs.returnExecuteAndStream)
-          ..returns = refer(
-              'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>')
-          ..modifier = MethodModifier.asyncStar
-          ..body = Code('''
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = 'executeAndStream'
+            ..documentation(docs.returnExecuteAndStream)
+            ..returns = refer(
+              'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
+            )
+            ..modifier = MethodModifier.asyncStar
+            ..body = Code('''
             final (sql, params) = _render(_expressions.toList());
             await for (final r in _context._query(sql, params)) {
               yield ${i == 1 ? '_expressions.\$1._decode(r) as ${typeArg[0]}' : '(${List.generate(i, (i) => '_expressions.\$${i + 1}._decode(r) as ${typeArg[i]}').join(',')})'};
             }
           '''),
-      ),
-      Method(
-        (b) => b
-          ..name = 'executeAndFetch'
-          ..documentation(docs.returnExecuteAndFetch)
-          ..returns = refer(
-              'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>')
-          ..modifier = MethodModifier.async
-          ..lambda = true
-          ..body = Code('await executeAndStream().toList()'),
-      ),
-    ]));
-
-  yield Extension((b) => b
-    ..name = 'ReturnSingle$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('ReturnSingle<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
-      Extension methods for a statement returning at-most one row with
-      $i expression${i > 1 ? 's' : ''}.
-    ''')
-    ..methods.addAll([
-      Method(
-        (b) => b
-          ..name = 'executeAndFetch'
-          ..documentation(docs.returnSingleExecuteAndFetch)
-          ..returns = refer(
-            'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}?>',
-          )
-          ..modifier = MethodModifier.async
-          ..lambda = true
-          ..body = Code('(await _return.executeAndFetch()).firstOrNull'),
-      ),
-      if (i > 1)
+        ),
         Method(
           (b) => b
-            ..name = 'executeAndFetchOrNulls'
-            ..documentation(docs.returnSingleExecuteAndFetchOrNulls)
+            ..name = 'executeAndFetch'
+            ..documentation(docs.returnExecuteAndFetch)
             ..returns = refer(
-              'Future<(${List.generate(i, (i) => '${typeArg[i]}?').join(',')})>',
+              'Future<List<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>>',
             )
             ..modifier = MethodModifier.async
             ..lambda = true
-            ..body = Code(
-              'await executeAndFetch() ?? (${List.generate(i, (i) => 'null').join(',')})',
-            ),
+            ..body = Code('await executeAndStream().toList()'),
         ),
-    ]));
+      ]),
+  );
 
-  yield Extension((b) => b
-    ..name = 'ReturnOne$i'
-    ..types.addAll(typeArg.take(i).map(refer))
-    ..on = refer('ReturnOne<${typArgedExprTuple(i, 0)}>')
-    ..documentation('''
+  yield Extension(
+    (b) => b
+      ..name = 'ReturnSingle$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('ReturnSingle<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
+      Extension methods for a statement returning at-most one row with
+      $i expression${i > 1 ? 's' : ''}.
+    ''')
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = 'executeAndFetch'
+            ..documentation(docs.returnSingleExecuteAndFetch)
+            ..returns = refer(
+              'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}?>',
+            )
+            ..modifier = MethodModifier.async
+            ..lambda = true
+            ..body = Code('(await _return.executeAndFetch()).firstOrNull'),
+        ),
+        if (i > 1)
+          Method(
+            (b) => b
+              ..name = 'executeAndFetchOrNulls'
+              ..documentation(docs.returnSingleExecuteAndFetchOrNulls)
+              ..returns = refer(
+                'Future<(${List.generate(i, (i) => '${typeArg[i]}?').join(',')})>',
+              )
+              ..modifier = MethodModifier.async
+              ..lambda = true
+              ..body = Code(
+                'await executeAndFetch() ?? (${List.generate(i, (i) => 'null').join(',')})',
+              ),
+          ),
+      ]),
+  );
+
+  yield Extension(
+    (b) => b
+      ..name = 'ReturnOne$i'
+      ..types.addAll(typeArg.take(i).map(refer))
+      ..on = refer('ReturnOne<${typArgedExprTuple(i, 0)}>')
+      ..documentation('''
       Extension methods for a statement returning exactly one row with
       $i expression${i > 1 ? 's' : ''}.
     ''')
-    ..methods.addAll([
-      Method(
-        (b) => b
-          ..name = 'executeAndFetch'
-          ..documentation(docs.returnOneExecuteAndFetch)
-          ..returns = refer(
-            'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
-          )
-          ..modifier = MethodModifier.async
-          ..lambda = true
-          ..body = Code('(await _return.executeAndFetch()).first'),
-      ),
-    ]));
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = 'executeAndFetch'
+            ..documentation(docs.returnOneExecuteAndFetch)
+            ..returns = refer(
+              'Future<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
+            )
+            ..modifier = MethodModifier.async
+            ..lambda = true
+            ..body = Code('(await _return.executeAndFetch()).first'),
+        ),
+      ]),
+  );
 }
 
 /// Build extension for `toList` on tuple.
@@ -1184,18 +1299,19 @@ Iterable<Spec> _buildReturnExtension(int i) sync* {
 /// }
 /// ```
 Spec _buildToListExtension(int i) => Extension(
-      (b) => b
-        ..types.addAll(typeArg.take(i).map(refer))
-        ..on = refer(typArgedExprTuple(i, 0))
-        ..methods.add(Method(
-          (b) => b
-            ..name = 'toList'
-            ..returns = refer('List<Expr>')
-            ..lambda = true
-            ..body =
-                Code('[${List.generate(i, (i) => '\$${i + 1}').join(',')}]'),
-        )),
-    );
+  (b) => b
+    ..types.addAll(typeArg.take(i).map(refer))
+    ..on = refer(typArgedExprTuple(i, 0))
+    ..methods.add(
+      Method(
+        (b) => b
+          ..name = 'toList'
+          ..returns = refer('List<Expr>')
+          ..lambda = true
+          ..body = Code('[${List.generate(i, (i) => '\$${i + 1}').join(',')}]'),
+      ),
+    ),
+);
 
 /// Build extension for `Join`
 ///
@@ -1227,27 +1343,32 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
     ('Right', '?', '', 'right'),
   ];
   for (final (kind, ln, rn, type) in kinds) {
-    yield Extension((b) => b
-      ..name = '${kind}Join${i}On$j'
-      ..types.addAll(typeArg.take(i + j).map(refer))
-      ..on = refer(
-          '${kind}Join<${typArgedExprTuple(i, 0)}, ${typArgedExprTuple(j, i)}>')
-      ..documentation('''
+    yield Extension(
+      (b) => b
+        ..name = '${kind}Join${i}On$j'
+        ..types.addAll(typeArg.take(i + j).map(refer))
+        ..on = refer(
+          '${kind}Join<${typArgedExprTuple(i, 0)}, ${typArgedExprTuple(j, i)}>',
+        )
+        ..documentation('''
         Extension methods for completing an `${kind.toUpperCase()} JOIN`.
       ''')
-      ..methods.addAll([
-        // We only have `all` on INNER JOIN
-        if (type == 'inner')
-          Method((b) => b
-            ..name = 'all'
-            ..documentation(docs.innerJoinAll)
-            ..returns = refer('Query<${listToTuple(toArgedExprList([
-                  ...typeArg.take(i).map((v) => '$v$ln'),
-                  ...typeArg.skip(i).take(j).map((v) => '$v$rn'),
-                ]))}>')
-            ..type = MethodType.getter
-            ..lambda = true
-            ..body = Code('''
+        ..methods.addAll([
+          // We only have `all` on INNER JOIN
+          if (type == 'inner')
+            Method(
+              (b) => b
+                ..name = 'all'
+                ..documentation(docs.innerJoinAll)
+                ..returns = refer(
+                  'Query<${listToTuple(toArgedExprList([
+                    ...typeArg.take(i).map((v) => '$v$ln'),
+                    ...typeArg.skip(i).take(j).map((v) => '$v$rn'),
+                  ]))}>',
+                )
+                ..type = MethodType.getter
+                ..lambda = true
+                ..body = Code('''
               Query._(
                 _from._context,
                 (
@@ -1262,21 +1383,28 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
                   Literal.true\$,
                 ),
               )
-           ''')),
-        Method((b) => b
-          ..name = 'on'
-          ..documentation(docs.joinOn(kind.toLowerCase()))
-          ..returns = refer('Query<${listToTuple(toArgedExprList([
-                ...typeArg.take(i).map((v) => '$v$ln'),
-                ...typeArg.skip(i).take(j).map((v) => '$v$rn'),
-              ]))}>')
-          ..requiredParameters.add(Parameter(
+           '''),
+            ),
+          Method(
             (b) => b
-              ..name = 'conditionBuilder'
-              ..type = refer(
-                  'Expr<bool> Function(${typArgedExprArgumentList(i + j)})'),
-          ))
-          ..body = Code('''
+              ..name = 'on'
+              ..documentation(docs.joinOn(kind.toLowerCase()))
+              ..returns = refer(
+                'Query<${listToTuple(toArgedExprList([
+                  ...typeArg.take(i).map((v) => '$v$ln'),
+                  ...typeArg.skip(i).take(j).map((v) => '$v$rn'),
+                ]))}>',
+              )
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = 'conditionBuilder'
+                    ..type = refer(
+                      'Expr<bool> Function(${typArgedExprArgumentList(i + j)})',
+                    ),
+                ),
+              )
+              ..body = Code('''
             late JoinClause join;
             final q = Query._(
               _from._context,
@@ -1295,8 +1423,10 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
               on,
             );
             return q;
-          '''))
-      ]));
+          '''),
+          ),
+        ]),
+    );
   }
 }
 
@@ -1328,28 +1458,33 @@ Spec _buildGroupByExtension(int i, int j) {
   final S = typArgedExprTuple(i);
   final T = typArgedExprTuple(j, i);
 
-  return Extension((b) => b
-    ..name = 'Group${j}By$i'
-    ..types.addAll(typeArg.take(i + j).map(refer))
-    ..on = refer('Group<$S, $T>')
-    ..documentation('''
+  return Extension(
+    (b) => b
+      ..name = 'Group${j}By$i'
+      ..types.addAll(typeArg.take(i + j).map(refer))
+      ..on = refer('Group<$S, $T>')
+      ..documentation('''
       Extension methods for completing a `GROUP BY`.
     ''')
-    // Note. There is no need for a .having clause, it's functionally equivalent
-    //       use .where on the resulting Query<R>.
-    ..methods.add(Method(
-      (b) => b
-        ..name = 'aggregate'
-        ..documentation(docs.groupByAggregate)
-        ..returns = refer('Query<T>')
-        ..types.add(refer('T extends Record'))
-        ..requiredParameters.add(Parameter(
+      // Note. There is no need for a .having clause, it's functionally equivalent
+      //       use .where on the resulting Query<R>.
+      ..methods.add(
+        Method(
           (b) => b
-            ..name = 'aggregationBuilder'
-            ..type =
-                refer('Aggregation<$T, T> Function(Aggregation<$T, $S> agg)'),
-        ))
-        ..body = Code('''
+            ..name = 'aggregate'
+            ..documentation(docs.groupByAggregate)
+            ..returns = refer('Query<T>')
+            ..types.add(refer('T extends Record'))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'aggregationBuilder'
+                  ..type = refer(
+                    'Aggregation<$T, T> Function(Aggregation<$T, $S> agg)',
+                  ),
+              ),
+            )
+            ..body = Code('''
           final agg = aggregationBuilder(Aggregation._(_standins, _group));
 
           return Query._(
@@ -1363,7 +1498,9 @@ Spec _buildGroupByExtension(int i, int j) {
             ),
           );
         '''),
-    )));
+        ),
+      ),
+  );
 }
 
 /// Build extension for `Aggregation`.
@@ -1384,54 +1521,63 @@ Spec _buildAggregationExtension(int i, int j) {
   final T = typeArg[i + j]; // typeArg is zero indexed, so +1 is not necessary!
 
   // Types in the returned projection, where T is T?
-  final t2nullable =
-      listToTuple(toArgedExprList([...typeArg.skip(i).take(j), '$T?']));
+  final t2nullable = listToTuple(
+    toArgedExprList([...typeArg.skip(i).take(j), '$T?']),
+  );
 
-  return Extension((b) => b
-    ..name = 'Aggregate${i}Project$j'
-    ..types.addAll(typeArg.take(i + j).map(refer))
-    ..on = refer('Aggregation<$S, $t1>')
-    ..documentation('''
+  return Extension(
+    (b) => b
+      ..name = 'Aggregate${i}Project$j'
+      ..types.addAll(typeArg.take(i + j).map(refer))
+      ..on = refer('Aggregation<$S, $t1>')
+      ..documentation('''
       Extension methods for specifying aggregate functions over rows in a group.
     ''')
-    ..methods.addAll([
-      //  Aggregation<
-      //      (
-      //        Expr<A>,
-      //        Expr<B>,
-      //      ),
-      //      (
-      //        Expr<C>,
-      //        Expr<D>,
-      //        Expr<S>,
-      //      )> _build<T, S>(
-      //    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
-      //    Expr<S> Function(Expr<T> e) wrap,
-      //  ) =>
-      //      Aggregation._(
-      //        _standins,
-      //        (
-      //          _projection.$1,
-      //          _projection.$2,
-      //          wrap(aggregateBuilder(_standins.$1, _standins.$2)),
-      //        ),
-      //      );
-      Method((b) => b
-        ..name = '_build'
-        ..returns = refer('Aggregation<$S, $t2>')
-        ..types.addAll([refer(T), refer('T')])
-        ..requiredParameters.add(Parameter(
+      ..methods.addAll([
+        //  Aggregation<
+        //      (
+        //        Expr<A>,
+        //        Expr<B>,
+        //      ),
+        //      (
+        //        Expr<C>,
+        //        Expr<D>,
+        //        Expr<S>,
+        //      )> _build<T, S>(
+        //    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+        //    Expr<S> Function(Expr<T> e) wrap,
+        //  ) =>
+        //      Aggregation._(
+        //        _standins,
+        //        (
+        //          _projection.$1,
+        //          _projection.$2,
+        //          wrap(aggregateBuilder(_standins.$1, _standins.$2)),
+        //        ),
+        //      );
+        Method(
           (b) => b
-            ..name = 'aggregateBuilder'
-            ..type = refer('Expr<T> Function(${typArgedExprArgumentList(i)})'),
-        ))
-        ..requiredParameters.add(Parameter(
-          (b) => b
-            ..name = 'wrap'
-            ..type = refer('Expr<$T> Function(Expr<T> e)'),
-        ))
-        ..lambda = true
-        ..body = Code('''
+            ..name = '_build'
+            ..returns = refer('Aggregation<$S, $t2>')
+            ..types.addAll([refer(T), refer('T')])
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'aggregateBuilder'
+                  ..type = refer(
+                    'Expr<T> Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ),
+            )
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'wrap'
+                  ..type = refer('Expr<$T> Function(Expr<T> e)'),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
           Aggregation._(
             _standins,
             (
@@ -1441,93 +1587,115 @@ Spec _buildAggregationExtension(int i, int j) {
               )),
             ),
           )
-        ''')),
+        '''),
+        ),
 
-      //  Aggregation<
-      //      (
-      //        Expr<A>,
-      //        Expr<B>,
-      //      ),
-      //      (
-      //        Expr<C>,
-      //        Expr<D>,
-      //        Expr<T>,
-      //      )> sum<T extends num>(
-      //    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
-      //  ) =>
-      //      _build(aggregateBuilder, SumExpression._);
-      Method((b) => b
-        ..name = 'sum'
-        ..documentation(docs.aggregationSum)
-        ..returns = refer('Aggregation<$S, $t2>')
-        ..types.add(refer('$T extends num'))
-        ..requiredParameters.add(Parameter(
+        //  Aggregation<
+        //      (
+        //        Expr<A>,
+        //        Expr<B>,
+        //      ),
+        //      (
+        //        Expr<C>,
+        //        Expr<D>,
+        //        Expr<T>,
+        //      )> sum<T extends num>(
+        //    Expr<T> Function(Expr<A> a, Expr<B> b) aggregateBuilder,
+        //  ) =>
+        //      _build(aggregateBuilder, SumExpression._);
+        Method(
           (b) => b
-            ..name = 'aggregateBuilder'
-            ..type =
-                refer('Expr<$T?> Function(${typArgedExprArgumentList(i)})'),
-        ))
-        ..lambda = true
-        ..body = Code('_build(aggregateBuilder, SumExpression._)')),
+            ..name = 'sum'
+            ..documentation(docs.aggregationSum)
+            ..returns = refer('Aggregation<$S, $t2>')
+            ..types.add(refer('$T extends num'))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'aggregateBuilder'
+                  ..type = refer(
+                    'Expr<$T?> Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('_build(aggregateBuilder, SumExpression._)'),
+        ),
 
-      Method((b) => b
-        ..name = 'avg'
-        ..documentation(docs.aggregationAvg)
-        ..returns = refer(
-            'Aggregation<$S, ${listToTuple(typArgedExprAsList(j, i) + [
-                  'Expr<double?>'
-                ])}>')
-        ..types.add(refer('$T extends num'))
-        ..requiredParameters.add(Parameter(
+        Method(
           (b) => b
-            ..name = 'aggregateBuilder'
-            ..type =
-                refer('Expr<$T?> Function(${typArgedExprArgumentList(i)})'),
-        ))
-        ..lambda = true
-        ..body = Code('_build(aggregateBuilder, AvgExpression._)')),
+            ..name = 'avg'
+            ..documentation(docs.aggregationAvg)
+            ..returns = refer(
+              'Aggregation<$S, ${listToTuple(typArgedExprAsList(j, i) + ['Expr<double?>'])}>',
+            )
+            ..types.add(refer('$T extends num'))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'aggregateBuilder'
+                  ..type = refer(
+                    'Expr<$T?> Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('_build(aggregateBuilder, AvgExpression._)'),
+        ),
 
-      Method((b) => b
-        ..name = 'min'
-        ..documentation(docs.aggregationMin)
-        ..returns = refer('Aggregation<$S, $t2nullable>')
-        ..types.add(refer('$T extends Comparable'))
-        ..requiredParameters.add(Parameter(
+        Method(
           (b) => b
-            ..name = 'aggregateBuilder'
-            ..type =
-                refer('Expr<$T?> Function(${typArgedExprArgumentList(i)})'),
-        ))
-        ..lambda = true
-        ..body = Code('_build(aggregateBuilder, MinExpression._)')),
+            ..name = 'min'
+            ..documentation(docs.aggregationMin)
+            ..returns = refer('Aggregation<$S, $t2nullable>')
+            ..types.add(refer('$T extends Comparable'))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'aggregateBuilder'
+                  ..type = refer(
+                    'Expr<$T?> Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('_build(aggregateBuilder, MinExpression._)'),
+        ),
 
-      Method((b) => b
-        ..name = 'max'
-        ..documentation(docs.aggregationMax)
-        ..returns = refer('Aggregation<$S, $t2nullable>')
-        ..types.add(refer('$T extends Comparable'))
-        ..requiredParameters.add(Parameter(
+        Method(
           (b) => b
-            ..name = 'aggregateBuilder'
-            ..type =
-                refer('Expr<$T?> Function(${typArgedExprArgumentList(i)})'),
-        ))
-        ..lambda = true
-        ..body = Code('_build(aggregateBuilder, MaxExpression._)')),
+            ..name = 'max'
+            ..documentation(docs.aggregationMax)
+            ..returns = refer('Aggregation<$S, $t2nullable>')
+            ..types.add(refer('$T extends Comparable'))
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'aggregateBuilder'
+                  ..type = refer(
+                    'Expr<$T?> Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ),
+            )
+            ..lambda = true
+            ..body = Code('_build(aggregateBuilder, MaxExpression._)'),
+        ),
 
-      Method((b) => b
-        ..name = 'count'
-        ..documentation(docs.aggregationCount)
-        ..returns = refer(
-            'Aggregation<$S, ${listToTuple(typArgedExprAsList(j, i) + [
-                  'Expr<int>'
-                ])}>')
-        ..lambda = true
-        ..body = Code('''
+        Method(
+          (b) => b
+            ..name = 'count'
+            ..documentation(docs.aggregationCount)
+            ..returns = refer(
+              'Aggregation<$S, ${listToTuple(typArgedExprAsList(j, i) + ['Expr<int>'])}>',
+            )
+            ..lambda = true
+            ..body = Code('''
           _build(
             (${arg.take(i).join(',')}) => CountAllExpression._(),
             (a) => a
           )
-        ''')),
-    ]));
+        '''),
+        ),
+      ]),
+  );
 }

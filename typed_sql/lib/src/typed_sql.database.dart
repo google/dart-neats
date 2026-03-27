@@ -17,8 +17,8 @@ part of 'typed_sql.dart';
 /// {@category transactions}
 final class Database<T extends Schema> {
   Database(DatabaseAdapter adapter, SqlDialect dialect)
-      : _adapter = adapter,
-        _dialect = dialect;
+    : _adapter = adapter,
+      _dialect = dialect;
 
   final SqlDialect _dialect;
   final DatabaseAdapter _adapter;
@@ -50,9 +50,12 @@ final class Database<T extends Schema> {
     Future<R> Function() fn,
   ) async {
     return await _executor.transact((tx) async {
-      return await runZoned(fn, zoneValues: {
-        _zoneKey: tx,
-      });
+      return await runZoned(
+        fn,
+        zoneValues: {
+          _zoneKey: tx,
+        },
+      );
     });
   }
 

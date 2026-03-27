@@ -137,11 +137,11 @@ final _cases = [
     values: [
       JsonValue({
         'a': [1, 2],
-        'b': {'c': 'hello'}
+        'b': {'c': 'hello'},
       }),
       JsonValue({
         'b': {'c': 'hello'},
-        'a': [1, 2]
+        'a': [1, 2],
       }),
     ],
     count: 1,
@@ -221,11 +221,11 @@ final _cases = [
     values: [
       JsonValue([
         {'a': 1},
-        {'b': 2}
+        {'b': 2},
       ]),
       JsonValue([
         {'b': 2},
-        {'a': 1}
+        {'a': 1},
       ]),
     ],
     count: 2,
@@ -235,10 +235,10 @@ final _cases = [
     name: 'map of lists with different order',
     values: [
       JsonValue({
-        'key': [1, 2]
+        'key': [1, 2],
       }),
       JsonValue({
-        'key': [2, 1]
+        'key': [2, 1],
       }),
     ],
     count: 2,

@@ -10,10 +10,7 @@ part of 'distinct_model_null_test.dart';
 extension TestDatabaseSchema on Database<TestDatabase> {
   static const _$tables = [_$Item._$table];
 
-  Table<Item> get items => $ForGeneratedCode.declareTable(
-        this,
-        _$Item._$table,
-      );
+  Table<Item> get items => $ForGeneratedCode.declareTable(this, _$Item._$table);
 
   /// Create tables defined in [TestDatabase].
   ///
@@ -27,10 +24,8 @@ extension TestDatabaseSchema on Database<TestDatabase> {
   /// > [!WARNING]
   /// > If the database is **not empty** behavior is undefined, most
   /// > likely this operation will fail.
-  Future<void> createTables() async => $ForGeneratedCode.createTables(
-        context: this,
-        tables: _$tables,
-      );
+  Future<void> createTables() async =>
+      $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
 /// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
@@ -44,20 +39,11 @@ extension TestDatabaseSchema on Database<TestDatabase> {
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createTestDatabaseTables(SqlDialect dialect) =>
-    $ForGeneratedCode.createTableSchema(
-      dialect: dialect,
-      tables: TestDatabaseSchema._$tables,
-    );
+String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
 final class _$Item extends Item {
-  _$Item._(
-    this.id,
-    this.text,
-    this.integer,
-    this.real,
-    this.json,
-  );
+  _$Item._(this.id, this.text, this.integer, this.real, this.json);
 
   @override
   final int id;
@@ -77,57 +63,63 @@ final class _$Item extends Item {
   static const _$table = (
     tableName: 'items',
     columns: <String>['id', 'text', 'integer', 'real', 'json'],
-    columnInfo: <({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })>[
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: true,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.text,
-        isNotNull: false,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.integer,
-        isNotNull: false,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.real,
-        isNotNull: false,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      ),
-      (
-        type: $ForGeneratedCode.jsonValue,
-        isNotNull: false,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: <SqlOverride>[],
-      )
-    ],
+    columnInfo:
+        <
+          ({
+            ColumnType type,
+            bool isNotNull,
+            Object? defaultValue,
+            bool autoIncrement,
+            List<SqlOverride> overrides,
+          })
+        >[
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: true,
+            defaultValue: null,
+            autoIncrement: true,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.text,
+            isNotNull: false,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.integer,
+            isNotNull: false,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.real,
+            isNotNull: false,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+          (
+            type: $ForGeneratedCode.jsonValue,
+            isNotNull: false,
+            defaultValue: null,
+            autoIncrement: false,
+            overrides: <SqlOverride>[],
+          ),
+        ],
     primaryKey: <String>['id'],
     unique: <List<String>>[],
-    foreignKeys: <({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })>[],
+    foreignKeys:
+        <
+          ({
+            String name,
+            List<String> columns,
+            String referencedTable,
+            List<String> referencedColumns,
+          })
+        >[],
     readRow: _$Item._$fromDatabase,
   );
 
@@ -164,17 +156,10 @@ extension TableItemExt on Table<Item> {
     Expr<int?>? integer,
     Expr<double?>? real,
     Expr<JsonValue?>? json,
-  }) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [
-          id,
-          text,
-          integer,
-          real,
-          json,
-        ],
-      );
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [id, text, integer, real, json],
+  );
 
   /// Delete a single row from the `items` table, specified by
   /// _primary key_.
@@ -185,10 +170,8 @@ extension TableItemExt on Table<Item> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Item> delete(int id) => $ForGeneratedCode.deleteSingle(
-        byKey(id),
-        _$Item._$table,
-      );
+  DeleteSingle<Item> delete(int id) =>
+      $ForGeneratedCode.deleteSingle(byKey(id), _$Item._$table);
 }
 
 /// Extension methods for building queries against the `items` table.
@@ -228,37 +211,33 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   Update<Item> update(
-          UpdateSet<Item> Function(
-            Expr<Item> item,
-            UpdateSet<Item> Function({
-              Expr<int> id,
-              Expr<String?> text,
-              Expr<int?> integer,
-              Expr<double?> real,
-              Expr<JsonValue?> json,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.update<Item>(
-        this,
-        _$Item._$table,
-        (item) => updateBuilder(
-          item,
-          ({
-            Expr<int>? id,
-            Expr<String?>? text,
-            Expr<int?>? integer,
-            Expr<double?>? real,
-            Expr<JsonValue?>? json,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Item>([
-            id,
-            text,
-            integer,
-            real,
-            json,
-          ]),
-        ),
-      );
+    UpdateSet<Item> Function(
+      Expr<Item> item,
+      UpdateSet<Item> Function({
+        Expr<int> id,
+        Expr<String?> text,
+        Expr<int?> integer,
+        Expr<double?> real,
+        Expr<JsonValue?> json,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Item>(
+    this,
+    _$Item._$table,
+    (item) => updateBuilder(
+      item,
+      ({
+        Expr<int>? id,
+        Expr<String?>? text,
+        Expr<int?>? integer,
+        Expr<double?>? real,
+        Expr<JsonValue?>? json,
+      }) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+    ),
+  );
 
   /// Delete all rows in the `items` table matching this [Query].
   ///
@@ -299,37 +278,33 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
   UpdateSingle<Item> update(
-          UpdateSet<Item> Function(
-            Expr<Item> item,
-            UpdateSet<Item> Function({
-              Expr<int> id,
-              Expr<String?> text,
-              Expr<int?> integer,
-              Expr<double?> real,
-              Expr<JsonValue?> json,
-            }) set,
-          ) updateBuilder) =>
-      $ForGeneratedCode.updateSingle<Item>(
-        this,
-        _$Item._$table,
-        (item) => updateBuilder(
-          item,
-          ({
-            Expr<int>? id,
-            Expr<String?>? text,
-            Expr<int?>? integer,
-            Expr<double?>? real,
-            Expr<JsonValue?>? json,
-          }) =>
-              $ForGeneratedCode.buildUpdate<Item>([
-            id,
-            text,
-            integer,
-            real,
-            json,
-          ]),
-        ),
-      );
+    UpdateSet<Item> Function(
+      Expr<Item> item,
+      UpdateSet<Item> Function({
+        Expr<int> id,
+        Expr<String?> text,
+        Expr<int?> integer,
+        Expr<double?> real,
+        Expr<JsonValue?> json,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Item>(
+    this,
+    _$Item._$table,
+    (item) => updateBuilder(
+      item,
+      ({
+        Expr<int>? id,
+        Expr<String?>? text,
+        Expr<int?>? integer,
+        Expr<double?>? real,
+        Expr<JsonValue?>? json,
+      }) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+    ),
+  );
 
   /// Delete the row (if any) in the `items` table matching this [QuerySingle].
   ///

@@ -31,4 +31,5 @@ abstract final class Account extends Row {
   @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get accountNumber;
 }
+
 // #endregion

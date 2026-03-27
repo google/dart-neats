@@ -38,10 +38,10 @@ final class Color implements CustomDataType<int> {
 
   /// Factory constructor `fromDatabase(T value)` is required by code-generator!
   factory Color.fromDatabase(int value) => Color(
-        (value >> 16) & 0xFF,
-        (value >> 8) & 0xFF,
-        value & 0xFF,
-      );
+    (value >> 16) & 0xFF,
+    (value >> 8) & 0xFF,
+    value & 0xFF,
+  );
 
   /// `toDatabase` serialization method is also required!
   @override
@@ -134,10 +134,12 @@ of fields from the database. The following example shows how to fetch distinct
 
 ```dart dealership_test.dart#available-colors
 final List<(String, Color)> modelAndColor = await db.cars
-    .select((car) => (
-          car.model,
-          car.color,
-        ))
+    .select(
+      (car) => (
+        car.model,
+        car.color,
+      ),
+    )
     .distinct()
     .fetch();
 ```
@@ -189,10 +191,12 @@ Then we could query for blue cars as follows:
 ```dart dealership_test.dart#where-blue-cars
 final modelsAndLicense = await db.cars
     .where((car) => car.color.isBlue)
-    .select((car) => (
-          car.model,
-          car.licensePlate,
-        ))
+    .select(
+      (car) => (
+        car.model,
+        car.licensePlate,
+      ),
+    )
     .fetch();
 
 check(modelsAndLicense).unorderedEquals([
