@@ -44,7 +44,7 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
       uri: true,
       mutex: true, // playing it safe for now!
     );
-    conn.execute('PRAGMA foreign_keys = ON;');
+    conn.execute('PRAGMA foreign_keys = ON');
     return conn;
   }
 
