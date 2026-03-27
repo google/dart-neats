@@ -240,7 +240,7 @@ final class _MysqlSqlDialect extends SqlDialect {
 /// Example: 'my string' -> '`my string`'
 ///
 /// Throws if [name] cannot be safely escaped.
-String escape(String name) => '`$name`'; // TODO: escape `
+String escape(String name) => '`${name.replaceAll('`', '``')}`';
 
 abstract class SqlContext {
   String addParameter(Object? value);
