@@ -23,7 +23,7 @@ final _rng = Random.secure();
 Uint8List _randomBytes(int length) {
   final b = Uint8List(length);
   for (var i = 0; i < length; i++) {
-    b[i] = _rng.nextInt(255);
+    b[i] = _rng.nextInt(256);
   }
   return b;
 }
