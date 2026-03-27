@@ -985,8 +985,9 @@ Future<ParsedDefaultValue?> _parseDefaultRawValue(
   await _throwInternalDefaultValue(field, elementAnnotation);
 }
 
-bool isValidIdentifier(String id) =>
-    RegExp(r'^[A-Za-z][A-Za-z0-9_]*$').hasMatch(id);
+final _identifierRegExp = RegExp(r'^[A-Za-z][A-Za-z0-9_]*$');
+
+bool isValidIdentifier(String id) => _identifierRegExp.hasMatch(id);
 
 extension on DartObject {
   /// Return a [JsonValue] corresponding to the [JsonValue] being represented
