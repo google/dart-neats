@@ -239,7 +239,7 @@ Iterable<Spec> buildSchema(ParsedSchema schema) sync* {
           (b) => b
             ..name = '_\$tables'
             ..static = true
-            ..modifier = FieldModifier.constant
+            ..modifier = FieldModifier.final$
             ..assignment = Code('''[
               ${schema.tables.map(
               (table) => '_\$${table.rowClass.name}._\$table',
@@ -362,28 +362,23 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           (b) => b
             ..name = '_\$table'
             ..static = true
-            ..modifier = FieldModifier.constant
+            ..modifier = FieldModifier.final$
             ..assignment = Code('''
             (
               tableName: '${table.name}',
               columns: <String>[${rowClass.fields.map((f) => '\'${f.name}\'').join(', ')}],
-              columnInfo: <({
-                    ColumnType type,
-                    bool isNotNull,
-                    Object? defaultValue,
-                    bool autoIncrement,
-                    List<SqlOverride> overrides,
-                  })>[
+              columnInfo: [
                 ${rowClass.fields.map((f) => '''
-                  (
+                  \$ForGeneratedCode.columnDefinition(
                     type: ${backingExprType(f.backingType)},
                     isNotNull: ${!f.isNullable},
                     defaultValue: ${renderExpression(f.defaultValue?.expression ?? literal(null))},
                     autoIncrement: ${f.autoIncrement},
-                    overrides: <SqlOverride>[
+                    overrides: [
                       ${f.sqlOverrides.map(
-              (o) => 'SqlOverride(dialect: ${literal(o.dialect)}, columnType: ${literal(o.columnType)})',
-            ).join(',')}
+                        (o) =>
+                            'const SqlOverride(dialect: ${literal(o.dialect)}, columnType: ${literal(o.columnType)})',
+                      ).join(',')}
                     ],
                   )
                 ''').join(', ')}
@@ -392,14 +387,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               unique: <List<String>>[
                 ${rowClass.uniqueConstraints.map((uc) => '[${uc.fields.map((f) => '\'${f.name}\'').join(', ')}]').join(', ')}
               ],
-              foreignKeys: <({
-                    String name,
-                    List<String> columns,
-                    String referencedTable,
-                    List<String> referencedColumns,
-                  })>[
+              foreignKeys: [
                 ${rowClass.foreignKeys.map((fk) => '''
-                  (
+                  \$ForGeneratedCode.foreignKeyDefinition(
                     name: '${fk.name}',
                     columns: [${fk.foreignKey.map((f) => '\'${f.name}\'').join(', ')}],
                     referencedTable: '${fk.table}',
@@ -1370,7 +1360,7 @@ extension on ParsedDefaultValue {
       case ParsedDefaultJsonValue v:
         return literalRecord([], {
           'kind': literal('raw'),
-          'value': refer('JsonValue').call([literal(v.value.value)]),
+          'value': refer('JsonValue').constInstance([literal(v.value.value)]),
         });
     }
   }
