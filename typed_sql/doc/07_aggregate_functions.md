@@ -46,8 +46,12 @@ has been loaded into the database.
 
 ```dart bookstore_test.dart#initial-data
 final initialAuthors = [
-  (name: 'Easter Bunny',),
-  (name: 'Bucks Bunny',),
+  (
+    name: 'Easter Bunny',
+  ),
+  (
+    name: 'Bucks Bunny',
+  ),
 ];
 
 final initialBooks = [

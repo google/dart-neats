@@ -37,8 +37,12 @@ abstract final class Book extends Row {
 And that the database is loaded with the following examples:
 ```dart bookstore_test.dart#initial-data
 final initialAuthors = [
-  (name: 'Easter Bunny',),
-  (name: 'Bucks Bunny',),
+  (
+    name: 'Easter Bunny',
+  ),
+  (
+    name: 'Bucks Bunny',
+  ),
 ];
 
 final initialBooks = [
@@ -75,7 +79,6 @@ abstract final class Book extends Row {
     // The reference is _named_ "author", this gives rise to a
     // Expr<Book>.author property when building queries.
     name: 'author', // optional
-
     // This is referenced _as_ "books", this gives rise to a
     // Expr<Author>.books property when building queries.
     as: 'books', // optional
@@ -106,10 +109,12 @@ a book and its author in a single query.
 ```dart bookstore_test.dart#books-follow-reference-by-name
 final bookAndAuthor = await db.books
     .byKey(1)
-    .select((book) => (
-          book,
-          book.author, // <-- use the 'author' subquery property
-        ))
+    .select(
+      (book) => (
+        book,
+        book.author, // <-- use the 'author' subquery property
+      ),
+    )
     .fetch(); // return Future<(Book, Author)?>
 
 if (bookAndAuthor == null) {
@@ -127,10 +132,12 @@ demonstrated in the following example:
 ```dart bookstore_test.dart#books-use-reference-in-where
 final titleAndAuthor = await db.books
     .where((book) => book.author.name.equals(toExpr('Easter Bunny')))
-    .select((book) => (
-          book.title,
-          book.author.name,
-        ))
+    .select(
+      (book) => (
+        book.title,
+        book.author.name,
+      ),
+    )
     .fetch();
 
 check(titleAndAuthor).unorderedEquals([
@@ -176,10 +183,12 @@ with the count of books referencing said row the authors table.
 ```dart bookstore_test.dart#authors-bykey-count-books
 final authorAndCount = await db.authors
     .byKey(1)
-    .select((author) => (
-          author,
-          author.books.count(),
-        ))
+    .select(
+      (author) => (
+        author,
+        author.books.count(),
+      ),
+    )
     .fetch();
 
 if (authorAndCount == null) {
@@ -196,10 +205,12 @@ below.
 
 ```dart bookstore_test.dart#authors-count-books
 final authorAndCount = await db.authors
-    .select((author) => (
-          author.name,
-          author.books.count(),
-        ))
+    .select(
+      (author) => (
+        author.name,
+        author.books.count(),
+      ),
+    )
     .fetch();
 
 check(authorAndCount).unorderedEquals([

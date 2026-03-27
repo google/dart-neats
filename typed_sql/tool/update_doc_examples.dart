@@ -150,7 +150,7 @@ String extractRegionLines(String content) {
         (line) => line.indexOf(RegExp(r'[^ ]')),
       )
       .min;
-  return content
+  final lines = content
       .split('\n')
       .where((line) => !line.contains('#hide'))
       .map(
@@ -160,7 +160,14 @@ String extractRegionLines(String content) {
           int _ => line.length,
         }),
       )
-      .join('\n');
+      .toList();
+  // Strip last line, if empty -- as dart formatter tends to put empty lines
+  // in front of comments.
+  final lastLine = lines.lastOrNull;
+  if (lastLine != null && lastLine.isEmpty) {
+    lines.removeLast();
+  }
+  return lines.join('\n');
 }
 
 final referencePattern = RegExp(
