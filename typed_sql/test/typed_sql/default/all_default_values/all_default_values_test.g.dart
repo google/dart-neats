@@ -8,7 +8,7 @@ part of 'all_default_values_test.dart';
 
 /// Extension methods for a [Database] operating on [MySchema].
 extension MySchemaSchema on Database<MySchema> {
-  static const _$tables = [_$Item._$table];
+  static final _$tables = [_$Item._$table];
 
   Table<Item> get items => $ForGeneratedCode.declareTable(this, _$Item._$table);
 
@@ -60,69 +60,49 @@ final class _$Item extends Item {
   @override
   final DateTime expires;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'items',
     columns: <String>['id', 'name', 'birthday', 'createdAt', 'expires'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: true,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: (kind: 'raw', value: 'Bob'),
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.dateTime,
-            isNotNull: true,
-            defaultValue: (kind: 'datetime', value: 'epoch'),
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.dateTime,
-            isNotNull: true,
-            defaultValue: (kind: 'datetime', value: 'now'),
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.dateTime,
-            isNotNull: true,
-            defaultValue: (
-              kind: 'datetime',
-              value: (2035, 11, 17, 0, 0, 0, 0, 0),
-            ),
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-        ],
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: (kind: 'raw', value: 'Bob'),
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.dateTime,
+        isNotNull: true,
+        defaultValue: (kind: 'datetime', value: 'epoch'),
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.dateTime,
+        isNotNull: true,
+        defaultValue: (kind: 'datetime', value: 'now'),
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.dateTime,
+        isNotNull: true,
+        defaultValue: (kind: 'datetime', value: (2035, 11, 17, 0, 0, 0, 0, 0)),
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['id'],
     unique: <List<String>>[],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[],
+    foreignKeys: [],
     readRow: _$Item._$fromDatabase,
   );
 

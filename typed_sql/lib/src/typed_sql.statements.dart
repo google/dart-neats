@@ -31,15 +31,7 @@ final class CreateTableStatement extends SqlStatement {
   >
   columns;
   final List<List<String>> unique;
-  final List<
-    ({
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-      String name,
-    })
-  >
-  foreignKeys;
+  final List<ForeignKeyDefinition> foreignKeys;
 
   CreateTableStatement._({
     required this.tableName,

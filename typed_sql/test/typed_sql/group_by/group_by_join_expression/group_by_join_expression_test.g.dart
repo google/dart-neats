@@ -8,7 +8,7 @@ part of 'group_by_join_expression_test.dart';
 
 /// Extension methods for a [Database] operating on [TestDatabase].
 extension TestDatabaseSchema on Database<TestDatabase> {
-  static const _$tables = [_$Department._$table, _$Employee._$table];
+  static final _$tables = [_$Department._$table, _$Employee._$table];
 
   Table<Department> get departments =>
       $ForGeneratedCode.declareTable(this, _$Department._$table);
@@ -55,45 +55,28 @@ final class _$Department extends Department {
   @override
   final String name;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'departments',
     columns: <String>['id', 'name'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: true,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-        ],
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['id'],
     unique: <List<String>>[],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[],
+    foreignKeys: [],
     readRow: _$Department._$fromDatabase,
   );
 
@@ -298,66 +281,49 @@ final class _$Employee extends Employee {
   @override
   final int salary;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'employees',
     columns: <String>['id', 'name', 'deptId', 'salary'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: true,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-        ],
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['id'],
     unique: <List<String>>[],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[
-          (
-            name: 'dept',
-            columns: ['deptId'],
-            referencedTable: 'departments',
-            referencedColumns: ['id'],
-          ),
-        ],
+    foreignKeys: [
+      $ForGeneratedCode.foreignKeyDefinition(
+        name: 'dept',
+        columns: ['deptId'],
+        referencedTable: 'departments',
+        referencedColumns: ['id'],
+      ),
+    ],
     readRow: _$Employee._$fromDatabase,
   );
 

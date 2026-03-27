@@ -55,32 +55,55 @@ abstract base class Schema {
 /// {@category schema}
 abstract base class Row {}
 
-typedef TableDefinition<T extends Row> = ({
-  String tableName,
-  List<String> columns,
-  List<
-    ({
-      ColumnType type,
-      bool isNotNull,
-      Object? defaultValue,
-      bool autoIncrement,
-      List<SqlOverride> overrides,
-    })
-  >
-  columnInfo,
-  List<String> primaryKey,
-  List<List<String>> unique,
-  List<
-    ({
-      String name,
-      List<String> columns,
-      String referencedTable,
-      List<String> referencedColumns,
-    })
-  >
-  foreignKeys,
-  T? Function(RowReader) readRow,
-});
+final class TableDefinition<T extends Row> {
+  final String tableName;
+  final List<String> columns;
+  final List<ColumnDefinition> columnInfo;
+  final List<String> primaryKey;
+  final List<List<String>> unique;
+  final List<ForeignKeyDefinition> foreignKeys;
+  final T? Function(RowReader) readRow;
+
+  const TableDefinition({
+    required this.tableName,
+    required this.columns,
+    required this.columnInfo,
+    required this.primaryKey,
+    required this.unique,
+    required this.foreignKeys,
+    required this.readRow,
+  });
+}
+
+final class ColumnDefinition {
+  final ColumnType type;
+  final bool isNotNull;
+  final Object? defaultValue;
+  final bool autoIncrement;
+  final List<SqlOverride> overrides;
+
+  const ColumnDefinition({
+    required this.type,
+    required this.isNotNull,
+    required this.defaultValue,
+    required this.autoIncrement,
+    required this.overrides,
+  });
+}
+
+final class ForeignKeyDefinition {
+  final String name;
+  final List<String> columns;
+  final String referencedTable;
+  final List<String> referencedColumns;
+
+  const ForeignKeyDefinition({
+    required this.name,
+    required this.columns,
+    required this.referencedTable,
+    required this.referencedColumns,
+  });
+}
 
 /// Parsed the encoding from table defintion to [Expr].
 Expr<Object>? _defaultValueAsExpr(Object? defaultValue) {
@@ -315,4 +338,54 @@ final class $ForGeneratedCode {
   static const ColumnType<String> text = ColumnType.text;
   static const ColumnType<Null> nullType = ColumnType.nullType;
   static const ColumnType<JsonValue> jsonValue = ColumnType.jsonValue;
+
+  static TableDefinition<T> tableDefinition<T extends Row>({
+    required String tableName,
+    required List<String> columns,
+    required List<ColumnDefinition> columnInfo,
+    required List<String> primaryKey,
+    required List<List<String>> unique,
+    required List<ForeignKeyDefinition> foreignKeys,
+    required T? Function(RowReader) readRow,
+  }) {
+    return TableDefinition<T>(
+      tableName: tableName,
+      columns: columns,
+      columnInfo: columnInfo,
+      primaryKey: primaryKey,
+      unique: unique,
+      foreignKeys: foreignKeys,
+      readRow: readRow,
+    );
+  }
+
+  static ColumnDefinition columnDefinition({
+    required ColumnType<Object?> type,
+    required bool isNotNull,
+    Object? defaultValue,
+    required bool autoIncrement,
+    required List<SqlOverride> overrides,
+  }) {
+    return ColumnDefinition(
+      type: type,
+      isNotNull: isNotNull,
+      defaultValue: defaultValue,
+      autoIncrement: autoIncrement,
+      overrides: overrides,
+    );
+  }
+
+  static ForeignKeyDefinition foreignKeyDefinition({
+    required String name,
+    required List<String> columns,
+    required String referencedTable,
+    required List<String> referencedColumns,
+  }) {
+    return ForeignKeyDefinition(
+      name: name,
+      columns: columns,
+      referencedTable: referencedTable,
+      referencedColumns: referencedColumns,
+    );
+  }
 }

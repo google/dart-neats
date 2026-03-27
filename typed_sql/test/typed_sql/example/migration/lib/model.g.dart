@@ -8,7 +8,7 @@ part of 'model.dart';
 
 /// Extension methods for a [Database] operating on [BankVault].
 extension BankVaultSchema on Database<BankVault> {
-  static const _$tables = [_$Account._$table];
+  static final _$tables = [_$Account._$table];
 
   Table<Account> get accounts =>
       $ForGeneratedCode.declareTable(this, _$Account._$table);
@@ -52,49 +52,32 @@ final class _$Account extends Account {
   @override
   final String accountNumber;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'accounts',
     columns: <String>['accountId', 'accountNumber'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: true,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[
-              SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
-            ],
-          ),
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [
+          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
         ],
+      ),
+    ],
     primaryKey: <String>['accountId'],
     unique: <List<String>>[
       ['accountNumber'],
     ],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[],
+    foreignKeys: [],
     readRow: _$Account._$fromDatabase,
   );
 

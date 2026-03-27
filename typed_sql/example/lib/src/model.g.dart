@@ -8,7 +8,7 @@ part of 'model.dart';
 
 /// Extension methods for a [Database] operating on [PrimaryDatabase].
 extension PrimaryDatabaseSchema on Database<PrimaryDatabase> {
-  static const _$tables = [_$User._$table, _$Package._$table, _$Like._$table];
+  static final _$tables = [_$User._$table, _$Package._$table, _$Like._$table];
 
   Table<User> get users => $ForGeneratedCode.declareTable(this, _$User._$table);
 
@@ -62,54 +62,37 @@ final class _$User extends User {
   @override
   final String email;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'users',
     columns: <String>['userId', 'name', 'email'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: true,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-        ],
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: true,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['userId'],
     unique: <List<String>>[
       ['email'],
     ],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[],
+    foreignKeys: [],
     readRow: _$User._$fromDatabase,
   );
 
@@ -394,66 +377,49 @@ final class _$Package extends Package {
   @override
   final String? publisher;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'packages',
     columns: <String>['packageName', 'likes', 'ownerId', 'publisher'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: (kind: 'raw', value: 0),
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: false,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-        ],
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: (kind: 'raw', value: 0),
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: false,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['packageName'],
     unique: <List<String>>[],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[
-          (
-            name: 'owner',
-            columns: ['ownerId'],
-            referencedTable: 'users',
-            referencedColumns: ['userId'],
-          ),
-        ],
+    foreignKeys: [
+      $ForGeneratedCode.foreignKeyDefinition(
+        name: 'owner',
+        columns: ['ownerId'],
+        referencedTable: 'users',
+        referencedColumns: ['userId'],
+      ),
+    ],
     readRow: _$Package._$fromDatabase,
   );
 
@@ -757,45 +723,28 @@ final class _$Like extends Like {
   @override
   final String packageName;
 
-  static const _$table = (
+  static final _$table = (
     tableName: 'likes',
     columns: <String>['userId', 'packageName'],
-    columnInfo:
-        <
-          ({
-            ColumnType type,
-            bool isNotNull,
-            Object? defaultValue,
-            bool autoIncrement,
-            List<SqlOverride> overrides,
-          })
-        >[
-          (
-            type: $ForGeneratedCode.integer,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-          (
-            type: $ForGeneratedCode.text,
-            isNotNull: true,
-            defaultValue: null,
-            autoIncrement: false,
-            overrides: <SqlOverride>[],
-          ),
-        ],
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
     primaryKey: <String>['userId', 'packageName'],
     unique: <List<String>>[],
-    foreignKeys:
-        <
-          ({
-            String name,
-            List<String> columns,
-            String referencedTable,
-            List<String> referencedColumns,
-          })
-        >[],
+    foreignKeys: [],
     readRow: _$Like._$fromDatabase,
   );
 
