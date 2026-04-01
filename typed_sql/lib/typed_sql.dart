@@ -68,7 +68,6 @@ export 'src/typed_sql.dart'
         FromClause,
         GroupByClause,
         InsertStatement,
-        InternalDatabaseAccessExt,
         IntersectClause,
         JoinClause,
         JoinType,

@@ -75,8 +75,3 @@ final class Database<T extends Schema> {
   QuerySingle<S> select<S extends Record>(S expressions) =>
       QuerySingle._(Query._(this, expressions, SelectClause._));
 }
-
-/// Extension for package-internal tests.
-extension InternalDatabaseAccessExt on Database {
-  Executor get executor => _executor;
-}

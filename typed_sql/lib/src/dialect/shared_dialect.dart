@@ -49,9 +49,9 @@ String? defaultReferentialActionClause({
     //
     // `NO ACTION` is the only action that explicitly allows for a temporary violation.
     if (supportsDeferrable && (onDelete == .noAction || onUpdate == .noAction))
-      // Note: the default behaviour is still `INITIALLY IMMEDIATE`, needs per-transaction
-      // opt-out, or this clause may include `INITIALLY DEFERRED` to apply it every time.
-      'DEFERRABLE',
+      // Note: the default behaviour is `INITIALLY IMMEDIATE`,
+      //       overriding it to make the constraint deferred by default.
+      'DEFERRABLE INITIALLY DEFERRED',
   ];
 
   return items.isEmpty ? null : items.join(' ');
