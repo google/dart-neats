@@ -15,6 +15,8 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
+import 'package:typed_sql/adapter.dart';
+import 'package:typed_sql/src/typed_sql.dart';
 import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';
@@ -122,14 +124,29 @@ void main() {
     return Map.fromEntries(list.map((i) => MapEntry(i.$1, i.$2)));
   }
 
+  Future<bool> detectIsSqlite(Executor executor) async {
+    try {
+      await executor.script('SELECT sqlite_version()');
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   r.addTest(
     'Delete is restricted with delay',
     (db) async {
+      final isSqlite = await detectIsSqlite(db.executor);
       expect(await authorIds(db), [1, 2, 3, 4]);
       expect(await booksCountByAuthorId(db), {1: 2, 2: 2, 3: 3, 4: 2});
       var called = false;
       await expectLater(
         () => db.transact(() async {
+          await db.executor.script(
+            isSqlite
+                ? 'PRAGMA defer_foreign_keys = ON'
+                : 'SET CONSTRAINTS ALL DEFERRED',
+          );
           await db.authors.delete(1).execute();
           called = true;
         }),
@@ -145,11 +162,17 @@ void main() {
   r.addTest(
     'Update is restricted with delay',
     (db) async {
+      final isSqlite = await detectIsSqlite(db.executor);
       expect(await authorIds(db), [1, 2, 3, 4]);
       expect(await booksCountByAuthorId(db), {1: 2, 2: 2, 3: 3, 4: 2});
       var called = false;
       await expectLater(
         () => db.transact(() async {
+          await db.executor.script(
+            isSqlite
+                ? 'PRAGMA defer_foreign_keys = ON'
+                : 'SET CONSTRAINTS ALL DEFERRED',
+          );
           await db.authors
               .byKey(1)
               .update((author, set) => set(authorId: 6.asExpr))

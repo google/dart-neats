@@ -14,37 +14,45 @@
 
 import '../typed_sql.dart';
 
-enum ReferentialEvent { delete, update }
-
-/// Returns the default SQL clause expression for the given [event] [action].
+/// Returns the default SQL clause expression for the given referential actions.
 ///
 /// SQL dialects may not support all values or may use different expression.
 /// Override it in the database-specific dialect.
-String defaultReferentialActionClause(
-  ReferentialEvent event,
-  ReferentialAction action,
-) {
-  final eventClause = () {
-    switch (event) {
-      case ReferentialEvent.delete:
-        return 'ON DELETE';
-      case ReferentialEvent.update:
-        return 'ON UPDATE';
-    }
-  }();
-  final actionClause = () {
+///
+/// Returns `null` if no clause is created.
+String? defaultReferentialActionClause({
+  required ReferentialAction? onDelete,
+  required ReferentialAction? onUpdate,
+  bool supportsDeferrable = false,
+}) {
+  String formatEventAction(String event, ReferentialAction action) {
     switch (action) {
       case ReferentialAction.cascade:
-        return 'CASCADE';
+        return '$event CASCADE';
       case ReferentialAction.noAction:
-        return 'NO ACTION';
+        return '$event NO ACTION';
       case ReferentialAction.restrict:
-        return 'RESTRICT';
+        return '$event RESTRICT';
       case ReferentialAction.setDefault:
-        return 'SET DEFAULT';
+        return '$event SET DEFAULT';
       case ReferentialAction.setNull:
-        return 'SET NULL';
+        return '$event SET NULL';
     }
-  }();
-  return '$eventClause $actionClause';
+  }
+
+  final items = [
+    if (onDelete != null) formatEventAction('ON DELETE', onDelete),
+    if (onUpdate != null) formatEventAction('ON UPDATE', onUpdate),
+
+    // By default contraints are created as non-deferrable, unless specified here.
+    // Deferrability is applied on both action the same way.
+    //
+    // `NO ACTION` is the only action that explicitly allows for a temporary violation.
+    if (supportsDeferrable && (onDelete == .noAction || onUpdate == .noAction))
+      // Note: the default behaviour is still `INITIALLY IMMEDIATE`, needs per-transaction
+      // opt-out, or this clause may include `INITIALLY DEFERRED` to apply it every time.
+      'DEFERRABLE',
+  ];
+
+  return items.isEmpty ? null : items.join(' ');
 }

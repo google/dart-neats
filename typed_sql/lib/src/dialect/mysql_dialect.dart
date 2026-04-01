@@ -112,24 +112,17 @@ final class _MysqlSqlDialect extends SqlDialect {
       }),
       ...statements.expand((table) {
         return table.foreignKeys.map(
-          (fk) => [
+          (fk) => <String>[
             'ALTER TABLE ${escape(table.tableName)}',
             'ADD',
             'CONSTRAINT ${escape(fk.name)}',
             'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
             'REFERENCES ${escape(fk.referencedTable)}',
             '(${fk.referencedColumns.map(escape).join(', ')})',
-            if (fk.onDelete != null)
-              defaultReferentialActionClause(
-                ReferentialEvent.delete,
-                fk.onDelete!,
-              ),
-            if (fk.onUpdate != null)
-              defaultReferentialActionClause(
-                ReferentialEvent.update,
-                fk.onUpdate!,
-              ),
-            // note: no support for `DEFERRABLE INITIALLY DEFERRED`
+            ?defaultReferentialActionClause(
+              onDelete: fk.onDelete,
+              onUpdate: fk.onUpdate,
+            ),
           ].join(' '),
         );
       }),
