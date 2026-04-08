@@ -57,6 +57,11 @@ abstract final class Book extends Row {
   int get stock;
 }
 
+extension on Database<TestDatabase> {
+  Future<List<(int?, int)>> booksCountByAuthorId() =>
+      books.groupBy((b) => (b.authorId,)).aggregate((a) => a.count()).fetch();
+}
+
 final _testAuthors = [
   (authorId: 1, firstname: 'John', lastname: 'Doe'),
   (authorId: 2, firstname: 'Jane', lastname: 'Doe'),
@@ -115,19 +120,16 @@ void main() {
         .fetch();
   }
 
-  Future<Map<int?, int>> booksCountByAuthorId(Database<TestDatabase> db) async {
-    final list = await db.books
-        .groupBy((b) => (b.authorId,))
-        .aggregate((a) => a.count())
-        .fetch();
-    return Map.fromEntries(list.map((i) => MapEntry(i.$1, i.$2)));
-  }
-
   r.addTest(
     'Delete is restricted with delay',
     (db) async {
       expect(await authorIds(db), [1, 2, 3, 4]);
-      expect(await booksCountByAuthorId(db), {1: 2, 2: 2, 3: 3, 4: 2});
+      check(await db.booksCountByAuthorId()).unorderedEquals([
+        (1, 2),
+        (2, 2),
+        (3, 3),
+        (4, 2),
+      ]);
       var called = false;
       await expectLater(
         () => db.transact(() async {
@@ -138,7 +140,12 @@ void main() {
       );
       expect(called, isTrue);
       expect(await authorIds(db), [1, 2, 3, 4]);
-      expect(await booksCountByAuthorId(db), {1: 2, 2: 2, 3: 3, 4: 2});
+      check(await db.booksCountByAuthorId()).unorderedEquals([
+        (1, 2),
+        (2, 2),
+        (3, 3),
+        (4, 2),
+      ]);
     },
     skipMysql: 'No support for deferred constraint check.',
   );
@@ -147,7 +154,12 @@ void main() {
     'Update is restricted with delay',
     (db) async {
       expect(await authorIds(db), [1, 2, 3, 4]);
-      expect(await booksCountByAuthorId(db), {1: 2, 2: 2, 3: 3, 4: 2});
+      check(await db.booksCountByAuthorId()).unorderedEquals([
+        (1, 2),
+        (2, 2),
+        (3, 3),
+        (4, 2),
+      ]);
       var called = false;
       await expectLater(
         () => db.transact(() async {
@@ -161,7 +173,12 @@ void main() {
       );
       expect(called, isTrue);
       expect(await authorIds(db), [1, 2, 3, 4]);
-      expect(await booksCountByAuthorId(db), {1: 2, 2: 2, 3: 3, 4: 2});
+      check(await db.booksCountByAuthorId()).unorderedEquals([
+        (1, 2),
+        (2, 2),
+        (3, 3),
+        (4, 2),
+      ]);
     },
     skipMysql: 'No support for deferred constraint check.',
   );
