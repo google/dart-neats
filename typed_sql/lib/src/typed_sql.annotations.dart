@@ -176,19 +176,21 @@ final class References {
   final String field;
   final String? as;
   final String? name;
-  final ReferentialAction? onDelete;
-  final ReferentialAction? onUpdate;
-  final Deferrability? deferrability;
+  final ReferentialAction onDelete;
+  final ReferentialAction onUpdate;
+  final Deferrability deferrability;
 
   const References({
     required this.table,
     required this.field,
     this.as,
     this.name,
-    this.onDelete,
-    this.onUpdate,
-    this.deferrability,
-  });
+    ReferentialAction? onDelete,
+    ReferentialAction? onUpdate,
+    Deferrability? deferrability,
+  }) : onDelete = onDelete ?? .noAction,
+       onUpdate = onUpdate ?? .noAction,
+       deferrability = deferrability ?? .alwaysImmediate;
 }
 
 /// Annotation for declaring a _composite foreign key_.
@@ -201,9 +203,9 @@ final class ForeignKey {
   final List<String> fields;
   final String? as;
   final String? name;
-  final ReferentialAction? onDelete;
-  final ReferentialAction? onUpdate;
-  final Deferrability? deferrability;
+  final ReferentialAction onDelete;
+  final ReferentialAction onUpdate;
+  final Deferrability deferrability;
 
   const ForeignKey(
     this.foreignKey, {
@@ -211,10 +213,12 @@ final class ForeignKey {
     required this.fields,
     this.name,
     this.as,
-    this.onDelete,
-    this.onUpdate,
-    this.deferrability,
-  });
+    ReferentialAction? onDelete,
+    ReferentialAction? onUpdate,
+    Deferrability? deferrability,
+  }) : onDelete = onDelete ?? .noAction,
+       onUpdate = onUpdate ?? .noAction,
+       deferrability = deferrability ?? .alwaysImmediate;
 }
 
 /// Annotation to define `UNIQUE` constraints.

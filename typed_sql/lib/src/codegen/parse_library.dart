@@ -787,13 +787,13 @@ Future<ParsedRowClass> _parseRowClass(
   );
 }
 
-Future<ReferentialAction?> _parseReferentialAction(
+Future<ReferentialAction> _parseReferentialAction(
   DartObject? value, {
   required Element annotatedElement,
   required ElementAnnotation annotation,
 }) async {
   if (value == null || value.isNull) {
-    return null;
+    return .noAction;
   }
   final name = value.variable?.name;
   final first = ReferentialAction.values
@@ -809,13 +809,13 @@ Future<ReferentialAction?> _parseReferentialAction(
   return first;
 }
 
-Future<Deferrability?> _parseDeferrability(
+Future<Deferrability> _parseDeferrability(
   DartObject? value, {
   required Element annotatedElement,
   required ElementAnnotation annotation,
 }) async {
   if (value == null || value.isNull) {
-    return null;
+    return .alwaysImmediate;
   }
   final name = value.variable?.name;
   final first = Deferrability.values.where((v) => v.name == name).firstOrNull;

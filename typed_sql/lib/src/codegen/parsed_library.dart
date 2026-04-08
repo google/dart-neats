@@ -111,9 +111,9 @@ final class ParsedForeignKey {
   final List<String> fields;
   final String? as;
   final String? name;
-  final ReferentialAction? onDelete;
-  final ReferentialAction? onUpdate;
-  final Deferrability? deferrability;
+  final ReferentialAction onDelete;
+  final ReferentialAction onUpdate;
+  final Deferrability deferrability;
 
   ParsedForeignKey({
     required this.foreignKey,
