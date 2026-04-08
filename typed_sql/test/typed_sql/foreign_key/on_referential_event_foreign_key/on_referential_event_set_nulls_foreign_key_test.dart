@@ -42,8 +42,8 @@ abstract final class Author extends Row {
   fields: ['authorId'],
   name: 'author',
   as: 'books',
-  onDelete: ReferentialAction.setNull,
-  onUpdate: ReferentialAction.setNull,
+  onDelete: .setNull,
+  onUpdate: .setNull,
 )
 abstract final class Book extends Row {
   @AutoIncrement()

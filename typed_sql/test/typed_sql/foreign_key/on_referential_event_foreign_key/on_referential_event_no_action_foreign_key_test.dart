@@ -42,9 +42,9 @@ abstract final class Author extends Row {
   fields: ['authorId'],
   name: 'author',
   as: 'books',
-  onDelete: ReferentialAction.noAction,
-  onUpdate: ReferentialAction.noAction,
-  deferrability: Deferrability.initiallyDeferred,
+  onDelete: .noAction,
+  onUpdate: .noAction,
+  deferrability: .initiallyDeferred,
 )
 abstract final class Book extends Row {
   @AutoIncrement()
