@@ -44,6 +44,7 @@ abstract final class Author extends Row {
   as: 'books',
   onDelete: ReferentialAction.noAction,
   onUpdate: ReferentialAction.noAction,
+  deferrability: Deferrability.initiallyDeferred,
 )
 abstract final class Book extends Row {
   @AutoIncrement()

@@ -98,6 +98,7 @@ final class ForeignKeyDefinition {
   final List<String> referencedColumns;
   final ReferentialAction? onDelete;
   final ReferentialAction? onUpdate;
+  final Deferrability? deferrability;
 
   const ForeignKeyDefinition({
     required this.name,
@@ -106,6 +107,7 @@ final class ForeignKeyDefinition {
     required this.referencedColumns,
     this.onDelete,
     this.onUpdate,
+    this.deferrability,
   });
 }
 
@@ -386,6 +388,7 @@ final class $ForGeneratedCode {
     required List<String> referencedColumns,
     ReferentialAction? onDelete,
     ReferentialAction? onUpdate,
+    Deferrability? deferrability,
   }) {
     return ForeignKeyDefinition(
       name: name,
@@ -394,6 +397,7 @@ final class $ForGeneratedCode {
       referencedColumns: referencedColumns,
       onDelete: onDelete,
       onUpdate: onUpdate,
+      deferrability: deferrability,
     );
   }
 }

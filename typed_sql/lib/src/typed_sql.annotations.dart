@@ -143,6 +143,30 @@ enum ReferentialAction {
   noAction,
 }
 
+/// Defines the deferrability and initial state of a database constraint.
+///
+/// {@category schema}
+/// {@category foreign_keys}
+enum Deferrability {
+  /// The constraint is checked immediately after every individual SQL statement.
+  /// It cannot be deferred to the end of a transaction.
+  ///
+  /// This is the equivalent of `NOT DEFERRABLE`.
+  alwaysImmediate,
+
+  /// The constraint check can be deferred, but by default, it is checked
+  /// immediately after every statement.
+  ///
+  /// This is the equivalent of `DEFERRABLE INITIALLY IMMEDIATE`.
+  initiallyImmediate,
+
+  /// The constraint check is deferred by default and is only validated
+  /// at the end of the transaction (COMMIT).
+  ///
+  /// This is the equivalent of `DEFERRABLE INITIALLY DEFERRED`.
+  initiallyDeferred,
+}
+
 /// Annotation for fields that references fields from another table.
 ///
 /// {@category schema}
@@ -154,6 +178,7 @@ final class References {
   final String? name;
   final ReferentialAction? onDelete;
   final ReferentialAction? onUpdate;
+  final Deferrability? deferrability;
 
   const References({
     required this.table,
@@ -162,6 +187,7 @@ final class References {
     this.name,
     this.onDelete,
     this.onUpdate,
+    this.deferrability,
   });
 }
 
@@ -177,6 +203,7 @@ final class ForeignKey {
   final String? name;
   final ReferentialAction? onDelete;
   final ReferentialAction? onUpdate;
+  final Deferrability? deferrability;
 
   const ForeignKey(
     this.foreignKey, {
@@ -186,6 +213,7 @@ final class ForeignKey {
     this.as,
     this.onDelete,
     this.onUpdate,
+    this.deferrability,
   });
 }
 

@@ -23,7 +23,7 @@ import '../typed_sql.dart';
 String? defaultReferentialActionClause({
   required ReferentialAction? onDelete,
   required ReferentialAction? onUpdate,
-  bool supportsDeferrable = false,
+  required Deferrability? deferrability,
 }) {
   String formatEventAction(String event, ReferentialAction action) {
     switch (action) {
@@ -40,19 +40,21 @@ String? defaultReferentialActionClause({
     }
   }
 
+  String formatDeferrability(Deferrability value) {
+    switch (value) {
+      case .alwaysImmediate:
+        return 'NOT DEFERRABLE';
+      case .initiallyImmediate:
+        return 'DEFERRABLE INITIALLY IMMEDIATE';
+      case .initiallyDeferred:
+        return 'DEFERRABLE INITIALLY DEFERRED';
+    }
+  }
+
   final items = [
     if (onDelete != null) formatEventAction('ON DELETE', onDelete),
     if (onUpdate != null) formatEventAction('ON UPDATE', onUpdate),
-
-    // By default contraints are created as non-deferrable, unless specified here.
-    // Deferrability is applied on both action the same way.
-    //
-    // `NO ACTION` is the only action that explicitly allows for a temporary violation.
-    if (supportsDeferrable && (onDelete == .noAction || onUpdate == .noAction))
-      // Note: the default behaviour is `INITIALLY IMMEDIATE`,
-      //       overriding it to make the constraint deferred by default.
-      'DEFERRABLE INITIALLY DEFERRED',
+    if (deferrability != null) formatDeferrability(deferrability),
   ];
-
   return items.isEmpty ? null : items.join(' ');
 }

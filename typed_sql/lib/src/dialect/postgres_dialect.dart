@@ -91,7 +91,7 @@ final class _PostgresDialect extends SqlDialect {
             ?defaultReferentialActionClause(
               onDelete: fk.onDelete,
               onUpdate: fk.onUpdate,
-              supportsDeferrable: true,
+              deferrability: fk.deferrability,
             ),
           ].join(' ');
           return '$statement;';

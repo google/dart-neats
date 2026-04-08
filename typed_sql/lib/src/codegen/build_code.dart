@@ -395,6 +395,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     referencedColumns: [${fk.fields.map((f) => '\'$f\'').join(', ')}],
                     ${fk.onDelete == null ? '' : 'onDelete: ReferentialAction.${fk.onDelete!.name},'}
                     ${fk.onUpdate == null ? '' : 'onUpdate: ReferentialAction.${fk.onUpdate!.name},'}
+                    ${fk.deferrability == null ? '' : 'deferrability: Deferrability.${fk.deferrability!.name},'}
                   )
                 ''').join(',')}
               ],
