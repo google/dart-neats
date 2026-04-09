@@ -21,24 +21,14 @@ import '../typed_sql.dart';
 String defaultReferentialActionClause({
   required ReferentialAction onDelete,
   required ReferentialAction onUpdate,
-}) {
-  String formatEventAction(String event, ReferentialAction action) {
-    switch (action) {
-      case ReferentialAction.cascade:
-        return '$event CASCADE';
-      case ReferentialAction.noAction:
-        return '$event NO ACTION';
-      case ReferentialAction.restrict:
-        return '$event RESTRICT';
-      case ReferentialAction.setDefault:
-        return '$event SET DEFAULT';
-      case ReferentialAction.setNull:
-        return '$event SET NULL';
-    }
-  }
+}) => 'ON DELETE ${onDelete.sql} ON UPDATE ${onUpdate.sql}';
 
-  return [
-    formatEventAction('ON DELETE', onDelete),
-    formatEventAction('ON UPDATE', onUpdate),
-  ].join(' ');
+extension ReferentialActionSql on ReferentialAction {
+  String get sql => switch(this) {
+      .cascade => 'CASCADE',
+      .noAction => 'NO ACTION',
+      .restrict => 'RESTRICT',
+      .setDefault => 'SET DEFAULT',
+      .setNull => 'SET NULL',
+    };
 }
