@@ -24,11 +24,11 @@ String defaultReferentialActionClause({
 }) => 'ON DELETE ${onDelete.sql} ON UPDATE ${onUpdate.sql}';
 
 extension ReferentialActionSql on ReferentialAction {
-  String get sql => switch(this) {
-      .cascade => 'CASCADE',
-      .noAction => 'NO ACTION',
-      .restrict => 'RESTRICT',
-      .setDefault => 'SET DEFAULT',
-      .setNull => 'SET NULL',
-    };
+  String get sql => switch (this) {
+    .cascade => 'CASCADE',
+    .noAction => 'NO ACTION',
+    .restrict => 'RESTRICT',
+    .setDefault => 'SET DEFAULT',
+    .setNull => 'SET NULL',
+  };
 }
