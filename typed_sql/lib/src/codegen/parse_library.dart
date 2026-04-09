@@ -26,7 +26,7 @@ import 'package:build/build.dart' show log;
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../typed_sql.dart' show Deferrability, ReferentialAction, SqlOverride;
+import '../typed_sql.dart' show ReferentialAction, SqlOverride;
 
 import '../types/json_value.dart' show JsonValue;
 import 'analyzer_utils.dart';

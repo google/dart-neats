@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import '../typed_sql.dart' show Deferrability, ReferentialAction, SqlOverride;
+import '../typed_sql.dart' show ReferentialAction, SqlOverride;
 import 'parsed_default_value.dart' show ParsedDefaultValue;
 
 final class ParsedLibrary {
