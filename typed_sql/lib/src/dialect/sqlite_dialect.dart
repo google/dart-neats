@@ -40,7 +40,7 @@ final class _Sqlite extends SqlDialect {
   @override
   String createTables(List<CreateTableStatement> statements) {
     final resolver = ExpressionResolver(PlainSqlContext());
-    final script = statements
+    return statements
         .map((table) {
           return [
             'CREATE TABLE ${escape(table.tableName)} (',
@@ -97,11 +97,6 @@ final class _Sqlite extends SqlDialect {
           ].join('\n');
         })
         .join('\n');
-    return [
-      if (statements.any((table) => table.foreignKeys.isNotEmpty))
-        'PRAGMA foreign_keys = ON;\n',
-      script,
-    ].join();
   }
 
   @override
