@@ -662,11 +662,6 @@ Future<ParsedRowClass> _parseRowClass(
           annotatedElement: a,
           annotation: elementAnnotation,
         ),
-        deferrability: await _parseDeferrability(
-          annotation.getField('deferrability'),
-          annotatedElement: a,
-          annotation: elementAnnotation,
-        ),
       );
       foreignKeyToElement[fk] = a;
       foreignKeys.add(fk);
@@ -702,11 +697,6 @@ Future<ParsedRowClass> _parseRowClass(
       ),
       onUpdate: await _parseReferentialAction(
         annotation.getField('onUpdate'),
-        annotatedElement: cls,
-        annotation: elementAnnotation,
-      ),
-      deferrability: await _parseDeferrability(
-        annotation.getField('deferrability'),
         annotatedElement: cls,
         annotation: elementAnnotation,
       ),
@@ -802,26 +792,6 @@ Future<ReferentialAction> _parseReferentialAction(
   if (first == null) {
     await throwInvalidAnnotationInSource(
       'Unable to parse ReferentialAction: $value',
-      annotatedElement: annotatedElement,
-      annotation: annotation,
-    );
-  }
-  return first;
-}
-
-Future<Deferrability> _parseDeferrability(
-  DartObject? value, {
-  required Element annotatedElement,
-  required ElementAnnotation annotation,
-}) async {
-  if (value == null || value.isNull) {
-    return .alwaysImmediate;
-  }
-  final name = value.variable?.name;
-  final first = Deferrability.values.where((v) => v.name == name).firstOrNull;
-  if (first == null) {
-    await throwInvalidAnnotationInSource(
-      'Unable to parse Deferrability: $value',
       annotatedElement: annotatedElement,
       annotation: annotation,
     );

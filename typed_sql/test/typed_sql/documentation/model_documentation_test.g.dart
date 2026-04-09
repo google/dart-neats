@@ -96,7 +96,6 @@ final class _$Author extends Author {
         referencedColumns: ['bookId'],
         onDelete: .noAction,
         onUpdate: .noAction,
-        deferrability: .alwaysImmediate,
       ),
     ],
     readRow: _$Author._$fromDatabase,
@@ -531,7 +530,6 @@ final class _$Book extends Book {
         referencedColumns: ['authorId'],
         onDelete: .noAction,
         onUpdate: .noAction,
-        deferrability: .alwaysImmediate,
       ),
       $ForGeneratedCode.foreignKeyDefinition(
         name: 'editor',
@@ -540,7 +538,6 @@ final class _$Book extends Book {
         referencedColumns: ['authorId'],
         onDelete: .noAction,
         onUpdate: .noAction,
-        deferrability: .alwaysImmediate,
       ),
     ],
     readRow: _$Book._$fromDatabase,

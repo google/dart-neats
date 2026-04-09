@@ -428,7 +428,6 @@ final class _$Package extends Package {
         referencedColumns: ['userId'],
         onDelete: .noAction,
         onUpdate: .noAction,
-        deferrability: .alwaysImmediate,
       ),
     ],
     readRow: _$Package._$fromDatabase,

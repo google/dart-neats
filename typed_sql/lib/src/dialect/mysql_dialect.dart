@@ -122,7 +122,6 @@ final class _MysqlSqlDialect extends SqlDialect {
             ?defaultReferentialActionClause(
               onDelete: fk.onDelete,
               onUpdate: fk.onUpdate,
-              deferrability: null, // not supported
             ),
           ].join(' '),
         );

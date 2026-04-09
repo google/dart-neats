@@ -324,7 +324,6 @@ final class _$Employee extends Employee {
         referencedColumns: ['id'],
         onDelete: .noAction,
         onUpdate: .noAction,
-        deferrability: .alwaysImmediate,
       ),
     ],
     readRow: _$Employee._$fromDatabase,

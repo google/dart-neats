@@ -113,7 +113,6 @@ final class ParsedForeignKey {
   final String? name;
   final ReferentialAction onDelete;
   final ReferentialAction onUpdate;
-  final Deferrability deferrability;
 
   ParsedForeignKey({
     required this.foreignKey,
@@ -123,7 +122,6 @@ final class ParsedForeignKey {
     required this.name,
     required this.onDelete,
     required this.onUpdate,
-    required this.deferrability,
   });
 
   late final List<ParsedField> referencedFields;

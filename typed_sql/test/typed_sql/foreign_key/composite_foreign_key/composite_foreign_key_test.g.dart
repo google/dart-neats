@@ -433,7 +433,6 @@ final class _$Book extends Book {
         referencedColumns: ['firstName', 'lastName'],
         onDelete: .noAction,
         onUpdate: .noAction,
-        deferrability: .alwaysImmediate,
       ),
     ],
     readRow: _$Book._$fromDatabase,

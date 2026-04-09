@@ -44,7 +44,6 @@ abstract final class Author extends Row {
   as: 'books',
   onDelete: .noAction,
   onUpdate: .noAction,
-  deferrability: .initiallyDeferred,
 )
 abstract final class Book extends Row {
   @AutoIncrement()
@@ -138,7 +137,8 @@ void main() {
         }),
         throwsA(isA<DatabaseException>()),
       );
-      expect(called, isTrue);
+      // NOTE: once deferred referential constraint is supported, this should be `true`
+      expect(called, isFalse);
       expect(await authorIds(db), [1, 2, 3, 4]);
       check(await db.booksCountByAuthorId()).unorderedEquals([
         (1, 2),
@@ -171,7 +171,8 @@ void main() {
         }),
         throwsA(isA<DatabaseException>()),
       );
-      expect(called, isTrue);
+      // NOTE: once deferred referential constraint is supported, this should be `true`
+      expect(called, isFalse);
       expect(await authorIds(db), [1, 2, 3, 4]);
       check(await db.booksCountByAuthorId()).unorderedEquals([
         (1, 2),

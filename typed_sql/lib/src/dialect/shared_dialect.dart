@@ -23,7 +23,6 @@ import '../typed_sql.dart';
 String? defaultReferentialActionClause({
   required ReferentialAction? onDelete,
   required ReferentialAction? onUpdate,
-  required Deferrability? deferrability,
 }) {
   String formatEventAction(String event, ReferentialAction action) {
     switch (action) {
@@ -40,21 +39,9 @@ String? defaultReferentialActionClause({
     }
   }
 
-  String formatDeferrability(Deferrability value) {
-    switch (value) {
-      case .alwaysImmediate:
-        return 'NOT DEFERRABLE';
-      case .initiallyImmediate:
-        return 'DEFERRABLE INITIALLY IMMEDIATE';
-      case .initiallyDeferred:
-        return 'DEFERRABLE INITIALLY DEFERRED';
-    }
-  }
-
   final items = [
     if (onDelete != null) formatEventAction('ON DELETE', onDelete),
     if (onUpdate != null) formatEventAction('ON UPDATE', onUpdate),
-    if (deferrability != null) formatDeferrability(deferrability),
   ];
   return items.isEmpty ? null : items.join(' ');
 }

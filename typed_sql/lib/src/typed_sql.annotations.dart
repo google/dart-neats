@@ -134,6 +134,9 @@ enum ReferentialAction {
   ///
   /// This is the equivalent of `ON DELETE SET DEFAULT` or
   /// `ON UPDATE SET DEFAULT` in SQL.
+  ///
+  /// Note for Mysql/Mariadb: This is recognized by the parser, but **IS NOT** supported
+  /// by the InnoDB engine. Using this will generally result in an error or be ignored.
   setDefault,
 
   /// Similar to [restrict], but the check is deferred until the end of the
@@ -141,30 +144,6 @@ enum ReferentialAction {
   ///
   /// This is the equivalent of `ON DELETE NO ACTION` or `ON UPDATE NO ACTION` in SQL.
   noAction,
-}
-
-/// Defines the deferrability and initial state of a database constraint.
-///
-/// {@category schema}
-/// {@category foreign_keys}
-enum Deferrability {
-  /// The constraint is checked immediately after every individual SQL statement.
-  /// It cannot be deferred to the end of a transaction.
-  ///
-  /// This is the equivalent of `NOT DEFERRABLE`.
-  alwaysImmediate,
-
-  /// The constraint check can be deferred, but by default, it is checked
-  /// immediately after every statement.
-  ///
-  /// This is the equivalent of `DEFERRABLE INITIALLY IMMEDIATE`.
-  initiallyImmediate,
-
-  /// The constraint check is deferred by default and is only validated
-  /// at the end of the transaction (COMMIT).
-  ///
-  /// This is the equivalent of `DEFERRABLE INITIALLY DEFERRED`.
-  initiallyDeferred,
 }
 
 /// Annotation for fields that references fields from another table.
@@ -178,19 +157,15 @@ final class References {
   final String? name;
   final ReferentialAction onDelete;
   final ReferentialAction onUpdate;
-  final Deferrability deferrability;
 
   const References({
     required this.table,
     required this.field,
     this.as,
     this.name,
-    ReferentialAction? onDelete,
-    ReferentialAction? onUpdate,
-    Deferrability? deferrability,
-  }) : onDelete = onDelete ?? .noAction,
-       onUpdate = onUpdate ?? .noAction,
-       deferrability = deferrability ?? .alwaysImmediate;
+    this.onDelete = .noAction,
+    this.onUpdate = .noAction,
+  });
 }
 
 /// Annotation for declaring a _composite foreign key_.
@@ -205,7 +180,6 @@ final class ForeignKey {
   final String? name;
   final ReferentialAction onDelete;
   final ReferentialAction onUpdate;
-  final Deferrability deferrability;
 
   const ForeignKey(
     this.foreignKey, {
@@ -213,12 +187,9 @@ final class ForeignKey {
     required this.fields,
     this.name,
     this.as,
-    ReferentialAction? onDelete,
-    ReferentialAction? onUpdate,
-    Deferrability? deferrability,
-  }) : onDelete = onDelete ?? .noAction,
-       onUpdate = onUpdate ?? .noAction,
-       deferrability = deferrability ?? .alwaysImmediate;
+    this.onDelete = .noAction,
+    this.onUpdate = .noAction,
+  });
 }
 
 /// Annotation to define `UNIQUE` constraints.

@@ -89,7 +89,6 @@ final class _Sqlite extends SqlDialect {
                   ?defaultReferentialActionClause(
                     onDelete: fk.onDelete,
                     onUpdate: fk.onUpdate,
-                    deferrability: fk.deferrability,
                   ),
                 ].join(' '),
               ),
