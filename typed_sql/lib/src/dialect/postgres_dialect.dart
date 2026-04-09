@@ -88,7 +88,7 @@ final class _PostgresDialect extends SqlDialect {
             'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
             'REFERENCES ${escape(fk.referencedTable)}',
             '(${fk.referencedColumns.map(escape).join(', ')})',
-            ?defaultReferentialActionClause(
+            defaultReferentialActionClause(
               onDelete: fk.onDelete,
               onUpdate: fk.onUpdate,
             ),

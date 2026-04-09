@@ -18,11 +18,9 @@ import '../typed_sql.dart';
 ///
 /// SQL dialects may not support all values or may use different expression.
 /// Override it in the database-specific dialect.
-///
-/// Returns `null` if no clause is created.
-String? defaultReferentialActionClause({
-  required ReferentialAction? onDelete,
-  required ReferentialAction? onUpdate,
+String defaultReferentialActionClause({
+  required ReferentialAction onDelete,
+  required ReferentialAction onUpdate,
 }) {
   String formatEventAction(String event, ReferentialAction action) {
     switch (action) {
@@ -39,9 +37,8 @@ String? defaultReferentialActionClause({
     }
   }
 
-  final items = [
-    if (onDelete != null) formatEventAction('ON DELETE', onDelete),
-    if (onUpdate != null) formatEventAction('ON UPDATE', onUpdate),
-  ];
-  return items.isEmpty ? null : items.join(' ');
+  return [
+    formatEventAction('ON DELETE', onDelete),
+    formatEventAction('ON UPDATE', onUpdate),
+  ].join(' ');
 }

@@ -96,16 +96,16 @@ final class ForeignKeyDefinition {
   final List<String> columns;
   final String referencedTable;
   final List<String> referencedColumns;
-  final ReferentialAction? onDelete;
-  final ReferentialAction? onUpdate;
+  final ReferentialAction onDelete;
+  final ReferentialAction onUpdate;
 
   const ForeignKeyDefinition({
     required this.name,
     required this.columns,
     required this.referencedTable,
     required this.referencedColumns,
-    this.onDelete,
-    this.onUpdate,
+    required this.onDelete,
+    required this.onUpdate,
   });
 }
 
@@ -384,8 +384,8 @@ final class $ForGeneratedCode {
     required List<String> columns,
     required String referencedTable,
     required List<String> referencedColumns,
-    ReferentialAction? onDelete,
-    ReferentialAction? onUpdate,
+    required ReferentialAction onDelete,
+    required ReferentialAction onUpdate,
   }) {
     return ForeignKeyDefinition(
       name: name,
