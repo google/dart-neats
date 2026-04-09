@@ -26,7 +26,7 @@ import 'package:build/build.dart' show log;
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../typed_sql.dart' show SqlOverride;
+import '../typed_sql.dart' show ReferentialAction, SqlOverride;
 
 import '../types/json_value.dart' show JsonValue;
 import 'analyzer_utils.dart';
@@ -652,6 +652,16 @@ Future<ParsedRowClass> _parseRowClass(
         fields: [field],
         as: as,
         name: name,
+        onDelete: await _parseReferentialAction(
+          annotation.getField('onDelete'),
+          annotatedElement: a,
+          annotation: elementAnnotation,
+        ),
+        onUpdate: await _parseReferentialAction(
+          annotation.getField('onUpdate'),
+          annotatedElement: a,
+          annotation: elementAnnotation,
+        ),
       );
       foreignKeyToElement[fk] = a;
       foreignKeys.add(fk);
@@ -659,7 +669,8 @@ Future<ParsedRowClass> _parseRowClass(
   }
 
   // Extract @ForeignKey annotations
-  for (final annotation in foreignKeyTypeChecker.annotationsOfExact(cls)) {
+  for (final (elementAnnotation, annotation)
+      in foreignKeyTypeChecker.annotationAndValuesOfExact(cls)) {
     final foreignKey = annotation
         .getField('foreignKey')!
         .toListValue()!
@@ -679,6 +690,16 @@ Future<ParsedRowClass> _parseRowClass(
           .toList(),
       as: annotation.getField('as')?.toStringValue(),
       name: annotation.getField('name')?.toStringValue(),
+      onDelete: await _parseReferentialAction(
+        annotation.getField('onDelete'),
+        annotatedElement: cls,
+        annotation: elementAnnotation,
+      ),
+      onUpdate: await _parseReferentialAction(
+        annotation.getField('onUpdate'),
+        annotatedElement: cls,
+        annotation: elementAnnotation,
+      ),
     );
     foreignKeyToElement[fk] = cls;
     foreignKeys.add(fk);
@@ -754,6 +775,28 @@ Future<ParsedRowClass> _parseRowClass(
     foreignKeys: foreignKeys,
     uniqueConstraints: uniqueConstraints,
   );
+}
+
+Future<ReferentialAction> _parseReferentialAction(
+  DartObject? value, {
+  required Element annotatedElement,
+  required ElementAnnotation annotation,
+}) async {
+  if (value == null || value.isNull) {
+    return .noAction;
+  }
+  final name = value.variable?.name;
+  final first = ReferentialAction.values
+      .where((v) => v.name == name)
+      .firstOrNull;
+  if (first == null) {
+    await throwInvalidAnnotationInSource(
+      'Unable to parse ReferentialAction: $value',
+      annotatedElement: annotatedElement,
+      annotation: annotation,
+    );
+  }
+  return first;
 }
 
 String? _tryGetColumnType(DartType t) {

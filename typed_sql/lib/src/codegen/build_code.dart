@@ -393,6 +393,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     columns: [${fk.foreignKey.map((f) => '\'${f.name}\'').join(', ')}],
                     referencedTable: '${fk.table}',
                     referencedColumns: [${fk.fields.map((f) => '\'$f\'').join(', ')}],
+                    onDelete: .${fk.onDelete.name},
+                    onUpdate: .${fk.onUpdate.name},
                   )
                 ''').join(',')}
               ],

@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'schema_default_value_test.dart';
+part of 'on_referential_event_cascade_foreign_key_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-/// Extension methods for a [Database] operating on [Bookstore].
-extension BookstoreSchema on Database<Bookstore> {
+/// Extension methods for a [Database] operating on [TestDatabase].
+extension TestDatabaseSchema on Database<TestDatabase> {
   static final _$tables = [_$Author._$table, _$Book._$table];
 
   Table<Author> get authors =>
@@ -15,11 +15,11 @@ extension BookstoreSchema on Database<Bookstore> {
 
   Table<Book> get books => $ForGeneratedCode.declareTable(this, _$Book._$table);
 
-  /// Create tables defined in [Bookstore].
+  /// Create tables defined in [TestDatabase].
   ///
   /// Calling this on an empty database will create the tables
-  /// defined in [Bookstore]. In production it's often better to
-  /// use [createBookstoreTables] and manage migrations using
+  /// defined in [TestDatabase]. In production it's often better to
+  /// use [createTestDatabaseTables] and manage migrations using
   /// external tools.
   ///
   /// This method is mostly useful for testing.
@@ -31,32 +31,35 @@ extension BookstoreSchema on Database<Bookstore> {
       $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
-/// Get SQL [DDL statements][1] for tables defined in [Bookstore].
+/// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
 ///
 /// This returns a SQL script with multiple DDL statements separated by `;`
 /// using the specified [dialect].
 ///
 /// Executing these statements in an empty database will create the tables
-/// defined in [Bookstore]. In practice, this method is often used for
+/// defined in [TestDatabase]. In practice, this method is often used for
 /// printing the DDL statements, such that migrations can be managed by
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBookstoreTables(SqlDialect dialect) => $ForGeneratedCode
-    .createTableSchema(dialect: dialect, tables: BookstoreSchema._$tables);
+String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
 final class _$Author extends Author {
-  _$Author._(this.authorId, this.name);
+  _$Author._(this.authorId, this.firstname, this.lastname);
 
   @override
   final int authorId;
 
   @override
-  final String name;
+  final String firstname;
+
+  @override
+  final String lastname;
 
   static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'authors',
-    columns: <String>['authorId', 'name'],
+    columns: <String>['authorId', 'firstname', 'lastname'],
     columnInfo: [
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
@@ -70,30 +73,35 @@ final class _$Author extends Author {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
-        ],
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
       ),
     ],
     primaryKey: <String>['authorId'],
-    unique: <List<String>>[
-      ['name'],
-    ],
+    unique: <List<String>>[],
     foreignKeys: [],
     readRow: _$Author._$fromDatabase,
   );
 
   static Author? _$fromDatabase(RowReader row) {
     final authorId = row.readInt();
-    final name = row.readString();
-    if (authorId == null && name == null) {
+    final firstname = row.readString();
+    final lastname = row.readString();
+    if (authorId == null && firstname == null && lastname == null) {
       return null;
     }
-    return _$Author._(authorId!, name!);
+    return _$Author._(authorId!, firstname!, lastname!);
   }
 
   @override
-  String toString() => 'Author(authorId: "$authorId", name: "$name")';
+  String toString() =>
+      'Author(authorId: "$authorId", firstname: "$firstname", lastname: "$lastname")';
 }
 
 /// Extension methods for table defined in [Author].
@@ -104,8 +112,12 @@ extension TableAuthorExt on Table<Author> {
   /// called for the row to be inserted.
   InsertSingle<Author> insert({
     Expr<int>? authorId,
-    required Expr<String> name,
-  }) => $ForGeneratedCode.insertInto(table: this, values: [authorId, name]);
+    required Expr<String> firstname,
+    required Expr<String> lastname,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [authorId, firstname, lastname],
+  );
 
   /// Delete a single row from the `authors` table, specified by
   /// _primary key_.
@@ -159,7 +171,12 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   Update<Author> update(
     UpdateSet<Author> Function(
       Expr<Author> author,
-      UpdateSet<Author> Function({Expr<int> authorId, Expr<String> name}) set,
+      UpdateSet<Author> Function({
+        Expr<int> authorId,
+        Expr<String> firstname,
+        Expr<String> lastname,
+      })
+      set,
     )
     updateBuilder,
   ) => $ForGeneratedCode.update<Author>(
@@ -167,21 +184,17 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
     _$Author._$table,
     (author) => updateBuilder(
       author,
-      ({Expr<int>? authorId, Expr<String>? name}) =>
-          $ForGeneratedCode.buildUpdate<Author>([authorId, name]),
+      ({
+        Expr<int>? authorId,
+        Expr<String>? firstname,
+        Expr<String>? lastname,
+      }) => $ForGeneratedCode.buildUpdate<Author>([
+        authorId,
+        firstname,
+        lastname,
+      ]),
     ),
   );
-
-  /// Lookup a single row in `authors` table using the
-  /// `name` field
-  ///
-  /// We know that lookup by the `name` field returns
-  /// at-most one row because the [Unique] annotation in [Author].
-  ///
-  /// Returns a [QuerySingle] object, which returns at-most one row,
-  /// when `.fetch()` is called.
-  QuerySingle<(Expr<Author>,)> byName(String name) =>
-      where((author) => author.name.equalsValue(name)).first;
 
   /// Delete all rows in the `authors` table matching this [Query].
   ///
@@ -224,7 +237,12 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
   UpdateSingle<Author> update(
     UpdateSet<Author> Function(
       Expr<Author> author,
-      UpdateSet<Author> Function({Expr<int> authorId, Expr<String> name}) set,
+      UpdateSet<Author> Function({
+        Expr<int> authorId,
+        Expr<String> firstname,
+        Expr<String> lastname,
+      })
+      set,
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateSingle<Author>(
@@ -232,8 +250,15 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
     _$Author._$table,
     (author) => updateBuilder(
       author,
-      ({Expr<int>? authorId, Expr<String>? name}) =>
-          $ForGeneratedCode.buildUpdate<Author>([authorId, name]),
+      ({
+        Expr<int>? authorId,
+        Expr<String>? firstname,
+        Expr<String>? lastname,
+      }) => $ForGeneratedCode.buildUpdate<Author>([
+        authorId,
+        firstname,
+        lastname,
+      ]),
     ),
   );
 
@@ -251,8 +276,11 @@ extension ExpressionAuthorExt on Expr<Author> {
   Expr<int> get authorId =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String> get name =>
+  Expr<String> get firstname =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
+
+  Expr<String> get lastname =>
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `books` table which
   /// reference this row.
@@ -270,8 +298,11 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   Expr<int?> get authorId =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String?> get name =>
+  Expr<String?> get firstname =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
+
+  Expr<String?> get lastname =>
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Get [SubQuery] of rows from the `books` table which
   /// reference this row.
@@ -334,10 +365,10 @@ final class _$Book extends Book {
   final int bookId;
 
   @override
-  final String? title;
+  final String title;
 
   @override
-  final int authorId;
+  final int? authorId;
 
   @override
   final int stock;
@@ -355,6 +386,13 @@ final class _$Book extends Book {
       ),
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.integer,
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
@@ -367,13 +405,6 @@ final class _$Book extends Book {
         autoIncrement: false,
         overrides: [],
       ),
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: (kind: 'raw', value: 0),
-        autoIncrement: false,
-        overrides: [],
-      ),
     ],
     primaryKey: <String>['bookId'],
     unique: <List<String>>[],
@@ -383,8 +414,8 @@ final class _$Book extends Book {
         columns: ['authorId'],
         referencedTable: 'authors',
         referencedColumns: ['authorId'],
-        onDelete: .noAction,
-        onUpdate: .noAction,
+        onDelete: .cascade,
+        onUpdate: .cascade,
       ),
     ],
     readRow: _$Book._$fromDatabase,
@@ -398,7 +429,7 @@ final class _$Book extends Book {
     if (bookId == null && title == null && authorId == null && stock == null) {
       return null;
     }
-    return _$Book._(bookId!, title, authorId!, stock!);
+    return _$Book._(bookId!, title!, authorId, stock!);
   }
 
   @override
@@ -414,9 +445,9 @@ extension TableBookExt on Table<Book> {
   /// called for the row to be inserted.
   InsertSingle<Book> insert({
     Expr<int>? bookId,
-    Expr<String?>? title,
-    required Expr<int> authorId,
-    Expr<int>? stock,
+    required Expr<String> title,
+    Expr<int?>? authorId,
+    required Expr<int> stock,
   }) => $ForGeneratedCode.insertInto(
     table: this,
     values: [bookId, title, authorId, stock],
@@ -476,8 +507,8 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
       Expr<Book> book,
       UpdateSet<Book> Function({
         Expr<int> bookId,
-        Expr<String?> title,
-        Expr<int> authorId,
+        Expr<String> title,
+        Expr<int?> authorId,
         Expr<int> stock,
       })
       set,
@@ -490,8 +521,8 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
       book,
       ({
         Expr<int>? bookId,
-        Expr<String?>? title,
-        Expr<int>? authorId,
+        Expr<String>? title,
+        Expr<int?>? authorId,
         Expr<int>? stock,
       }) =>
           $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
@@ -541,8 +572,8 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
       Expr<Book> book,
       UpdateSet<Book> Function({
         Expr<int> bookId,
-        Expr<String?> title,
-        Expr<int> authorId,
+        Expr<String> title,
+        Expr<int?> authorId,
         Expr<int> stock,
       })
       set,
@@ -555,8 +586,8 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
       book,
       ({
         Expr<int>? bookId,
-        Expr<String?>? title,
-        Expr<int>? authorId,
+        Expr<String>? title,
+        Expr<int?>? authorId,
         Expr<int>? stock,
       }) =>
           $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
@@ -577,10 +608,10 @@ extension ExpressionBookExt on Expr<Book> {
   Expr<int> get bookId =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String?> get title =>
+  Expr<String> get title =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
-  Expr<int> get authorId =>
+  Expr<int?> get authorId =>
       $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
 
   Expr<int> get stock =>
@@ -592,12 +623,11 @@ extension ExpressionBookExt on Expr<Book> {
   ///
   /// The gets the row from table `authors` where
   /// [Author.authorId]
-  /// is equal to [authorId].
-  Expr<Author> get author => $ForGeneratedCode
+  /// is equal to [authorId], if any.
+  Expr<Author?> get author => $ForGeneratedCode
       .subqueryTable(_$Author._$table)
       .where((r) => r.authorId.equals(authorId))
-      .first
-      .asNotNull();
+      .first;
 }
 
 extension ExpressionNullableBookExt on Expr<Book?> {
@@ -676,8 +706,11 @@ extension AuthorChecks on Subject<Author> {
   /// Create assertions on [Author.authorId].
   Subject<int> get authorId => has((m) => m.authorId, 'authorId');
 
-  /// Create assertions on [Author.name].
-  Subject<String> get name => has((m) => m.name, 'name');
+  /// Create assertions on [Author.firstname].
+  Subject<String> get firstname => has((m) => m.firstname, 'firstname');
+
+  /// Create assertions on [Author.lastname].
+  Subject<String> get lastname => has((m) => m.lastname, 'lastname');
 }
 
 /// Extension methods for assertions on [Book] using
@@ -689,10 +722,10 @@ extension BookChecks on Subject<Book> {
   Subject<int> get bookId => has((m) => m.bookId, 'bookId');
 
   /// Create assertions on [Book.title].
-  Subject<String?> get title => has((m) => m.title, 'title');
+  Subject<String> get title => has((m) => m.title, 'title');
 
   /// Create assertions on [Book.authorId].
-  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
+  Subject<int?> get authorId => has((m) => m.authorId, 'authorId');
 
   /// Create assertions on [Book.stock].
   Subject<int> get stock => has((m) => m.stock, 'stock');

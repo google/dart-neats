@@ -95,6 +95,8 @@ final class _$Employee extends Employee {
         columns: ['departmentId'],
         referencedTable: 'departments',
         referencedColumns: ['departmentId'],
+        onDelete: .noAction,
+        onUpdate: .noAction,
       ),
     ],
     readRow: _$Employee._$fromDatabase,

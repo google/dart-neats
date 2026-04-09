@@ -19,6 +19,7 @@ import 'package:collection/collection.dart';
 
 import '../utils/normalize_json.dart';
 import 'dialect.dart';
+import 'shared_dialect.dart';
 
 SqlDialect sqliteDialect() => _Sqlite();
 
@@ -80,11 +81,15 @@ final class _Sqlite extends SqlDialect {
               ),
               // Foreign keys
               ...table.foreignKeys.map(
-                (fk) => [
+                (fk) => <String>[
                   'CONSTRAINT ${escape(fk.name)}',
                   'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
                   'REFERENCES ${escape(fk.referencedTable)}',
                   '(${fk.referencedColumns.map(escape).join(', ')})',
+                  defaultReferentialActionClause(
+                    onDelete: fk.onDelete,
+                    onUpdate: fk.onUpdate,
+                  ),
                 ].join(' '),
               ),
             ].map((l) => '  $l').join(',\n'),

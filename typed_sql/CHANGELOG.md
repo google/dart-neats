@@ -1,7 +1,8 @@
 ## 0.1.8
  * Set `PRAGMA foreign_keys = ON;` on all sqlite connections.
- * Add constraint name to FOREIGN KEY DDLs.
  * Use classes in generated files.
+ * Add constraint name to `FOREIGN KEY` DDLs.
+ * Support `ON DELETE` and `ON UPDATE` actions (e.g. `CASCADE`).
 
 ## 0.1.7
  * Removed the debug use of `package:test` from mysql adapter.

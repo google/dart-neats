@@ -368,6 +368,8 @@ final class _$Book extends Book {
         columns: ['authorId'],
         referencedTable: 'authors',
         referencedColumns: ['authorId'],
+        onDelete: .noAction,
+        onUpdate: .noAction,
       ),
     ],
     readRow: _$Book._$fromDatabase,

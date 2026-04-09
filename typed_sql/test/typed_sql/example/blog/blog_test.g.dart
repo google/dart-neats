@@ -415,6 +415,8 @@ final class _$Comment extends Comment {
         columns: ['author', 'postSlug'],
         referencedTable: 'posts',
         referencedColumns: ['author', 'slug'],
+        onDelete: .noAction,
+        onUpdate: .noAction,
       ),
     ],
     readRow: _$Comment._$fromDatabase,
