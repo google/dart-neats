@@ -84,7 +84,7 @@ final class _PostgresDialect extends SqlDialect {
           final statement = <String>[
             'ALTER TABLE ${escape(table.tableName)}',
             'ADD',
-            'CONSTRAINT ${escape(fk.name)}',
+            'CONSTRAINT ${escape(foreignKeyConstraintName(table, fk))}',
             'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
             'REFERENCES ${escape(fk.referencedTable)}',
             '(${fk.referencedColumns.map(escape).join(', ')})',

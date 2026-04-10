@@ -32,3 +32,18 @@ extension ReferentialActionSql on ReferentialAction {
     .setNull => 'SET NULL',
   };
 }
+
+/// Returns an unescaped name for a FOREIGN KEY constraint.
+///
+/// The generated name has the following pattern:
+/// `<table_name>_fk_<name_or_columns>`
+String foreignKeyConstraintName(
+  CreateTableStatement table,
+  ForeignKeyDefinition key,
+) {
+  return [
+    table.tableName,
+    'fk',
+    if (key.name.isEmpty) ...key.columns else key.name,
+  ].join('_');
+}

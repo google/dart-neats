@@ -1,3 +1,6 @@
+## 0.1.9
+ * Fix constraint name generation for `FOREIGN KEY` DDLs.
+
 ## 0.1.8
  * Set `PRAGMA foreign_keys = ON;` on all sqlite connections.
  * Use classes in generated files.
