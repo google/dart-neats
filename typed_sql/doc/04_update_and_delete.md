@@ -255,4 +255,4 @@ But if you use it on a `QuerySingle<(Expr<T>,)>`, you just get a nullable row.
 <!-- GENERATED DOCUMENTATION LINKS -->
 [Query]: ../typed_sql/Query-class.html
 [QuerySingle]: ../typed_sql/QuerySingle-class.html
-[Writing queries]: ../topics/Writing%20queries-topic.html
+[Writing queries]: ../topics/writing_queries-topic.html

@@ -223,5 +223,5 @@ For more information on subqueries see [Writing queries].
 
 <!-- GENERATED DOCUMENTATION LINKS -->
 [Expr]: ../typed_sql/Expr-class.html
-[Writing queries]: ../topics/Writing%20queries-topic.html
+[Writing queries]: ../topics/writing_queries-topic.html
 [toExpr]: ../typed_sql/toExpr.html

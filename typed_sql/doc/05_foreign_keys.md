@@ -285,4 +285,4 @@ attached.
 > consistent of a single field.
 
 <!-- GENERATED DOCUMENTATION LINKS -->
-[Aggregate functions]: ../topics/Aggregate%20functions-topic.html
+[Aggregate functions]: ../topics/aggregate_functions-topic.html

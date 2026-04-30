@@ -869,5 +869,5 @@ The above documentation does not outline how `.join` and `.groupBy` works, for
 details on how to use these see [Joins] and [Aggregate functions].
 
 <!-- GENERATED DOCUMENTATION LINKS -->
-[Aggregate functions]: ../topics/Aggregate%20functions-topic.html
-[Joins]: ../topics/Joins-topic.html
+[Aggregate functions]: ../topics/aggregate_functions-topic.html
+[Joins]: ../topics/joins-topic.html

@@ -183,14 +183,14 @@ value for fields with type:
  * `String`, and,
  * `JsonValue`.
 
-However, since [DateTime] does not have a _const_ constructor one of the
-following annoations must be used to create a [DateTime] field with a
+However, since `DateTime` does not have a _const_ constructor one of the
+following annoations must be used to create a `DateTime` field with a
 _default value_:
  * `@DefaultValue.dateTime(year, [month, day, ...])`,
  * `@DefaultValue.epoch`, or,
  * `@DefaultValue.now`.
 
-With [DefaultValue.now] being a special constructor that uses
+With `DefaultValue.now` being a special constructor that uses
 `CURRENT_TIMESTAMP` in the database to ensure the field
 has a default value of `DateTime.now().toUtc()` when row is inserted.
 
@@ -312,11 +312,12 @@ See [References] documentation for details.
 [DDL]: https://en.wikipedia.org/wiki/Data_definition_language
 
 <!-- GENERATED DOCUMENTATION LINKS -->
-[Custom data types]: ../topics/Custom%20data%20types-topic.html
+[Custom data types]: ../topics/custom_data_types-topic.html
 [CustomDataType]: ../typed_sql/CustomDataType-class.html
 [Database]: ../typed_sql/Database-class.html
 [DatabaseAdapter]: ../typed_sql/DatabaseAdapter-class.html
-[Migrations]: ../topics/Migrations-topic.html
+[DefaultValue]: ../typed_sql/DefaultValue-class.html
+[Migrations]: ../topics/migrations-topic.html
 [References]: ../typed_sql/References-class.html
 [Schema]: ../typed_sql/Schema-class.html
 [SqlDialect]: ../typed_sql/SqlDialect-class.html
