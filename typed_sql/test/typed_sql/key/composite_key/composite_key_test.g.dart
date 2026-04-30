@@ -114,6 +114,19 @@ extension TableItemExt on Table<Item> {
     Expr<String?>? value,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, name, value]);
 
+  /// Insert row into the `items` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Item> insertValue({
+    required int id,
+    required String name,
+    String? value,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [id.asExpr, name.asExpr, value.asExpr],
+  );
+
   /// Delete a single row from the `items` table, specified by
   /// _primary key_.
   ///

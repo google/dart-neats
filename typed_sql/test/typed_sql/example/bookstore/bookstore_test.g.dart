@@ -114,7 +114,7 @@ extension TableAuthorExt on Table<Author> {
   InsertSingle<Author> insertValue({int? authorId, required String name}) =>
       $ForGeneratedCode.insertInto(
         table: this,
-        values: [toExpr(authorId), toExpr(name)],
+        values: [authorId?.asExpr, name.asExpr],
       );
 
   /// Delete a single row from the `authors` table, specified by
@@ -443,7 +443,7 @@ extension TableBookExt on Table<Book> {
     int? stock,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [toExpr(bookId), toExpr(title), toExpr(authorId), toExpr(stock)],
+    values: [bookId?.asExpr, title.asExpr, authorId.asExpr, stock?.asExpr],
   );
 
   /// Delete a single row from the `books` table, specified by

@@ -128,6 +128,20 @@ extension TableItemExt on Table<Item> {
     values: [id, category, data, score],
   );
 
+  /// Insert row into the `items` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Item> insertValue({
+    int? id,
+    required String category,
+    required JsonValue data,
+    required int score,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [id?.asExpr, category.asExpr, data.asExpr, score.asExpr],
+  );
+
   /// Delete a single row from the `items` table, specified by
   /// _primary key_.
   ///

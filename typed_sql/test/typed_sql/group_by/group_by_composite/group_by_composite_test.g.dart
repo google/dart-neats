@@ -270,6 +270,39 @@ extension TableItemExt on Table<Item> {
     ],
   );
 
+  /// Insert row into the `items` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Item> insertValue({
+    int? id,
+    required String text,
+    required double real,
+    required int integer,
+    required DateTime timestamp,
+    required JsonValue json,
+    String? optText,
+    double? optReal,
+    int? optInteger,
+    DateTime? optTimestamp,
+    JsonValue? optJson,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [
+      id?.asExpr,
+      text.asExpr,
+      real.asExpr,
+      integer.asExpr,
+      timestamp.asExpr,
+      json.asExpr,
+      optText.asExpr,
+      optReal.asExpr,
+      optInteger.asExpr,
+      optTimestamp.asExpr,
+      optJson.asExpr,
+    ],
+  );
+
   /// Delete a single row from the `items` table, specified by
   /// _primary key_.
   ///

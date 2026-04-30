@@ -110,7 +110,7 @@ extension TableItemExt on Table<Item> {
   InsertSingle<Item> insertValue({int? id, required int? value}) =>
       $ForGeneratedCode.insertInto(
         table: this,
-        values: [toExpr(id), toExpr(value)],
+        values: [id?.asExpr, value.asExpr],
       );
 
   /// Delete a single row from the `items` table, specified by

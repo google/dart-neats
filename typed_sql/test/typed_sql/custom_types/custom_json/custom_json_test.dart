@@ -69,6 +69,18 @@ void main() {
     check(item).isNotNull().value.equals(initialValue);
   });
 
+  r.addTest('insertValue', (db) async {
+    await db.items
+        .insertValue(
+          id: 1,
+          value: initialValue,
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.equals(initialValue);
+  });
+
   r.addTest('update', (db) async {
     await db.items
         .insert(

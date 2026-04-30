@@ -98,6 +98,13 @@ extension TableItemExt on Table<Item> {
   InsertSingle<Item> insert({Expr<int>? id, Expr<bool>? value}) =>
       $ForGeneratedCode.insertInto(table: this, values: [id, value]);
 
+  /// Insert row into the `items` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Item> insertValue({int? id, bool? value}) => $ForGeneratedCode
+      .insertInto(table: this, values: [id?.asExpr, value?.asExpr]);
+
   /// Delete a single row from the `items` table, specified by
   /// _primary key_.
   ///

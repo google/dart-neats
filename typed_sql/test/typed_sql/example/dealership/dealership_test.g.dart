@@ -135,6 +135,20 @@ extension TableCarExt on Table<Car> {
     values: [id, model, licensePlate, color],
   );
 
+  /// Insert row into the `cars` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Car> insertValue({
+    int? id,
+    required String model,
+    required String licensePlate,
+    required Color color,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [id?.asExpr, model.asExpr, licensePlate.asExpr, color.asExpr],
+  );
+
   /// Delete a single row from the `cars` table, specified by
   /// _primary key_.
   ///

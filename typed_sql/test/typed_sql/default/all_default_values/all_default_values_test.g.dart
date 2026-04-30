@@ -144,6 +144,27 @@ extension TableItemExt on Table<Item> {
     values: [id, name, birthday, createdAt, expires],
   );
 
+  /// Insert row into the `items` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Item> insertValue({
+    int? id,
+    String? name,
+    DateTime? birthday,
+    DateTime? createdAt,
+    DateTime? expires,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [
+      id?.asExpr,
+      name?.asExpr,
+      birthday?.asExpr,
+      createdAt?.asExpr,
+      expires?.asExpr,
+    ],
+  );
+
   /// Delete a single row from the `items` table, specified by
   /// _primary key_.
   ///

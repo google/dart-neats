@@ -125,6 +125,19 @@ extension TableUserExt on Table<User> {
     values: [accountId, firstName, lastName],
   );
 
+  /// Insert row into the `users` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<User> insertValue({
+    int? accountId,
+    required String firstName,
+    required String lastName,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [accountId?.asExpr, firstName.asExpr, lastName.asExpr],
+  );
+
   /// Delete a single row from the `users` table, specified by
   /// _primary key_.
   ///

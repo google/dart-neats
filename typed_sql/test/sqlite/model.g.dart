@@ -124,6 +124,19 @@ extension TableUserExt on Table<User> {
   }) =>
       $ForGeneratedCode.insertInto(table: this, values: [userId, name, email]);
 
+  /// Insert row into the `users` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<User> insertValue({
+    int? userId,
+    required String name,
+    required String email,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [userId?.asExpr, name.asExpr, email.asExpr],
+  );
+
   /// Delete a single row from the `users` table, specified by
   /// _primary key_.
   ///
@@ -468,6 +481,25 @@ extension TablePackageExt on Table<Package> {
     values: [packageName, likes, ownerId, publisher],
   );
 
+  /// Insert row into the `packages` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Package> insertValue({
+    required String packageName,
+    int? likes,
+    required int ownerId,
+    String? publisher,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [
+      packageName.asExpr,
+      likes?.asExpr,
+      ownerId.asExpr,
+      publisher.asExpr,
+    ],
+  );
+
   /// Delete a single row from the `packages` table, specified by
   /// _primary key_.
   ///
@@ -782,6 +814,18 @@ extension TableLikeExt on Table<Like> {
     required Expr<String> packageName,
   }) =>
       $ForGeneratedCode.insertInto(table: this, values: [userId, packageName]);
+
+  /// Insert row into the `likes` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Like> insertValue({
+    required int userId,
+    required String packageName,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [userId.asExpr, packageName.asExpr],
+  );
 
   /// Delete a single row from the `likes` table, specified by
   /// _primary key_.
