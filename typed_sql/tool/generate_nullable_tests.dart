@@ -173,6 +173,41 @@ void main() {
     check(item).isNotNull().value.isNull();
   });
 
+  r.addTest('.insertValue() non-null value', (db) async {
+    await db.items
+        .insertValue(
+          id: 1,
+          value: _value,
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.isNotNull().{{equality}}(_value);
+  });
+
+  r.addTest('.insertValue() null by default', (db) async {
+    await db.items
+        .insertValue(
+          id: 1,
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.isNull();
+  });
+
+  r.addTest('.insertValue() null explicitly', (db) async {
+    await db.items
+        .insertValue(
+          id: 1,
+          value: null,
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.isNull();
+  });
+
   r.addTest('.update() null by default', (db) async {
     await db.items
         .insert(

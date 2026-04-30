@@ -107,6 +107,16 @@ extension TableAuthorExt on Table<Author> {
     required Expr<String> name,
   }) => $ForGeneratedCode.insertInto(table: this, values: [authorId, name]);
 
+  /// Insert row into the `authors` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Author> insertValue({int? authorId, required String name}) =>
+      $ForGeneratedCode.insertInto(
+        table: this,
+        values: [toExpr(authorId), toExpr(name)],
+      );
+
   /// Delete a single row from the `authors` table, specified by
   /// _primary key_.
   ///
@@ -420,6 +430,20 @@ extension TableBookExt on Table<Book> {
   }) => $ForGeneratedCode.insertInto(
     table: this,
     values: [bookId, title, authorId, stock],
+  );
+
+  /// Insert row into the `books` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Book> insertValue({
+    int? bookId,
+    String? title,
+    required int authorId,
+    int? stock,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [toExpr(bookId), toExpr(title), toExpr(authorId), toExpr(stock)],
   );
 
   /// Delete a single row from the `books` table, specified by

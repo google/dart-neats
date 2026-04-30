@@ -314,7 +314,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         'Unsupported type "${field.typeName}"',
       ),
     };
-    if (field.backingType == field.typeName) {
+    if (!field.isCustomType) {
       return readBackingType;
     }
     return '''
@@ -486,6 +486,63 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ],
             )
           '''),
+        ),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'insertValue'
+            ..documentation('''
+              Insert row into the `${table.name}` table.
+
+              ${rowClass.fields.whereDefaultAndNullable.isEmpty ? '' : '''\n
+              > [!WARNING]
+              > It is not possible to insert the _default value_ for fields that
+              > are nullable. Providing `null` will insert `NULL` for
+              > ${rowClass.fields.whereDefaultAndNullable.map((f) => '`${f.name}`').join(', ')}.
+              '''}
+
+              Returns a [InsertSingle] statement on which `.execute` must be
+              called for the row to be inserted.
+            ''')
+            ..optionalParameters.addAll(
+              rowClass.fields.map((field) {
+                // Field is optional if it has a default value xor is nullable,
+                // but if it's both nullable and has a default value, then we
+                // will make it required! Because the default value of null will
+                // be read as NULL in the database and it won't get the database
+                // default value.
+                // NOTE: We do not set the default value as _default value_ in
+                //       dart, because this does not work for auto-increment or
+                //       for NOW() and similar annotations.
+                final isOptional = field.hasDefault ^ field.isNullable;
+                final nullable = field.hasDefault || field.isNullable
+                    ? '?'
+                    : '';
+
+                return Parameter(
+                  (b) => b
+                    ..name = field.name
+                    ..named = true
+                    ..required = !isOptional
+                    ..type = refer('${field.typeName}$nullable'),
+                );
+              }),
+            )
+            ..returns = refer('InsertSingle<$rowClassName>')
+            ..lambda = true
+            ..body = Code('''
+              \$ForGeneratedCode.insertInto(
+                table: this,
+                values: [${rowClass.fields.map((field) {
+              // Use .asExpr to support custom data types
+              // Use ?.asExpr if there is a default value and the field is not
+              // nullable.
+              final canOmit = field.hasDefault && !field.isNullable;
+              return '${field.name}${canOmit ? '?' : ''}.asExpr';
+            }).join(', ')},],
+              )
+            '''),
         ),
       )
       ..methods.add(
@@ -1265,6 +1322,21 @@ extension on ParsedRecord {
 
 extension on ParsedField {
   String get type => isNullable ? '$typeName?' : typeName;
+
+  bool get hasDefault => defaultValue != null || autoIncrement;
+
+  bool get isCustomType => backingType != typeName;
+}
+
+extension on List<ParsedField> {
+  /// Get a list of fields that both have a default value and are nullable.
+  ///
+  /// These fields are somewhat problematic to accept in `insertValue`, because
+  /// we map `null` to `NULL`, so there is no way to insert the and get the
+  /// default value. This kind of matters if the _default value_ is
+  /// auto-increment or `NOW()`. Hence, we should warn users.
+  List<ParsedField> get whereDefaultAndNullable =>
+      where((f) => f.hasDefault && f.isNullable).toList();
 }
 
 String backingExprType(String backingType) {
@@ -1284,7 +1356,7 @@ String backingExprType(String backingType) {
 
 String fieldType(ParsedField field) {
   var backingTypeName = backingExprType(field.backingType);
-  if (field.backingType == field.typeName) {
+  if (!field.isCustomType) {
     return backingTypeName;
   }
   return '${field.typeName}Ext._exprType';

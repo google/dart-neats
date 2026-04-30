@@ -64,27 +64,45 @@ await db.authors
     .execute();
 ```
 
-We cannot simply provide `name` or `id` as
+For maximum flexibility we do not simply provide `name` or `id` as
 `String` or `int` respectively. Instead we have to give an `Expr<String>` or
-`Expr<int>`. We can create such expressions using the [toExpr] function.
+`Expr<int>`. We can create such expressions using the [toExpr] function
+(or `.asExpr` extension method).
 
 The `toExpr<T>(T value)` function works for the following types:
  * `bool` (e.g. `toExpr(true)`),
  * `int` (e.g. `toExpr(42)`),
  * `double` (e.g. `toExpr(3.14)`),
  * `String` (e.g. `toExpr('hello world')`),
- * `DateTime` (e.g. `toExpr(DateTime.now())`),
+ * `DateTime` (e.g. `toExpr(DateTime.now())`, will normalize to UTC),
  * `Uint8List` (e.g. `toExpr(Uint8List.from([1, 2, 3]))`), and,
  * `Null` (e.g. `toExpr(null)`).
 
 By wrapping values in `Expr<T>` it possible for `package:typed_sql` to
-distinguish between an omitted value (default value), and intentional decision to
-insert `NULL`. Because `NULL` is always represented as `toExpr(null)`.
+distinguish between an omitted value (default value), and intentional decision
+to insert `NULL`. Because `NULL` is always represented as `toExpr(null)`.
 As we will explore later, this also enables us to insert values directly
 from a subquery.
 
-When wrapping a `DateTime` value, `toExpr` will normalize it to UTC before
-encoding it for the database.
+For convinience, `package:typed_sql` will generate a `.insertValue` method,
+which wraps arguments with [toExpr]. This is strictly less powerful than using
+`.insert` as you cannot insert value from a subquery.
+
+```dart bookstore_test.dart#authors-insertValue-with-id
+await db.authors
+    .insertValue(
+      authorId: 42,
+      name: 'Roger Rabbit',
+    )
+    .execute();
+```
+
+> [!CAUTION]
+> If a field is _nullable_ in the database, then providing `null` to
+> `insertValue` will insert `NULL`, even if the field has a _default value_.
+>
+> It is possible to omit a field that has a _default value_ by providing `null`,
+> but for nullable fields, this does **not** insert the _default value_.
 
 
 ## Insert with `RETURNING` clause
