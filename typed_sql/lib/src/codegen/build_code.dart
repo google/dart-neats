@@ -507,16 +507,43 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ''')
             ..optionalParameters.addAll(
               rowClass.fields.map((field) {
-                // Field is optional if it has a default value xor is nullable,
-                // but if it's both nullable and has a default value, then we
-                // will make it required! Because the default value of null will
-                // be read as NULL in the database and it won't get the database
-                // default value.
+                // Depending on whether a field has a default value and/or is
+                // nullable we have the following cases:
+                //
+                //  1. `!hasDefault && !isNullable`:
+                //     The user must give us a value!
+                //     The parameter is _required_ and non-nullable.
+                //
+                //  2. `hasDefault && !isNullable`:
+                //     The user may give us a value, or we can omit the field
+                //     and the database will insert the _default value_.
+                //     The parameter is optional and nullable, null means omit
+                //     the field when inserting the row.
+                //
+                //  3. `!hasDefault && isNullable`:
+                //     The user may give us a value, or we can insert `NULL` as
+                //     the default value -- this also what .insert() does!
+                //     The parameter is optional and nullable, null means set
+                //     the field `NULL` when inserting the row.
+                //
+                //  4. `hasDefault && isNullable`:
+                //     The user may give us a value, or omit the field to get
+                //     _default value_, or the user may give `null` meaning
+                //     `NULL`. We cannot represent all 3 options!
+                //     We always intepret `null` as `NULL`, thus, the user
+                //     cannot omit the field and get the _default value_.
+                //     The user can use `.insert()` instead of `.insertValue()`.
+                //     This could be surprising which is why we have:
+                //      * A warning in the documentation, and,
+                //      * Decided that the parameter is _required_ and nullable.
+                //     The parameter is _required_ and _nullable_, so that
+                //     inserting `null` is explicit, not implicit!
+                //
                 // NOTE: We do not set the default value as _default value_ in
                 //       dart, because this does not work for auto-increment or
                 //       for NOW() and similar annotations.
                 final isOptional = field.hasDefault ^ field.isNullable;
-                final nullable = field.hasDefault || field.isNullable
+                final nullablePostfix = field.hasDefault || field.isNullable
                     ? '?'
                     : '';
 
@@ -525,7 +552,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     ..name = field.name
                     ..named = true
                     ..required = !isOptional
-                    ..type = refer('${field.typeName}$nullable'),
+                    ..type = refer('${field.typeName}$nullablePostfix'),
                 );
               }),
             )
