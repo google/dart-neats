@@ -109,6 +109,18 @@ extension TableAccountExt on Table<Account> {
     values: [accountId, accountNumber],
   );
 
+  /// Insert row into the `accounts` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Account> insertValue({
+    int? accountId,
+    required String accountNumber,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [accountId?.asExpr, accountNumber.asExpr],
+  );
+
   /// Delete a single row from the `accounts` table, specified by
   /// _primary key_.
   ///

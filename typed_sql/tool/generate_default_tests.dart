@@ -75,6 +75,13 @@ final instances = [
     'equality': 'equals',
   },
   {
+    'name': 'default_nullable_text',
+    'type': 'String?',
+    'defaultValue': '\'hello\'',
+    'nonDefaultValue': '\'hello world\'',
+    'equality': 'equals',
+  },
+  {
     'name': 'default_boolean',
     'type': 'bool',
     'defaultValue': 'true',

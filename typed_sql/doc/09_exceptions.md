@@ -65,6 +65,6 @@ simply misconfigured.
 [OperationException]: ../typed_sql/OperationException-class.html
 [TransactionAbortedException]: ../typed_sql/TransactionAbortedException-class.html
 [TransactionAbortedException.reason]: ../typed_sql/TransactionAbortedException/reason.html
-[Transactions]: ../topics/Transactions-topic.html
+[Transactions]: ../topics/transactions-topic.html
 [TypeCastException]: ../typed_sql/TypeCastException-class.html
 [UnspecifiedOperationException]: ../typed_sql/UnspecifiedOperationException-class.html

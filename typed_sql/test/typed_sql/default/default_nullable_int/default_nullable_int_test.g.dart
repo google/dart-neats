@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'group_by_expression_test.dart';
+part of 'default_nullable_int_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
@@ -8,10 +8,9 @@ part of 'group_by_expression_test.dart';
 
 /// Extension methods for a [Database] operating on [TestDatabase].
 extension TestDatabaseSchema on Database<TestDatabase> {
-  static final _$tables = [_$Employee._$table];
+  static final _$tables = [_$Item._$table];
 
-  Table<Employee> get employees =>
-      $ForGeneratedCode.declareTable(this, _$Employee._$table);
+  Table<Item> get items => $ForGeneratedCode.declareTable(this, _$Item._$table);
 
   /// Create tables defined in [TestDatabase].
   ///
@@ -43,21 +42,18 @@ extension TestDatabaseSchema on Database<TestDatabase> {
 String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
     .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
-final class _$Employee extends Employee {
-  _$Employee._(this.id, this.surname, this.salary);
+final class _$Item extends Item {
+  _$Item._(this.id, this.value);
 
   @override
   final int id;
 
   @override
-  final String surname;
-
-  @override
-  final int salary;
+  final int? value;
 
   static final _$table = $ForGeneratedCode.tableDefinition(
-    tableName: 'employees',
-    columns: <String>['id', 'surname', 'salary'],
+    tableName: 'items',
+    columns: <String>['id', 'value'],
     columnInfo: [
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
@@ -67,16 +63,9 @@ final class _$Employee extends Employee {
         overrides: [],
       ),
       $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: [],
-      ),
-      $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
+        isNotNull: false,
+        defaultValue: (kind: 'raw', value: 42),
         autoIncrement: false,
         overrides: [],
       ),
@@ -84,51 +73,47 @@ final class _$Employee extends Employee {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
-    readRow: _$Employee._$fromDatabase,
+    readRow: _$Item._$fromDatabase,
   );
 
-  static Employee? _$fromDatabase(RowReader row) {
+  static Item? _$fromDatabase(RowReader row) {
     final id = row.readInt();
-    final surname = row.readString();
-    final salary = row.readInt();
-    if (id == null && surname == null && salary == null) {
+    final value = row.readInt();
+    if (id == null && value == null) {
       return null;
     }
-    return _$Employee._(id!, surname!, salary!);
+    return _$Item._(id!, value);
   }
 
   @override
-  String toString() =>
-      'Employee(id: "$id", surname: "$surname", salary: "$salary")';
+  String toString() => 'Item(id: "$id", value: "$value")';
 }
 
-/// Extension methods for table defined in [Employee].
-extension TableEmployeeExt on Table<Employee> {
-  /// Insert row into the `employees` table.
+/// Extension methods for table defined in [Item].
+extension TableItemExt on Table<Item> {
+  /// Insert row into the `items` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Employee> insert({
-    Expr<int>? id,
-    required Expr<String> surname,
-    required Expr<int> salary,
-  }) =>
-      $ForGeneratedCode.insertInto(table: this, values: [id, surname, salary]);
+  InsertSingle<Item> insert({Expr<int>? id, Expr<int?>? value}) =>
+      $ForGeneratedCode.insertInto(table: this, values: [id, value]);
 
-  /// Insert row into the `employees` table.
+  /// Insert row into the `items` table.
+  ///
+  /// > [!WARNING]
+  /// > It is not possible to insert the _default value_ for fields that
+  /// > are nullable. Providing `null` will insert `NULL` for
+  /// > `value`.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Employee> insertValue({
-    int? id,
-    required String surname,
-    required int salary,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [id?.asExpr, surname.asExpr, salary.asExpr],
-  );
+  InsertSingle<Item> insertValue({int? id, required int? value}) =>
+      $ForGeneratedCode.insertInto(
+        table: this,
+        values: [id?.asExpr, value.asExpr],
+      );
 
-  /// Delete a single row from the `employees` table, specified by
+  /// Delete a single row from the `items` table, specified by
   /// _primary key_.
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be
@@ -137,20 +122,20 @@ extension TableEmployeeExt on Table<Employee> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Employee> delete(int id) =>
-      $ForGeneratedCode.deleteSingle(byKey(id), _$Employee._$table);
+  DeleteSingle<Item> delete(int id) =>
+      $ForGeneratedCode.deleteSingle(byKey(id), _$Item._$table);
 }
 
-/// Extension methods for building queries against the `employees` table.
-extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
-  /// Lookup a single row in `employees` table using the _primary key_.
+/// Extension methods for building queries against the `items` table.
+extension QueryItemExt on Query<(Expr<Item>,)> {
+  /// Lookup a single row in `items` table using the _primary key_.
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Employee>,)> byKey(int id) =>
-      where((employee) => employee.id.equalsValue(id)).first;
+  QuerySingle<(Expr<Item>,)> byKey(int id) =>
+      where((item) => item.id.equalsValue(id)).first;
 
-  /// Update all rows in the `employees` table matching this [Query].
+  /// Update all rows in the `items` table matching this [Query].
   ///
   /// The changes to be applied to each row matching this [Query] are
   /// defined using the [updateBuilder], which is given an [Expr]
@@ -177,38 +162,32 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Employee> update(
-    UpdateSet<Employee> Function(
-      Expr<Employee> employee,
-      UpdateSet<Employee> Function({
-        Expr<int> id,
-        Expr<String> surname,
-        Expr<int> salary,
-      })
-      set,
+  Update<Item> update(
+    UpdateSet<Item> Function(
+      Expr<Item> item,
+      UpdateSet<Item> Function({Expr<int> id, Expr<int?> value}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.update<Employee>(
+  ) => $ForGeneratedCode.update<Item>(
     this,
-    _$Employee._$table,
-    (employee) => updateBuilder(
-      employee,
-      ({Expr<int>? id, Expr<String>? surname, Expr<int>? salary}) =>
-          $ForGeneratedCode.buildUpdate<Employee>([id, surname, salary]),
+    _$Item._$table,
+    (item) => updateBuilder(
+      item,
+      ({Expr<int>? id, Expr<int?>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, value]),
     ),
   );
 
-  /// Delete all rows in the `employees` table matching this [Query].
+  /// Delete all rows in the `items` table matching this [Query].
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Employee> delete() =>
-      $ForGeneratedCode.delete(this, _$Employee._$table);
+  Delete<Item> delete() => $ForGeneratedCode.delete(this, _$Item._$table);
 }
 
-/// Extension methods for building point queries against the `employees` table.
-extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
-  /// Update the row (if any) in the `employees` table matching this
+/// Extension methods for building point queries against the `items` table.
+extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
+  /// Update the row (if any) in the `items` table matching this
   /// [QuerySingle].
   ///
   /// The changes to be applied to the row matching this [QuerySingle] are
@@ -237,57 +216,46 @@ extension QuerySingleEmployeeExt on QuerySingle<(Expr<Employee>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  UpdateSingle<Employee> update(
-    UpdateSet<Employee> Function(
-      Expr<Employee> employee,
-      UpdateSet<Employee> Function({
-        Expr<int> id,
-        Expr<String> surname,
-        Expr<int> salary,
-      })
-      set,
+  UpdateSingle<Item> update(
+    UpdateSet<Item> Function(
+      Expr<Item> item,
+      UpdateSet<Item> Function({Expr<int> id, Expr<int?> value}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateSingle<Employee>(
+  ) => $ForGeneratedCode.updateSingle<Item>(
     this,
-    _$Employee._$table,
-    (employee) => updateBuilder(
-      employee,
-      ({Expr<int>? id, Expr<String>? surname, Expr<int>? salary}) =>
-          $ForGeneratedCode.buildUpdate<Employee>([id, surname, salary]),
+    _$Item._$table,
+    (item) => updateBuilder(
+      item,
+      ({Expr<int>? id, Expr<int?>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, value]),
     ),
   );
 
-  /// Delete the row (if any) in the `employees` table matching this [QuerySingle].
+  /// Delete the row (if any) in the `items` table matching this [QuerySingle].
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be called
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
-  DeleteSingle<Employee> delete() =>
-      $ForGeneratedCode.deleteSingle(this, _$Employee._$table);
+  DeleteSingle<Item> delete() =>
+      $ForGeneratedCode.deleteSingle(this, _$Item._$table);
 }
 
-/// Extension methods for expressions on a row in the `employees` table.
-extension ExpressionEmployeeExt on Expr<Employee> {
+/// Extension methods for expressions on a row in the `items` table.
+extension ExpressionItemExt on Expr<Item> {
   Expr<int> get id =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String> get surname =>
-      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  Expr<int> get salary =>
-      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
+  Expr<int?> get value =>
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.integer);
 }
 
-extension ExpressionNullableEmployeeExt on Expr<Employee?> {
+extension ExpressionNullableItemExt on Expr<Item?> {
   Expr<int?> get id =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String?> get surname =>
-      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  Expr<int?> get salary =>
-      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
+  Expr<int?> get value =>
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.integer);
 
   /// Check if the row is not `NULL`.
   ///
@@ -306,17 +274,14 @@ extension ExpressionNullableEmployeeExt on Expr<Employee?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
-/// Extension methods for assertions on [Employee] using
+/// Extension methods for assertions on [Item] using
 /// [`package:checks`][1].
 ///
 /// [1]: https://pub.dev/packages/checks
-extension EmployeeChecks on Subject<Employee> {
-  /// Create assertions on [Employee.id].
+extension ItemChecks on Subject<Item> {
+  /// Create assertions on [Item.id].
   Subject<int> get id => has((m) => m.id, 'id');
 
-  /// Create assertions on [Employee.surname].
-  Subject<String> get surname => has((m) => m.surname, 'surname');
-
-  /// Create assertions on [Employee.salary].
-  Subject<int> get salary => has((m) => m.salary, 'salary');
+  /// Create assertions on [Item.value].
+  Subject<int?> get value => has((m) => m.value, 'value');
 }

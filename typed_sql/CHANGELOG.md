@@ -1,3 +1,8 @@
+## 0.1.10-dev
+ * Introduce `.insertValue` which automatically wraps with `toExpr()`, but is
+   unfortunately unable to insert _default value_ for nullable fields that
+   have a default value other than `NULL`.
+
 ## 0.1.9
  * Fix constraint name generation for `FOREIGN KEY` DDLs.
 

@@ -243,6 +243,17 @@ void main() {
     // #endregion
   });
 
+  r.addTest('authors.insertValue w. authorId', (db) async {
+    // #region authors-insertValue-with-id
+    await db.authors
+        .insertValue(
+          authorId: 42,
+          name: 'Roger Rabbit',
+        )
+        .execute();
+    // #endregion
+  });
+
   r.addTest('authors.insert().returnInserted', (db) async {
     // #region authors-insert-returnInserted
     final author = await db.authors

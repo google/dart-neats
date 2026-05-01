@@ -123,6 +123,19 @@ extension TableDepartmentExt on Table<Department> {
     values: [departmentId, name, location],
   );
 
+  /// Insert row into the `departments` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Department> insertValue({
+    int? departmentId,
+    required String name,
+    required String location,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [departmentId?.asExpr, name.asExpr, location.asExpr],
+  );
+
   /// Delete a single row from the `departments` table, specified by
   /// _primary key_.
   ///
@@ -442,6 +455,19 @@ extension TableEmployeeExt on Table<Employee> {
   }) => $ForGeneratedCode.insertInto(
     table: this,
     values: [employeeId, name, departmentId],
+  );
+
+  /// Insert row into the `employees` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Employee> insertValue({
+    int? employeeId,
+    required String name,
+    int? departmentId,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [employeeId?.asExpr, name.asExpr, departmentId.asExpr],
   );
 
   /// Delete a single row from the `employees` table, specified by

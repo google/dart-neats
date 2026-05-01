@@ -47,11 +47,35 @@ void main() {
     check(item).isNotNull().value.deepEquals(initialValue);
   });
 
+  r.addTest('.insertValue()', (db) async {
+    await db.items
+        .insertValue(
+          id: 1,
+          value: initialValue,
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.deepEquals(initialValue);
+  });
+
   r.addTest('.insert(value: empty)', (db) async {
     await db.items
         .insert(
           id: toExpr(1),
           value: toExpr(emptyValue),
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.deepEquals(emptyValue);
+  });
+
+  r.addTest('.insertValue(value: empty)', (db) async {
+    await db.items
+        .insertValue(
+          id: 1,
+          value: emptyValue,
         )
         .execute();
 
@@ -71,6 +95,18 @@ void main() {
     check(item).isNotNull().value.deepEquals(otherValue);
   });
 
+  r.addTest('.insertValue(value: other)', (db) async {
+    await db.items
+        .insertValue(
+          id: 1,
+          value: otherValue,
+        )
+        .execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().value.deepEquals(otherValue);
+  });
+
   r.addTest('.insert().returnInserted()', (db) async {
     final item = await db.items
         .insert(
@@ -82,11 +118,33 @@ void main() {
     check(item).isNotNull().value.deepEquals(initialValue);
   });
 
+  r.addTest('.insertValue().returnInserted()', (db) async {
+    final item = await db.items
+        .insertValue(
+          id: 1,
+          value: initialValue,
+        )
+        .returnInserted()
+        .executeAndFetch();
+    check(item).isNotNull().value.deepEquals(initialValue);
+  });
+
   r.addTest('.insert().returning(.value)', (db) async {
     final value = await db.items
         .insert(
           id: toExpr(1),
           value: toExpr(initialValue),
+        )
+        .returning((item) => (item.value,))
+        .executeAndFetch();
+    check(value).isNotNull().deepEquals(initialValue);
+  });
+
+  r.addTest('.insertValue().returning(.value)', (db) async {
+    final value = await db.items
+        .insertValue(
+          id: 1,
+          value: initialValue,
         )
         .returning((item) => (item.value,))
         .executeAndFetch();

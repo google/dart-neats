@@ -123,6 +123,19 @@ extension TablePostExt on Table<Post> {
     values: [author, slug, content],
   );
 
+  /// Insert row into the `posts` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Post> insertValue({
+    required String author,
+    required String slug,
+    required String content,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [author.asExpr, slug.asExpr, content.asExpr],
+  );
+
   /// Delete a single row from the `posts` table, specified by
   /// _primary key_.
   ///
@@ -455,6 +468,20 @@ extension TableCommentExt on Table<Comment> {
   }) => $ForGeneratedCode.insertInto(
     table: this,
     values: [commentId, author, postSlug, comment],
+  );
+
+  /// Insert row into the `comments` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Comment> insertValue({
+    required int commentId,
+    required String author,
+    required String postSlug,
+    required String comment,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [commentId.asExpr, author.asExpr, postSlug.asExpr, comment.asExpr],
   );
 
   /// Delete a single row from the `comments` table, specified by

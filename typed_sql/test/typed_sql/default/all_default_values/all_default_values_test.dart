@@ -42,7 +42,16 @@ void main() {
     check(item).isNotNull().name.equals('Bob');
   });
 
-  r.addTest('override defaults', (db) async {
+  r.addTest('.insertValue() DEFAULT VALUES', (db) async {
+    // Inserting a row with all default values.
+    // This requires special syntax in sqlite and postgres.
+    await db.items.insertValue().execute();
+
+    final item = await db.items.first.fetch();
+    check(item).isNotNull().name.equals('Bob');
+  });
+
+  r.addTest('.insert() override defaults', (db) async {
     final bday = DateTime.utc(2000, 1, 1);
     final now = DateTime.utc(2023, 10, 27, 12, 0, 0);
     final exp = DateTime.utc(2025, 1, 1);
@@ -53,6 +62,32 @@ void main() {
           birthday: toExpr(bday),
           createdAt: toExpr(now),
           expires: toExpr(exp),
+        )
+        .execute();
+
+    final item = await db.items
+        .where(
+          (i) => i.name.equalsValue('Charlie'),
+        )
+        .first
+        .fetch();
+
+    check(item).isNotNull().birthday.equals(bday);
+    check(item).isNotNull().createdAt.equals(now);
+    check(item).isNotNull().expires.equals(exp);
+  });
+
+  r.addTest('.insertValue() override defaults', (db) async {
+    final bday = DateTime.utc(2000, 1, 1);
+    final now = DateTime.utc(2023, 10, 27, 12, 0, 0);
+    final exp = DateTime.utc(2025, 1, 1);
+
+    await db.items
+        .insertValue(
+          name: 'Charlie',
+          birthday: bday,
+          createdAt: now,
+          expires: exp,
         )
         .execute();
 

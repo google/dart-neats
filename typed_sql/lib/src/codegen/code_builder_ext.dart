@@ -27,22 +27,31 @@ extension ExtensionBuilderExt on ExtensionBuilder {
   }
 }
 
-Iterable<String> _documentationCommentLines(String content) =>
-    _trimLines(content)
-        .split('\n')
-        .skipWhile((l) => l.trim().isEmpty)
-        .toList()
-        .reversed
-        .skipWhile((l) => l.trim().isEmpty)
-        .toList()
-        .reversed
-        .map((l) {
-          l = l.trimRight();
-          if (l.isEmpty) {
-            return '///';
-          }
-          return '/// $l';
-        });
+Iterable<String> _documentationCommentLines(String content) sync* {
+  final lines = _trimLines(content).split('\n');
+
+  // Find the boundaries to naturally skip leading and trailing empty lines
+  final startIndex = lines.indexWhere((l) => l.trim().isNotEmpty);
+  if (startIndex == -1) {
+    return;
+  }
+  final endIndex = lines.lastIndexWhere((l) => l.trim().isNotEmpty);
+
+  var previousWasEmpty = false;
+
+  for (var i = startIndex; i <= endIndex; i++) {
+    final line = lines[i].trimRight();
+    final isEmpty = line.isEmpty;
+
+    // Collapse multiple empty lines into one
+    if (isEmpty && previousWasEmpty) {
+      continue;
+    }
+
+    previousWasEmpty = isEmpty;
+    yield isEmpty ? '///' : '/// $line';
+  }
+}
 
 /// Trim whitespace at the start of lines in [content]
 String _trimLines(String content) {
