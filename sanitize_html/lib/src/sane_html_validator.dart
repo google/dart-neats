@@ -225,6 +225,15 @@ class SaneHtmlValidator {
     return root.outerHtml;
   }
 
+  bool containsDisallowedContent(String htmlString) {
+    try {
+      final root = html_parser.parseFragment(htmlString);
+      return _hasDisallowedContent(root);
+    } catch (e) {
+      throw Exception('Error parsing HTML: $e');
+    }
+  }
+
   void _sanitize(Node node) {
     if (node is Element) {
       final tagName = node.localName!.toUpperCase();
@@ -266,6 +275,62 @@ class SaneHtmlValidator {
         _sanitize(node.nodes[i]);
       }
     }
+  }
+
+  bool _hasDisallowedContent(Node node) {
+    // Check if the node is an Element
+    if (node is Element) {
+      final tagName = node.localName?.toUpperCase() ?? '';
+
+      // If the tag is not allowed, return true
+      if (!_allowedElements.contains(tagName)) {
+        return true;
+      }
+
+      // Check each attribute of the element
+      for (var attribute in node.attributes.entries) {
+        final attrName = attribute.key.toString();
+        final attrValue = attribute.value;
+
+        // Allow 'id' attribute only if allowElementId allows it
+        if (attrName == 'id' && (allowElementId == null || !allowElementId!(attrValue))) {
+          return true;
+        }
+
+        // Allow 'class' attribute only if all classes are allowed
+        if (attrName == 'class' && allowClassName != null) {
+          for (var className in node.classes) {
+            if (!allowClassName!(className)) {
+              return true;
+            }
+          }
+        }
+
+        // Check other attributes against allowed attributes list and validators
+        if (!_isAttributeAllowed(tagName, attrName, attrValue)) {
+          return true;
+        }
+      }
+
+      // Special handling for 'A' elements with 'href' attribute
+      if (tagName == 'A' && node.attributes.containsKey('href')) {
+        final href = node.attributes['href'];
+        // Validate the href attribute
+        if (href != null && !_validLink(href)) {
+          return true;  // Disallow invalid URLs in 'href'
+        }
+      }
+    }
+
+    // Recursively check child nodes for disallowed content
+    for (var child in node.nodes) {
+      if (_hasDisallowedContent(child)) {
+        return true;
+      }
+    }
+
+    // If no disallowed content was found, return false
+    return false;
   }
 
   bool _isAttributeAllowed(String tagName, String attrName, String value) {
