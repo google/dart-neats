@@ -347,6 +347,59 @@ extension ExpressionNullableEmployeeExt on Expr<Employee?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+/// `Table<Employee>` conflict targets for use with `.onConflict`.
+enum EmployeeConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `id`.
+  primaryKey(['id']);
+
+  const EmployeeConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleEmployeeExt on InsertSingle<Employee> {
+  InsertOnConflictSingle<Employee> onConflict(EmployeeConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleEmployeeExt
+    on InsertOnConflictSingle<Employee> {
+  UpsertOne<Employee> update(
+    UpdateSet<Employee> Function(
+      Expr<Employee> employee,
+      Expr<Employee> excluded,
+      UpdateSet<Employee> Function({
+        Expr<int> id,
+        Expr<String> surname,
+        Expr<String> seniority,
+        Expr<int?> salary,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Employee>(
+    this,
+    (employee, excluded) => updateBuilder(
+      employee,
+      excluded,
+      ({
+        Expr<int>? id,
+        Expr<String>? surname,
+        Expr<String>? seniority,
+        Expr<int?>? salary,
+      }) => $ForGeneratedCode.buildUpdate<Employee>([
+        id,
+        surname,
+        seniority,
+        salary,
+      ]),
+    ),
+  );
+}
+
 /// Extension methods for assertions on [Employee] using
 /// [`package:checks`][1].
 ///

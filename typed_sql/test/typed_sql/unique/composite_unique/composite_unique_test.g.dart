@@ -338,6 +338,60 @@ extension ExpressionNullableUserExt on Expr<User?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+/// `Table<User>` conflict targets for use with `.onConflict`.
+enum UserConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `accountId`.
+  primaryKey(['accountId']),
+
+  /// `firstName`, `lastName` conflict.
+  ///
+  /// Due to violation of the `UNIQUE` constraint on
+  /// `firstName`, `lastName`.
+  ///
+  /// Thus, the conflicting row has matching values for these fields.
+  fullname(['firstName', 'lastName']);
+
+  const UserConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleUserExt on InsertSingle<User> {
+  InsertOnConflictSingle<User> onConflict(UserConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleUserExt on InsertOnConflictSingle<User> {
+  UpsertOne<User> update(
+    UpdateSet<User> Function(
+      Expr<User> user,
+      Expr<User> excluded,
+      UpdateSet<User> Function({
+        Expr<int> accountId,
+        Expr<String> firstName,
+        Expr<String> lastName,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<User>(
+    this,
+    (user, excluded) => updateBuilder(
+      user,
+      excluded,
+      ({
+        Expr<int>? accountId,
+        Expr<String>? firstName,
+        Expr<String>? lastName,
+      }) =>
+          $ForGeneratedCode.buildUpdate<User>([accountId, firstName, lastName]),
+    ),
+  );
+}
+
 /// Extension methods for assertions on [User] using
 /// [`package:checks`][1].
 ///

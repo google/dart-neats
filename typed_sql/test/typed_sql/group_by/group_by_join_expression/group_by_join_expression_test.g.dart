@@ -276,6 +276,44 @@ extension ExpressionNullableDepartmentExt on Expr<Department?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+/// `Table<Department>` conflict targets for use with `.onConflict`.
+enum DepartmentConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `id`.
+  primaryKey(['id']);
+
+  const DepartmentConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleDepartmentExt on InsertSingle<Department> {
+  InsertOnConflictSingle<Department> onConflict(DepartmentConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleDepartmentExt
+    on InsertOnConflictSingle<Department> {
+  UpsertOne<Department> update(
+    UpdateSet<Department> Function(
+      Expr<Department> department,
+      Expr<Department> excluded,
+      UpdateSet<Department> Function({Expr<int> id, Expr<String> name}) set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Department>(
+    this,
+    (department, excluded) => updateBuilder(
+      department,
+      excluded,
+      ({Expr<int>? id, Expr<String>? name}) =>
+          $ForGeneratedCode.buildUpdate<Department>([id, name]),
+    ),
+  );
+}
+
 final class _$Employee extends Employee {
   _$Employee._(this.id, this.name, this.deptId, this.salary);
 
@@ -631,6 +669,54 @@ extension RightJoinEmployeeDepartmentExt
   /// This will match rows where [Employee.deptId] = [Department.id].
   Query<(Expr<Employee?>, Expr<Department>)> usingDept() =>
       on((a, b) => b.id.equals(a.deptId));
+}
+
+/// `Table<Employee>` conflict targets for use with `.onConflict`.
+enum EmployeeConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `id`.
+  primaryKey(['id']);
+
+  const EmployeeConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleEmployeeExt on InsertSingle<Employee> {
+  InsertOnConflictSingle<Employee> onConflict(EmployeeConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleEmployeeExt
+    on InsertOnConflictSingle<Employee> {
+  UpsertOne<Employee> update(
+    UpdateSet<Employee> Function(
+      Expr<Employee> employee,
+      Expr<Employee> excluded,
+      UpdateSet<Employee> Function({
+        Expr<int> id,
+        Expr<String> name,
+        Expr<int> deptId,
+        Expr<int> salary,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Employee>(
+    this,
+    (employee, excluded) => updateBuilder(
+      employee,
+      excluded,
+      ({
+        Expr<int>? id,
+        Expr<String>? name,
+        Expr<int>? deptId,
+        Expr<int>? salary,
+      }) => $ForGeneratedCode.buildUpdate<Employee>([id, name, deptId, salary]),
+    ),
+  );
 }
 
 /// Extension methods for assertions on [Department] using

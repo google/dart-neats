@@ -384,6 +384,53 @@ extension RightJoinEmployeeDepartmentExt
       on((a, b) => b.departmentId.equals(a.departmentId));
 }
 
+/// `Table<Employee>` conflict targets for use with `.onConflict`.
+enum EmployeeConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `employeeId`.
+  primaryKey(['employeeId']);
+
+  const EmployeeConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleEmployeeExt on InsertSingle<Employee> {
+  InsertOnConflictSingle<Employee> onConflict(EmployeeConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleEmployeeExt
+    on InsertOnConflictSingle<Employee> {
+  UpsertOne<Employee> update(
+    UpdateSet<Employee> Function(
+      Expr<Employee> employee,
+      Expr<Employee> excluded,
+      UpdateSet<Employee> Function({
+        Expr<int> employeeId,
+        Expr<String> name,
+        Expr<int?> departmentId,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Employee>(
+    this,
+    (employee, excluded) => updateBuilder(
+      employee,
+      excluded,
+      ({Expr<int>? employeeId, Expr<String>? name, Expr<int?>? departmentId}) =>
+          $ForGeneratedCode.buildUpdate<Employee>([
+            employeeId,
+            name,
+            departmentId,
+          ]),
+    ),
+  );
+}
+
 final class _$Department extends Department {
   _$Department._(this.departmentId, this.name, this.location);
 
@@ -707,6 +754,53 @@ extension RightJoinDepartmentEmployeeExt
   /// This will match rows where [Department.departmentId] = [Employee.departmentId].
   Query<(Expr<Department?>, Expr<Employee>)> usingDepartment() =>
       on((a, b) => a.departmentId.equals(b.departmentId));
+}
+
+/// `Table<Department>` conflict targets for use with `.onConflict`.
+enum DepartmentConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `departmentId`.
+  primaryKey(['departmentId']);
+
+  const DepartmentConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleDepartmentExt on InsertSingle<Department> {
+  InsertOnConflictSingle<Department> onConflict(DepartmentConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleDepartmentExt
+    on InsertOnConflictSingle<Department> {
+  UpsertOne<Department> update(
+    UpdateSet<Department> Function(
+      Expr<Department> department,
+      Expr<Department> excluded,
+      UpdateSet<Department> Function({
+        Expr<int> departmentId,
+        Expr<String> name,
+        Expr<String> location,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Department>(
+    this,
+    (department, excluded) => updateBuilder(
+      department,
+      excluded,
+      ({Expr<int>? departmentId, Expr<String>? name, Expr<String>? location}) =>
+          $ForGeneratedCode.buildUpdate<Department>([
+            departmentId,
+            name,
+            location,
+          ]),
+    ),
+  );
 }
 
 /// Extension methods for assertions on [Department] using
