@@ -133,6 +133,10 @@ final class _MysqlSqlDialect extends SqlDialect {
   (String, List<Object?>) insertInto(InsertStatement statement) {
     final resolver = ExpressionResolver(StatmentContext());
 
+    if (statement.onConflict != null) {
+      throw UnsupportedError('mysql does not support ON CONFLICT clauses');
+    }
+
     String? returnProjection;
     final returning = statement.returning;
     if (returning != null) {

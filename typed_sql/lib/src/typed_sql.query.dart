@@ -318,8 +318,10 @@ sealed class FromClause extends QueryClause {
 ///
 /// Expressions can be bound to this context, that is the context from which
 /// they are referencing fields.
-abstract final class ExpressionContext {
-  Object get _handle;
+final class ExpressionContext {
+  final Object _handle;
+
+  ExpressionContext._(this._handle);
 }
 
 final class SelectFromClause extends FromClause implements ExpressionContext {

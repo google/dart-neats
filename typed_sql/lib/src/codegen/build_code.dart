@@ -1130,6 +1130,142 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       );
     }
   }
+
+  // Enum for <..>Conflict
+  final conflictTargets = [
+    (
+      name: 'primaryKey',
+      fields: rowClass.primaryKey.map((f) => f.name).toList(),
+      docs:
+          '''
+            Conflict with an existing row that has a matching primary key.
+
+            Thus, the other row has matching values for:
+            ${rowClass.primaryKey.map((f) => '`${f.name}`').join(', ')}.
+          ''',
+    ),
+    for (final c in rowClass.uniqueConstraints)
+      (
+        name:
+            c.name ??
+            c.fields.map((f) => f.name).reduce((v, e) => v + upperCamelCase(e)),
+        fields: c.fields.map((f) => f.name).toList(),
+        docs:
+            '''
+              ${c.fields.map((f) => '`${f.name}`').join(', ')} conflict.
+
+              Due to violation of the `UNIQUE` constraint on
+              ${c.fields.map((f) => '`${f.name}`').join(', ')}.
+
+              Thus, the conflicting row has matching values for these fields.
+            ''',
+      ),
+  ];
+
+  yield Enum(
+    (b) => b
+      ..name = '${rowClassName}Conflict'
+      ..documentation('''
+        `Table<$rowClassName>` conflict targets for use with `.onConflict`.
+      ''')
+      ..values.addAll([
+        for (final t in conflictTargets)
+          EnumValue(
+            (b) => b
+              ..name = t.name
+              ..arguments.add(literalList(t.fields))
+              ..documentation(t.docs),
+          ),
+      ])
+      ..constructors.add(
+        Constructor(
+          (b) => b
+            ..constant = true
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..toThis = true
+                  ..name = '_fields',
+              ),
+            ),
+        ),
+      )
+      ..fields.add(
+        Field(
+          (b) => b
+            ..name = '_fields'
+            ..modifier = FieldModifier.final$
+            ..type = refer('List<String>'),
+        ),
+      ),
+  );
+
+  // Extension InsertSingle<..>Ext
+  yield Extension(
+    (b) => b
+      ..name = 'InsertSingle${rowClassName}Ext'
+      ..on = refer('InsertSingle<$rowClassName>')
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = 'onConflict'
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'target'
+                  ..type = refer('${rowClassName}Conflict'),
+              ),
+            )
+            ..returns = refer('InsertOnConflictSingle<$rowClassName>')
+            ..lambda = true
+            ..body = Code(
+              '\$ForGeneratedCode.insertSingleOnConflict(this, target._fields)',
+            ),
+        ),
+      ]),
+  );
+
+  // Extension InsertOnConflictSingle<..>Ext
+  yield Extension(
+    (b) => b
+      ..name = 'InsertOnConflictSingle${rowClassName}Ext'
+      ..on = refer('InsertOnConflictSingle<$rowClassName>')
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = 'update'
+            ..returns = refer('UpsertOne<$rowClassName>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..type = refer('''
+                    UpdateSet<$rowClassName> Function(
+                      Expr<$rowClassName> $rowInstanceName,
+                      Expr<$rowClassName> excluded,
+                      UpdateSet<$rowClassName> Function({
+                        ${rowClass.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
+                      }) set,
+                    )
+                  ''')
+                  ..name = 'updateBuilder',
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
+              \$ForGeneratedCode.updateOnConflict<$rowClassName>(
+                this,
+                ($rowInstanceName, excluded) => updateBuilder($rowInstanceName, excluded, ({
+                    ${rowClass.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
+                  }) =>
+                    \$ForGeneratedCode.buildUpdate<$rowClassName>([
+                    ${rowClass.fields.map((field) => field.name).join(', ')},
+                    ]),
+                ),
+              )
+            '''),
+        ),
+      ]),
+  );
 }
 
 /// Generate code for using `Query<T>` where `T` is a named record!

@@ -51,9 +51,48 @@ final class InsertStatement extends SqlStatement {
   final String table;
   final List<String> columns;
   final List<Expr> values;
+  final ConflictClause? onConflict;
   final ReturningClause? returning;
 
-  InsertStatement._(this.table, this.columns, this.values, this.returning);
+  InsertStatement._(
+    this.table,
+    this.columns,
+    this.values,
+    this.onConflict,
+    this.returning,
+  );
+}
+
+sealed class ConflictClause {
+  final List<String> conflictTarget;
+
+  ConflictClause._(this.conflictTarget);
+}
+
+final class DoNothingOnConflictClause extends ConflictClause {
+  DoNothingOnConflictClause._(super.conflictTarget) : super._();
+}
+
+final class UpdateOnConflictClause extends ConflictClause
+    implements ExpressionContext {
+  @override
+  final Object _handle;
+
+  final TableClause table;
+  final ExpressionContext excluded;
+  final List<String> columns;
+  final List<Expr> values;
+  final Expr<bool> where;
+
+  UpdateOnConflictClause._(
+    this._handle,
+    super.conflictTarget,
+    this.table,
+    this.excluded,
+    this.columns,
+    this.values,
+    this.where,
+  ) : super._();
 }
 
 final class ReturningClause implements ExpressionContext {

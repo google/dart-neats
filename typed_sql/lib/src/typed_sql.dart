@@ -237,7 +237,7 @@ final class $ForGeneratedCode {
   static InsertSingle<T> insertInto<T extends Row>({
     required Table<T> table,
     required List<Expr?> values,
-  }) => InsertSingle._(table, values);
+  }) => InsertSingle._(_Insert._(table: table, values: values));
 
   static Update<T> update<T extends Row>(
     Query<(Expr<T>,)> query,
@@ -396,4 +396,14 @@ final class $ForGeneratedCode {
       onUpdate: onUpdate,
     );
   }
+
+  static InsertOnConflictSingle<T> insertSingleOnConflict<T extends Row>(
+    InsertSingle<T> insert,
+    List<String> conflictTarget,
+  ) => insert._onConflict(conflictTarget);
+
+  static UpsertOne<T> updateOnConflict<T extends Row>(
+    InsertOnConflictSingle<T> insert,
+    UpdateSet<T> Function(Expr<T> row, Expr<T> excluded) updateBuilder,
+  ) => insert._update(updateBuilder);
 }
