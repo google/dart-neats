@@ -368,6 +368,48 @@ extension RightJoinPostCommentExt
       on((a, b) => a.author.equals(b.author) & a.slug.equals(b.postSlug));
 }
 
+/// `Table<Post>` conflict targets for use with `.onConflict`.
+enum PostConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `author`, `slug`.
+  primaryKey(['author', 'slug']);
+
+  const PostConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSinglePostExt on InsertSingle<Post> {
+  InsertOnConflictSingle<Post> onConflict(PostConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSinglePostExt on InsertOnConflictSingle<Post> {
+  UpsertOne<Post> update(
+    UpdateSet<Post> Function(
+      Expr<Post> post,
+      Expr<Post> excluded,
+      UpdateSet<Post> Function({
+        Expr<String> author,
+        Expr<String> slug,
+        Expr<String> content,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Post>(
+    this,
+    (post, excluded) => updateBuilder(
+      post,
+      excluded,
+      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
+          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
+    ),
+  );
+}
+
 final class _$Comment extends Comment {
   _$Comment._(this.commentId, this.author, this.postSlug, this.comment);
 
@@ -742,6 +784,58 @@ extension RightJoinCommentPostExt
   /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
   Query<(Expr<Comment?>, Expr<Post>)> usingPost() =>
       on((a, b) => b.author.equals(a.author) & b.slug.equals(a.postSlug));
+}
+
+/// `Table<Comment>` conflict targets for use with `.onConflict`.
+enum CommentConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `commentId`.
+  primaryKey(['commentId']);
+
+  const CommentConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleCommentExt on InsertSingle<Comment> {
+  InsertOnConflictSingle<Comment> onConflict(CommentConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleCommentExt on InsertOnConflictSingle<Comment> {
+  UpsertOne<Comment> update(
+    UpdateSet<Comment> Function(
+      Expr<Comment> comment,
+      Expr<Comment> excluded,
+      UpdateSet<Comment> Function({
+        Expr<int> commentId,
+        Expr<String> author,
+        Expr<String> postSlug,
+        Expr<String> comment,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Comment>(
+    this,
+    (comment, excluded) => updateBuilder(
+      comment,
+      excluded,
+      ({
+        Expr<int>? commentId,
+        Expr<String>? author,
+        Expr<String>? postSlug,
+        Expr<String>? comment,
+      }) => $ForGeneratedCode.buildUpdate<Comment>([
+        commentId,
+        author,
+        postSlug,
+        comment,
+      ]),
+    ),
+  );
 }
 
 /// Extension methods for assertions on [Comment] using

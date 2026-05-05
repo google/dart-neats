@@ -383,6 +383,56 @@ extension RightJoinUserPackageExt
       on((a, b) => a.userId.equals(b.ownerId));
 }
 
+/// `Table<User>` conflict targets for use with `.onConflict`.
+enum UserConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `userId`.
+  primaryKey(['userId']),
+
+  /// `email` conflict.
+  ///
+  /// Due to violation of the `UNIQUE` constraint on
+  /// `email`.
+  ///
+  /// Thus, the conflicting row has matching values for these fields.
+  email(['email']);
+
+  const UserConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleUserExt on InsertSingle<User> {
+  InsertOnConflictSingle<User> onConflict(UserConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleUserExt on InsertOnConflictSingle<User> {
+  UpsertOne<User> update(
+    UpdateSet<User> Function(
+      Expr<User> user,
+      Expr<User> excluded,
+      UpdateSet<User> Function({
+        Expr<int> userId,
+        Expr<String> name,
+        Expr<String> email,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<User>(
+    this,
+    (user, excluded) => updateBuilder(
+      user,
+      excluded,
+      ({Expr<int>? userId, Expr<String>? name, Expr<String>? email}) =>
+          $ForGeneratedCode.buildUpdate<User>([userId, name, email]),
+    ),
+  );
+}
+
 final class _$Package extends Package {
   _$Package._(this.packageName, this.likes, this.ownerId, this.publisher);
 
@@ -756,6 +806,58 @@ extension RightJoinPackageUserExt
       on((a, b) => b.userId.equals(a.ownerId));
 }
 
+/// `Table<Package>` conflict targets for use with `.onConflict`.
+enum PackageConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `packageName`.
+  primaryKey(['packageName']);
+
+  const PackageConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSinglePackageExt on InsertSingle<Package> {
+  InsertOnConflictSingle<Package> onConflict(PackageConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSinglePackageExt on InsertOnConflictSingle<Package> {
+  UpsertOne<Package> update(
+    UpdateSet<Package> Function(
+      Expr<Package> package,
+      Expr<Package> excluded,
+      UpdateSet<Package> Function({
+        Expr<String> packageName,
+        Expr<int> likes,
+        Expr<int> ownerId,
+        Expr<String?> publisher,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Package>(
+    this,
+    (package, excluded) => updateBuilder(
+      package,
+      excluded,
+      ({
+        Expr<String>? packageName,
+        Expr<int>? likes,
+        Expr<int>? ownerId,
+        Expr<String?>? publisher,
+      }) => $ForGeneratedCode.buildUpdate<Package>([
+        packageName,
+        likes,
+        ownerId,
+        publisher,
+      ]),
+    ),
+  );
+}
+
 final class _$Like extends Like {
   _$Like._(this.userId, this.packageName);
 
@@ -991,6 +1093,44 @@ extension ExpressionNullableLikeExt on Expr<Like?> {
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
+}
+
+/// `Table<Like>` conflict targets for use with `.onConflict`.
+enum LikeConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `userId`, `packageName`.
+  primaryKey(['userId', 'packageName']);
+
+  const LikeConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleLikeExt on InsertSingle<Like> {
+  InsertOnConflictSingle<Like> onConflict(LikeConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleLikeExt on InsertOnConflictSingle<Like> {
+  UpsertOne<Like> update(
+    UpdateSet<Like> Function(
+      Expr<Like> like,
+      Expr<Like> excluded,
+      UpdateSet<Like> Function({Expr<int> userId, Expr<String> packageName})
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Like>(
+    this,
+    (like, excluded) => updateBuilder(
+      like,
+      excluded,
+      ({Expr<int>? userId, Expr<String>? packageName}) =>
+          $ForGeneratedCode.buildUpdate<Like>([userId, packageName]),
+    ),
+  );
 }
 
 /// Extension methods for building queries projected to a named record.

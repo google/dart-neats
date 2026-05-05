@@ -129,27 +129,76 @@ final class Update<T extends Row> {
   Return<(Expr<T>,)> returnUpdated() => returning((updated) => (updated,));
 }
 
-/// A `INSERT` statement to insert a single row.
-final class InsertSingle<T extends Row> {
+final class _Insert<T extends Row> {
   final Table<T> _table;
   final List<Expr?> _values;
+  final ConflictClause? _onConflict;
 
-  InsertSingle._(this._table, this._values);
+  _Insert._({
+    required Table<T> table,
+    required List<Expr?> values,
+    ConflictClause? onConflict,
+  }) : _table = table,
+       _values = values,
+       _onConflict = onConflict;
 
-  /// Execute this `INSERT` statement in the database.
-  Future<void> execute() async {
-    final (sql, params) = _table._context._dialect.insertInto(
-      InsertStatement._(
-        _table._tableClause.name,
-        _table._tableClause.columns
-            .whereIndexed((index, value) => _values[index] != null)
-            .toList(),
-        _values.nonNulls.toList(),
-        null,
-      ),
-    );
+  _Insert<T> _with({
+    Table<T>? table,
+    List<Expr?>? values,
+    ConflictClause? onConflict,
+  }) => _Insert._(
+    table: table ?? _table,
+    values: values ?? _values,
+    onConflict: onConflict ?? _onConflict,
+  );
+
+  Future<void> execute({
+    ReturningClause? returning,
+  }) async {
+    final (sql, params) = _render(returning: returning);
     await _table._context._query(sql, params).drain<void>();
   }
+
+  (String, List<Object?>) _render({
+    ReturningClause? returning,
+  }) => _table._context._dialect.insertInto(
+    InsertStatement._(
+      _table._tableClause.name,
+      _table._tableClause.columns
+          .whereIndexed((index, value) => _values[index] != null)
+          .toList(),
+      _values.nonNulls.toList(),
+      _onConflict,
+      returning,
+    ),
+  );
+
+  Return<S> returning<S extends Record>(
+    S Function(Expr<T> inserted) projectionBuilder,
+  ) {
+    final handle = Object();
+    final projection = projectionBuilder(
+      _table._expressions.$1._standin(0, handle),
+    );
+
+    return Return._(
+      _table._context,
+      projection,
+      (e) => _render(
+        returning: ReturningClause._(handle, _table._tableClause.columns, e),
+      ),
+    );
+  }
+}
+
+/// A `INSERT` statement to insert a single row.
+final class InsertSingle<T extends Row> {
+  final _Insert<T> _insert;
+
+  InsertSingle._(this._insert);
+
+  /// Execute this `INSERT` statement in the database.
+  Future<void> execute() => _insert.execute();
 
   /// Create a `INSERT` statement that returns a projection of the inserted row,
   /// using the `RETURNING` clause.
@@ -160,33 +209,128 @@ final class InsertSingle<T extends Row> {
   /// objects.
   ReturnOne<S> returning<S extends Record>(
     S Function(Expr<T> inserted) projectionBuilder,
-  ) {
-    final handle = Object();
-    final projection = projectionBuilder(
-      _table._expressions.$1._standin(0, handle),
-    );
-
-    return ReturnOne._(
-      Return._(_table._context, projection, (e) {
-        return _table._context._dialect.insertInto(
-          InsertStatement._(
-            _table._tableClause.name,
-            _table._tableClause.columns
-                .whereIndexed((index, value) => _values[index] != null)
-                .toList(),
-            _values.nonNulls.toList(),
-            ReturningClause._(handle, _table._tableClause.columns, e),
-          ),
-        );
-      }),
-    );
-  }
+  ) => ReturnOne._(_insert.returning(projectionBuilder));
 
   /// Create a `INSERT` statement that returns the inserted row, using the
   /// `RETURNING` clause.
   ///
   /// This is equivalent to the `RETURNING *` clause in SQL.
   ReturnOne<(Expr<T>,)> returnInserted() =>
+      returning((inserted) => (inserted,));
+
+  InsertOnConflictSingle<T> _onConflict(
+    List<String> conflictTarget,
+  ) => InsertOnConflictSingle._(_insert, conflictTarget);
+}
+
+final class InsertOnConflictSingle<T extends Row> {
+  final _Insert<T> _insert;
+  final List<String> _conflictTarget;
+
+  InsertOnConflictSingle._(this._insert, this._conflictTarget);
+
+  InsertOrIgnoreSingle<T> doNothing() => InsertOrIgnoreSingle._(
+    _insert._with(
+      onConflict: DoNothingOnConflictClause._(_conflictTarget),
+    ),
+  );
+
+  UpsertOne<T> _update(
+    UpdateSet<T> Function(Expr<T> row, Expr<T> excluded) updateBuilder,
+  ) {
+    final table = _insert._table;
+
+    final handle = Object();
+    final row = table._expressions.$1._standin(0, handle);
+    final excludedHandle = Object();
+    final excluded = table._expressions.$1._standin(0, excludedHandle);
+
+    final set = updateBuilder(row, excluded);
+
+    return UpsertOne._(
+      _insert._with(
+        onConflict: UpdateOnConflictClause._(
+          handle,
+          _conflictTarget,
+          table._tableClause,
+          ExpressionContext._(excludedHandle),
+          table._tableClause._definition.columns
+              .whereIndexed((index, value) => set._values[index] != null)
+              .toList(),
+          set._values.nonNulls.toList(),
+          Expr.true$,
+        ),
+      ),
+    );
+  }
+}
+
+final class InsertOrIgnoreSingle<T extends Row> {
+  final _Insert<T> _insert;
+  InsertOrIgnoreSingle._(this._insert);
+
+  /// Execute this `INSERT` statement in the database.
+  Future<void> execute() => _insert.execute();
+
+  ReturnSingle<S> returning<S extends Record>(
+    S Function(Expr<T> inserted) projectionBuilder,
+  ) => ReturnSingle._(_insert.returning(projectionBuilder));
+
+  ReturnSingle<(Expr<T>,)> returnInserted() =>
+      returning((inserted) => (inserted,));
+}
+
+final class UpsertOne<T extends Row> {
+  final _Insert<T> _insert;
+  UpsertOne._(this._insert);
+
+  Future<void> execute() => _insert.execute();
+
+  ReturnOne<S> returning<S extends Record>(
+    S Function(Expr<T> inserted) projectionBuilder,
+  ) => ReturnOne._(_insert.returning(projectionBuilder));
+
+  ReturnOne<(Expr<T>,)> returnUpserted() =>
+      returning((inserted) => (inserted,));
+
+  UpsertSingle<T> where(
+    Expr<bool> Function(Expr<T> row, Expr<T> excluded) conditionBuilder,
+  ) {
+    // Always a safe cast because InsertOnConflictSingle._update is the only
+    // place we create UpsertOne instances!
+    final conflictClause = _insert._onConflict as UpdateOnConflictClause;
+
+    final expr = _insert._table._expressions.$1;
+    final row = expr._standin(0, conflictClause._handle);
+    final excluded = expr._standin(0, conflictClause.excluded._handle);
+
+    return UpsertSingle._(
+      _insert._with(
+        onConflict: UpdateOnConflictClause._(
+          conflictClause._handle,
+          conflictClause.conflictTarget,
+          conflictClause.table,
+          conflictClause.excluded,
+          conflictClause.columns,
+          conflictClause.values,
+          conditionBuilder(row, excluded),
+        ),
+      ),
+    );
+  }
+}
+
+final class UpsertSingle<T extends Row> {
+  final _Insert<T> _insert;
+  UpsertSingle._(this._insert);
+
+  Future<void> execute() => _insert.execute();
+
+  ReturnSingle<S> returning<S extends Record>(
+    S Function(Expr<T> inserted) projectionBuilder,
+  ) => ReturnSingle._(_insert.returning(projectionBuilder));
+
+  ReturnSingle<(Expr<T>,)> returnInserted() =>
       returning((inserted) => (inserted,));
 }
 

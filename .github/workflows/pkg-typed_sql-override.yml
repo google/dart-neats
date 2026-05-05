@@ -68,7 +68,7 @@ jobs:
       run: dart pub get
     - name: Check formatting
       run: dart format --output=none --set-exit-if-changed .
-      if: always() && steps.install.outcome == 'success'
+      if: always() && steps.install.outcome == 'success' && matrix.sdk == 'dev'
     - name: Analyze code
       run: dart analyze --fatal-infos
       if: always() && steps.install.outcome == 'success'

@@ -15,6 +15,18 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 
+extension EnumBuilderExt on EnumBuilder {
+  void documentation(String content) {
+    docs.addAll(_documentationCommentLines(content));
+  }
+}
+
+extension EnumValueBuilderExt on EnumValueBuilder {
+  void documentation(String content) {
+    docs.addAll(_documentationCommentLines(content));
+  }
+}
+
 extension MethodBuilderExt on MethodBuilder {
   void documentation(String content) {
     docs.addAll(_documentationCommentLines(content));

@@ -319,6 +319,48 @@ void main() {
     // #endregion
   });
 
+  r.addTest(
+    'books.author().onConflict().doNothing()',
+    (db) async {
+      final a = await db.authors
+          .insertValue(name: 'Bucks Bunny')
+          .onConflict(.name)
+          .doNothing()
+          .returnInserted()
+          .executeAndFetch();
+      print(a);
+    },
+    skipMysql: 'ON CONFLICT not supported in Mysql',
+  );
+
+  r.addTest(
+    'books.insert().onConflict().update()',
+    (db) async {
+      final b = await db.books
+          .insert(
+            bookId: db.books
+                .where((b) => b.title.equalsValue('Are Bunnies Unhealthy?'))
+                .first
+                .asExpr
+                .bookId
+                .asNotNull(),
+            authorId: toExpr(1),
+            title: toExpr('Are Bunnies Unhealthy?'),
+            stock: toExpr(5),
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (book, excluded, set) => set(
+              stock: book.stock + excluded.stock,
+            ),
+          )
+          .returnUpserted()
+          .executeAndFetch();
+      print(b);
+    },
+    skipMysql: 'ON CONFLICT not supported in Mysql',
+  );
+
   r.addTest('books.where(stock > 3)', (db) async {
     // #region books.where-stock-gt-3
     final result = await db.books

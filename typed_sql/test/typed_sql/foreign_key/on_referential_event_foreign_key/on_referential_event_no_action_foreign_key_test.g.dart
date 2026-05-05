@@ -371,6 +371,55 @@ extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
       on((a, b) => a.authorId.equals(b.authorId));
 }
 
+/// `Table<Author>` conflict targets for use with `.onConflict`.
+enum AuthorConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `authorId`.
+  primaryKey(['authorId']);
+
+  const AuthorConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleAuthorExt on InsertSingle<Author> {
+  InsertOnConflictSingle<Author> onConflict(AuthorConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleAuthorExt on InsertOnConflictSingle<Author> {
+  UpsertOne<Author> update(
+    UpdateSet<Author> Function(
+      Expr<Author> author,
+      Expr<Author> excluded,
+      UpdateSet<Author> Function({
+        Expr<int> authorId,
+        Expr<String> firstname,
+        Expr<String> lastname,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Author>(
+    this,
+    (author, excluded) => updateBuilder(
+      author,
+      excluded,
+      ({
+        Expr<int>? authorId,
+        Expr<String>? firstname,
+        Expr<String>? lastname,
+      }) => $ForGeneratedCode.buildUpdate<Author>([
+        authorId,
+        firstname,
+        lastname,
+      ]),
+    ),
+  );
+}
+
 final class _$Book extends Book {
   _$Book._(this.bookId, this.title, this.authorId, this.stock);
 
@@ -723,6 +772,54 @@ extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
   /// This will match rows where [Book.authorId] = [Author.authorId].
   Query<(Expr<Book?>, Expr<Author>)> usingAuthor() =>
       on((a, b) => b.authorId.equals(a.authorId));
+}
+
+/// `Table<Book>` conflict targets for use with `.onConflict`.
+enum BookConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `bookId`.
+  primaryKey(['bookId']);
+
+  const BookConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleBookExt on InsertSingle<Book> {
+  InsertOnConflictSingle<Book> onConflict(BookConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleBookExt on InsertOnConflictSingle<Book> {
+  UpsertOne<Book> update(
+    UpdateSet<Book> Function(
+      Expr<Book> book,
+      Expr<Book> excluded,
+      UpdateSet<Book> Function({
+        Expr<int> bookId,
+        Expr<String> title,
+        Expr<int?> authorId,
+        Expr<int> stock,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Book>(
+    this,
+    (book, excluded) => updateBuilder(
+      book,
+      excluded,
+      ({
+        Expr<int>? bookId,
+        Expr<String>? title,
+        Expr<int?>? authorId,
+        Expr<int>? stock,
+      }) =>
+          $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
+    ),
+  );
 }
 
 /// Extension methods for assertions on [Author] using

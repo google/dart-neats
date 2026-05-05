@@ -25,7 +25,7 @@ SqlDialect postgresDialect() => _PostgresDialect();
 String _literal(Object? value) => switch (value) {
   null => 'NULL',
   true => 'TRUE',
-  false => 'TRUE',
+  false => 'FALSE',
   int i => i.toString(),
   double d => d.toString(),
   String s => '\'${s.replaceAll("'", "''").replaceAll("\\", "\\\\")}\'',
@@ -102,6 +102,40 @@ final class _PostgresDialect extends SqlDialect {
   @override
   (String, List<Object?>) insertInto(InsertStatement statement) {
     final resolver = ExpressionResolver(StatmentContext());
+    final alias = 'target';
+
+    String? conflictClause;
+    switch (statement.onConflict) {
+      case final DoNothingOnConflictClause c:
+        conflictClause = [
+          'ON CONFLICT',
+          '(${c.conflictTarget.map(escape).join(', ')})',
+          'DO NOTHING',
+        ].join(' ');
+      case final UpdateOnConflictClause c:
+        final r = resolver
+            .withScope(
+              c,
+              c.table.columns.map((c) => (alias, c)).toList(),
+            )
+            .withScope(
+              c.excluded,
+              c.table.columns.map((c) => ('excluded', c)).toList(),
+            );
+        conflictClause = [
+          'ON CONFLICT',
+          '(${c.conflictTarget.map(escape).join(', ')})',
+          'DO UPDATE SET',
+          c.columns
+              .mapIndexed(
+                (i, column) => '${escape(column)} = ${r.expr(c.values[i])}',
+              )
+              .join(', '),
+          if (c.where != Expr.true$) 'WHERE ${r.expr(c.where)}',
+        ].join(' ');
+      case null:
+      // do nothing
+    }
 
     String? returnProjection;
     final returning = statement.returning;
@@ -115,13 +149,14 @@ final class _PostgresDialect extends SqlDialect {
 
     return (
       [
-        'INSERT INTO ${escape(statement.table)}',
+        'INSERT INTO ${escape(statement.table)} AS $alias',
         if (statement.columns.isEmpty)
           'DEFAULT VALUES'
         else ...[
           '(${statement.columns.map(escape).join(', ')})',
           'VALUES (${statement.values.map(resolver.expr).join(', ')})',
         ],
+        ?conflictClause,
         if (returnProjection != null) 'RETURNING $returnProjection',
       ].join(' '),
       resolver.context.parameters,

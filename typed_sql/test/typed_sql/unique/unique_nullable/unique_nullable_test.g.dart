@@ -337,6 +337,63 @@ extension ExpressionNullableAccountExt on Expr<Account?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+/// `Table<Account>` conflict targets for use with `.onConflict`.
+enum AccountConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `accountId`.
+  primaryKey(['accountId']),
+
+  /// `accountNumber` conflict.
+  ///
+  /// Due to violation of the `UNIQUE` constraint on
+  /// `accountNumber`.
+  ///
+  /// Thus, the conflicting row has matching values for these fields.
+  accountNumber(['accountNumber']);
+
+  const AccountConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleAccountExt on InsertSingle<Account> {
+  InsertOnConflictSingle<Account> onConflict(AccountConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleAccountExt on InsertOnConflictSingle<Account> {
+  UpsertOne<Account> update(
+    UpdateSet<Account> Function(
+      Expr<Account> account,
+      Expr<Account> excluded,
+      UpdateSet<Account> Function({
+        Expr<int> accountId,
+        Expr<String?> accountNumber,
+        Expr<double> balance,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Account>(
+    this,
+    (account, excluded) => updateBuilder(
+      account,
+      excluded,
+      ({
+        Expr<int>? accountId,
+        Expr<String?>? accountNumber,
+        Expr<double>? balance,
+      }) => $ForGeneratedCode.buildUpdate<Account>([
+        accountId,
+        accountNumber,
+        balance,
+      ]),
+    ),
+  );
+}
+
 /// Extension methods for assertions on [Account] using
 /// [`package:checks`][1].
 ///

@@ -266,6 +266,43 @@ extension ExpressionNullableItemExt on Expr<Item?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+/// `Table<Item>` conflict targets for use with `.onConflict`.
+enum ItemConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `id`.
+  primaryKey(['id']);
+
+  const ItemConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleItemExt on InsertSingle<Item> {
+  InsertOnConflictSingle<Item> onConflict(ItemConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleItemExt on InsertOnConflictSingle<Item> {
+  UpsertOne<Item> update(
+    UpdateSet<Item> Function(
+      Expr<Item> item,
+      Expr<Item> excluded,
+      UpdateSet<Item> Function({Expr<int> id, Expr<double> value}) set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Item>(
+    this,
+    (item, excluded) => updateBuilder(
+      item,
+      excluded,
+      ({Expr<int>? id, Expr<double>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, value]),
+    ),
+  );
+}
+
 /// Extension methods for assertions on [Item] using
 /// [`package:checks`][1].
 ///

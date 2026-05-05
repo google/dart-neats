@@ -23,11 +23,13 @@ export '../typed_sql.dart'
         CastExpression,
         ColumnType,
         CompositeQueryClause,
+        ConflictClause,
         CountAllExpression,
         CreateTableStatement,
         CurrentTimestampExpression,
         DeleteStatement,
         DistinctClause,
+        DoNothingOnConflictClause,
         EncodedCustomDataTypeExpression,
         ExceptClause,
         ExistsExpression,
@@ -93,6 +95,7 @@ export '../typed_sql.dart'
         TableClause,
         UnionAllClause,
         UnionClause,
+        UpdateOnConflictClause,
         UpdateStatement,
         WhereClause;
 export '../types/custom_data_type.dart' show CustomDataType;

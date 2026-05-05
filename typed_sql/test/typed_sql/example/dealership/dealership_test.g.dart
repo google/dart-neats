@@ -354,6 +354,62 @@ extension ExpressionNullableCarExt on Expr<Car?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
+/// `Table<Car>` conflict targets for use with `.onConflict`.
+enum CarConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `id`.
+  primaryKey(['id']),
+
+  /// `licensePlate` conflict.
+  ///
+  /// Due to violation of the `UNIQUE` constraint on
+  /// `licensePlate`.
+  ///
+  /// Thus, the conflicting row has matching values for these fields.
+  licensePlate(['licensePlate']);
+
+  const CarConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertSingleCarExt on InsertSingle<Car> {
+  InsertOnConflictSingle<Car> onConflict(CarConflict target) =>
+      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictSingleCarExt on InsertOnConflictSingle<Car> {
+  UpsertOne<Car> update(
+    UpdateSet<Car> Function(
+      Expr<Car> car,
+      Expr<Car> excluded,
+      UpdateSet<Car> Function({
+        Expr<int> id,
+        Expr<String> model,
+        Expr<String> licensePlate,
+        Expr<Color> color,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Car>(
+    this,
+    (car, excluded) => updateBuilder(
+      car,
+      excluded,
+      ({
+        Expr<int>? id,
+        Expr<String>? model,
+        Expr<String>? licensePlate,
+        Expr<Color>? color,
+      }) =>
+          $ForGeneratedCode.buildUpdate<Car>([id, model, licensePlate, color]),
+    ),
+  );
+}
+
 /// Wrap this [Color] as [Expr<Color>] for use queries with
 /// `package:typed_sql`.
 extension ColorExt on Color {

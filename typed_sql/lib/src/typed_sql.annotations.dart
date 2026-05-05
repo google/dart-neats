@@ -215,7 +215,7 @@ final class Unique {
   /// ```dart
   /// @PrimaryKey(['id'])
   /// @Unique(
-  ///   name: 'fullname',
+  ///   name: 'fullName',
   ///   // Enforce unique `firstName` and `lastName` for each row!
   ///   fields: ['firstName', 'lastName'],
   /// )
