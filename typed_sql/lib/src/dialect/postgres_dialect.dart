@@ -28,12 +28,32 @@ String _literal(Object? value) => switch (value) {
   false => 'FALSE',
   int i => i.toString(),
   double d => d.toString(),
-  String s => '\'${s.replaceAll("'", "''").replaceAll("\\", "\\\\")}\'',
+  String s => _escapeStringLiteral(s),
   DateTime d => '\'${d.toIso8601String()}\'',
-  JsonValue j =>
-    '\'${json.encode(j.value).replaceAll("'", "''").replaceAll("\\", "\\\\")}\'::jsonb',
+  JsonValue j => '${_escapeStringLiteral(json.encode(j.value))}::jsonb',
   _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
 };
+
+/// Escapes a string literal for safe inlining into PostgreSQL queries.
+/// Assumes standard_conforming_strings = on.
+String _escapeStringLiteral(String input) {
+  var needsEscaping = false;
+  // 1. Fast Path
+  for (var i = 0; i < input.length; i++) {
+    final codeUnit = input.codeUnitAt(i);
+    // 39 = Single Quote (') | 0 = Null Byte (\x00)
+    if (codeUnit == 39 || codeUnit == 0) {
+      needsEscaping = true;
+      break;
+    }
+  }
+  if (!needsEscaping) {
+    return "'$input'";
+  }
+
+  final sanitized = input.replaceAll('\x00', '');
+  return "'${sanitized.replaceAll("'", "''")}'";
+}
 
 final class _PostgresDialect extends SqlDialect {
   @override
@@ -601,7 +621,8 @@ extension on ExpressionResolver<SqlContext> {
     if (path.isEmpty) {
       return expr(root);
     }
-    return '(${expr(root)} #> ARRAY[${path.map(context.addParameter).join(', ')}])';
+    final pathElements = path.map(_escapeStringLiteral).join(', ');
+    return '(${expr(root)} #> ARRAY[$pathElements])';
   }
 
   /// Unwinds the recursive reference into a flat list of path segments.
