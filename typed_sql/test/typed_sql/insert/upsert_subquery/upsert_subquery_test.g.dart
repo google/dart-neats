@@ -285,8 +285,7 @@ enum SourceItemConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `id`.
-  primaryKey(['id'])
-  ;
+  primaryKey(['id']);
 
   const SourceItemConflict(this._fields);
 
@@ -652,8 +651,7 @@ enum SubQueryItemConflict {
   /// `tag`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  tag(['tag'])
-  ;
+  tag(['tag']);
 
   const SubQueryItemConflict(this._fields);
 

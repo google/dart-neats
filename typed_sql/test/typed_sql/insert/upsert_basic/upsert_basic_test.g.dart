@@ -333,8 +333,7 @@ enum BasicItemConflict {
   /// `name`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  name(['name'])
-  ;
+  name(['name']);
 
   const BasicItemConflict(this._fields);
 

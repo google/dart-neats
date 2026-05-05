@@ -43,6 +43,7 @@ abstract final class CustomDataItem extends Row {
   CustomIntType get id; // Custom type as PK
 
   @Unique.field()
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
   CustomStringType get stringVal;
 }
 
