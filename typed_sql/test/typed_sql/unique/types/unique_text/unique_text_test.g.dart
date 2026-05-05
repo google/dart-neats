@@ -301,7 +301,8 @@ enum ItemConflict {
   /// `value`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  value(['value']);
+  value(['value'])
+  ;
 
   const ItemConflict(this._fields);
 

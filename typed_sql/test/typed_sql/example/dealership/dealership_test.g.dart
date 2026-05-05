@@ -368,7 +368,8 @@ enum CarConflict {
   /// `licensePlate`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  licensePlate(['licensePlate']);
+  licensePlate(['licensePlate'])
+  ;
 
   const CarConflict(this._fields);
 

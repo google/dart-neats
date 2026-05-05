@@ -328,7 +328,8 @@ enum EmployeeConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `employeeId`.
-  primaryKey(['employeeId']);
+  primaryKey(['employeeId'])
+  ;
 
   const EmployeeConflict(this._fields);
 
@@ -649,7 +650,8 @@ enum DepartmentConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `departmentId`.
-  primaryKey(['departmentId']);
+  primaryKey(['departmentId'])
+  ;
 
   const DepartmentConflict(this._fields);
 

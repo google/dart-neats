@@ -281,7 +281,8 @@ enum ItemConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `key`.
-  primaryKey(['key']);
+  primaryKey(['key'])
+  ;
 
   const ItemConflict(this._fields);
 

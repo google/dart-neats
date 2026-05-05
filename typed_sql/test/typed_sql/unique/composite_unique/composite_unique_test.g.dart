@@ -352,7 +352,8 @@ enum UserConflict {
   /// `firstName`, `lastName`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  fullname(['firstName', 'lastName']);
+  fullname(['firstName', 'lastName'])
+  ;
 
   const UserConflict(this._fields);
 
