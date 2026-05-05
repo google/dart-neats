@@ -619,8 +619,17 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ''')
       ..on = refer('Query<(Expr<$rowClassName>,)>')
       ..methods.add(
-        Method(
-          (b) => b
+        Method((b) {
+          final whereExpr = rowClass.primaryKey
+              .map((f) {
+                final c = '$rowInstanceName.${f.name}';
+                if (f.isCustomType) {
+                  return '$c.asEncoded().equalsValue(${f.name}.toDatabase())';
+                }
+                return '$c.equalsValue(${f.name})';
+              })
+              .join(' & ');
+          b
             ..name = 'byKey'
             ..documentation('''
             Lookup a single row in `${table.name}` table using the _primary key_.
@@ -639,12 +648,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ),
             )
             ..lambda = true
-            ..body = Code(
-              'where(($rowInstanceName) => ${rowClass.primaryKey.map(
-                (f) => '$rowInstanceName.${f.name}.equalsValue(${f.name})',
-              ).join(' & ')}).first',
-            ),
-        ),
+            ..body = Code('where(($rowInstanceName) => $whereExpr).first');
+        }),
       )
       ..methods.add(
         Method(
@@ -714,6 +719,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         rowClass.uniqueConstraints.where((uc) => uc.name != null).map((uc) {
           final s = uc.fields.length == 1 ? '' : 's';
           final fields = uc.fields.map((f) => '`${f.name}`').join(', ');
+
+          final whereExpr = uc.fields
+              .map((f) {
+                final c = '$rowInstanceName.${f.name}';
+                if (f.isCustomType) {
+                  return '$c.asEncoded().equalsValue(${f.name}.toDatabase())';
+                }
+                return '$c.equalsValue(${f.name})';
+              })
+              .join(' & ');
           return Method(
             (b) => b
               ..name = 'by${upperCamelCase(uc.name!)}'
@@ -738,11 +753,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ),
               )
               ..lambda = true
-              ..body = Code('''
-            where(($rowInstanceName) =>
-              ${uc.fields.map((field) => '$rowInstanceName.${field.name}.equalsValue(${field.name})').join(' & ')}
-            ).first
-          '''),
+              ..body = Code('where(($rowInstanceName) => $whereExpr).first'),
           );
         }),
       )
@@ -1034,7 +1045,11 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..lambda = true
             ..body = Code(
               rowClass.primaryKey
-                  .map((pk) => '${pk.name}.isNotNull()')
+                  .map(
+                    (pk) => pk.isCustomType
+                        ? '${pk.name}.asEncoded().isNotNull()'
+                        : '${pk.name}.isNotNull()',
+                  )
                   .join(' & '),
             ),
         ),

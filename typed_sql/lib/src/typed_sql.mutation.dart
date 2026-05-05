@@ -149,7 +149,7 @@ final class _Insert<T extends Row> {
   }) => _Insert._(
     table: table ?? _table,
     values: values ?? _values,
-    onConflict: _onConflict ?? onConflict,
+    onConflict: onConflict ?? _onConflict,
   );
 
   Future<void> execute({
