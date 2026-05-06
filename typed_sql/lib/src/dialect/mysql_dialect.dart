@@ -29,15 +29,76 @@ String _literal(dynamic value) => switch (value) {
   false => 'FALSE',
   int i => i.toString(),
   double d => d.toString(),
-  String s => "'${s.replaceAll("'", "''").replaceAll("\\", "\\\\")}'",
+  String s => _escapeStringLiteral(s),
   DateTime d =>
     "'${d.toIso8601String().substring(0, 19).replaceFirst('T', ' ')}'",
   Uint8List b =>
     "X'${b.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}'",
   JsonValue j =>
-    '(\'${json.encode(normalizeJson(j.value)).replaceAll("'", "''").replaceAll("\\", "\\\\")}\')',
+    '(${_escapeStringLiteral(json.encode(normalizeJson(j.value)))})',
   _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
 };
+
+/// Escapes a string literal for safe inlining into MySQL/MariaDB queries.
+/// Assumes standard MySQL behavior (NO_BACKSLASH_ESCAPES is OFF).
+String _escapeStringLiteral(String input) {
+  // Fast Path
+  var needsEscaping = false;
+  for (var i = 0; i < input.length; i++) {
+    final codeUnit = input.codeUnitAt(i);
+    // 39 = '  | 34 = "  | 92 = \  | 0 = \x00
+    // 10 = \n | 13 = \r | 26 = \x1A
+    if (codeUnit == 39 ||
+        codeUnit == 92 ||
+        codeUnit == 0 ||
+        codeUnit == 10 ||
+        codeUnit == 13 ||
+        codeUnit == 26 ||
+        codeUnit == 34) {
+      needsEscaping = true;
+      break;
+    }
+  }
+
+  if (!needsEscaping) {
+    return "'$input'";
+  }
+
+  final buffer = StringBuffer();
+  buffer.write("'");
+
+  for (var i = 0; i < input.length; i++) {
+    final char = input[i];
+    switch (char) {
+      case '\x00':
+        buffer.write(r'\0');
+        break;
+      case '\n':
+        buffer.write(r'\n');
+        break;
+      case '\r':
+        buffer.write(r'\r');
+        break;
+      case '\\':
+        buffer.write(r'\\');
+        break;
+      case "'":
+        buffer.write(r"\'");
+        break;
+      case '"':
+        buffer.write(r'\"');
+        break;
+      case '\x1A':
+        buffer.write(r'\Z');
+        break;
+      default:
+        buffer.write(char);
+    }
+  }
+
+  buffer.write("'");
+  return buffer.toString();
+}
 
 final class _MysqlSqlDialect extends SqlDialect {
   @override
@@ -599,7 +660,7 @@ extension on ExpressionResolver<SqlContext> {
 
   String extractJsonRef(ExpressionJsonRef ref) {
     final (root, path) = _compileJsonPath(ref);
-    return 'JSON_EXTRACT(${expr(root)}, ${context.addParameter(path)})';
+    return 'JSON_EXTRACT(${expr(root)}, ${_escapeStringLiteral(path)})';
   }
 
   /// Recursively builds the root expression and the MySQL JSON path string.

@@ -29,12 +29,32 @@ String _literal(Object? value) => switch (value) {
   false => 'FALSE',
   int i => i.toString(),
   double d => d.toString(),
-  String s => '\'${s.replaceAll("'", "''").replaceAll("\\", "\\\\")}\'',
+  String s => _escapeStringLiteral(s),
   DateTime d => '\'${d.toIso8601String()}\'',
   JsonValue j =>
-    'jsonb(\'${json.encode(normalizeJson(j.value)).replaceAll("'", "''").replaceAll("\\", "\\\\")}\')',
+    'jsonb(${_escapeStringLiteral(json.encode(normalizeJson(j.value)))})',
   _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
 };
+
+/// Escapes a string literal for safe inlining into SQLite queries.
+String _escapeStringLiteral(String input) {
+  // 1. Fast Path: Scan for characters that require handling.
+  var needsEscaping = false;
+  for (var i = 0; i < input.length; i++) {
+    final codeUnit = input.codeUnitAt(i);
+    // 39 = Single Quote (')
+    // 0  = Null Byte (\x00)
+    if (codeUnit == 39 || codeUnit == 0) {
+      needsEscaping = true;
+      break;
+    }
+  }
+  if (!needsEscaping) {
+    return "'$input'";
+  }
+  final sanitized = input.replaceAll('\x00', '');
+  return "'${sanitized.replaceAll("'", "''")}'";
+}
 
 final class _Sqlite extends SqlDialect {
   @override
@@ -577,7 +597,7 @@ extension on ExpressionResolver<SqlContext> {
     //
     // This follows the JSON Path returns string encoded JSON and then
     // re-encodes as JSONB.
-    return 'jsonb(${expr(root)} -> ${context.addParameter(path)})';
+    return 'jsonb(${expr(root)} -> ${_escapeStringLiteral(path)})';
   }
 
   String extractJsonRefAsText(ExpressionJsonRef ref) {
@@ -585,7 +605,7 @@ extension on ExpressionResolver<SqlContext> {
     // This is an efficient implementation of ExpressionJsonExtract for
     // ExpressionJsonRef, since ExpressionJsonRef otherwise has to be converted
     // to JSON string and then re-encoded as JSONB.
-    return '(${expr(root)} ->> ${context.addParameter(path)})';
+    return '(${expr(root)} ->> ${_escapeStringLiteral(path)})';
   }
 
   /// Get root and path from [ref].
