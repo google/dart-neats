@@ -101,6 +101,24 @@ export '../typed_sql.dart'
 export '../types/custom_data_type.dart' show CustomDataType;
 export '../types/json_value.dart' show JsonValue;
 
+sealed class SqlTask {
+  const SqlTask();
+}
+
+final class SingleSqlTask extends SqlTask {
+  final String sql;
+  final List<Object?> params;
+
+  const SingleSqlTask(this.sql, this.params);
+}
+
+final class PipelinedSqlTask extends SqlTask {
+  final String sql;
+  final Iterable<List<Object?>> paramsList;
+
+  const PipelinedSqlTask(this.sql, this.paramsList);
+}
+
 /// Interface for implementation of custom SQL dialects for `package:typed_sql`.
 ///
 /// > [!WARNING]
@@ -127,13 +145,13 @@ abstract base class SqlDialect {
   /// ```sql
   /// INSERT INTO [table] ([columns]) VALUES ($1, ...)
   /// ```
-  (String, List<Object?>) insertInto(InsertStatement statement);
+  SqlTask insertInto(InsertStatement statement);
 
   /// Update [UpdateStatement.columns] from [UpdateStatement.table] with
   /// [UpdateStatement.values].
   ///
   /// This updates rows satisfying the [UpdateStatement.where] expression.
-  (String, List<Object?>) update(UpdateStatement statement);
+  SqlTask update(UpdateStatement statement);
 
   /// Delete from [DeleteStatement.table].
   ///
@@ -141,10 +159,8 @@ abstract base class SqlDialect {
   ///
   /// This SQL statement should not return any rows,
   /// all return values are read but ignored.
-  (String, List<Object?>) delete(DeleteStatement statement);
+  SqlTask delete(DeleteStatement statement);
 
   /// Create select statment from [statement].
-  (String sql, List<Object?> params) select(
-    SelectStatement statement,
-  );
+  SqlTask select(SelectStatement statement);
 }

@@ -59,8 +59,15 @@ final class Database<T extends Schema> {
     });
   }
 
-  Stream<RowReader> _query(String sql, List<Object?> params) =>
-      _executor.query(sql, params);
+  Stream<RowReader> _query(SqlTask task) => switch (task) {
+    SingleSqlTask(:final sql, :final params) => _executor.query(sql, params),
+    PipelinedSqlTask(:final sql, :final paramsList) => _executor.queryMany(
+      sql,
+      paramsList,
+    ),
+  };
+
+  Future<void> _execute(SqlTask task) => _query(task).drain<void>();
 
   /// Create a [QuerySingle] that evaluates [expressions].
   ///

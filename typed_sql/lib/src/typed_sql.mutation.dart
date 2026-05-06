@@ -72,8 +72,8 @@ final class Update<T extends Row> {
   Update._(this._query, this._table, this._handle, this._set);
 
   /// Execute this `UPDATE` statement in the database.
-  Future<void> execute() async {
-    final (sql, params) = _query._context._dialect.update(
+  Future<void> execute() async => await _query._context._execute(
+    _query._context._dialect.update(
       UpdateStatement._(
         TableClause._(_table),
         _table.columns
@@ -84,10 +84,8 @@ final class Update<T extends Row> {
         _query._from(_query._expressions.toList()),
         null,
       ),
-    );
-
-    await _query._context._query(sql, params).drain<void>();
-  }
+    ),
+  );
 
   /// Create a `UPDATE` statement that returns a projection of the updated rows,
   /// using the `RETURNING` clause.
@@ -154,12 +152,9 @@ final class _Insert<T extends Row> {
 
   Future<void> execute({
     ReturningClause? returning,
-  }) async {
-    final (sql, params) = _render(returning: returning);
-    await _table._context._query(sql, params).drain<void>();
-  }
+  }) async => await _table._context._execute(_render(returning: returning));
 
-  (String, List<Object?>) _render({
+  SqlTask _render({
     ReturningClause? returning,
   }) => _table._context._dialect.insertInto(
     InsertStatement._(
@@ -342,17 +337,15 @@ final class Delete<T extends Row> {
   Delete._(this._query, this._table);
 
   /// Execute this `DELETE` statement in the database.
-  Future<void> execute() async {
-    final (sql, params) = _query._context._dialect.delete(
+  Future<void> execute() async => await _query._context._execute(
+    _query._context._dialect.delete(
       DeleteStatement._(
         TableClause._(_table),
         _query._from(_query._expressions.toList()),
         null,
       ),
-    );
-
-    await _query._context._query(sql, params).drain<void>();
-  }
+    ),
+  );
 
   /// Create a `DELETE` statement that returns a projection of the deleted rows,
   /// using the `RETURNING` clause.
@@ -451,7 +444,7 @@ final class ReturnOne<T extends Record> {
 /// additional clauses.
 final class Return<T extends Record> {
   final Database _context;
-  final (String, List<Object?>) Function(List<Expr> e) _render;
+  final SqlTask Function(List<Expr> e) _render;
   final T _expressions;
 
   Return._(this._context, this._expressions, this._render);

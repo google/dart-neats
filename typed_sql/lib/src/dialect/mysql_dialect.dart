@@ -130,7 +130,7 @@ final class _MysqlSqlDialect extends SqlDialect {
   }
 
   @override
-  (String, List<Object?>) insertInto(InsertStatement statement) {
+  SqlTask insertInto(InsertStatement statement) {
     final resolver = ExpressionResolver(StatmentContext());
 
     if (statement.onConflict != null) {
@@ -147,7 +147,7 @@ final class _MysqlSqlDialect extends SqlDialect {
       returnProjection = returning.projection.map(r.expr).join(', ');
     }
 
-    return (
+    return SingleSqlTask(
       [
         'INSERT INTO ${escape(statement.table)}',
         '(${statement.columns.map(escape).join(', ')})',
@@ -159,7 +159,7 @@ final class _MysqlSqlDialect extends SqlDialect {
   }
 
   @override
-  (String, List<Object?>) update(UpdateStatement statement) {
+  SqlTask update(UpdateStatement statement) {
     final resolver = ExpressionResolver(StatmentContext());
     final a1 = resolver.tableAlias1;
     final a2 = resolver.tableAlias2;
@@ -181,7 +181,7 @@ final class _MysqlSqlDialect extends SqlDialect {
       statement.table.columns.map((c) => (a1, c)).toList(),
     );
 
-    return (
+    return SingleSqlTask(
       [
         'UPDATE ${escape(statement.table.name)} AS $a1',
         'SET',
@@ -203,7 +203,7 @@ final class _MysqlSqlDialect extends SqlDialect {
   }
 
   @override
-  (String, List<Object?>) delete(DeleteStatement statement) {
+  SqlTask delete(DeleteStatement statement) {
     final resolver = ExpressionResolver(StatmentContext());
     final a1 = resolver.tableAlias1;
     final a2 = resolver.tableAlias2;
@@ -220,7 +220,7 @@ final class _MysqlSqlDialect extends SqlDialect {
       returnProjection = returning.projection.map(r.expr).join(', ');
     }
 
-    return (
+    return SingleSqlTask(
       [
         'DELETE FROM ${escape(statement.table.name)} AS $a1',
         'WHERE EXISTS (SELECT TRUE FROM ($sql) AS $a2 WHERE',
@@ -235,12 +235,12 @@ final class _MysqlSqlDialect extends SqlDialect {
   }
 
   @override
-  (String sql, List<Object?> params) select(
+  SqlTask select(
     SelectStatement statement,
   ) {
     final resolver = ExpressionResolver(StatmentContext());
     final (sql, columns) = resolver.selectExpression(statement.query);
-    return (sql, resolver.context.parameters);
+    return SingleSqlTask(sql, resolver.context.parameters);
   }
 }
 

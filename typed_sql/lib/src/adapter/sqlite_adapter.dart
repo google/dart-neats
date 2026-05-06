@@ -129,7 +129,7 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
   Stream<RowReader> query(String sql, List<Object?> params) async* {
     final conn = await _getConnection();
     try {
-      yield* _query(conn, sql, params);
+      yield* _query(conn, sql, [params]);
     } finally {
       _releaseConnection(conn);
     }
@@ -138,24 +138,64 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
   Stream<RowReader> _query(
     Database conn,
     String sql,
-    List<Object?> params,
+    Iterable<List<Object?>> paramsList,
   ) async* {
     try {
       _throwIfClosed();
       final stmt = conn.prepare(sql);
       try {
-        final cursor = stmt.selectCursor(_paramsForSqlite(params));
-        while (cursor.moveNext()) {
-          if (_closed) {
-            throw SqliteDatabaseConnectionForceClosedException._();
+        for (final params in paramsList) {
+          final cursor = stmt.selectCursor(_paramsForSqlite(params));
+          while (cursor.moveNext()) {
+            if (_closed) {
+              throw SqliteDatabaseConnectionForceClosedException._();
+            }
+            yield _SqliteRowReader(cursor.current);
           }
-          yield _SqliteRowReader(cursor.current);
         }
       } finally {
         stmt.dispose();
       }
     } on SqliteException catch (e) {
       _throwSqliteException(e);
+    }
+  }
+
+  @override
+  Stream<RowReader> queryMany(
+    String sql,
+    Iterable<List<Object?>> paramsList,
+  ) async* {
+    final conn = await _getConnection();
+    _throwIfClosed();
+    try {
+      try {
+        conn.execute('BEGIN');
+      } on SqliteException catch (e) {
+        _throwSqliteException(e);
+      }
+      yield* _query(conn, sql, paramsList);
+      try {
+        conn.execute('COMMIT');
+      } on SqliteException catch (e) {
+        _throwSqliteException(e);
+      }
+    } on Exception catch (e) {
+      try {
+        conn.execute('ROLLBACK');
+      } on SqliteException catch (e) {
+        _throwSqliteException(e);
+      }
+      throwTransactionAbortedException(e);
+    } catch (e) {
+      try {
+        conn.execute('ROLLBACK');
+      } catch (e) {
+        // ignore, if there was an error it's better to rethrow it!
+      }
+      rethrow;
+    } finally {
+      _releaseConnection(conn);
     }
   }
 
@@ -206,7 +246,7 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
     String sql,
     List<Object?> params,
   ) async {
-    await _query(conn, sql, params).toList();
+    await _query(conn, sql, [params]).toList();
     final affectedRows = conn.updatedRows;
     return QueryResult(
       affectedRows: affectedRows,
@@ -282,7 +322,20 @@ final class _SqliteDatabaseTransaction extends DatabaseTransaction {
 
     // Ensure we're never offering a stream that can be blocked by back-pressure
     yield* Stream.fromIterable(
-      await _adapter._query(_conn, sql, params).toList(),
+      await _adapter._query(_conn, sql, [params]).toList(),
+    );
+  }
+
+  @override
+  Stream<RowReader> queryMany(
+    String sql,
+    Iterable<List<Object?>> paramsList,
+  ) async* {
+    _throwIfBlocked();
+
+    // Ensure we're never offering a stream that can be blocked by back-pressure
+    yield* Stream.fromIterable(
+      await _adapter._query(_conn, sql, paramsList).toList(),
     );
   }
 
