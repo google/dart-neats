@@ -167,20 +167,39 @@ final class _PostgresDialect extends SqlDialect {
       returnProjection = returning.projection.map(r.expr).join(', ');
     }
 
-    return SingleSqlTask(
-      [
-        'INSERT INTO ${escape(statement.table)} AS $alias',
-        if (statement.columns.isEmpty)
-          'DEFAULT VALUES'
-        else ...[
-          '(${statement.columns.map(escape).join(', ')})',
-          'VALUES (${statement.values.map(resolver.expr).join(', ')})',
-        ],
-        ?conflictClause,
-        if (returnProjection != null) 'RETURNING $returnProjection',
-      ].join(' '),
-      resolver.context.parameters,
-    );
+    switch (statement.values) {
+      case ExprValuesSource(:final columns, :final values):
+        return SingleSqlTask(
+          [
+            'INSERT INTO ${escape(statement.table)} AS $alias',
+            if (columns.isEmpty)
+              'DEFAULT VALUES'
+            else ...[
+              '(${columns.map(escape).join(', ')})',
+              'VALUES (${values.map(resolver.expr).join(', ')})',
+            ],
+            ?conflictClause,
+            if (returnProjection != null) 'RETURNING $returnProjection',
+          ].join(' '),
+          resolver.context.parameters,
+        );
+      case BulkValuesSource(:final columns, :final values):
+        final columnValues = List.generate(
+          columns.length,
+          (i) => values.map((row) => row[i]).toList(),
+        );
+        return SingleSqlTask(
+          [
+            'INSERT INTO ${escape(statement.table)} AS $alias',
+            '(${columns.map(escape).join(', ')})',
+            'SELECT * FROM UNNEST(${columnValues.map(resolver.context.addParameter).join(', ')}) '
+                'AS t_(${columns.map(escape).join(', ')})',
+            ?conflictClause,
+            if (returnProjection != null) 'RETURNING $returnProjection',
+          ].join(' '),
+          resolver.context.parameters,
+        );
+    }
   }
 
   @override

@@ -20,6 +20,7 @@ export '../typed_sql.dart'
     show
         AvgExpression,
         BinaryOperationExpression,
+        BulkValuesSource,
         CastExpression,
         ColumnType,
         CompositeQueryClause,
@@ -34,6 +35,7 @@ export '../typed_sql.dart'
         ExceptClause,
         ExistsExpression,
         Expr,
+        ExprValuesSource,
         ExpressionBlobConcat,
         ExpressionBlobDecodeUtf8,
         ExpressionBlobLength,
@@ -97,6 +99,7 @@ export '../typed_sql.dart'
         UnionClause,
         UpdateOnConflictClause,
         UpdateStatement,
+        ValuesSource,
         WhereClause;
 export '../types/custom_data_type.dart' show CustomDataType;
 export '../types/json_value.dart' show JsonValue;

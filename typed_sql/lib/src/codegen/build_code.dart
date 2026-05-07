@@ -575,6 +575,66 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ..methods.add(
         Method(
           (b) => b
+            ..name = 'insertValuesMapped'
+            ..documentation('''
+              Bulk insert rows into the `${table.name}` table.
+
+              This method takes an `Iterable<T>` and requires that you provide
+              a _mapping function_ from `T` to each column to be inserted.
+
+              If a mapping function is omitted, the _default value_ will be
+              inserted, or `NULL` if column is nullable and as no default value.
+              To explicitely insert `NULL`, use a _mapping function_ that maps
+              `T` to `null`.
+
+              > [!NOTE]
+              > This method aims utilize database specific bulk insertion logic
+              > to ensure good performance. Database adapters may pipeline bulk
+              > insertions through multiple statements inside a transaction.
+
+              Returns a [Insert] statement on which `.execute` must be
+              called for the rows to be inserted.
+            ''')
+            ..types.add(refer('T'))
+            ..returns = refer('Insert<$rowClassName>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'rows'
+                  ..type = refer('Iterable<T>'),
+              ),
+            )
+            ..optionalParameters.addAll(
+              rowClass.fields.map((field) {
+                final hasDefault =
+                    field.defaultValue != null ||
+                    field.isNullable ||
+                    field.autoIncrement;
+                final nullable = hasDefault ? '?' : '';
+                return Parameter(
+                  (b) => b
+                    ..name = field.name
+                    ..named = true
+                    ..required = !hasDefault
+                    ..type = refer('${field.type} Function(T row)$nullable'),
+                );
+              }),
+            )
+            ..lambda = true
+            ..body = Code('''
+              \$ForGeneratedCode.insertValuesMapped(
+                table: this,
+                rows: rows,
+                mapping: {
+                  ${rowClass.fields.map((f) => '\'${f.name}\': ${f.name}').join(', ')}
+                },
+              )
+            '''),
+        ),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
             ..name = 'delete'
             ..documentation('''
             Delete a single row from the `${table.name}` table, specified by
@@ -1234,7 +1294,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..returns = refer('InsertOnConflictSingle<$rowClassName>')
             ..lambda = true
             ..body = Code(
-              '\$ForGeneratedCode.insertSingleOnConflict(this, target._fields)',
+              '\$ForGeneratedCode.insertOnConflictSingle(this, target._fields)',
             ),
         ),
       ]),
@@ -1249,7 +1309,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         Method(
           (b) => b
             ..name = 'update'
-            ..returns = refer('UpsertOne<$rowClassName>')
+            ..returns = refer('UpsertSingle<$rowClassName>')
             ..requiredParameters.add(
               Parameter(
                 (b) => b
@@ -1267,7 +1327,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             )
             ..lambda = true
             ..body = Code('''
-              \$ForGeneratedCode.updateOnConflict<$rowClassName>(
+              \$ForGeneratedCode.updateOnConflictSingle<$rowClassName>(
                 this,
                 ($rowInstanceName, excluded) => updateBuilder($rowInstanceName, excluded, ({
                     ${rowClass.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},

@@ -235,10 +235,38 @@ final class $ForGeneratedCode {
     table,
   );
 
+  static Insert<T> insertValuesMapped<T extends Row, S>({
+    required Table<T> table,
+    required Iterable<S> rows,
+    required Map<String, Object? Function(S)?> mapping,
+  }) {
+    final m = [
+      for (final e in mapping.entries)
+        if (e.value case final v?) (column: e.key, map: v),
+    ];
+    return Insert._(
+      table: table,
+      values: BulkValuesSource._(
+        m.map((e) => e.column).toList(),
+        rows.map((r) => m.map((e) => e.map(r)).toList()),
+      ),
+    );
+  }
+
   static InsertSingle<T> insertInto<T extends Row>({
     required Table<T> table,
     required List<Expr?> values,
-  }) => InsertSingle._(_Insert._(table: table, values: values));
+  }) => InsertSingle._(
+    Insert._(
+      table: table,
+      values: ExprValuesSource._(
+        table._tableClause.columns
+            .whereIndexed((index, value) => values[index] != null)
+            .toList(),
+        values.nonNulls.toList(),
+      ),
+    ),
+  );
 
   static Update<T> update<T extends Row>(
     Query<(Expr<T>,)> query,
@@ -398,12 +426,22 @@ final class $ForGeneratedCode {
     );
   }
 
-  static InsertOnConflictSingle<T> insertSingleOnConflict<T extends Row>(
+  static InsertOnConflict<T> insertOnConflict<T extends Row>(
+    Insert<T> insert,
+    List<String> conflictTarget,
+  ) => insert._onConflict(conflictTarget);
+
+  static Upsert<T> updateOnConflict<T extends Row>(
+    InsertOnConflict<T> insert,
+    UpdateSet<T> Function(Expr<T> row, Expr<T> excluded) updateBuilder,
+  ) => insert._update(updateBuilder);
+
+  static InsertOnConflictSingle<T> insertOnConflictSingle<T extends Row>(
     InsertSingle<T> insert,
     List<String> conflictTarget,
   ) => insert._onConflict(conflictTarget);
 
-  static UpsertOne<T> updateOnConflict<T extends Row>(
+  static UpsertSingle<T> updateOnConflictSingle<T extends Row>(
     InsertOnConflictSingle<T> insert,
     UpdateSet<T> Function(Expr<T> row, Expr<T> excluded) updateBuilder,
   ) => insert._update(updateBuilder);

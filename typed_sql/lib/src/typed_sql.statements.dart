@@ -49,18 +49,36 @@ final class SelectStatement extends SqlStatement {
 
 final class InsertStatement extends SqlStatement {
   final String table;
-  final List<String> columns;
-  final List<Expr> values;
+  final ValuesSource values;
   final ConflictClause? onConflict;
   final ReturningClause? returning;
 
   InsertStatement._(
     this.table,
-    this.columns,
     this.values,
     this.onConflict,
     this.returning,
   );
+}
+
+sealed class ValuesSource {
+  List<String> get columns;
+}
+
+final class ExprValuesSource extends ValuesSource {
+  @override
+  final List<String> columns;
+  final List<Expr> values;
+
+  ExprValuesSource._(this.columns, this.values);
+}
+
+final class BulkValuesSource extends ValuesSource {
+  @override
+  final List<String> columns;
+  final Iterable<List<Object?>> values;
+
+  BulkValuesSource._(this.columns, this.values);
 }
 
 sealed class ConflictClause {

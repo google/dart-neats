@@ -208,15 +208,39 @@ final class _MysqlSqlDialect extends SqlDialect {
       returnProjection = returning.projection.map(r.expr).join(', ');
     }
 
-    return SingleSqlTask(
-      [
-        'INSERT INTO ${escape(statement.table)}',
-        '(${statement.columns.map(escape).join(', ')})',
-        'VALUES (${statement.values.map(resolver.expr).join(', ')})',
-        if (returnProjection != null) 'RETURNING $returnProjection',
-      ].join(' '),
-      resolver.context.parameters,
-    );
+    switch (statement.values) {
+      case ExprValuesSource(:final columns, :final values):
+        return SingleSqlTask(
+          [
+            'INSERT INTO ${escape(statement.table)}',
+            '(${columns.map(escape).join(', ')})',
+            'VALUES (${values.map(resolver.expr).join(', ')})',
+            if (returnProjection != null) 'RETURNING $returnProjection',
+          ].join(' '),
+          resolver.context.parameters,
+        );
+      case BulkValuesSource(:final columns, :final values):
+        final N = columns.length;
+        final placeholders = List<Object?>.generate(N, (_) => Object());
+        return PipelinedSqlTask(
+          [
+            'INSERT INTO ${escape(statement.table)}',
+            '(${columns.map(escape).join(', ')})',
+            'VALUES (${placeholders.map(resolver.context.addParameter).join(', ')})',
+            if (returnProjection != null) 'RETURNING $returnProjection',
+          ].join(' '),
+          values.map(
+            (values) => List.generate(resolver.context.parameters.length, (i) {
+              final p = resolver.context.parameters[i];
+              i = placeholders.indexOf(p);
+              if (i != -1) {
+                return values[i];
+              }
+              return p;
+            }),
+          ),
+        );
+    }
   }
 
   @override
