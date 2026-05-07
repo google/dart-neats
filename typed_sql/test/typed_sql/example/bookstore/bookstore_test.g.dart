@@ -117,6 +117,33 @@ extension TableAuthorExt on Table<Author> {
         values: [authorId?.asExpr, name.asExpr],
       );
 
+  /// Bulk insert rows into the `authors` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<Author> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? authorId,
+    required String Function(T row) name,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'authorId': authorId, 'name': name},
+  );
+
   /// Delete a single row from the `authors` table, specified by
   /// _primary key_.
   ///
@@ -351,20 +378,21 @@ enum AuthorConflict {
   /// `name`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  name(['name']);
+  name(['name'])
+  ;
 
   const AuthorConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleAuthorExt on InsertSingle<Author> {
-  InsertOnConflictSingle<Author> onConflict(AuthorConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertAuthorExt on Insert<Author> {
+  InsertOnConflict<Author> onConflict(AuthorConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleAuthorExt on InsertOnConflictSingle<Author> {
-  UpsertOne<Author> update(
+extension InsertOnConflictAuthorExt on InsertOnConflict<Author> {
+  Upsert<Author> update(
     UpdateSet<Author> Function(
       Expr<Author> author,
       Expr<Author> excluded,
@@ -372,6 +400,30 @@ extension InsertOnConflictSingleAuthorExt on InsertOnConflictSingle<Author> {
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<Author>(
+    this,
+    (author, excluded) => updateBuilder(
+      author,
+      excluded,
+      ({Expr<int>? authorId, Expr<String>? name}) =>
+          $ForGeneratedCode.buildUpdate<Author>([authorId, name]),
+    ),
+  );
+}
+
+extension InsertSingleAuthorExt on InsertSingle<Author> {
+  InsertOnConflictSingle<Author> onConflict(AuthorConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleAuthorExt on InsertOnConflictSingle<Author> {
+  UpsertSingle<Author> update(
+    UpdateSet<Author> Function(
+      Expr<Author> author,
+      Expr<Author> excluded,
+      UpdateSet<Author> Function({Expr<int> authorId, Expr<String> name}) set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<Author>(
     this,
     (author, excluded) => updateBuilder(
       author,
@@ -489,6 +541,40 @@ extension TableBookExt on Table<Book> {
   }) => $ForGeneratedCode.insertInto(
     table: this,
     values: [bookId?.asExpr, title.asExpr, authorId.asExpr, stock?.asExpr],
+  );
+
+  /// Bulk insert rows into the `books` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<Book> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? bookId,
+    String? Function(T row)? title,
+    required int Function(T row) authorId,
+    int Function(T row)? stock,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {
+      'bookId': bookId,
+      'title': title,
+      'authorId': authorId,
+      'stock': stock,
+    },
   );
 
   /// Delete a single row from the `books` table, specified by
@@ -743,20 +829,21 @@ enum BookConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `bookId`.
-  primaryKey(['bookId']);
+  primaryKey(['bookId'])
+  ;
 
   const BookConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleBookExt on InsertSingle<Book> {
-  InsertOnConflictSingle<Book> onConflict(BookConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertBookExt on Insert<Book> {
+  InsertOnConflict<Book> onConflict(BookConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleBookExt on InsertOnConflictSingle<Book> {
-  UpsertOne<Book> update(
+extension InsertOnConflictBookExt on InsertOnConflict<Book> {
+  Upsert<Book> update(
     UpdateSet<Book> Function(
       Expr<Book> book,
       Expr<Book> excluded,
@@ -770,6 +857,41 @@ extension InsertOnConflictSingleBookExt on InsertOnConflictSingle<Book> {
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<Book>(
+    this,
+    (book, excluded) => updateBuilder(
+      book,
+      excluded,
+      ({
+        Expr<int>? bookId,
+        Expr<String?>? title,
+        Expr<int>? authorId,
+        Expr<int>? stock,
+      }) =>
+          $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
+    ),
+  );
+}
+
+extension InsertSingleBookExt on InsertSingle<Book> {
+  InsertOnConflictSingle<Book> onConflict(BookConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleBookExt on InsertOnConflictSingle<Book> {
+  UpsertSingle<Book> update(
+    UpdateSet<Book> Function(
+      Expr<Book> book,
+      Expr<Book> excluded,
+      UpdateSet<Book> Function({
+        Expr<int> bookId,
+        Expr<String?> title,
+        Expr<int> authorId,
+        Expr<int> stock,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<Book>(
     this,
     (book, excluded) => updateBuilder(
       book,

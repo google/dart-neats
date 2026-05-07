@@ -134,6 +134,38 @@ extension TableAccountExt on Table<Account> {
     values: [accountId?.asExpr, accountNumber.asExpr, balance?.asExpr],
   );
 
+  /// Bulk insert rows into the `accounts` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<Account> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? accountId,
+    required String Function(T row) accountNumber,
+    double Function(T row)? balance,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {
+      'accountId': accountId,
+      'accountNumber': accountNumber,
+      'balance': balance,
+    },
+  );
+
   /// Delete a single row from the `accounts` table, specified by
   /// _primary key_.
   ///
@@ -351,20 +383,21 @@ enum AccountConflict {
   /// `accountNumber`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  accountNumber(['accountNumber']);
+  accountNumber(['accountNumber'])
+  ;
 
   const AccountConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleAccountExt on InsertSingle<Account> {
-  InsertOnConflictSingle<Account> onConflict(AccountConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertAccountExt on Insert<Account> {
+  InsertOnConflict<Account> onConflict(AccountConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleAccountExt on InsertOnConflictSingle<Account> {
-  UpsertOne<Account> update(
+extension InsertOnConflictAccountExt on InsertOnConflict<Account> {
+  Upsert<Account> update(
     UpdateSet<Account> Function(
       Expr<Account> account,
       Expr<Account> excluded,
@@ -377,6 +410,42 @@ extension InsertOnConflictSingleAccountExt on InsertOnConflictSingle<Account> {
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<Account>(
+    this,
+    (account, excluded) => updateBuilder(
+      account,
+      excluded,
+      ({
+        Expr<int>? accountId,
+        Expr<String>? accountNumber,
+        Expr<double>? balance,
+      }) => $ForGeneratedCode.buildUpdate<Account>([
+        accountId,
+        accountNumber,
+        balance,
+      ]),
+    ),
+  );
+}
+
+extension InsertSingleAccountExt on InsertSingle<Account> {
+  InsertOnConflictSingle<Account> onConflict(AccountConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleAccountExt on InsertOnConflictSingle<Account> {
+  UpsertSingle<Account> update(
+    UpdateSet<Account> Function(
+      Expr<Account> account,
+      Expr<Account> excluded,
+      UpdateSet<Account> Function({
+        Expr<int> accountId,
+        Expr<String> accountNumber,
+        Expr<double> balance,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<Account>(
     this,
     (account, excluded) => updateBuilder(
       account,

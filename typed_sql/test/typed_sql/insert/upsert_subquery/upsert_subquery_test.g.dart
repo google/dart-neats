@@ -117,6 +117,33 @@ extension TableSourceItemExt on Table<SourceItem> {
         values: [id?.asExpr, value.asExpr],
       );
 
+  /// Bulk insert rows into the `sourceItems` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<SourceItem> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? id,
+    required String Function(T row) value,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'id': id, 'value': value},
+  );
+
   /// Delete a single row from the `sourceItems` table, specified by
   /// _primary key_.
   ///
@@ -285,21 +312,21 @@ enum SourceItemConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `id`.
-  primaryKey(['id']);
+  primaryKey(['id'])
+  ;
 
   const SourceItemConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleSourceItemExt on InsertSingle<SourceItem> {
-  InsertOnConflictSingle<SourceItem> onConflict(SourceItemConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertSourceItemExt on Insert<SourceItem> {
+  InsertOnConflict<SourceItem> onConflict(SourceItemConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleSourceItemExt
-    on InsertOnConflictSingle<SourceItem> {
-  UpsertOne<SourceItem> update(
+extension InsertOnConflictSourceItemExt on InsertOnConflict<SourceItem> {
+  Upsert<SourceItem> update(
     UpdateSet<SourceItem> Function(
       Expr<SourceItem> sourceItem,
       Expr<SourceItem> excluded,
@@ -307,6 +334,31 @@ extension InsertOnConflictSingleSourceItemExt
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<SourceItem>(
+    this,
+    (sourceItem, excluded) => updateBuilder(
+      sourceItem,
+      excluded,
+      ({Expr<int>? id, Expr<String>? value}) =>
+          $ForGeneratedCode.buildUpdate<SourceItem>([id, value]),
+    ),
+  );
+}
+
+extension InsertSingleSourceItemExt on InsertSingle<SourceItem> {
+  InsertOnConflictSingle<SourceItem> onConflict(SourceItemConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleSourceItemExt
+    on InsertOnConflictSingle<SourceItem> {
+  UpsertSingle<SourceItem> update(
+    UpdateSet<SourceItem> Function(
+      Expr<SourceItem> sourceItem,
+      Expr<SourceItem> excluded,
+      UpdateSet<SourceItem> Function({Expr<int> id, Expr<String> value}) set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<SourceItem>(
     this,
     (sourceItem, excluded) => updateBuilder(
       sourceItem,
@@ -428,6 +480,35 @@ extension TableSubQueryItemExt on Table<SubQueryItem> {
   }) => $ForGeneratedCode.insertInto(
     table: this,
     values: [id?.asExpr, tag.asExpr, refId.asExpr, count.asExpr],
+  );
+
+  /// Bulk insert rows into the `subQueryItems` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<SubQueryItem> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? id,
+    required String Function(T row) tag,
+    required int Function(T row) refId,
+    required int Function(T row) count,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'id': id, 'tag': tag, 'refId': refId, 'count': count},
   );
 
   /// Delete a single row from the `subQueryItems` table, specified by
@@ -651,22 +732,21 @@ enum SubQueryItemConflict {
   /// `tag`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  tag(['tag']);
+  tag(['tag'])
+  ;
 
   const SubQueryItemConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleSubQueryItemExt on InsertSingle<SubQueryItem> {
-  InsertOnConflictSingle<SubQueryItem> onConflict(
-    SubQueryItemConflict target,
-  ) => $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertSubQueryItemExt on Insert<SubQueryItem> {
+  InsertOnConflict<SubQueryItem> onConflict(SubQueryItemConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleSubQueryItemExt
-    on InsertOnConflictSingle<SubQueryItem> {
-  UpsertOne<SubQueryItem> update(
+extension InsertOnConflictSubQueryItemExt on InsertOnConflict<SubQueryItem> {
+  Upsert<SubQueryItem> update(
     UpdateSet<SubQueryItem> Function(
       Expr<SubQueryItem> subQueryItem,
       Expr<SubQueryItem> excluded,
@@ -680,6 +760,43 @@ extension InsertOnConflictSingleSubQueryItemExt
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<SubQueryItem>(
+    this,
+    (subQueryItem, excluded) => updateBuilder(
+      subQueryItem,
+      excluded,
+      ({
+        Expr<int>? id,
+        Expr<String>? tag,
+        Expr<int>? refId,
+        Expr<int>? count,
+      }) =>
+          $ForGeneratedCode.buildUpdate<SubQueryItem>([id, tag, refId, count]),
+    ),
+  );
+}
+
+extension InsertSingleSubQueryItemExt on InsertSingle<SubQueryItem> {
+  InsertOnConflictSingle<SubQueryItem> onConflict(
+    SubQueryItemConflict target,
+  ) => $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleSubQueryItemExt
+    on InsertOnConflictSingle<SubQueryItem> {
+  UpsertSingle<SubQueryItem> update(
+    UpdateSet<SubQueryItem> Function(
+      Expr<SubQueryItem> subQueryItem,
+      Expr<SubQueryItem> excluded,
+      UpdateSet<SubQueryItem> Function({
+        Expr<int> id,
+        Expr<String> tag,
+        Expr<int> refId,
+        Expr<int> count,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<SubQueryItem>(
     this,
     (subQueryItem, excluded) => updateBuilder(
       subQueryItem,

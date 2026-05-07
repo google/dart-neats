@@ -128,6 +128,34 @@ extension TableEmployeeExt on Table<Employee> {
     values: [id?.asExpr, surname.asExpr, salary.asExpr],
   );
 
+  /// Bulk insert rows into the `employees` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<Employee> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? id,
+    required String Function(T row) surname,
+    required int Function(T row) salary,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'id': id, 'surname': surname, 'salary': salary},
+  );
+
   /// Delete a single row from the `employees` table, specified by
   /// _primary key_.
   ///
@@ -312,21 +340,21 @@ enum EmployeeConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `id`.
-  primaryKey(['id']);
+  primaryKey(['id'])
+  ;
 
   const EmployeeConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleEmployeeExt on InsertSingle<Employee> {
-  InsertOnConflictSingle<Employee> onConflict(EmployeeConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertEmployeeExt on Insert<Employee> {
+  InsertOnConflict<Employee> onConflict(EmployeeConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleEmployeeExt
-    on InsertOnConflictSingle<Employee> {
-  UpsertOne<Employee> update(
+extension InsertOnConflictEmployeeExt on InsertOnConflict<Employee> {
+  Upsert<Employee> update(
     UpdateSet<Employee> Function(
       Expr<Employee> employee,
       Expr<Employee> excluded,
@@ -339,6 +367,36 @@ extension InsertOnConflictSingleEmployeeExt
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<Employee>(
+    this,
+    (employee, excluded) => updateBuilder(
+      employee,
+      excluded,
+      ({Expr<int>? id, Expr<String>? surname, Expr<int>? salary}) =>
+          $ForGeneratedCode.buildUpdate<Employee>([id, surname, salary]),
+    ),
+  );
+}
+
+extension InsertSingleEmployeeExt on InsertSingle<Employee> {
+  InsertOnConflictSingle<Employee> onConflict(EmployeeConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleEmployeeExt
+    on InsertOnConflictSingle<Employee> {
+  UpsertSingle<Employee> update(
+    UpdateSet<Employee> Function(
+      Expr<Employee> employee,
+      Expr<Employee> excluded,
+      UpdateSet<Employee> Function({
+        Expr<int> id,
+        Expr<String> surname,
+        Expr<int> salary,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<Employee>(
     this,
     (employee, excluded) => updateBuilder(
       employee,

@@ -127,6 +127,34 @@ extension TableProductExt on Table<Product> {
     values: [id?.asExpr, name.asExpr, metadata?.asExpr],
   );
 
+  /// Bulk insert rows into the `products` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<Product> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? id,
+    required String Function(T row) name,
+    JsonValue Function(T row)? metadata,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'id': id, 'name': name, 'metadata': metadata},
+  );
+
   /// Delete a single row from the `products` table, specified by
   /// _primary key_.
   ///
@@ -310,20 +338,21 @@ enum ProductConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `id`.
-  primaryKey(['id']);
+  primaryKey(['id'])
+  ;
 
   const ProductConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleProductExt on InsertSingle<Product> {
-  InsertOnConflictSingle<Product> onConflict(ProductConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertProductExt on Insert<Product> {
+  InsertOnConflict<Product> onConflict(ProductConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleProductExt on InsertOnConflictSingle<Product> {
-  UpsertOne<Product> update(
+extension InsertOnConflictProductExt on InsertOnConflict<Product> {
+  Upsert<Product> update(
     UpdateSet<Product> Function(
       Expr<Product> product,
       Expr<Product> excluded,
@@ -336,6 +365,35 @@ extension InsertOnConflictSingleProductExt on InsertOnConflictSingle<Product> {
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<Product>(
+    this,
+    (product, excluded) => updateBuilder(
+      product,
+      excluded,
+      ({Expr<int>? id, Expr<String>? name, Expr<JsonValue>? metadata}) =>
+          $ForGeneratedCode.buildUpdate<Product>([id, name, metadata]),
+    ),
+  );
+}
+
+extension InsertSingleProductExt on InsertSingle<Product> {
+  InsertOnConflictSingle<Product> onConflict(ProductConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleProductExt on InsertOnConflictSingle<Product> {
+  UpsertSingle<Product> update(
+    UpdateSet<Product> Function(
+      Expr<Product> product,
+      Expr<Product> excluded,
+      UpdateSet<Product> Function({
+        Expr<int> id,
+        Expr<String> name,
+        Expr<JsonValue> metadata,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<Product>(
     this,
     (product, excluded) => updateBuilder(
       product,

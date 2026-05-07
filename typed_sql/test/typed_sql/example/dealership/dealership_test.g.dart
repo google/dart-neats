@@ -149,6 +149,40 @@ extension TableCarExt on Table<Car> {
     values: [id?.asExpr, model.asExpr, licensePlate.asExpr, color.asExpr],
   );
 
+  /// Bulk insert rows into the `cars` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<Car> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? id,
+    required String Function(T row) model,
+    required String Function(T row) licensePlate,
+    required Color Function(T row) color,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {
+      'id': id,
+      'model': model,
+      'licensePlate': licensePlate,
+      'color': (T v) => color(v).toDatabase(),
+    },
+  );
+
   /// Delete a single row from the `cars` table, specified by
   /// _primary key_.
   ///
@@ -368,20 +402,21 @@ enum CarConflict {
   /// `licensePlate`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  licensePlate(['licensePlate']);
+  licensePlate(['licensePlate'])
+  ;
 
   const CarConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleCarExt on InsertSingle<Car> {
-  InsertOnConflictSingle<Car> onConflict(CarConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertCarExt on Insert<Car> {
+  InsertOnConflict<Car> onConflict(CarConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleCarExt on InsertOnConflictSingle<Car> {
-  UpsertOne<Car> update(
+extension InsertOnConflictCarExt on InsertOnConflict<Car> {
+  Upsert<Car> update(
     UpdateSet<Car> Function(
       Expr<Car> car,
       Expr<Car> excluded,
@@ -395,6 +430,41 @@ extension InsertOnConflictSingleCarExt on InsertOnConflictSingle<Car> {
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<Car>(
+    this,
+    (car, excluded) => updateBuilder(
+      car,
+      excluded,
+      ({
+        Expr<int>? id,
+        Expr<String>? model,
+        Expr<String>? licensePlate,
+        Expr<Color>? color,
+      }) =>
+          $ForGeneratedCode.buildUpdate<Car>([id, model, licensePlate, color]),
+    ),
+  );
+}
+
+extension InsertSingleCarExt on InsertSingle<Car> {
+  InsertOnConflictSingle<Car> onConflict(CarConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleCarExt on InsertOnConflictSingle<Car> {
+  UpsertSingle<Car> update(
+    UpdateSet<Car> Function(
+      Expr<Car> car,
+      Expr<Car> excluded,
+      UpdateSet<Car> Function({
+        Expr<int> id,
+        Expr<String> model,
+        Expr<String> licensePlate,
+        Expr<Color> color,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<Car>(
     this,
     (car, excluded) => updateBuilder(
       car,

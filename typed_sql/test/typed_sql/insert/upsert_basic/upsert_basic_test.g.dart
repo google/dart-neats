@@ -130,6 +130,34 @@ extension TableBasicItemExt on Table<BasicItem> {
     values: [id?.asExpr, name.asExpr, value.asExpr],
   );
 
+  /// Bulk insert rows into the `basicItems` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<BasicItem> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? id,
+    required String Function(T row) name,
+    required int Function(T row) value,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'id': id, 'name': name, 'value': value},
+  );
+
   /// Delete a single row from the `basicItems` table, specified by
   /// _primary key_.
   ///
@@ -333,21 +361,21 @@ enum BasicItemConflict {
   /// `name`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  name(['name']);
+  name(['name'])
+  ;
 
   const BasicItemConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleBasicItemExt on InsertSingle<BasicItem> {
-  InsertOnConflictSingle<BasicItem> onConflict(BasicItemConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertBasicItemExt on Insert<BasicItem> {
+  InsertOnConflict<BasicItem> onConflict(BasicItemConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleBasicItemExt
-    on InsertOnConflictSingle<BasicItem> {
-  UpsertOne<BasicItem> update(
+extension InsertOnConflictBasicItemExt on InsertOnConflict<BasicItem> {
+  Upsert<BasicItem> update(
     UpdateSet<BasicItem> Function(
       Expr<BasicItem> basicItem,
       Expr<BasicItem> excluded,
@@ -360,6 +388,36 @@ extension InsertOnConflictSingleBasicItemExt
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<BasicItem>(
+    this,
+    (basicItem, excluded) => updateBuilder(
+      basicItem,
+      excluded,
+      ({Expr<int>? id, Expr<String>? name, Expr<int>? value}) =>
+          $ForGeneratedCode.buildUpdate<BasicItem>([id, name, value]),
+    ),
+  );
+}
+
+extension InsertSingleBasicItemExt on InsertSingle<BasicItem> {
+  InsertOnConflictSingle<BasicItem> onConflict(BasicItemConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleBasicItemExt
+    on InsertOnConflictSingle<BasicItem> {
+  UpsertSingle<BasicItem> update(
+    UpdateSet<BasicItem> Function(
+      Expr<BasicItem> basicItem,
+      Expr<BasicItem> excluded,
+      UpdateSet<BasicItem> Function({
+        Expr<int> id,
+        Expr<String> name,
+        Expr<int> value,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<BasicItem>(
     this,
     (basicItem, excluded) => updateBuilder(
       basicItem,

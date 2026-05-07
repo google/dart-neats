@@ -121,6 +121,33 @@ extension TableCustomTypeItemExt on Table<CustomTypeItem> {
     values: [id?.asExpr, value.asExpr],
   );
 
+  /// Bulk insert rows into the `customTypeItems` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<CustomTypeItem> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? id,
+    required MyCustomType Function(T row) value,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'id': id, 'value': (T v) => value(v).toDatabase()},
+  );
+
   /// Delete a single row from the `customTypeItems` table, specified by
   /// _primary key_.
   ///
@@ -318,22 +345,22 @@ enum CustomTypeItemConflict {
   /// `value`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  value(['value']);
+  value(['value'])
+  ;
 
   const CustomTypeItemConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleCustomTypeItemExt on InsertSingle<CustomTypeItem> {
-  InsertOnConflictSingle<CustomTypeItem> onConflict(
-    CustomTypeItemConflict target,
-  ) => $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertCustomTypeItemExt on Insert<CustomTypeItem> {
+  InsertOnConflict<CustomTypeItem> onConflict(CustomTypeItemConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleCustomTypeItemExt
-    on InsertOnConflictSingle<CustomTypeItem> {
-  UpsertOne<CustomTypeItem> update(
+extension InsertOnConflictCustomTypeItemExt
+    on InsertOnConflict<CustomTypeItem> {
+  Upsert<CustomTypeItem> update(
     UpdateSet<CustomTypeItem> Function(
       Expr<CustomTypeItem> customTypeItem,
       Expr<CustomTypeItem> excluded,
@@ -345,6 +372,36 @@ extension InsertOnConflictSingleCustomTypeItemExt
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<CustomTypeItem>(
+    this,
+    (customTypeItem, excluded) => updateBuilder(
+      customTypeItem,
+      excluded,
+      ({Expr<int>? id, Expr<MyCustomType>? value}) =>
+          $ForGeneratedCode.buildUpdate<CustomTypeItem>([id, value]),
+    ),
+  );
+}
+
+extension InsertSingleCustomTypeItemExt on InsertSingle<CustomTypeItem> {
+  InsertOnConflictSingle<CustomTypeItem> onConflict(
+    CustomTypeItemConflict target,
+  ) => $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleCustomTypeItemExt
+    on InsertOnConflictSingle<CustomTypeItem> {
+  UpsertSingle<CustomTypeItem> update(
+    UpdateSet<CustomTypeItem> Function(
+      Expr<CustomTypeItem> customTypeItem,
+      Expr<CustomTypeItem> excluded,
+      UpdateSet<CustomTypeItem> Function({
+        Expr<int> id,
+        Expr<MyCustomType> value,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<CustomTypeItem>(
     this,
     (customTypeItem, excluded) => updateBuilder(
       customTypeItem,

@@ -114,6 +114,33 @@ extension TableNotNullItemExt on Table<NotNullItem> {
         values: [id?.asExpr, name.asExpr],
       );
 
+  /// Bulk insert rows into the `notNullItems` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<NotNullItem> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? id,
+    required String Function(T row) name,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'id': id, 'name': name},
+  );
+
   /// Delete a single row from the `notNullItems` table, specified by
   /// _primary key_.
   ///
@@ -282,21 +309,21 @@ enum NotNullItemConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `id`.
-  primaryKey(['id']);
+  primaryKey(['id'])
+  ;
 
   const NotNullItemConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleNotNullItemExt on InsertSingle<NotNullItem> {
-  InsertOnConflictSingle<NotNullItem> onConflict(NotNullItemConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertNotNullItemExt on Insert<NotNullItem> {
+  InsertOnConflict<NotNullItem> onConflict(NotNullItemConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleNotNullItemExt
-    on InsertOnConflictSingle<NotNullItem> {
-  UpsertOne<NotNullItem> update(
+extension InsertOnConflictNotNullItemExt on InsertOnConflict<NotNullItem> {
+  Upsert<NotNullItem> update(
     UpdateSet<NotNullItem> Function(
       Expr<NotNullItem> notNullItem,
       Expr<NotNullItem> excluded,
@@ -304,6 +331,31 @@ extension InsertOnConflictSingleNotNullItemExt
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<NotNullItem>(
+    this,
+    (notNullItem, excluded) => updateBuilder(
+      notNullItem,
+      excluded,
+      ({Expr<int>? id, Expr<String>? name}) =>
+          $ForGeneratedCode.buildUpdate<NotNullItem>([id, name]),
+    ),
+  );
+}
+
+extension InsertSingleNotNullItemExt on InsertSingle<NotNullItem> {
+  InsertOnConflictSingle<NotNullItem> onConflict(NotNullItemConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleNotNullItemExt
+    on InsertOnConflictSingle<NotNullItem> {
+  UpsertSingle<NotNullItem> update(
+    UpdateSet<NotNullItem> Function(
+      Expr<NotNullItem> notNullItem,
+      Expr<NotNullItem> excluded,
+      UpdateSet<NotNullItem> Function({Expr<int> id, Expr<String> name}) set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<NotNullItem>(
     this,
     (notNullItem, excluded) => updateBuilder(
       notNullItem,

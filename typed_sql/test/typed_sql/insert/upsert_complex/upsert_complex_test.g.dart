@@ -209,6 +209,44 @@ extension TableComplexItemExt on Table<ComplexItem> {
     ],
   );
 
+  /// Bulk insert rows into the `complexItems` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<ComplexItem> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    required int Function(T row) id,
+    DateTime Function(T row)? createdAt,
+    required String Function(T row) name,
+    double Function(T row)? doubleValue,
+    bool Function(T row)? boolValue,
+    required int Function(T row) value,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {
+      'id': id,
+      'createdAt': createdAt,
+      'name': name,
+      'doubleValue': doubleValue,
+      'boolValue': boolValue,
+      'value': value,
+    },
+  );
+
   /// Delete a single row from the `complexItems` table, specified by
   /// _primary key_.
   ///
@@ -476,21 +514,21 @@ enum ComplexItemConflict {
   /// `name`, `doubleValue`, `boolValue`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  complexUnique(['name', 'doubleValue', 'boolValue']);
+  complexUnique(['name', 'doubleValue', 'boolValue'])
+  ;
 
   const ComplexItemConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleComplexItemExt on InsertSingle<ComplexItem> {
-  InsertOnConflictSingle<ComplexItem> onConflict(ComplexItemConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertComplexItemExt on Insert<ComplexItem> {
+  InsertOnConflict<ComplexItem> onConflict(ComplexItemConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleComplexItemExt
-    on InsertOnConflictSingle<ComplexItem> {
-  UpsertOne<ComplexItem> update(
+extension InsertOnConflictComplexItemExt on InsertOnConflict<ComplexItem> {
+  Upsert<ComplexItem> update(
     UpdateSet<ComplexItem> Function(
       Expr<ComplexItem> complexItem,
       Expr<ComplexItem> excluded,
@@ -506,6 +544,52 @@ extension InsertOnConflictSingleComplexItemExt
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<ComplexItem>(
+    this,
+    (complexItem, excluded) => updateBuilder(
+      complexItem,
+      excluded,
+      ({
+        Expr<int>? id,
+        Expr<DateTime>? createdAt,
+        Expr<String>? name,
+        Expr<double>? doubleValue,
+        Expr<bool>? boolValue,
+        Expr<int>? value,
+      }) => $ForGeneratedCode.buildUpdate<ComplexItem>([
+        id,
+        createdAt,
+        name,
+        doubleValue,
+        boolValue,
+        value,
+      ]),
+    ),
+  );
+}
+
+extension InsertSingleComplexItemExt on InsertSingle<ComplexItem> {
+  InsertOnConflictSingle<ComplexItem> onConflict(ComplexItemConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleComplexItemExt
+    on InsertOnConflictSingle<ComplexItem> {
+  UpsertSingle<ComplexItem> update(
+    UpdateSet<ComplexItem> Function(
+      Expr<ComplexItem> complexItem,
+      Expr<ComplexItem> excluded,
+      UpdateSet<ComplexItem> Function({
+        Expr<int> id,
+        Expr<DateTime> createdAt,
+        Expr<String> name,
+        Expr<double> doubleValue,
+        Expr<bool> boolValue,
+        Expr<int> value,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<ComplexItem>(
     this,
     (complexItem, excluded) => updateBuilder(
       complexItem,

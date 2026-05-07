@@ -136,6 +136,34 @@ extension TablePostExt on Table<Post> {
     values: [author.asExpr, slug.asExpr, content.asExpr],
   );
 
+  /// Bulk insert rows into the `posts` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<Post> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    required String Function(T row) author,
+    required String Function(T row) slug,
+    required String Function(T row) content,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'author': author, 'slug': slug, 'content': content},
+  );
+
   /// Delete a single row from the `posts` table, specified by
   /// _primary key_.
   ///
@@ -374,20 +402,21 @@ enum PostConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `author`, `slug`.
-  primaryKey(['author', 'slug']);
+  primaryKey(['author', 'slug'])
+  ;
 
   const PostConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSinglePostExt on InsertSingle<Post> {
-  InsertOnConflictSingle<Post> onConflict(PostConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertPostExt on Insert<Post> {
+  InsertOnConflict<Post> onConflict(PostConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSinglePostExt on InsertOnConflictSingle<Post> {
-  UpsertOne<Post> update(
+extension InsertOnConflictPostExt on InsertOnConflict<Post> {
+  Upsert<Post> update(
     UpdateSet<Post> Function(
       Expr<Post> post,
       Expr<Post> excluded,
@@ -400,6 +429,35 @@ extension InsertOnConflictSinglePostExt on InsertOnConflictSingle<Post> {
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<Post>(
+    this,
+    (post, excluded) => updateBuilder(
+      post,
+      excluded,
+      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
+          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
+    ),
+  );
+}
+
+extension InsertSinglePostExt on InsertSingle<Post> {
+  InsertOnConflictSingle<Post> onConflict(PostConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSinglePostExt on InsertOnConflictSingle<Post> {
+  UpsertSingle<Post> update(
+    UpdateSet<Post> Function(
+      Expr<Post> post,
+      Expr<Post> excluded,
+      UpdateSet<Post> Function({
+        Expr<String> author,
+        Expr<String> slug,
+        Expr<String> content,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<Post>(
     this,
     (post, excluded) => updateBuilder(
       post,
@@ -524,6 +582,40 @@ extension TableCommentExt on Table<Comment> {
   }) => $ForGeneratedCode.insertInto(
     table: this,
     values: [commentId.asExpr, author.asExpr, postSlug.asExpr, comment.asExpr],
+  );
+
+  /// Bulk insert rows into the `comments` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<Comment> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    required int Function(T row) commentId,
+    required String Function(T row) author,
+    required String Function(T row) postSlug,
+    required String Function(T row) comment,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {
+      'commentId': commentId,
+      'author': author,
+      'postSlug': postSlug,
+      'comment': comment,
+    },
   );
 
   /// Delete a single row from the `comments` table, specified by
@@ -792,20 +884,21 @@ enum CommentConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `commentId`.
-  primaryKey(['commentId']);
+  primaryKey(['commentId'])
+  ;
 
   const CommentConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleCommentExt on InsertSingle<Comment> {
-  InsertOnConflictSingle<Comment> onConflict(CommentConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertCommentExt on Insert<Comment> {
+  InsertOnConflict<Comment> onConflict(CommentConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleCommentExt on InsertOnConflictSingle<Comment> {
-  UpsertOne<Comment> update(
+extension InsertOnConflictCommentExt on InsertOnConflict<Comment> {
+  Upsert<Comment> update(
     UpdateSet<Comment> Function(
       Expr<Comment> comment,
       Expr<Comment> excluded,
@@ -819,6 +912,45 @@ extension InsertOnConflictSingleCommentExt on InsertOnConflictSingle<Comment> {
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<Comment>(
+    this,
+    (comment, excluded) => updateBuilder(
+      comment,
+      excluded,
+      ({
+        Expr<int>? commentId,
+        Expr<String>? author,
+        Expr<String>? postSlug,
+        Expr<String>? comment,
+      }) => $ForGeneratedCode.buildUpdate<Comment>([
+        commentId,
+        author,
+        postSlug,
+        comment,
+      ]),
+    ),
+  );
+}
+
+extension InsertSingleCommentExt on InsertSingle<Comment> {
+  InsertOnConflictSingle<Comment> onConflict(CommentConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleCommentExt on InsertOnConflictSingle<Comment> {
+  UpsertSingle<Comment> update(
+    UpdateSet<Comment> Function(
+      Expr<Comment> comment,
+      Expr<Comment> excluded,
+      UpdateSet<Comment> Function({
+        Expr<int> commentId,
+        Expr<String> author,
+        Expr<String> postSlug,
+        Expr<String> comment,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<Comment>(
     this,
     (comment, excluded) => updateBuilder(
       comment,

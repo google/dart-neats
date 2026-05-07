@@ -153,6 +153,35 @@ extension TableMultiItemExt on Table<MultiItem> {
     values: [id?.asExpr, name.asExpr, email.asExpr, value.asExpr],
   );
 
+  /// Bulk insert rows into the `multiItems` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<MultiItem> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    int Function(T row)? id,
+    required String Function(T row) name,
+    required String Function(T row) email,
+    required int Function(T row) value,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {'id': id, 'name': name, 'email': email, 'value': value},
+  );
+
   /// Delete a single row from the `multiItems` table, specified by
   /// _primary key_.
   ///
@@ -391,21 +420,21 @@ enum MultiItemConflict {
   /// `email`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  email(['email']);
+  email(['email'])
+  ;
 
   const MultiItemConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertSingleMultiItemExt on InsertSingle<MultiItem> {
-  InsertOnConflictSingle<MultiItem> onConflict(MultiItemConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertMultiItemExt on Insert<MultiItem> {
+  InsertOnConflict<MultiItem> onConflict(MultiItemConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleMultiItemExt
-    on InsertOnConflictSingle<MultiItem> {
-  UpsertOne<MultiItem> update(
+extension InsertOnConflictMultiItemExt on InsertOnConflict<MultiItem> {
+  Upsert<MultiItem> update(
     UpdateSet<MultiItem> Function(
       Expr<MultiItem> multiItem,
       Expr<MultiItem> excluded,
@@ -419,6 +448,41 @@ extension InsertOnConflictSingleMultiItemExt
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<MultiItem>(
+    this,
+    (multiItem, excluded) => updateBuilder(
+      multiItem,
+      excluded,
+      ({
+        Expr<int>? id,
+        Expr<String>? name,
+        Expr<String>? email,
+        Expr<int>? value,
+      }) => $ForGeneratedCode.buildUpdate<MultiItem>([id, name, email, value]),
+    ),
+  );
+}
+
+extension InsertSingleMultiItemExt on InsertSingle<MultiItem> {
+  InsertOnConflictSingle<MultiItem> onConflict(MultiItemConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleMultiItemExt
+    on InsertOnConflictSingle<MultiItem> {
+  UpsertSingle<MultiItem> update(
+    UpdateSet<MultiItem> Function(
+      Expr<MultiItem> multiItem,
+      Expr<MultiItem> excluded,
+      UpdateSet<MultiItem> Function({
+        Expr<int> id,
+        Expr<String> name,
+        Expr<String> email,
+        Expr<int> value,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<MultiItem>(
     this,
     (multiItem, excluded) => updateBuilder(
       multiItem,
