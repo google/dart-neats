@@ -535,11 +535,11 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
         //     final decode2 = _expressions.$2._decode;
         //     final decode3 = _expressions.$3._decode;
         //
-        //     final (sql, columns, params) = _context._dialect.select(
+        //     final task = _context._dialect.select(
         //       SelectStatement._(from),
         //     );
         //
-        //     await for (final row in _context._query(sql, params)) {
+        //     await for (final row in _context._query(task)) {
         //       yield (
         //         decode1(row) as A,
         //         decode2(row) as B,
@@ -564,8 +564,8 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
                   (i) =>
                       'final decode${i + 1} = _expressions.\$${i + 1}._decode;',
                 ),
-                'final (sql, params) = _context._dialect.select(SelectStatement._(from));',
-                'await for (final row in _context._query(sql, params)) {',
+                'final task = _context._dialect.select(SelectStatement._(from));',
+                'await for (final row in _context._query(task)) {',
                 if (i == 1) ...[
                   'yield decode1(row) as ${typeArg[0]};',
                 ] else ...[
@@ -1170,8 +1170,8 @@ Spec _buildSingleQueryExtension(int i) {
 /// ```dart
 /// extension Return2<A, B> on Return<(Expr<A>, Expr<B>)> {
 ///   Stream<(A, B)> executeAndStream() async* {
-///     final (sql, params) = _render(_expressions.toList());
-///     await for (final r in _context._query(sql, params)) {
+///     final task = _render(_expressions.toList());
+///     await for (final r in _context._query(task)) {
 ///       yield (_expressions.$1._decode(r) as A, _expressions.$2._decode(r) as B);
 ///     }
 ///   }
@@ -1208,8 +1208,8 @@ Iterable<Spec> _buildReturnExtension(int i) sync* {
             )
             ..modifier = MethodModifier.asyncStar
             ..body = Code('''
-            final (sql, params) = _render(_expressions.toList());
-            await for (final r in _context._query(sql, params)) {
+            final task = _render(_expressions.toList());
+            await for (final r in _context._query(task)) {
               yield ${i == 1 ? '_expressions.\$1._decode(r) as ${typeArg[0]}' : '(${List.generate(i, (i) => '_expressions.\$${i + 1}._decode(r) as ${typeArg[i]}').join(',')})'};
             }
           '''),

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:postgres/postgres.dart' show Pool;
 
@@ -209,6 +210,23 @@ abstract base class DatabaseTransaction extends Executor {
   @override
   Stream<RowReader> query(String sql, List<Object?> params);
 
+  /// {@macro Executor.queryMany}
+  ///
+  /// The returned [Stream] must prevent back-pressure from blocking the
+  /// database connection to avoid deadlocks in the transaction. But if the
+  /// query is executed in chunks, back-pressure may be used to block further
+  /// chunks. In practice back-pressure is ignored by buffering all results in
+  /// a [List] and return a [Stream] wrapping said list.
+  @override
+  Stream<RowReader> queryMany(
+    String sql,
+    Iterable<List<Object?>> params,
+  ) async* {
+    for (final p in params) {
+      yield* query(sql, p);
+    }
+  }
+
   /// {@macro Executor.transact}
   ///
   /// Any call to [script], [query], [execute] or [transact] while a transaction
@@ -257,6 +275,56 @@ abstract final class Executor {
   /// Throws [DatabaseException], if the query fails.
   /// {@endtemplate}
   Stream<RowReader> query(String sql, List<Object?> params);
+
+  /// {@template Executor.queryMany}
+  /// Execute [sql] query with each list of positional parameters from [params].
+  ///
+  /// Parameters may be referenced in the [sql] query using `$1`, `$2`, ...
+  ///
+  /// Returns a stream of rows, where each row is a list columns.
+  /// If there are no data to be returned, this yields an empty stream.
+  ///
+  /// The following types can be passed in and out.
+  ///  * [String]
+  ///  * [int]
+  ///  * [double]
+  ///  * [bool]
+  ///  * [DateTime]
+  ///  * [Uint8List]
+  ///  * `null`
+  ///
+  /// Throws [DatabaseException], if the query fails.
+  /// {@endtemplate}
+  Stream<RowReader> queryMany(
+    String sql,
+    Iterable<List<Object?>> params,
+  ) {
+    final c = StreamController<RowReader>();
+    c.onListen = () async {
+      try {
+        // Await the entire transaction block
+        await transact((tx) async {
+          for (final p in params) {
+            if (c.isClosed) {
+              break;
+            }
+            await c.addStream(tx.query(sql, p), cancelOnError: true);
+          }
+        });
+      } catch (error, stackTrace) {
+        // If the transaction aborts (or addStream throws), pipe it out
+        if (!c.isClosed) {
+          c.addError(error, stackTrace);
+        }
+      } finally {
+        // Guarantee the stream closes cleanly, whether success or failure
+        if (!c.isClosed) {
+          await c.close();
+        }
+      }
+    };
+    return c.stream;
+  }
 
   /// Execute a single [sql] query with positional [params].
   ///

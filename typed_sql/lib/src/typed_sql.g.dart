@@ -263,8 +263,8 @@ extension Query1<A> on Query<(Expr<A>,)> {
   Stream<A> stream() async* {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
-    final (sql, params) = _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._query(sql, params)) {
+    final task = _context._dialect.select(SelectStatement._(from));
+    await for (final row in _context._query(task)) {
       yield decode1(row) as A;
     }
   }
@@ -1129,8 +1129,8 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
     final from = _from(_expressions.toList());
     final decode1 = _expressions.$1._decode;
     final decode2 = _expressions.$2._decode;
-    final (sql, params) = _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._query(sql, params)) {
+    final task = _context._dialect.select(SelectStatement._(from));
+    await for (final row in _context._query(task)) {
       yield (decode1(row) as A, decode2(row) as B);
     }
   }
@@ -2018,8 +2018,8 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
     final decode1 = _expressions.$1._decode;
     final decode2 = _expressions.$2._decode;
     final decode3 = _expressions.$3._decode;
-    final (sql, params) = _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._query(sql, params)) {
+    final task = _context._dialect.select(SelectStatement._(from));
+    await for (final row in _context._query(task)) {
       yield (decode1(row) as A, decode2(row) as B, decode3(row) as C);
     }
   }
@@ -2937,8 +2937,8 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
     final decode2 = _expressions.$2._decode;
     final decode3 = _expressions.$3._decode;
     final decode4 = _expressions.$4._decode;
-    final (sql, params) = _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._query(sql, params)) {
+    final task = _context._dialect.select(SelectStatement._(from));
+    await for (final row in _context._query(task)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,
@@ -3933,8 +3933,8 @@ extension Query5<A, B, C, D, E>
     final decode3 = _expressions.$3._decode;
     final decode4 = _expressions.$4._decode;
     final decode5 = _expressions.$5._decode;
-    final (sql, params) = _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._query(sql, params)) {
+    final task = _context._dialect.select(SelectStatement._(from));
+    await for (final row in _context._query(task)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,
@@ -4974,8 +4974,8 @@ extension Query6<A, B, C, D, E, F>
     final decode4 = _expressions.$4._decode;
     final decode5 = _expressions.$5._decode;
     final decode6 = _expressions.$6._decode;
-    final (sql, params) = _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._query(sql, params)) {
+    final task = _context._dialect.select(SelectStatement._(from));
+    await for (final row in _context._query(task)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,
@@ -6124,8 +6124,8 @@ extension Query7<A, B, C, D, E, F, G>
     final decode5 = _expressions.$5._decode;
     final decode6 = _expressions.$6._decode;
     final decode7 = _expressions.$7._decode;
-    final (sql, params) = _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._query(sql, params)) {
+    final task = _context._dialect.select(SelectStatement._(from));
+    await for (final row in _context._query(task)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,
@@ -7466,8 +7466,8 @@ extension Query8<A, B, C, D, E, F, G, H>
     final decode6 = _expressions.$6._decode;
     final decode7 = _expressions.$7._decode;
     final decode8 = _expressions.$8._decode;
-    final (sql, params) = _context._dialect.select(SelectStatement._(from));
-    await for (final row in _context._query(sql, params)) {
+    final task = _context._dialect.select(SelectStatement._(from));
+    await for (final row in _context._query(task)) {
       yield (
         decode1(row) as A,
         decode2(row) as B,
@@ -16686,8 +16686,8 @@ extension QuerySingle8<A, B, C, D, E, F, G, H>
 extension Return1<A> on Return<(Expr<A>,)> {
   /// Execute this statement and return the output as a [Stream].
   Stream<A> executeAndStream() async* {
-    final (sql, params) = _render(_expressions.toList());
-    await for (final r in _context._query(sql, params)) {
+    final task = _render(_expressions.toList());
+    await for (final r in _context._query(task)) {
       yield _expressions.$1._decode(r) as A;
     }
   }
@@ -16716,8 +16716,8 @@ extension ReturnOne1<A> on ReturnOne<(Expr<A>,)> {
 extension Return2<A, B> on Return<(Expr<A>, Expr<B>)> {
   /// Execute this statement and return the output as a [Stream].
   Stream<(A, B)> executeAndStream() async* {
-    final (sql, params) = _render(_expressions.toList());
-    await for (final r in _context._query(sql, params)) {
+    final task = _render(_expressions.toList());
+    await for (final r in _context._query(task)) {
       yield (_expressions.$1._decode(r) as A, _expressions.$2._decode(r) as B);
     }
   }
@@ -16752,8 +16752,8 @@ extension ReturnOne2<A, B> on ReturnOne<(Expr<A>, Expr<B>)> {
 extension Return3<A, B, C> on Return<(Expr<A>, Expr<B>, Expr<C>)> {
   /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C)> executeAndStream() async* {
-    final (sql, params) = _render(_expressions.toList());
-    await for (final r in _context._query(sql, params)) {
+    final task = _render(_expressions.toList());
+    await for (final r in _context._query(task)) {
       yield (
         _expressions.$1._decode(r) as A,
         _expressions.$2._decode(r) as B,
@@ -16792,8 +16792,8 @@ extension ReturnOne3<A, B, C> on ReturnOne<(Expr<A>, Expr<B>, Expr<C>)> {
 extension Return4<A, B, C, D> on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D)> executeAndStream() async* {
-    final (sql, params) = _render(_expressions.toList());
-    await for (final r in _context._query(sql, params)) {
+    final task = _render(_expressions.toList());
+    await for (final r in _context._query(task)) {
       yield (
         _expressions.$1._decode(r) as A,
         _expressions.$2._decode(r) as B,
@@ -16836,8 +16836,8 @@ extension Return5<A, B, C, D, E>
     on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
   /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D, E)> executeAndStream() async* {
-    final (sql, params) = _render(_expressions.toList());
-    await for (final r in _context._query(sql, params)) {
+    final task = _render(_expressions.toList());
+    await for (final r in _context._query(task)) {
       yield (
         _expressions.$1._decode(r) as A,
         _expressions.$2._decode(r) as B,
@@ -16881,8 +16881,8 @@ extension Return6<A, B, C, D, E, F>
     on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D, E, F)> executeAndStream() async* {
-    final (sql, params) = _render(_expressions.toList());
-    await for (final r in _context._query(sql, params)) {
+    final task = _render(_expressions.toList());
+    await for (final r in _context._query(task)) {
       yield (
         _expressions.$1._decode(r) as A,
         _expressions.$2._decode(r) as B,
@@ -16927,8 +16927,8 @@ extension Return7<A, B, C, D, E, F, G>
     on Return<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> {
   /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D, E, F, G)> executeAndStream() async* {
-    final (sql, params) = _render(_expressions.toList());
-    await for (final r in _context._query(sql, params)) {
+    final task = _render(_expressions.toList());
+    await for (final r in _context._query(task)) {
       yield (
         _expressions.$1._decode(r) as A,
         _expressions.$2._decode(r) as B,
@@ -16992,8 +16992,8 @@ extension Return8<A, B, C, D, E, F, G, H>
         > {
   /// Execute this statement and return the output as a [Stream].
   Stream<(A, B, C, D, E, F, G, H)> executeAndStream() async* {
-    final (sql, params) = _render(_expressions.toList());
-    await for (final r in _context._query(sql, params)) {
+    final task = _render(_expressions.toList());
+    await for (final r in _context._query(task)) {
       yield (
         _expressions.$1._decode(r) as A,
         _expressions.$2._decode(r) as B,
