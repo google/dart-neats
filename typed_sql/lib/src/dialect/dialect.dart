@@ -142,7 +142,7 @@ abstract base class SqlDialect {
   /// ```
   String createTables(List<CreateTableStatement> statements);
 
-  /// Insert [InsertStatement.columns] into [InsertStatement.table] returning
+  /// Insert [InsertStatement.values] into [InsertStatement.table] returning
   /// columns from [InsertStatement.returning].
   ///
   /// ```sql
