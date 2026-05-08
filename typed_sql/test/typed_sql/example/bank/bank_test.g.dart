@@ -383,8 +383,7 @@ enum AccountConflict {
   /// `accountNumber`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  accountNumber(['accountNumber'])
-  ;
+  accountNumber(['accountNumber']);
 
   const AccountConflict(this._fields);
 

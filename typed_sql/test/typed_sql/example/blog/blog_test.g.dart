@@ -402,8 +402,7 @@ enum PostConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `author`, `slug`.
-  primaryKey(['author', 'slug'])
-  ;
+  primaryKey(['author', 'slug']);
 
   const PostConflict(this._fields);
 
@@ -884,8 +883,7 @@ enum CommentConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `commentId`.
-  primaryKey(['commentId'])
-  ;
+  primaryKey(['commentId']);
 
   const CommentConflict(this._fields);
 

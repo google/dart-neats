@@ -425,8 +425,7 @@ enum UserConflict {
   /// `email`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  email(['email'])
-  ;
+  email(['email']);
 
   const UserConflict(this._fields);
 
@@ -904,8 +903,7 @@ enum PackageConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `packageName`.
-  primaryKey(['packageName'])
-  ;
+  primaryKey(['packageName']);
 
   const PackageConflict(this._fields);
 
@@ -1260,8 +1258,7 @@ enum LikeConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `userId`, `packageName`.
-  primaryKey(['userId', 'packageName'])
-  ;
+  primaryKey(['userId', 'packageName']);
 
   const LikeConflict(this._fields);
 

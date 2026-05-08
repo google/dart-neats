@@ -383,8 +383,7 @@ enum SimpleItemConflict {
   /// `name`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  name(['name'])
-  ;
+  name(['name']);
 
   const SimpleItemConflict(this._fields);
 
@@ -876,8 +875,7 @@ enum CompositeItemConflict {
   /// `firstName`, `lastName`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  fullname(['firstName', 'lastName'])
-  ;
+  fullname(['firstName', 'lastName']);
 
   const CompositeItemConflict(this._fields);
 
@@ -1303,8 +1301,7 @@ enum NullableUniqueItemConflict {
   /// `code`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  code(['code'])
-  ;
+  code(['code']);
 
   const NullableUniqueItemConflict(this._fields);
 
@@ -1745,8 +1742,7 @@ enum SubQueryItemConflict {
   /// `tag`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  tag(['tag'])
-  ;
+  tag(['tag']);
 
   const SubQueryItemConflict(this._fields);
 
@@ -2293,8 +2289,7 @@ enum ComplexItemConflict {
   /// `name`, `doubleValue`, `boolValue`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  complexUnique(['name', 'doubleValue', 'boolValue'])
-  ;
+  complexUnique(['name', 'doubleValue', 'boolValue']);
 
   const ComplexItemConflict(this._fields);
 
@@ -2691,8 +2686,7 @@ enum CustomTypeItemConflict {
   /// `value`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  value(['value'])
-  ;
+  value(['value']);
 
   const CustomTypeItemConflict(this._fields);
 

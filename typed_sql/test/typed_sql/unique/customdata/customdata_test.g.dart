@@ -358,8 +358,7 @@ enum CustomDataItemConflict {
   /// `stringVal`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  stringVal(['stringVal'])
-  ;
+  stringVal(['stringVal']);
 
   const CustomDataItemConflict(this._fields);
 

@@ -514,8 +514,7 @@ enum ComplexItemConflict {
   /// `name`, `doubleValue`, `boolValue`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  complexUnique(['name', 'doubleValue', 'boolValue'])
-  ;
+  complexUnique(['name', 'doubleValue', 'boolValue']);
 
   const ComplexItemConflict(this._fields);
 

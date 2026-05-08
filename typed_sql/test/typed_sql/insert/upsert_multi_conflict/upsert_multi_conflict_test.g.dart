@@ -420,8 +420,7 @@ enum MultiItemConflict {
   /// `email`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  email(['email'])
-  ;
+  email(['email']);
 
   const MultiItemConflict(this._fields);
 

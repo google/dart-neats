@@ -345,8 +345,7 @@ enum CustomTypeItemConflict {
   /// `value`.
   ///
   /// Thus, the conflicting row has matching values for these fields.
-  value(['value'])
-  ;
+  value(['value']);
 
   const CustomTypeItemConflict(this._fields);
 
