@@ -61,10 +61,13 @@ final class InsertStatement extends SqlStatement {
   );
 }
 
+/// Source of values in an [InsertStatement].
 sealed class ValuesSource {
   List<String> get columns;
 }
 
+/// Source of values for an [InsertStatement] that inserts a single row from
+/// [Expr] objects.
 final class ExprValuesSource extends ValuesSource {
   @override
   final List<String> columns;
@@ -73,10 +76,16 @@ final class ExprValuesSource extends ValuesSource {
   ExprValuesSource._(this.columns, this.values);
 }
 
+/// Source of values for an [InsertStatement] that inserts multiple rows from
+/// a list of values for each column.
 final class BulkValuesSource extends ValuesSource {
   @override
   final List<String> columns;
   final List<ColumnType> types;
+
+  /// A list with values for each column.
+  ///
+  /// The `j` row for `columns[i]` has the value `columnValues[i][j]`.
   final List<Iterable<Object?>> columnValues;
 
   BulkValuesSource._(this.columns, this.types, this.columnValues);
