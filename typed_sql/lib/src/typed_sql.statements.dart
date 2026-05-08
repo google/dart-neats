@@ -76,9 +76,10 @@ final class ExprValuesSource extends ValuesSource {
 final class BulkValuesSource extends ValuesSource {
   @override
   final List<String> columns;
-  final Iterable<List<Object?>> values;
+  final List<ColumnType> types;
+  final List<Iterable<Object?>> columnValues;
 
-  BulkValuesSource._(this.columns, this.values);
+  BulkValuesSource._(this.columns, this.types, this.columnValues);
 }
 
 sealed class ConflictClause {

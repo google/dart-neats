@@ -626,7 +626,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 table: this,
                 rows: rows,
                 mapping: {
-                  ${rowClass.fields.map((f) => '\'${f.name}\': ${f.name}').join(', ')}
+            ${rowClass.fields.map((f) {
+              final hasDefault = f.defaultValue != null || f.isNullable || f.autoIncrement;
+              if (f.isCustomType) {
+                if (hasDefault) {
+                  return '\'${f.name}\': ${f.name} != null ? (T v) => ${f.name}(v)?.toDatabase() : null';
+                }
+                return '\'${f.name}\': (T v) => ${f.name}(v).toDatabase()';
+              }
+              return '\'${f.name}\': ${f.name}';
+            }).join(', ')}
                 },
               )
             '''),
@@ -1273,6 +1282,73 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..type = refer('List<String>'),
         ),
       ),
+  );
+
+  // Extension Insert<..>Ext
+  yield Extension(
+    (b) => b
+      ..name = 'Insert${rowClassName}Ext'
+      ..on = refer('Insert<$rowClassName>')
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = 'onConflict'
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'target'
+                  ..type = refer('${rowClassName}Conflict'),
+              ),
+            )
+            ..returns = refer('InsertOnConflict<$rowClassName>')
+            ..lambda = true
+            ..body = Code(
+              '\$ForGeneratedCode.insertOnConflict(this, target._fields)',
+            ),
+        ),
+      ]),
+  );
+
+  // Extension InsertOnConflict<..>Ext
+  yield Extension(
+    (b) => b
+      ..name = 'InsertOnConflict${rowClassName}Ext'
+      ..on = refer('InsertOnConflict<$rowClassName>')
+      ..methods.addAll([
+        Method(
+          (b) => b
+            ..name = 'update'
+            ..returns = refer('Upsert<$rowClassName>')
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..type = refer('''
+                    UpdateSet<$rowClassName> Function(
+                      Expr<$rowClassName> $rowInstanceName,
+                      Expr<$rowClassName> excluded,
+                      UpdateSet<$rowClassName> Function({
+                        ${rowClass.fields.map((field) => 'Expr<${field.type}> ${field.name}').join(', ')},
+                      }) set,
+                    )
+                  ''')
+                  ..name = 'updateBuilder',
+              ),
+            )
+            ..lambda = true
+            ..body = Code('''
+              \$ForGeneratedCode.updateOnConflict<$rowClassName>(
+                this,
+                ($rowInstanceName, excluded) => updateBuilder($rowInstanceName, excluded, ({
+                    ${rowClass.fields.map((field) => 'Expr<${field.type}>? ${field.name}').join(', ')},
+                  }) =>
+                    \$ForGeneratedCode.buildUpdate<$rowClassName>([
+                    ${rowClass.fields.map((field) => field.name).join(', ')},
+                    ]),
+                ),
+              )
+            '''),
+        ),
+      ]),
   );
 
   // Extension InsertSingle<..>Ext

@@ -484,6 +484,7 @@ List<Object?> _paramsForPostgres(List<Object?> params) => params
         double d => d,
         Uint8List u => TypedValue(Type.byteArray, u, isSqlNull: false),
         JsonValue v => TypedValue(Type.jsonb, v.value, isSqlNull: false),
+        TypedValue v => v,
         _ => throw UnsupportedError('Unsupported type: ${p.runtimeType}'),
       },
     )

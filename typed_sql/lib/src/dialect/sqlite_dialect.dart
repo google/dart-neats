@@ -183,31 +183,34 @@ final class _Sqlite extends SqlDialect {
           ].join(' '),
           resolver.context.parameters,
         );
-      case BulkValuesSource(:final columns, :final values):
+      case BulkValuesSource(:final columns, :final columnValues):
         final N = columns.length;
         final placeholders = List<Object?>.generate(N, (_) => Object());
+        final sql = [
+          'INSERT INTO ${escape(statement.table)} AS $alias',
+          if (columns.isEmpty)
+            'DEFAULT VALUES'
+          else ...[
+            '(${columns.map(escape).join(', ')})',
+            'VALUES (${placeholders.map(resolver.context.addParameter).join(', ')})',
+          ],
+          ?conflictClause,
+          if (returnProjection != null) 'RETURNING $returnProjection',
+        ].join(' ');
+        final params = resolver.context.parameters;
+        final placeholderIndexes = List.generate(
+          N,
+          (i) => params.indexOf(placeholders[i]),
+        );
         return PipelinedSqlTask(
-          [
-            'INSERT INTO ${escape(statement.table)} AS $alias',
-            if (columns.isEmpty)
-              'DEFAULT VALUES'
-            else ...[
-              '(${columns.map(escape).join(', ')})',
-              'VALUES (${placeholders.map(resolver.context.addParameter).join(', ')})',
-            ],
-            ?conflictClause,
-            if (returnProjection != null) 'RETURNING $returnProjection',
-          ].join(' '),
-          values.map(
-            (values) => List.generate(resolver.context.parameters.length, (i) {
-              final p = resolver.context.parameters[i];
-              i = placeholders.indexOf(p);
-              if (i != -1) {
-                return values[i];
-              }
-              return p;
-            }),
-          ),
+          sql,
+          IterableZip(columnValues).map((row) {
+            final rowParams = params.toList(growable: false);
+            for (var i = 0; i < N; i++) {
+              rowParams[placeholderIndexes[i]] = row[i];
+            }
+            return rowParams;
+          }),
         );
     }
   }
@@ -729,7 +732,7 @@ extension on ColumnType {
     ColumnType<double> _ => 'REAL',
     ColumnType<String> _ => 'TEXT',
     ColumnType<JsonValue> _ => 'JSONB',
-    ColumnType<Null> _ => throw UnsupportedError(
+    ColumnType<Null> _ => throw AssertionError(
       'Null type cannot be used as column type',
     ),
   };

@@ -244,11 +244,16 @@ final class $ForGeneratedCode {
       for (final e in mapping.entries)
         if (e.value case final v?) (column: e.key, map: v),
     ];
+    final columns = m.map((e) => e.column).toList();
     return Insert._(
       table: table,
       values: BulkValuesSource._(
-        m.map((e) => e.column).toList(),
-        rows.map((r) => m.map((e) => e.map(r)).toList()),
+        columns,
+        columns.map((c) {
+          final i = table._tableClause._definition.columns.indexOf(c);
+          return table._tableClause._definition.columnInfo[i].type;
+        }).toList(),
+        m.map((e) => rows.map(e.map)).toList(),
       ),
     );
   }
