@@ -56,6 +56,7 @@ abstract final class Book extends Row {
   @DefaultValue(0)
   int get stock;
 }
+
 // #endregion
 
 // #region initial-data

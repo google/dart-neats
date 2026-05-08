@@ -44,6 +44,7 @@ final class Color implements CustomDataType<int> {
   @override
   int toDatabase() => (red << 16) | (green << 8) | blue;
 }
+
 // #endregion
 
 // #region custom-expr
@@ -60,6 +61,7 @@ extension ColorExprExt on Expr<Color> {
   Expr<bool> get isGreen => equalsValue(Color.green());
   Expr<bool> get isBlue => equalsValue(Color.blue());
 }
+
 // #endregion
 
 // #region schema
@@ -81,6 +83,7 @@ abstract final class Car extends Row {
   // We can use our custom type as column type
   Color get color;
 }
+
 // #endregion
 
 // #region initial-data

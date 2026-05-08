@@ -53,6 +53,7 @@ abstract final class Book extends Row {
   @DefaultValue(0) // Gives the `stock` field to have a default value!
   int get stock;
 }
+
 // #endregion
 
 void main() {
