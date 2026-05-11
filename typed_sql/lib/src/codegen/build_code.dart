@@ -1293,6 +1293,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         Method(
           (b) => b
             ..name = 'onConflict'
+            ..documentation(docs.onConflict(rowInstanceName))
             ..requiredParameters.add(
               Parameter(
                 (b) => b
@@ -1318,6 +1319,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         Method(
           (b) => b
             ..name = 'update'
+            ..documentation(docs.onConflictUpdate(rowInstanceName))
             ..returns = refer('Upsert<$rowClassName>')
             ..requiredParameters.add(
               Parameter(
@@ -1360,6 +1362,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         Method(
           (b) => b
             ..name = 'onConflict'
+            ..documentation(docs.onConflict(rowInstanceName))
             ..requiredParameters.add(
               Parameter(
                 (b) => b
@@ -1385,6 +1388,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         Method(
           (b) => b
             ..name = 'update'
+            ..documentation(docs.onConflictUpdate(rowInstanceName))
             ..returns = refer('UpsertSingle<$rowClassName>')
             ..requiredParameters.add(
               Parameter(
