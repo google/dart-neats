@@ -23,6 +23,7 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
   String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
@@ -220,6 +221,141 @@ constraint.
 > property was nullable such insertion would have been allowed.
 
 For more information on subqueries see [Writing queries].
+
+
+## Upsert with `ON CONFLICT` clause
+Suppose we wanted to ensure that an author exists in our database, we could use
+a transaction to first check if the author exists, and insert a new row if it
+doesn't exist. This is time proven and for some complex operations it is the
+only way to do it. But for many common cases we could just use an
+[upsert-clause][sqlite-upsert].
+
+The following example will skip inserting the row, if the insertion would have
+failed with a _primary key_ conflict. Creating a new row in `authors` if
+`authorId: 42` does not exist, and otherwise, skip insertion.
+
+```dart bookstore_test.dart#authors-insertValue-onConflict-doNothing
+await db.authors
+    .insertValue(
+      authorId: 42,
+      name: 'Roger Rabbit',
+    )
+    .onConflict(.primaryKey)
+    .doNothing()
+    .execute();
+```
+
+The `.onConflict(target)` extension method is used to specify a
+_conflict target_. The _conflict target_ is either a `PRIMARY KEY` or `UNIQUE`
+constraint. If the insert statement violates a constraint other than the one
+specified as _conflict target_ the operation fails. `package:typed_sql` will
+generate an enum consisting of _conflict targets_ ensuring that you can only
+pass valid _conflict targets_ to `.onConflict(target)`.
+
+Once you have specified a _conflict target_ using `.onConflict`, you must
+specify a conflict action. This can be `.doNothing()` or `.update(...)`
+depending on whether you wish to skip inserting the row, or update the existing
+row. The `.update((row, excluded, set) => set(...))` method takes a builder that
+is given 3 parameters:
+ * `row`, the conflicting row as it exists in the database.
+ * `excluded`, the row that should have been inserted, but conflicted with row.
+ * `set`, a builder for defining the updates to be made on `row`.
+
+The following example demonstrates how to insert a book with `stock: 5` or
+update the existing row, if a book with matching `title` already exists.
+
+```dart bookstore_test.dart#books-insert-onConflict-update
+await db.books
+    .insert(
+      title: toExpr('Vegan Dining'),
+      authorId: db.authors
+          .byName('Bucks Bunny')
+          .asExpr
+          .authorId
+          .asNotNull(),
+      stock: toExpr(5),
+    )
+    .onConflict(.title)
+    .update(
+      (book, excluded, set) => set(
+        stock: book.stock + excluded.stock,
+      ),
+    )
+    .execute();
+```
+
+Finally, if we only wanted the `stock` to be updated if the current stock is
+below `50`, we can make the `.update` clause conditional using the `.where`
+extension method as illustrated below:
+
+```dart bookstore_test.dart#books-insert-onConflict-update-where
+await db.books
+    .insert(
+      title: toExpr('Vegan Dining'),
+      authorId: db.authors
+          .byName('Bucks Bunny')
+          .asExpr
+          .authorId
+          .asNotNull(),
+      stock: toExpr(5),
+    )
+    .onConflict(.title)
+    .update(
+      (book, excluded, set) => set(
+        stock: book.stock + excluded.stock,
+      ),
+    )
+    .where((book, excluded) => book.stock < toExpr(50))
+    .execute();
+```
+
+This will insert a new book, or if there is an existing row with a conflicting
+`title`, it will update `stock` on the existing row, if the existing `stock` is
+less than 50. If existing `stock` is more than 50, then it'll skip inserting and
+updating the row altogether (similar to `.doNothing()`).
+
+This may be further combined with `.returning()` or `.returnUpserted()` to add
+on a `RETURNING` clause. Though it should be observed that only the inserted or
+updated rows will be returned, and if you're using `.doNothing()` or `.where()`
+rows may be skipped.
+
+```dart bookstore_test.dart#books-insert-onConflict-update-where-returning
+final currentStock = await db.books
+    .insert(
+      title: toExpr('Vegan Dining'),
+      authorId: db.authors
+          .byName('Bucks Bunny')
+          .asExpr
+          .authorId
+          .asNotNull(),
+      stock: toExpr(5),
+    )
+    .onConflict(.title)
+    .update(
+      (book, excluded, set) => set(
+        stock: book.stock + excluded.stock,
+      ),
+    )
+    .where((book, excluded) => book.stock < toExpr(50))
+    .returning((book) => (book.stock,))
+    .executeAndFetch();
+
+// We now have the stock, whether inserted or updated,
+// but not if skipped!
+check(currentStock).equals(8);
+```
+
+The equivalent SQL depends on the database, but it looks something like:
+```sql
+INSERT INTO books (title, authorId, stock)
+VALUES ('Vegan Dining', (SELECT authorId FROM authors WHERE name = 'Bucks Bunny'), 5)
+ON CONFLICT (title)
+UPDATE SET stock = stock + excluded.stock
+WHERE stock < 50
+RETURNING stock
+```
+
+[sqlite-upsert]: https://sqlite.org/lang_upsert.html
 
 <!-- GENERATED DOCUMENTATION LINKS -->
 [Expr]: ../typed_sql/Expr-class.html

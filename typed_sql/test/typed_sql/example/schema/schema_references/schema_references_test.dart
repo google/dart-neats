@@ -51,6 +51,8 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String? get title;
 
   @References(

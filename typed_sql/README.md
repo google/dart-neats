@@ -59,6 +59,7 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
   String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')

@@ -48,6 +48,8 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
@@ -254,6 +256,118 @@ void main() {
         .execute();
     // #endregion
   });
+
+  r.addTest(
+    'authors.insertValue onConflict doNothing',
+    (db) async {
+      await db.authors
+          .insertValue(
+            authorId: 42,
+            name: 'Roger Rabbit',
+          )
+          .onConflict(.primaryKey)
+          .doNothing()
+          .execute();
+      // #region authors-insertValue-onConflict-doNothing
+      await db.authors
+          .insertValue(
+            authorId: 42,
+            name: 'Roger Rabbit',
+          )
+          .onConflict(.primaryKey)
+          .doNothing()
+          .execute();
+      // #endregion
+    },
+    skipMysql: 'UPSERT not supported on mysql',
+  );
+
+  r.addTest(
+    'books.insert().onConflict().update()',
+    (db) async {
+      // #region books-insert-onConflict-update
+      await db.books
+          .insert(
+            title: toExpr('Vegan Dining'),
+            authorId: db.authors
+                .byName('Bucks Bunny')
+                .asExpr
+                .authorId
+                .asNotNull(),
+            stock: toExpr(5),
+          )
+          .onConflict(.title)
+          .update(
+            (book, excluded, set) => set(
+              stock: book.stock + excluded.stock,
+            ),
+          )
+          .execute();
+      // #endregion
+    },
+    skipMysql: 'UPSERT not supported on mysql',
+  );
+
+  r.addTest(
+    'books.insert().onConflict().update().where()',
+    (db) async {
+      // #region books-insert-onConflict-update-where
+      await db.books
+          .insert(
+            title: toExpr('Vegan Dining'),
+            authorId: db.authors
+                .byName('Bucks Bunny')
+                .asExpr
+                .authorId
+                .asNotNull(),
+            stock: toExpr(5),
+          )
+          .onConflict(.title)
+          .update(
+            (book, excluded, set) => set(
+              stock: book.stock + excluded.stock,
+            ),
+          )
+          .where((book, excluded) => book.stock < toExpr(50))
+          .execute();
+      // #endregion
+    },
+    skipMysql: 'UPSERT not supported on mysql',
+  );
+
+  r.addTest(
+    'books.insert().onConflict().update().where().returning',
+    (
+      db,
+    ) async {
+      // #region books-insert-onConflict-update-where-returning
+      final currentStock = await db.books
+          .insert(
+            title: toExpr('Vegan Dining'),
+            authorId: db.authors
+                .byName('Bucks Bunny')
+                .asExpr
+                .authorId
+                .asNotNull(),
+            stock: toExpr(5),
+          )
+          .onConflict(.title)
+          .update(
+            (book, excluded, set) => set(
+              stock: book.stock + excluded.stock,
+            ),
+          )
+          .where((book, excluded) => book.stock < toExpr(50))
+          .returning((book) => (book.stock,))
+          .executeAndFetch();
+
+      // We now have the stock, whether inserted or updated,
+      // but not if skipped!
+      check(currentStock).equals(8);
+      // #endregion
+    },
+    skipMysql: 'UPSERT not supported on mysql',
+  );
 
   r.addTest('authors.insert().returnInserted', (db) async {
     // #region authors-insert-returnInserted

@@ -578,7 +578,9 @@ final class _$Book extends Book {
         isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
-        overrides: [],
+        overrides: [
+          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+        ],
       ),
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
@@ -596,7 +598,9 @@ final class _$Book extends Book {
       ),
     ],
     primaryKey: <String>['bookId'],
-    unique: <List<String>>[],
+    unique: <List<String>>[
+      ['title'],
+    ],
     foreignKeys: [
       $ForGeneratedCode.foreignKeyDefinition(
         name: 'author',
@@ -765,6 +769,17 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
           $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
     ),
   );
+
+  /// Lookup a single row in `books` table using the
+  /// `title` field
+  ///
+  /// We know that lookup by the `title` field returns
+  /// at-most one row because the [Unique] annotation in [Book].
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
+  QuerySingle<(Expr<Book>,)> byTitle(String title) =>
+      where((book) => book.title.equalsValue(title)).first;
 
   /// Delete all rows in the `books` table matching this [Query].
   ///
@@ -942,7 +957,15 @@ enum BookConflict {
   ///
   /// Thus, the other row has matching values for:
   /// `bookId`.
-  primaryKey(['bookId']);
+  primaryKey(['bookId']),
+
+  /// `title` conflict.
+  ///
+  /// Due to violation of the `UNIQUE` constraint on
+  /// `title`.
+  ///
+  /// Thus, the conflicting row has matching values for these fields.
+  title(['title']);
 
   const BookConflict(this._fields);
 

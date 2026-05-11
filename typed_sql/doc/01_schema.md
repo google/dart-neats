@@ -72,7 +72,8 @@ The following data types are allowed for fields:
  * `double`,
  * `String`,
  * `DateTime`,
- * `Uint8List`, and,
+ * `Uint8List`,
+ * `JsonValue`, and,
  * Custom subclasses of `CustomDataType<T>`.
 
 These types are allowed to be nullable and non-nullable. When fields are
@@ -101,6 +102,7 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
   String? get title;
 
   @References(
@@ -134,7 +136,8 @@ CREATE TABLE books (
   title TEXT,
   authorId BIGINT NOT NULL,
   stock BIGINT NOT NULL DEFAULT 0,
-  FOREIGN KEY (authorId) REFERENCES authors (authorId)
+  FOREIGN KEY (authorId) REFERENCES authors (authorId),
+  UNIQUE (title)
 );
 ```
 
@@ -152,6 +155,7 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
   String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
@@ -169,7 +173,8 @@ CREATE TABLE books (
   title TEXT,
   authorId BIGINT NOT NULL,
   stock BIGINT NOT NULL DEFAULT 0,
-  FOREIGN KEY (authorId) REFERENCES authors (authorId)
+  FOREIGN KEY (authorId) REFERENCES authors (authorId),
+  UNIQUE (title)
 );
 ```
 
