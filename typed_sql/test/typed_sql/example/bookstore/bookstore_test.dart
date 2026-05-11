@@ -369,6 +369,39 @@ void main() {
     skipMysql: 'UPSERT not supported on mysql',
   );
 
+  r.addTest(
+    'books.insertValuesMapped()',
+    (db) async {
+      // #region books-insertValuesMapped
+      final newBookTitles = [
+        (title: 'Vegetarian Dining', stock: 2),
+        (title: 'Vegan Dining', stock: 1),
+        (title: 'Carrot casserole', stock: 1),
+        (title: 'Forloren hare', stock: null),
+      ];
+
+      await db.books
+          .insertValuesMapped(
+            // List of objects representing rows to be inserted
+            newBookTitles,
+            // closure mapping from object (given above) to column value
+            title: (b) => b.title,
+            authorId: (b) => 2,
+            stock: (b) => b.stock ?? 0,
+            // The bookId column is omitted, allowed because it is auto-increment
+          )
+          .onConflict(.title)
+          .update(
+            (book, excluded, set) => set(
+              stock: book.stock + excluded.stock,
+            ),
+          )
+          .execute();
+      // #endregion
+    },
+    skipMysql: 'UPSERT not supported on mysql',
+  );
+
   r.addTest('authors.insert().returnInserted', (db) async {
     // #region authors-insert-returnInserted
     final author = await db.authors

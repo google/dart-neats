@@ -357,6 +357,63 @@ RETURNING stock
 
 [sqlite-upsert]: https://sqlite.org/lang_upsert.html
 
+
+## Bulk insertion with `.insertValuesMapped`
+If we wanted to insert multiple rows we could call `.insert` many times,
+possibly inside a transaction, but for databases like postgres many sequantial
+operations can incur significant overhead from network latency. For this reason
+it is often preferable to use _bulk insertion_.
+
+To do _bulk insertion_ with `.insertValuesMapped<T>` we must provide a list of
+`T` objects representing rows to be inserted, and then for each column that we
+want to insert a value for we must provide a function mapping from `T` to value
+for the column. In the example below `newBookTitles` is a list of objects, that
+represent the rows we want to insert, and `title: (b) => b.title` simply maps
+from one such object to `String` that should be inserted in the `title` column.
+
+The example below does not specify a mapping function for `bookId`, instead
+this column will get a _default value_ from database, because it is annotated
+with `@AutoIncrement()` in the schema.
+
+```dart bookstore_test.dart#books-insertValuesMapped
+final newBookTitles = [
+  (title: 'Vegetarian Dining', stock: 2),
+  (title: 'Vegan Dining', stock: 1),
+  (title: 'Carrot casserole', stock: 1),
+  (title: 'Forloren hare', stock: null),
+];
+
+await db.books
+    .insertValuesMapped(
+      // List of objects representing rows to be inserted
+      newBookTitles,
+      // closure mapping from object (given above) to column value
+      title: (b) => b.title,
+      authorId: (b) => 2,
+      stock: (b) => b.stock ?? 0,
+      // The bookId column is omitted, allowed because it is auto-increment
+    )
+    .onConflict(.title)
+    .update(
+      (book, excluded, set) => set(
+        stock: book.stock + excluded.stock,
+      ),
+    )
+    .execute();
+```
+
+The `.onConflict` and `.update` methods specify how to handle conflicting rows,
+this can be quite useful when inserting many rows. Refer to earlier section on
+upsert for more details.
+
+> [!NOTE]
+> When using _bulk insertion_ we must insert the same expressions for all rows,
+> we cannot insert a value for `stock` in one row, and fallback on the
+> default defined in the database schema in another row. This is what makes
+> `.insertValuesMapped` require a mapping function for each column, but also
+> what keeps this extension method type-safe.
+
+
 <!-- GENERATED DOCUMENTATION LINKS -->
 [Expr]: ../typed_sql/Expr-class.html
 [Writing queries]: ../topics/writing_queries-topic.html
