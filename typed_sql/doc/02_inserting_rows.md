@@ -23,6 +23,7 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
   String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
@@ -220,6 +221,198 @@ constraint.
 > property was nullable such insertion would have been allowed.
 
 For more information on subqueries see [Writing queries].
+
+
+## Upsert with `ON CONFLICT` clause
+Suppose we wanted to ensure that an author exists in our database, we could use
+a transaction to first check if the author exists, and insert a new row if it
+doesn't exist. This is time proven and for some complex operations it is the
+only way to do it. But for many common cases we could just use an
+[upsert-clause][sqlite-upsert].
+
+The following example will skip inserting the row, if the insertion would have
+failed with a _primary key_ conflict. Creating a new row in `authors` if
+`authorId: 42` does not exist, and otherwise, skip insertion.
+
+```dart bookstore_test.dart#authors-insertValue-onConflict-doNothing
+await db.authors
+    .insertValue(
+      authorId: 42,
+      name: 'Roger Rabbit',
+    )
+    .onConflict(.primaryKey)
+    .doNothing()
+    .execute();
+```
+
+The `.onConflict(target)` extension method is used to specify a
+_conflict target_. The _conflict target_ is either a `PRIMARY KEY` or `UNIQUE`
+constraint. If the insert statement violates a constraint other than the one
+specified as _conflict target_ the operation fails. `package:typed_sql` will
+generate an enum consisting of _conflict targets_ ensuring that you can only
+pass valid _conflict targets_ to `.onConflict(target)`.
+
+Once you have specified a _conflict target_ using `.onConflict`, you must
+specify a conflict action. This can be `.doNothing()` or `.update(...)`
+depending on whether you wish to skip inserting the row, or update the existing
+row. The `.update((row, excluded, set) => set(...))` method takes a builder that
+is given 3 parameters:
+ * `row`, the conflicting row as it exists in the database.
+ * `excluded`, the row that should have been inserted, but conflicted with row.
+ * `set`, a builder for defining the updates to be made on `row`.
+
+The following example demonstrates how to insert a book with `stock: 5` or
+update the existing row, if a book with matching `title` already exists.
+
+```dart bookstore_test.dart#books-insert-onConflict-update
+await db.books
+    .insert(
+      title: toExpr('Vegan Dining'),
+      authorId: db.authors
+          .byName('Bucks Bunny')
+          .asExpr
+          .authorId
+          .asNotNull(),
+      stock: toExpr(5),
+    )
+    .onConflict(.title)
+    .update(
+      (book, excluded, set) => set(
+        stock: book.stock + excluded.stock,
+      ),
+    )
+    .execute();
+```
+
+Finally, if we only wanted the `stock` to be updated if the current stock is
+below `50`, we can make the `.update` clause conditional using the `.where`
+extension method as illustrated below:
+
+```dart bookstore_test.dart#books-insert-onConflict-update-where
+await db.books
+    .insert(
+      title: toExpr('Vegan Dining'),
+      authorId: db.authors
+          .byName('Bucks Bunny')
+          .asExpr
+          .authorId
+          .asNotNull(),
+      stock: toExpr(5),
+    )
+    .onConflict(.title)
+    .update(
+      (book, excluded, set) => set(
+        stock: book.stock + excluded.stock,
+      ),
+    )
+    .where((book, excluded) => book.stock < toExpr(50))
+    .execute();
+```
+
+This will insert a new book, or if there is an existing row with a conflicting
+`title`, it will update `stock` on the existing row, if the existing `stock` is
+less than 50. If existing `stock` is more than 50, then it'll skip inserting and
+updating the row altogether (similar to `.doNothing()`).
+
+This may be further combined with `.returning()` or `.returnUpserted()` to add
+on a `RETURNING` clause. Though it should be observed that only the inserted or
+updated rows will be returned, and if you're using `.doNothing()` or `.where()`
+rows may be skipped.
+
+```dart bookstore_test.dart#books-insert-onConflict-update-where-returning
+final currentStock = await db.books
+    .insert(
+      title: toExpr('Vegan Dining'),
+      authorId: db.authors
+          .byName('Bucks Bunny')
+          .asExpr
+          .authorId
+          .asNotNull(),
+      stock: toExpr(5),
+    )
+    .onConflict(.title)
+    .update(
+      (book, excluded, set) => set(
+        stock: book.stock + excluded.stock,
+      ),
+    )
+    .where((book, excluded) => book.stock < toExpr(50))
+    .returning((book) => (book.stock,))
+    .executeAndFetch();
+
+// We now have the stock, whether inserted or updated,
+// but not if skipped!
+check(currentStock).equals(8);
+```
+
+The equivalent SQL depends on the database, but it looks something like:
+```sql
+INSERT INTO books (title, authorId, stock)
+VALUES ('Vegan Dining', (SELECT authorId FROM authors WHERE name = 'Bucks Bunny'), 5)
+ON CONFLICT (title)
+UPDATE SET stock = stock + excluded.stock
+WHERE stock < 50
+RETURNING stock
+```
+
+[sqlite-upsert]: https://sqlite.org/lang_upsert.html
+
+
+## Bulk insertion with `.insertValuesMapped`
+If we wanted to insert multiple rows we could call `.insert` many times,
+possibly inside a transaction, but for databases like postgres many sequantial
+operations can incur significant overhead from network latency. For this reason
+it is often preferable to use _bulk insertion_.
+
+To do _bulk insertion_ with `.insertValuesMapped<T>` we must provide a list of
+`T` objects representing rows to be inserted, and then for each column that we
+want to insert a value for we must provide a function mapping from `T` to value
+for the column. In the example below `newBookTitles` is a list of objects, that
+represent the rows we want to insert, and `title: (b) => b.title` simply maps
+from one such object to `String` that should be inserted in the `title` column.
+
+The example below does not specify a mapping function for `bookId`, instead
+this column will get a _default value_ from database, because it is annotated
+with `@AutoIncrement()` in the schema.
+
+```dart bookstore_test.dart#books-insertValuesMapped
+final newBookTitles = [
+  (title: 'Vegetarian Dining', stock: 2),
+  (title: 'Vegan Dining', stock: 1),
+  (title: 'Carrot casserole', stock: 1),
+  (title: 'Forloren hare', stock: null),
+];
+
+await db.books
+    .insertValuesMapped(
+      // List of objects representing rows to be inserted
+      newBookTitles,
+      // closure mapping from object (given above) to column value
+      title: (b) => b.title,
+      authorId: (b) => 2,
+      stock: (b) => b.stock ?? 0,
+      // The bookId column is omitted, allowed because it is auto-increment
+    )
+    .onConflict(.title)
+    .update(
+      (book, excluded, set) => set(
+        stock: book.stock + excluded.stock,
+      ),
+    )
+    .execute();
+```
+
+The `.onConflict` and `.update` methods specify how to handle conflicting rows,
+this can be quite useful when inserting many rows. Refer to earlier section on
+upsert for more details.
+
+> [!NOTE]
+> When using _bulk insertion_ we must insert the same expressions for all rows,
+> we cannot insert a value for `stock` in one row, and fallback on the
+> default defined in the database schema in another row. This is what makes
+> `.insertValuesMapped` require a mapping function for each column, but also
+> what keeps this extension method type-safe.
+
 
 <!-- GENERATED DOCUMENTATION LINKS -->
 [Expr]: ../typed_sql/Expr-class.html

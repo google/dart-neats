@@ -208,15 +208,42 @@ final class _MysqlSqlDialect extends SqlDialect {
       returnProjection = returning.projection.map(r.expr).join(', ');
     }
 
-    return SingleSqlTask(
-      [
-        'INSERT INTO ${escape(statement.table)}',
-        '(${statement.columns.map(escape).join(', ')})',
-        'VALUES (${statement.values.map(resolver.expr).join(', ')})',
-        if (returnProjection != null) 'RETURNING $returnProjection',
-      ].join(' '),
-      resolver.context.parameters,
-    );
+    switch (statement.values) {
+      case ExprValuesSource(:final columns, :final values):
+        return SingleSqlTask(
+          [
+            'INSERT INTO ${escape(statement.table)}',
+            '(${columns.map(escape).join(', ')})',
+            'VALUES (${values.map(resolver.expr).join(', ')})',
+            if (returnProjection != null) 'RETURNING $returnProjection',
+          ].join(' '),
+          resolver.context.parameters,
+        );
+      case BulkValuesSource(:final columns, :final columnValues):
+        final N = columns.length;
+        final placeholders = List<Object?>.generate(N, (_) => Object());
+        final sql = [
+          'INSERT INTO ${escape(statement.table)}',
+          '(${columns.map(escape).join(', ')})',
+          'VALUES (${placeholders.map(resolver.context.addParameter).join(', ')})',
+          if (returnProjection != null) 'RETURNING $returnProjection',
+        ].join(' ');
+        final params = resolver.context.parameters;
+        final placeholderIndexes = List.generate(
+          N,
+          (i) => params.indexOf(placeholders[i]),
+        );
+        return PipelinedSqlTask(
+          sql,
+          IterableZip(columnValues).map((row) {
+            final rowParams = params.toList(growable: false);
+            for (var i = 0; i < N; i++) {
+              rowParams[placeholderIndexes[i]] = row[i];
+            }
+            return rowParams;
+          }),
+        );
+    }
   }
 
   @override
@@ -760,7 +787,7 @@ extension on ColumnType {
     ColumnType<double> _ => 'DOUBLE',
     ColumnType<String> _ => 'TEXT',
     ColumnType<JsonValue> _ => 'JSON',
-    ColumnType<Null> _ => throw UnsupportedError(
+    ColumnType<Null> _ => throw AssertionError(
       'Null type cannot be used as column type',
     ),
   };
@@ -773,7 +800,7 @@ extension on ColumnType {
     ColumnType<double> _ => 'DOUBLE',
     ColumnType<String> _ => 'CHAR',
     ColumnType<JsonValue> _ => 'CHAR',
-    ColumnType<Null> _ => throw UnsupportedError(
+    ColumnType<Null> _ => throw AssertionError(
       'Null type cannot be used as column type',
     ),
   };

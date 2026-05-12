@@ -167,20 +167,52 @@ final class _Sqlite extends SqlDialect {
       returnProjection = returning.projection.map(r.expr).join(', ');
     }
 
-    return SingleSqlTask(
-      [
-        'INSERT INTO ${escape(statement.table)} AS $alias',
-        if (statement.columns.isEmpty)
-          'DEFAULT VALUES'
-        else ...[
-          '(${statement.columns.map(escape).join(', ')})',
-          'VALUES (${statement.values.map(resolver.expr).join(', ')})',
-        ],
-        ?conflictClause,
-        if (returnProjection != null) 'RETURNING $returnProjection',
-      ].join(' '),
-      resolver.context.parameters,
-    );
+    switch (statement.values) {
+      case ExprValuesSource(:final columns, :final values):
+        return SingleSqlTask(
+          [
+            'INSERT INTO ${escape(statement.table)} AS $alias',
+            if (columns.isEmpty)
+              'DEFAULT VALUES'
+            else ...[
+              '(${columns.map(escape).join(', ')})',
+              'VALUES (${values.map(resolver.expr).join(', ')})',
+            ],
+            ?conflictClause,
+            if (returnProjection != null) 'RETURNING $returnProjection',
+          ].join(' '),
+          resolver.context.parameters,
+        );
+      case BulkValuesSource(:final columns, :final columnValues):
+        final N = columns.length;
+        final placeholders = List<Object?>.generate(N, (_) => Object());
+        final sql = [
+          'INSERT INTO ${escape(statement.table)} AS $alias',
+          if (columns.isEmpty)
+            'DEFAULT VALUES'
+          else ...[
+            '(${columns.map(escape).join(', ')})',
+            'VALUES (${placeholders.map(resolver.context.addParameter).join(', ')})',
+          ],
+          ?conflictClause,
+          if (returnProjection != null) 'RETURNING $returnProjection',
+        ].join(' ');
+        final params = resolver.context.parameters;
+        final placeholderIndexes = List.generate(
+          N,
+          (i) => params.indexOf(placeholders[i]),
+        );
+        return PipelinedSqlTask(
+          sql,
+          IterableZip(columnValues).map((row) {
+            final rowParams = params.toList(growable: false);
+            for (var i = 0; i < N; i++) {
+              rowParams[placeholderIndexes[i]] = row[i];
+            }
+            return rowParams;
+          }),
+        );
+    }
   }
 
   @override
@@ -700,7 +732,7 @@ extension on ColumnType {
     ColumnType<double> _ => 'REAL',
     ColumnType<String> _ => 'TEXT',
     ColumnType<JsonValue> _ => 'JSONB',
-    ColumnType<Null> _ => throw UnsupportedError(
+    ColumnType<Null> _ => throw AssertionError(
       'Null type cannot be used as column type',
     ),
   };

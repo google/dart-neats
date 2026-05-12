@@ -53,6 +53,7 @@ abstract final class Comment extends Row {
 
   String get comment;
 }
+
 // #endregion
 
 void main() {

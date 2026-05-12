@@ -37,6 +37,7 @@ abstract final class Account extends Row {
   @DefaultValue(0.0)
   double get balance;
 }
+
 // #endregion
 
 // #region initial-data
@@ -45,6 +46,7 @@ final initialAccounts = [
   (accountNumber: '0002', balance: 200.0),
   (accountNumber: '0003', balance: 300.0),
 ];
+
 // #endregion
 
 final class InsufficientBalanceException implements Exception {}

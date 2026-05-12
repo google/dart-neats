@@ -29,6 +29,7 @@ abstract final class Bookstore extends Schema {
   Table<Author> get authors;
   Table<Book> get books;
 }
+
 // #endregion
 
 // #region author-model
@@ -41,6 +42,7 @@ abstract final class Author extends Row {
   @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get name;
 }
+
 // #endregion
 
 // #region book-model
@@ -49,6 +51,8 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String? get title;
 
   @References(
@@ -68,6 +72,7 @@ abstract final class Book extends Row {
   @DefaultValue(0)
   int get stock;
 }
+
 // #endregion
 
 void main() {

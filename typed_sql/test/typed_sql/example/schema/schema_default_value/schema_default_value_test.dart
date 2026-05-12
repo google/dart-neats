@@ -45,6 +45,8 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
+  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
@@ -53,6 +55,7 @@ abstract final class Book extends Row {
   @DefaultValue(0) // Gives the `stock` field to have a default value!
   int get stock;
 }
+
 // #endregion
 
 void main() {

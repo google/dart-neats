@@ -22,6 +22,7 @@ abstract final class Book extends Row {
   @AutoIncrement()
   int get bookId;
 
+  @Unique.field()
   String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
@@ -564,6 +565,13 @@ if (book == null) {
 check(book.bookId).equals(1);
 ```
 
+> [!NOTE]
+> The example above uses `.where` and `.first` to illustrate how to use these
+> fundamental extension methods for building queries. But because `Book.title`
+> has a `@Unique.field()` constraint, `package:typed_sql` will generate an
+> short-hand `db.books.byTitle('Are Bunnies Unhealthy?')` that makes common
+> point queries easy.
+
 Often you'll want to lookup multiple point queries at the same time, this can
 be easily done using `db.select`. This works the same as `.select` except, there
 is only one result row, all values are `Expr` objects. Hence, we can lookup
@@ -587,7 +595,7 @@ if (author == null) {
 check(author.name).equals('Easter Bunny');
 ```
 
-Whenver, we have a `QuerySingle<(Expr<T>)>` consisting of a single value record,
+Whenever, we have a `QuerySingle<(Expr<T>)>` consisting of a single value record,
 we can convert it into a subquery using `.asExpr`. Similarly, whenever we have
 a `Query<T>` we can convert it to a `SubQuery<T>` using `.asSubQuery`.
 `SubQuery<T>` is not by itself magical, it's just that for convinience

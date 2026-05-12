@@ -209,6 +209,44 @@ extension TableComplexItemExt on Table<ComplexItem> {
     ],
   );
 
+  /// Bulk insert rows into the `complexItems` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<ComplexItem> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    required int Function(T row) id,
+    DateTime Function(T row)? createdAt,
+    required String Function(T row) name,
+    double Function(T row)? doubleValue,
+    bool Function(T row)? boolValue,
+    required int Function(T row) value,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mapping: {
+      'id': id,
+      'createdAt': createdAt,
+      'name': name,
+      'doubleValue': doubleValue,
+      'boolValue': boolValue,
+      'value': value,
+    },
+  );
+
   /// Delete a single row from the `complexItems` table, specified by
   /// _primary key_.
   ///
@@ -483,14 +521,70 @@ enum ComplexItemConflict {
   final List<String> _fields;
 }
 
-extension InsertSingleComplexItemExt on InsertSingle<ComplexItem> {
-  InsertOnConflictSingle<ComplexItem> onConflict(ComplexItemConflict target) =>
-      $ForGeneratedCode.insertSingleOnConflict(this, target._fields);
+extension InsertComplexItemExt on Insert<ComplexItem> {
+  /// Build an `INSERT` statement with an `ON CONFLICT` clause.
+  ///
+  /// The [target] argument specifies the _conflict target_ to be
+  /// handled. The _conflict target_ is always a `UNIQUE` constraint or
+  /// `PRIMARY KEY` constraint.
+  ///
+  /// If a row to be inserted violates the _conflict target_ constraint,
+  /// then the conflict action is triggered:
+  /// * `.doNothing()` to skip insertion of the new row, and,
+  /// * `.update((complexItem, excluded, set) => set(...))` to
+  ///   update the conflicting row.
+  ///
+  /// If a row to be inserted violates a constraint other than the one
+  /// specified in _conflict target_ then the entire `INSERT` statement
+  /// will fail.
+  ///
+  /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
+  InsertOnConflict<ComplexItem> onConflict(ComplexItemConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictSingleComplexItemExt
-    on InsertOnConflictSingle<ComplexItem> {
-  UpsertOne<ComplexItem> update(
+extension InsertOnConflictComplexItemExt on InsertOnConflict<ComplexItem> {
+  /// Build an `INSERT` statement an [upsert-clause][1].
+  ///
+  /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
+  /// constraint previously specified as _conflict target_, the existing
+  /// row is updated using the expressions defined with the
+  /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
+  ///   * `complexItem` an [Expr] representing the existing row in
+  ///     the database,
+  ///   * `excluded` an [Expr] representing the row to be inserted in the
+  ///     database, and,
+  ///   * `set` a function to specify which fields should be updated and
+  ///     build the [UpdateSet].
+  ///
+  /// The result of the `set` function should always be immediately
+  /// returned from the [updateBuilder].
+  ///
+  /// **Example:** Insert a counter with `count = 2` or increment the
+  /// existing row, if a `PRIMARY KEY` conflict occurs.
+  /// ```dart
+  /// await db.counters.insertValue(
+  ///     name: 'my-counter', // primary key
+  ///     count: 2,
+  ///   )
+  ///   .onConflict(.primaryKey)
+  ///   .update((counter, excluded, set) => set(
+  ///     count: counter.count + excluded.count,
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// This is equivalent to
+  /// `INSERT ... ON CONFLICT (...) UPDATE SET ...` in SQL.
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
+  ///
+  /// [1]: https://www.sqlite.org/lang_upsert.html
+  Upsert<ComplexItem> update(
     UpdateSet<ComplexItem> Function(
       Expr<ComplexItem> complexItem,
       Expr<ComplexItem> excluded,
@@ -506,6 +600,109 @@ extension InsertOnConflictSingleComplexItemExt
     )
     updateBuilder,
   ) => $ForGeneratedCode.updateOnConflict<ComplexItem>(
+    this,
+    (complexItem, excluded) => updateBuilder(
+      complexItem,
+      excluded,
+      ({
+        Expr<int>? id,
+        Expr<DateTime>? createdAt,
+        Expr<String>? name,
+        Expr<double>? doubleValue,
+        Expr<bool>? boolValue,
+        Expr<int>? value,
+      }) => $ForGeneratedCode.buildUpdate<ComplexItem>([
+        id,
+        createdAt,
+        name,
+        doubleValue,
+        boolValue,
+        value,
+      ]),
+    ),
+  );
+}
+
+extension InsertSingleComplexItemExt on InsertSingle<ComplexItem> {
+  /// Build an `INSERT` statement with an `ON CONFLICT` clause.
+  ///
+  /// The [target] argument specifies the _conflict target_ to be
+  /// handled. The _conflict target_ is always a `UNIQUE` constraint or
+  /// `PRIMARY KEY` constraint.
+  ///
+  /// If a row to be inserted violates the _conflict target_ constraint,
+  /// then the conflict action is triggered:
+  /// * `.doNothing()` to skip insertion of the new row, and,
+  /// * `.update((complexItem, excluded, set) => set(...))` to
+  ///   update the conflicting row.
+  ///
+  /// If a row to be inserted violates a constraint other than the one
+  /// specified in _conflict target_ then the entire `INSERT` statement
+  /// will fail.
+  ///
+  /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
+  InsertOnConflictSingle<ComplexItem> onConflict(ComplexItemConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleComplexItemExt
+    on InsertOnConflictSingle<ComplexItem> {
+  /// Build an `INSERT` statement an [upsert-clause][1].
+  ///
+  /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
+  /// constraint previously specified as _conflict target_, the existing
+  /// row is updated using the expressions defined with the
+  /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
+  ///   * `complexItem` an [Expr] representing the existing row in
+  ///     the database,
+  ///   * `excluded` an [Expr] representing the row to be inserted in the
+  ///     database, and,
+  ///   * `set` a function to specify which fields should be updated and
+  ///     build the [UpdateSet].
+  ///
+  /// The result of the `set` function should always be immediately
+  /// returned from the [updateBuilder].
+  ///
+  /// **Example:** Insert a counter with `count = 2` or increment the
+  /// existing row, if a `PRIMARY KEY` conflict occurs.
+  /// ```dart
+  /// await db.counters.insertValue(
+  ///     name: 'my-counter', // primary key
+  ///     count: 2,
+  ///   )
+  ///   .onConflict(.primaryKey)
+  ///   .update((counter, excluded, set) => set(
+  ///     count: counter.count + excluded.count,
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// This is equivalent to
+  /// `INSERT ... ON CONFLICT (...) UPDATE SET ...` in SQL.
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
+  ///
+  /// [1]: https://www.sqlite.org/lang_upsert.html
+  UpsertSingle<ComplexItem> update(
+    UpdateSet<ComplexItem> Function(
+      Expr<ComplexItem> complexItem,
+      Expr<ComplexItem> excluded,
+      UpdateSet<ComplexItem> Function({
+        Expr<int> id,
+        Expr<DateTime> createdAt,
+        Expr<String> name,
+        Expr<double> doubleValue,
+        Expr<bool> boolValue,
+        Expr<int> value,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<ComplexItem>(
     this,
     (complexItem, excluded) => updateBuilder(
       complexItem,

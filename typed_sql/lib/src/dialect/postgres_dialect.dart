@@ -16,6 +16,7 @@ import 'dart:convert' show json;
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:postgres/postgres.dart';
 
 import 'dialect.dart';
 import 'shared_dialect.dart';
@@ -167,20 +168,78 @@ final class _PostgresDialect extends SqlDialect {
       returnProjection = returning.projection.map(r.expr).join(', ');
     }
 
-    return SingleSqlTask(
-      [
-        'INSERT INTO ${escape(statement.table)} AS $alias',
-        if (statement.columns.isEmpty)
-          'DEFAULT VALUES'
-        else ...[
-          '(${statement.columns.map(escape).join(', ')})',
-          'VALUES (${statement.values.map(resolver.expr).join(', ')})',
-        ],
-        ?conflictClause,
-        if (returnProjection != null) 'RETURNING $returnProjection',
-      ].join(' '),
-      resolver.context.parameters,
-    );
+    switch (statement.values) {
+      case ExprValuesSource(:final columns, :final values):
+        return SingleSqlTask(
+          [
+            'INSERT INTO ${escape(statement.table)} AS $alias',
+            if (columns.isEmpty)
+              'DEFAULT VALUES'
+            else ...[
+              '(${columns.map(escape).join(', ')})',
+              'VALUES (${values.map(resolver.expr).join(', ')})',
+            ],
+            ?conflictClause,
+            if (returnProjection != null) 'RETURNING $returnProjection',
+          ].join(' '),
+          resolver.context.parameters,
+        );
+      case BulkValuesSource(:final columns, :final types, :final columnValues):
+        final params = List.generate(columns.length, (i) {
+          final type = types[i];
+          final values = columnValues[i];
+          final param = resolver.context.addParameter(switch (type) {
+            ColumnType<Uint8List> _ => TypedValue(
+              Type.byteArrayArray,
+              values.toList(),
+            ),
+            ColumnType<bool> _ => TypedValue(
+              Type.booleanArray,
+              values.toList(),
+            ),
+            ColumnType<DateTime> _ => TypedValue(
+              Type.timestampTzArray,
+              values.toList(),
+            ),
+            ColumnType<int> _ => TypedValue(
+              Type.bigIntegerArray,
+              values.toList(),
+            ),
+            ColumnType<double> _ => TypedValue(
+              Type.doubleArray,
+              values.toList(),
+            ),
+            ColumnType<String> _ => TypedValue(Type.textArray, values.toList()),
+            ColumnType<JsonValue> _ => TypedValue(
+              // TODO: Use jsonb array when there is support for inserting NULL
+              // https://github.com/isoos/postgresql-dart/issues/449
+              // Current logic relies on explicit cast in SQL.
+              Type.textArray,
+              values.map((v) {
+                if (v == null) {
+                  return null;
+                }
+                return json.encode((v as JsonValue).value);
+              }).toList(),
+            ),
+            ColumnType<Null> _ => throw AssertionError(
+              'Null type cannot be used as column type',
+            ),
+          });
+          return '$param::${type.sqlType}[]';
+        });
+        return SingleSqlTask(
+          [
+            'INSERT INTO ${escape(statement.table)} AS $alias',
+            '(${columns.map(escape).join(', ')})',
+            'SELECT * FROM UNNEST(${params.join(', ')})',
+            'AS t_(${columns.map(escape).join(', ')})',
+            ?conflictClause,
+            if (returnProjection != null) 'RETURNING $returnProjection',
+          ].join(' '),
+          resolver.context.parameters,
+        );
+    }
   }
 
   @override
@@ -707,7 +766,7 @@ extension on ColumnType {
     ColumnType<double> _ => 'DOUBLE PRECISION',
     ColumnType<String> _ => 'TEXT',
     ColumnType<JsonValue> _ => 'JSONB',
-    ColumnType<Null> _ => throw UnsupportedError(
+    ColumnType<Null> _ => throw AssertionError(
       'Null type cannot be used as column type',
     ),
   };

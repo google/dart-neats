@@ -421,10 +421,10 @@ packages:
     dependency: transitive
     description:
       name: postgres
-      sha256: fefbbfe749c6130e5096588b9c4459173684c695952cd7636ab19be76f255469
+      sha256: "3af8a28b89fef68ee5b26b4fd27254d5a286389e9c7fb6293a5f46e30490f800"
       url: "https://pub.dev"
     source: hosted
-    version: "3.5.9"
+    version: "3.5.10"
   pub_semver:
     dependency: transitive
     description:

@@ -31,6 +31,7 @@ export 'src/typed_sql.dart'
         BinaryOperationExpression,
         CastExpression,
         ColumnDefinition,
+        ColumnType,
         CompositeQueryClause,
         ConflictClause,
         CountAllExpression,
