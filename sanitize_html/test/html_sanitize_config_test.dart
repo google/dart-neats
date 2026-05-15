@@ -24,5 +24,52 @@ void main() {
       expect(HtmlSanitizeConfig.safeClassPattern.hasMatch('9abc'), false);
       expect(HtmlSanitizeConfig.safeClassPattern.hasMatch('class_name'), true);
     });
+
+    group('unicodeEscapeReg', () {
+      // The regex requires 3+ consecutive \XX sequences so that single
+      // backslash-hex pairs in plain text (e.g. PHP namespace separators)
+      // are not false-positives, while meaningful obfuscation is still caught.
+
+      test('does NOT match a single \\XX sequence', () {
+        // e.g. \DA from a PHP namespace like \DAV
+        expect(HtmlSanitizeConfig.unicodeEscapeReg.hasMatch(r'\DA'), false);
+        expect(HtmlSanitizeConfig.unicodeEscapeReg.hasMatch(r'\ab'), false);
+        expect(HtmlSanitizeConfig.unicodeEscapeReg.hasMatch(r'\FF'), false);
+      });
+
+      test('does NOT match two consecutive \\XX sequences', () {
+        expect(HtmlSanitizeConfig.unicodeEscapeReg.hasMatch(r'\6a\73'), false);
+      });
+
+      test('DOES match three or more consecutive \\XX sequences', () {
+        // \73\72\63 encodes "src" — still caught
+        expect(HtmlSanitizeConfig.unicodeEscapeReg.hasMatch(r'\73\72\63'), true);
+        // \6a\61\76 encodes "jav" — prefix of "javascript"
+        expect(HtmlSanitizeConfig.unicodeEscapeReg.hasMatch(r'\6a\61\76'), true);
+      });
+
+      test('DOES match full "javascript" encoded as \\XX sequences', () {
+        // \6a\61\76\61\73\63\72\69\70\74 = "javascript"
+        expect(
+          HtmlSanitizeConfig.unicodeEscapeReg
+              .hasMatch(r'\6a\61\76\61\73\63\72\69\70\74'),
+          true,
+        );
+      });
+
+      test('does NOT match PHP-style backslash namespace separators', () {
+        // Regression: \Sabre\DAV\Exception had \DA matching the old single-pair regex.
+        expect(
+          HtmlSanitizeConfig.unicodeEscapeReg
+              .hasMatch(r'\Sabre\DAV\Exception\Forbidden'),
+          false,
+        );
+        expect(
+          HtmlSanitizeConfig.unicodeEscapeReg
+              .hasMatch(r'\App\DB\Exception\AuthFailed'),
+          false,
+        );
+      });
+    });
   });
 }

@@ -78,5 +78,32 @@ void main() {
         '<p style="color: red">Hello</p>',
       );
     });
+
+    group('_shouldStripText – backslash-hex false-positive regression', () {
+      // Before the unicodeEscapeReg tightening, any text node containing
+      // \XX (backslash + two hex digits) was stripped. This caused plain-text
+      // emails with PHP namespace separators like \Sabre\DAV to go blank.
+
+      test('preserves text node with single \\XX sequence (PHP namespace separator)', () {
+        final doc = parse('<p>throw new \\Sabre\\DAV\\Exception\\Forbidden()</p>');
+        sanitizer.sanitize(doc.body!, allowUnwrap: false);
+        expect(doc.body!.innerHtml, contains('Forbidden'));
+      });
+
+      test('preserves text node with \\App\\DB\\Exception\\AuthFailed pattern', () {
+        final doc = parse('<p>throw new \\App\\DB\\Exception\\AuthFailed("denied")</p>');
+        sanitizer.sanitize(doc.body!, allowUnwrap: false);
+        expect(doc.body!.innerHtml, contains('AuthFailed'));
+      });
+
+      test('still strips text node with many consecutive \\XX sequences (encoded "javascript")', () {
+        // \6a\61\76\61\73\63\72\69\70\74 = "javascript" — must still be caught.
+        final doc = parse(
+          '<p>href=\\6a\\61\\76\\61\\73\\63\\72\\69\\70\\74:alert(1)</p>',
+        );
+        sanitizer.sanitize(doc.body!, allowUnwrap: false);
+        expect(doc.body!.innerHtml, isNot(contains('\\6a\\61\\76')));
+      });
+    });
   });
 }

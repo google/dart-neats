@@ -449,8 +449,12 @@ class HtmlSanitizeConfig {
   // on malformed or attacker-controlled CSS input.
   static final RegExp cssCommentPattern = RegExp(r'/\*[\s\S]{0,2000}?\*/');
 
+  // Require 3+ consecutive \XX sequences so that single backslash-hex pairs in
+  // plain text (e.g. PHP namespace separators like \DAV) are not false-positives.
+  // Meaningful JS/CSS obfuscation of any dangerous keyword (e.g. "src", "eval")
+  // needs at least 3 consecutive escapes, so the security bar is maintained.
   static final RegExp unicodeEscapeReg =
-      RegExp(r'\\[0-9a-f]{2}', caseSensitive: false);
+      RegExp(r'(\\[0-9a-f]{2}){3,}', caseSensitive: false);
 
   static final RegExp unitlessNumberPattern = RegExp(r'^\d+$');
 
