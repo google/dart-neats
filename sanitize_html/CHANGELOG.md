@@ -1,3 +1,6 @@
+## v3.0.2
+* fix(sanitizer): tighten unicodeEscapeReg to require 3+ consecutive \XX sequences
+
 ## v3.0.1
 * Preserve and safely sanitize internal CSS
 * Preserve nested CSS with token-level sanitization
