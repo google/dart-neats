@@ -623,18 +623,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               \$ForGeneratedCode.insertValuesMapped(
                 table: this,
                 rows: rows,
-                mapping: {
-            ${rowClass.fields.map((f) {
+                mappings: [${rowClass.fields.map((f) {
               final hasDefault = f.defaultValue != null || f.isNullable || f.autoIncrement;
               if (f.isCustomType) {
                 if (hasDefault) {
-                  return '\'${f.name}\': ${f.name} != null ? (T v) => ${f.name}(v)?.toDatabase() : null';
+                  return '${f.name} != null ? (T v) => ${f.name}(v)?.toDatabase() : null';
                 }
-                return '\'${f.name}\': (T v) => ${f.name}(v).toDatabase()';
+                return '(T v) => ${f.name}(v).toDatabase()';
               }
-              return '\'${f.name}\': ${f.name}';
-            }).join(', ')}
-                },
+              return f.name;
+            }).join(', ')}],
               )
             '''),
         ),
