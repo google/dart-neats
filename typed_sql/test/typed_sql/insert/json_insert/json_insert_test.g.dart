@@ -138,7 +138,7 @@ extension TableJsonItemExt on Table<JsonItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'data': data},
+    mappings: [id, data],
   );
 
   /// Delete a single row from the `jsonItems` table, specified by

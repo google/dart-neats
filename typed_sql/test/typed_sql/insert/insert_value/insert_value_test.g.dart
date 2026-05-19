@@ -135,7 +135,7 @@ extension TableValueItemExt on Table<ValueItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'value': value},
+    mappings: [id, value],
   );
 
   /// Delete a single row from the `valueItems` table, specified by

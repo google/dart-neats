@@ -189,7 +189,7 @@ extension TableMultiItemExt on Table<MultiItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'name': name, 'email': email, 'value': value},
+    mappings: [id, name, email, value],
   );
 
   /// Delete a single row from the `multiItems` table, specified by

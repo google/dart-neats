@@ -152,7 +152,7 @@ extension TableProductExt on Table<Product> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'name': name, 'metadata': metadata},
+    mappings: [id, name, metadata],
   );
 
   /// Delete a single row from the `products` table, specified by

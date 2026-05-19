@@ -157,11 +157,7 @@ extension TableAuthorExt on Table<Author> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'authorId': authorId,
-      'firstname': firstname,
-      'lastname': lastname,
-    },
+    mappings: [authorId, firstname, lastname],
   );
 
   /// Delete a single row from the `authors` table, specified by
@@ -737,12 +733,7 @@ extension TableBookExt on Table<Book> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'bookId': bookId,
-      'title': title,
-      'authorId': authorId,
-      'stock': stock,
-    },
+    mappings: [bookId, title, authorId, stock],
   );
 
   /// Delete a single row from the `books` table, specified by

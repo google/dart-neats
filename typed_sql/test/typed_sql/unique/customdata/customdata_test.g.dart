@@ -155,10 +155,7 @@ extension TableCustomDataItemExt on Table<CustomDataItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': (T v) => id(v).toDatabase(),
-      'stringVal': (T v) => stringVal(v).toDatabase(),
-    },
+    mappings: [(T v) => id(v).toDatabase(), (T v) => stringVal(v).toDatabase()],
   );
 
   /// Delete a single row from the `customDataItems` table, specified by

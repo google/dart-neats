@@ -160,7 +160,7 @@ extension TableBasicItemExt on Table<BasicItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'name': name, 'value': value},
+    mappings: [id, name, value],
   );
 
   /// Delete a single row from the `basicItems` table, specified by

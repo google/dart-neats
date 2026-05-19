@@ -180,12 +180,7 @@ extension TableCarExt on Table<Car> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': id,
-      'model': model,
-      'licensePlate': licensePlate,
-      'color': (T v) => color(v).toDatabase(),
-    },
+    mappings: [id, model, licensePlate, (T v) => color(v).toDatabase()],
   );
 
   /// Delete a single row from the `cars` table, specified by

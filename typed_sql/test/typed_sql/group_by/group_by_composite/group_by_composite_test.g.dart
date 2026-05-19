@@ -336,19 +336,19 @@ extension TableItemExt on Table<Item> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': id,
-      'text': text,
-      'real': real,
-      'integer': integer,
-      'timestamp': timestamp,
-      'json': json,
-      'optText': optText,
-      'optReal': optReal,
-      'optInteger': optInteger,
-      'optTimestamp': optTimestamp,
-      'optJson': optJson,
-    },
+    mappings: [
+      id,
+      text,
+      real,
+      integer,
+      timestamp,
+      json,
+      optText,
+      optReal,
+      optInteger,
+      optTimestamp,
+      optJson,
+    ],
   );
 
   /// Delete a single row from the `items` table, specified by

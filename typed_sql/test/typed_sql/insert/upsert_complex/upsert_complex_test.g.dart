@@ -242,14 +242,7 @@ extension TableComplexItemExt on Table<ComplexItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': id,
-      'createdAt': createdAt,
-      'name': name,
-      'doubleValue': doubleValue,
-      'boolValue': boolValue,
-      'value': value,
-    },
+    mappings: [id, createdAt, name, doubleValue, boolValue, value],
   );
 
   /// Delete a single row from the `complexItems` table, specified by

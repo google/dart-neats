@@ -164,7 +164,7 @@ extension TableConflictMappedItemExt on Table<ConflictMappedItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'name': name, 'value': value},
+    mappings: [id, name, value],
   );
 
   /// Delete a single row from the `conflictMappedItems` table, specified by

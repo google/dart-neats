@@ -239,15 +239,15 @@ extension TableComplexMappedItemExt on Table<ComplexMappedItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': id,
-      's': s,
-      'dt': dt,
-      'blob': blob,
-      'custom': custom != null ? (T v) => custom(v)?.toDatabase() : null,
-      'i': i,
-      'json': json,
-    },
+    mappings: [
+      id,
+      s,
+      dt,
+      blob,
+      custom != null ? (T v) => custom(v)?.toDatabase() : null,
+      i,
+      json,
+    ],
   );
 
   /// Delete a single row from the `complexMappedItems` table, specified by

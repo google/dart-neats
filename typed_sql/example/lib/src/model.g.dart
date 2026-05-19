@@ -162,7 +162,7 @@ extension TableUserExt on Table<User> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'userId': userId, 'name': name, 'email': email},
+    mappings: [userId, name, email],
   );
 
   /// Delete a single row from the `users` table, specified by
@@ -739,12 +739,7 @@ extension TablePackageExt on Table<Package> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'packageName': packageName,
-      'likes': likes,
-      'ownerId': ownerId,
-      'publisher': publisher,
-    },
+    mappings: [packageName, likes, ownerId, publisher],
   );
 
   /// Delete a single row from the `packages` table, specified by
@@ -1303,7 +1298,7 @@ extension TableLikeExt on Table<Like> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'userId': userId, 'packageName': packageName},
+    mappings: [userId, packageName],
   );
 
   /// Delete a single row from the `likes` table, specified by

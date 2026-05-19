@@ -171,7 +171,7 @@ extension TablePostExt on Table<Post> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'author': author, 'slug': slug, 'content': content},
+    mappings: [author, slug, content],
   );
 
   /// Delete a single row from the `posts` table, specified by
@@ -743,12 +743,7 @@ extension TableCommentExt on Table<Comment> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'commentId': commentId,
-      'author': author,
-      'postSlug': postSlug,
-      'comment': comment,
-    },
+    mappings: [commentId, author, postSlug, comment],
   );
 
   /// Delete a single row from the `comments` table, specified by

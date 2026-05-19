@@ -138,7 +138,7 @@ extension TableNotNullItemExt on Table<NotNullItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'name': name},
+    mappings: [id, name],
   );
 
   /// Delete a single row from the `notNullItems` table, specified by

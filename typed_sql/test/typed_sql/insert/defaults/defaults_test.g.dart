@@ -253,16 +253,7 @@ extension TableDefaultsItemExt on Table<DefaultsItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': id,
-      'b': b,
-      'i': i,
-      'd': d,
-      's': s,
-      'dtNow': dtNow,
-      'dtEpoch': dtEpoch,
-      'json': json,
-    },
+    mappings: [id, b, i, d, s, dtNow, dtEpoch, json],
   );
 
   /// Delete a single row from the `defaultsItems` table, specified by

@@ -145,7 +145,7 @@ extension TableCustomTypeItemExt on Table<CustomTypeItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'value': (T v) => value(v).toDatabase()},
+    mappings: [id, (T v) => value(v).toDatabase()],
   );
 
   /// Delete a single row from the `customTypeItems` table, specified by

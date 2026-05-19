@@ -169,12 +169,7 @@ extension TableEmployeeExt on Table<Employee> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': id,
-      'surname': surname,
-      'seniority': seniority,
-      'salary': salary,
-    },
+    mappings: [id, surname, seniority, salary],
   );
 
   /// Delete a single row from the `employees` table, specified by
