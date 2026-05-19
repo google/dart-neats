@@ -107,21 +107,17 @@ final class _MysqlSqlDialect extends SqlDialect {
     return [
       ...statements.map((table) {
         final resolvedColumnDefinitions = table.columns.map((c) {
-          final override = c.overrides.firstWhereOrNull(
-            (o) => o.dialect == 'mysql',
-          );
-          final generic = c.overrides.firstWhereOrNull(
-            (o) => o.dialect == null,
-          );
-          final sqlType =
-              override?.columnType ?? generic?.columnType ?? c.type.sqlType;
+          final o =
+              c.overrides.lastWhereOrNull((o) => o.dialect == 'mysql') ??
+              c.overrides.lastWhereOrNull((o) => o.dialect == null);
           return (
             name: c.name,
-            sqlType: sqlType,
-            originalColumnType: c.type,
+            sqlType: o?.columnType ?? c.type.sqlType,
             isNotNull: c.isNotNull,
             autoIncrement: c.autoIncrement,
             defaultValue: c.defaultValue,
+            defaultValueOverride: o?.defaultValue,
+            collation: o?.collation,
           );
         }).toList();
 
@@ -130,19 +126,18 @@ final class _MysqlSqlDialect extends SqlDialect {
           ...table.unique.expand((u) => u),
           ...table.foreignKeys.expand((fk) => fk.columns),
         }.toSet();
-
-        for (final colDef in resolvedColumnDefinitions) {
-          if (indexedColumnNames.contains(colDef.name) &&
-              colDef.originalColumnType == ColumnType.text &&
-              colDef.sqlType == 'TEXT') {
-            throw ArgumentError(
-              'Column \'${colDef.name}\' in table \'${table.tableName}\' cannot be '
-              'of type TEXT because it is used in a key constraint. MySQL '
-              'does not support indexing full TEXT columns. Consider using an '
-              '"@SqlOverride(dialect: \'mysql\', columnType: \'VARCHAR(255)\')" '
-              'annotation on the field to specify an indexable type.',
-            );
-          }
+        final indexedTextColumns = resolvedColumnDefinitions.where(
+          (c) => indexedColumnNames.contains(c.name) && c.sqlType == 'TEXT',
+        );
+        if (indexedTextColumns.isNotEmpty) {
+          final c = indexedTextColumns.first;
+          throw ArgumentError(
+            'Column \'${c.name}\' in table \'${table.tableName}\' cannot be '
+            'of type TEXT because it is used in a key constraint. MySQL '
+            'does not support indexing full TEXT columns. Consider using an '
+            '"@SqlOverride(dialect: \'mysql\', columnType: \'VARCHAR(255)\')" '
+            'annotation on the field to specify an indexable type.',
+          );
         }
 
         return [
@@ -154,11 +149,13 @@ final class _MysqlSqlDialect extends SqlDialect {
               return [
                 escape(c.name),
                 c.sqlType,
+                if (c.collation != null) 'COLLATE ${c.collation}',
                 if (c.isNotNull) 'NOT NULL',
+                if (c.defaultValueOverride != null)
+                  'DEFAULT ${c.defaultValueOverride}'
+                else if (defaultValue != null)
+                  'DEFAULT ${resolver.expr(defaultValue)}',
                 if (c.autoIncrement) 'AUTO_INCREMENT',
-                if (c.defaultValue != null)
-                  if (defaultValue != null)
-                    'DEFAULT ${resolver.expr(defaultValue)}',
               ].join(' ');
             }),
             // Primary key (composite)

@@ -67,6 +67,10 @@ final class _Sqlite extends SqlDialect {
             [
               // Columns
               ...table.columns.map((c) {
+                final o =
+                    c.overrides.lastWhereOrNull((o) => o.dialect == 'sqlite') ??
+                    c.overrides.lastWhereOrNull((o) => o.dialect == null);
+
                 final isPrimaryKey =
                     table.primaryKey.contains(c.name) &&
                     table.primaryKey.length == 1;
@@ -82,14 +86,17 @@ final class _Sqlite extends SqlDialect {
                 final defaultValue = c.defaultValue;
                 return [
                   escape(c.name),
-                  c.type.sqlType,
-                  c.isNotNull ? 'NOT NULL' : '',
+                  o?.columnType ?? c.type.sqlType,
+                  if (c.isNotNull) 'NOT NULL',
                   if (isPrimaryKey) 'PRIMARY KEY',
                   if (c.autoIncrement && isPrimaryKey) 'AUTOINCREMENT',
                   if (c.autoIncrement && !isPrimaryKey)
                     'GENERATED ALWAYS AS (rowid) STORED',
-                  if (defaultValue != null)
+                  if (o?.defaultValue != null)
+                    'DEFAULT ${o!.defaultValue}'
+                  else if (defaultValue != null)
                     'DEFAULT (${resolver.expr(defaultValue)})',
+                  if (o?.collation != null) 'COLLATE ${o!.collation}',
                 ].join(' ');
               }),
               // Primary key
