@@ -232,6 +232,16 @@ Future<ParsedLibrary> parseLibrary(
     }
   }
 
+  for (final schema in schemas) {
+    for (final table in schema.tables) {
+      table.schema = schema;
+      table.rowClass.table = table;
+      for (final field in table.rowClass.fields) {
+        field.rowClass = table.rowClass;
+      }
+    }
+  }
+
   return library;
 }
 
@@ -321,6 +331,7 @@ Future<ParsedSchema> _parseSchema(
           typeArgElement,
           () => rowClass,
         ),
+        overrides: await _parseSqlOverrides(a, .tableName),
       ),
     );
   }
@@ -777,8 +788,30 @@ Future<ParsedRowClass> _parseRowClass(
 
 enum SqlOverrideContext {
   schema,
+  tableName,
   table,
   field,
+}
+
+extension on SqlOverrideContext {
+  String get displayName => switch (this) {
+    .schema => 'Schema subclass',
+    .tableName => 'Table subclass',
+    .table => 'Row subclass',
+    .field => 'field definition',
+  };
+  String get constructorDisplayName => switch (this) {
+    .schema => '@SqlOverride.schema()',
+    .tableName => '@SqlOverride.tableName()',
+    .table => '@SqlOverride.table()',
+    .field => '@SqlOverride.field()',
+  };
+  String get constructorName => switch (this) {
+    .schema => 'schema',
+    .tableName => 'tableName',
+    .table => 'table',
+    .field => 'field',
+  };
 }
 
 Future<List<ParsedSqlOverride>> _parseSqlOverrides(
@@ -790,43 +823,88 @@ Future<List<ParsedSqlOverride>> _parseSqlOverrides(
       .annotationAndValuesOfExact(annotatedElement);
 
   for (final (ea, a) in sqlOverrideAnnotations) {
+    final c = a.constructorInvocation?.constructor.name;
+    // TODO(jonasfj): Disallow c == new when we remove the deprecated default constructor!
+    if (c != 'new' && c != context.constructorName) {
+      await throwInvalidAnnotationInSource(
+        '`SqlOverride.$c` should not be used on ${context.displayName}, '
+        'use `${context.constructorDisplayName}`',
+        annotatedElement: annotatedElement,
+        annotation: ea,
+      );
+    }
+
     final o = ParsedSqlOverride(
       dialect: a.getField('_dialect')?.toStringValue(),
       columnType: a.getField('_columnType')?.toStringValue(),
       defaultValue: a.getField('_defaultValue')?.toStringValue(),
       collation: a.getField('_collation')?.toStringValue(),
       name: a.getField('_name')?.toStringValue(),
-      namingConvention: a.getField('_namingConvention')?.toStringValue(),
+      naming: ParsedNaming.values.firstWhereOrNull(
+        (v) => a.getField('_naming')?.variable?.name == v.name,
+      ),
     );
 
-    if (o.columnType != null && context != .field) {
+    final fields = {
+      'dialect': o.dialect != null,
+      'columnType': o.columnType != null,
+      'defaultValue': o.defaultValue != null,
+      'collation': o.collation != null,
+      'name': o.name != null,
+      'naming': o.naming != null,
+    };
+
+    final allowedFields = switch (context) {
+      .schema => {'naming'},
+      .tableName => {'naming', 'name'},
+      .table => {'collation', 'naming'},
+      .field => {
+        'dialect',
+        'columnType',
+        'defaultValue',
+        'collation',
+        'name',
+        'naming',
+      },
+    };
+
+    final forbiddenFields = fields.entries
+        .where((e) => e.value)
+        .map((e) => e.key)
+        .where((f) => !allowedFields.contains(f))
+        .toList();
+    if (forbiddenFields.isNotEmpty) {
       await throwInvalidAnnotationInSource(
-        '`SqlOverride` only override `columnType` on a specific field',
+        '`SqlOverride` cannot override '
+        '${forbiddenFields.map((f) => '\'$f\'').join(', ')} '
+        'on ${context.displayName}, use `${context.constructorDisplayName}`',
         annotatedElement: annotatedElement,
         annotation: ea,
       );
     }
-    if (o.defaultValue != null && context != .field) {
-      await throwInvalidAnnotationInSource(
-        '`SqlOverride` only override `defaultValue` on a specific field',
-        annotatedElement: annotatedElement,
-        annotation: ea,
-      );
+
+    if (o.dialect != null) {
+      if (o.name != null) {
+        await throwInvalidAnnotationInSource(
+          '`SqlOverride` cannot override `name` for a specific `dialect`',
+          annotatedElement: annotatedElement,
+          annotation: ea,
+        );
+      }
+      if (o.naming != null) {
+        await throwInvalidAnnotationInSource(
+          '`SqlOverride` cannot override `naming` for a specific `dialect`',
+          annotatedElement: annotatedElement,
+          annotation: ea,
+        );
+      }
     }
-    if (o.dialect != null && o.name != null) {
-      await throwInvalidAnnotationInSource(
-        '`SqlOverride` cannot override `name` for a specific `dialect`',
-        annotatedElement: annotatedElement,
-        annotation: ea,
-      );
-    }
-    if (o.dialect != null && o.namingConvention != null) {
-      await throwInvalidAnnotationInSource(
-        '`SqlOverride` cannot override `namingConvention` for a specific `dialect`',
-        annotatedElement: annotatedElement,
-        annotation: ea,
-      );
-    }
+
+    // await throwInvalidAnnotationInSource(
+    //   '`SqlOverride` cannot override `name` for a   $o',
+    //   annotatedElement: annotatedElement,
+    //   annotation: ea,
+    // );
 
     overrides.add(o);
   }

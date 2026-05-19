@@ -262,6 +262,12 @@ final class Unique {
   const Unique.field({String? name}) : _name = name, _fields = null;
 }
 
+enum Nameing {
+  camelCase,
+  // ignore: constant_identifier_names
+  snake_case,
+}
+
 /// An annotation to provide overrides for SQL schema generation.
 final class SqlOverride {
   // ignore: unused_field
@@ -275,7 +281,7 @@ final class SqlOverride {
   // ignore: unused_field
   final String? _name; // used by code-gen
   // ignore: unused_field
-  final String? _namingConvention; // used by code-gen
+  final Nameing? _naming; // used by code-gen
 
   const SqlOverride._({
     String? dialect,
@@ -283,13 +289,17 @@ final class SqlOverride {
     String? defaultValue,
     String? collation,
     String? name,
-    String? namingConvention,
-  }) : _dialect = dialect,
+    Nameing? naming,
+  }) : // TODO(jonasfj): Consider having an assert, when analyze highlights
+       //                it correctly in source code. For now code-gen errors
+       //                are actually better.
+       // assert(dialect == null || (name == null && naming == null)),
+       _dialect = dialect,
        _columnType = columnType,
        _defaultValue = defaultValue,
        _collation = collation,
        _name = name,
-       _namingConvention = namingConvention;
+       _naming = naming;
 
   @Deprecated(
     'Use SqlOverride.field(), SqlOverride.table() or SqlOverride.schema() instead',
@@ -300,21 +310,25 @@ final class SqlOverride {
   }) = SqlOverride._;
 
   const factory SqlOverride.field({
-    String? dialect,
-    String? columnType,
-    String? defaultValue,
-    String? collation,
-    String? name,
-    String? namingConvention,
+    String dialect,
+    String columnType,
+    String defaultValue,
+    String collation,
+    String name,
+    Nameing naming,
+  }) = SqlOverride._;
+
+  const factory SqlOverride.tableName({
+    String name,
+    Nameing naming,
   }) = SqlOverride._;
 
   const factory SqlOverride.table({
-    String? collation,
-    String? name,
-    String? namingConvention,
+    String collation,
+    Nameing naming,
   }) = SqlOverride._;
 
   const factory SqlOverride.schema({
-    String? namingConvention,
+    Nameing naming,
   }) = SqlOverride._;
 }

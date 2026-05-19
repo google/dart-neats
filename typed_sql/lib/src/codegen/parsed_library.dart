@@ -60,18 +60,27 @@ final class ParsedTable {
   final String name;
   final String? documentation;
   final ParsedRowClass rowClass;
+  final List<ParsedSqlOverride> overrides;
 
   ParsedTable({
     required this.name,
     required this.documentation,
     required this.rowClass,
+    required this.overrides,
   });
+
+  /// Reference to the [ParsedSchema] where this table is defined.
+  ///
+  /// This field is not available during parsing, only after an entire library
+  /// has been parsed.
+  late final ParsedSchema schema;
 
   @override
   String toString() =>
       'ParsedTable(${[
         'name: "$name"',
         'rowClass: $rowClass',
+        'overrides: ${overrides.join(', ')}',
       ].join(', ')})';
 }
 
@@ -91,6 +100,12 @@ final class ParsedRowClass {
     required this.uniqueConstraints,
     required this.overrides,
   });
+
+  /// Reference to the [ParsedTable] for which this _row class_ is used.
+  ///
+  /// This field is not available during parsing, only after an entire library
+  /// has been parsed.
+  late final ParsedTable table;
 
   @override
   String toString() =>
@@ -132,7 +147,16 @@ final class ParsedForeignKey {
     required this.onUpdate,
   });
 
+  /// Reference to the [ParsedField]s referenced in [fields].
+  ///
+  /// This field is not available during parsing, only after an entire library
+  /// has been parsed.
   late final List<ParsedField> referencedFields;
+
+  /// Reference to the [ParsedTable] referenced in [table].
+  ///
+  /// This field is not available during parsing, only after an entire library
+  /// has been parsed.
   late final ParsedTable referencedTable;
 
   @override
@@ -178,6 +202,12 @@ final class ParsedField {
     required this.overrides,
   });
 
+  /// Reference to the [ParsedRowClass] that this field is defined within.
+  ///
+  /// This field is not available during parsing, only after an entire library
+  /// has been parsed.
+  late final ParsedRowClass rowClass;
+
   @override
   String toString() =>
       'ParsedField(${[
@@ -205,13 +235,22 @@ final class ParsedRecord {
       ].join(', ')})';
 }
 
+/// Parsed representation of [Nameing].
+///
+/// This should always stay in sync with the [Nameing] enum.
+enum ParsedNaming {
+  camelCase,
+  // ignore: constant_identifier_names
+  snake_case,
+}
+
 final class ParsedSqlOverride {
   final String? dialect;
   final String? columnType;
   final String? defaultValue;
   final String? collation;
   final String? name;
-  final String? namingConvention;
+  final ParsedNaming? naming;
 
   ParsedSqlOverride({
     this.dialect,
@@ -219,7 +258,7 @@ final class ParsedSqlOverride {
     this.defaultValue,
     this.collation,
     this.name,
-    this.namingConvention,
+    this.naming,
   });
 
   @override
@@ -230,6 +269,6 @@ final class ParsedSqlOverride {
         'defaultValue: ${defaultValue != null ? '"$defaultValue"' : 'null'}',
         'collation: ${collation != null ? '"$collation"' : 'null'}',
         'name: ${name != null ? '"$name"' : 'null'}',
-        'namingConvention: ${namingConvention != null ? '"$namingConvention"' : 'null'}',
+        'naming: ${naming != null ? '"${naming!.name}"' : 'null'}',
       ].join(', ')})';
 }
