@@ -375,9 +375,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     defaultValue: ${renderExpression(f.defaultValue?.expression ?? literal(null))},
                     autoIncrement: ${f.autoIncrement},
                     overrides: [
-                      ${f.sqlOverrides.map(
-              (o) => 'const SqlOverride(dialect: ${literal(o.dialect)}, columnType: ${literal(o.columnType)})',
-            ).join(',')}
+                      ${f.dialectSpecificOverrides(schema, rowClass).map((o) => o.toCode()).join(', ')}
                     ],
                   )
                 ''').join(', ')}
@@ -1638,12 +1636,86 @@ extension on ParsedRecord {
       ).join(', ')},})';
 }
 
+typedef DialectSpecificOverride = ({
+  String? dialect,
+  String? columnType,
+  String? defaultValue,
+  String? collation,
+});
+
+extension on DialectSpecificOverride {
+  String toCode() =>
+      '''
+        (
+          dialect: ${dialect != null ? '\'$dialect\'' : 'null'},
+          columnType: ${columnType != null ? '\'$columnType\'' : 'null'},
+          defaultValue: ${defaultValue != null ? '\'$defaultValue\'' : 'null'},
+          collation: ${collation != null ? '\'$collation\'' : 'null'},
+        )
+      ''';
+}
+
 extension on ParsedField {
   String get type => isNullable ? '$typeName?' : typeName;
 
   bool get hasDefault => defaultValue != null || autoIncrement;
 
   bool get isCustomType => backingType != typeName;
+
+  List<DialectSpecificOverride> dialectSpecificOverrides(
+    ParsedSchema schema,
+    ParsedRowClass rowClass,
+  ) {
+    // List of all overrides in prioritized order
+    final allOverrides = [
+      ...schema.overrides,
+      ...rowClass.overrides,
+      ...overrides,
+    ].toList();
+
+    // Find all the dialects that we should consider making overrides for
+    final dialects = {
+      ...allOverrides.map((o) => o.dialect),
+    }.nonNulls.toList();
+
+    // For each dialect find the overrides that apply and add them to resolved
+    // always add the null dialect first
+    final resolved = <DialectSpecificOverride>[];
+    for (final dialect in [null, ...dialects]) {
+      String? columnType;
+      String? defaultValue;
+      String? collation;
+      var hasOverride = false;
+      for (final o in allOverrides) {
+        if (o.dialect == dialect || o.dialect == null) {
+          if (o.columnType != null) {
+            columnType = o.columnType;
+            hasOverride = true;
+          }
+          if (o.defaultValue != null) {
+            defaultValue = o.defaultValue;
+            hasOverride = true;
+          }
+          if (o.collation != null) {
+            collation = o.collation;
+            hasOverride = true;
+          }
+          // We ignore name overrides because these cannot be dialect specific!
+        }
+      }
+
+      if (hasOverride) {
+        resolved.add((
+          dialect: dialect,
+          columnType: columnType,
+          defaultValue: defaultValue,
+          collation: collation,
+        ));
+      }
+    }
+
+    return resolved;
+  }
 }
 
 extension on List<ParsedField> {

@@ -263,23 +263,58 @@ final class Unique {
 }
 
 /// An annotation to provide overrides for SQL schema generation.
-///
-/// This can be used multiple times on a single field to specify different
-/// overrides for different dialects.
 final class SqlOverride {
-  /// The dialect this override applies to (e.g. 'mysql', 'postgres', 'sqlite').
-  /// If omitted (`null`), the override applies to all dialects.
-  final String? dialect;
+  // ignore: unused_field
+  final String? _dialect; // used by code-gen
+  // ignore: unused_field
+  final String? _columnType; // used by code-gen
+  // ignore: unused_field
+  final String? _defaultValue; // used by code-gen
+  // ignore: unused_field
+  final String? _collation; // used by code-gen
+  // ignore: unused_field
+  final String? _name; // used by code-gen
+  // ignore: unused_field
+  final String? _namingConvention; // used by code-gen
 
-  /// Overrides the SQL data type definition for the annotated column.
-  ///
-  /// Example:
-  ///  * `VARCHAR(255)`,
-  ///  * `DECIMAL(10, 2)`, etc.
-  final String? columnType;
+  const SqlOverride._({
+    String? dialect,
+    String? columnType,
+    String? defaultValue,
+    String? collation,
+    String? name,
+    String? namingConvention,
+  }) : _dialect = dialect,
+       _columnType = columnType,
+       _defaultValue = defaultValue,
+       _collation = collation,
+       _name = name,
+       _namingConvention = namingConvention;
 
-  const SqlOverride({
-    this.dialect,
-    this.columnType,
-  });
+  @Deprecated(
+    'Use SqlOverride.field(), SqlOverride.table() or SqlOverride.schema() instead',
+  )
+  const factory SqlOverride({
+    String? dialect,
+    String? columnType,
+  }) = SqlOverride._;
+
+  const factory SqlOverride.field({
+    String? dialect,
+    String? columnType,
+    String? defaultValue,
+    String? collation,
+    String? name,
+    String? namingConvention,
+  }) = SqlOverride._;
+
+  const factory SqlOverride.table({
+    String? collation,
+    String? name,
+    String? namingConvention,
+  }) = SqlOverride._;
+
+  const factory SqlOverride.schema({
+    String? namingConvention,
+  }) = SqlOverride._;
 }

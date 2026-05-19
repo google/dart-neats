@@ -81,7 +81,15 @@ final class ColumnDefinition {
   final bool isNotNull;
   final Object? defaultValue;
   final bool autoIncrement;
-  final List<SqlOverride> overrides;
+  final List<
+    ({
+      String? dialect,
+      String? columnType,
+      String? defaultValue,
+      String? collation,
+    })
+  >
+  overrides;
 
   const ColumnDefinition({
     required this.type,
@@ -402,7 +410,15 @@ final class $ForGeneratedCode {
     required bool isNotNull,
     Object? defaultValue,
     required bool autoIncrement,
-    required List<SqlOverride> overrides,
+    required List<
+      ({
+        String? dialect,
+        String? columnType,
+        String? defaultValue,
+        String? collation,
+      })
+    >
+    overrides,
   }) {
     return ColumnDefinition(
       type: type,
