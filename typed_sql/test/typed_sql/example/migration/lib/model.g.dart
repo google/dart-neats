@@ -69,7 +69,12 @@ final class _$Account extends Account {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
     ],

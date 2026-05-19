@@ -82,7 +82,12 @@ final class _$Department extends Department {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
     ],

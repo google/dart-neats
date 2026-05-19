@@ -94,7 +94,12 @@ final class _$SimpleItem extends SimpleItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -597,7 +602,12 @@ final class _$CompositeItem extends CompositeItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -613,7 +623,12 @@ final class _$CompositeItem extends CompositeItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -622,7 +637,12 @@ final class _$CompositeItem extends CompositeItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -1225,7 +1245,12 @@ final class _$NullableUniqueItem extends NullableUniqueItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -1753,7 +1778,12 @@ final class _$SubQueryItem extends SubQueryItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -2336,7 +2366,12 @@ final class _$ComplexItem extends ComplexItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(

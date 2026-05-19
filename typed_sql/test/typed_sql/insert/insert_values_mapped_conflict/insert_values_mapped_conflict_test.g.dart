@@ -75,7 +75,12 @@ final class _$ConflictMappedItem extends ConflictMappedItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(

@@ -61,7 +61,12 @@ final class _$Item extends Item {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
