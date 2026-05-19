@@ -497,26 +497,6 @@ void main() {
     ]),
   );
 
-  testCodeGeneration(
-    name: 'SqlOverride.table supports collation override',
-    source: r'''
-      abstract final class TestDatabase extends Schema {
-        Table<Item> get items;
-      }
-
-      @SqlOverride.table(collation: 'NOCASE')
-      @PrimaryKey(['id'])
-      abstract final class Item extends Row {
-        int get id;
-
-        String get category;
-      }
-    ''',
-    generated: allOf([
-      contains("collation: 'NOCASE',"),
-    ]),
-  );
-
   // Test defaultValue override
 
   testCodeGeneration(

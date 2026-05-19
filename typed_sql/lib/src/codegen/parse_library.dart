@@ -857,7 +857,7 @@ Future<List<ParsedSqlOverride>> _parseSqlOverrides(
     final allowedFields = switch (context) {
       .schema => {'naming'},
       .tableName => {'naming', 'name'},
-      .table => {'collation', 'naming'},
+      .table => {'naming'},
       .field => {
         'dialect',
         'columnType',
@@ -899,12 +899,6 @@ Future<List<ParsedSqlOverride>> _parseSqlOverrides(
         );
       }
     }
-
-    // await throwInvalidAnnotationInSource(
-    //   '`SqlOverride` cannot override `name` for a   $o',
-    //   annotatedElement: annotatedElement,
-    //   annotation: ea,
-    // );
 
     overrides.add(o);
   }

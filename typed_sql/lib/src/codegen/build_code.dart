@@ -376,7 +376,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     defaultValue: ${renderExpression(f.defaultValue?.expression ?? literal(null))},
                     autoIncrement: ${f.autoIncrement},
                     overrides: [
-                      ${f.dialectSpecificOverrides.map((o) => o.toCode()).join(', ')}
+                      ${f.dialectSpecificOverrides.map((o) => o.expression).map(renderExpression).join(', ')}
                     ],
                   )
                 ''').join(', ')}
@@ -1662,15 +1662,12 @@ typedef DialectSpecificOverride = ({
 });
 
 extension on DialectSpecificOverride {
-  String toCode() =>
-      '''
-        (
-          dialect: ${dialect != null ? '\'$dialect\'' : 'null'},
-          columnType: ${columnType != null ? '\'$columnType\'' : 'null'},
-          defaultValue: ${defaultValue != null ? '\'$defaultValue\'' : 'null'},
-          collation: ${collation != null ? '\'$collation\'' : 'null'},
-        )
-      ''';
+  Expression get expression => literalRecord([], {
+    'dialect': literal(dialect),
+    'columnType': literal(columnType),
+    'defaultValue': literal(defaultValue),
+    'collation': literal(collation),
+  });
 }
 
 extension on ParsedField {

@@ -420,7 +420,6 @@ final class SqlOverride {
   ///
   /// This annotation can be used on a _row class_ (`Row` subclass).
   /// It allows overriding the:
-  ///  * default [collation] for the table, or,
   ///  * [naming] scheme used to derive SQL column names for fields.
   ///
   /// **Example:**
@@ -432,7 +431,6 @@ final class SqlOverride {
   /// }
   /// ```
   const factory SqlOverride.table({
-    String collation,
     Naming naming,
   }) = SqlOverride._;
 
