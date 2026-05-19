@@ -235,9 +235,9 @@ final class ParsedRecord {
       ].join(', ')})';
 }
 
-/// Parsed representation of [Nameing].
+/// Parsed representation of [Naming].
 ///
-/// This should always stay in sync with the [Nameing] enum.
+/// This should always stay in sync with the [Naming] enum.
 enum ParsedNaming {
   camelCase,
   // ignore: constant_identifier_names
