@@ -19,11 +19,11 @@ import 'dart:async';
 import 'dart:typed_data' show Uint8List;
 
 import 'package:collection/collection.dart';
+import 'package:meta/meta_meta.dart';
 
 import 'adapter/adapter.dart';
 import 'dialect/dialect.dart'
     show PipelinedSqlTask, SingleSqlTask, SqlDialect, SqlTask;
-
 import 'types/custom_data_type.dart' show CustomDataType;
 import 'types/json_value.dart' show JsonValue;
 
