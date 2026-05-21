@@ -29,7 +29,7 @@ abstract final class ComplexItem extends Row {
   @DefaultValue.now
   DateTime get createdAt;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get name;
 
   @DefaultValue(0.0)

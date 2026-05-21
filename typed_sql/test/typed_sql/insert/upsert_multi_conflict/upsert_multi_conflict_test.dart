@@ -27,11 +27,11 @@ abstract final class MultiItem extends Row {
   int get id;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get name;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get email;
 
   int get value;

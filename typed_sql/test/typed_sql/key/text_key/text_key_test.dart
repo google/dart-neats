@@ -24,7 +24,7 @@ abstract final class TestDatabase extends Schema {
 
 @PrimaryKey(['key'])
 abstract final class Item extends Row {
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get key;
 
   String get value;

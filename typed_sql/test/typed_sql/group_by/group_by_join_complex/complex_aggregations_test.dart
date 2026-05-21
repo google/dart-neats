@@ -28,7 +28,7 @@ abstract final class Department extends Row {
   @AutoIncrement()
   int get departmentId;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get name;
 }
 

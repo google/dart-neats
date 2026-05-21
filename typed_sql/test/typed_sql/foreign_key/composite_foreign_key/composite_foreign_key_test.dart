@@ -25,10 +25,10 @@ abstract final class TestDatabase extends Schema {
 
 @PrimaryKey(['firstName', 'lastName'])
 abstract final class Author extends Row {
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get firstName;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get lastName;
 }
 
@@ -46,10 +46,10 @@ abstract final class Book extends Row {
 
   String get title;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get authorFirstName;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get authorLastName;
 
   int get stock;

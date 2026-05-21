@@ -27,7 +27,7 @@ abstract final class BasicItem extends Row {
   int get id;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get name;
 
   int get value;
