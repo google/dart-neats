@@ -41,6 +41,36 @@ void main() {
     },
   );
 
+  r.addTest('successful nested transaction (savepoint)', (db) async {
+    await db.accounts
+        .insertValue(accountNumber: '0001', balance: 100.0)
+        .execute();
+
+    await db.transact(() async {
+      // Update in outer transaction
+      await db.accounts
+          .byAccountNumber('0001')
+          .update((a, set) => set(balance: toExpr(200.0)))
+          .execute();
+
+      await db.transact(() async {
+        // Update in inner transaction
+        await db.accounts
+            .byAccountNumber('0001')
+            .update((a, set) => set(balance: toExpr(300.0)))
+            .execute();
+      });
+
+      // Outer transaction should still see the committed value from inner (300)
+      final item = await db.accounts.byAccountNumber('0001').fetch();
+      check(item).isNotNull().balance.equals(300.0);
+    });
+
+    // After commit, should still be 300
+    final item = await db.accounts.byAccountNumber('0001').fetch();
+    check(item).isNotNull().balance.equals(300.0);
+  });
+
   r.addTest('Basic nested transaction (savepoint) rollback', (db) async {
     await db.accounts
         .insertValue(accountNumber: '0001', balance: 100.0)
