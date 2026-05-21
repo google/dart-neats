@@ -32,6 +32,7 @@ abstract final class Bookstore extends Schema {
 
   Table<Book> get booksInStock; // 'books_in_stock' in SQL
 }
+
 // #endregion
 
 // #region author-override
@@ -43,9 +44,10 @@ abstract final class Author extends Row {
   @Unique.field()
   @SqlOverride.field(name: 'author_name')
   @SqlOverride.field(dialect: 'sqlite', collation: 'NOCASE')
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get name; // 'author_name' in SQL
 }
+
 // #endregion
 
 @PrimaryKey(['bookId'])
@@ -54,7 +56,7 @@ abstract final class Book extends Row {
   int get bookId;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')
