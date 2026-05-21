@@ -26,8 +26,6 @@ import 'package:build/build.dart' show log;
 import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../typed_sql.dart' show ReferentialAction, SqlOverride;
-
 import '../types/json_value.dart' show JsonValue;
 import 'analyzer_utils.dart';
 import 'parsed_default_value.dart';
@@ -234,6 +232,16 @@ Future<ParsedLibrary> parseLibrary(
     }
   }
 
+  for (final schema in schemas) {
+    for (final table in schema.tables) {
+      table.schema = schema;
+      table.rowClass.table = table;
+      for (final field in table.rowClass.fields) {
+        field.rowClass = table.rowClass;
+      }
+    }
+  }
+
   return library;
 }
 
@@ -323,11 +331,16 @@ Future<ParsedSchema> _parseSchema(
           typeArgElement,
           () => rowClass,
         ),
+        overrides: await _parseSqlOverrides(a, .tableName),
       ),
     );
   }
 
-  return ParsedSchema(name: cls.name!, tables: tables);
+  return ParsedSchema(
+    name: cls.name!,
+    tables: tables,
+    overrides: await _parseSqlOverrides(cls, .schema),
+  );
 }
 
 Future<ParsedRowClass> _parseRowClass(
@@ -507,12 +520,7 @@ Future<ParsedRowClass> _parseRowClass(
       backingType: backingType,
       autoIncrement: autoIncrement,
       defaultValue: await _parseDefaultValue(a, type),
-      sqlOverrides: sqlOverrideTypeChecker.annotationsOf(a).map((annotation) {
-        return SqlOverride(
-          dialect: annotation.getField('dialect')?.toStringValue(),
-          columnType: annotation.getField('columnType')?.toStringValue(),
-        );
-      }).toList(),
+      overrides: await _parseSqlOverrides(a, .field),
     );
     fieldToElement[field] = a;
     fields.add(field);
@@ -774,10 +782,130 @@ Future<ParsedRowClass> _parseRowClass(
     fields: fields,
     foreignKeys: foreignKeys,
     uniqueConstraints: uniqueConstraints,
+    overrides: await _parseSqlOverrides(cls, .table),
   );
 }
 
-Future<ReferentialAction> _parseReferentialAction(
+enum SqlOverrideContext {
+  schema,
+  tableName,
+  table,
+  field,
+}
+
+extension on SqlOverrideContext {
+  String get displayName => switch (this) {
+    .schema => 'Schema subclass',
+    .tableName => 'Table subclass',
+    .table => 'Row subclass',
+    .field => 'field definition',
+  };
+  String get constructorDisplayName => switch (this) {
+    .schema => '@SqlOverride.schema()',
+    .tableName => '@SqlOverride.tableName()',
+    .table => '@SqlOverride.table()',
+    .field => '@SqlOverride.field()',
+  };
+  String get constructorName => switch (this) {
+    .schema => 'schema',
+    .tableName => 'tableName',
+    .table => 'table',
+    .field => 'field',
+  };
+}
+
+Future<List<ParsedSqlOverride>> _parseSqlOverrides(
+  Element annotatedElement,
+  SqlOverrideContext context,
+) async {
+  final overrides = <ParsedSqlOverride>[];
+  final sqlOverrideAnnotations = sqlOverrideTypeChecker
+      .annotationAndValuesOfExact(annotatedElement);
+
+  for (final (ea, a) in sqlOverrideAnnotations) {
+    final c = a.constructorInvocation?.constructor.name;
+    // TODO(jonasfj): Disallow c == new when we remove the deprecated default constructor!
+    if (c != 'new' && c != context.constructorName) {
+      await throwInvalidAnnotationInSource(
+        '`SqlOverride.$c` should not be used on ${context.displayName}, '
+        'use `${context.constructorDisplayName}`',
+        annotatedElement: annotatedElement,
+        annotation: ea,
+      );
+    }
+
+    final o = ParsedSqlOverride(
+      dialect: a.getField('_dialect')?.toStringValue(),
+      columnType: a.getField('_columnType')?.toStringValue(),
+      defaultValue: a.getField('_defaultValue')?.toStringValue(),
+      collation: a.getField('_collation')?.toStringValue(),
+      name: a.getField('_name')?.toStringValue(),
+      naming: ParsedNaming.values.firstWhereOrNull(
+        (v) => a.getField('_naming')?.variable?.name == v.name,
+      ),
+    );
+
+    final fields = {
+      'dialect': o.dialect != null,
+      'columnType': o.columnType != null,
+      'defaultValue': o.defaultValue != null,
+      'collation': o.collation != null,
+      'name': o.name != null,
+      'naming': o.naming != null,
+    };
+
+    final allowedFields = switch (context) {
+      .schema => {'naming'},
+      .tableName => {'naming', 'name'},
+      .table => {'naming'},
+      .field => {
+        'dialect',
+        'columnType',
+        'defaultValue',
+        'collation',
+        'name',
+        'naming',
+      },
+    };
+
+    final forbiddenFields = fields.entries
+        .where((e) => e.value)
+        .map((e) => e.key)
+        .where((f) => !allowedFields.contains(f))
+        .toList();
+    if (forbiddenFields.isNotEmpty) {
+      await throwInvalidAnnotationInSource(
+        '`SqlOverride` cannot override '
+        '${forbiddenFields.map((f) => '\'$f\'').join(', ')} '
+        'on ${context.displayName}, use `${context.constructorDisplayName}`',
+        annotatedElement: annotatedElement,
+        annotation: ea,
+      );
+    }
+
+    if (o.dialect != null) {
+      if (o.name != null) {
+        await throwInvalidAnnotationInSource(
+          '`SqlOverride` cannot override `name` for a specific `dialect`',
+          annotatedElement: annotatedElement,
+          annotation: ea,
+        );
+      }
+      if (o.naming != null) {
+        await throwInvalidAnnotationInSource(
+          '`SqlOverride` cannot override `naming` for a specific `dialect`',
+          annotatedElement: annotatedElement,
+          annotation: ea,
+        );
+      }
+    }
+
+    overrides.add(o);
+  }
+  return overrides;
+}
+
+Future<ParsedReferentialAction> _parseReferentialAction(
   DartObject? value, {
   required Element annotatedElement,
   required ElementAnnotation annotation,
@@ -786,7 +914,7 @@ Future<ReferentialAction> _parseReferentialAction(
     return .noAction;
   }
   final name = value.variable?.name;
-  final first = ReferentialAction.values
+  final first = ParsedReferentialAction.values
       .where((v) => v.name == name)
       .firstOrNull;
   if (first == null) {

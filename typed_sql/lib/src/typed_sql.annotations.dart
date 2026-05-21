@@ -262,24 +262,212 @@ final class Unique {
   const Unique.field({String? name}) : _name = name, _fields = null;
 }
 
-/// An annotation to provide overrides for SQL schema generation.
+/// Naming scheme for deriving SQL _table_ and _column_ names from Dart
+/// identifiers.
 ///
-/// This can be used multiple times on a single field to specify different
-/// overrides for different dialects.
-final class SqlOverride {
-  /// The dialect this override applies to (e.g. 'mysql', 'postgres', 'sqlite').
-  /// If omitted (`null`), the override applies to all dialects.
-  final String? dialect;
-
-  /// Overrides the SQL data type definition for the annotated column.
+/// The naming scheme assumes that Dart identifiers follow
+/// [Effective Dart][effective-dart], that is:
+///  * Class names are in `UpperCamelCase`, and,
+///  * Field names are in `lowerCamelCase`.
+///
+/// The _default_ naming scheme, if not overriden is [camelCase], which uses
+/// Dart identifiers as SQL table and column names.
+///
+/// The [snake_case] naming scheme converts Dart identifiers to lowercase with
+/// underscores, as illustrated below:
+///  * `userId` becomes `user_id`
+///  * `createdAt` becomes `created_at`,
+///  * `IPAddress` becomes `ip_address`, and,
+///  * `ShoppingCartItem` becomes `shopping_cart_item`.
+///
+/// > [!NOTE]
+/// > To make [snake_case] work well, only capitalize the first letter of
+/// > acronyms longer than two characters.
+/// > Prefer `HttpParser` over `HTTPParser` as per [Effective Dart][acronyms].
+///
+/// You can override the naming scheme for a schema, table or field using the
+/// appropriate [SqlOverride] annotation.
+///
+/// [effective-dart]: https://dart.dev/effective-dart/style#identifiers
+/// [acronyms]: https://dart.dev/effective-dart/style#do-capitalize-acronyms-and-abbreviations-longer-than-two-letters-like-words
+enum Naming {
+  /// Use `camelCase` for SQL table and column names.
   ///
-  /// Example:
-  ///  * `VARCHAR(255)`,
-  ///  * `DECIMAL(10, 2)`, etc.
-  final String? columnType;
+  /// This is the default naming scheme, and it is effectively a pass-thru, as
+  /// we assume Dart identifiers to be `camelCase`.
+  camelCase,
 
-  const SqlOverride({
-    this.dialect,
-    this.columnType,
-  });
+  /// Use `snake_case` for SQL table and column names.
+  ///
+  /// The `snake_case` is derived from Dart identifiers to lowercase with
+  /// underscores, as illustrated below:
+  ///  * `userId` becomes `user_id`
+  ///  * `createdAt` becomes `created_at`,
+  ///  * `IPAddress` becomes `ip_address`, and,
+  ///  * `ShoppingCartItem` becomes `shopping_cart_item`.
+  ///
+  /// > [!NOTE]
+  /// > To make [snake_case] work well, only capitalize the first letter of
+  /// > acronyms longer than two characters.
+  /// > Prefer `HttpParser` over `HTTPParser` as per [Effective Dart][acronyms].
+  ///
+  /// [acronyms]: https://dart.dev/effective-dart/style#do-capitalize-acronyms-and-abbreviations-longer-than-two-letters-like-words
+  snake_case, // ignore: constant_identifier_names
+}
+
+/// An annotation to provide overrides for SQL schema DDL generation.
+///
+/// The `SqlOverride` annotation is used to customize the generated SQL.
+/// It provides different named constructors depending on where it is applied:
+///
+///  * [SqlOverride.schema]: Applied to a _schema class_ to override schema-wide
+///    defaults.
+///  * [SqlOverride.tableName]: Applied to a table declaration inside a
+///    _schema class_ to override the table name.
+///  * [SqlOverride.table]: Applied to a _row class_ to override table-wide
+///    defaults.
+///  * [SqlOverride.field]: Applied to a field declaration inside a _row class_
+///    to override column-specific details.
+///
+/// Overrides are hierarchical. For example, a [Naming] scheme defined on a
+/// _schema class_ using [SqlOverride.schema] applies to all its tables and
+/// fields, unless specifically overridden at the _row class_ or field level.
+///
+/// {@category schema}
+final class SqlOverride {
+  // ignore: unused_field
+  final String? _dialect; // used by code-gen
+  // ignore: unused_field
+  final String? _columnType; // used by code-gen
+  // ignore: unused_field
+  final String? _defaultValue; // used by code-gen
+  // ignore: unused_field
+  final String? _collation; // used by code-gen
+  // ignore: unused_field
+  final String? _name; // used by code-gen
+  // ignore: unused_field
+  final Naming? _naming; // used by code-gen
+
+  const SqlOverride._({
+    String? dialect,
+    String? columnType,
+    String? defaultValue,
+    String? collation,
+    String? name,
+    Naming? naming,
+  }) : // TODO(jonasfj): Consider having an assert, when analyze highlights
+       //                it correctly in source code. For now code-gen errors
+       //                are actually better.
+       // assert(dialect == null || (name == null && naming == null)),
+       _dialect = dialect,
+       _columnType = columnType,
+       _defaultValue = defaultValue,
+       _collation = collation,
+       _name = name,
+       _naming = naming;
+
+  @Deprecated(
+    'Use SqlOverride.field(), SqlOverride.table() or SqlOverride.schema() instead',
+  )
+  const factory SqlOverride({
+    String? dialect,
+    String? columnType,
+  }) = SqlOverride._;
+
+  /// Specify schema-wide [Naming] scheme.
+  ///
+  /// This annotaiton can be used on a _schema class_ ([Schema] subclass).
+  /// It allowed overriding the _default_ [naming] scheme.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// @SqlOverride.schema(naming: .snake_case)
+  /// abstract final class Bookstore extends Schema {
+  ///  Table<Author> get authors;
+  ///  Table<Book> get books;
+  /// }
+  /// ```
+  const factory SqlOverride.schema({
+    Naming naming,
+  }) = SqlOverride._;
+
+  /// Specify overrides for a table in a `Schema`.
+  ///
+  /// This annotation can be used on a table declaration inside a
+  /// _schema class_ ([Schema] subclass). It allows overriding the:
+  ///  * SQL table [name] directly, or,
+  ///  * [naming] scheme for deriving the SQL table name.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// abstract final class Bookstore extends Schema {
+  ///   @SqlOverride.tableName(name: 'tbl_books')
+  ///   Table<Book> get books;
+  /// }
+  /// ```
+  ///
+  /// > [!NOTE]
+  /// > This only affects the SQL table name. It does not override the naming
+  /// > convention used for the columns within the table.
+  /// > To specify a naming convention for the columns, use [SqlOverride.table]
+  /// > on the _row class_.
+  const factory SqlOverride.tableName({
+    String name,
+    Naming naming,
+  }) = SqlOverride._;
+
+  /// Specify overrides for a _row class_.
+  ///
+  /// This annotation can be used on a _row class_ (`Row` subclass).
+  /// It allows overriding the:
+  ///  * [naming] scheme used to derive SQL column names for fields.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// @SqlOverride.table(naming: .snake_case)
+  /// @PrimaryKey(['id'])
+  /// abstract final class Book extends Row {
+  ///   // ...
+  /// }
+  /// ```
+  const factory SqlOverride.table({
+    Naming naming,
+  }) = SqlOverride._;
+
+  /// Specify overrides for a field in a _row class_.
+  ///
+  /// This annotation can be used on a field declaration inside a _row class_.
+  /// It allows overriding the generated SQL:
+  ///  * [columnType],
+  ///  * [defaultValue],
+  ///  * [collation],
+  ///  * SQL column [name], or,
+  ///  * [naming] scheme used to derive the SQL column name.
+  ///
+  /// Providing a [dialect] (e.g., `'postgres'` or `'sqlite'`) restricts the
+  /// overrides to only apply when generating SQL for that specific dialect.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// @PrimaryKey(['id'])
+  /// abstract final class Book extends Row {
+  ///   int get id;
+  ///
+  ///   @SqlOverride.field(name: 'book_title')
+  ///   @SqlOverride.field(dialect: 'postgres', columnType: 'VARCHAR(255)')
+  ///   String get title;
+  /// }
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > Overriding [name] or [naming] is not allowed when a [dialect] is
+  /// > provided, as SQL column names cannot be dialect-specific.
+  const factory SqlOverride.field({
+    String dialect,
+    String columnType,
+    String defaultValue,
+    String collation,
+    String name,
+    Naming naming,
+  }) = SqlOverride._;
 }

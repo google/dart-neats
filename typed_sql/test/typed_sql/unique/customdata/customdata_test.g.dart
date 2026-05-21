@@ -72,7 +72,12 @@ final class _$CustomDataItem extends CustomDataItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
     ],
@@ -150,10 +155,7 @@ extension TableCustomDataItemExt on Table<CustomDataItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': (T v) => id(v).toDatabase(),
-      'stringVal': (T v) => stringVal(v).toDatabase(),
-    },
+    mappings: [(T v) => id(v).toDatabase(), (T v) => stringVal(v).toDatabase()],
   );
 
   /// Delete a single row from the `customDataItems` table, specified by

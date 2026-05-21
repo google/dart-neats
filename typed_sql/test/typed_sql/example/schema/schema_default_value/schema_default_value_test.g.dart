@@ -71,7 +71,12 @@ final class _$Author extends Author {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
     ],
@@ -141,7 +146,7 @@ extension TableAuthorExt on Table<Author> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'authorId': authorId, 'name': name},
+    mappings: [authorId, name],
   );
 
   /// Delete a single row from the `authors` table, specified by
@@ -579,7 +584,12 @@ final class _$Book extends Book {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -686,12 +696,7 @@ extension TableBookExt on Table<Book> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'bookId': bookId,
-      'title': title,
-      'authorId': authorId,
-      'stock': stock,
-    },
+    mappings: [bookId, title, authorId, stock],
   );
 
   /// Delete a single row from the `books` table, specified by

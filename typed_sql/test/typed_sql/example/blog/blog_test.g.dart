@@ -67,7 +67,12 @@ final class _$Post extends Post {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -76,7 +81,12 @@ final class _$Post extends Post {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -161,7 +171,7 @@ extension TablePostExt on Table<Post> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'author': author, 'slug': slug, 'content': content},
+    mappings: [author, slug, content],
   );
 
   /// Delete a single row from the `posts` table, specified by
@@ -613,7 +623,12 @@ final class _$Comment extends Comment {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -622,7 +637,12 @@ final class _$Comment extends Comment {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -723,12 +743,7 @@ extension TableCommentExt on Table<Comment> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'commentId': commentId,
-      'author': author,
-      'postSlug': postSlug,
-      'comment': comment,
-    },
+    mappings: [commentId, author, postSlug, comment],
   );
 
   /// Delete a single row from the `comments` table, specified by

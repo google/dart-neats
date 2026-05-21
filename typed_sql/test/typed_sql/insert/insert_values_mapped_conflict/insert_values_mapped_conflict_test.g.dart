@@ -75,7 +75,12 @@ final class _$ConflictMappedItem extends ConflictMappedItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -159,7 +164,7 @@ extension TableConflictMappedItemExt on Table<ConflictMappedItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'name': name, 'value': value},
+    mappings: [id, name, value],
   );
 
   /// Delete a single row from the `conflictMappedItems` table, specified by

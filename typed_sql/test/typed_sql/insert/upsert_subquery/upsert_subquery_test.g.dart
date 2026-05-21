@@ -141,7 +141,7 @@ extension TableSourceItemExt on Table<SourceItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'value': value},
+    mappings: [id, value],
   );
 
   /// Delete a single row from the `sourceItems` table, specified by
@@ -514,7 +514,12 @@ final class _$SubQueryItem extends SubQueryItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -621,7 +626,7 @@ extension TableSubQueryItemExt on Table<SubQueryItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'tag': tag, 'refId': refId, 'count': count},
+    mappings: [id, tag, refId, count],
   );
 
   /// Delete a single row from the `subQueryItems` table, specified by

@@ -21,6 +21,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 
 import '../utils/camelcase.dart';
+import '../utils/snake_case.dart';
 import 'code_builder_ext.dart';
 import 'docs.dart' as docs;
 import 'parsed_default_value.dart';
@@ -365,8 +366,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..modifier = FieldModifier.final$
             ..assignment = Code('''
               \$ForGeneratedCode.tableDefinition(
-              tableName: '${table.name}',
-              columns: <String>[${rowClass.fields.map((f) => '\'${f.name}\'').join(', ')}],
+              tableName: '${table.sqlName}',
+              columns: <String>[${rowClass.fields.map((f) => '\'${f.sqlName}\'').join(', ')}],
               columnInfo: [
                 ${rowClass.fields.map((f) => '''
                   \$ForGeneratedCode.columnDefinition(
@@ -375,24 +376,22 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     defaultValue: ${renderExpression(f.defaultValue?.expression ?? literal(null))},
                     autoIncrement: ${f.autoIncrement},
                     overrides: [
-                      ${f.sqlOverrides.map(
-              (o) => 'const SqlOverride(dialect: ${literal(o.dialect)}, columnType: ${literal(o.columnType)})',
-            ).join(',')}
+                      ${f.dialectSpecificOverrides.map((o) => o.expression).map(renderExpression).join(', ')}
                     ],
                   )
                 ''').join(', ')}
               ],
-              primaryKey: <String>[${rowClass.primaryKey.map((f) => '\'${f.name}\'').join(', ')}],
+              primaryKey: <String>[${rowClass.primaryKey.map((f) => '\'${f.sqlName}\'').join(', ')}],
               unique: <List<String>>[
-                ${rowClass.uniqueConstraints.map((uc) => '[${uc.fields.map((f) => '\'${f.name}\'').join(', ')}]').join(', ')}
+                ${rowClass.uniqueConstraints.map((uc) => '[${uc.fields.map((f) => '\'${f.sqlName}\'').join(', ')}]').join(', ')}
               ],
               foreignKeys: [
                 ${rowClass.foreignKeys.map((fk) => '''
                   \$ForGeneratedCode.foreignKeyDefinition(
                     name: '${fk.name}',
-                    columns: [${fk.foreignKey.map((f) => '\'${f.name}\'').join(', ')}],
-                    referencedTable: '${fk.table}',
-                    referencedColumns: [${fk.fields.map((f) => '\'$f\'').join(', ')}],
+                    columns: [${fk.foreignKey.map((f) => '\'${f.sqlName}\'').join(', ')}],
+                    referencedTable: '${fk.referencedTable.sqlName}',
+                    referencedColumns: [${fk.referencedFields.map((f) => '\'${f.sqlName}\'').join(', ')}],
                     onDelete: .${fk.onDelete.name},
                     onUpdate: .${fk.onUpdate.name},
                   )
@@ -625,18 +624,16 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               \$ForGeneratedCode.insertValuesMapped(
                 table: this,
                 rows: rows,
-                mapping: {
-            ${rowClass.fields.map((f) {
+                mappings: [${rowClass.fields.map((f) {
               final hasDefault = f.defaultValue != null || f.isNullable || f.autoIncrement;
               if (f.isCustomType) {
                 if (hasDefault) {
-                  return '\'${f.name}\': ${f.name} != null ? (T v) => ${f.name}(v)?.toDatabase() : null';
+                  return '${f.name} != null ? (T v) => ${f.name}(v)?.toDatabase() : null';
                 }
-                return '\'${f.name}\': (T v) => ${f.name}(v).toDatabase()';
+                return '(T v) => ${f.name}(v).toDatabase()';
               }
-              return '\'${f.name}\': ${f.name}';
-            }).join(', ')}
-                },
+              return f.name;
+            }).join(', ')}],
               )
             '''),
         ),
@@ -1626,6 +1623,25 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
     ))*/
 }
 
+extension on ParsedTable {
+  String get sqlName {
+    final nameOverride = overrides.map((o) => o.name).nonNulls.lastOrNull;
+    if (nameOverride != null) {
+      return nameOverride;
+    }
+
+    final naming =
+        [
+          // List of all overrides in prioritized order
+          ...schema.overrides,
+          ...overrides,
+        ].map((o) => o.naming).nonNulls.lastOrNull ??
+        .camelCase;
+
+    return naming.format(name);
+  }
+}
+
 extension on ParsedRecord {
   String get type =>
       '({${fields.mapIndexed(
@@ -1638,12 +1654,95 @@ extension on ParsedRecord {
       ).join(', ')},})';
 }
 
+typedef DialectSpecificOverride = ({
+  String? dialect,
+  String? columnType,
+  String? defaultValue,
+  String? collation,
+});
+
+extension on DialectSpecificOverride {
+  Expression get expression => literalRecord([], {
+    'dialect': literal(dialect),
+    'columnType': literal(columnType),
+    'defaultValue': literal(defaultValue),
+    'collation': literal(collation),
+  });
+}
+
 extension on ParsedField {
   String get type => isNullable ? '$typeName?' : typeName;
 
   bool get hasDefault => defaultValue != null || autoIncrement;
 
   bool get isCustomType => backingType != typeName;
+
+  String get sqlName {
+    final nameOverride = overrides.map((o) => o.name).nonNulls.lastOrNull;
+    if (nameOverride != null) {
+      return nameOverride;
+    }
+
+    final naming =
+        [
+          // List of all overrides in prioritized order
+          ...rowClass.table.schema.overrides,
+          ...rowClass.overrides,
+          ...overrides,
+        ].map((o) => o.naming).nonNulls.lastOrNull ??
+        .camelCase;
+
+    return naming.format(name);
+  }
+
+  Iterable<DialectSpecificOverride> get dialectSpecificOverrides sync* {
+    // List of all overrides in prioritized order
+    final allOverrides = [
+      ...rowClass.table.schema.overrides,
+      ...rowClass.overrides,
+      ...overrides,
+    ].toList();
+
+    // Find all the dialects that we should consider making overrides for
+    final dialects = {
+      ...allOverrides.map((o) => o.dialect),
+    }.nonNulls.toList();
+
+    // For each dialect find the overrides that apply and add them to resolved
+    // always add the null dialect first
+    for (final dialect in [null, ...dialects]) {
+      String? columnType;
+      String? defaultValue;
+      String? collation;
+      var hasOverride = false;
+      for (final o in allOverrides) {
+        if (o.dialect == dialect || o.dialect == null) {
+          if (o.columnType != null) {
+            columnType = o.columnType;
+            hasOverride = true;
+          }
+          if (o.defaultValue != null) {
+            defaultValue = o.defaultValue;
+            hasOverride = true;
+          }
+          if (o.collation != null) {
+            collation = o.collation;
+            hasOverride = true;
+          }
+          // We ignore name overrides because these cannot be dialect specific!
+        }
+      }
+
+      if (hasOverride) {
+        yield (
+          dialect: dialect,
+          columnType: columnType,
+          defaultValue: defaultValue,
+          collation: collation,
+        );
+      }
+    }
+  }
 }
 
 extension on List<ParsedField> {
@@ -1755,4 +1854,11 @@ extension on ParsedDefaultValue {
         });
     }
   }
+}
+
+extension on ParsedNaming {
+  String format(String name) => switch (this) {
+    ParsedNaming.camelCase => name,
+    ParsedNaming.snake_case => snakeCase(name),
+  };
 }

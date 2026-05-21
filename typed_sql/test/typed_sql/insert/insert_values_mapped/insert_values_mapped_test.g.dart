@@ -169,12 +169,7 @@ extension TableMappedItemExt on Table<MappedItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': id,
-      'value': value,
-      'count': count,
-      'nullableValue': nullableValue,
-    },
+    mappings: [id, value, count, nullableValue],
   );
 
   /// Delete a single row from the `mappedItems` table, specified by

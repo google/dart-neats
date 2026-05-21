@@ -72,7 +72,12 @@ final class _$BasicItem extends BasicItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -155,7 +160,7 @@ extension TableBasicItemExt on Table<BasicItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'name': name, 'value': value},
+    mappings: [id, name, value],
   );
 
   /// Delete a single row from the `basicItems` table, specified by

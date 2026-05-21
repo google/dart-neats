@@ -94,7 +94,12 @@ final class _$SimpleItem extends SimpleItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -177,7 +182,7 @@ extension TableSimpleItemExt on Table<SimpleItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'name': name, 'value': value},
+    mappings: [id, name, value],
   );
 
   /// Delete a single row from the `simpleItems` table, specified by
@@ -597,7 +602,12 @@ final class _$CompositeItem extends CompositeItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -613,7 +623,12 @@ final class _$CompositeItem extends CompositeItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -622,7 +637,12 @@ final class _$CompositeItem extends CompositeItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -727,13 +747,7 @@ extension TableCompositeItemExt on Table<CompositeItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'partA': partA,
-      'partB': partB,
-      'firstName': firstName,
-      'lastName': lastName,
-      'data': data,
-    },
+    mappings: [partA, partB, firstName, lastName, data],
   );
 
   /// Delete a single row from the `compositeItems` table, specified by
@@ -1225,7 +1239,12 @@ final class _$NullableUniqueItem extends NullableUniqueItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -1312,7 +1331,7 @@ extension TableNullableUniqueItemExt on Table<NullableUniqueItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'code': code, 'description': description},
+    mappings: [id, code, description],
   );
 
   /// Delete a single row from the `nullableUniqueItems` table, specified by
@@ -1753,7 +1772,12 @@ final class _$SubQueryItem extends SubQueryItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -1860,7 +1884,7 @@ extension TableSubQueryItemExt on Table<SubQueryItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'tag': tag, 'refId': refId, 'count': count},
+    mappings: [id, tag, refId, count],
   );
 
   /// Delete a single row from the `subQueryItems` table, specified by
@@ -2336,7 +2360,12 @@ final class _$ComplexItem extends ComplexItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -2468,14 +2497,7 @@ extension TableComplexItemExt on Table<ComplexItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': id,
-      'createdAt': createdAt,
-      'name': name,
-      'doubleValue': doubleValue,
-      'boolValue': boolValue,
-      'value': value,
-    },
+    mappings: [id, createdAt, name, doubleValue, boolValue, value],
   );
 
   /// Delete a single row from the `complexItems` table, specified by
@@ -3056,7 +3078,7 @@ extension TableCustomTypeItemExt on Table<CustomTypeItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'value': (T v) => value(v).toDatabase()},
+    mappings: [id, (T v) => value(v).toDatabase()],
   );
 
   /// Delete a single row from the `customTypeItems` table, specified by

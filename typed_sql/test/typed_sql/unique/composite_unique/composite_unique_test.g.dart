@@ -74,7 +74,12 @@ final class _$User extends User {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -83,7 +88,12 @@ final class _$User extends User {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
     ],
@@ -163,11 +173,7 @@ extension TableUserExt on Table<User> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'accountId': accountId,
-      'firstName': firstName,
-      'lastName': lastName,
-    },
+    mappings: [accountId, firstName, lastName],
   );
 
   /// Delete a single row from the `users` table, specified by

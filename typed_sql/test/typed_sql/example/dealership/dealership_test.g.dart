@@ -81,7 +81,12 @@ final class _$Car extends Car {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -175,12 +180,7 @@ extension TableCarExt on Table<Car> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'id': id,
-      'model': model,
-      'licensePlate': licensePlate,
-      'color': (T v) => color(v).toDatabase(),
-    },
+    mappings: [id, model, licensePlate, (T v) => color(v).toDatabase()],
   );
 
   /// Delete a single row from the `cars` table, specified by

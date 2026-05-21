@@ -161,11 +161,7 @@ extension TableEmployeeExt on Table<Employee> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {
-      'employeeId': employeeId,
-      'name': name,
-      'departmentId': departmentId,
-    },
+    mappings: [employeeId, name, departmentId],
   );
 
   /// Delete a single row from the `employees` table, specified by
@@ -660,7 +656,7 @@ extension TableDepartmentExt on Table<Department> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'departmentId': departmentId, 'name': name, 'location': location},
+    mappings: [departmentId, name, location],
   );
 
   /// Delete a single row from the `departments` table, specified by

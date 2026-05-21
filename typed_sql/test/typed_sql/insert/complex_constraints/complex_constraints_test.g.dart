@@ -86,7 +86,12 @@ final class _$CompositePkItem extends CompositePkItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -168,7 +173,7 @@ extension TableCompositePkItemExt on Table<CompositePkItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'pkA': pkA, 'pkB': pkB, 'data': data},
+    mappings: [pkA, pkB, data],
   );
 
   /// Delete a single row from the `compositePkItems` table, specified by
@@ -574,7 +579,12 @@ final class _$MultiUniqueItem extends MultiUniqueItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -672,7 +682,7 @@ extension TableMultiUniqueItemExt on Table<MultiUniqueItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'fieldA': fieldA, 'fieldB': fieldB, 'data': data},
+    mappings: [id, fieldA, fieldB, data],
   );
 
   /// Delete a single row from the `multiUniqueItems` table, specified by
@@ -1153,7 +1163,12 @@ final class _$ForeignKeyItem extends ForeignKeyItem {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -1251,7 +1266,7 @@ extension TableForeignKeyItemExt on Table<ForeignKeyItem> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'id': id, 'refPkA': refPkA, 'refPkB': refPkB, 'data': data},
+    mappings: [id, refPkA, refPkB, data],
   );
 
   /// Delete a single row from the `foreignKeyItems` table, specified by

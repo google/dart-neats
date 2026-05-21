@@ -81,7 +81,15 @@ final class ColumnDefinition {
   final bool isNotNull;
   final Object? defaultValue;
   final bool autoIncrement;
-  final List<SqlOverride> overrides;
+  final List<
+    ({
+      String? dialect,
+      String? columnType,
+      String? defaultValue,
+      String? collation,
+    })
+  >
+  overrides;
 
   const ColumnDefinition({
     required this.type,
@@ -238,25 +246,20 @@ final class $ForGeneratedCode {
   static Insert<T> insertValuesMapped<T extends Row, S>({
     required Table<T> table,
     required Iterable<S> rows,
-    required Map<String, Object? Function(S)?> mapping,
-  }) {
-    final m = [
-      for (final e in mapping.entries)
-        if (e.value case final v?) (column: e.key, map: v),
-    ];
-    final columns = m.map((e) => e.column).toList();
-    return Insert._(
-      table: table,
-      values: BulkValuesSource._(
-        columns,
-        columns.map((c) {
-          final i = table._tableClause._definition.columns.indexOf(c);
-          return table._tableClause._definition.columnInfo[i].type;
-        }).toList(),
-        m.map((e) => rows.map(e.map)).toList(),
-      ),
-    );
-  }
+    required List<Object? Function(S)?> mappings,
+  }) => Insert._(
+    table: table,
+    values: BulkValuesSource._(
+      table._tableClause.columns
+          .whereIndexed((index, value) => mappings[index] != null)
+          .toList(),
+      table._tableClause._definition.columnInfo
+          .whereIndexed((index, value) => mappings[index] != null)
+          .map((c) => c.type)
+          .toList(),
+      mappings.nonNulls.map(rows.map).toList(),
+    ),
+  );
 
   static InsertSingle<T> insertInto<T extends Row>({
     required Table<T> table,
@@ -402,7 +405,15 @@ final class $ForGeneratedCode {
     required bool isNotNull,
     Object? defaultValue,
     required bool autoIncrement,
-    required List<SqlOverride> overrides,
+    required List<
+      ({
+        String? dialect,
+        String? columnType,
+        String? defaultValue,
+        String? collation,
+      })
+    >
+    overrides,
   }) {
     return ColumnDefinition(
       type: type,

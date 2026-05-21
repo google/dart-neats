@@ -69,7 +69,12 @@ final class _$Account extends Account {
         defaultValue: null,
         autoIncrement: false,
         overrides: [
-          const SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)'),
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
         ],
       ),
     ],
@@ -145,7 +150,7 @@ extension TableAccountExt on Table<Account> {
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mapping: {'accountId': accountId, 'accountNumber': accountNumber},
+    mappings: [accountId, accountNumber],
   );
 
   /// Delete a single row from the `accounts` table, specified by

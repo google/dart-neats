@@ -26,7 +26,15 @@ final class CreateTableStatement extends SqlStatement {
       bool isNotNull,
       Expr<Object>? defaultValue,
       bool autoIncrement,
-      List<SqlOverride> overrides,
+      List<
+        ({
+          String? dialect,
+          String? columnType,
+          String? defaultValue,
+          String? collation,
+        })
+      >
+      overrides,
     })
   >
   columns;
