@@ -17,6 +17,7 @@ part of 'typed_sql.dart';
 /// Annotation for a table specifying its primary key.
 ///
 /// {@category schema}
+@Target({.classType})
 final class PrimaryKey {
   final List<String> fields;
 
@@ -29,6 +30,7 @@ final class PrimaryKey {
 /// to be _optional_ when inserting rows.
 ///
 /// {@category schema}
+@Target({.getter})
 final class DefaultValue {
   // ignore: unused_field
   final ({String kind, Object value}) _value; // decoded by code-gen
@@ -101,6 +103,7 @@ final class DefaultValue {
 /// Annotation for a field that should be auto-incremented (by default).
 ///
 /// {@category schema}
+@Target({.getter})
 final class AutoIncrement {
   const AutoIncrement();
 }
@@ -150,6 +153,7 @@ enum ReferentialAction {
 ///
 /// {@category schema}
 /// {@category foreign_keys}
+@Target({.getter})
 final class References {
   final String table;
   final String field;
@@ -172,6 +176,7 @@ final class References {
 ///
 /// {@category schema}
 /// {@category foreign_keys}
+@Target({.classType})
 final class ForeignKey {
   final List<String> foreignKey;
   final String table;
@@ -195,6 +200,7 @@ final class ForeignKey {
 /// Annotation to define `UNIQUE` constraints.
 ///
 /// {@category schema}
+@Target({.classType, .getter})
 final class Unique {
   // ignore: unused_field
   final String? _name; // used by code-gen
@@ -334,6 +340,7 @@ enum Naming {
 /// fields, unless specifically overridden at the _row class_ or field level.
 ///
 /// {@category schema}
+@Target({.classType, .getter})
 final class SqlOverride {
   // ignore: unused_field
   final String? _dialect; // used by code-gen
