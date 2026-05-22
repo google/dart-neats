@@ -32,7 +32,7 @@ abstract final class SimpleItem extends Row {
   int get id;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get name;
 
   int get value;
@@ -41,14 +41,14 @@ abstract final class SimpleItem extends Row {
 @PrimaryKey(['partA', 'partB'])
 @Unique(name: 'fullname', fields: ['firstName', 'lastName'])
 abstract final class CompositeItem extends Row {
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get partA;
   int get partB;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get firstName;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get lastName;
 
   String get data;
@@ -60,7 +60,7 @@ abstract final class NullableUniqueItem extends Row {
   int get id;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String? get code;
 
   String get description;
@@ -72,7 +72,7 @@ abstract final class SubQueryItem extends Row {
   int get id;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get tag;
 
   @References(table: 'simpleItems', field: 'id')
@@ -89,7 +89,7 @@ abstract final class ComplexItem extends Row {
   @DefaultValue.now
   DateTime get createdAt;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get name;
 
   @DefaultValue(0.0)

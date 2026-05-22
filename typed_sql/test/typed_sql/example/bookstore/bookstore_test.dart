@@ -39,7 +39,7 @@ abstract final class Author extends Row {
   int get authorId;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String get name;
 }
 
@@ -49,7 +49,7 @@ abstract final class Book extends Row {
   int get bookId;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)') // #hide
   String? get title;
 
   @References(table: 'authors', field: 'authorId', name: 'author', as: 'books')

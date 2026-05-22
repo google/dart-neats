@@ -28,10 +28,10 @@ abstract final class User extends Row {
   @AutoIncrement()
   int get accountId;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get firstName;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get lastName;
 }
 

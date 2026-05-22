@@ -24,9 +24,9 @@ abstract final class BlogDatabase extends Schema {
 
 @PrimaryKey(['author', 'slug'])
 abstract final class Post extends Row {
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get author;
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get slug;
 
   String get content;
@@ -44,9 +44,9 @@ abstract final class Comment extends Row {
   @AutoIncrement()
   int get commentId;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get author;
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get postSlug;
 
   String get comment;

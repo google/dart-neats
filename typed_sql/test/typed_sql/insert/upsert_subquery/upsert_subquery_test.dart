@@ -36,7 +36,7 @@ abstract final class SubQueryItem extends Row {
   int get id;
 
   @Unique.field()
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get tag;
 
   @References(table: 'sourceItems', field: 'id')

@@ -27,7 +27,7 @@ abstract final class ComplexConstraintsDatabase extends Schema {
 abstract final class CompositePkItem extends Row {
   int get pkA;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get pkB;
 
   String get data;
@@ -39,7 +39,7 @@ abstract final class MultiUniqueItem extends Row {
   @AutoIncrement()
   int get id;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get fieldA;
 
   int get fieldB;
@@ -59,7 +59,7 @@ abstract final class ForeignKeyItem extends Row {
 
   int get refPkA;
 
-  @SqlOverride(dialect: 'mysql', columnType: 'VARCHAR(255)')
+  @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get refPkB;
 
   String get data;
