@@ -316,6 +316,80 @@ See [References] documentation for details.
 [build_runner]: https://pub.dev/packages/build_runner
 [DDL]: https://en.wikipedia.org/wiki/Data_definition_language
 
+
+## Customize SQL generation
+When generating SQL `package:typed_sql` will derive table names, column names,
+data-types and constraints from the Dart identifiers, types and annotations
+used in _schema class_ and _row classes_. We can customize the generated SQL
+using the [SqlOverride] annotation, which can be used to override:
+
+ * `columnType`, raw SQL data type to be used for a column,
+ * `defaultValue`, raw SQL expression for a default value,
+ * `collation`, raw SQL definition of collation,
+ * `name`, column name, and,
+ * `naming` convention, used for deriving the name from Dart identifier.
+
+The overrides are hierarchical, and can be applied at different levels using
+the appropriate named constructor.
+
+ * [SqlOverride.schema], can be applied to a _schema class_ to override
+   schema-wide naming convention.
+ * [SqlOverride.tableName], can be applied to a table declaration inside a
+   _schema class_ to override the _table name_.
+ * [SqlOverride.table], can be applied to a _row class_ to override table-wide
+   naming convention.
+ * [SqlOverride.field], can be applied to a field declaration inside a
+   _row class_ to overide column-specific details.
+
+To use `snake_case` for all table column names in the database, we can put an
+[SqlOverride.schema] annotation on the _schema class_, and still override the
+specific name for a table with a [SqlOverride.tableName] annotation later, as
+illustrated below:
+
+```dart schema_overrides_test.dart#schema-override
+@SqlOverride.schema(naming: .snake_case)
+abstract final class Bookstore extends Schema {
+  @SqlOverride.tableName(name: 'tbl_authors')
+  Table<Author> get authors; // 'tbl_authors' in SQL
+
+  Table<Book> get booksInStock; // 'books_in_stock' in SQL
+}
+```
+
+The `naming` override on the _schema class_ will be default for all tables,
+unless `name` or `naming`-convention is overriden further down. An override
+will be _dialect-specific_ if a `dialect` parameter is given, this is often
+useful for things like `collation` or `columnType` which are rarely portable
+across databases. The example below shows how to use [SqlOverride.field] to
+specify collation when generating SQL for sqlite.
+
+```dart schema_overrides_test.dart#author-override
+@PrimaryKey(['authorId'])
+abstract final class Author extends Row {
+  @AutoIncrement()
+  int get authorId; // 'author_id' in SQL
+
+  @Unique.field()
+  @SqlOverride.field(name: 'author_name')
+  @SqlOverride.field(dialect: 'sqlite', collation: 'NOCASE')
+  String get name; // 'author_name' in SQL
+}
+```
+
+The equivalent SQL depends on the database, but for sqlite it looks something
+like:
+```sql
+CREATE TABLE tbl_authors (
+  author_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  author_name TEXT NOCASE NOT NULL,
+  UNIQUE(author_name)
+);
+
+> [!WARNING]
+> It is not possible to make a _dialect-specific_ override of `name` or
+> `naming` convention, attempting to do so will cause a code-generation error.
+
+
 <!-- GENERATED DOCUMENTATION LINKS -->
 [Custom data types]: ../topics/custom_data_types-topic.html
 [CustomDataType]: ../typed_sql/CustomDataType-class.html
@@ -326,4 +400,9 @@ See [References] documentation for details.
 [References]: ../typed_sql/References-class.html
 [Schema]: ../typed_sql/Schema-class.html
 [SqlDialect]: ../typed_sql/SqlDialect-class.html
+[SqlOverride]: ../typed_sql/SqlOverride-class.html
+[SqlOverride.field]: ../typed_sql/SqlOverride/SqlOverride.field.html
+[SqlOverride.schema]: ../typed_sql/SqlOverride/SqlOverride.schema.html
+[SqlOverride.table]: ../typed_sql/SqlOverride/SqlOverride.table.html
+[SqlOverride.tableName]: ../typed_sql/SqlOverride/SqlOverride.tableName.html
 [Table]: ../typed_sql/Table-class.html
