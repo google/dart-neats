@@ -1,7 +1,18 @@
-## 0.1.10-dev
+## 0.1.10
  * Introduce `.insertValue` which automatically wraps with `toExpr()`, but is
    unfortunately unable to insert _default value_ for nullable fields that
    have a default value other than `NULL`.
+ * Introduce `.insert(..).onConflict(..).update(..).where(..).returning(..)`
+   enabling upsert-style inserts.
+ * Introduce `.insertValuesMapped(..)` for bulk-inserts.
+ * Improve performance by using string literals for JSON path expressions in
+   generated SQL.
+ * Introduce `@SqlOverride` annotation for overriding:
+    * Column type,
+    * Column name,
+    * Default naming convention,
+    * Collation, or,
+    * Default value expression.
 
 ## 0.1.9
  * Fix constraint name generation for `FOREIGN KEY` DDLs.
