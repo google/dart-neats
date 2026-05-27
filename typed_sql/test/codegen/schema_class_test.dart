@@ -20,7 +20,7 @@ void main() {
     source: r'''
       abstract final class TestDatabase extends Schema {}
     ''',
-    generated: contains('TestDatabaseSchema on Database<TestDatabase>'),
+    output: (s) => s.contains('TestDatabaseSchema on Database<TestDatabase>'),
   );
 
   testCodeGeneration(
@@ -28,7 +28,7 @@ void main() {
     source: r'''
       final class TestDatabase extends Schema {}
     ''',
-    error: contains('abstract'),
+    error: (s) => s.contains('abstract'),
   );
 
   testCodeGeneration(
@@ -36,7 +36,7 @@ void main() {
     source: r'''
       abstract class TestDatabase extends Schema {}
     ''',
-    error: contains('final'),
+    error: (s) => s.contains('final'),
   );
 
   testCodeGeneration(
@@ -45,7 +45,7 @@ void main() {
       abstract final class TestDatabase extends Schema {}
       abstract final class TestDatabase2 extends Schema {}
     ''',
-    error: contains('Only one Schema per library is allowed'),
+    error: (s) => s.contains('Only one Schema per library is allowed'),
   );
 
   testCodeGeneration(
@@ -57,7 +57,7 @@ void main() {
         }
       }
     ''',
-    error: contains('subclasses of `Schema` cannot have methods'),
+    error: (s) => s.contains('subclasses of `Schema` cannot have methods'),
   );
 
   testCodeGeneration(
@@ -74,7 +74,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('subclasses of `Schema` cannot have setters'),
+    error: (s) => s.contains('subclasses of `Schema` cannot have setters'),
   );
 
   testCodeGeneration(
@@ -90,7 +90,8 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('subclasses of `Schema` can only abstract getters'),
+    error: (s) =>
+        s.contains('subclasses of `Schema` can only abstract getters'),
   );
 
   testCodeGeneration(
@@ -100,7 +101,8 @@ void main() {
         String get items;
       }
     ''',
-    error: contains('subclasses of `Schema` can only have `Table` properties'),
+    error: (s) =>
+        s.contains('subclasses of `Schema` can only have `Table` properties'),
   );
 
   testCodeGeneration(
@@ -110,7 +112,7 @@ void main() {
         Table<UnknownItem> get items;
       }
     ''',
-    error: contains('Unable to resolve T in `Table<T>` properties'),
+    error: (s) => s.contains('Unable to resolve T in `Table<T>` properties'),
   );
 
   testCodeGeneration(
@@ -120,7 +122,7 @@ void main() {
         Table<int> get items;
       }
     ''',
-    error: contains('T in `Table<T>` must be a subclass of `Row`'),
+    error: (s) => s.contains('T in `Table<T>` must be a subclass of `Row`'),
   );
 
   testCodeGeneration(
@@ -130,6 +132,6 @@ void main() {
         Table<Exception> get items;
       }
     ''',
-    error: contains('T in `Table<T>` must be a subclass of `Row`'),
+    error: (s) => s.contains('T in `Table<T>` must be a subclass of `Row`'),
   );
 }

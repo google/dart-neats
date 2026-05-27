@@ -30,7 +30,7 @@ void main() {
         String get accountNumber;
       }
     ''',
-    generated: contains('byAccountNumber'),
+    output: (s) => s.contains('byAccountNumber'),
   );
 
   testCodeGeneration(
@@ -48,7 +48,7 @@ void main() {
         String get accountNumber;
       }
     ''',
-    generated: contains('byAccNr'),
+    output: (s) => s.contains('byAccNr'),
   );
 
   testCodeGeneration(
@@ -66,7 +66,7 @@ void main() {
         String get accountNumber;
       }
     ''',
-    generated: isNot(contains('byAccountNumber')),
+    output: (s) => s.not((s) => s.contains('byAccountNumber')),
   );
 
   testCodeGeneration(
@@ -85,7 +85,8 @@ void main() {
         String get accountNumber;
       }
     ''',
-    error: contains('Only one `Unique.field` annotation is allowed per field'),
+    error: (s) =>
+        s.contains('Only one `Unique.field` annotation is allowed per field'),
   );
 
   testCodeGeneration(
@@ -103,7 +104,7 @@ void main() {
         String get accountNumber;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       '`Unique()` cannot be used on fields, use `Unique.fields` instead',
     ),
   );
@@ -123,7 +124,7 @@ void main() {
         String get accountNumber;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       '`Unique.field(name: "hello world")`: name is not a valid Dart identifier',
     ),
   );
@@ -144,7 +145,7 @@ void main() {
         String get accountNumber;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       '`Unique.field()` cannot be used on classes, use `Unique()` instead',
     ),
   );
@@ -164,7 +165,8 @@ void main() {
         JsonValue get accountNumber;
       }
     ''',
-    error: contains('JsonValue field cannot be used in a `Unique` annotation'),
+    error: (s) =>
+        s.contains('JsonValue field cannot be used in a `Unique` annotation'),
   );
 
   testCodeGeneration(
@@ -181,7 +183,7 @@ void main() {
         String get accountNumber;
       }
     ''',
-    generated: contains('byAccountNr'),
+    output: (s) => s.contains('byAccountNr'),
   );
 
   testCodeGeneration(
@@ -199,7 +201,7 @@ void main() {
         String get accountNumber;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       '`Unique(name: "hello world")`: name is not a valid Dart identifier',
     ),
   );
@@ -218,7 +220,8 @@ void main() {
         String get accountNumber;
       }
     ''',
-    error: contains('`Unique()` annotation must have non-empty `fields`'),
+    error: (s) =>
+        s.contains('`Unique()` annotation must have non-empty `fields`'),
   );
 
   testCodeGeneration(
@@ -235,7 +238,7 @@ void main() {
         String get accountNumber;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       '`Unique()` annotation references unknown field "noSuchField"',
     ),
   );

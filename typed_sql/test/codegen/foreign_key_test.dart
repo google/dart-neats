@@ -36,7 +36,7 @@ void main() {
         int get authorId;
       }
     ''',
-    generated: anything,
+    output: (s) => s.isNotEmpty(),
   );
 
   testCodeGeneration(
@@ -60,7 +60,7 @@ void main() {
         int get authorId;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'References annotation must have `table` and `field` fields',
     ),
   );
@@ -86,7 +86,7 @@ void main() {
         int get authorId;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'References have `name: "bookId"` which conflicts with the field',
     ),
   );
@@ -112,7 +112,7 @@ void main() {
         int get authorId;
       }
     ''',
-    error: contains('Foreign key references unknown table'),
+    error: (s) => s.contains('Foreign key references unknown table'),
   );
 
   testCodeGeneration(
@@ -136,7 +136,7 @@ void main() {
         int get authorId;
       }
     ''',
-    error: contains('Foreign key references unknown field'),
+    error: (s) => s.contains('Foreign key references unknown field'),
   );
 
   testCodeGeneration(
@@ -162,7 +162,9 @@ void main() {
         int get authorId;
       }
     ''',
-    error: allOf(contains('Foreign key field'), contains('Types must match!')),
+    error: (s) => s
+      ..contains('Foreign key field')
+      ..contains('Types must match!'),
   );
 
   testCodeGeneration(
@@ -194,7 +196,7 @@ void main() {
         String get authorLastName;
       }
     ''',
-    generated: anything,
+    output: (s) => s.isNotEmpty(),
   );
 
   testCodeGeneration(
@@ -226,7 +228,7 @@ void main() {
         String get authorLastName;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'Foreign key fields and referenced fields must have the same length',
     ),
   );
@@ -254,6 +256,6 @@ void main() {
         JsonValue get authorInfo;
       }
     ''',
-    error: contains('JsonValue field cannot be used in foreign keys'),
+    error: (s) => s.contains('JsonValue field cannot be used in foreign keys'),
   );
 }

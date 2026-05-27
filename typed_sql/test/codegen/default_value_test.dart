@@ -30,7 +30,9 @@ void main() {
         String get value;
       }
     ''',
-    generated: allOf(contains('extends Item'), contains('hello world')),
+    output: (s) => s
+      ..contains('extends Item')
+      ..contains('hello world'),
   );
 
   testCodeGeneration(
@@ -48,7 +50,9 @@ void main() {
         JsonValue get value;
       }
     ''',
-    generated: allOf(contains('hello'), contains('world')),
+    output: (s) => s
+      ..contains('hello')
+      ..contains('world'),
   );
 
   testCodeGeneration(
@@ -67,7 +71,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('Only one DefaultValue annotation is allowed'),
+    error: (s) => s.contains('Only one DefaultValue annotation is allowed'),
   );
 
   testCodeGeneration(
@@ -85,7 +89,8 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('DefaultValue.epoch is only allowed for DateTime fields'),
+    error: (s) =>
+        s.contains('DefaultValue.epoch is only allowed for DateTime fields'),
   );
 
   testCodeGeneration(
@@ -103,7 +108,8 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('DefaultValue.now is only allowed for DateTime fields'),
+    error: (s) =>
+        s.contains('DefaultValue.now is only allowed for DateTime fields'),
   );
 
   testCodeGeneration(
@@ -121,7 +127,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'DefaultValue.dateTime(...) is only allowed for DateTime fields',
     ),
   );
@@ -141,7 +147,8 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('Disallowed value in @DefaultValue(value) annotation'),
+    error: (s) =>
+        s.contains('Disallowed value in @DefaultValue(value) annotation'),
   );
 
   testCodeGeneration(
@@ -159,7 +166,8 @@ void main() {
         int get value;
       }
     ''',
-    error: contains('DefaultValue(String) is only allowed for String fields'),
+    error: (s) =>
+        s.contains('DefaultValue(String) is only allowed for String fields'),
   );
 
   testCodeGeneration(
@@ -177,7 +185,8 @@ void main() {
         int get value;
       }
     ''',
-    error: contains('DefaultValue(bool) is only allowed for bool fields'),
+    error: (s) =>
+        s.contains('DefaultValue(bool) is only allowed for bool fields'),
   );
 
   testCodeGeneration(
@@ -195,7 +204,7 @@ void main() {
         double get value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'DefaultValue(int) cannot be cast to double',
     ),
   );
@@ -215,7 +224,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'DefaultValue(int) is only allowed for int or double fields',
     ),
   );
@@ -235,7 +244,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'DefaultValue(double) is only allowed for double fields',
     ),
   );

@@ -30,7 +30,7 @@ void main() {
         String get value;
       }
     ''',
-    generated: contains('extends Item'),
+    output: (s) => s.contains('extends Item'),
   );
 
   testCodeGeneration(
@@ -48,7 +48,8 @@ void main() {
         int get autoValue;
       }
     ''',
-    error: contains('AutoIncrement is only allowed on primary key fields'),
+    error: (s) =>
+        s.contains('AutoIncrement is only allowed on primary key fields'),
   );
 
   testCodeGeneration(
@@ -66,7 +67,7 @@ void main() {
         String get hash;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'AutoIncrement is only allowed on non-composite primary key fields',
     ),
   );
@@ -84,7 +85,7 @@ void main() {
         String get id;
       }
     ''',
-    error: contains('AutoIncrement is only allowed for int fields'),
+    error: (s) => s.contains('AutoIncrement is only allowed for int fields'),
   );
 
   testCodeGeneration(
@@ -100,6 +101,6 @@ void main() {
         String get id;
       }
     ''',
-    error: contains('AutoIncrement is only allowed for int fields'),
+    error: (s) => s.contains('AutoIncrement is only allowed for int fields'),
   );
 }

@@ -29,7 +29,7 @@ void main() {
         String get value;
       }
     ''',
-    generated: contains('extends Item'),
+    output: (s) => s.contains('extends Item'),
   );
 
   testCodeGeneration(
@@ -46,7 +46,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('final'),
+    error: (s) => s.contains('final'),
   );
 
   testCodeGeneration(
@@ -63,7 +63,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('abstract'),
+    error: (s) => s.contains('abstract'),
   );
 
   testCodeGeneration(
@@ -81,7 +81,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('"Item" is used in more than one table'),
+    error: (s) => s.contains('"Item" is used in more than one table'),
   );
 
   testCodeGeneration(
@@ -102,7 +102,7 @@ void main() {
         }
       }
     ''',
-    error: contains('subclasses of `Row` cannot have methods'),
+    error: (s) => s.contains('subclasses of `Row` cannot have methods'),
   );
 
   testCodeGeneration(
@@ -120,7 +120,7 @@ void main() {
         set value(String value);
       }
     ''',
-    error: contains('subclasses of `Row` cannot have setters'),
+    error: (s) => s.contains('subclasses of `Row` cannot have setters'),
   );
 
   testCodeGeneration(
@@ -137,7 +137,7 @@ void main() {
         String get value => 42;
       }
     ''',
-    error: contains('subclasses of `Row` can only abstract getters'),
+    error: (s) => s.contains('subclasses of `Row` can only abstract getters'),
   );
 
   testCodeGeneration(
@@ -154,6 +154,6 @@ void main() {
         Exception get value;
       }
     ''',
-    error: contains('Unsupported data-type'),
+    error: (s) => s.contains('Unsupported data-type'),
   );
 }

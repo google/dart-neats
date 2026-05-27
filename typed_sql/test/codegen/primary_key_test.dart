@@ -28,7 +28,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'subclasses of `Row` must have one `PrimaryKey` annotation',
     ),
   );
@@ -48,7 +48,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'Only one `PrimaryKey` annotation is allowed',
     ),
   );
@@ -67,7 +67,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains('PrimaryKey annotation references unknown field'),
+    error: (s) => s.contains('PrimaryKey annotation references unknown field'),
   );
 
   testCodeGeneration(
@@ -84,7 +84,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'subclasses of `Row` must have a non-empty `PrimaryKey` annotation',
     ),
   );
@@ -103,7 +103,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'subclasses of `Row` cannot have duplicate fields in `PrimaryKey`',
     ),
   );
@@ -122,7 +122,7 @@ void main() {
         String get value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'PrimaryKey fields cannot be nullable',
     ),
   );
@@ -141,6 +141,7 @@ void main() {
         JsonValue get value;
       }
     ''',
-    error: contains('JsonValue field cannot be used in PrimaryKey annotation'),
+    error: (s) =>
+        s.contains('JsonValue field cannot be used in PrimaryKey annotation'),
   );
 }

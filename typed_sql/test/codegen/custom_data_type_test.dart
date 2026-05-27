@@ -39,7 +39,7 @@ void main() {
         String toDatabase() => value;
       }
     ''',
-    generated: anything,
+    output: (s) => s.isNotEmpty(),
   );
 
   testCodeGeneration(
@@ -66,7 +66,8 @@ void main() {
         String toDatabase() => value;
       }
     ''',
-    error: contains('Unsupported type parameter for `CustomDataType<T>`'),
+    error: (s) =>
+        s.contains('Unsupported type parameter for `CustomDataType<T>`'),
   );
 
   testCodeGeneration(
@@ -93,7 +94,7 @@ void main() {
         String toDatabase() => value;
       }
     ''',
-    error: contains('CustomDataType<T?> is not supported'),
+    error: (s) => s.contains('CustomDataType<T?> is not supported'),
   );
 
   testCodeGeneration(
@@ -118,7 +119,7 @@ void main() {
         String toDatabase() => value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'CustomDataType<T> subclasses must have a `fromDatabase` constructor!',
     ),
   );
@@ -147,7 +148,8 @@ void main() {
         String toDatabase() => value;
       }
     ''',
-    error: contains('fromDatabase` constructor must take a single argument'),
+    error: (s) =>
+        s.contains('fromDatabase` constructor must take a single argument'),
   );
 
   testCodeGeneration(
@@ -174,7 +176,7 @@ void main() {
         String toDatabase() => value;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'must have a `fromDatabase` constructor whose argument type matches the backing type',
     ),
   );
@@ -213,7 +215,7 @@ void main() {
         T toDatabase() => json.fuse(utf8).encode(jsonValue) as T;
       }
     ''',
-    generated: anything,
+    output: (s) => s.isNotEmpty(),
   );
 
   testCodeGeneration(
@@ -248,7 +250,7 @@ void main() {
         T toDatabase() => json.fuse(utf8).encode(jsonValue) as T;
       }
     ''',
-    error: contains('Field types may not have type arguments'),
+    error: (s) => s.contains('Field types may not have type arguments'),
   );
 
   testCodeGeneration(
@@ -282,7 +284,7 @@ void main() {
         int compareTo(MyCustomType other) => 0;
       }
     ''',
-    error: contains(
+    error: (s) => s.contains(
       'CustomDataType<JsonValue> classes cannot implement Comparable',
     ),
   );
