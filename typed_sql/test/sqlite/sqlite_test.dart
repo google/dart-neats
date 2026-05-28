@@ -14,6 +14,7 @@
 
 import 'dart:async';
 
+import 'package:checks/checks.dart';
 import 'package:meta/meta.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
@@ -119,9 +120,9 @@ void main() {
         .where((u) => u.email.endsWithValue('@example.com'))
         .select((u) => (u.name,))
         .fetch();
-    expect(users, contains('Alice'));
-    expect(users, contains('Bob'));
-    expect(users, hasLength(2));
+    check(users).contains('Alice');
+    check(users).contains('Bob');
+    check(users).length.equals(2);
   });
 
   _test('db.users.where(.startsWithValue).select()', (db) async {
@@ -129,14 +130,14 @@ void main() {
         .where((u) => u.email.startsWithValue('alice@'))
         .select((u) => (u.name,))
         .fetch();
-    expect(users, contains('Alice'));
-    expect(users, hasLength(1));
+    check(users).contains('Alice');
+    check(users).length.equals(1);
   });
 
   _test('db.packages.where().update()', (db) async {
     {
       final p = await db.packages.byKey('foo').fetch();
-      expect(p!.ownerId, equals(1));
+      check(p!.ownerId).equals(1);
     }
     await db.packages
         .where((p) => p.packageName.equalsValue('foo'))
@@ -148,15 +149,14 @@ void main() {
         .execute();
     {
       final p = await db.packages.byKey('foo').fetch();
-      expect(p!.ownerId, equals(2));
+      check(p!.ownerId).equals(2);
     }
   });
 
   _test('db.packages.byKey().update(.add / .subtract)', (db) async {
-    expect(
+    check(
       await db.packages.byKey('foo').select((p) => (p.likes,)).fetch(),
-      equals(2),
-    );
+    ).equals(2);
 
     await db.packages
         .byKey('foo')
@@ -167,10 +167,9 @@ void main() {
         )
         .execute();
 
-    expect(
+    check(
       await db.packages.byKey('foo').select((p) => (p.likes,)).fetch(),
-      equals(3),
-    );
+    ).equals(3);
 
     await db.packages
         .byKey('foo')
@@ -181,10 +180,9 @@ void main() {
         )
         .execute();
 
-    expect(
+    check(
       await db.packages.byKey('foo').select((p) => (p.likes,)).fetch(),
-      equals(4),
-    );
+    ).equals(4);
 
     await db.packages
         .byKey('foo')
@@ -204,28 +202,27 @@ void main() {
         )
         .execute();
 
-    expect(
+    check(
       await db.packages.byKey('foo').select((p) => (p.likes,)).fetch(),
-      equals(2),
-    );
+    ).equals(2);
   });
 
   _test('db.packages.byKey().delete()', (db) async {
     {
       final p = await db.packages.byKey('foo').fetch();
-      expect(p, isNotNull);
+      check(p).isNotNull();
     }
     await db.packages.byKey('foo').delete().execute();
     {
       final p = await db.packages.byKey('foo').fetch();
-      expect(p, isNull);
+      check(p).isNull();
     }
   });
 
   _test('db.packages.where().deleteAll()', (db) async {
     {
       final packages = await db.packages.fetch();
-      expect(packages, hasLength(2));
+      check(packages).length.equals(2);
     }
     await db.packages
         .where((p) => p.packageName.equalsValue('foo'))
@@ -233,7 +230,7 @@ void main() {
         .execute();
     {
       final packages = await db.packages.fetch();
-      expect(packages, hasLength(1));
+      check(packages).length.equals(1);
     }
   });
 
@@ -243,8 +240,8 @@ void main() {
         .limit(1)
         .select((u) => (u.name,))
         .fetch();
-    expect(users, contains('Alice'));
-    expect(users, hasLength(1));
+    check(users).contains('Alice');
+    check(users).length.equals(1);
   });
 
   _test('db.users.limit().where()', (db) async {
@@ -253,8 +250,8 @@ void main() {
         .where((u) => u.email.equalsValue('alice@example.com'))
         .select((u) => (u.name,))
         .fetch();
-    expect(users, contains('Alice'));
-    expect(users, hasLength(1));
+    check(users).contains('Alice');
+    check(users).length.equals(1);
   });
 
   _test('db.users.offset(0).limit().where()', (db) async {
@@ -264,8 +261,8 @@ void main() {
         .where((u) => u.email.equalsValue('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
-    expect(users, contains('Bob'));
-    expect(users, hasLength(1));
+    check(users).contains('Bob');
+    check(users).length.equals(1);
   });
 
   _test('db.users.limit(0).offset().where()', (db) async {
@@ -275,8 +272,8 @@ void main() {
         .where((u) => u.email.equalsValue('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
-    expect(users, contains('Bob'));
-    expect(users, hasLength(1));
+    check(users).contains('Bob');
+    check(users).length.equals(1);
   });
 
   _test('db.users.orderBy().offset().where(1) (empty)', (db) async {
@@ -287,7 +284,7 @@ void main() {
         .where((u) => u.email.equalsValue('alice@example.com'))
         .select((u) => (u.name,))
         .fetch();
-    expect(users, isEmpty);
+    check(users).isEmpty();
   });
 
   _test('db.users.orderBy().offset(1).where()', (db) async {
@@ -298,8 +295,8 @@ void main() {
         .where((u) => u.email.equalsValue('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
-    expect(users, contains('Bob'));
-    expect(users, hasLength(1));
+    check(users).contains('Bob');
+    check(users).length.equals(1);
   });
 
   _test('db.users.orderBy(descending).offset(1).where() (empty)', (db) async {
@@ -310,7 +307,7 @@ void main() {
         .where((u) => u.email.equalsValue('bob@example.com'))
         .select((u) => (u.name,))
         .fetch();
-    expect(users, isEmpty);
+    check(users).isEmpty();
   });
 
   _test('db.users.orderBy(descending).offset(1).where()', (db) async {
@@ -321,8 +318,8 @@ void main() {
         .where((u) => u.email.equalsValue('alice@example.com'))
         .select((u) => (u.name,))
         .fetch();
-    expect(users, contains('Alice'));
-    expect(users, hasLength(1));
+    check(users).contains('Alice');
+    check(users).length.equals(1);
   });
 
   _test('db.users.join(db.packages).on()', (db) async {
@@ -330,10 +327,10 @@ void main() {
         .join(db.packages)
         .on((u, p) => u.userId.equals(p.ownerId))
         .fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
     final (u, p) = result[0];
-    expect(u.name, equals('Alice'));
-    expect(p.packageName, anyOf(equals('foo'), equals('bar')));
+    check(u.name).equals('Alice');
+    check(['foo', 'bar']).contains(p.packageName);
   });
 
   _test('db.users.join(db.packages).on().select()', (db) async {
@@ -342,8 +339,8 @@ void main() {
         .on((u, p) => u.userId.equals(p.ownerId))
         .select((u, p) => (u.name, p.packageName))
         .fetch();
-    expect(result, contains(('Alice', 'foo')));
-    expect(result, hasLength(2));
+    check(result).contains(('Alice', 'foo'));
+    check(result).length.equals(2);
   });
 
   _test('db.users.byKey().asQuery.join(db.packages).on().select()', (db) async {
@@ -354,8 +351,8 @@ void main() {
         .on((u, p) => u.userId.equals(p.ownerId))
         .select((u, p) => (u.name, p.packageName))
         .fetch();
-    expect(result, contains(('Alice', 'foo')));
-    expect(result, hasLength(2));
+    check(result).contains(('Alice', 'foo'));
+    check(result).length.equals(2);
   });
 
   _test('db.users.byKey().asQuery.join(db.packages).on() (empty)', (db) async {
@@ -365,7 +362,7 @@ void main() {
         .join(db.packages)
         .on((u, p) => u.userId.equals(p.ownerId))
         .fetch();
-    expect(result, hasLength(0));
+    check(result).length.equals(0);
   });
 
   _test('db.users.join(db.packages.where().select()).on()', (db) async {
@@ -377,11 +374,11 @@ void main() {
         )
         .on((u, packageName, ownerId) => u.userId.equals(ownerId))
         .fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
     final (u, packageName, ownerId) = result[0];
-    expect(u.name, equals('Alice'));
-    expect(packageName, anyOf(equals('foo'), equals('bar')));
-    expect(ownerId, equals(1));
+    check(u.name).equals('Alice');
+    check(['foo', 'bar']).contains(packageName);
+    check(ownerId).equals(1);
   });
 
   _test('db.users.join(db.packages.select().where().select()).on()', (
@@ -396,11 +393,11 @@ void main() {
         )
         .on((u, packageName, ownerId) => u.userId.equals(ownerId))
         .fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
     final (u, packageName, ownerId) = result[0];
-    expect(u.name, equals('Alice'));
-    expect(packageName, anyOf(equals('foo'), equals('bar')));
-    expect(ownerId, equals(1));
+    check(u.name).equals('Alice');
+    check(['foo', 'bar']).contains(packageName);
+    check(ownerId).equals(1);
   });
 
   _test('db.packages.select(db.users.where().select().first)', (db) async {
@@ -416,10 +413,10 @@ void main() {
           ),
         )
         .fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
     final (p, name) = result[0];
-    expect(p.packageName, anyOf(equals('foo'), equals('bar')));
-    expect(name, equals('Alice'));
+    check(['foo', 'bar']).contains(p.packageName);
+    check(name).equals('Alice');
   });
 
   _test('db.packages.select(db.users.where().first)', (db) async {
@@ -432,11 +429,11 @@ void main() {
           ),
         )
         .fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
     final (p, user) = result[0];
-    expect(p.packageName, anyOf(equals('foo'), equals('bar')));
-    expect(user, isNotNull);
-    expect(user!.name, equals('Alice'));
+    check(['foo', 'bar']).contains(p.packageName);
+    check(user).isNotNull();
+    check(user!.name).equals('Alice');
   });
 
   _test('db.select(true, "hello world", 42)', (db) async {
@@ -445,101 +442,101 @@ void main() {
       toExpr('hello world'),
       toExpr(42),
     )).fetch();
-    expect(result, equals((true, 'hello world', 42)));
+    check(result).equals((true, 'hello world', 42));
   });
 
   _test('db.select(true && false)', (db) async {
     final result = await db.select(
       (toExpr(true) & toExpr(false),),
     ).fetch();
-    expect(result, isFalse);
+    check(result).equals(false);
   });
 
   _test('db.select(true || false)', (db) async {
     final result = await db.select(
       (toExpr(true) | toExpr(false),),
     ).fetch();
-    expect(result, isTrue);
+    check(result).equals(true);
   });
 
   _test('db.select(true.not)', (db) async {
     final result = await db.select(
       (toExpr(true).not(),),
     ).fetch();
-    expect(result, isFalse);
+    check(result).equals(false);
   });
 
   _test('db.select(true.not())', (db) async {
     final result = await db.select(
       (toExpr(true).not(),),
     ).fetch();
-    expect(result, isFalse);
+    check(result).equals(false);
   });
 
   _test('db.select(true.and(false))', (db) async {
     final result = await db.select(
       (toExpr(true).and(toExpr(false)),),
     ).fetch();
-    expect(result, isFalse);
+    check(result).equals(false);
   });
 
   _test('db.select(true.or(false))', (db) async {
     final result = await db.select(
       (toExpr(true).or(toExpr(false)),),
     ).fetch();
-    expect(result, isTrue);
+    check(result).equals(true);
   });
 
   _test('db.select(42.add(1))', (db) async {
     final result = await db.select(
       (toExpr(42).add(toExpr(1)),),
     ).fetch();
-    expect(result, equals(43));
+    check(result).equals(43);
   });
 
   _test('db.select(42.subtract(1))', (db) async {
     final result = await db.select(
       (toExpr(42).subtract(toExpr(1)),),
     ).fetch();
-    expect(result, equals(41));
+    check(result).equals(41);
   });
 
   _test('db.select(42.multiply(2))', (db) async {
     final result = await db.select(
       (toExpr(42).multiply(toExpr(2)),),
     ).fetch();
-    expect(result, equals(84));
+    check(result).equals(84);
   });
 
   _test('db.select(42.divide(2))', (db) async {
     final result = await db.select(
       (toExpr(42).divide(toExpr(2)),),
     ).fetch();
-    expect(result, equals(21));
+    check(result).equals(21);
   });
 
   _test('db.select(42.equals(42))', (db) async {
     final result = await db.select(
       (toExpr(42).equals(toExpr(42)),),
     ).fetch();
-    expect(result, isTrue);
+    check(result).equals(true);
   });
 
   _test('db.packages.exists()', (db) async {
     final result = await db.packages.exists().fetch();
-    expect(result, isTrue);
+    check(result).equals(true);
   });
 
   _test('db.packages.exists().asExpr', (db) async {
     final result = await db.select((db.packages.exists().asExpr,)).fetch();
-    expect(result, isTrue);
+    check(result).equals(true);
   });
 
   _test('db.packages.exists().asExpr.not()', (db) async {
     final result = await db.select((
       db.packages.exists().asExpr.asNotNull().not(),
     )).fetch();
-    expect(result, isFalse);
+    check(result).equals(false);
   });
 
   _test('db.users.select(db.packages.where().isNotEmpty)', (db) async {
@@ -554,13 +551,13 @@ void main() {
           ),
         )
         .fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
     final (user1, hasPackage1) = result[0];
     final (user2, hasPackage2) = result[1];
-    expect(user1.name, equals('Alice'));
-    expect(hasPackage1, isTrue);
-    expect(user2.name, equals('Bob'));
-    expect(hasPackage2, isFalse);
+    check(user1.name).equals('Alice');
+    check(hasPackage1).equals(true);
+    check(user2.name).equals('Bob');
+    check(hasPackage2).equals(false);
   });
 
   _test('db.users.select(db.packages.where().isEmpty)', (db) async {
@@ -577,13 +574,13 @@ void main() {
           ),
         )
         .fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
     final (user1, hasPackage1) = result[0];
     final (user2, hasPackage2) = result[1];
-    expect(user1.name, equals('Alice'));
-    expect(hasPackage1, isFalse);
-    expect(user2.name, equals('Bob'));
-    expect(hasPackage2, isTrue);
+    check(user1.name).equals('Alice');
+    check(hasPackage1).equals(false);
+    check(user2.name).equals('Bob');
+    check(hasPackage2).equals(true);
   });
 
   _test('db.users.where(db.packages.where().isEmpty)', (db) async {
@@ -598,8 +595,8 @@ void main() {
         )
         .select((u) => (u.name,))
         .fetch();
-    expect(result, hasLength(1));
-    expect(result, contains('Bob'));
+    check(result).length.equals(1);
+    check(result).contains('Bob');
   });
 
   _test('db.users.where(db.packages.where().isNotEmpty)', (db) async {
@@ -613,8 +610,8 @@ void main() {
         )
         .select((u) => (u.name,))
         .fetch();
-    expect(result, hasLength(1));
-    expect(result, contains('Alice'));
+    check(result).length.equals(1);
+    check(result).contains('Alice');
   });
 
   _test('select((u, p) => (owner: u.name, packages: p.packageName))', (
@@ -630,34 +627,34 @@ void main() {
           ),
         )
         .fetch();
-    expect(result, hasLength(2));
-    expect(result[0].owner, equals('Alice'));
-    expect(result[0].package, anyOf(equals('foo'), equals('bar')));
+    check(result).length.equals(2);
+    check(result[0].owner).equals('Alice');
+    check(['foo', 'bar']).contains(result[0].package);
   });
 
   _test('db.likes.select().sum()', (db) async {
     final result = await db.packages.select((p) => (p.likes,)).sum().fetch();
-    expect(result, equals(5));
+    check(result).equals(5);
   });
 
   _test('db.likes.select().avg()', (db) async {
     final result = await db.packages.select((p) => (p.likes,)).avg().fetch();
-    expect(result, equals(2.5));
+    check(result).equals(2.5);
   });
 
   _test('db.likes.select().min()', (db) async {
     final result = await db.packages.select((p) => (p.likes,)).min().fetch();
-    expect(result, equals(2));
+    check(result).equals(2);
   });
 
   _test('db.likes.select().max()', (db) async {
     final result = await db.packages.select((p) => (p.likes,)).max().fetch();
-    expect(result, equals(3));
+    check(result).equals(3);
   });
 
   _test('db.likes.count()', (db) async {
     final result = await db.likes.count().fetch();
-    expect(result, equals(2));
+    check(result).equals(2);
   });
 
   _test('db.likes.select().count()', (db) async {
@@ -665,7 +662,7 @@ void main() {
         .select((l) => (l.packageName,))
         .count()
         .fetch();
-    expect(result, equals(2));
+    check(result).equals(2);
   });
 
   _test('db.likes.where().select().count()', (db) async {
@@ -674,7 +671,7 @@ void main() {
         .select((l) => (l.packageName,))
         .count()
         .fetch();
-    expect(result, equals(0));
+    check(result).equals(0);
   });
 
   _test('db.packages.select(ownerId).distinct()', (db) async {
@@ -682,34 +679,34 @@ void main() {
         .select((p) => (p.ownerId,))
         .distinct()
         .fetch();
-    expect(result, hasLength(1));
-    expect(result, contains(1));
+    check(result).length.equals(1);
+    check(result).contains(1);
   });
 
   _test('db.packages.distinct()', (db) async {
     final result = await db.packages.distinct().fetch();
-    expect(result, hasLength(2));
-    expect(result[0].packageName, anyOf(equals('foo'), equals('bar')));
+    check(result).length.equals(2);
+    check(['foo', 'bar']).contains(result[0].packageName);
   });
 
   _test('db.packages.union(db.packages)', (db) async {
     final result = await db.packages.union(db.packages).fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
   });
 
   _test('db.packages.unionAll(db.packages)', (db) async {
     final result = await db.packages.unionAll(db.packages).fetch();
-    expect(result, hasLength(4));
+    check(result).length.equals(4);
   });
 
   _test('db.packages.intersect(db.packages)', (db) async {
     final result = await db.packages.intersect(db.packages).fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
   });
 
   _test('db.packages.except(db.packages)', (db) async {
     final result = await db.packages.except(db.packages).fetch();
-    expect(result, hasLength(0));
+    check(result).length.equals(0);
   });
 
   /*
@@ -724,13 +721,13 @@ void main() {
         )
         .orderBy((r) => [(r.userName, Order.ascending)])
         .fetch();
-    expect(result, hasLength(2));
-    expect(result[0].userName, equals('Alice'));
-    expect(result[0].packages, equals(2));
-    expect(result[0].totalLikes, equals(5));
-    expect(result[1].userName, equals('Bob'));
-    expect(result[1].packages, equals(0));
-    expect(result[1].totalLikes, equals(0));
+    check(result).length.equals(2);
+    check(result[0].userName).equals('Alice');
+    check(result[0].packages).equals(2);
+    check(result[0].totalLikes).equals(5);
+    check(result[1].userName).equals('Bob');
+    check(result[1].packages).equals(0);
+    check(result[1].totalLikes).equals(0);
   });*/
 
   _test('db.packages.select((p) => p, p.owner)', (db) async {
@@ -742,7 +739,7 @@ void main() {
           ),
         )
         .fetch();
-    expect(result, hasLength(2));
+    check(result).length.equals(2);
   });
 
   _test('db.packages.select((p) => p.packageName, p.owner.name)', (db) async {
@@ -754,9 +751,9 @@ void main() {
           ),
         )
         .fetch();
-    expect(result, hasLength(2));
-    expect(result, contains(('foo', 'Alice')));
-    expect(result, contains(('bar', 'Alice')));
+    check(result).length.equals(2);
+    check(result).contains(('foo', 'Alice'));
+    check(result).contains(('bar', 'Alice'));
   });
 
   _test('db.likes.groupBy((l) => p.package).aggregate(count, avg)', (db) async {
@@ -769,8 +766,8 @@ void main() {
               .min((like) => like.userId), // doesn't make sense, but tests min
         )
         .fetch();
-    expect(result, hasLength(1));
-    expect(result[0], equals(('foo', 2, 1)));
+    check(result).length.equals(1);
+    check(result[0]).equals(('foo', 2, 1));
   });
 
   _test('db.insert().returnInserted()', (db) async {
@@ -778,8 +775,8 @@ void main() {
         .insert(packageName: toExpr('foobar'), ownerId: toExpr(1))
         .returnInserted()
         .executeAndFetch();
-    expect(result, isNotNull);
-    expect(result.ownerId, equals(1));
+    check(result).isNotNull();
+    check(result.ownerId).equals(1);
   });
 
   _test('db.insert().returning()', (db) async {
@@ -787,9 +784,9 @@ void main() {
         .insert(packageName: toExpr('foobar'), ownerId: toExpr(1))
         .returning((pkg) => (pkg.likes, pkg.owner))
         .executeAndFetch();
-    expect(likes, equals(0));
-    expect(owner.userId, equals(1));
-    expect(owner.name, equals('Alice'));
+    check(likes).equals(0);
+    check(owner.userId).equals(1);
+    check(owner.name).equals('Alice');
   });
 
   _test('db.update().returning()', (db) async {
@@ -798,9 +795,9 @@ void main() {
         .update((pkg, set) => set(likes: pkg.likes + toExpr(1)))
         .returning((pkg) => (pkg.likes, pkg.owner))
         .executeAndFetchOrNulls();
-    expect(likes, equals(3));
-    expect(owner!.userId, equals(1));
-    expect(owner.name, equals('Alice'));
+    check(likes).equals(3);
+    check(owner!.userId).equals(1);
+    check(owner.name).equals('Alice');
   });
 
   _test('db.update().returnUpdated()', (db) async {
@@ -809,8 +806,8 @@ void main() {
         .update((pkg, set) => set(likes: pkg.likes + toExpr(1)))
         .returnUpdated()
         .executeAndFetch();
-    expect(result, isNotNull);
-    expect(result?.likes, equals(3));
+    check(result).isNotNull();
+    check(result?.likes).equals(3);
   });
 
   _test('db.delete().returning()', (db) async {
@@ -819,9 +816,9 @@ void main() {
         .delete()
         .returning((pkg) => (pkg.likes, pkg.owner))
         .executeAndFetchOrNulls();
-    expect(likes, equals(2));
-    expect(owner!.userId, equals(1));
-    expect(owner.name, equals('Alice'));
+    check(likes).equals(2);
+    check(owner!.userId).equals(1);
+    check(owner.name).equals('Alice');
   });
 
   _test('db.delete().returnDeleted()', (db) async {
@@ -830,8 +827,8 @@ void main() {
         .delete()
         .returnDeleted()
         .executeAndFetch();
-    expect(result, isNotNull);
-    expect(result?.likes, equals(2));
+    check(result).isNotNull();
+    check(result?.likes).equals(2);
   });
 
   // TODO: Support operators on nullable values!
@@ -841,8 +838,8 @@ void main() {
         .select((p) => (p.packageName,))
         .fetch()
         ;
-    expect(result, contains('foo'));
-    expect(result, hasLength(1));
+    check(result).contains('foo');
+    check(result).length.equals(1);
   });*/
 }
 

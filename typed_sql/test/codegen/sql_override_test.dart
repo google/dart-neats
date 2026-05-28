@@ -28,7 +28,7 @@ void main() {
         String get firstName;
       }
     ''',
-    generated: anything,
+    output: (s) => s.isNotEmpty(),
   );
 
   testCodeGeneration(
@@ -50,7 +50,7 @@ void main() {
         String get firstName;
       }
     ''',
-    generated: anything,
+    output: (s) => s.isNotEmpty(),
   );
 
   // Testing use of the wrong constructor
@@ -69,7 +69,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -86,7 +86,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -103,7 +103,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -120,7 +120,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -137,7 +137,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -154,7 +154,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -171,7 +171,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -188,7 +188,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -205,7 +205,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -222,7 +222,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -239,7 +239,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   testCodeGeneration(
@@ -256,7 +256,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   // Test annotation with constants to make sure analyze resolution is correct
@@ -277,7 +277,7 @@ void main() {
         String get firstName;
       }
     ''',
-    generated: anything,
+    output: (s) => s.isNotEmpty(),
   );
 
   testCodeGeneration(
@@ -296,7 +296,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('should not be used on'),
+    error: (s) => s.contains('should not be used on'),
   );
 
   // Test name and naming cannot be dialect specific
@@ -315,7 +315,7 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('cannot override `name` for a specific `dialect`'),
+    error: (s) => s.contains('cannot override `name` for a specific `dialect`'),
   );
 
   testCodeGeneration(
@@ -332,7 +332,8 @@ void main() {
         String get firstName;
       }
     ''',
-    error: contains('cannot override `naming` for a specific `dialect`'),
+    error: (s) =>
+        s.contains('cannot override `naming` for a specific `dialect`'),
   );
 
   // Test naming override
@@ -351,13 +352,10 @@ void main() {
         String get firstName;
       }
     ''',
-    generated: allOf([
-      // Table name should be snake_cased
-      contains("'user_accounts'"),
-      // Column names should be snake_cased
-      contains("'user_id'"),
-      contains("'first_name'"),
-    ]),
+    output: (s) => s
+      ..contains("'user_accounts'")
+      ..contains("'user_id'")
+      ..contains("'first_name'"),
   );
 
   testCodeGeneration(
@@ -374,12 +372,10 @@ void main() {
         String get firstName;
       }
     ''',
-    generated: allOf([
-      isNot(contains("'user_accounts'")),
-      // Column names should be snake_cased
-      contains("'user_id'"),
-      contains("'first_name'"),
-    ]),
+    output: (s) => s
+      ..not((s) => s.contains("'user_accounts'"))
+      ..contains("'user_id'")
+      ..contains("'first_name'"),
   );
 
   testCodeGeneration(
@@ -396,11 +392,10 @@ void main() {
         String get firstName;
       }
     ''',
-    generated: allOf([
-      isNot(contains("'user_accounts'")),
-      contains("'user_id'"),
-      isNot(contains("'first_name'")),
-    ]),
+    output: (s) => s
+      ..not((s) => s.contains("'user_accounts'"))
+      ..contains("'user_id'")
+      ..not((s) => s.contains("'first_name'")),
   );
 
   testCodeGeneration(
@@ -421,12 +416,11 @@ void main() {
         String get firstName;
       }
     ''',
-    generated: allOf([
-      isNot(contains("'user_accounts'")),
-      contains("'tbl_userAccounts'"),
-      contains("'uid'"),
-      isNot(contains("'first_name'")),
-    ]),
+    output: (s) => s
+      ..not((s) => s.contains("'user_accounts'"))
+      ..contains("'tbl_userAccounts'")
+      ..contains("'uid'")
+      ..not((s) => s.contains("'first_name'")),
   );
 
   // Test columnType override
@@ -446,9 +440,7 @@ void main() {
         JsonValue get data;
       }
     ''',
-    generated: allOf([
-      contains("columnType: 'BIGGER_INT',"),
-    ]),
+    output: (s) => s.contains("columnType: 'BIGGER_INT',"),
   );
 
   testCodeGeneration(
@@ -467,12 +459,11 @@ void main() {
         JsonValue get data;
       }
     ''',
-    generated: allOf([
-      contains("dialect: 'postgres',"),
-      contains("columnType: 'FOO_JSONB',"),
-      contains("dialect: 'sqlite',"),
-      contains("columnType: 'BAR_TEXT',"),
-    ]),
+    output: (s) => s
+      ..contains("dialect: 'postgres',")
+      ..contains("columnType: 'FOO_JSONB',")
+      ..contains("dialect: 'sqlite',")
+      ..contains("columnType: 'BAR_TEXT',"),
   );
 
   // Test collation override
@@ -492,9 +483,7 @@ void main() {
         String get category;
       }
     ''',
-    generated: allOf([
-      contains("collation: 'NOCASE',"),
-    ]),
+    output: (s) => s.contains("collation: 'NOCASE',"),
   );
 
   // Test defaultValue override
@@ -514,9 +503,7 @@ void main() {
         String get category;
       }
     ''',
-    generated: allOf([
-      contains("defaultValue: 'UNKNOWN'"),
-    ]),
+    output: (s) => s.contains("defaultValue: 'UNKNOWN'"),
   );
 
   // Test conflicting overrides
@@ -534,9 +521,8 @@ void main() {
         int get userId;
       }
     ''',
-    generated: allOf([
-      contains("'second_id'"),
-      isNot(contains("'first_id'")),
-    ]),
+    output: (s) => s
+      ..contains("'second_id'")
+      ..not((s) => s.contains("'first_id'")),
   );
 }

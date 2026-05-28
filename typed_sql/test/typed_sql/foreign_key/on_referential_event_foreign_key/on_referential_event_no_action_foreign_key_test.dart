@@ -14,7 +14,6 @@
 
 import 'dart:async';
 
-import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';
@@ -122,7 +121,7 @@ void main() {
   r.addTest(
     'Delete is restricted with delay',
     (db) async {
-      expect(await authorIds(db), [1, 2, 3, 4]);
+      check(await authorIds(db)).deepEquals([1, 2, 3, 4]);
       check(await db.booksCountByAuthorId()).unorderedEquals([
         (1, 2),
         (2, 2),
@@ -130,16 +129,15 @@ void main() {
         (4, 2),
       ]);
       var called = false;
-      await expectLater(
-        () => db.transact(() async {
+      await check(
+        db.transact(() async {
           await db.authors.delete(1).execute();
           called = true;
         }),
-        throwsA(isA<DatabaseException>()),
-      );
+      ).throws<DatabaseException>();
       // NOTE: once deferred referential constraint is supported, this should be `true`
-      expect(called, isFalse);
-      expect(await authorIds(db), [1, 2, 3, 4]);
+      check(called).isFalse();
+      check(await authorIds(db)).deepEquals([1, 2, 3, 4]);
       check(await db.booksCountByAuthorId()).unorderedEquals([
         (1, 2),
         (2, 2),
@@ -153,7 +151,7 @@ void main() {
   r.addTest(
     'Update is restricted with delay',
     (db) async {
-      expect(await authorIds(db), [1, 2, 3, 4]);
+      check(await authorIds(db)).deepEquals([1, 2, 3, 4]);
       check(await db.booksCountByAuthorId()).unorderedEquals([
         (1, 2),
         (2, 2),
@@ -161,19 +159,18 @@ void main() {
         (4, 2),
       ]);
       var called = false;
-      await expectLater(
-        () => db.transact(() async {
+      await check(
+        db.transact(() async {
           await db.authors
               .byKey(1)
               .update((author, set) => set(authorId: 6.asExpr))
               .execute();
           called = true;
         }),
-        throwsA(isA<DatabaseException>()),
-      );
+      ).throws<DatabaseException>();
       // NOTE: once deferred referential constraint is supported, this should be `true`
-      expect(called, isFalse);
-      expect(await authorIds(db), [1, 2, 3, 4]);
+      check(called).isFalse();
+      check(await authorIds(db)).deepEquals([1, 2, 3, 4]);
       check(await db.booksCountByAuthorId()).unorderedEquals([
         (1, 2),
         (2, 2),

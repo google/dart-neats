@@ -13,10 +13,12 @@
 // limitations under the License.
 
 import 'package:build_test/build_test.dart';
+import 'package:checks/checks.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/builder.dart' show typedSqlBuilder;
 
+export 'package:checks/checks.dart';
 export 'package:matcher/matcher.dart';
 
 /// Test code generation for [source] by running `build_runner` in-memory.
@@ -25,7 +27,7 @@ export 'package:matcher/matcher.dart';
 /// `package:test_package/lib/src/schema.dart`. It'll then run [typedSqlBuilder]
 /// using `build_runner` in-memory expecting either:
 ///  * an error matching [error], or,
-///  * a generated file matching [generated].
+///  * a generated file matching [output].
 ///
 /// The [source] must contain `part 'schema.g.dart';`, if it does not it'll be
 /// automatically prepended with:
@@ -34,25 +36,24 @@ export 'package:matcher/matcher.dart';
 /// part 'schema.g.dart';
 /// ```
 ///
-/// Each test case must supply either [error] or [generated], never both.
-/// If you only want to test that there was an error, or that generation
-/// was successful use the [anything] matcher.
+/// Each test case must supply either [error] or [output], never both.
+/// Both are expected to be `checks` conditions (functions taking a `Subject`).
 void testCodeGeneration({
   required String name,
   required String source,
-  Matcher? error,
-  Matcher? generated,
+  Condition<String>? error,
+  Condition<String>? output,
 }) {
-  if (error == null && generated == null) {
+  if (error == null && output == null) {
     throw ArgumentError(
-      'A matcher must be given for either error or generated',
-      'generated',
+      'A condition must be given for either error or output',
+      'output',
     );
   }
-  if (error != null && generated != null) {
+  if (error != null && output != null) {
     throw ArgumentError(
-      'A matcher must only be given for one of error or generated',
-      'generated',
+      'A condition must only be given for one of error or output',
+      'output',
     );
   }
 
@@ -83,29 +84,18 @@ void testCodeGeneration({
     );
 
     if (error != null) {
-      expect(result.errors, anyElement(error));
-      expect(
-        result.succeeded,
-        isFalse,
-        reason: 'test case is expected to fail',
-      );
+      check(result.succeeded).isFalse();
+      final errorString = result.errors.join('\n');
+      error(check(errorString));
     }
 
-    if (generated != null) {
-      expect(
-        result.errors,
-        isEmpty,
-        reason: 'expected no errors when test case is successful',
-      );
-      expect(
-        result.succeeded,
-        isTrue,
-        reason: 'test case is expected to be successful',
-      );
-      expect(result.outputs, hasLength(1));
+    if (output != null) {
+      check(result.errors).isEmpty();
+      check(result.succeeded).isTrue();
+      check(result.outputs).length.equals(1);
       final outputId = result.outputs.first;
-      final output = await result.readerWriter.readAsString(outputId);
-      expect(output, generated);
+      final outputContent = await result.readerWriter.readAsString(outputId);
+      check(outputContent).which(output);
     }
   });
 }
