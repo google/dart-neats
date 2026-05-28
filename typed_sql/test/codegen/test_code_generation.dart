@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import 'package:build_test/build_test.dart';
+import 'package:checks/checks.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/builder.dart' show typedSqlBuilder;
-import 'package:checks/checks.dart';
 
-export 'package:matcher/matcher.dart';
 export 'package:checks/checks.dart';
+export 'package:matcher/matcher.dart';
 
 /// Test code generation for [source] by running `build_runner` in-memory.
 ///

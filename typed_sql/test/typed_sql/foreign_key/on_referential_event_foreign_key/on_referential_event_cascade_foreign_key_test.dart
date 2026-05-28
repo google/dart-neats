@@ -14,7 +14,6 @@
 
 import 'dart:async';
 
-import 'package:test/test.dart';
 import 'package:typed_sql/typed_sql.dart';
 
 import '../../testrunner.dart';
@@ -120,7 +119,7 @@ void main() {
   }
 
   r.addTest('Delete is cascaded', (db) async {
-    expect(await authorIds(db), [1, 2, 3, 4]);
+    check(await authorIds(db)).deepEquals([1, 2, 3, 4]);
     check(await db.booksCountByAuthorId()).unorderedEquals([
       (1, 2),
       (2, 2),
@@ -128,7 +127,7 @@ void main() {
       (4, 2),
     ]);
     await db.authors.delete(1).execute();
-    expect(await authorIds(db), [2, 3, 4]);
+    check(await authorIds(db)).deepEquals([2, 3, 4]);
     check(await db.booksCountByAuthorId()).unorderedEquals([
       (2, 2),
       (3, 3),
@@ -137,7 +136,7 @@ void main() {
   });
 
   r.addTest('Update is cascaded', (db) async {
-    expect(await authorIds(db), [1, 2, 3, 4]);
+    check(await authorIds(db)).deepEquals([1, 2, 3, 4]);
     check(await db.booksCountByAuthorId()).unorderedEquals([
       (1, 2),
       (2, 2),
@@ -148,7 +147,7 @@ void main() {
         .byKey(1)
         .update((author, set) => set(authorId: 6.asExpr))
         .execute();
-    expect(await authorIds(db), [2, 3, 4, 6]);
+    check(await authorIds(db)).deepEquals([2, 3, 4, 6]);
     check(await db.booksCountByAuthorId()).unorderedEquals([
       (2, 2),
       (3, 3),

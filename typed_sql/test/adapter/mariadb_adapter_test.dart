@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/adapter.dart';
 import 'package:typed_sql/src/adapter/mysql_adapter.dart'
@@ -49,12 +50,9 @@ void main() {
           [],
         )
         .toIntStr();
-    expect(
-      result,
-      equals([
-        [1, 'Alice'],
-      ]),
-    );
+    check(result).deepEquals([
+      [1, 'Alice'],
+    ]);
 
     await adapter.execute('DROP TABLE users', []);
   });

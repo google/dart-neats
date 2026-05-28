@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:checks/checks.dart';
 import 'package:test/test.dart';
+
 // ignore: avoid_relative_lib_imports
 import '../lib/model.dart';
 
 void main() {
   test('bin/schema.dart', () {
-    expect(
-      createBankVaultTables(SqlDialect.sqlite()),
-      equalsIgnoringWhitespace('''
+    check(createBankVaultTables(SqlDialect.sqlite())).equalsIgnoringWhitespace(
+      '''
 CREATE TABLE "accounts" (
   "accountId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "accountNumber" TEXT NOT NULL,
   UNIQUE ("accountNumber")
 );
-'''),
+''',
     );
   });
 }

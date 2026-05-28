@@ -14,6 +14,7 @@
 
 import 'dart:io';
 
+import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/adapter.dart';
 
@@ -55,8 +56,8 @@ void main() async {
     final users = await db
         .query('SELECT id, name FROM users', [])
         .toTupleList();
-    expect(users.firstWhere((u) => u.$1 == 1), (1, 'Alice'));
-    expect(users.firstWhere((u) => u.$1 == 2), (2, 'Bob'));
+    check(users.firstWhere((u) => u.$1 == 1)).equals((1, 'Alice'));
+    check(users.firstWhere((u) => u.$1 == 2)).equals((2, 'Bob'));
 
     await db.close();
   });

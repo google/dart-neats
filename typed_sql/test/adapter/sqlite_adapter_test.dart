@@ -14,6 +14,7 @@
 
 import 'dart:async';
 
+import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 import 'package:typed_sql/adapter.dart';
 
@@ -57,8 +58,8 @@ void main() {
     await insertAliceBob(db);
 
     final users = await db.query('SELECT id, name FROM users', []).toIntStr();
-    expect(users.firstWhere((u) => u[0] == 1), [1, 'Alice']);
-    expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob']);
+    check(users.firstWhere((u) => u[0] == 1)).deepEquals([1, 'Alice']);
+    check(users.firstWhere((u) => u[0] == 2)).deepEquals([2, 'Bob']);
   });
 
   _test('update', (db) async {
@@ -70,8 +71,8 @@ void main() {
     ).drain<void>();
 
     final users = await db.query('SELECT id, name FROM users', []).toIntStr();
-    expect(users.firstWhere((u) => u[0] == 1), [1, 'Alice']);
-    expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob Builder']);
+    check(users.firstWhere((u) => u[0] == 1)).deepEquals([1, 'Alice']);
+    check(users.firstWhere((u) => u[0] == 2)).deepEquals([2, 'Bob Builder']);
   });
 
   _test('delete', (db) async {
@@ -80,8 +81,8 @@ void main() {
     await db.query('DELETE FROM users WHERE id = ?', [1]).drain<void>();
 
     final users = await db.query('SELECT id, name FROM users', []).toIntStr();
-    expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob']);
-    expect(users, hasLength(1));
+    check(users.firstWhere((u) => u[0] == 2)).deepEquals([2, 'Bob']);
+    check(users).length.equals(1);
   });
 
   _test('transaction', (db) async {
@@ -92,8 +93,8 @@ void main() {
     });
 
     final users = await db.query('SELECT id, name FROM users', []).toIntStr();
-    expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob']);
-    expect(users, hasLength(1));
+    check(users.firstWhere((u) => u[0] == 2)).deepEquals([2, 'Bob']);
+    check(users).length.equals(1);
   });
 
   _test('transaction with conflict', (db) async {
@@ -102,7 +103,7 @@ void main() {
     final c1 = Completer<void>();
     final c2 = Completer<void>();
 
-    await expectLater(
+    await check(
       Future.wait([
         () async {
           await db.transact((tx) async {
@@ -127,8 +128,7 @@ void main() {
           });
         }(),
       ]),
-      throwsA(isA<TransactionAbortedException>()),
-    );
+    ).throws<TransactionAbortedException>();
   });
 
   _test('savepoint', (db) async {
@@ -141,8 +141,8 @@ void main() {
     });
 
     final users = await db.query('SELECT id, name FROM users', []).toIntStr();
-    expect(users.firstWhere((u) => u[0] == 2), [2, 'Bob']);
-    expect(users, hasLength(1));
+    check(users.firstWhere((u) => u[0] == 2)).deepEquals([2, 'Bob']);
+    check(users).length.equals(1);
   });
 
   // TODO: Make some more intersting test cases with conflicts!
@@ -153,7 +153,7 @@ void main() {
     final c1started = Completer<void>();
     final c2started = Completer<void>();
 
-    await expectLater(
+    await check(
       Future.wait([
         () async {
           await db.transact((tx) async {
@@ -182,7 +182,6 @@ void main() {
           });
         }(),
       ]),
-      throwsA(isA<TransactionAbortedException>()),
-    );
+    ).throws<TransactionAbortedException>();
   });
 }
