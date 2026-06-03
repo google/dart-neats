@@ -105,12 +105,12 @@ final _cases = [
   ),
   (
     name: '"".equals(null)',
-    expr: toExpr('').equals(toExpr(null)),
+    expr: (toExpr('') as Expr<String?>).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: '"hello".equals(null)',
-    expr: toExpr('hello').equals(toExpr(null)),
+    expr: (toExpr('hello') as Expr<String?>).equals(toExpr(null)),
     expected: false,
   ),
 
@@ -142,12 +142,12 @@ final _cases = [
   ),
   (
     name: '"".equalsValue(null)',
-    expr: toExpr('').equalsValue(null),
+    expr: (toExpr('') as Expr<String?>).equalsValue(null),
     expected: false,
   ),
   (
     name: '"hello".equalsValue(null)',
-    expr: toExpr('hello').equalsValue(null),
+    expr: (toExpr('hello') as Expr<String?>).equalsValue(null),
     expected: false,
   ),
 
@@ -179,12 +179,12 @@ final _cases = [
   ),
   (
     name: '"".notEquals(null)',
-    expr: toExpr('').notEquals(toExpr(null)),
+    expr: (toExpr('') as Expr<String?>).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: '"hello".notEquals(null)',
-    expr: toExpr('hello').notEquals(toExpr(null)),
+    expr: (toExpr('hello') as Expr<String?>).notEquals(toExpr(null)),
     expected: true,
   ),
 
@@ -216,12 +216,12 @@ final _cases = [
   ),
   (
     name: '"".notEqualsValue(null)',
-    expr: toExpr('').notEqualsValue(null),
+    expr: (toExpr('') as Expr<String?>).notEqualsValue(null),
     expected: true,
   ),
   (
     name: '"hello".notEqualsValue(null)',
-    expr: toExpr('hello').notEqualsValue(null),
+    expr: (toExpr('hello') as Expr<String?>).notEqualsValue(null),
     expected: true,
   ),
 

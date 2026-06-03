@@ -340,7 +340,7 @@ extension ExpressionEmployeeExt on Expr<Employee> {
   /// is equal to [departmentId], if any.
   Expr<Department?> get department => $ForGeneratedCode
       .subqueryTable(_$Department._$table)
-      .where((r) => r.departmentId.equals(departmentId))
+      .where((r) => departmentId.equals(r.departmentId))
       .first;
 }
 
@@ -391,7 +391,7 @@ extension InnerJoinEmployeeDepartmentExt
   ///
   /// This will match rows where [Employee.departmentId] = [Department.departmentId].
   Query<(Expr<Employee>, Expr<Department>)> usingDepartment() =>
-      on((a, b) => b.departmentId.equals(a.departmentId));
+      on((a, b) => a.departmentId.equals(b.departmentId));
 }
 
 extension LeftJoinEmployeeDepartmentExt
@@ -400,7 +400,7 @@ extension LeftJoinEmployeeDepartmentExt
   ///
   /// This will match rows where [Employee.departmentId] = [Department.departmentId].
   Query<(Expr<Employee>, Expr<Department?>)> usingDepartment() =>
-      on((a, b) => b.departmentId.equals(a.departmentId));
+      on((a, b) => a.departmentId.equals(b.departmentId));
 }
 
 extension RightJoinEmployeeDepartmentExt
@@ -409,7 +409,7 @@ extension RightJoinEmployeeDepartmentExt
   ///
   /// This will match rows where [Employee.departmentId] = [Department.departmentId].
   Query<(Expr<Employee?>, Expr<Department>)> usingDepartment() =>
-      on((a, b) => b.departmentId.equals(a.departmentId));
+      on((a, b) => a.departmentId.equals(b.departmentId));
 }
 
 /// `Table<Employee>` conflict targets for use with `.onConflict`.
@@ -938,7 +938,7 @@ extension InnerJoinDepartmentEmployeeExt
   ///
   /// This will match rows where [Department.departmentId] = [Employee.departmentId].
   Query<(Expr<Department>, Expr<Employee>)> usingDepartment() =>
-      on((a, b) => a.departmentId.equals(b.departmentId));
+      on((a, b) => b.departmentId.equals(a.departmentId));
 }
 
 extension LeftJoinDepartmentEmployeeExt
@@ -947,7 +947,7 @@ extension LeftJoinDepartmentEmployeeExt
   ///
   /// This will match rows where [Department.departmentId] = [Employee.departmentId].
   Query<(Expr<Department>, Expr<Employee?>)> usingDepartment() =>
-      on((a, b) => a.departmentId.equals(b.departmentId));
+      on((a, b) => b.departmentId.equals(a.departmentId));
 }
 
 extension RightJoinDepartmentEmployeeExt
@@ -956,7 +956,7 @@ extension RightJoinDepartmentEmployeeExt
   ///
   /// This will match rows where [Department.departmentId] = [Employee.departmentId].
   Query<(Expr<Department?>, Expr<Employee>)> usingDepartment() =>
-      on((a, b) => a.departmentId.equals(b.departmentId));
+      on((a, b) => b.departmentId.equals(a.departmentId));
 }
 
 /// `Table<Department>` conflict targets for use with `.onConflict`.

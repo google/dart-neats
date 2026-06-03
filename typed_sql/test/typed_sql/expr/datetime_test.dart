@@ -53,12 +53,12 @@ final _cases = [
   ),
   (
     name: 'epoch.equals(null)',
-    expr: toExpr(epoch).equals(toExpr(null)),
+    expr: (toExpr(epoch) as Expr<DateTime?>).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: 'today.equals(null)',
-    expr: toExpr(today).equals(toExpr(null)),
+    expr: (toExpr(today) as Expr<DateTime?>).equals(toExpr(null)),
     expected: false,
   ),
 
@@ -95,12 +95,12 @@ final _cases = [
   ),
   (
     name: 'epoch.equalsValue(null)',
-    expr: toExpr(epoch).equalsValue(null),
+    expr: (toExpr(epoch) as Expr<DateTime?>).equalsValue(null),
     expected: false,
   ),
   (
     name: 'today.equalsValue(null)',
-    expr: toExpr(today).equalsValue(null),
+    expr: (toExpr(today) as Expr<DateTime?>).equalsValue(null),
     expected: false,
   ),
 
@@ -139,12 +139,12 @@ final _cases = [
   ),
   (
     name: 'epoch.notEquals(null)',
-    expr: toExpr(epoch).notEquals(toExpr(null)),
+    expr: (toExpr(epoch) as Expr<DateTime?>).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: 'today.notEquals(null)',
-    expr: toExpr(today).notEquals(toExpr(null)),
+    expr: (toExpr(today) as Expr<DateTime?>).notEquals(toExpr(null)),
     expected: true,
   ),
 
@@ -181,12 +181,12 @@ final _cases = [
   ),
   (
     name: 'epoch.notEqualsValue(null)',
-    expr: toExpr(epoch).notEqualsValue(null),
+    expr: (toExpr(epoch) as Expr<DateTime?>).notEqualsValue(null),
     expected: true,
   ),
   (
     name: 'today.notEqualsValue(null)',
-    expr: toExpr(today).notEqualsValue(null),
+    expr: (toExpr(today) as Expr<DateTime?>).notEqualsValue(null),
     expected: true,
   ),
 

@@ -1014,7 +1014,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 _\$${fk.referencedTable.rowClass.name}._\$table
               ).where(
                 (r) =>
-                  ${fk.fields.mapIndexed((i, f) => 'r.$f.equals(${fk.foreignKey[i].name})').join(' & ')}
+                  ${fk.fields.mapIndexed((i, f) => _pkAndFkEqualsExpr('r.$f', fk.foreignKey[i].name, fk.foreignKey[i].isNullable)).join(' & ')}
               ).$firstAsNotNull
             '''),
           );
@@ -1184,7 +1184,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   ..lambda = true
                   ..body = Code('''
                   on((a, b) =>
-                    ${ref.fk.fields.mapIndexed((i, f) => 'a.$f.equals(b.${ref.fk.foreignKey[i].name})').join(' & ')}
+                    ${ref.fk.fields.mapIndexed((i, f) => _pkAndFkEqualsExpr('a.$f', 'b.${ref.fk.foreignKey[i].name}', ref.fk.foreignKey[i].isNullable)).join(' & ')}
                   )
                 '''),
               ),
@@ -1202,7 +1202,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   ..lambda = true
                   ..body = Code('''
                 on((a, b) =>
-                  ${fk.fields.mapIndexed((i, f) => 'b.$f.equals(a.${fk.foreignKey[i].name})').join(' & ')}
+                  ${fk.fields.mapIndexed((i, f) => _pkAndFkEqualsExpr('b.$f', 'a.${fk.foreignKey[i].name}', fk.foreignKey[i].isNullable)).join(' & ')}
                 )
               '''),
               );
@@ -1622,6 +1622,11 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
           '''),
     ))*/
 }
+
+/// Generate `pkExpr.equals(fkExpr)` or `fkExpr.equals(pkExpr)` depending on
+/// whether the FK field is nullable (the known nullable field must be the first).
+String _pkAndFkEqualsExpr(String pkExpr, String fkExpr, bool isFkNullable) =>
+    isFkNullable ? '$fkExpr.equals($pkExpr)' : '$pkExpr.equals($fkExpr)';
 
 extension on ParsedTable {
   String get sqlName {

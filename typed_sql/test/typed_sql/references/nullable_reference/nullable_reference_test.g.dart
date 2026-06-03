@@ -357,7 +357,7 @@ extension ExpressionAuthorExt on Expr<Author> {
   /// is equal to [favoriteBookId], if any.
   Expr<Book?> get favoriteBook => $ForGeneratedCode
       .subqueryTable(_$Book._$table)
-      .where((r) => r.bookId.equals(favoriteBookId))
+      .where((r) => favoriteBookId.equals(r.bookId))
       .first;
 }
 
@@ -439,13 +439,13 @@ extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
   ///
   /// This will match rows where [Author.authorId] = [Book.editorId].
   Query<(Expr<Author>, Expr<Book>)> usingEditor() =>
-      on((a, b) => a.authorId.equals(b.editorId));
+      on((a, b) => b.editorId.equals(a.authorId));
 
   /// Join using the `favoriteBook` _foreign key_.
   ///
   /// This will match rows where [Author.favoriteBookId] = [Book.bookId].
   Query<(Expr<Author>, Expr<Book>)> usingFavoriteBook() =>
-      on((a, b) => b.bookId.equals(a.favoriteBookId));
+      on((a, b) => a.favoriteBookId.equals(b.bookId));
 }
 
 extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
@@ -459,13 +459,13 @@ extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
   ///
   /// This will match rows where [Author.authorId] = [Book.editorId].
   Query<(Expr<Author>, Expr<Book?>)> usingEditor() =>
-      on((a, b) => a.authorId.equals(b.editorId));
+      on((a, b) => b.editorId.equals(a.authorId));
 
   /// Join using the `favoriteBook` _foreign key_.
   ///
   /// This will match rows where [Author.favoriteBookId] = [Book.bookId].
   Query<(Expr<Author>, Expr<Book?>)> usingFavoriteBook() =>
-      on((a, b) => b.bookId.equals(a.favoriteBookId));
+      on((a, b) => a.favoriteBookId.equals(b.bookId));
 }
 
 extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
@@ -479,13 +479,13 @@ extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
   ///
   /// This will match rows where [Author.authorId] = [Book.editorId].
   Query<(Expr<Author?>, Expr<Book>)> usingEditor() =>
-      on((a, b) => a.authorId.equals(b.editorId));
+      on((a, b) => b.editorId.equals(a.authorId));
 
   /// Join using the `favoriteBook` _foreign key_.
   ///
   /// This will match rows where [Author.favoriteBookId] = [Book.bookId].
   Query<(Expr<Author?>, Expr<Book>)> usingFavoriteBook() =>
-      on((a, b) => b.bookId.equals(a.favoriteBookId));
+      on((a, b) => a.favoriteBookId.equals(b.bookId));
 }
 
 /// `Table<Author>` conflict targets for use with `.onConflict`.
@@ -1066,7 +1066,7 @@ extension ExpressionBookExt on Expr<Book> {
   /// is equal to [editorId], if any.
   Expr<Author?> get editor => $ForGeneratedCode
       .subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equals(editorId))
+      .where((r) => editorId.equals(r.authorId))
       .first;
 }
 
@@ -1150,7 +1150,7 @@ extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.bookId] = [Author.favoriteBookId].
   Query<(Expr<Book>, Expr<Author>)> usingFavoriteBook() =>
-      on((a, b) => a.bookId.equals(b.favoriteBookId));
+      on((a, b) => b.favoriteBookId.equals(a.bookId));
 
   /// Join using the `author` _foreign key_.
   ///
@@ -1162,7 +1162,7 @@ extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.editorId] = [Author.authorId].
   Query<(Expr<Book>, Expr<Author>)> usingEditor() =>
-      on((a, b) => b.authorId.equals(a.editorId));
+      on((a, b) => a.editorId.equals(b.authorId));
 }
 
 extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
@@ -1170,7 +1170,7 @@ extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.bookId] = [Author.favoriteBookId].
   Query<(Expr<Book>, Expr<Author?>)> usingFavoriteBook() =>
-      on((a, b) => a.bookId.equals(b.favoriteBookId));
+      on((a, b) => b.favoriteBookId.equals(a.bookId));
 
   /// Join using the `author` _foreign key_.
   ///
@@ -1182,7 +1182,7 @@ extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.editorId] = [Author.authorId].
   Query<(Expr<Book>, Expr<Author?>)> usingEditor() =>
-      on((a, b) => b.authorId.equals(a.editorId));
+      on((a, b) => a.editorId.equals(b.authorId));
 }
 
 extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
@@ -1190,7 +1190,7 @@ extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.bookId] = [Author.favoriteBookId].
   Query<(Expr<Book?>, Expr<Author>)> usingFavoriteBook() =>
-      on((a, b) => a.bookId.equals(b.favoriteBookId));
+      on((a, b) => b.favoriteBookId.equals(a.bookId));
 
   /// Join using the `author` _foreign key_.
   ///
@@ -1202,7 +1202,7 @@ extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.editorId] = [Author.authorId].
   Query<(Expr<Book?>, Expr<Author>)> usingEditor() =>
-      on((a, b) => b.authorId.equals(a.editorId));
+      on((a, b) => a.editorId.equals(b.authorId));
 }
 
 /// `Table<Book>` conflict targets for use with `.onConflict`.

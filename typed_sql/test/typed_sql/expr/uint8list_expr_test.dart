@@ -71,9 +71,12 @@ final _cases =
       ),
       (
         name: '[1,2,3].equals(null)',
-        expr: toExpr(
-          Uint8List.fromList([1, 2, 3]),
-        ).equals(toExpr(null as Uint8List?)),
+        expr:
+            (toExpr(
+                      Uint8List.fromList([1, 2, 3]),
+                    )
+                    as Expr<Uint8List?>)
+                .equals(toExpr(null as Uint8List?)),
         expected: false,
       ),
 
@@ -122,7 +125,8 @@ final _cases =
       ),
       (
         name: '[1,2,3].equalsValue(null)',
-        expr: toExpr(Uint8List.fromList([1, 2, 3])).equalsValue(null),
+        expr: (toExpr(Uint8List.fromList([1, 2, 3])) as Expr<Uint8List?>)
+            .equalsValue(null),
         expected: false,
       ),
 
@@ -171,9 +175,12 @@ final _cases =
       ),
       (
         name: '[1,2,3].notEquals(null)',
-        expr: toExpr(
-          Uint8List.fromList([1, 2, 3]),
-        ).notEquals(toExpr(null as Uint8List?)),
+        expr:
+            (toExpr(
+                      Uint8List.fromList([1, 2, 3]),
+                    )
+                    as Expr<Uint8List?>)
+                .notEquals(toExpr(null as Uint8List?)),
         expected: true,
       ),
 
@@ -222,7 +229,8 @@ final _cases =
       ),
       (
         name: '[1,2,3].notEqualsValue(null)',
-        expr: toExpr(Uint8List.fromList([1, 2, 3])).notEqualsValue(null),
+        expr: (toExpr(Uint8List.fromList([1, 2, 3])) as Expr<Uint8List?>)
+            .notEqualsValue(null),
         expected: true,
       ),
 

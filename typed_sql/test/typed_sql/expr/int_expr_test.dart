@@ -50,12 +50,12 @@ final _cases = [
   ),
   (
     name: '0.equals(null)',
-    expr: toExpr(0).equals(toExpr(null)),
+    expr: (toExpr(0) as Expr<int?>).equals(toExpr(null)),
     expected: false,
   ),
   (
     name: '42.equals(null)',
-    expr: toExpr(42).equals(toExpr(null)),
+    expr: (toExpr(42) as Expr<int?>).equals(toExpr(null)),
     expected: false,
   ),
 
@@ -92,12 +92,12 @@ final _cases = [
   ),
   (
     name: '0.equalsValue(null)',
-    expr: toExpr(0).equalsValue(null),
+    expr: (toExpr(0) as Expr<int?>).equalsValue(null),
     expected: false,
   ),
   (
     name: '42.equalsValue(null)',
-    expr: toExpr(42).equalsValue(null),
+    expr: (toExpr(42) as Expr<int?>).equalsValue(null),
     expected: false,
   ),
 
@@ -134,12 +134,12 @@ final _cases = [
   ),
   (
     name: '0.notEquals(null)',
-    expr: toExpr(0).notEquals(toExpr(null)),
+    expr: (toExpr(0) as Expr<int?>).notEquals(toExpr(null)),
     expected: true,
   ),
   (
     name: '42.notEquals(null)',
-    expr: toExpr(42).notEquals(toExpr(null)),
+    expr: (toExpr(42) as Expr<int?>).notEquals(toExpr(null)),
     expected: true,
   ),
 
@@ -176,12 +176,12 @@ final _cases = [
   ),
   (
     name: '0.notEqualsValue(null)',
-    expr: toExpr(0).notEqualsValue(null),
+    expr: (toExpr(0) as Expr<int?>).notEqualsValue(null),
     expected: true,
   ),
   (
     name: '42.notEqualsValue(null)',
-    expr: toExpr(42).notEqualsValue(null),
+    expr: (toExpr(42) as Expr<int?>).notEqualsValue(null),
     expected: true,
   ),
 
