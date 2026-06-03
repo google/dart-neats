@@ -1,3 +1,6 @@
+## 0.1.11
+ * Fix equality helpers + reorder foreign key equals expressions.
+
 ## 0.1.10
  * Introduce `.insertValue` which automatically wraps with `toExpr()`, but is
    unfortunately unable to insert _default value_ for nullable fields that
