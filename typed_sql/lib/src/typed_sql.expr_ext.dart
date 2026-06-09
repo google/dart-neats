@@ -385,6 +385,50 @@ extension ExpressionNullableBool on Expr<bool?> {
   ///
   /// If this is `NULL`, [isFalse] will evaluate to `FALSE`.
   Expr<bool> isFalse() => isNotDistinctFrom(Expr.false$);
+
+  /// Logical AND.
+  ///
+  /// This is equivalent to `this AND other` in SQL, following SQL three-valued
+  /// logic (e.g. `NULL AND TRUE` is `NULL`, while `NULL AND FALSE` is `FALSE`).
+  ///
+  /// Also available as `&` operator.
+  Expr<bool?> and(Expr<bool?> other) {
+    if (other == Expr.true$) {
+      // this AND TRUE == this
+      return this;
+    }
+    if (other == Expr.false$) {
+      // this AND FALSE == FALSE
+      return Expr.false$;
+    }
+    if (this == Expr.true$) {
+      // TRUE AND other == other
+      return other;
+    }
+    return ExpressionBoolAnd<bool?>(this, other);
+  }
+
+  /// Logical AND.
+  ///
+  /// This is equivalent to `this AND other` in SQL.
+  ///
+  /// Also available as [and] method.
+  Expr<bool?> operator &(Expr<bool?> other) => and(other);
+
+  /// Logical OR.
+  ///
+  /// This is equivalent to `this OR other` in SQL, following SQL three-valued
+  /// logic (e.g. `NULL OR FALSE` is `NULL`, while `NULL OR TRUE` is `TRUE`).
+  ///
+  /// Also available as `|` operator.
+  Expr<bool?> or(Expr<bool?> other) => ExpressionBoolOr<bool?>(this, other);
+
+  /// Logical OR.
+  ///
+  /// This is equivalent to `this OR other` in SQL.
+  ///
+  /// Also available as [or] method.
+  Expr<bool?> operator |(Expr<bool?> other) => or(other);
 }
 
 /// Extension methods for nullable [DateTime] expressions.
@@ -737,18 +781,25 @@ extension ExpressionBool on Expr<bool> {
   ///
   /// This is equivalent to `this AND other` in SQL.
   ///
-  /// Also available as `&` operator.
-  Expr<bool> and(Expr<bool> other) {
-    if (other == Expr.true$) {
-      return this;
+  /// If [other] is a _nullable_ boolean expression, then the result is also
+  /// nullable, following SQL three-valued logic (e.g. `TRUE AND NULL` is
+  /// `NULL`).
+  /// Also available as `&` operator (when [other] is non-nullable).
+  Expr<R> and<R extends bool?>(Expr<R> other) {
+    if (identical(other, Expr.true$)) {
+      // this AND TRUE == this
+      return this as Expr<R>;
     }
-    if (other == Expr.false$) {
-      return Expr.false$;
+    if (identical(other, Expr.false$)) {
+      // this AND FALSE == FALSE
+      return Expr.false$ as Expr<R>;
     }
     if (this == Expr.true$) {
+      // TRUE AND other == other
       return other;
     }
-    return ExpressionBoolAnd(this, other);
+    // `this` is `Expr<bool>`, which is always assignable to `Expr<R>` for
+    return ExpressionBoolAnd<R>(this as Expr<R>, other);
   }
 
   /// Logical AND.
@@ -762,15 +813,23 @@ extension ExpressionBool on Expr<bool> {
   ///
   /// This is equivalent to `this OR other` in SQL.
   ///
-  /// Also available as `|` operator.
-  Expr<bool> or(Expr<bool> other) => ExpressionBoolOr(this, other);
+  /// If [other] is a _nullable_ boolean expression, then the result is also
+  /// nullable, following SQL three-valued logic (e.g. `FALSE OR NULL` is
+  /// `NULL`).
+  ///
+  /// Also available as `|` operator (when [other] is non-nullable).
+  Expr<R> or<R extends bool?>(Expr<R> other) =>
+      // `this` is `Expr<bool>`, which is always assignable to `Expr<R>` for
+      // `R extends bool?`, hence, this cast is safe.
+      ExpressionBoolOr<R>(this as Expr<R>, other);
 
   /// Logical OR.
   ///
   /// This is equivalent to `this OR other` in SQL.
   ///
   /// Also available as [or] method.
-  Expr<bool> operator |(Expr<bool> other) => ExpressionBoolOr(this, other);
+  Expr<bool> operator |(Expr<bool> other) =>
+      ExpressionBoolOr<bool>(this, other);
 
   /// Cast as integer.
   ///

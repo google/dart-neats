@@ -372,7 +372,7 @@ final class Upsert<T extends Row> {
   ///
   /// [1]: https://www.sqlite.org/lang_upsert.html
   UpsertConditional<T> where(
-    Expr<bool> Function(Expr<T> row, Expr<T> excluded) conditionBuilder,
+    Expr<bool?> Function(Expr<T> row, Expr<T> excluded) conditionBuilder,
   ) {
     // Always a safe cast because InsertOnConflict._update is the only
     // place we create UpsertConditional instances!
@@ -645,7 +645,7 @@ final class UpsertSingle<T extends Row> {
   ///
   /// [1]: https://www.sqlite.org/lang_upsert.html
   UpsertConditionalSingle<T> where(
-    Expr<bool> Function(Expr<T> row, Expr<T> excluded) conditionBuilder,
+    Expr<bool?> Function(Expr<T> row, Expr<T> excluded) conditionBuilder,
   ) {
     // Always a safe cast because InsertOnConflictSingle._update is the only
     // place we create UpsertConditionalSingle instances!

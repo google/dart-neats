@@ -399,6 +399,175 @@ final _cases = [
     expr: toExpr(false as bool?).isNotNull(),
     expected: true,
   ),
+
+  // Tests for .and() - SQL three-valued logic
+  (
+    name: 'null.and(null)',
+    expr: toExpr(null as bool?).and(toExpr(null as bool?)),
+    expected: null,
+  ),
+  (
+    name: 'null.and(true)',
+    expr: toExpr(null as bool?).and(toExpr(true as bool?)),
+    expected: null,
+  ),
+  (
+    name: 'toExpr(null).and(true)',
+    expr: toExpr(null).asBool().and(toExpr(true as bool?)),
+    expected: null,
+  ),
+  (
+    name: 'null.and(false)',
+    expr: toExpr(null as bool?).and(toExpr(false as bool?)),
+    expected: false,
+  ),
+  (
+    name: 'true.and(null)',
+    expr: toExpr(true as bool?).and(toExpr(null as bool?)),
+    expected: null,
+  ),
+  (
+    name: 'true.and(true)',
+    expr: toExpr(true as bool?).and(toExpr(true as bool?)),
+    expected: true,
+  ),
+  (
+    name: 'true.and(false)',
+    expr: toExpr(true as bool?).and(toExpr(false as bool?)),
+    expected: false,
+  ),
+  (
+    name: 'false.and(null)',
+    expr: toExpr(false as bool?).and(toExpr(null as bool?)),
+    expected: false,
+  ),
+  (
+    name: 'false.and(true)',
+    expr: toExpr(false as bool?).and(toExpr(true as bool?)),
+    expected: false,
+  ),
+  (
+    name: 'false.and(false)',
+    expr: toExpr(false as bool?).and(toExpr(false as bool?)),
+    expected: false,
+  ),
+
+  // Tests for operator & (alias for .and())
+  (
+    name: 'null & true',
+    expr: toExpr(null as bool?) & toExpr(true as bool?),
+    expected: null,
+  ),
+  (
+    name: 'null & false',
+    expr: toExpr(null as bool?) & toExpr(false as bool?),
+    expected: false,
+  ),
+  (
+    name: 'true & null',
+    expr: toExpr(true as bool?) & toExpr(null as bool?),
+    expected: null,
+  ),
+
+  // Tests for .or() - SQL three-valued logic
+  (
+    name: 'null.or(null)',
+    expr: toExpr(null as bool?).or(toExpr(null as bool?)),
+    expected: null,
+  ),
+  (
+    name: 'null.or(true)',
+    expr: toExpr(null as bool?).or(toExpr(true as bool?)),
+    expected: true,
+  ),
+  (
+    name: 'null.or(false)',
+    expr: toExpr(null as bool?).or(toExpr(false as bool?)),
+    expected: null,
+  ),
+  (
+    name: 'true.or(null)',
+    expr: toExpr(true as bool?).or(toExpr(null as bool?)),
+    expected: true,
+  ),
+  (
+    name: 'true.or(true)',
+    expr: toExpr(true as bool?).or(toExpr(true as bool?)),
+    expected: true,
+  ),
+  (
+    name: 'true.or(false)',
+    expr: toExpr(true as bool?).or(toExpr(false as bool?)),
+    expected: true,
+  ),
+  (
+    name: 'false.or(null)',
+    expr: toExpr(false as bool?).or(toExpr(null as bool?)),
+    expected: null,
+  ),
+  (
+    name: 'false.or(true)',
+    expr: toExpr(false as bool?).or(toExpr(true as bool?)),
+    expected: true,
+  ),
+  (
+    name: 'false.or(false)',
+    expr: toExpr(false as bool?).or(toExpr(false as bool?)),
+    expected: false,
+  ),
+
+  // Tests for operator | (alias for .or())
+  (
+    name: 'null | false',
+    expr: toExpr(null as bool?) | toExpr(false as bool?),
+    expected: null,
+  ),
+  (
+    name: 'null | true',
+    expr: toExpr(null as bool?) | toExpr(true as bool?),
+    expected: true,
+  ),
+  (
+    name: 'false | null',
+    expr: toExpr(false as bool?) | toExpr(null as bool?),
+    expected: null,
+  ),
+
+  // Tests for mixed nullability: a non-nullable `Expr<bool>` receiver combined
+  // with a nullable operand widens the result to `Expr<bool?>`.
+  (
+    name: 'true(non-null).and(null)',
+    expr: toExpr(true).and(toExpr(null as bool?)),
+    expected: null,
+  ),
+  (
+    name: 'false(non-null).and(null)',
+    expr: toExpr(false).and(toExpr(null as bool?)),
+    expected: false,
+  ),
+  (
+    name: 'true(non-null).or(null)',
+    expr: toExpr(true).or(toExpr(null as bool?)),
+    expected: true,
+  ),
+  (
+    name: 'false(non-null).or(null)',
+    expr: toExpr(false).or(toExpr(null as bool?)),
+    expected: null,
+  ),
+
+  // Combining clauses, e.g. as one might in a `.where()` filter.
+  (
+    name: 'null.and(true).or(false)',
+    expr: toExpr(null as bool?).and(toExpr(true as bool?)).or(toExpr(false)),
+    expected: null,
+  ),
+  (
+    name: '(true & null) | true',
+    expr:
+        (toExpr(true as bool?) & toExpr(null as bool?)) | toExpr(true as bool?),
+    expected: true,
+  ),
 ];
 
 void main() {

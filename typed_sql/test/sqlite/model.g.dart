@@ -1708,7 +1708,7 @@ extension QueryOwnerPackageNamed<A, B>
   /// Returns a [Query] retaining rows from this [Query] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   Query<({Expr<A> owner, Expr<B> package})> where(
-    Expr<bool> Function(({Expr<A> owner, Expr<B> package}) expr)
+    Expr<bool?> Function(({Expr<A> owner, Expr<B> package}) expr)
     conditionBuilder,
   ) => _fromPositionalQuery(
     _asPositionalQuery.where(_wrapBuilder(conditionBuilder)),
