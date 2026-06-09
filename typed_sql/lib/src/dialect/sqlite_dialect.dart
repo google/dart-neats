@@ -572,9 +572,6 @@ extension on ExpressionResolver<SqlContext> {
   String expr<T>(Expr<T> e) => switch (e) {
     FieldExpression<T>() => resolveField(e),
     SubQueryExpression<T>(:final query) => '(${selectExpression(query).$1})',
-    ValueExpression.false$ => 'FALSE',
-    ValueExpression.true$ => 'TRUE',
-    ValueExpression.null$ => 'NULL',
     ValueExpression<CustomDataType?>(value: final value) =>
       context.addParameter(
         value?.toDatabase(),

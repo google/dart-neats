@@ -473,30 +473,6 @@ final class ValueExpression<T> extends SingleValueExpr<T> {
 
   const ValueExpression._(this.value, this._type) : super._();
 
-  static ValueExpression<T> custom<S, T extends CustomDataType<S>>(
-    T value,
-    T Function(S) fromDatabase,
-  ) {
-    final backingType = switch (value) {
-      CustomDataType<bool> _ => ColumnType.boolean as ColumnType<S>,
-      CustomDataType<String> _ => ColumnType.text as ColumnType<S>,
-      CustomDataType<int> _ => ColumnType.integer as ColumnType<S>,
-      CustomDataType<double> _ => ColumnType.real as ColumnType<S>,
-      CustomDataType<Uint8List> _ => ColumnType.blob as ColumnType<S>,
-      CustomDataType<DateTime> _ => ColumnType.dateTime as ColumnType<S>,
-      CustomDataType<JsonValue> _ => ColumnType.jsonValue as ColumnType<S>,
-      _ => throw ArgumentError.value(
-        value,
-        'value',
-        'T in CustomDataType<T> must be String, int, double, bool, or DateTime!',
-      ),
-    };
-    return ValueExpression._(
-      value,
-      CustomExprType._(backingType, fromDatabase),
-    );
-  }
-
   factory ValueExpression(T value) {
     // TODO: Consider asking Lasse how to actually switch over T, because null is not a type!
     // TODO: We need to switch over T or use an extension method! If someone does
