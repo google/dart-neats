@@ -1,7 +1,10 @@
 # Type-safe SQL in Dart
+
 This package aims to offer a _slightly opinionated_ type-safe API for
 interacting with an SQL database from Dart. Thus, offering users the power
 of SQL, with the type-safety of Dart (including null-safety!).
+
+**Disclaimer:** This is not an officially supported Google product.
 
 **Features:**
  * **Type safety:** If your Dart code is type-safe you will not get SQL
