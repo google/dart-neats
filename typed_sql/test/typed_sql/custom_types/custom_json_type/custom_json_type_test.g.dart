@@ -485,7 +485,7 @@ extension JsonValueExt on JsonValue {
   /// Wrap this [JsonValue] as [Expr<JsonValue>] for use queries with
   /// `package:typed_sql`.
   Expr<JsonValue> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
 }
 
 /// Wrap this [JsonValue] as [Expr<JsonValue>] for use queries with
@@ -494,7 +494,7 @@ extension JsonValueNullableExt on JsonValue? {
   /// Wrap this [JsonValue] as [Expr<JsonValue?>] for use queries with
   /// `package:typed_sql`.
   Expr<JsonValue?> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, JsonValueExt._exprType);
+      $ForGeneratedCode.customDataTypeAsExpr(this, JsonValueExt._exprType);
 }
 
 /// Extension methods for assertions on [Item] using

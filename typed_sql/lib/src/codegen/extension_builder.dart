@@ -1380,7 +1380,7 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
                   JoinType.$type,
                   _from._from(_from._expressions.toList()),
                   _join._from(_join._expressions.toList()),
-                  Literal.true\$,
+                  Expr.true\$,
                 ),
               )
            '''),

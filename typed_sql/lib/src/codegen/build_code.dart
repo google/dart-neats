@@ -64,7 +64,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
       .sortedBy((e) => e.typeName);
 
   for (final (:typeName, :backingTypeExpr) in customTypes) {
-    // Extension for creating an literal Expr<T> from T, when
+    // Extension for creating an Expr<T> from T, when
     // T extends CustomDataType<T>
     yield Extension(
       (b) => b
@@ -99,7 +99,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
               ..type = MethodType.getter
               ..lambda = true
               ..body = Code('''
-              \$ForGeneratedCode.literalCustomDataType(
+              \$ForGeneratedCode.customDataTypeAsExpr(
                 this,
                 _exprType,
               ).asNotNull()
@@ -108,7 +108,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
         ),
     );
 
-    // Extension for creating an literal Expr<T?> from T, when
+    // Extension for creating an Expr<T?> from T, when
     // T extends CustomDataType<T>
     yield Extension(
       (b) => b
@@ -127,7 +127,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
               ..type = MethodType.getter
               ..lambda = true
               ..body = Code('''
-              \$ForGeneratedCode.literalCustomDataType(
+              \$ForGeneratedCode.customDataTypeAsExpr(
                 this,
                 ${typeName}Ext._exprType,
               )

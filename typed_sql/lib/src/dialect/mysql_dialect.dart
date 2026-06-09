@@ -624,10 +624,11 @@ extension on ExpressionResolver<SqlContext> {
   String expr<T>(Expr<T> e) => switch (e) {
     FieldExpression<T>() => resolveField(e),
     SubQueryExpression<T>(:final query) => '(${selectExpression(query).$1})',
-    Literal<CustomDataType?>(value: final value) => context.addParameter(
-      value?.toDatabase(),
-    ),
-    Literal<T>(value: final value) => context.addParameter(value),
+    ValueExpression<CustomDataType?>(value: final value) =>
+      context.addParameter(
+        value?.toDatabase(),
+      ),
+    ValueExpression<T>(value: final value) => context.addParameter(value),
     ExpressionBlobLength(:final value) => 'LENGTH(${expr(value)})',
     ExpressionBlobToHex(:final value) => 'HEX(${expr(value)})',
     ExpressionBlobDecodeUtf8(:final value) =>

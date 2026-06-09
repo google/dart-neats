@@ -1264,7 +1264,7 @@ extension ColorExt on Color {
   /// Wrap this [Color] as [Expr<Color>] for use queries with
   /// `package:typed_sql`.
   Expr<Color> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
 }
 
 /// Wrap this [Color] as [Expr<Color>] for use queries with
@@ -1273,7 +1273,7 @@ extension ColorNullableExt on Color? {
   /// Wrap this [Color] as [Expr<Color?>] for use queries with
   /// `package:typed_sql`.
   Expr<Color?> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, ColorExt._exprType);
+      $ForGeneratedCode.customDataTypeAsExpr(this, ColorExt._exprType);
 }
 
 /// Extension methods for assertions on [SnakeProfile] using

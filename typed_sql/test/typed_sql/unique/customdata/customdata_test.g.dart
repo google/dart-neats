@@ -551,7 +551,7 @@ extension CustomIntTypeExt on CustomIntType {
   /// Wrap this [CustomIntType] as [Expr<CustomIntType>] for use queries with
   /// `package:typed_sql`.
   Expr<CustomIntType> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
 }
 
 /// Wrap this [CustomIntType] as [Expr<CustomIntType>] for use queries with
@@ -560,7 +560,7 @@ extension CustomIntTypeNullableExt on CustomIntType? {
   /// Wrap this [CustomIntType] as [Expr<CustomIntType?>] for use queries with
   /// `package:typed_sql`.
   Expr<CustomIntType?> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, CustomIntTypeExt._exprType);
+      $ForGeneratedCode.customDataTypeAsExpr(this, CustomIntTypeExt._exprType);
 }
 
 /// Wrap this [CustomStringType] as [Expr<CustomStringType>] for use queries with
@@ -574,7 +574,7 @@ extension CustomStringTypeExt on CustomStringType {
   /// Wrap this [CustomStringType] as [Expr<CustomStringType>] for use queries with
   /// `package:typed_sql`.
   Expr<CustomStringType> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
 }
 
 /// Wrap this [CustomStringType] as [Expr<CustomStringType>] for use queries with
@@ -582,7 +582,7 @@ extension CustomStringTypeExt on CustomStringType {
 extension CustomStringTypeNullableExt on CustomStringType? {
   /// Wrap this [CustomStringType] as [Expr<CustomStringType?>] for use queries with
   /// `package:typed_sql`.
-  Expr<CustomStringType?> get asExpr => $ForGeneratedCode.literalCustomDataType(
+  Expr<CustomStringType?> get asExpr => $ForGeneratedCode.customDataTypeAsExpr(
     this,
     CustomStringTypeExt._exprType,
   );

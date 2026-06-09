@@ -77,7 +77,7 @@ export '../typed_sql.dart'
         JoinClause,
         JoinType,
         LimitClause,
-        Literal,
+        ValueExpression,
         MaxExpression,
         MinExpression,
         NotNullExpression,

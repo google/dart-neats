@@ -8476,7 +8476,7 @@ extension InnerJoin1On1<A, B> on InnerJoin<(Expr<A>,), (Expr<B>,)> {
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -8560,7 +8560,7 @@ extension InnerJoin1On2<A, B, C> on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -8653,7 +8653,7 @@ extension InnerJoin1On3<A, B, C, D>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -8755,7 +8755,7 @@ extension InnerJoin1On4<A, B, C, D, E>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -8862,7 +8862,7 @@ extension InnerJoin1On5<A, B, C, D, E, F>
           JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
-          Literal.true$,
+          Expr.true$,
         ),
       );
 
@@ -8998,7 +8998,7 @@ extension InnerJoin1On6<A, B, C, D, E, F, G>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -9152,7 +9152,7 @@ extension InnerJoin1On7<A, B, C, D, E, F, G, H>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -9312,7 +9312,7 @@ extension InnerJoin2On1<A, B, C> on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -9405,7 +9405,7 @@ extension InnerJoin2On2<A, B, C, D>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -9507,7 +9507,7 @@ extension InnerJoin2On3<A, B, C, D, E>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -9614,7 +9614,7 @@ extension InnerJoin2On4<A, B, C, D, E, F>
           JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
-          Literal.true$,
+          Expr.true$,
         ),
       );
 
@@ -9750,7 +9750,7 @@ extension InnerJoin2On5<A, B, C, D, E, F, G>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -9904,7 +9904,7 @@ extension InnerJoin2On6<A, B, C, D, E, F, G, H>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -10070,7 +10070,7 @@ extension InnerJoin3On1<A, B, C, D>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -10172,7 +10172,7 @@ extension InnerJoin3On2<A, B, C, D, E>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -10279,7 +10279,7 @@ extension InnerJoin3On3<A, B, C, D, E, F>
           JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
-          Literal.true$,
+          Expr.true$,
         ),
       );
 
@@ -10415,7 +10415,7 @@ extension InnerJoin3On4<A, B, C, D, E, F, G>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -10568,7 +10568,7 @@ extension InnerJoin3On5<A, B, C, D, E, F, G, H>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -10735,7 +10735,7 @@ extension InnerJoin4On1<A, B, C, D, E>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -10842,7 +10842,7 @@ extension InnerJoin4On2<A, B, C, D, E, F>
           JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
-          Literal.true$,
+          Expr.true$,
         ),
       );
 
@@ -10978,7 +10978,7 @@ extension InnerJoin4On3<A, B, C, D, E, F, G>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -11131,7 +11131,7 @@ extension InnerJoin4On4<A, B, C, D, E, F, G, H>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -11291,7 +11291,7 @@ extension InnerJoin5On1<A, B, C, D, E, F>
           JoinType.inner,
           _from._from(_from._expressions.toList()),
           _join._from(_join._expressions.toList()),
-          Literal.true$,
+          Expr.true$,
         ),
       );
 
@@ -11427,7 +11427,7 @@ extension InnerJoin5On2<A, B, C, D, E, F, G>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -11581,7 +11581,7 @@ extension InnerJoin5On3<A, B, C, D, E, F, G, H>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -11755,7 +11755,7 @@ extension InnerJoin6On1<A, B, C, D, E, F, G>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -11909,7 +11909,7 @@ extension InnerJoin6On2<A, B, C, D, E, F, G, H>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 
@@ -12086,7 +12086,7 @@ extension InnerJoin7On1<A, B, C, D, E, F, G, H>
       JoinType.inner,
       _from._from(_from._expressions.toList()),
       _join._from(_join._expressions.toList()),
-      Literal.true$,
+      Expr.true$,
     ),
   );
 

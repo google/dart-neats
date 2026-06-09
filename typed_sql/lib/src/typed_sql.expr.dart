@@ -165,9 +165,9 @@ sealed class Expr<T extends Object?> implements _ExprTyped<T> {
 
   Iterable<Expr<Object?>> _explode();
 
-  static const Expr<Null> null$ = Literal.null$;
-  static const Expr<bool> true$ = Literal.true$;
-  static const Expr<bool> false$ = Literal.false$;
+  static const Expr<Null> null$ = ValueExpression.null$;
+  static const Expr<bool> true$ = ValueExpression.true$;
+  static const Expr<bool> false$ = ValueExpression.false$;
 
   /// Get an [Expr<DateTime>] that represents the current timestamp in UTC.
   ///
@@ -264,7 +264,7 @@ base mixin _ExprJsonValue implements _ExprTyped<JsonValue> {
 /// {@category inserting_rows}
 /// {@category writing_queries}
 /// {@category update_and_delete}
-Expr<T> toExpr<T extends Object?>(T value) => Literal(value);
+Expr<T> toExpr<T extends Object?>(T value) => ValueExpression(value);
 
 final class RowExpression<T extends Row> extends Expr<T> {
   final TableDefinition<T> _table;
@@ -454,26 +454,26 @@ final class CastExpression<T, R> extends SingleValueExpr<R> {
   _ExprType<R> get _type => type;
 }
 
-final class Literal<T> extends SingleValueExpr<T> {
+// TODO: Consider supporting a Constant expression subclass, currently we
+//       always encode literals as ? and attach them as parameters.
+//       This is fine, but if we ever use these query builders to create
+//       prepared statements that are executed more than once, then it matters
+//       whether a literal is encoded as value or a constant.
+//       If we do this, we might have to rename Literal to Value!
+
+final class ValueExpression<T> extends SingleValueExpr<T> {
   final T value;
 
   @override
   final _ExprType<T> _type;
 
-  // TODO: Consider supporting a Constant expression subclass, currently we
-  //       always encode literals as ? and attach them as parameters.
-  //       This is fine, but if we ever use these query builders to create
-  //       prepared statements that are executed more than once, then it matters
-  //       whether a literal is encoded as value or a constant.
-  //       If we do this, we might have to rename Literal to Value!
+  static const null$ = ValueExpression<Null>._(null, ColumnType.nullType);
+  static const true$ = ValueExpression._(true, ColumnType.boolean);
+  static const false$ = ValueExpression._(false, ColumnType.boolean);
 
-  static const null$ = Literal<Null>._(null, ColumnType.nullType);
-  static const true$ = Literal._(true, ColumnType.boolean);
-  static const false$ = Literal._(false, ColumnType.boolean);
+  const ValueExpression._(this.value, this._type) : super._();
 
-  const Literal._(this.value, this._type) : super._();
-
-  static Literal<T> custom<S, T extends CustomDataType<S>>(
+  static ValueExpression<T> custom<S, T extends CustomDataType<S>>(
     T value,
     T Function(S) fromDatabase,
   ) {
@@ -491,45 +491,48 @@ final class Literal<T> extends SingleValueExpr<T> {
         'T in CustomDataType<T> must be String, int, double, bool, or DateTime!',
       ),
     };
-    return Literal._(value, CustomExprType._(backingType, fromDatabase));
+    return ValueExpression._(
+      value,
+      CustomExprType._(backingType, fromDatabase),
+    );
   }
 
-  factory Literal(T value) {
+  factory ValueExpression(T value) {
     // TODO: Consider asking Lasse how to actually switch over T, because null is not a type!
     // TODO: We need to switch over T or use an extension method! If someone does
     //       select(toExpr(null as bool?)).union(select(toExpr(true)))
     //       We'll have a expression that can't actually decode bools!
     switch (value) {
       case true:
-        return true$ as Literal<T>;
+        return true$ as ValueExpression<T>;
 
       case false:
-        return false$ as Literal<T>;
+        return false$ as ValueExpression<T>;
 
       case null:
-        return null$ as Literal<T>;
+        return null$ as ValueExpression<T>;
 
       case String _:
-        return Literal._(value, ColumnType.text as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.text as _ExprType<T>);
       case int _:
-        return Literal._(value, ColumnType.integer as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.integer as _ExprType<T>);
       case double _:
-        return Literal._(value, ColumnType.real as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.real as _ExprType<T>);
       case Uint8List _:
-        return Literal._(value, ColumnType.blob as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.blob as _ExprType<T>);
       case DateTime v:
-        return Literal._(
+        return ValueExpression._(
           v.toUtc() as T,
           ColumnType.dateTime as _ExprType<T>,
         );
       case JsonValue _:
-        return Literal._(value, ColumnType.jsonValue as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.jsonValue as _ExprType<T>);
 
       case CustomDataType _:
         throw ArgumentError.value(
           value,
           'value',
-          'Use Literal.custom for CustomDataType!',
+          'Use CustomDataType.asExpr instead!',
         );
 
       default:
@@ -537,7 +540,7 @@ final class Literal<T> extends SingleValueExpr<T> {
           value,
           'value',
           'Only String, int, double, bool, null, and DateTime '
-              'literals are allowed',
+              'values are allowed',
         );
     }
   }

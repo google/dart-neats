@@ -626,13 +626,14 @@ extension on ExpressionResolver<SqlContext> {
   String expr<T>(Expr<T> e) => switch (e) {
     FieldExpression<T>() => resolveField(e),
     SubQueryExpression<T>(:final query) => '(${selectExpression(query).$1})',
-    Literal.false$ => 'FALSE',
-    Literal.true$ => 'TRUE',
-    Literal.null$ => '(NULL)::unknown',
-    Literal<CustomDataType?>(value: final value) => context.addParameter(
-      value?.toDatabase(),
-    ),
-    Literal<T>(value: final value) => context.addParameter(value),
+    ValueExpression.false$ => 'FALSE',
+    ValueExpression.true$ => 'TRUE',
+    ValueExpression.null$ => '(NULL)::unknown',
+    ValueExpression<CustomDataType?>(value: final value) =>
+      context.addParameter(
+        value?.toDatabase(),
+      ),
+    ValueExpression<T>(value: final value) => context.addParameter(value),
     ExpressionBlobSublist(:final value, :final start, :final length) =>
       'SUBSTRING(${expr(value)} FROM CAST(${expr(start)} AS INTEGER) + 1 '
           '${length != null ? 'FOR CAST(${expr(length)} AS INTEGER)' : ''})',

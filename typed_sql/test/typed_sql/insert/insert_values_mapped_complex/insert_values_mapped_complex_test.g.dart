@@ -729,7 +729,7 @@ extension MyCustomTypeExt on MyCustomType {
   /// Wrap this [MyCustomType] as [Expr<MyCustomType>] for use queries with
   /// `package:typed_sql`.
   Expr<MyCustomType> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
 }
 
 /// Wrap this [MyCustomType] as [Expr<MyCustomType>] for use queries with
@@ -738,7 +738,7 @@ extension MyCustomTypeNullableExt on MyCustomType? {
   /// Wrap this [MyCustomType] as [Expr<MyCustomType?>] for use queries with
   /// `package:typed_sql`.
   Expr<MyCustomType?> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, MyCustomTypeExt._exprType);
+      $ForGeneratedCode.customDataTypeAsExpr(this, MyCustomTypeExt._exprType);
 }
 
 /// Extension methods for assertions on [ComplexMappedItem] using

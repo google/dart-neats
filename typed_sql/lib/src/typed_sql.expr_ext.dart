@@ -316,12 +316,12 @@ extension ExpressionNullableBool on Expr<bool?> {
   Expr<bool> isNotNull() => isNull().not();
 
   /// True, if this expression evaluates to `TRUE`.
-  Expr<bool> isTrue() => isNotDistinctFrom(Literal.true$);
+  Expr<bool> isTrue() => isNotDistinctFrom(ValueExpression.true$);
 
   /// True, if this expression evaluates to `FALSE`.
   ///
   /// If this is `NULL`, [isFalse] will evaluate to `FALSE`.
-  Expr<bool> isFalse() => isNotDistinctFrom(Literal.false$);
+  Expr<bool> isFalse() => isNotDistinctFrom(ValueExpression.false$);
 }
 
 /// Extension methods for nullable [DateTime] expressions.
@@ -677,13 +677,13 @@ extension ExpressionBool on Expr<bool> {
   ///
   /// Also available as `&` operator.
   Expr<bool> and(Expr<bool> other) {
-    if (other == Literal.true$) {
+    if (other == ValueExpression.true$) {
       return this;
     }
-    if (other == Literal.false$) {
-      return Literal.false$;
+    if (other == ValueExpression.false$) {
+      return ValueExpression.false$;
     }
-    if (this == Literal.true$) {
+    if (this == ValueExpression.true$) {
       return other;
     }
     return ExpressionBoolAnd(this, other);
