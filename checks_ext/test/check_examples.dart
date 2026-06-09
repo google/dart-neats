@@ -72,7 +72,7 @@ void checkExamples({String directory = 'example'}) {
       test('"$filename" output matches comments', () async {
         final expected = file
             .readAsLinesSync()
-            .map((l) => l.trim())
+            .map((l) => l.trimLeft())
             .where((l) => l.startsWith('//') && !l.startsWith('///'))
             .map((l) => l.startsWith('// ') ? l.substring(3) : l.substring(2))
             .where((l) => l.trim().isNotEmpty)
