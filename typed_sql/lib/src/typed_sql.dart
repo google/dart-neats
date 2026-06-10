@@ -131,23 +131,25 @@ Expr<Object>? _defaultValueAsExpr(Object? defaultValue) {
   // because parameters don't work well with schema migration tools.
 
   if (defaultValue case (kind: 'raw', value: final String value)) {
-    return toExpr(value);
+    return toExpr<String>(value);
   }
   if (defaultValue case (kind: 'raw', value: final bool value)) {
-    return toExpr(value);
+    return toExpr<bool>(value);
   }
   if (defaultValue case (kind: 'raw', value: final int value)) {
-    return toExpr(value);
+    return toExpr<int>(value);
   }
   if (defaultValue case (kind: 'raw', value: final double value)) {
-    return toExpr(value);
+    return toExpr<double>(value);
   }
   if (defaultValue case (kind: 'raw', value: final JsonValue value)) {
-    return toExpr(value);
+    return toExpr<JsonValue>(value);
   }
 
   if (defaultValue case (kind: 'datetime', value: 'epoch')) {
-    return toExpr(DateTime.fromMillisecondsSinceEpoch(0, isUtc: true));
+    return toExpr<DateTime>(
+      DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+    );
   }
 
   if (defaultValue case (kind: 'datetime', value: 'now')) {
@@ -167,7 +169,7 @@ Expr<Object>? _defaultValueAsExpr(Object? defaultValue) {
       final int microsecond,
     ),
   )) {
-    return toExpr(
+    return toExpr<DateTime>(
       DateTime.utc(
         year,
         month,
