@@ -513,7 +513,7 @@ final class _SqliteRowReader extends RowReader {
 List<Object?> _paramsForSqlite(List<Object?> params) => params
     .map(
       (p) => switch (p) {
-        DateTime d => d.toIso8601String(),
+        DateTime d => d.toUtc().toIso8601String(),
         String s => s,
         null => null,
         bool b => b,

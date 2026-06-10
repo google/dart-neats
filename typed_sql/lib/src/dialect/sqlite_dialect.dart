@@ -30,7 +30,7 @@ String _literal(Object? value) => switch (value) {
   int i => i.toString(),
   double d => d.toString(),
   String s => _escapeStringLiteral(s),
-  DateTime d => '\'${d.toIso8601String()}\'',
+  DateTime d => '\'${d.toUtc().toIso8601String()}\'',
   JsonValue j =>
     'jsonb(${_escapeStringLiteral(json.encode(normalizeJson(j.value)))})',
   Uint8List b =>

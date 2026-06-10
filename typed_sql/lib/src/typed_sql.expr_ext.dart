@@ -297,7 +297,7 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   ///
   /// This is equivalent to `this IS NULL` in SQL.
   /// {@endtemplate}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@template isNotNull}
   /// Check if this expression is not `NULL`.
@@ -337,7 +337,7 @@ extension ExpressionNullableString on Expr<String?> {
       ExpressionEquals(this, other);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -373,18 +373,18 @@ extension ExpressionNullableBool on Expr<bool?> {
       ExpressionEquals(this, other);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
 
   /// True, if this expression evaluates to `TRUE`.
-  Expr<bool> isTrue() => isNotDistinctFrom(ValueExpression.true$);
+  Expr<bool> isTrue() => isNotDistinctFrom(Expr.true$);
 
   /// True, if this expression evaluates to `FALSE`.
   ///
   /// If this is `NULL`, [isFalse] will evaluate to `FALSE`.
-  Expr<bool> isFalse() => isNotDistinctFrom(ValueExpression.false$);
+  Expr<bool> isFalse() => isNotDistinctFrom(Expr.false$);
 }
 
 /// Extension methods for nullable [DateTime] expressions.
@@ -418,7 +418,7 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
       ExpressionEquals(this, other);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -455,7 +455,7 @@ extension ExpressionNullableUint8List on Expr<Uint8List?> {
       ExpressionEquals(this, other);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -484,8 +484,7 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// > This method only returns `true` if `this` is an SQL `NULL`, meaning:
   /// >  * `toExpr(null as JsonValue?).isNull()` evaluates  to `true`, and,
   /// >  * `toExpr(JsonValue(null) as JsonValue?).isNull()` evaluates  to `false`.
-  Expr<bool> isNull() =>
-      ExpressionIsNotDistinctFrom<JsonValue>(this, Expr.null$);
+  Expr<bool> isNull() => ExpressionIsNotDistinctFrom(this, toExpr(null));
 
   /// {@macro isNotNull}
   ///
@@ -684,7 +683,7 @@ extension ExpressionBool on Expr<bool> {
   /// {@endtemplate}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@macro isNotNull}
   ///
@@ -740,13 +739,13 @@ extension ExpressionBool on Expr<bool> {
   ///
   /// Also available as `&` operator.
   Expr<bool> and(Expr<bool> other) {
-    if (other == ValueExpression.true$) {
+    if (other == Expr.true$) {
       return this;
     }
-    if (other == ValueExpression.false$) {
-      return ValueExpression.false$;
+    if (other == Expr.false$) {
+      return Expr.false$;
     }
-    if (this == ValueExpression.true$) {
+    if (this == Expr.true$) {
       return other;
     }
     return ExpressionBoolAnd(this, other);
@@ -809,7 +808,7 @@ extension ExpressionString on Expr<String> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@macro isNotNull}
   ///
@@ -1222,7 +1221,7 @@ extension ExpressionNum<T extends num> on Expr<T> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@macro isNotNull}
   ///
@@ -1310,7 +1309,7 @@ extension ExpressionDateTime on Expr<DateTime> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@macro isNotNull}
   ///
@@ -1400,7 +1399,7 @@ extension ExpressionUint8List on Expr<Uint8List> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExpr(null));
 
   /// {@macro isNotNull}
   ///
@@ -1455,8 +1454,7 @@ extension ExpressionJsonValue on Expr<JsonValue> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() =>
-      ExpressionIsNotDistinctFrom<JsonValue>(this, Expr.null$);
+  Expr<bool> isNull() => ExpressionIsNotDistinctFrom(this, toExpr(null));
 
   /// {@macro isNotNull}
   ///
