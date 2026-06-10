@@ -131,23 +131,25 @@ Expr<Object>? _defaultValueAsExpr(Object? defaultValue) {
   // because parameters don't work well with schema migration tools.
 
   if (defaultValue case (kind: 'raw', value: final String value)) {
-    return toExpr(value);
+    return toExprLiteral<String>(value);
   }
   if (defaultValue case (kind: 'raw', value: final bool value)) {
-    return toExpr(value);
+    return toExprLiteral<bool>(value);
   }
   if (defaultValue case (kind: 'raw', value: final int value)) {
-    return toExpr(value);
+    return toExprLiteral<int>(value);
   }
   if (defaultValue case (kind: 'raw', value: final double value)) {
-    return toExpr(value);
+    return toExprLiteral<double>(value);
   }
   if (defaultValue case (kind: 'raw', value: final JsonValue value)) {
-    return toExpr(value);
+    return toExprLiteral<JsonValue>(value);
   }
 
   if (defaultValue case (kind: 'datetime', value: 'epoch')) {
-    return toExpr(DateTime.fromMillisecondsSinceEpoch(0, isUtc: true));
+    return toExprLiteral<DateTime>(
+      DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+    );
   }
 
   if (defaultValue case (kind: 'datetime', value: 'now')) {
@@ -167,7 +169,7 @@ Expr<Object>? _defaultValueAsExpr(Object? defaultValue) {
       final int microsecond,
     ),
   )) {
-    return toExpr(
+    return toExprLiteral<DateTime>(
       DateTime.utc(
         year,
         month,
@@ -366,10 +368,15 @@ final class $ForGeneratedCode {
     T Function(S) fromDatabase,
   ) => CustomExprType<S, T>._(backingType, fromDatabase);
 
-  static Expr<T?> literalCustomDataType<S, T extends CustomDataType<S>>(
+  static Expr<T?> customDataTypeAsExpr<S, T extends CustomDataType<S>>(
     T? value,
     CustomExprType<S, T> type,
-  ) => Literal<T?>._(value, type);
+  ) => ValueExpression<T?>._(value, type);
+
+  static Expr<T?> customDataTypeAsExprLiteral<S, T extends CustomDataType<S>>(
+    T? value,
+    CustomExprType<S, T> type,
+  ) => LiteralExpression<T?>._(value, type);
 
   static const ColumnType<Uint8List> blob = ColumnType.blob;
   static const ColumnType<bool> boolean = ColumnType.boolean;

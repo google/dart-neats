@@ -550,8 +550,20 @@ extension CustomIntTypeExt on CustomIntType {
 
   /// Wrap this [CustomIntType] as [Expr<CustomIntType>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<CustomIntType> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
+
+  /// Wrap this [CustomIntType] as [Expr<CustomIntType>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<CustomIntType> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, _exprType)
+      .asNotNull();
 }
 
 /// Wrap this [CustomIntType] as [Expr<CustomIntType>] for use queries with
@@ -559,8 +571,19 @@ extension CustomIntTypeExt on CustomIntType {
 extension CustomIntTypeNullableExt on CustomIntType? {
   /// Wrap this [CustomIntType] as [Expr<CustomIntType?>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<CustomIntType?> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, CustomIntTypeExt._exprType);
+      $ForGeneratedCode.customDataTypeAsExpr(this, CustomIntTypeExt._exprType);
+
+  /// Wrap this [CustomIntType] as [Expr<CustomIntType?>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<CustomIntType?> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, CustomIntTypeExt._exprType);
 }
 
 /// Wrap this [CustomStringType] as [Expr<CustomStringType>] for use queries with
@@ -573,8 +596,20 @@ extension CustomStringTypeExt on CustomStringType {
 
   /// Wrap this [CustomStringType] as [Expr<CustomStringType>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<CustomStringType> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
+
+  /// Wrap this [CustomStringType] as [Expr<CustomStringType>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<CustomStringType> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, _exprType)
+      .asNotNull();
 }
 
 /// Wrap this [CustomStringType] as [Expr<CustomStringType>] for use queries with
@@ -582,10 +617,21 @@ extension CustomStringTypeExt on CustomStringType {
 extension CustomStringTypeNullableExt on CustomStringType? {
   /// Wrap this [CustomStringType] as [Expr<CustomStringType?>] for use queries with
   /// `package:typed_sql`.
-  Expr<CustomStringType?> get asExpr => $ForGeneratedCode.literalCustomDataType(
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
+  Expr<CustomStringType?> get asExpr => $ForGeneratedCode.customDataTypeAsExpr(
     this,
     CustomStringTypeExt._exprType,
   );
+
+  /// Wrap this [CustomStringType] as [Expr<CustomStringType?>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<CustomStringType?> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, CustomStringTypeExt._exprType);
 }
 
 /// Extension methods for assertions on [CustomDataItem] using

@@ -490,8 +490,20 @@ extension MyCustomTypeAliasExt on MyCustomTypeAlias {
 
   /// Wrap this [MyCustomTypeAlias] as [Expr<MyCustomTypeAlias>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<MyCustomTypeAlias> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
+
+  /// Wrap this [MyCustomTypeAlias] as [Expr<MyCustomTypeAlias>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<MyCustomTypeAlias> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, _exprType)
+      .asNotNull();
 }
 
 /// Wrap this [MyCustomTypeAlias] as [Expr<MyCustomTypeAlias>] for use queries with
@@ -499,8 +511,21 @@ extension MyCustomTypeAliasExt on MyCustomTypeAlias {
 extension MyCustomTypeAliasNullableExt on MyCustomTypeAlias? {
   /// Wrap this [MyCustomTypeAlias] as [Expr<MyCustomTypeAlias?>] for use queries with
   /// `package:typed_sql`.
-  Expr<MyCustomTypeAlias?> get asExpr => $ForGeneratedCode
-      .literalCustomDataType(this, MyCustomTypeAliasExt._exprType);
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
+  Expr<MyCustomTypeAlias?> get asExpr => $ForGeneratedCode.customDataTypeAsExpr(
+    this,
+    MyCustomTypeAliasExt._exprType,
+  );
+
+  /// Wrap this [MyCustomTypeAlias] as [Expr<MyCustomTypeAlias?>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<MyCustomTypeAlias?> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, MyCustomTypeAliasExt._exprType);
 }
 
 /// Extension methods for assertions on [Item] using

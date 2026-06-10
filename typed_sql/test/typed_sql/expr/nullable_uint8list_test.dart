@@ -321,6 +321,11 @@ final _cases =
 
       // Expr<Uint8List?>.isNull()
       (
+        name: 'null.isNull()',
+        expr: toExpr(null as Uint8List?).isNull(),
+        expected: true,
+      ),
+      (
         name: 'null.asBlob().isNull()',
         expr: toExpr(null).asBlob().isNull(),
         expected: true,
@@ -337,6 +342,11 @@ final _cases =
       ),
 
       // Expr<Uint8List?>.isNotNull()
+      (
+        name: 'null.isNotNull()',
+        expr: toExpr(null as Uint8List?).isNotNull(),
+        expected: false,
+      ),
       (
         name: 'null.asBlob().isNotNull()',
         expr: toExpr(null).asBlob().isNotNull(),

@@ -486,8 +486,20 @@ extension MyCustomTypeExt on MyCustomType {
 
   /// Wrap this [MyCustomType] as [Expr<MyCustomType>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<MyCustomType> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
+
+  /// Wrap this [MyCustomType] as [Expr<MyCustomType>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<MyCustomType> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, _exprType)
+      .asNotNull();
 }
 
 /// Wrap this [MyCustomType] as [Expr<MyCustomType>] for use queries with
@@ -495,8 +507,19 @@ extension MyCustomTypeExt on MyCustomType {
 extension MyCustomTypeNullableExt on MyCustomType? {
   /// Wrap this [MyCustomType] as [Expr<MyCustomType?>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<MyCustomType?> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, MyCustomTypeExt._exprType);
+      $ForGeneratedCode.customDataTypeAsExpr(this, MyCustomTypeExt._exprType);
+
+  /// Wrap this [MyCustomType] as [Expr<MyCustomType?>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<MyCustomType?> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, MyCustomTypeExt._exprType);
 }
 
 /// Extension methods for assertions on [Item] using

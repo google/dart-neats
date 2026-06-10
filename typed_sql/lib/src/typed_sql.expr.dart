@@ -165,9 +165,8 @@ sealed class Expr<T extends Object?> implements _ExprTyped<T> {
 
   Iterable<Expr<Object?>> _explode();
 
-  static const Expr<Null> null$ = Literal.null$;
-  static const Expr<bool> true$ = Literal.true$;
-  static const Expr<bool> false$ = Literal.false$;
+  static final Expr<bool> true$ = LiteralExpression._true$;
+  static final Expr<bool> false$ = LiteralExpression._false$;
 
   /// Get an [Expr<DateTime>] that represents the current timestamp in UTC.
   ///
@@ -243,7 +242,7 @@ base mixin _ExprJsonValue implements _ExprTyped<JsonValue> {
   final _type = ColumnType.jsonValue;
 }
 
-/// Create an [Expr<T>] wrapping [value].
+/// Create an [Expr<T>] wrapping [value] as SQL parameter.
 ///
 /// The type of [value] must be one of:
 ///  * [String],
@@ -264,7 +263,30 @@ base mixin _ExprJsonValue implements _ExprTyped<JsonValue> {
 /// {@category inserting_rows}
 /// {@category writing_queries}
 /// {@category update_and_delete}
-Expr<T> toExpr<T extends Object?>(T value) => Literal(value);
+Expr<T> toExpr<T extends Object?>(T value) => ValueExpression(value);
+
+/// Create an [Expr<T>] wrapping [value] as SQL literal.
+///
+/// The type of [value] must be one of:
+///  * [String],
+///  * [int],
+///  * [double],
+///  * [bool],
+///  * [DateTime] (will be normalized to UTC),
+///  * [Uint8List],
+///  * `null`
+///
+/// > [!NOTE]
+/// > If you want to use a [CustomDataType], use the `.asExprLiteral`
+/// > _extension method_ instead.
+///
+/// When wrapping a [DateTime] object using [toExprLiteral], it will be
+/// normalized to UTC before encoding to the database.
+///
+/// {@category inserting_rows}
+/// {@category writing_queries}
+/// {@category update_and_delete}
+Expr<T> toExprLiteral<T extends Object?>(T value) => LiteralExpression(value);
 
 final class RowExpression<T extends Row> extends Expr<T> {
   final TableDefinition<T> _table;
@@ -454,94 +476,198 @@ final class CastExpression<T, R> extends SingleValueExpr<R> {
   _ExprType<R> get _type => type;
 }
 
-final class Literal<T> extends SingleValueExpr<T> {
+final class LiteralExpression<T> extends SingleValueExpr<T> {
   final T value;
 
   @override
-  final _ExprType<T> _type;
+  final FieldType<T> _type;
 
-  // TODO: Consider supporting a Constant expression subclass, currently we
-  //       always encode literals as ? and attach them as parameters.
-  //       This is fine, but if we ever use these query builders to create
-  //       prepared statements that are executed more than once, then it matters
-  //       whether a literal is encoded as value or a constant.
-  //       If we do this, we might have to rename Literal to Value!
+  ColumnType<Object?> get type => switch (_type) {
+    ColumnType<T> t => t,
+    CustomExprType t => t._backingType,
+  };
 
-  static const null$ = Literal<Null>._(null, ColumnType.nullType);
-  static const true$ = Literal._(true, ColumnType.boolean);
-  static const false$ = Literal._(false, ColumnType.boolean);
+  static final _true$ = LiteralExpression._(true, ColumnType.boolean);
+  static final _false$ = LiteralExpression._(false, ColumnType.boolean);
 
-  const Literal._(this.value, this._type) : super._();
+  LiteralExpression._(this.value, this._type) : super._();
 
-  static Literal<T> custom<S, T extends CustomDataType<S>>(
-    T value,
-    T Function(S) fromDatabase,
-  ) {
-    final backingType = switch (value) {
-      CustomDataType<bool> _ => ColumnType.boolean as ColumnType<S>,
-      CustomDataType<String> _ => ColumnType.text as ColumnType<S>,
-      CustomDataType<int> _ => ColumnType.integer as ColumnType<S>,
-      CustomDataType<double> _ => ColumnType.real as ColumnType<S>,
-      CustomDataType<Uint8List> _ => ColumnType.blob as ColumnType<S>,
-      CustomDataType<DateTime> _ => ColumnType.dateTime as ColumnType<S>,
-      CustomDataType<JsonValue> _ => ColumnType.jsonValue as ColumnType<S>,
-      _ => throw ArgumentError.value(
-        value,
-        'value',
-        'T in CustomDataType<T> must be String, int, double, bool, or DateTime!',
-      ),
-    };
-    return Literal._(value, CustomExprType._(backingType, fromDatabase));
-  }
-
-  factory Literal(T value) {
-    // TODO: Consider asking Lasse how to actually switch over T, because null is not a type!
-    // TODO: We need to switch over T or use an extension method! If someone does
-    //       select(toExpr(null as bool?)).union(select(toExpr(true)))
-    //       We'll have a expression that can't actually decode bools!
-    switch (value) {
-      case true:
-        return true$ as Literal<T>;
-
-      case false:
-        return false$ as Literal<T>;
-
-      case null:
-        return null$ as Literal<T>;
-
-      case String _:
-        return Literal._(value, ColumnType.text as _ExprType<T>);
-      case int _:
-        return Literal._(value, ColumnType.integer as _ExprType<T>);
-      case double _:
-        return Literal._(value, ColumnType.real as _ExprType<T>);
-      case Uint8List _:
-        return Literal._(value, ColumnType.blob as _ExprType<T>);
-      case DateTime v:
-        return Literal._(
-          v.toUtc() as T,
-          ColumnType.dateTime as _ExprType<T>,
-        );
-      case JsonValue _:
-        return Literal._(value, ColumnType.jsonValue as _ExprType<T>);
-
-      case CustomDataType _:
+  factory LiteralExpression(T value) {
+    // Switch over _Dummy<T> such that toExprLiteral<T?>(value) becomes an
+    // instance of Expr<T?> even if value is `null`.
+    switch (_Dummy<T>()) {
+      case _Dummy<Null>():
+        return LiteralExpression._(value, ColumnType.nullType as FieldType<T>);
+      case _Dummy<String?>():
+        return LiteralExpression._(value, ColumnType.text as FieldType<T>);
+      case _Dummy<int?>():
+        return LiteralExpression._(value, ColumnType.integer as FieldType<T>);
+      case _Dummy<double?>():
+        return LiteralExpression._(value, ColumnType.real as FieldType<T>);
+      case _Dummy<bool?>():
+        switch (value) {
+          case true:
+            return _true$ as LiteralExpression<T>;
+          case false:
+            return _false$ as LiteralExpression<T>;
+          default: // null
+            return LiteralExpression._(
+              value,
+              ColumnType.boolean as FieldType<T>,
+            );
+        }
+      case _Dummy<DateTime?>():
+        return LiteralExpression._(value, ColumnType.dateTime as FieldType<T>);
+      case _Dummy<Uint8List?>():
+        return LiteralExpression._(value, ColumnType.blob as FieldType<T>);
+      case _Dummy<JsonValue?>():
+        return LiteralExpression._(value, ColumnType.jsonValue as FieldType<T>);
+      case _Dummy<CustomDataType?>():
+        if (value == null) {
+          return LiteralExpression<Null>._(null, ColumnType.nullType)
+              as LiteralExpression<T>;
+        }
         throw ArgumentError.value(
           value,
           'value',
-          'Use Literal.custom for CustomDataType!',
+          'Use CustomDataType.asExpr instead of toExpr()!',
         );
-
       default:
-        throw ArgumentError.value(
-          value,
-          'value',
-          'Only String, int, double, bool, null, and DateTime '
-              'literals are allowed',
-        );
+        // If there is no inferred T in toExprLiteral(value), for example when
+        // user does:
+        //    Expr<Object?> e = toExprLiteral(value);
+        // then we infer T from value.
+        // That does mean we loose the type if value is `null`, but otherwise
+        // we shall recover it.
+        switch (value) {
+          case String v:
+            return LiteralExpression<String>._(v, ColumnType.text)
+                as LiteralExpression<T>;
+          case int v:
+            return LiteralExpression<int>._(v, ColumnType.integer)
+                as LiteralExpression<T>;
+          case double v:
+            return LiteralExpression<double>._(v, ColumnType.real)
+                as LiteralExpression<T>;
+          case bool v:
+            switch (v) {
+              case true:
+                return _true$ as LiteralExpression<T>;
+              case false:
+                return _false$ as LiteralExpression<T>;
+            }
+          case DateTime v:
+            return LiteralExpression<DateTime>._(v, ColumnType.dateTime)
+                as LiteralExpression<T>;
+          case Uint8List v:
+            return LiteralExpression<Uint8List>._(v, ColumnType.blob)
+                as LiteralExpression<T>;
+          case JsonValue v:
+            return LiteralExpression<JsonValue>._(v, ColumnType.jsonValue)
+                as LiteralExpression<T>;
+          case null:
+            return LiteralExpression<Null>._(null, ColumnType.nullType)
+                as LiteralExpression<T>;
+          default:
+            throw ArgumentError.value(
+              value,
+              'value',
+              'Only String, int, double, bool, null, DateTime, Uint8List,'
+                  ' JsonValue values are allowed',
+            );
+        }
     }
   }
 }
+
+final class ValueExpression<T> extends SingleValueExpr<T> {
+  final T value;
+
+  @override
+  final FieldType<T> _type;
+
+  ColumnType<Object?> get type => switch (_type) {
+    ColumnType<T> t => t,
+    CustomExprType t => t._backingType,
+  };
+
+  ValueExpression._(this.value, this._type) : super._();
+
+  factory ValueExpression(T value) {
+    // Switch over _Dummy<T> such that toExpr<T?>(value) becomes an
+    // instance of Expr<T?> even if value is `null`.
+    switch (_Dummy<T>()) {
+      case _Dummy<Null>():
+        return ValueExpression._(value, ColumnType.nullType as ColumnType<T>);
+      case _Dummy<String?>():
+        return ValueExpression._(value, ColumnType.text as ColumnType<T>);
+      case _Dummy<int?>():
+        return ValueExpression._(value, ColumnType.integer as ColumnType<T>);
+      case _Dummy<double?>():
+        return ValueExpression._(value, ColumnType.real as ColumnType<T>);
+      case _Dummy<bool?>():
+        return ValueExpression._(value, ColumnType.boolean as ColumnType<T>);
+      case _Dummy<DateTime?>():
+        return ValueExpression._(value, ColumnType.dateTime as ColumnType<T>);
+      case _Dummy<Uint8List?>():
+        return ValueExpression._(value, ColumnType.blob as ColumnType<T>);
+      case _Dummy<JsonValue?>():
+        return ValueExpression._(value, ColumnType.jsonValue as ColumnType<T>);
+      case _Dummy<CustomDataType?>():
+        if (value == null) {
+          return ValueExpression<Null>._(null, ColumnType.nullType)
+              as ValueExpression<T>;
+        }
+        throw ArgumentError.value(
+          value,
+          'value',
+          'Use CustomDataType.asExpr instead of toExpr()!',
+        );
+      default:
+        // If there is no inferred T in toExpr(value), for example when
+        // user does:
+        //    Expr<Object?> e = toExpr(value);
+        // then we infer T from value.
+        // That does mean we loose the type if value is `null`, but otherwise
+        // we shall recover it.
+        switch (value) {
+          case String v:
+            return ValueExpression<String>._(v, ColumnType.text)
+                as ValueExpression<T>;
+          case int v:
+            return ValueExpression<int>._(v, ColumnType.integer)
+                as ValueExpression<T>;
+          case double v:
+            return ValueExpression<double>._(v, ColumnType.real)
+                as ValueExpression<T>;
+          case bool v:
+            return ValueExpression<bool>._(v, ColumnType.boolean)
+                as ValueExpression<T>;
+          case DateTime v:
+            return ValueExpression<DateTime>._(v, ColumnType.dateTime)
+                as ValueExpression<T>;
+          case Uint8List v:
+            return ValueExpression<Uint8List>._(v, ColumnType.blob)
+                as ValueExpression<T>;
+          case JsonValue v:
+            return ValueExpression<JsonValue>._(v, ColumnType.jsonValue)
+                as ValueExpression<T>;
+          case null:
+            return ValueExpression<Null>._(null, ColumnType.nullType)
+                as ValueExpression<T>;
+          default:
+            throw ArgumentError.value(
+              value,
+              'value',
+              'Only String, int, double, bool, null, DateTime, Uint8List,'
+                  ' JsonValue values are allowed',
+            );
+        }
+    }
+  }
+}
+
+final class _Dummy<T> {}
 
 final class CurrentTimestampExpression extends SingleValueExpr<DateTime> {
   const CurrentTimestampExpression._() : super._();

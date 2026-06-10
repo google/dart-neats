@@ -23,18 +23,6 @@ import 'shared_dialect.dart';
 
 SqlDialect postgresDialect() => _PostgresDialect();
 
-String _literal(Object? value) => switch (value) {
-  null => 'NULL',
-  true => 'TRUE',
-  false => 'FALSE',
-  int i => i.toString(),
-  double d => d.toString(),
-  String s => _escapeStringLiteral(s),
-  DateTime d => '\'${d.toIso8601String()}\'',
-  JsonValue j => '${_escapeStringLiteral(json.encode(j.value))}::jsonb',
-  _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
-};
-
 /// Escapes a string literal for safe inlining into PostgreSQL queries.
 /// Assumes standard_conforming_strings = on.
 String _escapeStringLiteral(String input) {
@@ -59,8 +47,8 @@ String _escapeStringLiteral(String input) {
 final class _PostgresDialect extends SqlDialect {
   @override
   String createTables(List<CreateTableStatement> statements) {
-    final resolver = ExpressionResolver(PlainSqlContext());
-    return [
+    final resolver = ExpressionResolver(SqlContext());
+    final sql = [
       ...statements.map((table) {
         return [
           'CREATE TABLE ${escape(table.tableName)} (',
@@ -125,11 +113,15 @@ final class _PostgresDialect extends SqlDialect {
         });
       }),
     ].join('\n');
+    if (resolver.context.parameters.isNotEmpty) {
+      throw AssertionError('Parameters are not allowed in DDL');
+    }
+    return sql;
   }
 
   @override
   SqlTask insertInto(InsertStatement statement) {
-    final resolver = ExpressionResolver(StatmentContext());
+    final resolver = ExpressionResolver(SqlContext());
     final alias = 'target';
 
     String? conflictClause;
@@ -251,7 +243,7 @@ final class _PostgresDialect extends SqlDialect {
 
   @override
   SqlTask update(UpdateStatement statement) {
-    final resolver = ExpressionResolver(StatmentContext());
+    final resolver = ExpressionResolver(SqlContext());
     final a1 = resolver.tableAlias1;
     final a2 = resolver.tableAlias2;
 
@@ -295,7 +287,7 @@ final class _PostgresDialect extends SqlDialect {
 
   @override
   SqlTask delete(DeleteStatement statement) {
-    final resolver = ExpressionResolver(StatmentContext());
+    final resolver = ExpressionResolver(SqlContext());
     final a1 = resolver.tableAlias1;
     final a2 = resolver.tableAlias2;
 
@@ -329,7 +321,7 @@ final class _PostgresDialect extends SqlDialect {
   SqlTask select(
     SelectStatement statement,
   ) {
-    final resolver = ExpressionResolver(StatmentContext());
+    final resolver = ExpressionResolver(SqlContext());
     final (sql, columns) = resolver.selectExpression(statement.query);
     return SingleSqlTask(sql, resolver.context.parameters);
   }
@@ -342,52 +334,14 @@ final class _PostgresDialect extends SqlDialect {
 /// Throws if [name] cannot be safely escaped.
 String escape(String name) => '"${name.replaceAll('"', '""')}"';
 
-abstract class SqlContext {
-  String addParameter(Object? value);
-}
-
-final class StatmentContext extends SqlContext {
+final class SqlContext {
   final parameters = <Object?>[];
 
-  @override
   String addParameter(Object? value) {
-    switch (value) {
-      case bool _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::BOOLEAN';
-      case int _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::BIGINT';
-      case double _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::DOUBLE PRECISION';
-      case JsonValue _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::jsonb';
-      case Uint8List _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::BYTEA';
-      case DateTime _:
-        parameters.add(value.toUtc());
-        final index = parameters.length;
-        return '\$$index::TIMESTAMP WITH TIME ZONE';
-    }
     parameters.add(value);
     final index = parameters.length;
     return '\$$index';
   }
-}
-
-final class PlainSqlContext extends SqlContext {
-  final parameters = <Object?>[];
-
-  @override
-  String addParameter(Object? value) => _literal(value);
 }
 
 extension on ExpressionResolver<SqlContext> {
@@ -623,16 +577,32 @@ extension on ExpressionResolver<SqlContext> {
     return '$alias.${escape(column)}';
   }
 
+  String _encodeLiteral(Object? value) => switch (value) {
+    null => 'NULL',
+    true => 'TRUE',
+    false => 'FALSE',
+    int i => i.toString(),
+    double d => d.toString(),
+    String s => _escapeStringLiteral(s),
+    DateTime d => '\'${d.toUtc().toIso8601String()}\'',
+    JsonValue j => _escapeStringLiteral(json.encode(j.value)),
+    Uint8List b =>
+      "'\\x${b.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}'",
+    _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
+  };
+
   String expr<T>(Expr<T> e) => switch (e) {
     FieldExpression<T>() => resolveField(e),
     SubQueryExpression<T>(:final query) => '(${selectExpression(query).$1})',
-    Literal.false$ => 'FALSE',
-    Literal.true$ => 'TRUE',
-    Literal.null$ => '(NULL)::unknown',
-    Literal<CustomDataType?>(value: final value) => context.addParameter(
-      value?.toDatabase(),
-    ),
-    Literal<T>(value: final value) => context.addParameter(value),
+    final LiteralExpression<CustomDataType?> e =>
+      '${_encodeLiteral(e.value?.toDatabase())}${e.type.sqlTypeCast}',
+    LiteralExpression<T>(value: final value) =>
+      '${_encodeLiteral(value)}${e.type.sqlTypeCast}',
+    final ValueExpression<CustomDataType?> e =>
+      '${context.addParameter(e.value?.toDatabase())}${e.type.sqlTypeCast}',
+    ValueExpression<T>(value: final value) =>
+      '${context.addParameter(value)}${e.type.sqlTypeCast}',
+
     ExpressionBlobSublist(:final value, :final start, :final length) =>
       'SUBSTRING(${expr(value)} FROM CAST(${expr(start)} AS INTEGER) + 1 '
           '${length != null ? 'FOR CAST(${expr(length)} AS INTEGER)' : ''})',
@@ -653,7 +623,7 @@ extension on ExpressionResolver<SqlContext> {
     ExpressionStringEndsWith(value: final value, suffix: final suffix) =>
       'STARTS_WITH(REVERSE(${expr(value)}), REVERSE(${expr(suffix)}))',
     ExpressionStringLike(value: final value, pattern: final pattern) =>
-      '( ${expr(value)} LIKE ${context.addParameter(pattern)} )',
+      '( ${expr(value)} LIKE ${_escapeStringLiteral(pattern)} )',
     ExpressionStringContains(value: final value, needle: final needle) =>
       '( STRPOS( ${expr(value)} , ${expr(needle)} ) > 0 )',
     ExpressionStringToUpperCase(value: final value) =>
@@ -776,6 +746,11 @@ extension on ColumnType {
     ColumnType<Null> _ => throw AssertionError(
       'Null type cannot be used as column type',
     ),
+  };
+
+  String get sqlTypeCast => switch (this) {
+    ColumnType<Null> _ => '',
+    _ => '::$sqlType',
   };
 }
 

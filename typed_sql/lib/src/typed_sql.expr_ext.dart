@@ -59,43 +59,106 @@ extension CustomTypeNullableExt<S> on Expr<CustomDataType<S>?> {
 /// Extension methods for wrapping an [int] as an expression.
 extension IntExt<T extends int?> on T {
   /// Wrap [int] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [int] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [double] as an expression.
 extension DoubleExt<T extends double?> on T {
   /// Wrap [double] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [double] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [String] as an expression.
 extension StringExt<T extends String?> on T {
   /// Wrap [String] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [String] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [DateTime] as an expression.
 extension DateTimeExt<T extends DateTime?> on T {
   /// Wrap [DateTime] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [DateTime] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [bool] as an expression.
 extension BoolExt<T extends bool?> on T {
   /// Wrap [bool] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [bool] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping an [Uint8List] as an expression.
 extension Uint8ListExt<T extends Uint8List?> on T {
   /// Wrap [Uint8List] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [Uint8List] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [JsonValue] as an expression.
 extension JsonValueExt<T extends JsonValue?> on T {
   /// Wrap [JsonValue] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [JsonValue] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for casting `NULL` to other types.
@@ -234,7 +297,7 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   ///
   /// This is equivalent to `this IS NULL` in SQL.
   /// {@endtemplate}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@template isNotNull}
   /// Check if this expression is not `NULL`.
@@ -274,7 +337,7 @@ extension ExpressionNullableString on Expr<String?> {
       ExpressionEquals(this, other);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -310,18 +373,18 @@ extension ExpressionNullableBool on Expr<bool?> {
       ExpressionEquals(this, other);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
 
   /// True, if this expression evaluates to `TRUE`.
-  Expr<bool> isTrue() => isNotDistinctFrom(Literal.true$);
+  Expr<bool> isTrue() => isNotDistinctFrom(Expr.true$);
 
   /// True, if this expression evaluates to `FALSE`.
   ///
   /// If this is `NULL`, [isFalse] will evaluate to `FALSE`.
-  Expr<bool> isFalse() => isNotDistinctFrom(Literal.false$);
+  Expr<bool> isFalse() => isNotDistinctFrom(Expr.false$);
 }
 
 /// Extension methods for nullable [DateTime] expressions.
@@ -355,7 +418,7 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
       ExpressionEquals(this, other);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -392,7 +455,7 @@ extension ExpressionNullableUint8List on Expr<Uint8List?> {
       ExpressionEquals(this, other);
 
   /// {@macro isNull}
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@macro isNotNull}
   Expr<bool> isNotNull() => isNull().not();
@@ -421,8 +484,7 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// > This method only returns `true` if `this` is an SQL `NULL`, meaning:
   /// >  * `toExpr(null as JsonValue?).isNull()` evaluates  to `true`, and,
   /// >  * `toExpr(JsonValue(null) as JsonValue?).isNull()` evaluates  to `false`.
-  Expr<bool> isNull() =>
-      ExpressionIsNotDistinctFrom<JsonValue>(this, Expr.null$);
+  Expr<bool> isNull() => ExpressionIsNotDistinctFrom(this, toExprLiteral(null));
 
   /// {@macro isNotNull}
   ///
@@ -621,7 +683,7 @@ extension ExpressionBool on Expr<bool> {
   /// {@endtemplate}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@macro isNotNull}
   ///
@@ -677,13 +739,13 @@ extension ExpressionBool on Expr<bool> {
   ///
   /// Also available as `&` operator.
   Expr<bool> and(Expr<bool> other) {
-    if (other == Literal.true$) {
+    if (other == Expr.true$) {
       return this;
     }
-    if (other == Literal.false$) {
-      return Literal.false$;
+    if (other == Expr.false$) {
+      return Expr.false$;
     }
-    if (this == Literal.true$) {
+    if (this == Expr.true$) {
       return other;
     }
     return ExpressionBoolAnd(this, other);
@@ -746,7 +808,7 @@ extension ExpressionString on Expr<String> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@macro isNotNull}
   ///
@@ -1159,7 +1221,7 @@ extension ExpressionNum<T extends num> on Expr<T> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@macro isNotNull}
   ///
@@ -1247,7 +1309,7 @@ extension ExpressionDateTime on Expr<DateTime> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@macro isNotNull}
   ///
@@ -1337,7 +1399,7 @@ extension ExpressionUint8List on Expr<Uint8List> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() => isNotDistinctFrom(Expr.null$);
+  Expr<bool> isNull() => isNotDistinctFrom(toExprLiteral(null));
 
   /// {@macro isNotNull}
   ///
@@ -1392,8 +1454,7 @@ extension ExpressionJsonValue on Expr<JsonValue> {
   /// {@macro isNull-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_isNullOnNonNullableDeprecation)
-  Expr<bool> isNull() =>
-      ExpressionIsNotDistinctFrom<JsonValue>(this, Expr.null$);
+  Expr<bool> isNull() => ExpressionIsNotDistinctFrom(this, toExprLiteral(null));
 
   /// {@macro isNotNull}
   ///

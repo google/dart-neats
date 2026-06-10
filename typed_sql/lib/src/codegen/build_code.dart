@@ -64,7 +64,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
       .sortedBy((e) => e.typeName);
 
   for (final (:typeName, :backingTypeExpr) in customTypes) {
-    // Extension for creating an literal Expr<T> from T, when
+    // Extension for creating an Expr<T> from T, when
     // T extends CustomDataType<T>
     yield Extension(
       (b) => b
@@ -99,7 +99,23 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
               ..type = MethodType.getter
               ..lambda = true
               ..body = Code('''
-              \$ForGeneratedCode.literalCustomDataType(
+              \$ForGeneratedCode.customDataTypeAsExpr(
+                this,
+                _exprType,
+              ).asNotNull()
+            '''),
+          ),
+        )
+        ..methods.add(
+          Method(
+            (b) => b
+              ..name = 'asExprLiteral'
+              ..documentation(docs.customDataTypeAsExprLiteral(typeName, ''))
+              ..returns = refer('Expr<$typeName>')
+              ..type = MethodType.getter
+              ..lambda = true
+              ..body = Code('''
+              \$ForGeneratedCode.customDataTypeAsExprLiteral(
                 this,
                 _exprType,
               ).asNotNull()
@@ -108,7 +124,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
         ),
     );
 
-    // Extension for creating an literal Expr<T?> from T, when
+    // Extension for creating an Expr<T?> from T, when
     // T extends CustomDataType<T>
     yield Extension(
       (b) => b
@@ -118,7 +134,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
           Wrap this [$typeName] as [Expr<$typeName>] for use queries with
           `package:typed_sql`.
         ''')
-        ..methods.add(
+        ..methods.addAll([
           Method(
             (b) => b
               ..name = 'asExpr'
@@ -127,13 +143,27 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
               ..type = MethodType.getter
               ..lambda = true
               ..body = Code('''
-              \$ForGeneratedCode.literalCustomDataType(
+              \$ForGeneratedCode.customDataTypeAsExpr(
                 this,
                 ${typeName}Ext._exprType,
               )
             '''),
           ),
-        ),
+          Method(
+            (b) => b
+              ..name = 'asExprLiteral'
+              ..documentation(docs.customDataTypeAsExprLiteral(typeName, '?'))
+              ..returns = refer('Expr<$typeName?>')
+              ..type = MethodType.getter
+              ..lambda = true
+              ..body = Code('''
+              \$ForGeneratedCode.customDataTypeAsExprLiteral(
+                this,
+                ${typeName}Ext._exprType,
+              )
+            '''),
+          ),
+        ]),
     );
 
     //yield Extension();

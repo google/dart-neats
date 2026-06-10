@@ -76,5 +76,17 @@ void main() {
     check(result).deepEquals([3.14, null]);
   });
 
+  r.addTest('(null as double?).unionAll(3.14)', (db) async {
+    final q1 = db.select((toExpr(null as double?),)).asQuery;
+
+    final q2 = db.select(
+      (toExpr(3.14),),
+    ).asQuery;
+
+    final result = await q1.unionAll(q2).fetch();
+    check(result).length.equals(2);
+    check(result).deepEquals([null, 3.14]);
+  });
+
   r.run();
 }

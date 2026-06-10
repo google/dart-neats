@@ -475,8 +475,8 @@ List<Object?> _paramsForPostgres(List<Object?> params) => params
         // Negative years and year zero most be written as BC in postgres
         // https://www.postgresql.org/docs/17/datetime-input-rules.html
         DateTime d when d.year <= 0 =>
-          '${d.copyWith(year: 1 - d.year).toIso8601String()} BC',
-        DateTime d => d.toIso8601String(),
+          '${d.toUtc().copyWith(year: 1 - d.toUtc().year).toIso8601String()} BC',
+        DateTime d => d.toUtc().toIso8601String(),
         String s => s,
         null => null,
         bool b => b,

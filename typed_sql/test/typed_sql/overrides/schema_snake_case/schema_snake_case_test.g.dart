@@ -1263,8 +1263,20 @@ extension ColorExt on Color {
 
   /// Wrap this [Color] as [Expr<Color>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<Color> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, _exprType).asNotNull();
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
+
+  /// Wrap this [Color] as [Expr<Color>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<Color> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, _exprType)
+      .asNotNull();
 }
 
 /// Wrap this [Color] as [Expr<Color>] for use queries with
@@ -1272,8 +1284,19 @@ extension ColorExt on Color {
 extension ColorNullableExt on Color? {
   /// Wrap this [Color] as [Expr<Color?>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<Color?> get asExpr =>
-      $ForGeneratedCode.literalCustomDataType(this, ColorExt._exprType);
+      $ForGeneratedCode.customDataTypeAsExpr(this, ColorExt._exprType);
+
+  /// Wrap this [Color] as [Expr<Color?>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<Color?> get asExprLiteral =>
+      $ForGeneratedCode.customDataTypeAsExprLiteral(this, ColorExt._exprType);
 }
 
 /// Extension methods for assertions on [SnakeProfile] using

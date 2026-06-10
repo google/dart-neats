@@ -94,6 +94,11 @@ final _cases =
 
       // Expr<JsonValue?>.isNull()
       (
+        name: 'null.isNull()',
+        expr: toExpr(null as JsonValue?).isNull(),
+        expected: true,
+      ),
+      (
         name: 'null.asJsonValue().isNull()',
         expr: toExpr(null).asJsonValue().isNull(),
         expected: true,
@@ -114,6 +119,11 @@ final _cases =
         expected: false,
       ),
       // Expr<JsonValue?>.isNotNull()
+      (
+        name: 'null.isNotNull()',
+        expr: toExpr(null as JsonValue?).isNotNull(),
+        expected: false,
+      ),
       (
         name: 'null.asJsonValue().isNotNull()',
         expr: toExpr(null).asJsonValue().isNotNull(),
