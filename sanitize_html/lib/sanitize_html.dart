@@ -74,10 +74,14 @@ String sanitizeHtml(
   bool Function(String)? allowElementId,
   bool Function(String)? allowClassName,
   Iterable<String>? Function(String)? addLinkRel,
+  List<String>? allowAttributes,
+  List<String>? allowTags,
 }) {
   return SaneHtmlValidator(
     allowElementId: allowElementId,
     allowClassName: allowClassName,
     addLinkRel: addLinkRel,
+    allowAttributes: allowAttributes,
+    allowTags: allowTags,
   ).sanitize(htmlString);
 }
