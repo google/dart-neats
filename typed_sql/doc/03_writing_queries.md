@@ -727,6 +727,32 @@ The reference above, deliberately omits variations such as
 `.<method>Value(...)` and `.not<method>(...)` because they are merely
 convinience functions.
 
+### Injecting values
+The `toExpr(value)` function and `.asExpr` extension methods will inject
+values as _SQL parameters_. This is the desired behavior when injecting
+variables or large constants. In SQL parameters are typically be injected using
+`?` or `$1`, `$2`, ... and the actual value will be encoded using
+database-specific wire-format.
+
+If you are however, hardcoding values into your queries you may want to use
+the `toExprLiteral(value)` function and `.asExprLiteral` extension methods
+instead. These will inject values as escaped SQL literals, effectively encoding
+the value as a string in the SQL query.
+
+The choice between _SQL parameter_ and _SQL literal_ may affect performance.
+The query planner typically considers literals when planning execution,
+but does probably not consider the value of the parameters.
+Instead a database will typically cache the parsed SQL under the assumption that
+it'll be asked to run the same SQL query again, but with different parameters.
+
+Thus, it is advisable to use `toExpr()` or `.asExpr` when injecting a variable
+that may change next time the same query runs, or when injecting a large value,
+since encoding large values as strings is likely to be inefficient.
+
+Avoid, `toExprLiteral()` or `.asExprLiteral` whenever in doubt, but for small
+constants hardcoded into your queries, it may improve performance.
+
+
 ### Equality operators
 In the previous reference there are 3 equality operators:
 
