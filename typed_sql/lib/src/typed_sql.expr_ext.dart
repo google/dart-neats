@@ -59,43 +59,106 @@ extension CustomTypeNullableExt<S> on Expr<CustomDataType<S>?> {
 /// Extension methods for wrapping an [int] as an expression.
 extension IntExt<T extends int?> on T {
   /// Wrap [int] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [int] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [double] as an expression.
 extension DoubleExt<T extends double?> on T {
   /// Wrap [double] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [double] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [String] as an expression.
 extension StringExt<T extends String?> on T {
   /// Wrap [String] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [String] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [DateTime] as an expression.
 extension DateTimeExt<T extends DateTime?> on T {
   /// Wrap [DateTime] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [DateTime] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [bool] as an expression.
 extension BoolExt<T extends bool?> on T {
   /// Wrap [bool] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [bool] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping an [Uint8List] as an expression.
 extension Uint8ListExt<T extends Uint8List?> on T {
   /// Wrap [Uint8List] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [Uint8List] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for wrapping a [JsonValue] as an expression.
 extension JsonValueExt<T extends JsonValue?> on T {
   /// Wrap [JsonValue] as an [Expr] expression for use with `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<T> get asExpr => toExpr(this);
+
+  /// Wrap [JsonValue] as an [Expr] literal for use with `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<T> get asExprLiteral => toExprLiteral(this);
 }
 
 /// Extension methods for casting `NULL` to other types.

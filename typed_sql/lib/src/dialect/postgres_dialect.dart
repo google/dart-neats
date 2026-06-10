@@ -32,6 +32,8 @@ String _literal(Object? value) => switch (value) {
   String s => _escapeStringLiteral(s),
   DateTime d => '\'${d.toIso8601String()}\'',
   JsonValue j => '${_escapeStringLiteral(json.encode(j.value))}::jsonb',
+  Uint8List b =>
+    "'\\x${b.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}'::bytea",
   _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
 };
 
@@ -351,35 +353,21 @@ final class StatmentContext extends SqlContext {
 
   @override
   String addParameter(Object? value) {
-    switch (value) {
-      case bool _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::BOOLEAN';
-      case int _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::BIGINT';
-      case double _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::DOUBLE PRECISION';
-      case JsonValue _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::jsonb';
-      case Uint8List _:
-        parameters.add(value);
-        final index = parameters.length;
-        return '\$$index::BYTEA';
-      case DateTime _:
-        parameters.add(value.toUtc());
-        final index = parameters.length;
-        return '\$$index::TIMESTAMP WITH TIME ZONE';
-    }
     parameters.add(value);
     final index = parameters.length;
-    return '\$$index';
+
+    final cast = switch (value) {
+      bool _ => '::BOOLEAN',
+      int _ => '::BIGINT',
+      double _ => '::DOUBLE PRECISION',
+      String _ => '::TEXT',
+      JsonValue _ => '::jsonb',
+      Uint8List _ => '::BYTEA',
+      DateTime _ => '::TIMESTAMP WITH TIME ZONE',
+      _ => '', // Fallback for null or unknown types
+    };
+
+    return '\$$index$cast';
   }
 }
 
@@ -626,6 +614,10 @@ extension on ExpressionResolver<SqlContext> {
   String expr<T>(Expr<T> e) => switch (e) {
     FieldExpression<T>() => resolveField(e),
     SubQueryExpression<T>(:final query) => '(${selectExpression(query).$1})',
+    LiteralExpression<CustomDataType?>(value: final value) => _literal(
+      value?.toDatabase(),
+    ),
+    LiteralExpression<T>(value: final value) => _literal(value),
     ValueExpression<CustomDataType?>(value: final value) =>
       context.addParameter(
         value?.toDatabase(),

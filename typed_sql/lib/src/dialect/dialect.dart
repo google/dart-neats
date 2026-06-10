@@ -77,7 +77,7 @@ export '../typed_sql.dart'
         JoinClause,
         JoinType,
         LimitClause,
-        ValueExpression,
+        LiteralExpression,
         MaxExpression,
         MinExpression,
         NotNullExpression,
@@ -99,6 +99,7 @@ export '../typed_sql.dart'
         UnionClause,
         UpdateOnConflictClause,
         UpdateStatement,
+        ValueExpression,
         ValuesSource,
         WhereClause;
 export '../types/custom_data_type.dart' show CustomDataType;

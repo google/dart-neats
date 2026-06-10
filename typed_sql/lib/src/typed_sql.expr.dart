@@ -243,7 +243,7 @@ base mixin _ExprJsonValue implements _ExprTyped<JsonValue> {
   final _type = ColumnType.jsonValue;
 }
 
-/// Create an [Expr<T>] wrapping [value].
+/// Create an [Expr<T>] wrapping [value] as SQL parameter.
 ///
 /// The type of [value] must be one of:
 ///  * [String],
@@ -265,6 +265,29 @@ base mixin _ExprJsonValue implements _ExprTyped<JsonValue> {
 /// {@category writing_queries}
 /// {@category update_and_delete}
 Expr<T> toExpr<T extends Object?>(T value) => ValueExpression(value);
+
+/// Create an [Expr<T>] wrapping [value] as SQL literal.
+///
+/// The type of [value] must be one of:
+///  * [String],
+///  * [int],
+///  * [double],
+///  * [bool],
+///  * [DateTime] (will be normalized to UTC),
+///  * [Uint8List],
+///  * `null`
+///
+/// > [!NOTE]
+/// > If you want to use a [CustomDataType], use the `.asExprLiteral`
+/// > _extension method_ instead.
+///
+/// When wrapping a [DateTime] object using [toExprLiteral], it will be
+/// normalized to UTC before encoding to the database.
+///
+/// {@category inserting_rows}
+/// {@category writing_queries}
+/// {@category update_and_delete}
+Expr<T> toExprLiteral<T extends Object?>(T value) => LiteralExpression(value);
 
 final class RowExpression<T extends Row> extends Expr<T> {
   final TableDefinition<T> _table;
@@ -460,6 +483,63 @@ final class CastExpression<T, R> extends SingleValueExpr<R> {
 //       prepared statements that are executed more than once, then it matters
 //       whether a literal is encoded as value or a constant.
 //       If we do this, we might have to rename Literal to Value!
+
+final class LiteralExpression<T> extends SingleValueExpr<T> {
+  final T value;
+
+  @override
+  final _ExprType<T> _type;
+
+  static const null$ = LiteralExpression<Null>._(null, ColumnType.nullType);
+  static const true$ = LiteralExpression._(true, ColumnType.boolean);
+  static const false$ = LiteralExpression._(false, ColumnType.boolean);
+
+  const LiteralExpression._(this.value, this._type) : super._();
+
+  factory LiteralExpression(T value) {
+    switch (value) {
+      case true:
+        return true$ as LiteralExpression<T>;
+
+      case false:
+        return false$ as LiteralExpression<T>;
+
+      case null:
+        return null$ as LiteralExpression<T>;
+
+      case String _:
+        return LiteralExpression._(value, ColumnType.text as _ExprType<T>);
+      case int _:
+        return LiteralExpression._(value, ColumnType.integer as _ExprType<T>);
+      case double _:
+        return LiteralExpression._(value, ColumnType.real as _ExprType<T>);
+      case Uint8List _:
+        return LiteralExpression._(value, ColumnType.blob as _ExprType<T>);
+      case DateTime v:
+        return LiteralExpression._(
+          v.toUtc() as T,
+          ColumnType.dateTime as _ExprType<T>,
+        );
+      case JsonValue _:
+        return LiteralExpression._(value, ColumnType.jsonValue as _ExprType<T>);
+
+      case CustomDataType _:
+        throw ArgumentError.value(
+          value,
+          'value',
+          'Use CustomDataType.asExprLiteral instead!',
+        );
+
+      default:
+        throw ArgumentError.value(
+          value,
+          'value',
+          'Only String, int, double, bool, null, and DateTime '
+              'values are allowed',
+        );
+    }
+  }
+}
 
 final class ValueExpression<T> extends SingleValueExpr<T> {
   final T value;

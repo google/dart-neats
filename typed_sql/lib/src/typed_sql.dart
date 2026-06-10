@@ -371,6 +371,11 @@ final class $ForGeneratedCode {
     CustomExprType<S, T> type,
   ) => ValueExpression<T?>._(value, type);
 
+  static Expr<T?> customDataTypeAsExprLiteral<S, T extends CustomDataType<S>>(
+    T? value,
+    CustomExprType<S, T> type,
+  ) => LiteralExpression<T?>._(value, type);
+
   static const ColumnType<Uint8List> blob = ColumnType.blob;
   static const ColumnType<bool> boolean = ColumnType.boolean;
   static const ColumnType<DateTime> dateTime = ColumnType.dateTime;

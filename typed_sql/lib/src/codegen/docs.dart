@@ -426,6 +426,21 @@ String customDataTypeAsExpr(String typeName, String nullable) =>
     '''
     Wrap this [$typeName] as [Expr<$typeName$nullable>] for use queries with
     `package:typed_sql`.
+
+    Using [asExpr] will inject this value as an SQL parameter,
+    use [asExprLiteral] if you wish to inject as SQL literal instead.
+''';
+
+/// Documentation for  `.asExprLiteral` on subclasses of [CustomDataType].
+///
+/// [nullable] must be `''` or `'?'`.
+String customDataTypeAsExprLiteral(String typeName, String nullable) =>
+    '''
+    Wrap this [$typeName] as [Expr<$typeName$nullable>] for use queries with
+    `package:typed_sql`.
+
+    Using [asExprLiteral] will inject this value as an SQL literal,
+    use [asExpr] if you wish to inject as SQL parameter instead.
 ''';
 
 /// Documentation for `.onConflict` in `db.insert(...).onConflict(...)`.

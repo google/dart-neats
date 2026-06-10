@@ -231,6 +231,11 @@ final _cases =
       ),
       // Expr<DateTime?>.isNull()
       (
+        name: 'null.isNull()',
+        expr: toExpr(null as DateTime?).isNull(),
+        expected: true,
+      ),
+      (
         name: 'null.asDateTime().isNull()',
         expr: toExpr(null).asDateTime().isNull(),
         expected: true,
@@ -246,6 +251,11 @@ final _cases =
         expected: false,
       ),
       // Expr<DateTime?>.isNotNull()
+      (
+        name: 'null.isNotNull()',
+        expr: toExpr(null as DateTime?).isNotNull(),
+        expected: false,
+      ),
       (
         name: 'null.asDateTime().isNotNull()',
         expr: toExpr(null).asDateTime().isNotNull(),

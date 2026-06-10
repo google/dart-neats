@@ -33,6 +33,8 @@ String _literal(Object? value) => switch (value) {
   DateTime d => '\'${d.toIso8601String()}\'',
   JsonValue j =>
     'jsonb(${_escapeStringLiteral(json.encode(normalizeJson(j.value)))})',
+  Uint8List b =>
+    "x'${b.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}'",
   _ => throw UnsupportedError('Unable to encode "$value" as a literal'),
 };
 
@@ -572,6 +574,10 @@ extension on ExpressionResolver<SqlContext> {
   String expr<T>(Expr<T> e) => switch (e) {
     FieldExpression<T>() => resolveField(e),
     SubQueryExpression<T>(:final query) => '(${selectExpression(query).$1})',
+    LiteralExpression<CustomDataType?>(value: final value) => _literal(
+      value?.toDatabase(),
+    ),
+    LiteralExpression<T>(value: final value) => _literal(value),
     ValueExpression<CustomDataType?>(value: final value) =>
       context.addParameter(
         value?.toDatabase(),

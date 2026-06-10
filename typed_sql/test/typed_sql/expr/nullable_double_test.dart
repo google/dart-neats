@@ -229,6 +229,11 @@ final _cases =
 
       // Expr<double?>.isNull()
       (
+        name: 'null.isNull()',
+        expr: toExpr(null as double?).isNull(),
+        expected: true,
+      ),
+      (
         name: 'null.asDouble().isNull()',
         expr: toExpr(null).asDouble().isNull(),
         expected: true,
@@ -244,6 +249,11 @@ final _cases =
         expected: false,
       ),
       // Expr<double?>.isNotNull()
+      (
+        name: 'null.isNotNull()',
+        expr: toExpr(null as double?).isNotNull(),
+        expected: false,
+      ),
       (
         name: 'null.asDouble().isNotNull()',
         expr: toExpr(null).asDouble().isNotNull(),

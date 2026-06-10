@@ -484,8 +484,20 @@ extension JsonValueExt on JsonValue {
 
   /// Wrap this [JsonValue] as [Expr<JsonValue>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<JsonValue> get asExpr =>
       $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
+
+  /// Wrap this [JsonValue] as [Expr<JsonValue>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<JsonValue> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, _exprType)
+      .asNotNull();
 }
 
 /// Wrap this [JsonValue] as [Expr<JsonValue>] for use queries with
@@ -493,8 +505,19 @@ extension JsonValueExt on JsonValue {
 extension JsonValueNullableExt on JsonValue? {
   /// Wrap this [JsonValue] as [Expr<JsonValue?>] for use queries with
   /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
   Expr<JsonValue?> get asExpr =>
       $ForGeneratedCode.customDataTypeAsExpr(this, JsonValueExt._exprType);
+
+  /// Wrap this [JsonValue] as [Expr<JsonValue?>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<JsonValue?> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, JsonValueExt._exprType);
 }
 
 /// Extension methods for assertions on [Item] using

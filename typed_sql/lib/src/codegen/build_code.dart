@@ -105,6 +105,22 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
               ).asNotNull()
             '''),
           ),
+        )
+        ..methods.add(
+          Method(
+            (b) => b
+              ..name = 'asExprLiteral'
+              ..documentation(docs.customDataTypeAsExprLiteral(typeName, ''))
+              ..returns = refer('Expr<$typeName>')
+              ..type = MethodType.getter
+              ..lambda = true
+              ..body = Code('''
+              \$ForGeneratedCode.customDataTypeAsExprLiteral(
+                this,
+                _exprType,
+              ).asNotNull()
+            '''),
+          ),
         ),
     );
 
@@ -118,7 +134,7 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
           Wrap this [$typeName] as [Expr<$typeName>] for use queries with
           `package:typed_sql`.
         ''')
-        ..methods.add(
+        ..methods.addAll([
           Method(
             (b) => b
               ..name = 'asExpr'
@@ -133,7 +149,21 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
               )
             '''),
           ),
-        ),
+          Method(
+            (b) => b
+              ..name = 'asExprLiteral'
+              ..documentation(docs.customDataTypeAsExprLiteral(typeName, '?'))
+              ..returns = refer('Expr<$typeName?>')
+              ..type = MethodType.getter
+              ..lambda = true
+              ..body = Code('''
+              \$ForGeneratedCode.customDataTypeAsExprLiteral(
+                this,
+                ${typeName}Ext._exprType,
+              )
+            '''),
+          ),
+        ]),
     );
 
     //yield Extension();

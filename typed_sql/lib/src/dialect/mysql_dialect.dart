@@ -31,7 +31,7 @@ String _literal(dynamic value) => switch (value) {
   double d => d.toString(),
   String s => _escapeStringLiteral(s),
   DateTime d =>
-    "'${d.toIso8601String().substring(0, 19).replaceFirst('T', ' ')}'",
+    "TIMESTAMP  '${d.toUtc().toIso8601String().replaceFirst('T', ' ').replaceAll('Z', '')}'",
   Uint8List b =>
     "X'${b.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}'",
   JsonValue j =>
@@ -624,6 +624,10 @@ extension on ExpressionResolver<SqlContext> {
   String expr<T>(Expr<T> e) => switch (e) {
     FieldExpression<T>() => resolveField(e),
     SubQueryExpression<T>(:final query) => '(${selectExpression(query).$1})',
+    LiteralExpression<CustomDataType?>(value: final value) => _literal(
+      value?.toDatabase(),
+    ),
+    LiteralExpression<T>(value: final value) => _literal(value),
     ValueExpression<CustomDataType?>(value: final value) =>
       context.addParameter(
         value?.toDatabase(),

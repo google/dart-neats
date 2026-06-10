@@ -363,6 +363,11 @@ final _cases = [
     expected: true,
   ),
   (
+    name: 'null.asBool().isNull()',
+    expr: toExpr(null).asBool().isNull(),
+    expected: true,
+  ),
+  (
     name: 'true.isNull()',
     expr: toExpr(true as bool?).isNull(),
     expected: false,
@@ -377,6 +382,11 @@ final _cases = [
   (
     name: 'null.isNotNull()',
     expr: toExpr(null as bool?).isNotNull(),
+    expected: false,
+  ),
+  (
+    name: 'null.asBool().isNotNull()',
+    expr: toExpr(null).asBool().isNotNull(),
     expected: false,
   ),
   (

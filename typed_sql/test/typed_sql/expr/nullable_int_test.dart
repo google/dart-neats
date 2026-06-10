@@ -228,6 +228,11 @@ final _cases =
       ),
       // Expr<int?>.isNull()
       (
+        name: 'null.isNull()',
+        expr: toExpr(null as int?).isNull(),
+        expected: true,
+      ),
+      (
         name: 'null.asInt().isNull()',
         expr: toExpr(null).asInt().isNull(),
         expected: true,
@@ -243,6 +248,11 @@ final _cases =
         expected: false,
       ),
       // Expr<int?>.isNotNull()
+      (
+        name: 'null.isNotNull()',
+        expr: toExpr(null as int?).isNotNull(),
+        expected: false,
+      ),
       (
         name: 'null.asInt().isNotNull()',
         expr: toExpr(null).asInt().isNotNull(),
