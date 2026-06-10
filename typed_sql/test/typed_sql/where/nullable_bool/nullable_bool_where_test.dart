@@ -14,7 +14,7 @@
 
 import 'package:typed_sql/typed_sql.dart';
 
-import '../testrunner.dart';
+import '../../testrunner.dart';
 
 part 'nullable_bool_where_test.g.dart';
 
