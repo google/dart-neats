@@ -480,7 +480,12 @@ final class LiteralExpression<T> extends SingleValueExpr<T> {
   final T value;
 
   @override
-  final _ExprType<T> _type;
+  final FieldType<T> _type;
+
+  ColumnType<Object?> get type => switch (_type) {
+    ColumnType<T> t => t,
+    CustomExprType t => t._backingType,
+  };
 
   static final _true$ = LiteralExpression._(true, ColumnType.boolean);
   static final _false$ = LiteralExpression._(false, ColumnType.boolean);
@@ -492,13 +497,13 @@ final class LiteralExpression<T> extends SingleValueExpr<T> {
     // instance of Expr<T?> even if value is `null`.
     switch (_Dummy<T>()) {
       case _Dummy<Null>():
-        return LiteralExpression._(value, ColumnType.nullType as _ExprType<T>);
+        return LiteralExpression._(value, ColumnType.nullType as FieldType<T>);
       case _Dummy<String?>():
-        return LiteralExpression._(value, ColumnType.text as _ExprType<T>);
+        return LiteralExpression._(value, ColumnType.text as FieldType<T>);
       case _Dummy<int?>():
-        return LiteralExpression._(value, ColumnType.integer as _ExprType<T>);
+        return LiteralExpression._(value, ColumnType.integer as FieldType<T>);
       case _Dummy<double?>():
-        return LiteralExpression._(value, ColumnType.real as _ExprType<T>);
+        return LiteralExpression._(value, ColumnType.real as FieldType<T>);
       case _Dummy<bool?>():
         switch (value) {
           case true:
@@ -508,15 +513,15 @@ final class LiteralExpression<T> extends SingleValueExpr<T> {
           default: // null
             return LiteralExpression._(
               value,
-              ColumnType.boolean as _ExprType<T>,
+              ColumnType.boolean as FieldType<T>,
             );
         }
       case _Dummy<DateTime?>():
-        return LiteralExpression._(value, ColumnType.dateTime as _ExprType<T>);
+        return LiteralExpression._(value, ColumnType.dateTime as FieldType<T>);
       case _Dummy<Uint8List?>():
-        return LiteralExpression._(value, ColumnType.blob as _ExprType<T>);
+        return LiteralExpression._(value, ColumnType.blob as FieldType<T>);
       case _Dummy<JsonValue?>():
-        return LiteralExpression._(value, ColumnType.jsonValue as _ExprType<T>);
+        return LiteralExpression._(value, ColumnType.jsonValue as FieldType<T>);
       case _Dummy<CustomDataType?>():
         if (value == null) {
           return LiteralExpression<Null>._(null, ColumnType.nullType)
@@ -579,7 +584,12 @@ final class ValueExpression<T> extends SingleValueExpr<T> {
   final T value;
 
   @override
-  final _ExprType<T> _type;
+  final FieldType<T> _type;
+
+  ColumnType<Object?> get type => switch (_type) {
+    ColumnType<T> t => t,
+    CustomExprType t => t._backingType,
+  };
 
   ValueExpression._(this.value, this._type) : super._();
 
@@ -588,21 +598,21 @@ final class ValueExpression<T> extends SingleValueExpr<T> {
     // instance of Expr<T?> even if value is `null`.
     switch (_Dummy<T>()) {
       case _Dummy<Null>():
-        return ValueExpression._(value, ColumnType.nullType as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.nullType as ColumnType<T>);
       case _Dummy<String?>():
-        return ValueExpression._(value, ColumnType.text as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.text as ColumnType<T>);
       case _Dummy<int?>():
-        return ValueExpression._(value, ColumnType.integer as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.integer as ColumnType<T>);
       case _Dummy<double?>():
-        return ValueExpression._(value, ColumnType.real as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.real as ColumnType<T>);
       case _Dummy<bool?>():
-        return ValueExpression._(value, ColumnType.boolean as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.boolean as ColumnType<T>);
       case _Dummy<DateTime?>():
-        return ValueExpression._(value, ColumnType.dateTime as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.dateTime as ColumnType<T>);
       case _Dummy<Uint8List?>():
-        return ValueExpression._(value, ColumnType.blob as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.blob as ColumnType<T>);
       case _Dummy<JsonValue?>():
-        return ValueExpression._(value, ColumnType.jsonValue as _ExprType<T>);
+        return ValueExpression._(value, ColumnType.jsonValue as ColumnType<T>);
       case _Dummy<CustomDataType?>():
         if (value == null) {
           return ValueExpression<Null>._(null, ColumnType.nullType)
