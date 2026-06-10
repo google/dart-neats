@@ -684,18 +684,27 @@ sealed class BinaryOperationExpression<T, R> extends SingleValueExpr<R> {
   BinaryOperationExpression(this.left, this.right) : super._();
 }
 
-final class ExpressionBoolNot extends SingleValueExpr<bool> with _ExprBoolean {
-  final Expr<bool> value;
+final class ExpressionBoolNot<T extends bool?> extends SingleValueExpr<T> {
+  final Expr<T> value;
   ExpressionBoolNot(this.value) : super._();
+
+  @override
+  _ExprType<T> get _type => ColumnType.boolean as _ExprType<T>;
 }
 
-final class ExpressionBoolAnd extends BinaryOperationExpression<bool, bool>
-    with _ExprBoolean {
+final class ExpressionBoolAnd<T extends bool?>
+    extends BinaryOperationExpression<T, T> {
+  @override
+  _ExprType<T> get _type => ColumnType.boolean as _ExprType<T>;
+
   ExpressionBoolAnd(super.left, super.right);
 }
 
-final class ExpressionBoolOr extends BinaryOperationExpression<bool, bool>
-    with _ExprBoolean {
+final class ExpressionBoolOr<T extends bool?>
+    extends BinaryOperationExpression<T, T> {
+  @override
+  _ExprType<T> get _type => ColumnType.boolean as _ExprType<T>;
+
   ExpressionBoolOr(super.left, super.right);
 }
 

@@ -155,7 +155,7 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
         ),
 
         //   Query<(Expr<A>, Expr<B>, Expr<C>)> where(
-        //     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+        //     Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
         //   ) {
         //     final (handle, where) = _build(conditionBuilder);
         //     return Query._(
@@ -174,7 +174,7 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
                 (b) => b
                   ..name = 'conditionBuilder'
                   ..type = refer(
-                    'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+                    'Expr<bool?> Function(${typArgedExprArgumentList(i)})',
                   ),
               ),
             )
@@ -608,7 +608,7 @@ Iterable<Spec> _buildOrderedQueryExtensions(int i) sync* {
           (b) => b
             ..name = 'conditionBuilder'
             ..type = refer(
-              'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+              'Expr<bool?> Function(${typArgedExprArgumentList(i)})',
             ),
         ),
       )
@@ -924,7 +924,7 @@ Spec _buildSubQueryExtension(int i) {
                 (b) => b
                   ..name = 'conditionBuilder'
                   ..type = refer(
-                    'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+                    'Expr<bool?> Function(${typArgedExprArgumentList(i)})',
                   ),
               ),
             )
@@ -1063,7 +1063,7 @@ Spec _buildSubQueryExtension(int i) {
 ///   Query<(Expr<A>, Expr<B>)> get asQuery => _query;
 ///
 ///   QuerySingle<(Expr<A>, Expr<B>)> where(
-///     Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
+///     Expr<bool?> Function(Expr<A> a, Expr<B> b) conditionBuilder,
 ///   ) =>
 ///       asQuery.where(conditionBuilder).first;
 ///
@@ -1106,7 +1106,7 @@ Spec _buildSingleQueryExtension(int i) {
                   (b) => b
                     ..name = 'conditionBuilder'
                     ..type = refer(
-                      'Expr<bool> Function(${typArgedExprArgumentList(i)})',
+                      'Expr<bool?> Function(${typArgedExprArgumentList(i)})',
                     ),
                 ),
               )

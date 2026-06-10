@@ -20,7 +20,7 @@ extension Query1<A> on Query<(Expr<A>,)> {
   ///
   /// Returns a [Query] retaining rows from this [Query] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
-  Query<(Expr<A>,)> where(Expr<bool> Function(Expr<A> a) conditionBuilder) {
+  Query<(Expr<A>,)> where(Expr<bool?> Function(Expr<A> a) conditionBuilder) {
     final (handle, where) = _build(conditionBuilder);
     return Query._(
       _context,
@@ -287,7 +287,7 @@ extension SubQuery1<A> on SubQuery<(Expr<A>,)> {
   ///
   /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
-  SubQuery<(Expr<A>,)> where(Expr<bool> Function(Expr<A> a) conditionBuilder) {
+  SubQuery<(Expr<A>,)> where(Expr<bool?> Function(Expr<A> a) conditionBuilder) {
     final (handle, where) = _build(conditionBuilder);
     return SubQuery._(
       _expressions,
@@ -392,7 +392,7 @@ extension OrderedQuery1<A> on OrderedQuery<(Expr<A>,)> {
   /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedQuery<(Expr<A>,)> where(
-    Expr<bool> Function(Expr<A> a) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a) conditionBuilder,
   ) => OrderedQuery._(_query.where(conditionBuilder));
 
   /// Create a projection of this [OrderedQuery] using `SELECT` clause.
@@ -647,7 +647,7 @@ extension OrderedSubQuery1<A> on OrderedSubQuery<(Expr<A>,)> {
   /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedSubQuery<(Expr<A>,)> where(
-    Expr<bool> Function(Expr<A> a) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a) conditionBuilder,
   ) => OrderedSubQuery._(_query.where(conditionBuilder));
 
   /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
@@ -867,7 +867,7 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
   /// Returns a [Query] retaining rows from this [Query] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) {
     final (handle, where) = _build(conditionBuilder);
     return Query._(
@@ -1156,7 +1156,7 @@ extension SubQuery2<A, B> on SubQuery<(Expr<A>, Expr<B>)> {
   /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) {
     final (handle, where) = _build(conditionBuilder);
     return SubQuery._(
@@ -1262,7 +1262,7 @@ extension OrderedQuery2<A, B> on OrderedQuery<(Expr<A>, Expr<B>)> {
   /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedQuery<(Expr<A>, Expr<B>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) => OrderedQuery._(_query.where(conditionBuilder));
 
   /// Create a projection of this [OrderedQuery] using `SELECT` clause.
@@ -1518,7 +1518,7 @@ extension OrderedSubQuery2<A, B> on OrderedSubQuery<(Expr<A>, Expr<B>)> {
   /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedSubQuery<(Expr<A>, Expr<B>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) => OrderedSubQuery._(_query.where(conditionBuilder));
 
   /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
@@ -1742,7 +1742,7 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
   /// Returns a [Query] retaining rows from this [Query] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     final (handle, where) = _build(conditionBuilder);
     return Query._(
@@ -2047,7 +2047,7 @@ extension SubQuery3<A, B, C> on SubQuery<(Expr<A>, Expr<B>, Expr<C>)> {
   /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     final (handle, where) = _build(conditionBuilder);
     return SubQuery._(
@@ -2154,7 +2154,7 @@ extension OrderedQuery3<A, B, C> on OrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> {
   /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedQuery<(Expr<A>, Expr<B>, Expr<C>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) => OrderedQuery._(_query.where(conditionBuilder));
 
   /// Create a projection of this [OrderedQuery] using `SELECT` clause.
@@ -2416,7 +2416,7 @@ extension OrderedSubQuery3<A, B, C>
   /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) => OrderedSubQuery._(_query.where(conditionBuilder));
 
   /// Create a projection of this [OrderedSubQuery] using `SELECT` clause.
@@ -2650,7 +2650,7 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
   /// Returns a [Query] retaining rows from this [Query] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     final (handle, where) = _build(conditionBuilder);
@@ -2976,7 +2976,7 @@ extension SubQuery4<A, B, C, D>
   /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     final (handle, where) = _build(conditionBuilder);
@@ -3090,7 +3090,7 @@ extension OrderedQuery4<A, B, C, D>
   /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) => OrderedQuery._(_query.where(conditionBuilder));
 
@@ -3377,7 +3377,7 @@ extension OrderedSubQuery4<A, B, C, D>
   /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) => OrderedSubQuery._(_query.where(conditionBuilder));
 
@@ -3639,7 +3639,7 @@ extension Query5<A, B, C, D, E>
   /// Returns a [Query] retaining rows from this [Query] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     final (handle, where) = _build(conditionBuilder);
@@ -3975,7 +3975,7 @@ extension SubQuery5<A, B, C, D, E>
   /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     final (handle, where) = _build(conditionBuilder);
@@ -4091,7 +4091,7 @@ extension OrderedQuery5<A, B, C, D, E>
   /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) => OrderedQuery._(_query.where(conditionBuilder));
 
@@ -4391,7 +4391,7 @@ extension OrderedSubQuery5<A, B, C, D, E>
   /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) => OrderedSubQuery._(_query.where(conditionBuilder));
 
@@ -4663,7 +4663,7 @@ extension Query6<A, B, C, D, E, F>
   /// Returns a [Query] retaining rows from this [Query] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -5020,7 +5020,7 @@ extension SubQuery6<A, B, C, D, E, F>
   /// Returns a [SubQuery] retaining rows from this [SubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -5147,7 +5147,7 @@ extension OrderedQuery6<A, B, C, D, E, F>
   /// Returns a [OrderedQuery] retaining rows from this [OrderedQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -5468,7 +5468,7 @@ extension OrderedSubQuery6<A, B, C, D, E, F>
   /// Returns a [OrderedSubQuery] retaining rows from this [OrderedSubQuery] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedSubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -5775,7 +5775,7 @@ extension Query7<A, B, C, D, E, F, G>
   /// Returns a [Query] retaining rows from this [Query] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -6185,7 +6185,7 @@ extension SubQuery7<A, B, C, D, E, F, G>
   /// returned by [conditionBuilder] evaluates to `true`.
   SubQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
   where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -6329,7 +6329,7 @@ extension OrderedQuery7<A, B, C, D, E, F, G>
   /// returned by [conditionBuilder] evaluates to `true`.
   OrderedQuery<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
   where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -6689,7 +6689,7 @@ extension OrderedSubQuery7<A, B, C, D, E, F, G>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)
   >
   where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -7051,7 +7051,7 @@ extension Query8<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -7543,7 +7543,7 @@ extension SubQuery8<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -7705,7 +7705,7 @@ extension OrderedQuery8<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -8124,7 +8124,7 @@ extension OrderedSubQuery8<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -16206,7 +16206,7 @@ extension QuerySingle1<A> on QuerySingle<(Expr<A>,)> {
   /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>,)> where(
-    Expr<bool> Function(Expr<A> a) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a) conditionBuilder,
   ) => asQuery.where(conditionBuilder).first;
 
   /// Create a projection of this [QuerySingle] using `SELECT` clause.
@@ -16247,7 +16247,7 @@ extension QuerySingle2<A, B> on QuerySingle<(Expr<A>, Expr<B>)> {
   /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) => asQuery.where(conditionBuilder).first;
 
   /// Create a projection of this [QuerySingle] using `SELECT` clause.
@@ -16299,7 +16299,7 @@ extension QuerySingle3<A, B, C> on QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> {
   /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) => asQuery.where(conditionBuilder).first;
 
   /// Create a projection of this [QuerySingle] using `SELECT` clause.
@@ -16353,7 +16353,7 @@ extension QuerySingle4<A, B, C, D>
   /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) => asQuery.where(conditionBuilder).first;
 
@@ -16408,7 +16408,7 @@ extension QuerySingle5<A, B, C, D, E>
   /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> where(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) => asQuery.where(conditionBuilder).first;
 
@@ -16465,7 +16465,7 @@ extension QuerySingle6<A, B, C, D, E, F>
   /// Returns a [QuerySingle] retaining rows from this [QuerySingle] where the expression
   /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -16534,7 +16534,7 @@ extension QuerySingle7<A, B, C, D, E, F, G>
   /// returned by [conditionBuilder] evaluates to `true`.
   QuerySingle<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)>
   where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -16625,7 +16625,7 @@ extension QuerySingle8<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   where(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,

@@ -337,7 +337,7 @@ final class SelectFromClause extends FromClause implements ExpressionContext {
 final class WhereClause extends FromClause implements ExpressionContext {
   @override
   final Object _handle;
-  final Expr<bool> where;
+  final Expr<bool?> where;
   WhereClause._(super.from, this._handle, this.where) : super._();
 }
 

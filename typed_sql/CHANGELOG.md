@@ -1,3 +1,7 @@
+## 0.1.11
+ * Allow nullable boolean in `.where(...)` clauses.
+ * Support for combining `Expr<bool?>` expressions.
+
 ## 0.1.10
  * Introduce `.insertValue` which automatically wraps with `toExpr()`, but is
    unfortunately unable to insert _default value_ for nullable fields that

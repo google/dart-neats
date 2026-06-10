@@ -1618,7 +1618,7 @@ Iterable<Spec> buildRecord(ParsedRecord record) sync* {
               Parameter(
                 (b) => b
                   ..name = 'conditionBuilder'
-                  ..type = refer('Expr<bool> Function(${record.type} expr)'),
+                  ..type = refer('Expr<bool?> Function(${record.type} expr)'),
               ),
             )
             ..lambda = true

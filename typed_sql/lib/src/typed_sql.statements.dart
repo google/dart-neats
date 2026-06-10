@@ -118,7 +118,7 @@ final class UpdateOnConflictClause extends ConflictClause
   final ExpressionContext excluded;
   final List<String> columns;
   final List<Expr> values;
-  final Expr<bool> where;
+  final Expr<bool?> where;
 
   UpdateOnConflictClause._(
     this._handle,
