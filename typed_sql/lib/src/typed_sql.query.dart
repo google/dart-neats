@@ -372,7 +372,7 @@ final class JoinClause extends FromClause implements ExpressionContext {
   final Object _handle;
   final JoinType type;
   final QueryClause join;
-  final Expr<bool> on;
+  final Expr<bool?> on;
 
   JoinClause._(
     this._handle,

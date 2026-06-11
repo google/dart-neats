@@ -1,5 +1,6 @@
 ## 0.1.11
  * Allow nullable boolean in `.where(...)` clauses.
+ * Allow nullable boolean in JOIN `.on(...)` conditions.
  * Support for combining `Expr<bool?>` expressions.
 
 ## 0.1.10

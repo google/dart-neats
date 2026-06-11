@@ -1331,7 +1331,7 @@ Spec _buildToListExtension(int i) => Extension(
 ///       );
 ///
 ///   Query<(Expr<A>, Expr<B>, Expr<C>)> on(
-///     Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+///     Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
 ///   ) =>
 ///       all.where(conditionBuilder);
 /// }
@@ -1400,7 +1400,7 @@ Iterable<Spec> _buildJoinExtension(int i, int j) sync* {
                   (b) => b
                     ..name = 'conditionBuilder'
                     ..type = refer(
-                      'Expr<bool> Function(${typArgedExprArgumentList(i + j)})',
+                      'Expr<bool?> Function(${typArgedExprArgumentList(i + j)})',
                     ),
                 ),
               )
