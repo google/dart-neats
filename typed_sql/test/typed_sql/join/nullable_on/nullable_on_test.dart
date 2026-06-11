@@ -28,42 +28,41 @@ abstract final class Item extends Row {
   bool? get value;
 }
 
-final _cases =
-    <
-      ({
-        String name,
-        Expr<bool?> Function(Expr<Item> a, Expr<Item> b) on,
-        List<(int, int)> expected,
-      })
-    >[
-      // Use the first part's a nullable column directly as the ON condition.
-      (
-        name: '.on(a.value)',
-        on: (a, b) => a.value,
-        expected: [(1, 1), (1, 2), (1, 3)],
-      ),
+typedef _Case = ({
+  String name,
+  Expr<bool?> Function(Expr<Item> a, Expr<Item> b) on,
+  List<(int, int)> expected,
+});
 
-      // AND follows SQL three-valued logic in the ON clause.
-      (
-        name: '.on(a.value.and(b.value))',
-        on: (a, b) => a.value.and(b.value),
-        expected: [(1, 1)],
-      ),
+final _cases = <_Case>[
+  // Use the first part's a nullable column directly as the ON condition.
+  (
+    name: '.on(a.value)',
+    on: (a, b) => a.value,
+    expected: [(1, 1), (1, 2), (1, 3)],
+  ),
 
-      // OR follows SQL three-valued logic in the ON clause.
-      (
-        name: '.on(a.value.or(b.value))',
-        on: (a, b) => a.value.or(b.value),
-        expected: [(1, 1), (1, 2), (1, 3), (2, 1), (3, 1)],
-      ),
+  // AND follows SQL three-valued logic in the ON clause.
+  (
+    name: '.on(a.value.and(b.value))',
+    on: (a, b) => a.value.and(b.value),
+    expected: [(1, 1)],
+  ),
 
-      // combined condition
-      (
-        name: '.on(a.id.equals(b.id).and(a.value))',
-        on: (a, b) => a.id.equals(b.id).and(a.value),
-        expected: [(1, 1)],
-      ),
-    ];
+  // OR follows SQL three-valued logic in the ON clause.
+  (
+    name: '.on(a.value.or(b.value))',
+    on: (a, b) => a.value.or(b.value),
+    expected: [(1, 1), (1, 2), (1, 3), (2, 1), (3, 1)],
+  ),
+
+  // combined condition
+  (
+    name: '.on(a.id.equals(b.id).and(a.value))',
+    on: (a, b) => a.id.equals(b.id).and(a.value),
+    expected: [(1, 1)],
+  ),
+];
 
 void main() {
   // Insert a row for each possible value of a nullable boolean: TRUE, FALSE and NULL.
