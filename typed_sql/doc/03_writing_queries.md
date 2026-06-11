@@ -87,9 +87,9 @@ explore how to only return a subset of the fields using custom projections with
 `.select`.
 
 The `db.books` object has a type `Query<(Expr<Book>,)>`, and when we invoke
-`.where` we provide a callback on the form `Expr<bool> Function(Expr<Book>)`.
+`.where` we provide a callback on the form `Expr<bool?> Function(Expr<Book>)`.
 Essentially, the `.where` invocation is passed a function that given an
-`Expr<Book>` will return an `Expr<bool>`.
+`Expr<Book>` will return an `Expr<bool?>`.
 
 When `package:typed_sql` generates code for the database schema it'll generate
 extension methods for `Expr<Book>` such that fields like `stock` can be accessed
@@ -675,6 +675,9 @@ _extension methods_:
     * `.not() -> Expr<bool>` (also available as operator `~`)
     * `.and(Expr<bool> other) -> Expr<bool>` (also available as operator `&`)
     * `.or(Expr<bool> other) -> Expr<bool>` (also available as operator `|`)
+ * `Expr<bool?>`, has:
+    * `.and(Expr<bool?> other) -> Expr<bool?>` (also available as operator `&`)
+    * `.or(Expr<bool?> other) -> Expr<bool?>` (also available as operator `|`)
  * `Expr<String>`, has:
     * `.endsWith(Expr<String> other) -> Expr<bool>`
     * `.startsWith(Expr<String> other) -> Expr<bool>`
@@ -816,7 +819,7 @@ select a single integer field (or expression) such that you have
 
  * `Query<T>`, when `T` is `(Expr<A>, Expr<B>, ...)`, has:
    * `.orderBy(List<(Expr<Comparable>, Order)> Function(Expr<A>, Expr<B>, ...) orderBy) -> OrderedQuery<T>`
-   * `.where(Expr<bool> Function(Expr<A>, Expr<B>, ...) filter) -> Query<T>`
+   * `.where(Expr<bool?> Function(Expr<A>, Expr<B>, ...) filter) -> Query<T>`
    * `.first -> QuerySingle<T>`
    * `.limit(int limit) -> Query<T>`
    * `.offset(int offset) -> Query<T>`
@@ -847,11 +850,11 @@ select a single integer field (or expression) such that you have
  * `QuerySingle<T>`, when `T` is `(Expr<A>, Expr<B>, ...)`, has:
    * `.fetch() -> Future<(A, B, ...)?>`
    * `.fetchOrNulls() -> Future<(A?, B?, ...)>`
-   * `.where(Expr<bool> Function(Expr<A>, Expr<B>, ...) filter) -> QuerySingle<T>`
+   * `.where(Expr<bool?> Function(Expr<A>, Expr<B>, ...) filter) -> QuerySingle<T>`
    * `.select<S>(S Function(Expr<A>, Expr<B>, ...) projection) -> QuerySingle<S>`
    * `.asQuery -> Query<T>`
  * `OrderedQuery<T>`, when `T` is `(Expr<A>, Expr<B>, ...)`, has:
-   * `.where(Expr<bool> Function(Expr<A>, Expr<B>, ...) filter) -> OrderQuery<T>`
+   * `.where(Expr<bool?> Function(Expr<A>, Expr<B>, ...) filter) -> OrderQuery<T>`
    * `.limit(int limit) -> OrderedQueryRange<T>`
    * `.offset(int offset) -> OrderedQueryRange<T>`
    * `.select<S>(S Function(Expr<A>, Expr<B>, ...) projection) -> ProjectedOrderedQuery<S>`
