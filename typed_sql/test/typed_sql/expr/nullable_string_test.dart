@@ -73,22 +73,30 @@ final _cases =
       // Expr<String?>.equals
       (
         name: 'null.asString().equals("hello")',
-        expr: toExpr(null).asString().equals(toExpr('hello')),
+        expr: toExpr(
+          null,
+        ).asString().equalsUnlessNull(toExpr('hello')).orElseValue(false),
         expected: false,
       ),
       (
         name: '"hello".equals("hello")',
-        expr: toExpr('hello' as String?).equals(toExpr('hello')),
+        expr: toExpr(
+          'hello' as String?,
+        ).equalsUnlessNull(toExpr('hello')).orElseValue(false),
         expected: true,
       ),
       (
         name: 'null.asString().equals("")',
-        expr: toExpr(null).asString().equals(toExpr('')),
+        expr: toExpr(
+          null,
+        ).asString().equalsUnlessNull(toExpr('')).orElseValue(false),
         expected: false,
       ),
       (
         name: '"".equals("")',
-        expr: toExpr('' as String?).equals(toExpr('')),
+        expr: toExpr(
+          '' as String?,
+        ).equalsUnlessNull(toExpr('')).orElseValue(false),
         expected: true,
       ),
       // Expr<String?>.isNotDistinctFrom
@@ -166,65 +174,89 @@ final _cases =
       // Expr<String?>.notEquals
       (
         name: 'null.asString().notEquals("hello")',
-        expr: toExpr(null).asString().notEquals(toExpr('hello')),
+        expr: toExpr(
+          null,
+        ).asString().equalsUnlessNull(toExpr('hello')).orElseValue(false).not(),
         expected: true,
       ),
       (
         name: '"hello".notEquals("hello")',
-        expr: toExpr('hello' as String?).notEquals(toExpr('hello')),
+        expr: toExpr(
+          'hello' as String?,
+        ).equalsUnlessNull(toExpr('hello')).orElseValue(false).not(),
         expected: false,
       ),
       (
         name: 'null.asString().notEquals("")',
-        expr: toExpr(null).asString().notEquals(toExpr('')),
+        expr: toExpr(
+          null,
+        ).asString().equalsUnlessNull(toExpr('')).orElseValue(false).not(),
         expected: true,
       ),
       (
         name: '"".notEquals("")',
-        expr: toExpr('' as String?).notEquals(toExpr('')),
+        expr: toExpr(
+          '' as String?,
+        ).equalsUnlessNull(toExpr('')).orElseValue(false).not(),
         expected: false,
       ),
 
       // Expr<String?>.equalsValue
       (
         name: 'null.asString().equalsValue("hello")',
-        expr: toExpr(null).asString().equalsValue('hello'),
+        expr: toExpr(
+          null,
+        ).asString().equalsUnlessNull(toExpr('hello')).orElseValue(false),
         expected: false,
       ),
       (
         name: '"hello".equalsValue("hello")',
-        expr: toExpr('hello' as String?).equalsValue('hello'),
+        expr: toExpr(
+          'hello' as String?,
+        ).equalsUnlessNull(toExpr('hello')).orElseValue(false),
         expected: true,
       ),
       (
         name: 'null.asString().equalsValue("")',
-        expr: toExpr(null).asString().equalsValue(''),
+        expr: toExpr(
+          null,
+        ).asString().equalsUnlessNull(toExpr('')).orElseValue(false),
         expected: false,
       ),
       (
         name: '"".equalsValue("")',
-        expr: toExpr('' as String?).equalsValue(''),
+        expr: toExpr(
+          '' as String?,
+        ).equalsUnlessNull(toExpr('')).orElseValue(false),
         expected: true,
       ),
       // Expr<String?>.notEqualsValue
       (
         name: 'null.asString().notEqualsValue("hello")',
-        expr: toExpr(null).asString().notEqualsValue('hello'),
+        expr: toExpr(
+          null,
+        ).asString().equalsUnlessNull(toExpr('hello')).orElseValue(false).not(),
         expected: true,
       ),
       (
         name: '"hello".notEqualsValue("hello")',
-        expr: toExpr('hello' as String?).notEqualsValue('hello'),
+        expr: toExpr(
+          'hello' as String?,
+        ).equalsUnlessNull(toExpr('hello')).orElseValue(false).not(),
         expected: false,
       ),
       (
         name: 'null.asString().notEqualsValue("")',
-        expr: toExpr(null).asString().notEqualsValue(''),
+        expr: toExpr(
+          null,
+        ).asString().equalsUnlessNull(toExpr('')).orElseValue(false).not(),
         expected: true,
       ),
       (
         name: '"".notEqualsValue("")',
-        expr: toExpr('' as String?).notEqualsValue(''),
+        expr: toExpr(
+          '' as String?,
+        ).equalsUnlessNull(toExpr('')).orElseValue(false).not(),
         expected: false,
       ),
       // Expr<String?>.isNull()

@@ -245,33 +245,6 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   /// {@macro orElse}
   Expr<T> orElseValue(T value) => orElse(toExpr(value));
 
-  /// {@template equals}
-  /// Compare this expression to [other] using `=` in SQL coalesced to `FALSE`.
-  ///
-  /// This is equivalent to `COALESCE(this = other, FALSE)` in SQL.
-  ///
-  /// The `.equals` _extension method_ requires that one of the two operators
-  /// are non-nullable. Because `NULL = NULL` evaluates to `UNKNOWN` in SQL,
-  /// which is surprising in a Dart context.
-  ///
-  /// If you wish to compare two _nullable expressions_ you can use:
-  ///  * [isNotDistinctFrom], to get `NULL` equivalent to `NULL`, or,
-  ///  * [equalsUnlessNull], to explicitely get the SQL `=` semantics.
-  /// {@endtemplate}
-  Expr<bool> equals(Expr<T> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
-
-  /// {@macro equals}
-  Expr<bool> equalsValue(T other) => equals(toExpr(other));
-
-  /// {@template notEquals}
-  /// Compare this expression to [other] using `<>` in SQL.
-  /// {@endtemplate}
-  Expr<bool> notEquals(Expr<T> other) => equals(other).not();
-
-  /// {@macro notEquals}
-  Expr<bool> notEqualsValue(T other) => notEquals(toExpr(other));
-
   /// {@template isNotDistinctFrom}
   /// Compare this expression to [other] using `IS NOT DISTINCT FROM`.
   ///
@@ -315,19 +288,6 @@ extension ExpressionNullableString on Expr<String?> {
   /// {@macro orElse}
   Expr<String> orElseValue(String value) => orElse(toExpr(value));
 
-  /// {@macro equals}
-  Expr<bool> equals(Expr<String> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
-
-  /// {@macro equals}
-  Expr<bool> equalsValue(String other) => equals(toExpr(other));
-
-  /// {@macro notEquals}
-  Expr<bool> notEquals(Expr<String> other) => equals(other).not();
-
-  /// {@macro notEquals}
-  Expr<bool> notEqualsValue(String other) => notEquals(toExpr(other));
-
   /// {@macro isNotDistinctFrom}
   Expr<bool> isNotDistinctFrom(Expr<String?> other) =>
       ExpressionIsNotDistinctFrom(this, other);
@@ -350,19 +310,6 @@ extension ExpressionNullableBool on Expr<bool?> {
 
   /// {@macro orElse}
   Expr<bool> orElseValue(bool value) => orElse(toExpr(value));
-
-  /// {@macro equals}
-  Expr<bool> equals(Expr<bool> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
-
-  /// {@macro equals}
-  Expr<bool> equalsValue(bool other) => equals(toExpr(other));
-
-  /// {@macro notEquals}
-  Expr<bool> notEquals(Expr<bool> other) => equals(other).not();
-
-  /// {@macro notEquals}
-  Expr<bool> notEqualsValue(bool other) => notEquals(toExpr(other));
 
   /// {@macro isNotDistinctFrom}
   Expr<bool> isNotDistinctFrom(Expr<bool?> other) =>
@@ -448,19 +395,6 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
   /// {@macro orElse}
   Expr<DateTime> orElseValue(DateTime value) => orElse(toExpr(value));
 
-  /// {@macro equals}
-  Expr<bool> equals(Expr<DateTime> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
-
-  /// {@macro equals}
-  Expr<bool> equalsValue(DateTime other) => equals(toExpr(other));
-
-  /// {@macro notEquals}
-  Expr<bool> notEquals(Expr<DateTime> other) => equals(other).not();
-
-  /// {@macro notEquals}
-  Expr<bool> notEqualsValue(DateTime other) => notEquals(toExpr(other));
-
   /// {@macro isNotDistinctFrom}
   Expr<bool> isNotDistinctFrom(Expr<DateTime?> other) =>
       ExpressionIsNotDistinctFrom(this, other);
@@ -484,19 +418,6 @@ extension ExpressionNullableUint8List on Expr<Uint8List?> {
 
   /// {@macro orElse}
   Expr<Uint8List> orElseValue(Uint8List value) => orElse(toExpr(value));
-
-  /// {@macro equals}
-  Expr<bool> equals(Expr<Uint8List> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
-
-  /// {@macro equals}
-  Expr<bool> equalsValue(Uint8List other) => equals(toExpr(other));
-
-  /// {@macro notEquals}
-  Expr<bool> notEquals(Expr<Uint8List> other) => equals(other).not();
-
-  /// {@macro notEquals}
-  Expr<bool> notEqualsValue(Uint8List other) => notEquals(toExpr(other));
 
   /// {@macro isNotDistinctFrom}
   Expr<bool> isNotDistinctFrom(Expr<Uint8List?> other) =>
@@ -711,18 +632,32 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
 
 /// Extension methods for [bool] expressions.
 extension ExpressionBool on Expr<bool> {
-  /// {@macro equals}
-  Expr<bool> equals(Expr<bool?> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
+  /// {@template equals}
+  /// Compare this expression to [other] using `=` in SQL.
+  ///
+  /// This is equivalent to `this = other` in SQL.
+  ///
+  /// The `.equals` _extension method_ requires that both operands are
+  /// _non-nullable_. Because comparison involving `NULL` evaluates to `UNKNOWN`
+  /// in SQL, which is surprising in a Dart context.
+  ///
+  /// If you wish to compare _nullable expressions_ you can use:
+  ///  * [isNotDistinctFrom], to get `NULL` equivalent to `NULL`, or,
+  ///  * [equalsUnlessNull], to explicitely get the SQL `=` semantics.
+  /// {@endtemplate}
+  Expr<bool> equals(Expr<bool> other) =>
+      ExpressionEquals(this, other).asNotNull();
 
   /// {@macro equals}
-  Expr<bool> equalsValue(bool? other) => equals(toExpr(other));
+  Expr<bool> equalsValue(bool other) => equals(toExpr(other));
+
+  /// {@template notEquals}
+  /// Compare this expression to [other] using `<>` in SQL.
+  /// {@endtemplate}
+  Expr<bool> notEquals(Expr<bool> other) => equals(other).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEquals(Expr<bool?> other) => equals(other).not();
-
-  /// {@macro notEquals}
-  Expr<bool> notEqualsValue(bool? other) => notEquals(toExpr(other));
+  Expr<bool> notEqualsValue(bool other) => notEquals(toExpr(other));
 
   /// {@macro isNull}
   ///
@@ -847,17 +782,17 @@ extension ExpressionBool on Expr<bool> {
 /// Extension methods for [String] expressions.
 extension ExpressionString on Expr<String> {
   /// {@macro equals}
-  Expr<bool> equals(Expr<String?> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
+  Expr<bool> equals(Expr<String> other) =>
+      ExpressionEquals(this, other).asNotNull();
 
   /// {@macro equals}
-  Expr<bool> equalsValue(String? other) => equals(toExpr(other));
+  Expr<bool> equalsValue(String other) => equals(toExpr(other));
 
   /// {@macro notEquals}
-  Expr<bool> notEquals(Expr<String?> other) => equals(other).not();
+  Expr<bool> notEquals(Expr<String> other) => equals(other).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsValue(String? other) => notEquals(toExpr(other));
+  Expr<bool> notEqualsValue(String other) => notEquals(toExpr(other));
 
   /// {@macro isNull}
   ///
@@ -1260,17 +1195,16 @@ extension ExpressionDouble on Expr<double> {
 /// Extension methods for [int] and [double] expressions.
 extension ExpressionNum<T extends num> on Expr<T> {
   /// {@macro equals}
-  Expr<bool> equals(Expr<T?> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
+  Expr<bool> equals(Expr<T> other) => ExpressionEquals(this, other).asNotNull();
 
   /// {@macro equals}
-  Expr<bool> equalsValue(T? other) => equals(toExpr(other));
+  Expr<bool> equalsValue(T other) => equals(toExpr(other));
 
   /// {@macro notEquals}
-  Expr<bool> notEquals(Expr<T?> other) => equals(other).not();
+  Expr<bool> notEquals(Expr<T> other) => equals(other).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsValue(T? other) => notEquals(toExpr(other));
+  Expr<bool> notEqualsValue(T other) => notEquals(toExpr(other));
 
   /// {@macro isNull}
   ///
@@ -1348,17 +1282,17 @@ extension ExpressionNum<T extends num> on Expr<T> {
 /// Extension methods for [DateTime] expressions.
 extension ExpressionDateTime on Expr<DateTime> {
   /// {@macro equals}
-  Expr<bool> equals(Expr<DateTime?> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
+  Expr<bool> equals(Expr<DateTime> other) =>
+      ExpressionEquals(this, other).asNotNull();
 
   /// {@macro equals}
-  Expr<bool> equalsValue(DateTime? other) => equals(toExpr(other));
+  Expr<bool> equalsValue(DateTime other) => equals(toExpr(other));
 
   /// {@macro notEquals}
-  Expr<bool> notEquals(Expr<DateTime?> other) => equals(other).not();
+  Expr<bool> notEquals(Expr<DateTime> other) => equals(other).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsValue(DateTime? other) => notEquals(toExpr(other));
+  Expr<bool> notEqualsValue(DateTime other) => notEquals(toExpr(other));
 
   /// {@macro isNull}
   ///
@@ -1438,17 +1372,17 @@ extension ExpressionDateTime on Expr<DateTime> {
 /// Extension methods for [Uint8List] expressions.
 extension ExpressionUint8List on Expr<Uint8List> {
   /// {@macro equals}
-  Expr<bool> equals(Expr<Uint8List?> other) =>
-      ExpressionEquals(this, other).orElseValue(false);
+  Expr<bool> equals(Expr<Uint8List> other) =>
+      ExpressionEquals(this, other).asNotNull();
 
   /// {@macro equals}
-  Expr<bool> equalsValue(Uint8List? other) => equals(toExpr(other));
+  Expr<bool> equalsValue(Uint8List other) => equals(toExpr(other));
 
   /// {@macro notEquals}
-  Expr<bool> notEquals(Expr<Uint8List?> other) => equals(other).not();
+  Expr<bool> notEquals(Expr<Uint8List> other) => equals(other).not();
 
   /// {@macro notEquals}
-  Expr<bool> notEqualsValue(Uint8List? other) => notEquals(toExpr(other));
+  Expr<bool> notEqualsValue(Uint8List other) => notEquals(toExpr(other));
 
   /// {@macro isNull}
   ///

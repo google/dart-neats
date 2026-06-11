@@ -1418,7 +1418,8 @@ extension QueryNullableUniqueItemExt on Query<(Expr<NullableUniqueItem>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<NullableUniqueItem>,)> byCode(String code) => where(
-    (nullableUniqueItem) => nullableUniqueItem.code.equalsValue(code),
+    (nullableUniqueItem) =>
+        nullableUniqueItem.code.equalsUnlessNull(toExpr(code)),
   ).first;
 
   /// Delete all rows in the `nullableUniqueItems` table matching this [Query].

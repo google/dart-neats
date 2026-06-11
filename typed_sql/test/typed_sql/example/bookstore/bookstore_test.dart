@@ -114,7 +114,9 @@ void main() {
 
     // Decrease stock for 'Vegan Dining', return update stock
     final updatedStock = await db.books
-        .where((b) => b.title.equals(toExpr('Vegan Dining')))
+        .where(
+          (b) => b.title.equalsUnlessNull(toExpr('Vegan Dining')),
+        )
         .update(
           (b, set) => set(
             stock: b.stock - toExpr(1),
@@ -169,7 +171,9 @@ void main() {
     // Lookup book and associated author in one query
     final (book, authorOfBook) = await db.books
         // Filtering using a .where clause with a typed expression
-        .where((b) => b.title.equals(toExpr('Vegan Dining')))
+        .where(
+          (b) => b.title.equalsUnlessNull(toExpr('Vegan Dining')),
+        )
         // Projection to select Expr<book> and Expr<Author> using a subquery
         .select((b) => (b, b.author))
         .first // only get the first result
@@ -487,7 +491,11 @@ void main() {
       final b = await db.books
           .insert(
             bookId: db.books
-                .where((b) => b.title.equalsValue('Are Bunnies Unhealthy?'))
+                .where(
+                  (b) => b.title.equalsUnlessNull(
+                    toExpr('Are Bunnies Unhealthy?'),
+                  ),
+                )
                 .first
                 .asExpr
                 .bookId
@@ -716,7 +724,9 @@ void main() {
   r.addTest('books.where().first', (db) async {
     // #region books-where-first
     final book = await db.books
-        .where((b) => b.title.equals(toExpr('Are Bunnies Unhealthy?')))
+        .where(
+          (b) => b.title.equalsUnlessNull(toExpr('Are Bunnies Unhealthy?')),
+        )
         .first
         .fetch();
 
@@ -731,7 +741,9 @@ void main() {
     // #region select-book-and-author
     final (book, author) = await db.select((
       db.books.asSubQuery
-          .where((b) => b.title.equals(toExpr('Are Bunnies Unhealthy?')))
+          .where(
+            (b) => b.title.equalsUnlessNull(toExpr('Are Bunnies Unhealthy?')),
+          )
           .first,
       db.authors.byKey(1).asExpr,
     )).fetchOrNulls();

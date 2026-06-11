@@ -51,16 +51,6 @@ final _cases = [
     expr: toExpr(epoch).equals(toExpr(today)),
     expected: false,
   ),
-  (
-    name: 'epoch.equals(null)',
-    expr: toExpr(epoch).equals(toExpr(null)),
-    expected: false,
-  ),
-  (
-    name: 'today.equals(null)',
-    expr: toExpr(today).equals(toExpr(null)),
-    expected: false,
-  ),
 
   // Test for .equalsValue
   (
@@ -91,16 +81,6 @@ final _cases = [
   (
     name: 'epoch.equalsValue(today)',
     expr: toExpr(epoch).equalsValue(today),
-    expected: false,
-  ),
-  (
-    name: 'epoch.equalsValue(null)',
-    expr: toExpr(epoch).equalsValue(null),
-    expected: false,
-  ),
-  (
-    name: 'today.equalsValue(null)',
-    expr: toExpr(today).equalsValue(null),
     expected: false,
   ),
 
@@ -137,16 +117,6 @@ final _cases = [
     expr: toExpr(epoch).notEquals(toExpr(today)),
     expected: true,
   ),
-  (
-    name: 'epoch.notEquals(null)',
-    expr: toExpr(epoch).notEquals(toExpr(null)),
-    expected: true,
-  ),
-  (
-    name: 'today.notEquals(null)',
-    expr: toExpr(today).notEquals(toExpr(null)),
-    expected: true,
-  ),
 
   // Test for .notEqualsValue
   (
@@ -177,16 +147,6 @@ final _cases = [
   (
     name: 'epoch.notEqualsValue(today)',
     expr: toExpr(epoch).notEqualsValue(today),
-    expected: true,
-  ),
-  (
-    name: 'epoch.notEqualsValue(null)',
-    expr: toExpr(epoch).notEqualsValue(null),
-    expected: true,
-  ),
-  (
-    name: 'today.notEqualsValue(null)',
-    expr: toExpr(today).notEqualsValue(null),
     expected: true,
   ),
 

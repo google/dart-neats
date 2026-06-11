@@ -1481,9 +1481,7 @@ extension ExpressionNullableForeignKeyItemExt on Expr<ForeignKeyItem?> {
   Expr<CompositePkItem?> get compositeRef => $ForGeneratedCode
       .subqueryTable(_$CompositePkItem._$table)
       .where(
-        (r) =>
-            r.pkA.equalsUnlessNull(refPkA).asNotNull() &
-            r.pkB.equalsUnlessNull(refPkB).asNotNull(),
+        (r) => r.pkA.equalsUnlessNull(refPkA) & r.pkB.equalsUnlessNull(refPkB),
       )
       .first;
 

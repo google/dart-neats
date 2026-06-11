@@ -356,7 +356,7 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
       .subqueryTable(_$Book._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull());
+      .where((r) => r.authorId.equalsUnlessNull(authorId));
 
   /// Check if the row is not `NULL`.
   ///
@@ -938,7 +938,7 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Author?> get author => $ForGeneratedCode
       .subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull())
+      .where((r) => r.authorId.equalsUnlessNull(authorId))
       .first;
 
   /// Check if the row is not `NULL`.

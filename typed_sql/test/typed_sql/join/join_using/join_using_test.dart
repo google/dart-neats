@@ -93,7 +93,7 @@ void main() {
         .join(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equals(department.departmentId),
+              employee.departmentId.equalsUnlessNull(department.departmentId),
         )
         .fetch();
     check(result).length.equals(3);

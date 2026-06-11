@@ -142,7 +142,9 @@ void main() {
 
   r.addTest('books.where(.author.firstName.equals(Bucks))', (db) async {
     final result = await db.books
-        .where((b) => b.author.firstName.equalsValue('Bucks'))
+        .where(
+          (b) => b.author.firstName.equalsUnlessNull(toExpr('Bucks')),
+        )
         .fetch();
     check(result).length.equals(2);
   });
@@ -244,8 +246,8 @@ void main() {
               db.books
                   .where(
                     (b) =>
-                        b.authorFirstName.equals(author.firstName) &
-                        b.authorLastName.equals(author.lastName),
+                        b.authorFirstName.equalsUnlessNull(author.firstName) &
+                        b.authorLastName.equalsUnlessNull(author.lastName),
                   )
                   .select((b) => (b.stock,))
                   .sum()
@@ -268,8 +270,8 @@ void main() {
         .join(db.books)
         .on(
           (author, book) =>
-              author.firstName.equals(book.authorFirstName) &
-              author.lastName.equals(book.authorLastName),
+              book.authorFirstName.equalsUnlessNull(author.firstName) &
+              book.authorLastName.equalsUnlessNull(author.lastName),
         )
         .groupBy((author, book) => (author,))
         .aggregate(

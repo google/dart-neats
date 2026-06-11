@@ -818,7 +818,7 @@ extension ExpressionNullableEmployeeExt on Expr<Employee?> {
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Department?> get dept => $ForGeneratedCode
       .subqueryTable(_$Department._$table)
-      .where((r) => r.id.equalsUnlessNull(deptId).asNotNull())
+      .where((r) => r.id.equalsUnlessNull(deptId))
       .first;
 
   /// Check if the row is not `NULL`.
