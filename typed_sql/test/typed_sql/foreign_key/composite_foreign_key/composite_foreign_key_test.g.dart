@@ -344,8 +344,8 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
       .subqueryTable(_$Book._$table)
       .where(
         (r) =>
-            r.authorFirstName.equalsUnlessNull(firstName).asNotNull() &
-            r.authorLastName.equalsUnlessNull(lastName).asNotNull(),
+            r.authorFirstName.equalsUnlessNull(firstName) &
+            r.authorLastName.equalsUnlessNull(lastName),
       );
 
   /// Check if the row is not `NULL`.
@@ -997,8 +997,8 @@ extension ExpressionNullableBookExt on Expr<Book?> {
       .subqueryTable(_$Author._$table)
       .where(
         (r) =>
-            r.firstName.equalsUnlessNull(authorFirstName).asNotNull() &
-            r.lastName.equalsUnlessNull(authorLastName).asNotNull(),
+            r.firstName.equalsUnlessNull(authorFirstName) &
+            r.lastName.equalsUnlessNull(authorLastName),
       )
       .first;
 

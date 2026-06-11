@@ -103,16 +103,6 @@ final _cases = [
     expr: toExpr('hello').equals(toExpr('hello world')),
     expected: false,
   ),
-  (
-    name: '"".equals(null)',
-    expr: toExpr('').equals(toExpr(null)),
-    expected: false,
-  ),
-  (
-    name: '"hello".equals(null)',
-    expr: toExpr('hello').equals(toExpr(null)),
-    expected: false,
-  ),
 
   // Tests for .equalsValue
   (
@@ -138,16 +128,6 @@ final _cases = [
   (
     name: '"hello".equalsValue("hello world")',
     expr: toExpr('hello').equalsValue('hello world'),
-    expected: false,
-  ),
-  (
-    name: '"".equalsValue(null)',
-    expr: toExpr('').equalsValue(null),
-    expected: false,
-  ),
-  (
-    name: '"hello".equalsValue(null)',
-    expr: toExpr('hello').equalsValue(null),
     expected: false,
   ),
 
@@ -177,16 +157,6 @@ final _cases = [
     expr: toExpr('hello').notEquals(toExpr('hello world')),
     expected: true,
   ),
-  (
-    name: '"".notEquals(null)',
-    expr: toExpr('').notEquals(toExpr(null)),
-    expected: true,
-  ),
-  (
-    name: '"hello".notEquals(null)',
-    expr: toExpr('hello').notEquals(toExpr(null)),
-    expected: true,
-  ),
 
   // Tests for .notEqualsValue
   (
@@ -212,16 +182,6 @@ final _cases = [
   (
     name: '"hello".notEqualsValue("hello world")',
     expr: toExpr('hello').notEqualsValue('hello world'),
-    expected: true,
-  ),
-  (
-    name: '"".notEqualsValue(null)',
-    expr: toExpr('').notEqualsValue(null),
-    expected: true,
-  ),
-  (
-    name: '"hello".notEqualsValue(null)',
-    expr: toExpr('hello').notEqualsValue(null),
     expected: true,
   ),
 

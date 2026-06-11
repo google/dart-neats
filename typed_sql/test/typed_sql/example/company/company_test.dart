@@ -101,7 +101,7 @@ void main() {
         .join(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equals(department.departmentId),
+              employee.departmentId.equalsUnlessNull(department.departmentId),
         )
         // Now we have a Query<(Expr<Employee>, Expr<Department>)>
         .fetch();
@@ -118,7 +118,7 @@ void main() {
         .join(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equals(department.departmentId),
+              employee.departmentId.equalsUnlessNull(department.departmentId),
         )
         // Now we have a Query<(Expr<Employee>, Expr<Department>)>
         .select(

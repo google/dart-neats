@@ -319,8 +319,8 @@ extension ExpressionAuthorExt on Expr<Author> {
       .subqueryTable(_$Book._$table)
       .where(
         (r) =>
-            r.authorFirstName.equals(firstName) &
-            r.authorLastName.equals(lastName),
+            r.authorFirstName.equalsUnlessNull(firstName) &
+            r.authorLastName.equalsUnlessNull(lastName),
       );
 }
 
@@ -344,8 +344,8 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
       .subqueryTable(_$Book._$table)
       .where(
         (r) =>
-            r.authorFirstName.equalsUnlessNull(firstName).asNotNull() &
-            r.authorLastName.equalsUnlessNull(lastName).asNotNull(),
+            r.authorFirstName.equalsUnlessNull(firstName) &
+            r.authorLastName.equalsUnlessNull(lastName),
       );
 
   /// Check if the row is not `NULL`.
@@ -371,8 +371,8 @@ extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
   /// This will match rows where [Author.firstName] = [Book.authorFirstName] and [Author.lastName] = [Book.authorLastName].
   Query<(Expr<Author>, Expr<Book>)> usingAuthor() => on(
     (a, b) =>
-        a.firstName.equals(b.authorFirstName) &
-        a.lastName.equals(b.authorLastName),
+        a.firstName.equalsUnlessNull(b.authorFirstName) &
+        a.lastName.equalsUnlessNull(b.authorLastName),
   );
 }
 
@@ -382,8 +382,8 @@ extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
   /// This will match rows where [Author.firstName] = [Book.authorFirstName] and [Author.lastName] = [Book.authorLastName].
   Query<(Expr<Author>, Expr<Book?>)> usingAuthor() => on(
     (a, b) =>
-        a.firstName.equals(b.authorFirstName) &
-        a.lastName.equals(b.authorLastName),
+        a.firstName.equalsUnlessNull(b.authorFirstName) &
+        a.lastName.equalsUnlessNull(b.authorLastName),
   );
 }
 
@@ -393,8 +393,8 @@ extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
   /// This will match rows where [Author.firstName] = [Book.authorFirstName] and [Author.lastName] = [Book.authorLastName].
   Query<(Expr<Author?>, Expr<Book>)> usingAuthor() => on(
     (a, b) =>
-        a.firstName.equals(b.authorFirstName) &
-        a.lastName.equals(b.authorLastName),
+        a.firstName.equalsUnlessNull(b.authorFirstName) &
+        a.lastName.equalsUnlessNull(b.authorLastName),
   );
 }
 
@@ -961,8 +961,8 @@ extension ExpressionBookExt on Expr<Book> {
       .subqueryTable(_$Author._$table)
       .where(
         (r) =>
-            r.firstName.equals(authorFirstName) &
-            r.lastName.equals(authorLastName),
+            r.firstName.equalsUnlessNull(authorFirstName) &
+            r.lastName.equalsUnlessNull(authorLastName),
       )
       .first;
 }
@@ -996,8 +996,8 @@ extension ExpressionNullableBookExt on Expr<Book?> {
       .subqueryTable(_$Author._$table)
       .where(
         (r) =>
-            r.firstName.equalsUnlessNull(authorFirstName).asNotNull() &
-            r.lastName.equalsUnlessNull(authorLastName).asNotNull(),
+            r.firstName.equalsUnlessNull(authorFirstName) &
+            r.lastName.equalsUnlessNull(authorLastName),
       )
       .first;
 
@@ -1024,8 +1024,8 @@ extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
   /// This will match rows where [Book.authorFirstName] = [Author.firstName] and [Book.authorLastName] = [Author.lastName].
   Query<(Expr<Book>, Expr<Author>)> usingAuthor() => on(
     (a, b) =>
-        b.firstName.equals(a.authorFirstName) &
-        b.lastName.equals(a.authorLastName),
+        b.firstName.equalsUnlessNull(a.authorFirstName) &
+        b.lastName.equalsUnlessNull(a.authorLastName),
   );
 }
 
@@ -1035,8 +1035,8 @@ extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
   /// This will match rows where [Book.authorFirstName] = [Author.firstName] and [Book.authorLastName] = [Author.lastName].
   Query<(Expr<Book>, Expr<Author?>)> usingAuthor() => on(
     (a, b) =>
-        b.firstName.equals(a.authorFirstName) &
-        b.lastName.equals(a.authorLastName),
+        b.firstName.equalsUnlessNull(a.authorFirstName) &
+        b.lastName.equalsUnlessNull(a.authorLastName),
   );
 }
 
@@ -1046,8 +1046,8 @@ extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
   /// This will match rows where [Book.authorFirstName] = [Author.firstName] and [Book.authorLastName] = [Author.lastName].
   Query<(Expr<Book?>, Expr<Author>)> usingAuthor() => on(
     (a, b) =>
-        b.firstName.equals(a.authorFirstName) &
-        b.lastName.equals(a.authorLastName),
+        b.firstName.equalsUnlessNull(a.authorFirstName) &
+        b.lastName.equalsUnlessNull(a.authorLastName),
   );
 }
 

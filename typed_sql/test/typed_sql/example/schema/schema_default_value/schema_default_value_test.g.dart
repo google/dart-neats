@@ -326,7 +326,7 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
       .subqueryTable(_$Book._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull());
+      .where((r) => r.authorId.equalsUnlessNull(authorId));
 
   /// Check if the row is not `NULL`.
   ///
@@ -784,7 +784,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Book>,)> byTitle(String title) =>
-      where((book) => book.title.equalsValue(title)).first;
+      where((book) => book.title.equalsUnlessNull(toExpr(title))).first;
 
   /// Delete all rows in the `books` table matching this [Query].
   ///
@@ -912,7 +912,7 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Author?> get author => $ForGeneratedCode
       .subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId).asNotNull())
+      .where((r) => r.authorId.equalsUnlessNull(authorId))
       .first;
 
   /// Check if the row is not `NULL`.

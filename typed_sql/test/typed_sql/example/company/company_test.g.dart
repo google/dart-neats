@@ -332,7 +332,7 @@ extension ExpressionDepartmentExt on Expr<Department> {
   /// in this row.
   SubQuery<(Expr<Employee>,)> get employees => $ForGeneratedCode
       .subqueryTable(_$Employee._$table)
-      .where((r) => r.departmentId.equals(departmentId));
+      .where((r) => r.departmentId.equalsUnlessNull(departmentId));
 }
 
 extension ExpressionNullableDepartmentExt on Expr<Department?> {
@@ -356,7 +356,7 @@ extension ExpressionNullableDepartmentExt on Expr<Department?> {
   /// If this row is `NULL` the subquery is always be empty.
   SubQuery<(Expr<Employee>,)> get employees => $ForGeneratedCode
       .subqueryTable(_$Employee._$table)
-      .where((r) => r.departmentId.equalsUnlessNull(departmentId).asNotNull());
+      .where((r) => r.departmentId.equalsUnlessNull(departmentId));
 
   /// Check if the row is not `NULL`.
   ///
@@ -381,7 +381,7 @@ extension InnerJoinDepartmentEmployeeExt
   ///
   /// This will match rows where [Department.departmentId] = [Employee.departmentId].
   Query<(Expr<Department>, Expr<Employee>)> usingDepartment() =>
-      on((a, b) => a.departmentId.equals(b.departmentId));
+      on((a, b) => a.departmentId.equalsUnlessNull(b.departmentId));
 }
 
 extension LeftJoinDepartmentEmployeeExt
@@ -390,7 +390,7 @@ extension LeftJoinDepartmentEmployeeExt
   ///
   /// This will match rows where [Department.departmentId] = [Employee.departmentId].
   Query<(Expr<Department>, Expr<Employee?>)> usingDepartment() =>
-      on((a, b) => a.departmentId.equals(b.departmentId));
+      on((a, b) => a.departmentId.equalsUnlessNull(b.departmentId));
 }
 
 extension RightJoinDepartmentEmployeeExt
@@ -399,7 +399,7 @@ extension RightJoinDepartmentEmployeeExt
   ///
   /// This will match rows where [Department.departmentId] = [Employee.departmentId].
   Query<(Expr<Department?>, Expr<Employee>)> usingDepartment() =>
-      on((a, b) => a.departmentId.equals(b.departmentId));
+      on((a, b) => a.departmentId.equalsUnlessNull(b.departmentId));
 }
 
 /// `Table<Department>` conflict targets for use with `.onConflict`.
@@ -887,7 +887,7 @@ extension ExpressionEmployeeExt on Expr<Employee> {
   /// is equal to [departmentId], if any.
   Expr<Department?> get department => $ForGeneratedCode
       .subqueryTable(_$Department._$table)
-      .where((r) => r.departmentId.equals(departmentId))
+      .where((r) => r.departmentId.equalsUnlessNull(departmentId))
       .first;
 }
 
@@ -912,7 +912,7 @@ extension ExpressionNullableEmployeeExt on Expr<Employee?> {
   /// If this row is `NULL` the subquery is always return `NULL`.
   Expr<Department?> get department => $ForGeneratedCode
       .subqueryTable(_$Department._$table)
-      .where((r) => r.departmentId.equalsUnlessNull(departmentId).asNotNull())
+      .where((r) => r.departmentId.equalsUnlessNull(departmentId))
       .first;
 
   /// Check if the row is not `NULL`.
@@ -938,7 +938,7 @@ extension InnerJoinEmployeeDepartmentExt
   ///
   /// This will match rows where [Employee.departmentId] = [Department.departmentId].
   Query<(Expr<Employee>, Expr<Department>)> usingDepartment() =>
-      on((a, b) => b.departmentId.equals(a.departmentId));
+      on((a, b) => b.departmentId.equalsUnlessNull(a.departmentId));
 }
 
 extension LeftJoinEmployeeDepartmentExt
@@ -947,7 +947,7 @@ extension LeftJoinEmployeeDepartmentExt
   ///
   /// This will match rows where [Employee.departmentId] = [Department.departmentId].
   Query<(Expr<Employee>, Expr<Department?>)> usingDepartment() =>
-      on((a, b) => b.departmentId.equals(a.departmentId));
+      on((a, b) => b.departmentId.equalsUnlessNull(a.departmentId));
 }
 
 extension RightJoinEmployeeDepartmentExt
@@ -956,7 +956,7 @@ extension RightJoinEmployeeDepartmentExt
   ///
   /// This will match rows where [Employee.departmentId] = [Department.departmentId].
   Query<(Expr<Employee?>, Expr<Department>)> usingDepartment() =>
-      on((a, b) => b.departmentId.equals(a.departmentId));
+      on((a, b) => b.departmentId.equalsUnlessNull(a.departmentId));
 }
 
 /// `Table<Employee>` conflict targets for use with `.onConflict`.

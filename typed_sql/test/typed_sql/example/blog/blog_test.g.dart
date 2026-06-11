@@ -359,8 +359,8 @@ extension ExpressionNullablePostExt on Expr<Post?> {
       .subqueryTable(_$Comment._$table)
       .where(
         (r) =>
-            r.author.equalsUnlessNull(author).asNotNull() &
-            r.postSlug.equalsUnlessNull(slug).asNotNull(),
+            r.author.equalsUnlessNull(author) &
+            r.postSlug.equalsUnlessNull(slug),
       );
 
   /// Check if the row is not `NULL`.
@@ -958,8 +958,8 @@ extension ExpressionNullableCommentExt on Expr<Comment?> {
       .subqueryTable(_$Post._$table)
       .where(
         (r) =>
-            r.author.equalsUnlessNull(author).asNotNull() &
-            r.slug.equalsUnlessNull(postSlug).asNotNull(),
+            r.author.equalsUnlessNull(author) &
+            r.slug.equalsUnlessNull(postSlug),
       )
       .first;
 

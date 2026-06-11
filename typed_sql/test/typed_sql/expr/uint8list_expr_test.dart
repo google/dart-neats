@@ -62,20 +62,6 @@ final _cases =
         ).equals(toExpr(Uint8List.fromList([1, 2, 3]))),
         expected: false,
       ),
-      (
-        name: 'null.equals([1,2,3])',
-        expr: toExpr(
-          null as Uint8List?,
-        ).equals(toExpr(Uint8List.fromList([1, 2, 3]))),
-        expected: false,
-      ),
-      (
-        name: '[1,2,3].equals(null)',
-        expr: toExpr(
-          Uint8List.fromList([1, 2, 3]),
-        ).equals(toExpr(null as Uint8List?)),
-        expected: false,
-      ),
 
       // Tests for .equalsValue
       (
@@ -111,18 +97,6 @@ final _cases =
         expr: toExpr(
           Uint8List.fromList([]),
         ).equalsValue(Uint8List.fromList([1, 2, 3])),
-        expected: false,
-      ),
-      (
-        name: 'null.equalsValue([1,2,3])',
-        expr: toExpr(
-          null as Uint8List?,
-        ).equalsValue(Uint8List.fromList([1, 2, 3])),
-        expected: false,
-      ),
-      (
-        name: '[1,2,3].equalsValue(null)',
-        expr: toExpr(Uint8List.fromList([1, 2, 3])).equalsValue(null),
         expected: false,
       ),
 
@@ -162,20 +136,6 @@ final _cases =
         ).notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
         expected: true,
       ),
-      (
-        name: 'null.notEquals([1,2,3])',
-        expr: toExpr(
-          null as Uint8List?,
-        ).notEquals(toExpr(Uint8List.fromList([1, 2, 3]))),
-        expected: true,
-      ),
-      (
-        name: '[1,2,3].notEquals(null)',
-        expr: toExpr(
-          Uint8List.fromList([1, 2, 3]),
-        ).notEquals(toExpr(null as Uint8List?)),
-        expected: true,
-      ),
 
       // Tests for .notEqualsValue
       (
@@ -211,18 +171,6 @@ final _cases =
         expr: toExpr(
           Uint8List.fromList([]),
         ).notEqualsValue(Uint8List.fromList([1, 2, 3])),
-        expected: true,
-      ),
-      (
-        name: 'null.notEqualsValue([1,2,3])',
-        expr: toExpr(
-          null as Uint8List?,
-        ).notEqualsValue(Uint8List.fromList([1, 2, 3])),
-        expected: true,
-      ),
-      (
-        name: '[1,2,3].notEqualsValue(null)',
-        expr: toExpr(Uint8List.fromList([1, 2, 3])).notEqualsValue(null),
         expected: true,
       ),
 
