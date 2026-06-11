@@ -386,10 +386,16 @@ extension ExpressionNullableBool on Expr<bool?> {
   /// If this is `NULL`, [isFalse] will evaluate to `FALSE`.
   Expr<bool> isFalse() => isNotDistinctFrom(Expr.false$);
 
+  /// {@template and}
   /// Logical AND.
   ///
-  /// This is equivalent to `this AND other` in SQL, following SQL three-valued
-  /// logic (e.g. `NULL AND TRUE` is `NULL`, while `NULL AND FALSE` is `FALSE`).
+  /// This is equivalent to `this AND other` in SQL.
+  ///
+  /// If either operand is `NULL` the result is `NULL` following SQL
+  /// three-valued logic.
+  ///  * `NULL AND TRUE` is `NULL`.
+  ///  * `NULL AND FALSE` is `NULL`.
+  /// {@endtemplate}
   ///
   /// Also available as `&` operator.
   Expr<bool?> and(Expr<bool?> other) {
@@ -408,24 +414,26 @@ extension ExpressionNullableBool on Expr<bool?> {
     return ExpressionBoolAnd<bool?>(this, other);
   }
 
-  /// Logical AND.
-  ///
-  /// This is equivalent to `this AND other` in SQL.
+  /// {@macro and}
   ///
   /// Also available as [and] method.
   Expr<bool?> operator &(Expr<bool?> other) => and(other);
 
+  /// {@template or}
   /// Logical OR.
   ///
-  /// This is equivalent to `this OR other` in SQL, following SQL three-valued
-  /// logic (e.g. `NULL OR FALSE` is `NULL`, while `NULL OR TRUE` is `TRUE`).
+  /// This is equivalent to `this OR other` in SQL.
+  ///
+  /// If either operand is `NULL` the result is `NULL` following SQL
+  /// three-valued logic.
+  ///  * `NULL OR TRUE` is `TRUE`.
+  ///  * `NULL OR FALSE` is `FALSE`.
+  /// {@endtemplate}
   ///
   /// Also available as `|` operator.
   Expr<bool?> or(Expr<bool?> other) => ExpressionBoolOr<bool?>(this, other);
 
-  /// Logical OR.
-  ///
-  /// This is equivalent to `this OR other` in SQL.
+  /// {@macro or}
   ///
   /// Also available as [or] method.
   Expr<bool?> operator |(Expr<bool?> other) => or(other);
@@ -763,28 +771,25 @@ extension ExpressionBool on Expr<bool> {
   @Deprecated(_orElseValueOnNonNullableDeprecation)
   Expr<bool> orElseValue(bool value) => orElse(toExpr(value));
 
+  /// {@template not}
   /// Negate this expression.
   ///
   /// This is equivalent to `NOT this` in SQL.
+  /// {@endtemplate}
   ///
   /// Also available as `~` operator.
   Expr<bool> not() => ExpressionBoolNot(this);
 
-  /// Negate this expression.
-  ///
-  /// This is equivalent to `NOT this` in SQL.
+  /// {@macro not}
   ///
   /// Also available as [not] method.
   Expr<bool> operator ~() => ExpressionBoolNot(this);
 
-  /// Logical AND.
+  /// {@macro and}
   ///
-  /// This is equivalent to `this AND other` in SQL.
+  /// If [other] is _nullable_ then the result will be `Expr<bool?>`.
   ///
-  /// If [other] is a _nullable_ boolean expression, then the result is also
-  /// nullable, following SQL three-valued logic (e.g. `TRUE AND NULL` is
-  /// `NULL`).
-  /// Also available as `&` operator (when [other] is non-nullable).
+  /// Also available as `&` operator.
   Expr<R> and<R extends bool?>(Expr<R> other) {
     if (identical(other, Expr.true$)) {
       // this AND TRUE == this
@@ -802,30 +807,22 @@ extension ExpressionBool on Expr<bool> {
     return ExpressionBoolAnd<R>(this as Expr<R>, other);
   }
 
-  /// Logical AND.
-  ///
-  /// This is equivalent to `this AND other` in SQL.
+  /// {@macro and}
   ///
   /// Also available as [and] method.
   Expr<bool> operator &(Expr<bool> other) => and(other);
 
-  /// Logical OR.
+  /// {@macro or}
   ///
-  /// This is equivalent to `this OR other` in SQL.
+  /// If [other] is _nullable_ then the result will be `Expr<bool?>`.
   ///
-  /// If [other] is a _nullable_ boolean expression, then the result is also
-  /// nullable, following SQL three-valued logic (e.g. `FALSE OR NULL` is
-  /// `NULL`).
-  ///
-  /// Also available as `|` operator (when [other] is non-nullable).
+  /// Also available as `|` operator.
   Expr<R> or<R extends bool?>(Expr<R> other) =>
       // `this` is `Expr<bool>`, which is always assignable to `Expr<R>` for
       // `R extends bool?`, hence, this cast is safe.
       ExpressionBoolOr<R>(this as Expr<R>, other);
 
-  /// Logical OR.
-  ///
-  /// This is equivalent to `this OR other` in SQL.
+  /// {@macro or}
   ///
   /// Also available as [or] method.
   Expr<bool> operator |(Expr<bool> other) =>
