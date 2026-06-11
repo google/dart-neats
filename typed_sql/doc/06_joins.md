@@ -76,9 +76,13 @@ for (final (employee, department) in result) {
 When joining `Query<(Expr<A>, Expr<B>, ...)>` with
 `Query<(Expr<C>, Expr<D>, ...)>` we first call `.join` to create an [InnerJoin]
 object, we then call `InnerJoin.on` to create a
-`Query<(Expr<A>, Expr<B>, ..., Expr<C>, Expr<D>, ...)>`. Once you've joined two
-query objects, you can still use `.where` and `.select` on the resulting
-query object as demonstrated in the example below:
+`Query<(Expr<A>, Expr<B>, ..., Expr<C>, Expr<D>, ...)>`. The `.on` invocation is
+passed a callback on the form
+`Expr<bool?> Function(Expr<A>, Expr<B>, ..., Expr<C>, Expr<D>, ...)`. Following
+SQL three-valued logic, a row is only retained when the condition evaluates to
+`true`; rows where it evaluates to `NULL` are discarded, just like `false`.
+Once you've joined two query objects, you can still use `.where` and `.select`
+on the resulting query object as demonstrated in the example below:
 
 ```dart company_test.dart#inner-join-select
 final result = await db.employees
@@ -114,7 +118,8 @@ INNER JOIN departments
   ON employees.departmentId IS NOT DISTINCT FROM departments.departmentId
 ```
 
-The `.on` extension method on `InnerJoin` let's us join on any condition.
+The `.on` extension method on `InnerJoin` let's us join on any condition,
+including a _nullable_ `Expr<bool?>` condition.
 However, because used the `@References` annotation to declare
 `Employee.departmentId` a _foreign key_, we also get a `.usingDepartment`
 extension method on `InnerJoin<(Expr<Employee>,), (Expr<Department>,)>`.

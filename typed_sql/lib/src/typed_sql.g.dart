@@ -8482,7 +8482,7 @@ extension InnerJoin1On1<A, B> on InnerJoin<(Expr<A>,), (Expr<B>,)> {
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) {
     late JoinClause join;
     final q = Query._(_from._context, (
@@ -8505,7 +8505,7 @@ extension InnerJoin1On1<A, B> on InnerJoin<(Expr<A>,), (Expr<B>,)> {
 extension LeftJoin1On1<A, B> on LeftJoin<(Expr<A>,), (Expr<B>,)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) {
     late JoinClause join;
     final q = Query._(_from._context, (
@@ -8528,7 +8528,7 @@ extension LeftJoin1On1<A, B> on LeftJoin<(Expr<A>,), (Expr<B>,)> {
 extension RightJoin1On1<A, B> on RightJoin<(Expr<A>,), (Expr<B>,)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b) conditionBuilder,
   ) {
     late JoinClause join;
     final q = Query._(_from._context, (
@@ -8566,7 +8566,7 @@ extension InnerJoin1On2<A, B, C> on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
     final q = Query._(_from._context, (
@@ -8590,7 +8590,7 @@ extension InnerJoin1On2<A, B, C> on InnerJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
 extension LeftJoin1On2<A, B, C> on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
     final q = Query._(_from._context, (
@@ -8614,7 +8614,7 @@ extension LeftJoin1On2<A, B, C> on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
 extension RightJoin1On2<A, B, C> on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
     final q = Query._(_from._context, (
@@ -8659,7 +8659,7 @@ extension InnerJoin1On3<A, B, C, D>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -8686,7 +8686,7 @@ extension LeftJoin1On3<A, B, C, D>
     on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -8713,7 +8713,7 @@ extension RightJoin1On3<A, B, C, D>
     on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -8761,7 +8761,7 @@ extension InnerJoin1On4<A, B, C, D, E>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -8789,7 +8789,7 @@ extension LeftJoin1On4<A, B, C, D, E>
     on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -8817,7 +8817,7 @@ extension RightJoin1On4<A, B, C, D, E>
     on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -8868,7 +8868,7 @@ extension InnerJoin1On5<A, B, C, D, E, F>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -8904,7 +8904,7 @@ extension LeftJoin1On5<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -8940,7 +8940,7 @@ extension RightJoin1On5<A, B, C, D, E, F>
     on RightJoin<(Expr<A>,), (Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9004,7 +9004,7 @@ extension InnerJoin1On6<A, B, C, D, E, F, G>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9047,7 +9047,7 @@ extension LeftJoin1On6<A, B, C, D, E, F, G>
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G?>)>
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9089,7 +9089,7 @@ extension RightJoin1On6<A, B, C, D, E, F, G>
         > {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9161,7 +9161,7 @@ extension InnerJoin1On7<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9217,7 +9217,7 @@ extension LeftJoin1On7<A, B, C, D, E, F, G, H>
     )
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9264,7 +9264,7 @@ extension RightJoin1On7<A, B, C, D, E, F, G, H>
     (Expr<A?>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9318,7 +9318,7 @@ extension InnerJoin2On1<A, B, C> on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
     final q = Query._(_from._context, (
@@ -9342,7 +9342,7 @@ extension InnerJoin2On1<A, B, C> on InnerJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
 extension LeftJoin2On1<A, B, C> on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
     final q = Query._(_from._context, (
@@ -9366,7 +9366,7 @@ extension LeftJoin2On1<A, B, C> on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
 extension RightJoin2On1<A, B, C> on RightJoin<(Expr<A>, Expr<B>), (Expr<C>,)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c) conditionBuilder,
   ) {
     late JoinClause join;
     final q = Query._(_from._context, (
@@ -9411,7 +9411,7 @@ extension InnerJoin2On2<A, B, C, D>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -9438,7 +9438,7 @@ extension LeftJoin2On2<A, B, C, D>
     on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -9465,7 +9465,7 @@ extension RightJoin2On2<A, B, C, D>
     on RightJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -9513,7 +9513,7 @@ extension InnerJoin2On3<A, B, C, D, E>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -9541,7 +9541,7 @@ extension LeftJoin2On3<A, B, C, D, E>
     on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>, Expr<E?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -9569,7 +9569,7 @@ extension RightJoin2On3<A, B, C, D, E>
     on RightJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -9620,7 +9620,7 @@ extension InnerJoin2On4<A, B, C, D, E, F>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9656,7 +9656,7 @@ extension LeftJoin2On4<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9692,7 +9692,7 @@ extension RightJoin2On4<A, B, C, D, E, F>
     on RightJoin<(Expr<A>, Expr<B>), (Expr<C>, Expr<D>, Expr<E>, Expr<F>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9756,7 +9756,7 @@ extension InnerJoin2On5<A, B, C, D, E, F, G>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9799,7 +9799,7 @@ extension LeftJoin2On5<A, B, C, D, E, F, G>
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G?>)>
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9841,7 +9841,7 @@ extension RightJoin2On5<A, B, C, D, E, F, G>
         > {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9913,7 +9913,7 @@ extension InnerJoin2On6<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -9969,7 +9969,7 @@ extension LeftJoin2On6<A, B, C, D, E, F, G, H>
     )
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10016,7 +10016,7 @@ extension RightJoin2On6<A, B, C, D, E, F, G, H>
     (Expr<A?>, Expr<B?>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10076,7 +10076,7 @@ extension InnerJoin3On1<A, B, C, D>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -10103,7 +10103,7 @@ extension LeftJoin3On1<A, B, C, D>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -10130,7 +10130,7 @@ extension RightJoin3On1<A, B, C, D>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>,)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -10178,7 +10178,7 @@ extension InnerJoin3On2<A, B, C, D, E>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -10206,7 +10206,7 @@ extension LeftJoin3On2<A, B, C, D, E>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>, Expr<E?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -10234,7 +10234,7 @@ extension RightJoin3On2<A, B, C, D, E>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -10285,7 +10285,7 @@ extension InnerJoin3On3<A, B, C, D, E, F>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10321,7 +10321,7 @@ extension LeftJoin3On3<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>, Expr<E?>, Expr<F?>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10357,7 +10357,7 @@ extension RightJoin3On3<A, B, C, D, E, F>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>), (Expr<D>, Expr<E>, Expr<F>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10421,7 +10421,7 @@ extension InnerJoin3On4<A, B, C, D, E, F, G>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10463,7 +10463,7 @@ extension LeftJoin3On4<A, B, C, D, E, F, G>
         > {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G?>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10505,7 +10505,7 @@ extension RightJoin3On4<A, B, C, D, E, F, G>
         > {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10577,7 +10577,7 @@ extension InnerJoin3On5<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10633,7 +10633,7 @@ extension LeftJoin3On5<A, B, C, D, E, F, G, H>
     )
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10680,7 +10680,7 @@ extension RightJoin3On5<A, B, C, D, E, F, G, H>
     (Expr<A?>, Expr<B?>, Expr<C?>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10741,7 +10741,7 @@ extension InnerJoin4On1<A, B, C, D, E>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -10769,7 +10769,7 @@ extension LeftJoin4On1<A, B, C, D, E>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -10797,7 +10797,7 @@ extension RightJoin4On1<A, B, C, D, E>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>,)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>)> on(
-    Expr<bool> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
+    Expr<bool?> Function(Expr<A> a, Expr<B> b, Expr<C> c, Expr<D> d, Expr<E> e)
     conditionBuilder,
   ) {
     late JoinClause join;
@@ -10848,7 +10848,7 @@ extension InnerJoin4On2<A, B, C, D, E, F>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10884,7 +10884,7 @@ extension LeftJoin4On2<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>, Expr<F?>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10920,7 +10920,7 @@ extension RightJoin4On2<A, B, C, D, E, F>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>), (Expr<E>, Expr<F>)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -10984,7 +10984,7 @@ extension InnerJoin4On3<A, B, C, D, E, F, G>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11026,7 +11026,7 @@ extension LeftJoin4On3<A, B, C, D, E, F, G>
         > {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>, Expr<F?>, Expr<G?>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11068,7 +11068,7 @@ extension RightJoin4On3<A, B, C, D, E, F, G>
         > {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11140,7 +11140,7 @@ extension InnerJoin4On4<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11187,7 +11187,7 @@ extension LeftJoin4On4<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E?>, Expr<F?>, Expr<G?>, Expr<H?>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11234,7 +11234,7 @@ extension RightJoin4On4<A, B, C, D, E, F, G, H>
     (Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11297,7 +11297,7 @@ extension InnerJoin5On1<A, B, C, D, E, F>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11333,7 +11333,7 @@ extension LeftJoin5On1<A, B, C, D, E, F>
     on LeftJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11369,7 +11369,7 @@ extension RightJoin5On1<A, B, C, D, E, F>
     on RightJoin<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>), (Expr<F>,)> {
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11433,7 +11433,7 @@ extension InnerJoin5On2<A, B, C, D, E, F, G>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11475,7 +11475,7 @@ extension LeftJoin5On2<A, B, C, D, E, F, G>
         > {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>, Expr<G?>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11518,7 +11518,7 @@ extension RightJoin5On2<A, B, C, D, E, F, G>
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F>, Expr<G>)>
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11590,7 +11590,7 @@ extension InnerJoin5On3<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11637,7 +11637,7 @@ extension LeftJoin5On3<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F?>, Expr<G?>, Expr<H?>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11693,7 +11693,7 @@ extension RightJoin5On3<A, B, C, D, E, F, G, H>
     )
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11761,7 +11761,7 @@ extension InnerJoin6On1<A, B, C, D, E, F, G>
 
   /// Create `inner JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11803,7 +11803,7 @@ extension LeftJoin6On1<A, B, C, D, E, F, G>
         > {
   /// Create `left JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>)> on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11846,7 +11846,7 @@ extension RightJoin6On1<A, B, C, D, E, F, G>
   /// Create `right JOIN` using [conditionBuilder] in the `ON` clause.
   Query<(Expr<A?>, Expr<B?>, Expr<C?>, Expr<D?>, Expr<E?>, Expr<F?>, Expr<G>)>
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11918,7 +11918,7 @@ extension InnerJoin6On2<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -11965,7 +11965,7 @@ extension LeftJoin6On2<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G?>, Expr<H?>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -12021,7 +12021,7 @@ extension RightJoin6On2<A, B, C, D, E, F, G, H>
     )
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -12095,7 +12095,7 @@ extension InnerJoin7On1<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -12142,7 +12142,7 @@ extension LeftJoin7On1<A, B, C, D, E, F, G, H>
     (Expr<A>, Expr<B>, Expr<C>, Expr<D>, Expr<E>, Expr<F>, Expr<G>, Expr<H?>)
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
@@ -12198,7 +12198,7 @@ extension RightJoin7On1<A, B, C, D, E, F, G, H>
     )
   >
   on(
-    Expr<bool> Function(
+    Expr<bool?> Function(
       Expr<A> a,
       Expr<B> b,
       Expr<C> c,
