@@ -76,24 +76,19 @@ void main() {
     },
   );
 
-  Future<List<(int, int)>> joinOn(
-    Database<TestDatabase> db,
-    Expr<bool?> Function(Expr<Item> a, Expr<Item> b) conditionBuilder,
-  ) async {
-    final pairs = await db.items
-        .join(db.items)
-        .on(conditionBuilder)
-        .select((a, b) => (a.id, b.id))
-        .fetch();
-    return pairs.toList()..sort((x, y) {
-      final c = x.$1.compareTo(y.$1);
-      return c != 0 ? c : x.$2.compareTo(y.$2);
-    });
-  }
-
   for (final c in _cases) {
     r.addTest(c.name, (db) async {
-      check(await joinOn(db, c.on)).deepEquals(c.expected);
+      var pairs = await db.items
+          .join(db.items)
+          .on(c.on)
+          .select((a, b) => (a.id, b.id))
+          .fetch();
+      pairs = pairs.toList()
+        ..sort((x, y) {
+          final c = x.$1.compareTo(y.$1);
+          return c != 0 ? c : x.$2.compareTo(y.$2);
+        });
+      check(pairs).deepEquals(c.expected);
     });
   }
 
