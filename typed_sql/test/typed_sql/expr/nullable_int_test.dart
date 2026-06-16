@@ -73,28 +73,22 @@ final _cases =
       // Expr<int?>.equals
       (
         name: 'null.asInt().equals(42)',
-        expr: toExpr(
-          null,
-        ).asInt().equalsUnlessNull(toExpr(42)).orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asInt().equals(toExpr(42)),
+        expected: null,
       ),
       (
         name: '42.equals(42)',
-        expr: toExpr(
-          42 as int?,
-        ).equalsUnlessNull(toExpr(42)).orElseValue(false),
+        expr: toExpr(42 as int?).equals(toExpr(42)),
         expected: true,
       ),
       (
         name: 'null.asInt().equals(0)',
-        expr: toExpr(
-          null,
-        ).asInt().equalsUnlessNull(toExpr(0)).orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asInt().equals(toExpr(0)),
+        expected: null,
       ),
       (
         name: '0.equals(0)',
-        expr: toExpr(0 as int?).equalsUnlessNull(toExpr(0)).orElseValue(false),
+        expr: toExpr(0 as int?).equals(toExpr(0)),
         expected: true,
       ),
       // Expr<int?>.isNotDistinctFrom
@@ -201,28 +195,22 @@ final _cases =
       // Expr<int?>.equalsValue
       (
         name: 'null.asInt().equalsValue(42)',
-        expr: toExpr(
-          null,
-        ).asInt().equalsUnlessNull(toExpr(42)).orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asInt().equalsValue(42),
+        expected: null,
       ),
       (
         name: '42.equalsValue(42)',
-        expr: toExpr(
-          42 as int?,
-        ).equalsUnlessNull(toExpr(42)).orElseValue(false),
+        expr: toExpr(42 as int?).equalsValue(42),
         expected: true,
       ),
       (
         name: 'null.asInt().equalsValue(0)',
-        expr: toExpr(
-          null,
-        ).asInt().equalsUnlessNull(toExpr(0)).orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asInt().equalsValue(0),
+        expected: null,
       ),
       (
         name: '0.equalsValue(0)',
-        expr: toExpr(0 as int?).equalsUnlessNull(toExpr(0)).orElseValue(false),
+        expr: toExpr(0 as int?).equalsValue(0),
         expected: true,
       ),
       // Expr<int?>.notEqualsValue

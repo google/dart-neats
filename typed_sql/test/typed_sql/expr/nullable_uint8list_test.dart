@@ -86,48 +86,35 @@ final _cases =
       // Expr<Uint8List?>.equals
       (
         name: 'null.asBlob().equals([1,2,3])',
-        expr:
-            toExpr(
-                  null,
-                )
-                .asBlob()
-                .equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3])))
-                .orElseValue(false),
-        expected: false,
+        expr: toExpr(
+          null,
+        ).asBlob().equals(toExpr(Uint8List.fromList([1, 2, 3]))),
+        expected: null,
       ),
       (
         name: '[1,2,3].equals([1,2,3])',
-        expr:
-            toExpr(
-                  Uint8List.fromList([1, 2, 3]) as Uint8List?,
-                )
-                .equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3])))
-                .orElseValue(false),
+        expr: toExpr(
+          Uint8List.fromList([1, 2, 3]) as Uint8List?,
+        ).equals(toExpr(Uint8List.fromList([1, 2, 3]))),
         expected: true,
       ),
       (
         name: '[1,2,3].equals([3,2,1])',
-        expr:
-            toExpr(
-                  Uint8List.fromList([1, 2, 3]) as Uint8List?,
-                )
-                .equalsUnlessNull(toExpr(Uint8List.fromList([3, 2, 1])))
-                .orElseValue(false),
+        expr: toExpr(
+          Uint8List.fromList([1, 2, 3]) as Uint8List?,
+        ).equals(toExpr(Uint8List.fromList([3, 2, 1]))),
         expected: false,
       ),
       (
         name: 'null.asBlob().equals([])',
-        expr: toExpr(null)
-            .asBlob()
-            .equalsUnlessNull(toExpr(Uint8List.fromList([])))
-            .orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asBlob().equals(toExpr(Uint8List.fromList([]))),
+        expected: null,
       ),
       (
         name: '[].equals([])',
         expr: toExpr(
           Uint8List.fromList([]) as Uint8List?,
-        ).equalsUnlessNull(toExpr(Uint8List.fromList([]))).orElseValue(false),
+        ).equals(toExpr(Uint8List.fromList([]))),
         expected: true,
       ),
 
@@ -288,45 +275,33 @@ final _cases =
       // Expr<Uint8List?>.equalsValue
       (
         name: 'null.asBlob().equalsValue([1,2,3])',
-        expr: toExpr(null)
-            .asBlob()
-            .equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3])))
-            .orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asBlob().equalsValue(Uint8List.fromList([1, 2, 3])),
+        expected: null,
       ),
       (
         name: '[1,2,3].equalsValue([1,2,3])',
-        expr:
-            toExpr(
-                  Uint8List.fromList([1, 2, 3]) as Uint8List?,
-                )
-                .equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3])))
-                .orElseValue(false),
+        expr: toExpr(
+          Uint8List.fromList([1, 2, 3]) as Uint8List?,
+        ).equalsValue(Uint8List.fromList([1, 2, 3])),
         expected: true,
       ),
       (
         name: '[1,2,3].equalsValue([3,2,1])',
-        expr:
-            toExpr(
-                  Uint8List.fromList([1, 2, 3]) as Uint8List?,
-                )
-                .equalsUnlessNull(toExpr(Uint8List.fromList([3, 2, 1])))
-                .orElseValue(false),
+        expr: toExpr(
+          Uint8List.fromList([1, 2, 3]) as Uint8List?,
+        ).equalsValue(Uint8List.fromList([3, 2, 1])),
         expected: false,
       ),
       (
         name: 'null.asBlob().equalsValue([])',
-        expr: toExpr(null)
-            .asBlob()
-            .equalsUnlessNull(toExpr(Uint8List.fromList([])))
-            .orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asBlob().equalsValue(Uint8List.fromList([])),
+        expected: null,
       ),
       (
         name: '[].equalsValue([])',
         expr: toExpr(
           Uint8List.fromList([]) as Uint8List?,
-        ).equalsUnlessNull(toExpr(Uint8List.fromList([]))).orElseValue(false),
+        ).equalsValue(Uint8List.fromList([])),
         expected: true,
       ),
 

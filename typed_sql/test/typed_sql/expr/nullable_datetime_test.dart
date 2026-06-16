@@ -76,30 +76,22 @@ final _cases =
       // Expr<DateTime?>.equals
       (
         name: 'null.asDateTime().equals(epoch)',
-        expr: toExpr(
-          null,
-        ).asDateTime().equalsUnlessNull(toExpr(epoch)).orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asDateTime().equals(toExpr(epoch)),
+        expected: null,
       ),
       (
         name: 'epoch.equals(epoch)',
-        expr: toExpr(
-          epoch as DateTime?,
-        ).equalsUnlessNull(toExpr(epoch)).orElseValue(false),
+        expr: toExpr(epoch as DateTime?).equals(toExpr(epoch)),
         expected: true,
       ),
       (
         name: 'null.asDateTime().equals(today)',
-        expr: toExpr(
-          null,
-        ).asDateTime().equalsUnlessNull(toExpr(today)).orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asDateTime().equals(toExpr(today)),
+        expected: null,
       ),
       (
         name: 'today.equals(today)',
-        expr: toExpr(
-          today as DateTime?,
-        ).equalsUnlessNull(toExpr(today)).orElseValue(false),
+        expr: toExpr(today as DateTime?).equals(toExpr(today)),
         expected: true,
       ),
       // Expr<DateTime?>.isNotDistinctFrom
@@ -206,30 +198,22 @@ final _cases =
       // Expr<DateTime?>.equalsValue
       (
         name: 'null.asDateTime().equalsValue(epoch)',
-        expr: toExpr(
-          null,
-        ).asDateTime().equalsUnlessNull(toExpr(epoch)).orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asDateTime().equalsValue(epoch),
+        expected: null,
       ),
       (
         name: 'epoch.equalsValue(epoch)',
-        expr: toExpr(
-          epoch as DateTime?,
-        ).equalsUnlessNull(toExpr(epoch)).orElseValue(false),
+        expr: toExpr(epoch as DateTime?).equalsValue(epoch),
         expected: true,
       ),
       (
         name: 'null.asDateTime().equalsValue(today)',
-        expr: toExpr(
-          null,
-        ).asDateTime().equalsUnlessNull(toExpr(today)).orElseValue(false),
-        expected: false,
+        expr: toExpr(null).asDateTime().equalsValue(today),
+        expected: null,
       ),
       (
         name: 'today.equalsValue(today)',
-        expr: toExpr(
-          today as DateTime?,
-        ).equalsUnlessNull(toExpr(today)).orElseValue(false),
+        expr: toExpr(today as DateTime?).equalsValue(today),
         expected: true,
       ),
       // Expr<DateTime?>.notEqualsValue

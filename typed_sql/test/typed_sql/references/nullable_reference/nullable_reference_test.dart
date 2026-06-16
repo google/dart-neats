@@ -302,9 +302,7 @@ void main() {
     (db) async {
       final result = await db.books
           .join(db.authors)
-          .on(
-            (book, author) => book.editorId.equalsUnlessNull(author.authorId),
-          )
+          .on((book, author) => book.editorId.equals(author.authorId))
           .select(
             (book, editor) => (
               book.title,

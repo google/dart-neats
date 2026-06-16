@@ -88,9 +88,7 @@ void main() {
     final result = await db.employees
         .where((e) => e.name.endsWithValue('e'))
         .join(db.departments)
-        .on(
-          (e, d) => e.departmentId.equalsUnlessNull(d.departmentId),
-        )
+        .on((e, d) => e.departmentId.equals(d.departmentId))
         .fetch();
     check(result).length.equals(2);
   });
@@ -99,9 +97,7 @@ void main() {
     final result = await db.employees
         .where((e) => e.name.endsWithValue('e'))
         .leftJoin(db.departments)
-        .on(
-          (e, d) => e.departmentId.equalsUnlessNull(d.departmentId),
-        )
+        .on((e, d) => e.departmentId.equals(d.departmentId))
         .fetch();
     check(result).length.equals(3);
   });
@@ -110,9 +106,7 @@ void main() {
     final result = await db.employees
         .where((e) => e.name.endsWithValue('e'))
         .rightJoin(db.departments)
-        .on(
-          (e, d) => e.departmentId.equalsUnlessNull(d.departmentId),
-        )
+        .on((e, d) => e.departmentId.equals(d.departmentId))
         .fetch();
     check(result).length.equals(4);
   });
@@ -122,9 +116,7 @@ void main() {
   r.addTest('departments.join(employees.where(..))', (db) async {
     final result = await db.departments
         .join(db.employees.where((e) => e.name.endsWithValue('e')))
-        .on(
-          (d, e) => e.departmentId.equalsUnlessNull(d.departmentId),
-        )
+        .on((d, e) => e.departmentId.equals(d.departmentId))
         .fetch();
     check(result).length.equals(2);
   });
@@ -132,9 +124,7 @@ void main() {
   r.addTest('departments.leftJoin(employees.where(..))', (db) async {
     final result = await db.departments
         .leftJoin(db.employees.where((e) => e.name.endsWithValue('e')))
-        .on(
-          (d, e) => e.departmentId.equalsUnlessNull(d.departmentId),
-        )
+        .on((d, e) => e.departmentId.equals(d.departmentId))
         .fetch();
     check(result).length.equals(4);
   });
@@ -142,9 +132,7 @@ void main() {
   r.addTest('departments.rightJoin(employees.where(..))', (db) async {
     final result = await db.departments
         .rightJoin(db.employees.where((e) => e.name.endsWithValue('e')))
-        .on(
-          (d, e) => e.departmentId.equalsUnlessNull(d.departmentId),
-        )
+        .on((d, e) => e.departmentId.equals(d.departmentId))
         .fetch();
     check(result).length.equals(3);
   });
@@ -155,9 +143,7 @@ void main() {
     final result = await db.departments
         .where((d) => d.location.notEqualsValue('Floor 3'))
         .join(db.employees.where((e) => e.name.endsWithValue('e')))
-        .on(
-          (d, e) => e.departmentId.equalsUnlessNull(d.departmentId),
-        )
+        .on((d, e) => e.departmentId.equals(d.departmentId))
         .fetch();
     check(result).length.equals(2);
   });
@@ -166,9 +152,7 @@ void main() {
     final result = await db.departments
         .where((d) => d.location.notEqualsValue('Floor 3'))
         .leftJoin(db.employees.where((e) => e.name.endsWithValue('e')))
-        .on(
-          (d, e) => e.departmentId.equalsUnlessNull(d.departmentId),
-        )
+        .on((d, e) => e.departmentId.equals(d.departmentId))
         .fetch();
     check(result).length.equals(3);
   });
@@ -177,9 +161,7 @@ void main() {
     final result = await db.departments
         .where((d) => d.location.notEqualsValue('Floor 3'))
         .rightJoin(db.employees.where((e) => e.name.endsWithValue('e')))
-        .on(
-          (d, e) => e.departmentId.equalsUnlessNull(d.departmentId),
-        )
+        .on((d, e) => e.departmentId.equals(d.departmentId))
         .fetch();
     check(result).length.equals(3);
   });

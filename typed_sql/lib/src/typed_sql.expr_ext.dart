@@ -245,6 +245,25 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   /// {@macro orElse}
   Expr<T> orElseValue(T value) => orElse(toExpr(value));
 
+  /// {@template equalsNullable}
+  /// Compare this expression to [other] using `=` in SQL.
+  ///
+  /// This is equivalent to `this = other` in SQL. If this expression is `NULL`
+  /// the result is `NULL`, following SQL three-valued logic.
+  ///
+  /// The `.equals` _extension method_ requires that [other] is _non-nullable_,
+  /// because `NULL = NULL` evaluates to `UNKNOWN` in SQL, which is surprising
+  /// in a Dart context.
+  ///
+  /// If you wish to compare two _nullable expressions_ you can use:
+  ///  * [isNotDistinctFrom], to get `NULL` equivalent to `NULL`, or,
+  ///  * [equalsUnlessNull], to explicitely get the SQL `=` semantics.
+  /// {@endtemplate}
+  Expr<bool?> equals(Expr<T> other) => ExpressionEquals(this, other);
+
+  /// {@macro equalsNullable}
+  Expr<bool?> equalsValue(T other) => equals(toExpr(other));
+
   /// {@template isNotDistinctFrom}
   /// Compare this expression to [other] using `IS NOT DISTINCT FROM`.
   ///
@@ -288,6 +307,12 @@ extension ExpressionNullableString on Expr<String?> {
   /// {@macro orElse}
   Expr<String> orElseValue(String value) => orElse(toExpr(value));
 
+  /// {@macro equalsNullable}
+  Expr<bool?> equals(Expr<String> other) => ExpressionEquals(this, other);
+
+  /// {@macro equalsNullable}
+  Expr<bool?> equalsValue(String other) => equals(toExpr(other));
+
   /// {@macro isNotDistinctFrom}
   Expr<bool> isNotDistinctFrom(Expr<String?> other) =>
       ExpressionIsNotDistinctFrom(this, other);
@@ -310,6 +335,12 @@ extension ExpressionNullableBool on Expr<bool?> {
 
   /// {@macro orElse}
   Expr<bool> orElseValue(bool value) => orElse(toExpr(value));
+
+  /// {@macro equalsNullable}
+  Expr<bool?> equals(Expr<bool> other) => ExpressionEquals(this, other);
+
+  /// {@macro equalsNullable}
+  Expr<bool?> equalsValue(bool other) => equals(toExpr(other));
 
   /// {@macro isNotDistinctFrom}
   Expr<bool> isNotDistinctFrom(Expr<bool?> other) =>
@@ -395,6 +426,12 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
   /// {@macro orElse}
   Expr<DateTime> orElseValue(DateTime value) => orElse(toExpr(value));
 
+  /// {@macro equalsNullable}
+  Expr<bool?> equals(Expr<DateTime> other) => ExpressionEquals(this, other);
+
+  /// {@macro equalsNullable}
+  Expr<bool?> equalsValue(DateTime other) => equals(toExpr(other));
+
   /// {@macro isNotDistinctFrom}
   Expr<bool> isNotDistinctFrom(Expr<DateTime?> other) =>
       ExpressionIsNotDistinctFrom(this, other);
@@ -418,6 +455,12 @@ extension ExpressionNullableUint8List on Expr<Uint8List?> {
 
   /// {@macro orElse}
   Expr<Uint8List> orElseValue(Uint8List value) => orElse(toExpr(value));
+
+  /// {@macro equalsNullable}
+  Expr<bool?> equals(Expr<Uint8List> other) => ExpressionEquals(this, other);
+
+  /// {@macro equalsNullable}
+  Expr<bool?> equalsValue(Uint8List other) => equals(toExpr(other));
 
   /// {@macro isNotDistinctFrom}
   Expr<bool> isNotDistinctFrom(Expr<Uint8List?> other) =>

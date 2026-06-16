@@ -3,9 +3,10 @@
  * Allow nullable boolean in JOIN `.on(...)` conditions.
  * Support for combining `Expr<bool?>` expressions.
  * Generate `.equals` when both sides are non-nullable, `.equalsUnlessNull` otherwise.
+ * The nullable expressions `.equals` / `.equalsValue` now follow SQL `=`
+   semantics and return `Expr<bool?>` (`NULL` when an operand is `NULL`).
  * **Breaking change**:
-   * removed `.equals`, `.equalsValue`, `.notEquals` and `.notEqualsValue`
-     methods from nullable expressions - use `equalsUnlessNull` instead.
+   * removed `.notEquals` and `.notEqualsValue` methods from nullable expressions
 
 ## 0.1.10
  * Introduce `.insertValue` which automatically wraps with `toExpr()`, but is

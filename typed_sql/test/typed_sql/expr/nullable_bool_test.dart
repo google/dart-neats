@@ -103,88 +103,64 @@ final _cases = [
   // Test for .equals
   (
     name: 'null.equals(true)',
-    expr: toExpr(
-      null as bool?,
-    ).equalsUnlessNull(toExpr(true)).orElseValue(false),
-    expected: false,
+    expr: toExpr(null as bool?).equals(toExpr(true)),
+    expected: null,
   ),
   (
     name: 'null.equals(false)',
-    expr: toExpr(
-      null as bool?,
-    ).equalsUnlessNull(toExpr(false)).orElseValue(false),
-    expected: false,
+    expr: toExpr(null as bool?).equals(toExpr(false)),
+    expected: null,
   ),
   (
     name: 'true.equals(true)',
-    expr: toExpr(
-      true as bool?,
-    ).equalsUnlessNull(toExpr(true)).orElseValue(false),
+    expr: toExpr(true as bool?).equals(toExpr(true)),
     expected: true,
   ),
   (
     name: 'true.equals(false)',
-    expr: toExpr(
-      true as bool?,
-    ).equalsUnlessNull(toExpr(false)).orElseValue(false),
+    expr: toExpr(true as bool?).equals(toExpr(false)),
     expected: false,
   ),
   (
     name: 'false.equals(true)',
-    expr: toExpr(
-      false as bool?,
-    ).equalsUnlessNull(toExpr(true)).orElseValue(false),
+    expr: toExpr(false as bool?).equals(toExpr(true)),
     expected: false,
   ),
   (
     name: 'false.equals(false)',
-    expr: toExpr(
-      false as bool?,
-    ).equalsUnlessNull(toExpr(false)).orElseValue(false),
+    expr: toExpr(false as bool?).equals(toExpr(false)),
     expected: true,
   ),
 
   // Test for .equalsValue
   (
     name: 'null.equalsValue(true)',
-    expr: toExpr(
-      null as bool?,
-    ).equalsUnlessNull(toExpr(true)).orElseValue(false),
-    expected: false,
+    expr: toExpr(null as bool?).equalsValue(true),
+    expected: null,
   ),
   (
     name: 'null.equalsValue(false)',
-    expr: toExpr(
-      null as bool?,
-    ).equalsUnlessNull(toExpr(false)).orElseValue(false),
-    expected: false,
+    expr: toExpr(null as bool?).equalsValue(false),
+    expected: null,
   ),
   (
     name: 'true.equalsValue(true)',
-    expr: toExpr(
-      true as bool?,
-    ).equalsUnlessNull(toExpr(true)).orElseValue(false),
+    expr: toExpr(true as bool?).equalsValue(true),
     expected: true,
   ),
   (
     name: 'true.equalsValue(false)',
-    expr: toExpr(
-      true as bool?,
-    ).equalsUnlessNull(toExpr(false)).orElseValue(false),
+    expr: toExpr(true as bool?).equalsValue(false),
     expected: false,
   ),
   (
     name: 'false.equalsValue(true)',
-    expr: toExpr(
-      false as bool?,
-    ).equalsUnlessNull(toExpr(true)).orElseValue(false),
+    expr: toExpr(false as bool?).equalsValue(true),
     expected: false,
   ),
   (
     name: 'false.equalsValue(false)',
-    expr: toExpr(
-      false as bool?,
-    ).equalsUnlessNull(toExpr(false)).orElseValue(false),
+    expr: toExpr(false as bool?).equalsValue(false),
     expected: true,
   ),
 

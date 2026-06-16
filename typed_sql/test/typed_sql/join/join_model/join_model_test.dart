@@ -87,7 +87,7 @@ void main() {
         .join(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId),
+              employee.departmentId.equals(department.departmentId),
         )
         .fetch();
     check(result).length.equals(3);
@@ -98,7 +98,7 @@ void main() {
         .leftJoin(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId),
+              employee.departmentId.equals(department.departmentId),
         )
         .fetch();
     check(result).length.equals(5);
@@ -109,7 +109,7 @@ void main() {
         .rightJoin(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId),
+              employee.departmentId.equals(department.departmentId),
         )
         .fetch();
     check(result).length.equals(4);
@@ -123,7 +123,7 @@ void main() {
         .join(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId),
+              employee.departmentId.equals(department.departmentId),
         )
         .select(
           (employee, department) => (
@@ -146,7 +146,7 @@ void main() {
         .leftJoin(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId),
+              employee.departmentId.equals(department.departmentId),
         )
         .select(
           (employee, department) => (
@@ -171,7 +171,7 @@ void main() {
         .rightJoin(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId),
+              employee.departmentId.equals(department.departmentId),
         )
         .select(
           (employee, department) => (
@@ -466,7 +466,7 @@ void main() {
         .join(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId) &
+              employee.departmentId.equals(department.departmentId) &
               department.name.equals(toExpr('Engineering')),
         )
         .select(
@@ -490,7 +490,7 @@ void main() {
         .leftJoin(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId) |
+              employee.departmentId.equals(department.departmentId) |
               (employee.name.equals(toExpr('David')) &
                   department.name.equals(toExpr('Marketing'))),
         )
@@ -517,7 +517,7 @@ void main() {
         .leftJoin(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId),
+              employee.departmentId.equals(department.departmentId),
         )
         .where((employee, department) => department.departmentId.isNotNull())
         .select(
@@ -542,7 +542,7 @@ void main() {
         .rightJoin(db.departments)
         .on(
           (employee, department) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId),
+              employee.departmentId.equals(department.departmentId),
         )
         .where((employee, department) => employee.employeeId.isNotNull())
         .select(
@@ -567,7 +567,7 @@ void main() {
         .leftJoin(db.employees)
         .on(
           (department, employee) =>
-              employee.departmentId.equalsUnlessNull(department.departmentId),
+              employee.departmentId.equals(department.departmentId),
         )
         .groupBy((department, employee) => (department.name,))
         .aggregate(
