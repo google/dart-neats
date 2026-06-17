@@ -789,7 +789,7 @@ extension ExpressionEmployeeExt on Expr<Employee> {
   /// is equal to [deptId].
   Expr<Department> get dept => $ForGeneratedCode
       .subqueryTable(_$Department._$table)
-      .where((r) => r.id.equals(deptId))
+      .where((r) => r.id.equalsUnlessNull(deptId))
       .first
       .asNotNull();
 }
@@ -844,7 +844,7 @@ extension InnerJoinEmployeeDepartmentExt
   ///
   /// This will match rows where [Employee.deptId] = [Department.id].
   Query<(Expr<Employee>, Expr<Department>)> usingDept() =>
-      on((a, b) => b.id.equals(a.deptId));
+      on((a, b) => b.id.equalsUnlessNull(a.deptId));
 }
 
 extension LeftJoinEmployeeDepartmentExt
@@ -853,7 +853,7 @@ extension LeftJoinEmployeeDepartmentExt
   ///
   /// This will match rows where [Employee.deptId] = [Department.id].
   Query<(Expr<Employee>, Expr<Department?>)> usingDept() =>
-      on((a, b) => b.id.equals(a.deptId));
+      on((a, b) => b.id.equalsUnlessNull(a.deptId));
 }
 
 extension RightJoinEmployeeDepartmentExt
@@ -862,7 +862,7 @@ extension RightJoinEmployeeDepartmentExt
   ///
   /// This will match rows where [Employee.deptId] = [Department.id].
   Query<(Expr<Employee?>, Expr<Department>)> usingDept() =>
-      on((a, b) => b.id.equals(a.deptId));
+      on((a, b) => b.id.equalsUnlessNull(a.deptId));
 }
 
 /// `Table<Employee>` conflict targets for use with `.onConflict`.

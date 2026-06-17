@@ -349,8 +349,7 @@ void main() {
         .join(db.departments)
         .on(
           (employee, department) => employee.departmentId
-              .equalsUnlessNull(department.departmentId)
-              .orElseValue(false)
+              .isNotDistinctFrom(department.departmentId)
               .not(),
         )
         .select(
@@ -382,8 +381,7 @@ void main() {
         .leftJoin(db.departments)
         .on(
           (employee, department) => employee.departmentId
-              .equalsUnlessNull(department.departmentId)
-              .orElseValue(false)
+              .isNotDistinctFrom(department.departmentId)
               .not(),
         )
         .select(

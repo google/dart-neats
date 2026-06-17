@@ -62,6 +62,13 @@ final _cases =
         ).equals(toExpr(Uint8List.fromList([1, 2, 3]))),
         expected: false,
       ),
+      (
+        name: 'null.equals([1,2,3])',
+        expr: toExpr(
+          null as Uint8List?,
+        ).equals(toExpr(Uint8List.fromList([1, 2, 3]))),
+        expected: null,
+      ),
 
       // Tests for .equalsValue
       (
@@ -98,6 +105,13 @@ final _cases =
           Uint8List.fromList([]),
         ).equalsValue(Uint8List.fromList([1, 2, 3])),
         expected: false,
+      ),
+      (
+        name: 'null.equalsValue([1,2,3])',
+        expr: toExpr(
+          null as Uint8List?,
+        ).equalsValue(Uint8List.fromList([1, 2, 3])),
+        expected: null,
       ),
 
       // Tests for .notEquals

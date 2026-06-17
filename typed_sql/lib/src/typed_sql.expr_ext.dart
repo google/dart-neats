@@ -245,15 +245,14 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   /// {@macro orElse}
   Expr<T> orElseValue(T value) => orElse(toExpr(value));
 
-  /// {@template equalsNullable}
+  /// {@template nullable.equals}
   /// Compare this expression to [other] using `=` in SQL.
   ///
-  /// This is equivalent to `this = other` in SQL. If this expression is `NULL`
-  /// the result is `NULL`, following SQL three-valued logic.
+  /// This is equivalent to `this = other` in SQL.
   ///
-  /// The `.equals` _extension method_ requires that [other] is _non-nullable_,
-  /// because `NULL = NULL` evaluates to `UNKNOWN` in SQL, which is surprising
-  /// in a Dart context.
+  /// In SQL `NULL = other` evaluates to `NULL`, thus, because we require that
+  /// [other] is _non-nullable_, this operation avoids the surprising behavior
+  /// that  `NULL = NULL` evaluates to `NULL` in SQL.
   ///
   /// If you wish to compare two _nullable expressions_ you can use:
   ///  * [isNotDistinctFrom], to get `NULL` equivalent to `NULL`, or,
@@ -261,7 +260,7 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   /// {@endtemplate}
   Expr<bool?> equals(Expr<T> other) => ExpressionEquals(this, other);
 
-  /// {@macro equalsNullable}
+  /// {@macro nullable.equals}
   Expr<bool?> equalsValue(T other) => equals(toExpr(other));
 
   /// {@template isNotDistinctFrom}
@@ -276,8 +275,8 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   /// {@template equalsUnlessNull}
   /// Compare this expression to [other] using `=`.
   ///
-  /// This is equivalent to `this = other` in SQL, which if one of them is
-  /// `NULL` will return `NULL`.
+  /// This is equivalent to `this = other` in SQL, which if one of operands is
+  /// `NULL` will evaluate to `NULL`, following SQL three-valued logic.
   ///
   /// Use [isNotDistinctFrom] if you wish to compare expressions in a manner
   /// where `NULL` is considered equal to `NULL`.
@@ -307,10 +306,10 @@ extension ExpressionNullableString on Expr<String?> {
   /// {@macro orElse}
   Expr<String> orElseValue(String value) => orElse(toExpr(value));
 
-  /// {@macro equalsNullable}
+  /// {@macro nullable.equals}
   Expr<bool?> equals(Expr<String> other) => ExpressionEquals(this, other);
 
-  /// {@macro equalsNullable}
+  /// {@macro nullable.equals}
   Expr<bool?> equalsValue(String other) => equals(toExpr(other));
 
   /// {@macro isNotDistinctFrom}
@@ -336,10 +335,10 @@ extension ExpressionNullableBool on Expr<bool?> {
   /// {@macro orElse}
   Expr<bool> orElseValue(bool value) => orElse(toExpr(value));
 
-  /// {@macro equalsNullable}
+  /// {@macro nullable.equals}
   Expr<bool?> equals(Expr<bool> other) => ExpressionEquals(this, other);
 
-  /// {@macro equalsNullable}
+  /// {@macro nullable.equals}
   Expr<bool?> equalsValue(bool other) => equals(toExpr(other));
 
   /// {@macro isNotDistinctFrom}
@@ -426,10 +425,10 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
   /// {@macro orElse}
   Expr<DateTime> orElseValue(DateTime value) => orElse(toExpr(value));
 
-  /// {@macro equalsNullable}
+  /// {@macro nullable.equals}
   Expr<bool?> equals(Expr<DateTime> other) => ExpressionEquals(this, other);
 
-  /// {@macro equalsNullable}
+  /// {@macro nullable.equals}
   Expr<bool?> equalsValue(DateTime other) => equals(toExpr(other));
 
   /// {@macro isNotDistinctFrom}
@@ -456,10 +455,10 @@ extension ExpressionNullableUint8List on Expr<Uint8List?> {
   /// {@macro orElse}
   Expr<Uint8List> orElseValue(Uint8List value) => orElse(toExpr(value));
 
-  /// {@macro equalsNullable}
+  /// {@macro nullable.equals}
   Expr<bool?> equals(Expr<Uint8List> other) => ExpressionEquals(this, other);
 
-  /// {@macro equalsNullable}
+  /// {@macro nullable.equals}
   Expr<bool?> equalsValue(Uint8List other) => equals(toExpr(other));
 
   /// {@macro isNotDistinctFrom}
@@ -680,9 +679,8 @@ extension ExpressionBool on Expr<bool> {
   ///
   /// This is equivalent to `this = other` in SQL.
   ///
-  /// The `.equals` _extension method_ requires that both operands are
-  /// _non-nullable_. Because comparison involving `NULL` evaluates to `UNKNOWN`
-  /// in SQL, which is surprising in a Dart context.
+  /// In SQL `this = NULL` evaluates to `NULL`, thus, because we require that
+  /// [other] is _non-nullable_ this operation can return a non-nullable boolean.
   ///
   /// If you wish to compare _nullable expressions_ you can use:
   ///  * [isNotDistinctFrom], to get `NULL` equivalent to `NULL`, or,

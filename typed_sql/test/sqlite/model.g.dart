@@ -338,7 +338,7 @@ extension ExpressionUserExt on Expr<User> {
   /// in this row.
   SubQuery<(Expr<Package>,)> get packages => $ForGeneratedCode
       .subqueryTable(_$Package._$table)
-      .where((r) => r.ownerId.equals(userId));
+      .where((r) => r.ownerId.equalsUnlessNull(userId));
 }
 
 extension ExpressionNullableUserExt on Expr<User?> {
@@ -391,7 +391,7 @@ extension InnerJoinUserPackageExt
   ///
   /// This will match rows where [User.userId] = [Package.ownerId].
   Query<(Expr<User>, Expr<Package>)> usingOwner() =>
-      on((a, b) => a.userId.equals(b.ownerId));
+      on((a, b) => a.userId.equalsUnlessNull(b.ownerId));
 }
 
 extension LeftJoinUserPackageExt on LeftJoin<(Expr<User>,), (Expr<Package>,)> {
@@ -399,7 +399,7 @@ extension LeftJoinUserPackageExt on LeftJoin<(Expr<User>,), (Expr<Package>,)> {
   ///
   /// This will match rows where [User.userId] = [Package.ownerId].
   Query<(Expr<User>, Expr<Package?>)> usingOwner() =>
-      on((a, b) => a.userId.equals(b.ownerId));
+      on((a, b) => a.userId.equalsUnlessNull(b.ownerId));
 }
 
 extension RightJoinUserPackageExt
@@ -408,7 +408,7 @@ extension RightJoinUserPackageExt
   ///
   /// This will match rows where [User.userId] = [Package.ownerId].
   Query<(Expr<User?>, Expr<Package>)> usingOwner() =>
-      on((a, b) => a.userId.equals(b.ownerId));
+      on((a, b) => a.userId.equalsUnlessNull(b.ownerId));
 }
 
 /// `Table<User>` conflict targets for use with `.onConflict`.
@@ -931,7 +931,7 @@ extension ExpressionPackageExt on Expr<Package> {
   /// is equal to [ownerId].
   Expr<User> get owner => $ForGeneratedCode
       .subqueryTable(_$User._$table)
-      .where((r) => r.userId.equals(ownerId))
+      .where((r) => r.userId.equalsUnlessNull(ownerId))
       .first
       .asNotNull();
 }
@@ -986,7 +986,7 @@ extension InnerJoinPackageUserExt
   ///
   /// This will match rows where [Package.ownerId] = [User.userId].
   Query<(Expr<Package>, Expr<User>)> usingOwner() =>
-      on((a, b) => b.userId.equals(a.ownerId));
+      on((a, b) => b.userId.equalsUnlessNull(a.ownerId));
 }
 
 extension LeftJoinPackageUserExt on LeftJoin<(Expr<Package>,), (Expr<User>,)> {
@@ -994,7 +994,7 @@ extension LeftJoinPackageUserExt on LeftJoin<(Expr<Package>,), (Expr<User>,)> {
   ///
   /// This will match rows where [Package.ownerId] = [User.userId].
   Query<(Expr<Package>, Expr<User?>)> usingOwner() =>
-      on((a, b) => b.userId.equals(a.ownerId));
+      on((a, b) => b.userId.equalsUnlessNull(a.ownerId));
 }
 
 extension RightJoinPackageUserExt
@@ -1003,7 +1003,7 @@ extension RightJoinPackageUserExt
   ///
   /// This will match rows where [Package.ownerId] = [User.userId].
   Query<(Expr<Package?>, Expr<User>)> usingOwner() =>
-      on((a, b) => b.userId.equals(a.ownerId));
+      on((a, b) => b.userId.equalsUnlessNull(a.ownerId));
 }
 
 /// `Table<Package>` conflict targets for use with `.onConflict`.

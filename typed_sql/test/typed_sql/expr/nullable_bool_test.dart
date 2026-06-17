@@ -164,88 +164,44 @@ final _cases = [
     expected: true,
   ),
 
-  // Test for .notEquals
+  // Test for .equalsUnlessNull(..).orElseValue(false).not()
   (
-    name: 'null.notEquals(true)',
+    name: 'null.equalsUnlessNull(true).orElseValue(false).not()',
     expr: toExpr(
       null as bool?,
     ).equalsUnlessNull(toExpr(true)).orElseValue(false).not(),
     expected: true,
   ),
   (
-    name: 'null.notEquals(false)',
+    name: 'null.equalsUnlessNull(false).orElseValue(false).not()',
     expr: toExpr(
       null as bool?,
     ).equalsUnlessNull(toExpr(false)).orElseValue(false).not(),
     expected: true,
   ),
   (
-    name: 'true.notEquals(true)',
+    name: 'true.equalsUnlessNull(true).orElseValue(false).not()',
     expr: toExpr(
       true as bool?,
     ).equalsUnlessNull(toExpr(true)).orElseValue(false).not(),
     expected: false,
   ),
   (
-    name: 'true.notEquals(false)',
+    name: 'true.equalsUnlessNull(false).orElseValue(false).not()',
     expr: toExpr(
       true as bool?,
     ).equalsUnlessNull(toExpr(false)).orElseValue(false).not(),
     expected: true,
   ),
   (
-    name: 'false.notEquals(true)',
+    name: 'false.equalsUnlessNull(true).orElseValue(false).not()',
     expr: toExpr(
       false as bool?,
     ).equalsUnlessNull(toExpr(true)).orElseValue(false).not(),
     expected: true,
   ),
   (
-    name: 'false.notEquals(false)',
-    expr: toExpr(
-      false as bool?,
-    ).equalsUnlessNull(toExpr(false)).orElseValue(false).not(),
-    expected: false,
-  ),
-
-  // Test for .notEqualsValue
-  (
-    name: 'null.notEqualsValue(true)',
-    expr: toExpr(
-      null as bool?,
-    ).equalsUnlessNull(toExpr(true)).orElseValue(false).not(),
-    expected: true,
-  ),
-  (
-    name: 'null.notEqualsValue(false)',
-    expr: toExpr(
-      null as bool?,
-    ).equalsUnlessNull(toExpr(false)).orElseValue(false).not(),
-    expected: true,
-  ),
-  (
-    name: 'true.notEqualsValue(true)',
-    expr: toExpr(
-      true as bool?,
-    ).equalsUnlessNull(toExpr(true)).orElseValue(false).not(),
-    expected: false,
-  ),
-  (
-    name: 'true.notEqualsValue(false)',
-    expr: toExpr(
-      true as bool?,
-    ).equalsUnlessNull(toExpr(false)).orElseValue(false).not(),
-    expected: true,
-  ),
-  (
-    name: 'false.notEqualsValue(true)',
-    expr: toExpr(
-      false as bool?,
-    ).equalsUnlessNull(toExpr(true)).orElseValue(false).not(),
-    expected: true,
-  ),
-  (
-    name: 'false.notEqualsValue(false)',
+    name: 'false.equalsUnlessNull(false).orElseValue(false).not()',
     expr: toExpr(
       false as bool?,
     ).equalsUnlessNull(toExpr(false)).orElseValue(false).not(),

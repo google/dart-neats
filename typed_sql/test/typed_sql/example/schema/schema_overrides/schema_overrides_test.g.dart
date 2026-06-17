@@ -312,7 +312,7 @@ extension ExpressionAuthorExt on Expr<Author> {
   /// in this row.
   SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
       .subqueryTable(_$Book._$table)
-      .where((r) => r.authorId.equals(authorId));
+      .where((r) => r.authorId.equalsUnlessNull(authorId));
 }
 
 extension ExpressionNullableAuthorExt on Expr<Author?> {
@@ -357,7 +357,7 @@ extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
   ///
   /// This will match rows where [Author.authorId] = [Book.authorId].
   Query<(Expr<Author>, Expr<Book>)> usingAuthor() =>
-      on((a, b) => a.authorId.equals(b.authorId));
+      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
 }
 
 extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
@@ -365,7 +365,7 @@ extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
   ///
   /// This will match rows where [Author.authorId] = [Book.authorId].
   Query<(Expr<Author>, Expr<Book?>)> usingAuthor() =>
-      on((a, b) => a.authorId.equals(b.authorId));
+      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
 }
 
 extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
@@ -373,7 +373,7 @@ extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
   ///
   /// This will match rows where [Author.authorId] = [Book.authorId].
   Query<(Expr<Author?>, Expr<Book>)> usingAuthor() =>
-      on((a, b) => a.authorId.equals(b.authorId));
+      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
 }
 
 /// `Table<Author>` conflict targets for use with `.onConflict`.
@@ -791,7 +791,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Book>,)> byTitle(String title) =>
-      where((book) => book.title.equalsUnlessNull(toExpr(title))).first;
+      where((book) => book.title.equalsValue(title)).first;
 
   /// Delete all rows in the `booksInStock` table matching this [Query].
   ///
@@ -890,7 +890,7 @@ extension ExpressionBookExt on Expr<Book> {
   /// is equal to [authorId].
   Expr<Author> get author => $ForGeneratedCode
       .subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equals(authorId))
+      .where((r) => r.authorId.equalsUnlessNull(authorId))
       .first
       .asNotNull();
 }
@@ -944,7 +944,7 @@ extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.authorId] = [Author.authorId].
   Query<(Expr<Book>, Expr<Author>)> usingAuthor() =>
-      on((a, b) => b.authorId.equals(a.authorId));
+      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
 }
 
 extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
@@ -952,7 +952,7 @@ extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.authorId] = [Author.authorId].
   Query<(Expr<Book>, Expr<Author?>)> usingAuthor() =>
-      on((a, b) => b.authorId.equals(a.authorId));
+      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
 }
 
 extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
@@ -960,7 +960,7 @@ extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.authorId] = [Author.authorId].
   Query<(Expr<Book?>, Expr<Author>)> usingAuthor() =>
-      on((a, b) => b.authorId.equals(a.authorId));
+      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
 }
 
 /// `Table<Book>` conflict targets for use with `.onConflict`.

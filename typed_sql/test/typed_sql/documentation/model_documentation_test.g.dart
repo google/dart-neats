@@ -344,7 +344,7 @@ extension ExpressionAuthorExt on Expr<Author> {
   /// in this row.
   SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
       .subqueryTable(_$Book._$table)
-      .where((r) => r.authorId.equals(authorId));
+      .where((r) => r.authorId.equalsUnlessNull(authorId));
 
   /// Get [SubQuery] of rows from the `books` table which
   /// reference this row.
@@ -448,7 +448,7 @@ extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
   ///
   /// This will match rows where [Author.authorId] = [Book.authorId].
   Query<(Expr<Author>, Expr<Book>)> usingAuthor() =>
-      on((a, b) => a.authorId.equals(b.authorId));
+      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
 
   /// Join using the `editor` _foreign key_.
   ///
@@ -468,7 +468,7 @@ extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
   ///
   /// This will match rows where [Author.authorId] = [Book.authorId].
   Query<(Expr<Author>, Expr<Book?>)> usingAuthor() =>
-      on((a, b) => a.authorId.equals(b.authorId));
+      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
 
   /// Join using the `editor` _foreign key_.
   ///
@@ -488,7 +488,7 @@ extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
   ///
   /// This will match rows where [Author.authorId] = [Book.authorId].
   Query<(Expr<Author?>, Expr<Book>)> usingAuthor() =>
-      on((a, b) => a.authorId.equals(b.authorId));
+      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
 
   /// Join using the `editor` _foreign key_.
   ///
@@ -1068,7 +1068,7 @@ extension ExpressionBookExt on Expr<Book> {
   /// is equal to [authorId].
   Expr<Author> get author => $ForGeneratedCode
       .subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equals(authorId))
+      .where((r) => r.authorId.equalsUnlessNull(authorId))
       .first
       .asNotNull();
 
@@ -1171,7 +1171,7 @@ extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.authorId] = [Author.authorId].
   Query<(Expr<Book>, Expr<Author>)> usingAuthor() =>
-      on((a, b) => b.authorId.equals(a.authorId));
+      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
 
   /// Join using the `editor` _foreign key_.
   ///
@@ -1191,7 +1191,7 @@ extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.authorId] = [Author.authorId].
   Query<(Expr<Book>, Expr<Author?>)> usingAuthor() =>
-      on((a, b) => b.authorId.equals(a.authorId));
+      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
 
   /// Join using the `editor` _foreign key_.
   ///
@@ -1211,7 +1211,7 @@ extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
   ///
   /// This will match rows where [Book.authorId] = [Author.authorId].
   Query<(Expr<Book?>, Expr<Author>)> usingAuthor() =>
-      on((a, b) => b.authorId.equals(a.authorId));
+      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
 
   /// Join using the `editor` _foreign key_.
   ///

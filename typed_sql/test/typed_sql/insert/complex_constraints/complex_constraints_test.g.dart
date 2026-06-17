@@ -1451,7 +1451,9 @@ extension ExpressionForeignKeyItemExt on Expr<ForeignKeyItem> {
   /// is equal to [refPkA], [refPkB].
   Expr<CompositePkItem> get compositeRef => $ForGeneratedCode
       .subqueryTable(_$CompositePkItem._$table)
-      .where((r) => r.pkA.equals(refPkA) & r.pkB.equals(refPkB))
+      .where(
+        (r) => r.pkA.equalsUnlessNull(refPkA) & r.pkB.equalsUnlessNull(refPkB),
+      )
       .first
       .asNotNull();
 }
@@ -1508,7 +1510,10 @@ extension InnerJoinForeignKeyItemCompositePkItemExt
   ///
   /// This will match rows where [ForeignKeyItem.refPkA] = [CompositePkItem.pkA] and [ForeignKeyItem.refPkB] = [CompositePkItem.pkB].
   Query<(Expr<ForeignKeyItem>, Expr<CompositePkItem>)> usingCompositeRef() =>
-      on((a, b) => b.pkA.equals(a.refPkA) & b.pkB.equals(a.refPkB));
+      on(
+        (a, b) =>
+            b.pkA.equalsUnlessNull(a.refPkA) & b.pkB.equalsUnlessNull(a.refPkB),
+      );
 }
 
 extension LeftJoinForeignKeyItemCompositePkItemExt
@@ -1517,7 +1522,10 @@ extension LeftJoinForeignKeyItemCompositePkItemExt
   ///
   /// This will match rows where [ForeignKeyItem.refPkA] = [CompositePkItem.pkA] and [ForeignKeyItem.refPkB] = [CompositePkItem.pkB].
   Query<(Expr<ForeignKeyItem>, Expr<CompositePkItem?>)> usingCompositeRef() =>
-      on((a, b) => b.pkA.equals(a.refPkA) & b.pkB.equals(a.refPkB));
+      on(
+        (a, b) =>
+            b.pkA.equalsUnlessNull(a.refPkA) & b.pkB.equalsUnlessNull(a.refPkB),
+      );
 }
 
 extension RightJoinForeignKeyItemCompositePkItemExt
@@ -1526,7 +1534,10 @@ extension RightJoinForeignKeyItemCompositePkItemExt
   ///
   /// This will match rows where [ForeignKeyItem.refPkA] = [CompositePkItem.pkA] and [ForeignKeyItem.refPkB] = [CompositePkItem.pkB].
   Query<(Expr<ForeignKeyItem?>, Expr<CompositePkItem>)> usingCompositeRef() =>
-      on((a, b) => b.pkA.equals(a.refPkA) & b.pkB.equals(a.refPkB));
+      on(
+        (a, b) =>
+            b.pkA.equalsUnlessNull(a.refPkA) & b.pkB.equalsUnlessNull(a.refPkB),
+      );
 }
 
 /// `Table<ForeignKeyItem>` conflict targets for use with `.onConflict`.

@@ -333,7 +333,11 @@ extension ExpressionPostExt on Expr<Post> {
   /// in this row.
   SubQuery<(Expr<Comment>,)> get comments => $ForGeneratedCode
       .subqueryTable(_$Comment._$table)
-      .where((r) => r.author.equals(author) & r.postSlug.equals(slug));
+      .where(
+        (r) =>
+            r.author.equalsUnlessNull(author) &
+            r.postSlug.equalsUnlessNull(slug),
+      );
 }
 
 extension ExpressionNullablePostExt on Expr<Post?> {
@@ -385,16 +389,22 @@ extension InnerJoinPostCommentExt
   /// Join using the `post` _foreign key_.
   ///
   /// This will match rows where [Post.author] = [Comment.author] and [Post.slug] = [Comment.postSlug].
-  Query<(Expr<Post>, Expr<Comment>)> usingPost() =>
-      on((a, b) => a.author.equals(b.author) & a.slug.equals(b.postSlug));
+  Query<(Expr<Post>, Expr<Comment>)> usingPost() => on(
+    (a, b) =>
+        a.author.equalsUnlessNull(b.author) &
+        a.slug.equalsUnlessNull(b.postSlug),
+  );
 }
 
 extension LeftJoinPostCommentExt on LeftJoin<(Expr<Post>,), (Expr<Comment>,)> {
   /// Join using the `post` _foreign key_.
   ///
   /// This will match rows where [Post.author] = [Comment.author] and [Post.slug] = [Comment.postSlug].
-  Query<(Expr<Post>, Expr<Comment?>)> usingPost() =>
-      on((a, b) => a.author.equals(b.author) & a.slug.equals(b.postSlug));
+  Query<(Expr<Post>, Expr<Comment?>)> usingPost() => on(
+    (a, b) =>
+        a.author.equalsUnlessNull(b.author) &
+        a.slug.equalsUnlessNull(b.postSlug),
+  );
 }
 
 extension RightJoinPostCommentExt
@@ -402,8 +412,11 @@ extension RightJoinPostCommentExt
   /// Join using the `post` _foreign key_.
   ///
   /// This will match rows where [Post.author] = [Comment.author] and [Post.slug] = [Comment.postSlug].
-  Query<(Expr<Post?>, Expr<Comment>)> usingPost() =>
-      on((a, b) => a.author.equals(b.author) & a.slug.equals(b.postSlug));
+  Query<(Expr<Post?>, Expr<Comment>)> usingPost() => on(
+    (a, b) =>
+        a.author.equalsUnlessNull(b.author) &
+        a.slug.equalsUnlessNull(b.postSlug),
+  );
 }
 
 /// `Table<Post>` conflict targets for use with `.onConflict`.
@@ -927,7 +940,11 @@ extension ExpressionCommentExt on Expr<Comment> {
   /// is equal to [author], [postSlug].
   Expr<Post> get post => $ForGeneratedCode
       .subqueryTable(_$Post._$table)
-      .where((r) => r.author.equals(author) & r.slug.equals(postSlug))
+      .where(
+        (r) =>
+            r.author.equalsUnlessNull(author) &
+            r.slug.equalsUnlessNull(postSlug),
+      )
       .first
       .asNotNull();
 }
@@ -985,16 +1002,22 @@ extension InnerJoinCommentPostExt
   /// Join using the `post` _foreign key_.
   ///
   /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
-  Query<(Expr<Comment>, Expr<Post>)> usingPost() =>
-      on((a, b) => b.author.equals(a.author) & b.slug.equals(a.postSlug));
+  Query<(Expr<Comment>, Expr<Post>)> usingPost() => on(
+    (a, b) =>
+        b.author.equalsUnlessNull(a.author) &
+        b.slug.equalsUnlessNull(a.postSlug),
+  );
 }
 
 extension LeftJoinCommentPostExt on LeftJoin<(Expr<Comment>,), (Expr<Post>,)> {
   /// Join using the `post` _foreign key_.
   ///
   /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
-  Query<(Expr<Comment>, Expr<Post?>)> usingPost() =>
-      on((a, b) => b.author.equals(a.author) & b.slug.equals(a.postSlug));
+  Query<(Expr<Comment>, Expr<Post?>)> usingPost() => on(
+    (a, b) =>
+        b.author.equalsUnlessNull(a.author) &
+        b.slug.equalsUnlessNull(a.postSlug),
+  );
 }
 
 extension RightJoinCommentPostExt
@@ -1002,8 +1025,11 @@ extension RightJoinCommentPostExt
   /// Join using the `post` _foreign key_.
   ///
   /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
-  Query<(Expr<Comment?>, Expr<Post>)> usingPost() =>
-      on((a, b) => b.author.equals(a.author) & b.slug.equals(a.postSlug));
+  Query<(Expr<Comment?>, Expr<Post>)> usingPost() => on(
+    (a, b) =>
+        b.author.equalsUnlessNull(a.author) &
+        b.slug.equalsUnlessNull(a.postSlug),
+  );
 }
 
 /// `Table<Comment>` conflict targets for use with `.onConflict`.

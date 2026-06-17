@@ -216,9 +216,10 @@ final _cases =
         expected: true,
       ),
 
-      // Expr<Uint8List?>.notEquals
+      // Expr<Uint8List?>.equalsUnlessNull(..).orElseValue(false).not()
       (
-        name: 'null.asBlob().notEquals([1,2,3])',
+        name:
+            'null.asBlob().equalsUnlessNull([1,2,3]).orElseValue(false).not()',
         expr:
             toExpr(
                   null,
@@ -230,7 +231,7 @@ final _cases =
         expected: true,
       ),
       (
-        name: '[1,2,3].notEquals([1,2,3])',
+        name: '[1,2,3].equalsUnlessNull([1,2,3]).orElseValue(false).not()',
         expr:
             toExpr(
                   Uint8List.fromList([1, 2, 3]) as Uint8List?,
@@ -241,7 +242,7 @@ final _cases =
         expected: false,
       ),
       (
-        name: '[1,2,3].notEquals([3,2,1])',
+        name: '[1,2,3].equalsUnlessNull([3,2,1]).orElseValue(false).not()',
         expr:
             toExpr(
                   Uint8List.fromList([1, 2, 3]) as Uint8List?,
@@ -252,7 +253,7 @@ final _cases =
         expected: true,
       ),
       (
-        name: 'null.asBlob().notEquals([])',
+        name: 'null.asBlob().equalsUnlessNull([]).orElseValue(false).not()',
         expr: toExpr(null)
             .asBlob()
             .equalsUnlessNull(toExpr(Uint8List.fromList([])))
@@ -261,7 +262,7 @@ final _cases =
         expected: true,
       ),
       (
-        name: '[].notEquals([])',
+        name: '[].equalsUnlessNull([]).orElseValue(false).not()',
         expr:
             toExpr(
                   Uint8List.fromList([]) as Uint8List?,
@@ -303,62 +304,6 @@ final _cases =
           Uint8List.fromList([]) as Uint8List?,
         ).equalsValue(Uint8List.fromList([])),
         expected: true,
-      ),
-
-      // Expr<Uint8List?>.notEqualsValue
-      (
-        name: 'null.asBlob().notEqualsValue([1,2,3])',
-        expr:
-            toExpr(
-                  null,
-                )
-                .asBlob()
-                .equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3])))
-                .orElseValue(false)
-                .not(),
-        expected: true,
-      ),
-      (
-        name: '[1,2,3].notEqualsValue([1,2,3])',
-        expr:
-            toExpr(
-                  Uint8List.fromList([1, 2, 3]) as Uint8List?,
-                )
-                .equalsUnlessNull(toExpr(Uint8List.fromList([1, 2, 3])))
-                .orElseValue(false)
-                .not(),
-        expected: false,
-      ),
-      (
-        name: '[1,2,3].notEqualsValue([3,2,1])',
-        expr:
-            toExpr(
-                  Uint8List.fromList([1, 2, 3]) as Uint8List?,
-                )
-                .equalsUnlessNull(toExpr(Uint8List.fromList([3, 2, 1])))
-                .orElseValue(false)
-                .not(),
-        expected: true,
-      ),
-      (
-        name: 'null.asBlob().notEqualsValue([])',
-        expr: toExpr(null)
-            .asBlob()
-            .equalsUnlessNull(toExpr(Uint8List.fromList([])))
-            .orElseValue(false)
-            .not(),
-        expected: true,
-      ),
-      (
-        name: '[].notEqualsValue([])',
-        expr:
-            toExpr(
-                  Uint8List.fromList([]) as Uint8List?,
-                )
-                .equalsUnlessNull(toExpr(Uint8List.fromList([])))
-                .orElseValue(false)
-                .not(),
-        expected: false,
       ),
 
       // Expr<Uint8List?>.isNull()
