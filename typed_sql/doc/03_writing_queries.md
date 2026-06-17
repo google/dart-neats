@@ -662,7 +662,7 @@ The following is a high-level reference of _some_ of the available
 _extension methods_:
 
  * `Expr<T?>`, when `T` is one of `bool`, `int`, `double`, `String`, `DateTime`, `JsonValue`, has:
-    * `.equals(Expr<T> other) -> Expr<bool>`
+    * `.equals(Expr<T> other) -> Expr<bool?>`
     * `.equalsUnlessNull(Expr<T?> other) -> Expr<bool?>`
     * `.isNotDistinctFrom(Expr<T?> other) -> Expr<bool>`
     * `.isNull() -> Expr<bool>`
@@ -670,7 +670,7 @@ _extension methods_:
     * `.orElse(Expr<T> other) -> Expr<T>`
     * `.asNotNull() -> Expr<T>`
  * `Expr<T>`, when `T` is one of `bool`, `int`, `double`, `String`, `DateTime`, has:
-    * `.equals(Expr<T?> other) -> Expr<bool>`
+    * `.equals(Expr<T> other) -> Expr<bool>`
  * `Expr<bool>`, has:
     * `.not() -> Expr<bool>` (also available as operator `~`)
     * `.and(Expr<bool> other) -> Expr<bool>` (also available as operator `&`)
@@ -759,11 +759,11 @@ constants hardcoded into your queries, it may improve performance.
 ### Equality operators
 In the previous reference there are 3 equality operators:
 
-| `package:typed_sql`      | Return type   | SQL equivalent             | `NULL` compared to `NULL`? |
-|--------------------------|---------------|:--------------------------:|:--------------------------:|
-| `a.equals(b)`            | `Expr<bool>`  | `a = b`                    | N/A                        |
-| `a.equalsUnlessNull(b)`  | `Expr<bool?>` | `a = b`                    | `NULL`                     |
-| `a.isNotDistinctFrom(b)` | `Expr<bool>`  | `a IS NOT DISTINCT FROM b` | `TRUE`                     |
+| `package:typed_sql`      | Return type                  | SQL equivalent             | `NULL` compared to `NULL`? |
+|--------------------------|------------------------------|:--------------------------:|:--------------------------:|
+| `a.equals(b)`            | `Expr<bool>` / `Expr<bool?>` | `a = b`                    | N/A                        |
+| `a.equalsUnlessNull(b)`  | `Expr<bool?>`                | `a = b`                    | `NULL`                     |
+| `a.isNotDistinctFrom(b)` | `Expr<bool>`                 | `a IS NOT DISTINCT FROM b` | `TRUE`                     |
 
 The difference between these operators is what arguments they take, and how they
 behave when comparing to `NULL`. In SQL `NULL = NULL` yields `UNKNOWN`
@@ -780,10 +780,11 @@ extension method.
 
 The `.equals` extension method requires that at least one of the two operands
 are not nullable. This is implemented by having two variants:
- * `Expr<T>.equals(Expr<T?> other) -> Expr<bool>`, and,
+ * `Expr<T>.equals(Expr<T> other) -> Expr<bool>`, and,
  * `Expr<T?>.equals(Expr<T> other) -> Expr<bool>`.
 
-Thus, when using the `.equals` extension method the return type is `Expr<bool>`,
+Thus, when using the `.equals` extension method the return type is `Expr<bool>`
+or `Expr<bool?>`,
 and the SQL operator used is `=`. The downside is that you cannot compare two
 nullable expressions. If you wish to compare two nullable expressions you can use
 `.isNotDistinctFrom` which has the same semantics as Dart, meaning that
