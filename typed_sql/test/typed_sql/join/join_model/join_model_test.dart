@@ -565,7 +565,7 @@ void main() {
         .leftJoin(db.employees)
         .on(
           (department, employee) =>
-              employee.departmentId.equals(department.departmentId),
+              department.departmentId.equals(employee.departmentId),
         )
         .groupBy((department, employee) => (department.name,))
         .aggregate(

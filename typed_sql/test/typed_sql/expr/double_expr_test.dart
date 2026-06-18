@@ -48,6 +48,16 @@ final _cases = [
     expr: toExpr(3.14).equals(toExpr(3.14)),
     expected: true,
   ),
+  (
+    name: '0.0.equals(null)',
+    expr: toExpr(0.0).equals(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: '3.14.equals(null)',
+    expr: toExpr(3.14).equals(toExpr(null)),
+    expected: null,
+  ),
 
   // Test for .equalsValue
   (
@@ -79,6 +89,16 @@ final _cases = [
     name: '3.14.equalsValue(3.14)',
     expr: toExpr(3.14).equalsValue(3.14),
     expected: true,
+  ),
+  (
+    name: '0.0.equalsValue(null)',
+    expr: toExpr(0.0).equalsValue(null),
+    expected: null,
+  ),
+  (
+    name: '3.14.equalsValue(null)',
+    expr: toExpr(3.14).equalsValue(null),
+    expected: null,
   ),
 
   // Test for .notEquals
@@ -990,7 +1010,7 @@ void main() {
       final result = await db.select(
         (c.expr,),
       ).fetch();
-      check(result).isNotNull().equals(c.expected);
+      check(result).equals(c.expected);
     });
   }
 

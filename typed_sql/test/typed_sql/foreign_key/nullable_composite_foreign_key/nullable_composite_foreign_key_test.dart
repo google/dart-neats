@@ -268,8 +268,8 @@ void main() {
         .join(db.books)
         .on(
           (author, book) =>
-              book.authorFirstName.equals(author.firstName) &
-              book.authorLastName.equals(author.lastName),
+              author.firstName.equals(book.authorFirstName) &
+              author.lastName.equals(book.authorLastName),
         )
         .groupBy((author, book) => (author,))
         .aggregate(

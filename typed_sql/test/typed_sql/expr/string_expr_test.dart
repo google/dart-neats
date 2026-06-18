@@ -103,6 +103,16 @@ final _cases = [
     expr: toExpr('hello').equals(toExpr('hello world')),
     expected: false,
   ),
+  (
+    name: '"".equals(null)',
+    expr: toExpr('').equals(toExpr(null)),
+    expected: null,
+  ),
+  (
+    name: '"hello".equals(null)',
+    expr: toExpr('hello').equals(toExpr(null)),
+    expected: null,
+  ),
 
   // Tests for .equalsValue
   (
@@ -129,6 +139,16 @@ final _cases = [
     name: '"hello".equalsValue("hello world")',
     expr: toExpr('hello').equalsValue('hello world'),
     expected: false,
+  ),
+  (
+    name: '"".equalsValue(null)',
+    expr: toExpr('').equalsValue(null),
+    expected: null,
+  ),
+  (
+    name: '"hello".equalsValue(null)',
+    expr: toExpr('hello').equalsValue(null),
+    expected: null,
   ),
 
   // Tests for .notEquals
@@ -869,7 +889,7 @@ void main() {
       final result = await db.select(
         (c.expr,),
       ).fetch();
-      check(result).isNotNull().equals(c.expected);
+      check(result).equals(c.expected);
     });
   }
 
