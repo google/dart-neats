@@ -645,6 +645,8 @@ extension on ExpressionResolver<SqlContext> {
       '( CAST(${expr(e.left)} AS DOUBLE) ${e.operator} ${expr(e.right)} )',
     final BinaryOperationExpression e =>
       '( ${expr(e.left)} ${e.operator} ${expr(e.right)} )',
+    ExpressionIsTrue(value: final value) => '( ${expr(value)} ) IS TRUE',
+    ExpressionIsFalse(value: final value) => '( ${expr(value)} ) IS FALSE',
     ExpressionBoolNot<bool?>(value: final value) => '( NOT ${expr(value)} )',
     ExpressionStringIsEmpty(value: final value) => '( ${expr(value)} = \'\' )',
     ExpressionStringLength(value: final value) => 'LENGTH( ${expr(value)} )',
@@ -765,6 +767,7 @@ extension on BinaryOperationExpression {
     ExpressionBoolAnd() => 'AND',
     ExpressionBoolOr() => 'OR',
     ExpressionEquals() => '=',
+    ExpressionNotEquals() => '<>',
     ExpressionIsNotDistinctFrom() => '<=>',
     ExpressionLessThan() => '<',
     ExpressionLessThanOrEqual() => '<=',

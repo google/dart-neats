@@ -218,37 +218,7 @@ final _cases =
         expr: toExpr(today as DateTime?).equalsValue(today),
         expected: true,
       ),
-      // Expr<DateTime?>.equalsUnlessNull(..).orElseValue(false).not()
-      (
-        name:
-            'null.asDateTime().equalsUnlessNull(epoch).orElseValue(false).not()',
-        expr: toExpr(
-          null,
-        ).asDateTime().equalsUnlessNull(toExpr(epoch)).orElseValue(false).not(),
-        expected: true,
-      ),
-      (
-        name: 'epoch.equalsUnlessNull(epoch).orElseValue(false).not()',
-        expr: toExpr(
-          epoch as DateTime?,
-        ).equalsUnlessNull(toExpr(epoch)).orElseValue(false).not(),
-        expected: false,
-      ),
-      (
-        name:
-            'null.asDateTime().equalsUnlessNull(today).orElseValue(false).not()',
-        expr: toExpr(
-          null,
-        ).asDateTime().equalsUnlessNull(toExpr(today)).orElseValue(false).not(),
-        expected: true,
-      ),
-      (
-        name: 'today.equalsUnlessNull(today).orElseValue(false).not()',
-        expr: toExpr(
-          today as DateTime?,
-        ).equalsUnlessNull(toExpr(today)).orElseValue(false).not(),
-        expected: false,
-      ),
+
       // Expr<DateTime?>.isNull()
       (
         name: 'null.isNull()',

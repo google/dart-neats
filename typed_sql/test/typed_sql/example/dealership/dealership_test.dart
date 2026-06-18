@@ -50,10 +50,11 @@ final class Color implements CustomDataType<int> {
 // #region custom-expr
 extension ColorExprExt on Expr<Color> {
   // We know black is encoded as zero
-  Expr<bool> get isBlack => asEncoded().equalsValue(0);
+  Expr<bool> get isBlack => asEncoded().equalsValue(0).asNotNull();
 
   // We can make `.equals` and `.equalsValue` for `Color` if we want
-  Expr<bool> equals(Expr<Color> other) => asEncoded().equals(other.asEncoded());
+  Expr<bool> equals(Expr<Color> other) =>
+      asEncoded().equals(other.asEncoded()).asNotNull();
   Expr<bool> equalsValue(Color other) => equals(other.asExpr);
 
   // We can make our own utility methods too

@@ -692,6 +692,22 @@ final class ExpressionBoolNot<T extends bool?> extends SingleValueExpr<T> {
   _ExprType<T> get _type => ColumnType.boolean as _ExprType<T>;
 }
 
+/// SQL Expression using `IS TRUE`.
+///
+/// Collapsing `Expr<bool?>` to `Expr<bool>` by interpreting `NULL` as `FALSE`.
+final class ExpressionIsTrue extends SingleValueExpr<bool> with _ExprBoolean {
+  final Expr<bool?> value;
+  ExpressionIsTrue(this.value) : super._();
+}
+
+/// SQL Expression using `IS FALSE`.
+///
+/// Collapsing `Expr<bool?>` to `Expr<bool>` by interpreting `NULL` as `TRUE`.
+final class ExpressionIsFalse extends SingleValueExpr<bool> with _ExprBoolean {
+  final Expr<bool?> value;
+  ExpressionIsFalse(this.value) : super._();
+}
+
 final class ExpressionBoolAnd<T extends bool?>
     extends BinaryOperationExpression<T, T> {
   @override
@@ -715,6 +731,15 @@ final class ExpressionEquals<T extends Object>
   final _type = ColumnType.boolean;
 
   ExpressionEquals(super.left, super.right);
+}
+
+/// SQL Expression using `<>`.
+final class ExpressionNotEquals<T extends Object>
+    extends BinaryOperationExpression<T?, bool?> {
+  @override
+  final _type = ColumnType.boolean;
+
+  ExpressionNotEquals(super.left, super.right);
 }
 
 /// SQL Expression using `IS NOT DISTINCT FROM`.

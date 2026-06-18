@@ -670,7 +670,7 @@ _extension methods_:
     * `.orElse(Expr<T> other) -> Expr<T>`
     * `.asNotNull() -> Expr<T>`
  * `Expr<T>`, when `T` is one of `bool`, `int`, `double`, `String`, `DateTime`, has:
-    * `.equals(Expr<T> other) -> Expr<bool>`
+    * `.equals(Expr<T?> other) -> Expr<bool?>`
  * `Expr<bool>`, has:
     * `.not() -> Expr<bool>` (also available as operator `~`)
     * `.and(Expr<bool> other) -> Expr<bool>` (also available as operator `&`)
@@ -759,11 +759,11 @@ constants hardcoded into your queries, it may improve performance.
 ### Equality operators
 In the previous reference there are 3 equality operators:
 
-| `package:typed_sql`      | Return type                  | SQL equivalent             | `NULL` compared to `NULL`? |
-|--------------------------|------------------------------|:--------------------------:|:--------------------------:|
-| `a.equals(b)`            | `Expr<bool>` / `Expr<bool?>` | `a = b`                    | N/A                        |
-| `a.equalsUnlessNull(b)`  | `Expr<bool?>`                | `a = b`                    | `NULL`                     |
-| `a.isNotDistinctFrom(b)` | `Expr<bool>`                 | `a IS NOT DISTINCT FROM b` | `TRUE`                     |
+| `package:typed_sql`      | Return type   | SQL equivalent             | `NULL` compared to `NULL`? |
+|--------------------------|---------------|:--------------------------:|:--------------------------:|
+| `a.equals(b)`            | `Expr<bool?>` | `a = b`                    | N/A                        |
+| `a.equalsUnlessNull(b)`  | `Expr<bool?>` | `a = b`                    | `NULL`                     |
+| `a.isNotDistinctFrom(b)` | `Expr<bool>`  | `a IS NOT DISTINCT FROM b` | `TRUE`                     |
 
 The difference between these operators is what arguments they take, and how they
 behave when comparing to `NULL`. In SQL `NULL = NULL` yields `UNKNOWN`
@@ -772,19 +772,12 @@ the `=` operator, the result cannot be `TRUE` if one of the expressions is `NULL
 This is very different from Dart. Thus, to avoid any confusion the SQL `=`
 operator is exposed using the `.equalsUnlessNull` extension method.
 
-The `.equalsUnlessNull` extension method will return `NULL` if any of the two
-operands are `NULL`, thus, the return type for `.equalsUnlessNull` is
-`Expr<bool?>`. This isn't very convenient, but if you're comparing two
-expressions where one of them is not nullable, you can use the `.equals`
-extension method.
-
 The `.equals` extension method requires that at least one of the two operands
 are not nullable. This is implemented by having two variants:
- * `Expr<T>.equals(Expr<T> other) -> Expr<bool>`, and,
- * `Expr<T?>.equals(Expr<T> other) -> Expr<bool>`.
+ * `Expr<T>.equals(Expr<T?> other) -> Expr<bool?>`, and,
+ * `Expr<T?>.equals(Expr<T> other) -> Expr<bool?>`.
 
-Thus, when using the `.equals` extension method the return type is `Expr<bool>`
-or `Expr<bool?>`,
+Thus, when using the `.equals` extension method the return type is `Expr<bool?>`,
 and the SQL operator used is `=`. The downside is that you cannot compare two
 nullable expressions. If you wish to compare two nullable expressions you can use
 `.isNotDistinctFrom` which has the same semantics as Dart, meaning that
@@ -793,21 +786,20 @@ nullable expressions. If you wish to compare two nullable expressions you can us
 `NULL`.
 
 If you wish to compare two nullable expressions in manner where `NULL = NULL`
-evaluates to `FALSE`, you can use `a.equalsUnlessNull(b).orElseValue(false)`.
+evaluates to `FALSE`, you can use `a.equalsUnlessNull(b).isTrue()`.
 Or you can do `a.isNotDistinctFrom(b) & a.isNotNull()`.
 
 > [!TIP]
 > While it is tempting to always use `.isNotDistinctFrom`, which has the same
 > comparison semantics as equality in Dart, there are many scenarios where
 > database engines are optimized for the `=` operator in SQL.
-> And if you are joining tables you'll
-> often find that you do not want to join two rows when the key in both tables
-> is `NULL`.
+> And if you are joining tables you'll often find that you do not want to join
+> two rows when the key in both tables is `NULL`.
 >
 > Thus, whenever you find that the `.equals` extension method doesn't work,
 > because you are comparing two nullable expressions, do consider if you want
 > the `NULL = NULL` to be `TRUE` or `FALSE`, before resorting to use
-> `.isNotDistinctFrom`.
+> `.isNotDistinctFrom`, and consider if `.equalsUnlessNull` is a better choice.
 
 
 ## Query reference
