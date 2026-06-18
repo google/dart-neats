@@ -671,6 +671,7 @@ _extension methods_:
     * `.asNotNull() -> Expr<T>`
  * `Expr<T>`, when `T` is one of `bool`, `int`, `double`, `String`, `DateTime`, has:
     * `.equals(Expr<T?> other) -> Expr<bool?>`
+    * `.notEquals(Expr<T> other) -> Expr<bool>`
  * `Expr<bool>`, has:
     * `.not() -> Expr<bool>` (also available as operator `~`)
     * `.and(Expr<bool> other) -> Expr<bool>` (also available as operator `&`)
@@ -678,6 +679,8 @@ _extension methods_:
  * `Expr<bool?>`, has:
     * `.and(Expr<bool?> other) -> Expr<bool?>` (also available as operator `&`)
     * `.or(Expr<bool?> other) -> Expr<bool?>` (also available as operator `|`)
+    * `.isTrue() -> Expr<bool>`
+    * `.isFalse() -> Expr<bool>`
  * `Expr<String>`, has:
     * `.endsWith(Expr<String> other) -> Expr<bool>`
     * `.startsWith(Expr<String> other) -> Expr<bool>`
@@ -765,15 +768,14 @@ In the previous reference there are 3 equality operators:
 | `a.equalsUnlessNull(b)`  | `Expr<bool?>` | `a = b`                    | `NULL`                     |
 | `a.isNotDistinctFrom(b)` | `Expr<bool>`  | `a IS NOT DISTINCT FROM b` | `TRUE`                     |
 
-The difference between these operators is what arguments they take, and how they
-behave when comparing to `NULL`. In SQL `NULL = NULL` yields `UNKNOWN`
-represented by `NULL`. Meaning that when we compare two expressions in SQL using
-the `=` operator, the result cannot be `TRUE` if one of the expressions is `NULL`.
-This is very different from Dart. Thus, to avoid any confusion the SQL `=`
-operator is exposed using the `.equalsUnlessNull` extension method.
+SQL has two comparison operators `=` and `IS NOT DISTINCT FROM`, the difference
+is that if one of the operands is `NULL` then `=` yeilds `UNKNOWN` represented
+by `NULL`. Thus, `NULL = NULL` evaluates to `NULL`, whereas
+`NULL IS NOT DISTINCT FROM NULL` evaluates to `TRUE`.
 
-The `.equals` extension method requires that at least one of the two operands
-are not nullable. This is implemented by having two variants:
+To minimize the risk of unexpected behavior `package:typed_sql` only allows the
+`.equals` short-hand when one of the two operands are _non-nullable_.
+This is implemented by having two variants:
  * `Expr<T>.equals(Expr<T?> other) -> Expr<bool?>`, and,
  * `Expr<T?>.equals(Expr<T> other) -> Expr<bool?>`.
 
