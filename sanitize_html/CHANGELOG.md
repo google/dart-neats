@@ -1,3 +1,9 @@
+## v2.2.0
+ * Allow the `<picture>` and `<source>` elements, with `srcset` on `<source>`,
+   matching the [`html-pipeline` allowlist](https://github.com/gjtorikian/html-pipeline/blob/main/lib/html_pipeline/sanitization_filter.rb)
+   this package is modeled on. Enables theme-aware images via `<picture>` with
+   `prefers-color-scheme`.
+
 ## v2.1.0
  * Remove custom HTML rendering logic in favor of logic from `package:html`.
  * Added `topics` to `pubspec.yaml`.

@@ -110,6 +110,29 @@ void main() {
   testNotContains('<img src="javascript:test.jpg"/>', 'src=');
   testNotContains('<img src="javascript:test.jpg"/>', 'javascript');
   testContains('<img src="javascript:test.jpg"/>', 'img');
+
+  // <picture> and <source> survive sanitization, including the fallback <img>.
+  // A bad URL in srcset drops only the attribute, not the element.
+  testContains('<picture><img src="banner.webp"/></picture>', '<picture>');
+  testContains('<picture><img src="banner.webp"/></picture>', '<img');
+  testContains(
+      '<picture><source srcset="dark.webp"><img src="light.webp"/></picture>',
+      '<source');
+  testContains('<source srcset="banner.webp">', 'srcset');
+  testContains('<source srcset="banner.webp">', 'banner.webp');
+  testContains(
+      '<source media="(prefers-color-scheme: dark)" srcset="dark.webp">',
+      'media=');
+  testContains('<source srcset="a.webp 1x, b.webp 2x">', 'b.webp 2x');
+  testContains('<source srcset="/img/banner.webp">', '/img/banner.webp');
+  testContains('<source srcset="https://example.com/b.webp">',
+      'https://example.com/b.webp');
+  testNotContains('<source srcset="javascript:alert()">', 'srcset');
+  testNotContains('<source srcset="javascript:alert()">', 'javascript');
+  testContains('<source srcset="javascript:alert()">', '<source');
+  testNotContains('<source srcset="ok.webp, javascript:alert()">', 'srcset');
+  testNotContains('<source srcset="ok.webp, javascript:alert()">', 'javascript');
+
   testNotContains('<script/>', 'script');
   testNotContains('<script src="example.js"/>', 'script');
   testNotContains('<script src="example.js"/>', 'src');
