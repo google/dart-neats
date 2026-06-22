@@ -60,72 +60,71 @@ String _escapeStringLiteral(String input) {
 
 final class _Sqlite extends SqlDialect {
   @override
-  String createTables(List<CreateTableStatement> statements) {
+  ScriptSqlTask createTables(List<CreateTableStatement> statements) {
     final resolver = ExpressionResolver(PlainSqlContext());
-    return statements
-        .map((table) {
-          return [
-            'CREATE TABLE ${escape(table.tableName)} (',
-            [
-              // Columns
-              ...table.columns.map((c) {
-                final o =
-                    c.overrides.lastWhereOrNull((o) => o.dialect == 'sqlite') ??
-                    c.overrides.lastWhereOrNull((o) => o.dialect == null);
+    final sqlStatements = statements.map((table) {
+      return [
+        'CREATE TABLE ${escape(table.tableName)} (',
+        [
+          // Columns
+          ...table.columns.map((c) {
+            final o =
+                c.overrides.lastWhereOrNull((o) => o.dialect == 'sqlite') ??
+                c.overrides.lastWhereOrNull((o) => o.dialect == null);
 
-                final isPrimaryKey =
-                    table.primaryKey.contains(c.name) &&
-                    table.primaryKey.length == 1;
+            final isPrimaryKey =
+                table.primaryKey.contains(c.name) &&
+                table.primaryKey.length == 1;
 
-                if (c.autoIncrement &&
-                    table.primaryKey.contains(c.name) &&
-                    table.primaryKey.length > 1) {
-                  throw UnsupportedError(
-                    'Sqlite does not support AUTOINCREMENT in composite primary keys',
-                  );
-                }
+            if (c.autoIncrement &&
+                table.primaryKey.contains(c.name) &&
+                table.primaryKey.length > 1) {
+              throw UnsupportedError(
+                'Sqlite does not support AUTOINCREMENT in composite primary keys',
+              );
+            }
 
-                final defaultValue = c.defaultValue;
-                return [
-                  escape(c.name),
-                  o?.columnType ?? c.type.sqlType,
-                  if (c.isNotNull) 'NOT NULL',
-                  if (isPrimaryKey) 'PRIMARY KEY',
-                  if (c.autoIncrement && isPrimaryKey) 'AUTOINCREMENT',
-                  if (c.autoIncrement && !isPrimaryKey)
-                    'GENERATED ALWAYS AS (rowid) STORED',
-                  if (o?.defaultValue != null)
-                    'DEFAULT ${o!.defaultValue}'
-                  else if (defaultValue != null)
-                    'DEFAULT (${resolver.expr(defaultValue)})',
-                  if (o?.collation != null) 'COLLATE ${o!.collation}',
-                ].join(' ');
-              }),
-              // Primary key
-              if (table.primaryKey.length > 1)
-                'PRIMARY KEY (${table.primaryKey.map(escape).join(', ')})',
-              // Unique constraints
-              ...table.unique.map(
-                (u) => 'UNIQUE (${u.map(escape).join(', ')})',
+            final defaultValue = c.defaultValue;
+            return [
+              escape(c.name),
+              o?.columnType ?? c.type.sqlType,
+              if (c.isNotNull) 'NOT NULL',
+              if (isPrimaryKey) 'PRIMARY KEY',
+              if (c.autoIncrement && isPrimaryKey) 'AUTOINCREMENT',
+              if (c.autoIncrement && !isPrimaryKey)
+                'GENERATED ALWAYS AS (rowid) STORED',
+              if (o?.defaultValue != null)
+                'DEFAULT ${o!.defaultValue}'
+              else if (defaultValue != null)
+                'DEFAULT (${resolver.expr(defaultValue)})',
+              if (o?.collation != null) 'COLLATE ${o!.collation}',
+            ].join(' ');
+          }),
+          // Primary key
+          if (table.primaryKey.length > 1)
+            'PRIMARY KEY (${table.primaryKey.map(escape).join(', ')})',
+          // Unique constraints
+          ...table.unique.map(
+            (u) => 'UNIQUE (${u.map(escape).join(', ')})',
+          ),
+          // Foreign keys
+          ...table.foreignKeys.map(
+            (fk) => <String>[
+              'CONSTRAINT ${escape(foreignKeyConstraintName(table, fk))}',
+              'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
+              'REFERENCES ${escape(fk.referencedTable)}',
+              '(${fk.referencedColumns.map(escape).join(', ')})',
+              defaultReferentialActionClause(
+                onDelete: fk.onDelete,
+                onUpdate: fk.onUpdate,
               ),
-              // Foreign keys
-              ...table.foreignKeys.map(
-                (fk) => <String>[
-                  'CONSTRAINT ${escape(foreignKeyConstraintName(table, fk))}',
-                  'FOREIGN KEY (${fk.columns.map(escape).join(', ')})',
-                  'REFERENCES ${escape(fk.referencedTable)}',
-                  '(${fk.referencedColumns.map(escape).join(', ')})',
-                  defaultReferentialActionClause(
-                    onDelete: fk.onDelete,
-                    onUpdate: fk.onUpdate,
-                  ),
-                ].join(' '),
-              ),
-            ].map((l) => '  $l').join(',\n'),
-            ');\n',
-          ].join('\n');
-        })
-        .join('\n');
+            ].join(' '),
+          ),
+        ].map((l) => '  $l').join(',\n'),
+        ')',
+      ].join('\n');
+    }).toList();
+    return ScriptSqlTask(sqlStatements);
   }
 
   @override

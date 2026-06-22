@@ -65,6 +65,9 @@ final class Database<T extends Schema> {
       sql,
       paramsList,
     ),
+    ScriptSqlTask() => throw AssertionError(
+      'Unreachable! TODO: Make this work!',
+    ),
   };
 
   Future<void> _execute(SqlTask task) => _query(task).drain<void>();

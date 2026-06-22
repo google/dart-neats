@@ -102,9 +102,9 @@ String _escapeStringLiteral(String input) {
 
 final class _MysqlSqlDialect extends SqlDialect {
   @override
-  String createTables(List<CreateTableStatement> statements) {
+  ScriptSqlTask createTables(List<CreateTableStatement> statements) {
     final resolver = ExpressionResolver(PlainSqlContext());
-    return [
+    final sqlStatements = [
       ...statements.map((table) {
         final resolvedColumnDefinitions = table.columns.map((c) {
           final o =
@@ -184,7 +184,8 @@ final class _MysqlSqlDialect extends SqlDialect {
           ].join(' '),
         );
       }),
-    ].join(';\n');
+    ];
+    return ScriptSqlTask(sqlStatements.toList());
   }
 
   @override

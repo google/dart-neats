@@ -46,9 +46,9 @@ String _escapeStringLiteral(String input) {
 
 final class _PostgresDialect extends SqlDialect {
   @override
-  String createTables(List<CreateTableStatement> statements) {
+  ScriptSqlTask createTables(List<CreateTableStatement> statements) {
     final resolver = ExpressionResolver(SqlContext());
-    final sql = [
+    final sqlStatements = [
       ...statements.map((table) {
         return [
           'CREATE TABLE ${escape(table.tableName)} (',
@@ -91,13 +91,13 @@ final class _PostgresDialect extends SqlDialect {
             // Unique constraints
             ...table.unique.map((u) => 'UNIQUE (${u.map(escape).join(', ')})'),
           ].map((l) => '  $l').join(',\n'),
-          ');\n',
+          ')',
         ].join('\n');
       }),
       ...statements.expand((table) {
         // Foreign keys
-        return table.foreignKeys.map((fk) {
-          final statement = <String>[
+        return table.foreignKeys.map(
+          (fk) => [
             'ALTER TABLE ${escape(table.tableName)}',
             'ADD',
             'CONSTRAINT ${escape(foreignKeyConstraintName(table, fk))}',
@@ -108,15 +108,14 @@ final class _PostgresDialect extends SqlDialect {
               onDelete: fk.onDelete,
               onUpdate: fk.onUpdate,
             ),
-          ].join(' ');
-          return '$statement;';
-        });
+          ].join(' '),
+        );
       }),
-    ].join('\n');
+    ];
     if (resolver.context.parameters.isNotEmpty) {
       throw AssertionError('Parameters are not allowed in DDL');
     }
-    return sql;
+    return ScriptSqlTask(sqlStatements.toList());
   }
 
   @override

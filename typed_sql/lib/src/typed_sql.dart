@@ -23,7 +23,7 @@ import 'package:meta/meta_meta.dart';
 
 import 'adapter/adapter.dart';
 import 'dialect/dialect.dart'
-    show PipelinedSqlTask, SingleSqlTask, SqlDialect, SqlTask;
+    show PipelinedSqlTask, ScriptSqlTask, SingleSqlTask, SqlDialect, SqlTask;
 import 'types/custom_data_type.dart' show CustomDataType;
 import 'types/json_value.dart' show JsonValue;
 
@@ -197,7 +197,7 @@ final class $ForGeneratedCode {
     required SqlDialect dialect,
     required List<TableDefinition> tables,
   }) {
-    return dialect.createTables(
+    final task = dialect.createTables(
       tables
           .map(
             (t) => CreateTableStatement._(
@@ -223,6 +223,7 @@ final class $ForGeneratedCode {
           )
           .toList(),
     );
+    return task.script;
   }
 
   static Future<void> createTables({

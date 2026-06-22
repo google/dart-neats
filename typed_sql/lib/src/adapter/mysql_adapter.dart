@@ -246,7 +246,9 @@ final class _MysqlDatabaseAdapter extends DatabaseAdapter {
       return await _withConnection((conn) async {
         // TODO: Fix this pretty ugly hack!
         for (final s in sql.split(';')) {
-          await conn.query(s);
+          if (s.trim().isNotEmpty) {
+            await conn.query(s);
+          }
         }
       });
     } on Exception catch (e) {

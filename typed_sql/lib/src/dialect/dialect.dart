@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import '../sql_task.dart';
 import '../typed_sql.dart';
 import 'postgres_dialect.dart';
 import 'sqlite_dialect.dart';
 
+export '../sql_task.dart';
 export '../typed_sql.dart'
     show
         AvgExpression,
@@ -108,24 +110,6 @@ export '../typed_sql.dart'
 export '../types/custom_data_type.dart' show CustomDataType;
 export '../types/json_value.dart' show JsonValue;
 
-sealed class SqlTask {
-  const SqlTask();
-}
-
-final class SingleSqlTask extends SqlTask {
-  final String sql;
-  final List<Object?> params;
-
-  const SingleSqlTask(this.sql, this.params);
-}
-
-final class PipelinedSqlTask extends SqlTask {
-  final String sql;
-  final Iterable<List<Object?>> paramsList;
-
-  const PipelinedSqlTask(this.sql, this.paramsList);
-}
-
 /// Interface for implementation of custom SQL dialects for `package:typed_sql`.
 ///
 /// > [!WARNING]
@@ -144,7 +128,7 @@ abstract base class SqlDialect {
   /// ```sql
   /// CREATE TABLE [table] ([columns])
   /// ```
-  String createTables(List<CreateTableStatement> statements);
+  ScriptSqlTask createTables(List<CreateTableStatement> statements);
 
   /// Insert [InsertStatement.values] into [InsertStatement.table] returning
   /// columns from [InsertStatement.returning].
