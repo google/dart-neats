@@ -181,11 +181,23 @@ bool _validUrl(String url) {
 
 // `srcset` is a comma-separated list of "<url> [descriptor]" candidates.
 // Validate every candidate's URL with the same scheme rules as `src`, so a
-// single bad entry (e.g. a `javascript:` URL) rejects the whole attribute.
+// single bad entry (e.g. a `javascript:` URL) rejects the whole attribute. The
+// optional descriptor must be a width (`640w`) or pixel-density (`1.5x`) value;
+// arbitrary trailing text rejects the attribute.
+//
+// See also: https://html.spec.whatwg.org/multipage/images.html#srcset-attributes
+final _srcsetDescriptor = RegExp(r'^(?:[0-9]+w|[0-9]*\.?[0-9]+x)$');
+
 bool _validSrcset(String value) {
   for (final candidate in value.split(',')) {
-    final url = candidate.trim().split(RegExp(r'\s+')).first;
-    if (url.isNotEmpty && !_validUrl(url)) return false;
+    final trimmed = candidate.trim();
+    if (trimmed.isEmpty) continue;
+    final parts = trimmed.split(RegExp(r'\s+'));
+    if (!_validUrl(parts.first)) return false;
+    if (parts.length > 2) return false;
+    if (parts.length == 2 && !_srcsetDescriptor.hasMatch(parts[1])) {
+      return false;
+    }
   }
   return true;
 }

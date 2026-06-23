@@ -131,7 +131,17 @@ void main() {
   testNotContains('<source srcset="javascript:alert()">', 'javascript');
   testContains('<source srcset="javascript:alert()">', '<source');
   testNotContains('<source srcset="ok.webp, javascript:alert()">', 'srcset');
-  testNotContains('<source srcset="ok.webp, javascript:alert()">', 'javascript');
+  testNotContains(
+      '<source srcset="ok.webp, javascript:alert()">', 'javascript');
+
+  // A descriptor must be a width (`640w`) or density (`1.5x`); nothing else.
+  testContains('<source srcset="a.webp 640w">', '640w');
+  testContains('<source srcset="a.webp 1.5x">', '1.5x');
+  testNotContains('<source srcset="a.webp totally-bogus">', 'srcset');
+  testNotContains('<source srcset="a.webp totally-bogus">', 'totally-bogus');
+  testContains('<source srcset="a.webp totally-bogus">', '<source');
+  testNotContains('<source srcset="a.webp 1x 2x">', 'srcset');
+  testNotContains('<source srcset="a.webp 1x, b.webp bogus">', 'srcset');
 
   testNotContains('<script/>', 'script');
   testNotContains('<script src="example.js"/>', 'script');
