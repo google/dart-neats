@@ -1,3 +1,14 @@
+## v3.0.2
+* fix(sanitizer): tighten unicodeEscapeReg to require 3+ consecutive \XX sequences
+
+## v3.0.1
+* Preserve and safely sanitize internal CSS
+* Preserve nested CSS with token-level sanitization
+* Mitigate potential ReDoS in regex patterns
+
+## v3.0.0
+* Add secure, high-performance HTML sanitization engine
+
 ## v2.1.0
  * Remove custom HTML rendering logic in favor of logic from `package:html`.
  * Added `topics` to `pubspec.yaml`.
