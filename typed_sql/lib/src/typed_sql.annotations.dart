@@ -314,8 +314,7 @@ final class Index {
   /// To create a _composite index_, use the [Index] annotation at the
   /// _row class_ level.
   ///
-  /// The optional [name] parameter overrides the SQL name derived for the
-  /// index (note: only the column name part can be replaced with this).
+  /// If [name] is not given, it'll be derived from indexed field.
   ///
   /// **Example:**
   /// ```dart
