@@ -131,7 +131,7 @@ final class ParsedUniqueConstraint {
 }
 
 final class ParsedIndex {
-  /// The user-provided name segment for the index, or `null` to derive it from the covered columns.
+  /// The user-provided name segment for the index, or `null` to derive it from the indexed columns.
   final String? name;
   final List<ParsedField> fields;
 
