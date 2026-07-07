@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 import 'test_code_generation.dart';
 
 void main() {
@@ -86,6 +85,29 @@ void main() {
       }
     ''',
     output: (s) => s.contains("name: 'ownerName'"),
+  );
+
+  testCodeGeneration(
+    name: 'Index() name is converted using the schema naming rules',
+    source: r'''
+      abstract final class BankVault extends Schema {
+        Table<Account> get accounts;
+      }
+
+      @SqlOverride.table(naming: .snake_case)
+      @PrimaryKey(['accountId'])
+      @Index(name: 'ownerName', fields: ['lastName', 'firstName'])
+      abstract final class Account extends Row {
+        int get accountId;
+        String get firstName;
+        String get lastName;
+      }
+    ''',
+    output: (s) {
+      // The raw name is preserved, and `sqlName` carries the converted name.
+      s.contains("name: 'ownerName'");
+      s.contains("sqlName: 'owner_name'");
+    },
   );
 
   testCodeGeneration(

@@ -431,6 +431,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ${rowClass.indexes.map((idx) => '''
                   \$ForGeneratedCode.indexDefinition(
                     name: ${idx.name == null ? 'null' : '\'${idx.name}\''},
+                    sqlName: ${idx.sqlName == null ? 'null' : '\'${idx.sqlName}\''},
                     columns: [${idx.fields.map((f) => '\'${f.sqlName}\'').join(', ')}],
                   )
                 ''').join(', ')}
@@ -1899,4 +1900,24 @@ extension on ParsedNaming {
     ParsedNaming.camelCase => name,
     ParsedNaming.snake_case => snakeCase(name),
   };
+}
+
+extension on ParsedIndex {
+  String? get sqlName {
+    final name = this.name;
+    if (name == null) {
+      return null;
+    }
+
+    final rowClass = fields.first.rowClass;
+    final naming =
+        [
+          // List of all overrides in prioritized order
+          ...rowClass.table.schema.overrides,
+          ...rowClass.overrides,
+        ].map((o) => o.naming).nonNulls.lastOrNull ??
+        .camelCase;
+
+    return naming.format(name);
+  }
 }

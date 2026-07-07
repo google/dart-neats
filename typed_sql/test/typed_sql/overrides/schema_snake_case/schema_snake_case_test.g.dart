@@ -144,9 +144,14 @@ final class _$SnakeUser extends SnakeUser {
     ],
     foreignKeys: [],
     indexes: [
-      $ForGeneratedCode.indexDefinition(name: null, columns: ['last_name']),
       $ForGeneratedCode.indexDefinition(
         name: null,
+        sqlName: null,
+        columns: ['last_name'],
+      ),
+      $ForGeneratedCode.indexDefinition(
+        name: null,
+        sqlName: null,
         columns: ['last_name', 'first_name'],
       ),
     ],

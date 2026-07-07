@@ -57,7 +57,7 @@ Iterable<String> createIndexStatements(
     final indexName = [
       table.tableName,
       'idx',
-      if (index.name == null) ...index.columns else index.name,
+      if (index.sqlName == null) ...index.columns else index.sqlName,
     ].join('_');
 
     return <String>[

@@ -121,12 +121,20 @@ final class ForeignKeyDefinition {
 }
 
 final class IndexDefinition {
-  /// `null` to derive it from the table and the covered [columns], otherwise replaces the columns part.
+  /// The semantic name of the index, given through the `@Index` annotation.
   final String? name;
+
+  /// The [name] converted using the schema's naming rules, or `null` to derive
+  /// it from the table and the indexed [columns].
+  ///
+  /// This is the name used when constructing the SQL index name.
+  final String? sqlName;
+
   final List<String> columns;
 
   const IndexDefinition({
     required this.name,
+    required this.sqlName,
     required this.columns,
   });
 }
@@ -468,10 +476,12 @@ final class $ForGeneratedCode {
 
   static IndexDefinition indexDefinition({
     required String? name,
+    required String? sqlName,
     required List<String> columns,
   }) {
     return IndexDefinition(
       name: name,
+      sqlName: sqlName,
       columns: columns,
     );
   }

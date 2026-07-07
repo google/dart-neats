@@ -666,9 +666,14 @@ final class _$Package extends Package {
       ),
     ],
     indexes: [
-      $ForGeneratedCode.indexDefinition(name: null, columns: ['ownerId']),
       $ForGeneratedCode.indexDefinition(
         name: null,
+        sqlName: null,
+        columns: ['ownerId'],
+      ),
+      $ForGeneratedCode.indexDefinition(
+        name: null,
+        sqlName: null,
         columns: ['ownerId', 'publisher'],
       ),
     ],
