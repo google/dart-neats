@@ -427,6 +427,14 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                   )
                 ''').join(',')}
               ],
+              indexes: [
+                ${rowClass.indexes.map((idx) => '''
+                  \$ForGeneratedCode.indexDefinition(
+                    name: ${idx.name == null ? 'null' : '\'${idx.name}\''},
+                    columns: [${idx.fields.map((f) => '\'${f.sqlName}\'').join(', ')}],
+                  )
+                ''').join(', ')}
+              ],
               readRow: _\$${rowClass.name}._\$fromDatabase,
             )
           '''),

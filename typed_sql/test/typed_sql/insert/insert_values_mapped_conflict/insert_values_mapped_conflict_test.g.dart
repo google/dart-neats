@@ -96,6 +96,7 @@ final class _$ConflictMappedItem extends ConflictMappedItem {
       ['name'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$ConflictMappedItem._$fromDatabase,
   );
 

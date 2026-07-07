@@ -90,6 +90,7 @@ final class ParsedRowClass {
   final List<ParsedField> fields;
   final List<ParsedForeignKey> foreignKeys;
   final List<ParsedUniqueConstraint> uniqueConstraints;
+  final List<ParsedIndex> indexes;
   final List<ParsedSqlOverride> overrides;
 
   ParsedRowClass({
@@ -98,6 +99,7 @@ final class ParsedRowClass {
     required this.fields,
     required this.foreignKeys,
     required this.uniqueConstraints,
+    required this.indexes,
     required this.overrides,
   });
 
@@ -123,6 +125,17 @@ final class ParsedUniqueConstraint {
   final List<ParsedField> fields;
 
   ParsedUniqueConstraint({
+    required this.name,
+    required this.fields,
+  });
+}
+
+final class ParsedIndex {
+  /// The user-provided name segment for the index, or `null` to derive it from the covered columns.
+  final String? name;
+  final List<ParsedField> fields;
+
+  ParsedIndex({
     required this.name,
     required this.fields,
   });

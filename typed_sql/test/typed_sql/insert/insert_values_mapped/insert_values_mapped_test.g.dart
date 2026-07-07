@@ -94,6 +94,7 @@ final class _$MappedItem extends MappedItem {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$MappedItem._$fromDatabase,
   );
 

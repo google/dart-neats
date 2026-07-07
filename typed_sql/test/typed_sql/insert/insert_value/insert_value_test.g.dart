@@ -74,6 +74,7 @@ final class _$ValueItem extends ValueItem {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$ValueItem._$fromDatabase,
   );
 

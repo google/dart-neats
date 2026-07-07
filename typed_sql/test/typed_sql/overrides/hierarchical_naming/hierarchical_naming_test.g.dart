@@ -146,6 +146,7 @@ final class _$HierarchyUser extends HierarchyUser {
       ['str_first_name', 'lastName'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$HierarchyUser._$fromDatabase,
   );
 
@@ -770,6 +771,7 @@ final class _$HierarchyProfile extends HierarchyProfile {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$HierarchyProfile._$fromDatabase,
   );
 

@@ -114,6 +114,7 @@ final class _$MultiItem extends MultiItem {
       ['email'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$MultiItem._$fromDatabase,
   );
 

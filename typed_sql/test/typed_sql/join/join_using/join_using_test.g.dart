@@ -99,6 +99,7 @@ final class _$Employee extends Employee {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$Employee._$fromDatabase,
   );
 
@@ -647,6 +648,7 @@ final class _$Department extends Department {
     primaryKey: <String>['departmentId'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Department._$fromDatabase,
   );
 

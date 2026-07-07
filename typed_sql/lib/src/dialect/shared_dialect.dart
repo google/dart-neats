@@ -47,3 +47,23 @@ String foreignKeyConstraintName(
     if (key.name.isEmpty) ...key.columns else key.name,
   ].join('_');
 }
+
+/// Returns the `CREATE INDEX` statements for the indexes defined on [table].
+Iterable<String> createIndexStatements(
+  CreateTableStatement table,
+  String Function(String) escape,
+) {
+  return table.indexes.map((index) {
+    final indexName = [
+      table.tableName,
+      'idx',
+      if (index.name == null) ...index.columns else index.name,
+    ].join('_');
+
+    return <String>[
+      'CREATE INDEX ${escape(indexName)}',
+      'ON ${escape(table.tableName)}',
+      '(${index.columns.map(escape).join(', ')})',
+    ].join(' ');
+  });
+}

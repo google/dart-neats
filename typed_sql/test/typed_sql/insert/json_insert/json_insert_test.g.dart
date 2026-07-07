@@ -77,6 +77,7 @@ final class _$JsonItem extends JsonItem {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$JsonItem._$fromDatabase,
   );
 

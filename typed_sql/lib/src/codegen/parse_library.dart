@@ -628,6 +628,113 @@ Future<ParsedRowClass> _parseRowClass(
     );
   }
 
+  // Extract @Index.field() annotations
+  final indexes = <ParsedIndex>[];
+  for (final a in cls.getters) {
+    // Find the annotated field
+    final field = fields.firstWhere((f) => f.name == a.name!);
+
+    for (final (elementAnnotation, value)
+        in indexTypeChecker.annotationAndValuesOfExact(a)) {
+      final indexFields = value.getField('_fields')?.toListValue();
+      if (indexFields != null) {
+        await throwInvalidAnnotationInSource(
+          '`Index()` cannot be used on fields, use `Index.field()` instead',
+          annotatedElement: a,
+          annotation: elementAnnotation,
+        );
+      }
+
+      final name = value.getField('_name')?.toStringValue();
+      if (name != null && !isValidIdentifier(name)) {
+        await throwInvalidAnnotationInSource(
+          '`Index.field(name: "$name")`: name is not a valid identifier',
+          annotatedElement: a,
+          annotation: elementAnnotation,
+        );
+      }
+
+      if (field.backingType == 'JsonValue') {
+        await throwInvalidAnnotationInSource(
+          'JsonValue field cannot be used in an `Index` annotation',
+          annotatedElement: a,
+          annotation: elementAnnotation,
+        );
+      }
+
+      indexes.add(
+        ParsedIndex(
+          name: name,
+          fields: [field],
+        ),
+      );
+    }
+  }
+
+  // Extract @Index annotations
+  for (final (ea, a) in indexTypeChecker.annotationAndValuesOfExact(cls)) {
+    final name = a.getField('_name')?.toStringValue();
+    final indexFields = a
+        .getField('_fields')
+        ?.toListValue()
+        ?.map((v) => v.toStringValue()!)
+        .toList();
+
+    // Forbid use of Index.field() on classes
+    if (name == null || indexFields == null) {
+      await throwInvalidAnnotationInSource(
+        '`Index.field()` cannot be used on classes, use `Index()` instead',
+        annotatedElement: cls,
+        annotation: ea,
+      );
+    }
+
+    // Check name is valid, if present
+    if (name != '-' && !isValidIdentifier(name)) {
+      await throwInvalidAnnotationInSource(
+        '`Index(name: "$name")`: name is not a valid identifier',
+        annotatedElement: cls,
+        annotation: ea,
+      );
+    }
+
+    if (indexFields.isEmpty) {
+      await throwInvalidAnnotationInSource(
+        '`Index()` annotation must have non-empty `fields`!',
+        annotatedElement: cls,
+        annotation: ea,
+      );
+    }
+
+    final indexFieldRefs = <ParsedField>[];
+    for (final fieldName in indexFields) {
+      final field = fields.firstWhereOrNull((f) => f.name == fieldName);
+      if (field == null) {
+        await throwInvalidAnnotationInSource(
+          '`Index()` annotation references unknown field "$fieldName", '
+          'no such field on row class "${cls.name}".',
+          annotatedElement: cls,
+          annotation: ea,
+        );
+      }
+      if (field.backingType == 'JsonValue') {
+        await throwInvalidAnnotationInSource(
+          'JsonValue field cannot be used in an `Index` annotation',
+          annotatedElement: cls,
+          annotation: ea,
+        );
+      }
+      indexFieldRefs.add(field);
+    }
+
+    indexes.add(
+      ParsedIndex(
+        name: name == '-' ? null : name,
+        fields: indexFieldRefs,
+      ),
+    );
+  }
+
   // Extract @References annotations
   final foreignKeys = <ParsedForeignKey>[];
   for (final a in [...cls.getters, ...cls.setters]) {
@@ -782,6 +889,7 @@ Future<ParsedRowClass> _parseRowClass(
     fields: fields,
     foreignKeys: foreignKeys,
     uniqueConstraints: uniqueConstraints,
+    indexes: indexes,
     overrides: await _parseSqlOverrides(cls, .table),
   );
 }

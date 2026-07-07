@@ -86,6 +86,7 @@ final class _$CustomDataItem extends CustomDataItem {
       ['stringVal'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$CustomDataItem._$fromDatabase,
   );
 

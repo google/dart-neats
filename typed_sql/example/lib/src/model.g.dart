@@ -93,6 +93,7 @@ final class _$User extends User {
       ['email'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$User._$fromDatabase,
   );
 
@@ -656,6 +657,7 @@ final class _$Package extends Package {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$Package._$fromDatabase,
   );
 
@@ -1234,6 +1236,7 @@ final class _$Like extends Like {
     primaryKey: <String>['userId', 'packageName'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Like._$fromDatabase,
   );
 

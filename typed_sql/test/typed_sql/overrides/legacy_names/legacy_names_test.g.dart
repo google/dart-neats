@@ -155,6 +155,7 @@ final class _$LegacyUser extends LegacyUser {
       ['str_First_Name', 'str_Last_Name'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$LegacyUser._$fromDatabase,
   );
 
@@ -805,6 +806,7 @@ final class _$LegacyComment extends LegacyComment {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$LegacyComment._$fromDatabase,
   );
 

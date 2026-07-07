@@ -63,6 +63,7 @@ final class TableDefinition<T extends Row> {
   final List<String> primaryKey;
   final List<List<String>> unique;
   final List<ForeignKeyDefinition> foreignKeys;
+  final List<IndexDefinition> indexes;
   final T? Function(RowReader) readRow;
 
   const TableDefinition({
@@ -72,6 +73,7 @@ final class TableDefinition<T extends Row> {
     required this.primaryKey,
     required this.unique,
     required this.foreignKeys,
+    required this.indexes,
     required this.readRow,
   });
 }
@@ -115,6 +117,17 @@ final class ForeignKeyDefinition {
     required this.referencedColumns,
     required this.onDelete,
     required this.onUpdate,
+  });
+}
+
+final class IndexDefinition {
+  /// `null` to derive it from the table and the covered [columns], otherwise replaces the columns part.
+  final String? name;
+  final List<String> columns;
+
+  const IndexDefinition({
+    required this.name,
+    required this.columns,
   });
 }
 
@@ -219,6 +232,7 @@ final class $ForGeneratedCode {
                   .toList(),
               unique: t.unique,
               foreignKeys: t.foreignKeys,
+              indexes: t.indexes,
             ),
           )
           .toList(),
@@ -395,6 +409,7 @@ final class $ForGeneratedCode {
     required List<String> primaryKey,
     required List<List<String>> unique,
     required List<ForeignKeyDefinition> foreignKeys,
+    required List<IndexDefinition> indexes,
     required T? Function(RowReader) readRow,
   }) {
     return TableDefinition<T>(
@@ -404,6 +419,7 @@ final class $ForGeneratedCode {
       primaryKey: primaryKey,
       unique: unique,
       foreignKeys: foreignKeys,
+      indexes: indexes,
       readRow: readRow,
     );
   }
@@ -447,6 +463,16 @@ final class $ForGeneratedCode {
       referencedColumns: referencedColumns,
       onDelete: onDelete,
       onUpdate: onUpdate,
+    );
+  }
+
+  static IndexDefinition indexDefinition({
+    required String? name,
+    required List<String> columns,
+  }) {
+    return IndexDefinition(
+      name: name,
+      columns: columns,
     );
   }
 

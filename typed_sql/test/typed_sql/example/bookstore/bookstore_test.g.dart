@@ -85,6 +85,7 @@ final class _$Author extends Author {
       ['name'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Author._$fromDatabase,
   );
 
@@ -621,6 +622,7 @@ final class _$Book extends Book {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$Book._$fromDatabase,
   );
 

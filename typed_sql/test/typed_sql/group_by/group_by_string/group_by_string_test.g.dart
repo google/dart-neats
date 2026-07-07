@@ -94,6 +94,7 @@ final class _$Employee extends Employee {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Employee._$fromDatabase,
   );
 

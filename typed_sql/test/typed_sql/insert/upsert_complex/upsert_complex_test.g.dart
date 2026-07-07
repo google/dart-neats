@@ -140,6 +140,7 @@ final class _$ComplexItem extends ComplexItem {
       ['name', 'doubleValue', 'boolValue'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$ComplexItem._$fromDatabase,
   );
 

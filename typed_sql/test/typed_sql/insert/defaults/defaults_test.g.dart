@@ -146,6 +146,7 @@ final class _$DefaultsItem extends DefaultsItem {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$DefaultsItem._$fromDatabase,
   );
 

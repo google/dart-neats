@@ -38,6 +38,7 @@ abstract final class User extends Row {
 }
 
 @PrimaryKey(['packageName'])
+@Index(fields: ['ownerId', 'publisher'])
 abstract final class Package extends Row {
   String get packageName;
 
@@ -45,6 +46,7 @@ abstract final class Package extends Row {
   int get likes;
 
   @References(table: 'users', field: 'userId', as: 'packages', name: 'owner')
+  @Index.field()
   int get ownerId;
 
   String? get publisher;

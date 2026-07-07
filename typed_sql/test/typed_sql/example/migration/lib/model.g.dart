@@ -83,6 +83,7 @@ final class _$Account extends Account {
       ['accountNumber'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Account._$fromDatabase,
   );
 

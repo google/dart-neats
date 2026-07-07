@@ -93,6 +93,7 @@ final class _$User extends User {
       ['email'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$User._$fromDatabase,
   );
 
@@ -662,6 +663,13 @@ final class _$Package extends Package {
         referencedColumns: ['userId'],
         onDelete: .noAction,
         onUpdate: .noAction,
+      ),
+    ],
+    indexes: [
+      $ForGeneratedCode.indexDefinition(name: null, columns: ['ownerId']),
+      $ForGeneratedCode.indexDefinition(
+        name: null,
+        columns: ['ownerId', 'publisher'],
       ),
     ],
     readRow: _$Package._$fromDatabase,
@@ -1242,6 +1250,7 @@ final class _$Like extends Like {
     primaryKey: <String>['userId', 'packageName'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Like._$fromDatabase,
   );
 

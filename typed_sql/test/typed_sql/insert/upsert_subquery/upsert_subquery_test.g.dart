@@ -80,6 +80,7 @@ final class _$SourceItem extends SourceItem {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$SourceItem._$fromDatabase,
   );
 
@@ -551,6 +552,7 @@ final class _$SubQueryItem extends SubQueryItem {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$SubQueryItem._$fromDatabase,
   );
 

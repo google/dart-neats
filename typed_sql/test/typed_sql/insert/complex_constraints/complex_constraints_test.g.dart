@@ -105,6 +105,7 @@ final class _$CompositePkItem extends CompositePkItem {
     primaryKey: <String>['pkA', 'pkB'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$CompositePkItem._$fromDatabase,
   );
 
@@ -607,6 +608,7 @@ final class _$MultiUniqueItem extends MultiUniqueItem {
       ['fieldA', 'fieldB'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$MultiUniqueItem._$fromDatabase,
   );
 
@@ -1191,6 +1193,7 @@ final class _$ForeignKeyItem extends ForeignKeyItem {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$ForeignKeyItem._$fromDatabase,
   );
 

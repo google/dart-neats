@@ -102,6 +102,7 @@ final class _$User extends User {
       ['firstName', 'lastName'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$User._$fromDatabase,
   );
 

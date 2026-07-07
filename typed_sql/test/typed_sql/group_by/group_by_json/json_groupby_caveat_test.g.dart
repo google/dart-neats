@@ -84,6 +84,7 @@ final class _$Product extends Product {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Product._$fromDatabase,
   );
 

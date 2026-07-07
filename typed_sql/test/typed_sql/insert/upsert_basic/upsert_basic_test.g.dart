@@ -93,6 +93,7 @@ final class _$BasicItem extends BasicItem {
       ['name'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$BasicItem._$fromDatabase,
   );
 

@@ -115,6 +115,7 @@ final class _$SimpleItem extends SimpleItem {
       ['name'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$SimpleItem._$fromDatabase,
   );
 
@@ -658,6 +659,7 @@ final class _$CompositeItem extends CompositeItem {
       ['firstName', 'lastName'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$CompositeItem._$fromDatabase,
   );
 
@@ -1260,6 +1262,7 @@ final class _$NullableUniqueItem extends NullableUniqueItem {
       ['code'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$NullableUniqueItem._$fromDatabase,
   );
 
@@ -1809,6 +1812,7 @@ final class _$SubQueryItem extends SubQueryItem {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$SubQueryItem._$fromDatabase,
   );
 
@@ -2395,6 +2399,7 @@ final class _$ComplexItem extends ComplexItem {
       ['name', 'doubleValue', 'boolValue'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$ComplexItem._$fromDatabase,
   );
 
@@ -3012,6 +3017,7 @@ final class _$CustomTypeItem extends CustomTypeItem {
       ['value'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$CustomTypeItem._$fromDatabase,
   );
 

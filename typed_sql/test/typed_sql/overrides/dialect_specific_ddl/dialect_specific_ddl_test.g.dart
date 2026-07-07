@@ -158,6 +158,7 @@ final class _$DialectItem extends DialectItem {
       ['name', 'category'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$DialectItem._$fromDatabase,
   );
 
@@ -754,6 +755,7 @@ final class _$DialectLog extends DialectLog {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$DialectLog._$fromDatabase,
   );
 

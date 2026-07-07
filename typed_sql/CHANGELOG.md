@@ -1,3 +1,6 @@
+## 0.1.13
+ * Support `CREATE INDEX` DDLs through `@Index` annotations.
+
 ## 0.1.12
  * Fixed code generator bug that affected `onConflict` clauses with non-default naming.
 

@@ -212,20 +212,9 @@ final class _SqliteDatabaseAdapter extends DatabaseAdapter {
   Future<void> _script(Database conn, String sql) async {
     try {
       _throwIfClosed();
-      final statements = conn.prepareMultiple(sql);
-      try {
-        for (final statement in statements) {
-          statement.execute();
-        }
-      } finally {
-        for (final statement in statements) {
-          try {
-            statement.dispose();
-          } catch (e) {
-            // ignore errors, we always have to dispose!
-          }
-        }
-      }
+      // Note: `prepareMultiple` does not work with `CREATE INDEX` following its `CREATE TABLE`.
+      // TODO: Consider running the DDLs one-by-one when creating the schema.
+      conn.execute(sql);
     } on SqliteException catch (e) {
       _throwSqliteException(e);
     }

@@ -90,6 +90,7 @@ final class _$Employee extends Employee {
     primaryKey: <String>['employeeId'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Employee._$fromDatabase,
   );
 
@@ -585,6 +586,7 @@ final class _$Department extends Department {
     primaryKey: <String>['departmentId'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Department._$fromDatabase,
   );
 

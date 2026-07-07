@@ -77,6 +77,7 @@ final class _$NotNullItem extends NotNullItem {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$NotNullItem._$fromDatabase,
   );
 

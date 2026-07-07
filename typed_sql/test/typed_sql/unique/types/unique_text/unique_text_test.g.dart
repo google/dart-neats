@@ -85,6 +85,7 @@ final class _$Item extends Item {
       ['value'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Item._$fromDatabase,
   );
 

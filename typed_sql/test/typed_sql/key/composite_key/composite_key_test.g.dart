@@ -90,6 +90,7 @@ final class _$Item extends Item {
     primaryKey: <String>['id', 'name'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Item._$fromDatabase,
   );
 

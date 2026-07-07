@@ -135,6 +135,7 @@ final class _$ComplexMappedItem extends ComplexMappedItem {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$ComplexMappedItem._$fromDatabase,
   );
 

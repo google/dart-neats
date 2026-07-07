@@ -40,6 +40,7 @@ final class CreateTableStatement extends SqlStatement {
   columns;
   final List<List<String>> unique;
   final List<ForeignKeyDefinition> foreignKeys;
+  final List<IndexDefinition> indexes;
 
   CreateTableStatement._({
     required this.tableName,
@@ -47,6 +48,7 @@ final class CreateTableStatement extends SqlStatement {
     required this.columns,
     required this.unique,
     required this.foreignKeys,
+    required this.indexes,
   });
 }
 

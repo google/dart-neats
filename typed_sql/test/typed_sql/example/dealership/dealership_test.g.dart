@@ -102,6 +102,7 @@ final class _$Car extends Car {
       ['licensePlate'],
     ],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Car._$fromDatabase,
   );
 

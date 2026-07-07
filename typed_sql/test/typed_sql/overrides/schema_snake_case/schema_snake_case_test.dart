@@ -36,6 +36,7 @@ abstract final class SnakeDatabase extends Schema {
 
 @PrimaryKey(['userId'])
 @Unique(fields: ['firstName', 'lastName'])
+@Index(fields: ['lastName', 'firstName'])
 abstract final class SnakeUser extends Row {
   @AutoIncrement()
   int get userId;
@@ -43,6 +44,7 @@ abstract final class SnakeUser extends Row {
   @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get firstName;
 
+  @Index.field()
   @SqlOverride.field(dialect: 'mysql', columnType: 'VARCHAR(255)')
   String get lastName;
 

@@ -36,6 +36,9 @@ final tableTypeChecker = TypeChecker.fromUrl(
 final uniqueTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#Unique'),
 );
+final indexTypeChecker = TypeChecker.fromUrl(
+  typedSqlSrcUri.resolve('#Index'),
+);
 final autoIncrementTypeChecker = TypeChecker.fromUrl(
   typedSqlSrcUri.resolve('#AutoIncrement'),
 );

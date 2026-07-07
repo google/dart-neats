@@ -100,6 +100,7 @@ final class _$Post extends Post {
     primaryKey: <String>['author', 'slug'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$Post._$fromDatabase,
   );
 
@@ -678,6 +679,7 @@ final class _$Comment extends Comment {
         onUpdate: .noAction,
       ),
     ],
+    indexes: [],
     readRow: _$Comment._$fromDatabase,
   );
 

@@ -70,6 +70,7 @@ export 'src/typed_sql.dart'
         ForeignKeyDefinition,
         FromClause,
         GroupByClause,
+        IndexDefinition,
         InsertStatement,
         IntersectClause,
         JoinClause,

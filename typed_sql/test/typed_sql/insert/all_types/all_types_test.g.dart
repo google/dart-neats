@@ -335,6 +335,7 @@ final class _$AllTypesItem extends AllTypesItem {
     primaryKey: <String>['id'],
     unique: <List<String>>[],
     foreignKeys: [],
+    indexes: [],
     readRow: _$AllTypesItem._$fromDatabase,
   );
 

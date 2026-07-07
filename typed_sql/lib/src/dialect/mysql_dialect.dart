@@ -125,6 +125,7 @@ final class _MysqlSqlDialect extends SqlDialect {
           ...table.primaryKey,
           ...table.unique.expand((u) => u),
           ...table.foreignKeys.expand((fk) => fk.columns),
+          ...table.indexes.expand((idx) => idx.columns),
         }.toSet();
         final indexedTextColumns = resolvedColumnDefinitions.where(
           (c) => indexedColumnNames.contains(c.name) && c.sqlType == 'TEXT',
@@ -184,6 +185,8 @@ final class _MysqlSqlDialect extends SqlDialect {
           ].join(' '),
         );
       }),
+      // Indexes are emitted as separate statements after the tables.
+      ...statements.expand((table) => createIndexStatements(table, escape)),
     ];
     return ScriptSqlTask(sqlStatements.toList());
   }
