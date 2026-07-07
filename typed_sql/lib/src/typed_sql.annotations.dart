@@ -271,8 +271,7 @@ final class Unique {
 /// Annotation to define a database `INDEX`.
 ///
 /// The index is emitted as a separate `CREATE INDEX` statement following the
-/// `CREATE TABLE` statement, using a name derived from the table and covered
-/// columns, unless an explicit name is provided.
+/// `CREATE TABLE` statement.
 ///
 /// This annotation may be applied multiple times on a _row class_ to define
 /// multiple indexes.
