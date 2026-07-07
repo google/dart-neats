@@ -286,8 +286,7 @@ final class Index {
 
   /// Add a composite index covering multiple [fields].
   ///
-  /// The optional [name] parameter overrides the SQL name derived for the
-  /// index (note: only the column concatenation part can be replaced with this).
+  /// If [name] is not given it'll be derived from indexed fields.
   ///
   /// **Example:**
   /// ```dart
