@@ -85,19 +85,23 @@ final class DocumentationCodeSample {
   /// ```
   final bool noTest;
 
+  /// Whether the code sample should be run as a test.
+  final bool shouldRun;
+
   /// Create a new [DocumentationCodeSample].
   DocumentationCodeSample({
     required this.comment,
     required this.code,
     required this.noTest,
+    this.shouldRun = false,
   });
 
   /// Whether the code sample has a `main` function.
   /// Detects variations like:
-  /// - void main()
-  /// - Future<void> main()
-  /// - Future main()
-  /// - main()
+  /// - `void main()`
+  /// - `Future<void> main()`
+  /// - `Future main()`
+  /// - `main()`
   bool get hasMain {
     // Check for any main function declaration
     // Matches: main(), void main(), Future<void> main(), Future main()

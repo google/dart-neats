@@ -19,6 +19,25 @@ import 'package:dartdoc_test/src/logger.dart';
 import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
+/// Result of running a test.
+class TestResult {
+  /// Name of the test.
+  final String name;
+
+  /// Whether the test passed.
+  final bool passed;
+
+  /// Error output if the test failed.
+  final String? output;
+
+  /// Create a new [TestResult].
+  TestResult({
+    required this.name,
+    required this.passed,
+    this.output,
+  });
+}
+
 /// Reporter for dartdoc_test result.
 ///
 /// This class provides a way to report issues found in code samples. It can be
@@ -45,6 +64,11 @@ abstract base class Reporter {
   /// Create a new reporter for test.
   static Reporter test({required bool verbose}) =>
       _RepoterForTest(verbose: verbose);
+
+  /// Report test results.
+  void reportTestResults(List<TestResult> results, {bool verbose = false}) {
+    // Default implementation - will be overridden by subclasses
+  }
 }
 
 /// Reporter for source file.
@@ -113,6 +137,32 @@ final class _ReporterForStdout extends Reporter
       logger.info('${issue.commentSpan!.info(issue.message)}\n');
     }
   }
+
+  @override
+  void reportTestResults(List<TestResult> results, {bool verbose = false}) {
+    final passed = results.where((r) => r.passed);
+    final failed = results.where((r) => !r.passed);
+
+    if (verbose) {
+      for (final r in results) {
+        if (r.passed) {
+          logger.info('✅ ${r.name}');
+        } else {
+          logger.error('❌ ${r.name}');
+          if (r.output != null) {
+            logger.error(r.output!);
+          }
+        }
+      }
+    }
+
+    if (failed.isEmpty) {
+      logger.info('✅ All ${results.length} tests passed!');
+    } else {
+      logger.error('❌ ${failed.length} tests failed out of ${results.length}');
+      io.exitCode = 1;
+    }
+  }
 }
 
 /// Reporter for test.
@@ -161,6 +211,20 @@ final class _RepoterForTest extends Reporter
         () {
           if (issue.commentSpan != null) {
             fail(issue.commentSpan!.info(issue.message));
+          }
+        },
+      );
+    }
+  }
+
+  @override
+  void reportTestResults(List<TestResult> results, {bool verbose = false}) {
+    for (final result in results) {
+      test(
+        result.name,
+        () {
+          if (!result.passed) {
+            fail(result.output ?? 'Test failed');
           }
         },
       );
