@@ -98,6 +98,45 @@ abstract final class Book extends Row {
 > support for composite foreign keys in the future. But in most cases, you
 > should probably avoid such constructs when possible.
 
+## Choosing referential actions
+
+Both `@References` and `@ForeignKey` accept `onDelete` and `onUpdate`
+arguments. These select what the database does to child rows when the
+referenced row in the parent table is deleted or its referenced fields are
+updated. Both arguments default to `.noAction`.
+
+For example, the following foreign key deletes a book when its author is
+deleted, but prevents updating an author ID while books reference it:
+
+```dart
+@PrimaryKey(['bookId'])
+@ForeignKey(
+  ['authorId'],
+  table: 'authors',
+  fields: ['authorId'],
+  onDelete: .cascade,
+  onUpdate: .restrict,
+)
+abstract final class Book extends Row {
+  int get bookId;
+  int get authorId;
+}
+```
+
+The available `ReferentialAction` values are:
+
+| Value | SQL action | Effect on child rows |
+|---|---|---|
+| `.cascade` | `CASCADE` | Delete child rows, or update their foreign-key fields. |
+| `.restrict` | `RESTRICT` | Reject the parent delete or update immediately. |
+| `.noAction` | `NO ACTION` | Reject the operation if it would violate the constraint. This is the default. |
+| `.setNull` | `SET NULL` | Set the child foreign-key fields to `NULL`. The fields must be nullable. |
+| `.setDefault` | `SET DEFAULT` | Set the child foreign-key fields to their declared defaults. |
+
+> [!NOTE]
+> Support and constraint-check timing vary between SQL dialects. In particular,
+> MySQL and MariaDB's InnoDB engine do not support `SET DEFAULT`. Make sure the
+> selected action is supported by every database used by the application.
 
 ## Following references in a query (using reference `name`)
 With the `@References` annotation in place, `package:typed_sql` will use
