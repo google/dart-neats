@@ -93,7 +93,16 @@ final class DocumentationCodeSample {
   });
 
   /// Whether the code sample has a `main` function.
-  bool get hasMain => code.contains('void main()');
+  /// Detects variations like:
+  /// - void main()
+  /// - Future<void> main()
+  /// - Future main()
+  /// - main()
+  bool get hasMain {
+    // Check for any main function declaration
+    // Matches: main(), void main(), Future<void> main(), Future main()
+    return RegExp(r'\b(Future<void>|Future|void)?\s*main\s*\(').hasMatch(code);
+  }
 
   /// Create a sample by wrapping the code with a main function and imports.
   String wrappedCode(Directory testDir) {
