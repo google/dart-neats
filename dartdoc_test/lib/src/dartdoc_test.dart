@@ -16,9 +16,12 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:glob/glob.dart';
+import 'package:path/path.dart' as p;
 
 import 'analyzer.dart';
 import 'extractor.dart';
+import 'model.dart'; // ← ADD THIS IMPORT for CodeSampleFile
+import 'reporter.dart'; // ← ADD THIS IMPORT for TestResult
 import 'resource.dart';
 
 /// Dartdoc test
@@ -56,6 +59,44 @@ class DartdocTest {
     return results;
   }
 
+  /// Run code samples marked with #test tag.
+  Future<List<TestResult>> run() async {
+    final files =
+        _testContext.codeSampleFiles.where((f) => f.sample.shouldRun).toList();
+
+    final results = <TestResult>[];
+    for (final f in files) {
+      final result = await _runCodeSample(f);
+      results.add(result);
+    }
+    return results;
+  }
+
+  /// Run a single code sample as a test.
+  Future<TestResult> _runCodeSample(CodeSampleFile file) async {
+    final tempDir = await Directory.systemTemp.createTemp('dartdoc_test_');
+    final tempFile = File(p.join(tempDir.path, 'test.dart'));
+    final content = file.sample.wrappedCode(tempDir);
+    await tempFile.writeAsString(content);
+
+    try {
+      final result = await Process.run(
+        'dart',
+        ['run', tempFile.path],
+        runInShell: true,
+      );
+
+      final passed = result.exitCode == 0;
+      return TestResult(
+        name: file.sample.comment.path,
+        passed: passed,
+        output: passed ? null : result.stderr as String?,
+      );
+    } finally {
+      await tempDir.delete(recursive: true);
+    }
+  }
+
   /// Get all dart files in the current directory.
   List<File> getFiles() => _testContext.getFiles();
 }
@@ -68,6 +109,9 @@ class DartdocTestOptions {
   /// Whether to output verbose information.
   final bool verbose;
 
+  /// Whether to run code samples marked with #test.
+  final bool runSamples;
+
   /// The glob patterns to exclude files from analysis.
   final List<Glob> exclude;
 
@@ -79,6 +123,7 @@ class DartdocTestOptions {
   DartdocTestOptions({
     this.write = false,
     this.verbose = false,
+    this.runSamples = false,
     List<String> exclude = const [],
     this.out,
   }) : exclude = exclude.map((e) => Glob(e)).toList();

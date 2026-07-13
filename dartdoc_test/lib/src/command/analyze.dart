@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io' as io;
+
 import 'package:dartdoc_test/src/reporter.dart';
 
 import '../dartdoc_test.dart';
@@ -47,6 +49,10 @@ class AnalyzeCommand extends DartdocTestCommand {
         'exclude',
         abbr: 'x',
         help: 'Directories or files to exclude from analysis.',
+      )
+      ..addFlag(
+        'run',
+        help: 'Run code samples marked with #test tag.',
       );
   }
 
@@ -57,7 +63,11 @@ class AnalyzeCommand extends DartdocTestCommand {
       verbose: globalResults.flag('verbose'),
       out: argResults.option('output'),
       exclude: argResults.multiOption('exclude'),
+      runSamples: argResults.flag('run'),
     ));
+
+    final reporter = Reporter.stdout(verbose: globalResults.flag('verbose'));
+
     logger.info('Extracting code samples ...');
     await dartdocTest.extract();
 
@@ -84,6 +94,25 @@ class AnalyzeCommand extends DartdocTestCommand {
     for (final file in files) {
       reporter.reportSourceFile(file.path);
     }
-    logger.info(Summary.from(result).toString());
+    final summary = Summary.from(result);
+    logger.info(summary.toString());
+
+    // Run tests if --run flag is provided
+    if (argResults.flag('run')) {
+      logger.info('');
+      logger.info('Running code samples marked with #test ...');
+      final testResults = await dartdocTest.run();
+      reporter.reportTestResults(testResults,
+          verbose: globalResults.flag('verbose'));
+
+      final hasFailedTests = testResults.any((r) => !r.passed);
+      if (hasFailedTests) {
+        io.exitCode = 1;
+      }
+    }
+
+    if (summary.isFailed) {
+      io.exitCode = 1;
+    }
   }
 }
