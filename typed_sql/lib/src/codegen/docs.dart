@@ -509,3 +509,52 @@ String onConflictUpdate(String rowInstanceName) =>
 
     [1]: https://www.sqlite.org/lang_upsert.html
 ''';
+
+/// Documentation for `.fetchPage` on `Query<(Expr<Row>,)>`.
+String fetchPage(String rowClassName) =>
+    '''
+    Fetch a page of at most `request.pageSize` rows.
+
+    For continuing an existing pagination, pass `page.nextPageRequest`
+    from the previous page as [request]:
+    ```dart
+    PageRequest<$rowClassName, ${rowClassName}Cursor>? request =
+        ${rowClassName}PageRequest(pageSize: 100);
+    while (request != null) {
+      final page = await db.myTable.fetchPage(request);
+      // ... process page.items ...
+      request = page.nextPageRequest;
+    }
+    ```
+
+    If you only need a resume point to persist (e.g. in a URL or a stored
+    checkpoint) rather than the whole request, use `page.nextCursor`
+    instead -- see [${rowClassName}Cursor].
+''';
+
+/// Documentation for the generated `${rowClassName}Cursor` class.
+String fetchPageCursor(String rowClassName) =>
+    '''
+    Pagination cursor referencing a row in [$rowClassName].
+
+    This identifies the row after which the next page of results begins,
+    using the values of the _primary key_ fields from that row.
+''';
+
+/// Documentation for the generated `${rowClassName}Direction` class.
+String fetchPageDirection(String rowClassName) =>
+    '''
+    Sort direction for each _primary key_ field of [$rowClassName], used by
+    `.fetchPage(...)`.
+''';
+
+/// Documentation for the generated `${rowClassName}PageRequest` class.
+String fetchPageRequest(String rowClassName) =>
+    '''
+    Parameters for a `.fetchPage(...)` call against [$rowClassName].
+
+    > [!WARNING]
+    > Always use the same [direction] for every page in a single pagination.
+    > Using a cursor obtained with one direction while fetching
+    > with a different direction will paginate the wrong way.
+''';

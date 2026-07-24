@@ -33,6 +33,7 @@ part 'typed_sql.expr.dart';
 part 'typed_sql.expr_ext.dart';
 part 'typed_sql.g.dart';
 part 'typed_sql.mutation.dart';
+part 'typed_sql.pagination.dart';
 part 'typed_sql.query.dart';
 part 'typed_sql.query_ext.dart';
 part 'typed_sql.statements.dart';
@@ -346,6 +347,35 @@ final class $ForGeneratedCode {
     QuerySingle<(Expr<T>,)> query,
     TableDefinition<T> table,
   ) => DeleteSingle._(Delete._(query.asQuery, table));
+
+  static Future<Page<T, C>> fetchPage<T extends Row, C extends Object>({
+    required Query<(Expr<T>,)> query,
+    required PageRequest<T, C> request,
+  }) async {
+    final pageSize = request.pageSize;
+    if (pageSize < 1) {
+      throw ArgumentError.value(
+        pageSize,
+        'pageSize',
+        'must be a positive integer',
+      );
+    }
+    final filtered = request.cursor == null
+        ? query
+        : query.where(request.where);
+    // Fetch one extra row to determine `hasMore` without a second COUNT(*)
+    // query.
+    final rows = await filtered
+        .orderBy(request.orderBy)
+        .limit(pageSize + 1)
+        .fetch();
+    if (rows.length <= pageSize) {
+      return Page._(rows, null);
+    }
+    final items = rows.sublist(0, pageSize);
+    final cursor = request.cursorOf(items.last);
+    return Page._(items, request.withCursor(cursor));
+  }
 
   static UpdateSet<T> buildUpdate<T extends Row>(List<Expr?> values) =>
       UpdateSet._(values);

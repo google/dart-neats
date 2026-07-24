@@ -188,6 +188,82 @@ extension TablePostExt on Table<Post> {
       $ForGeneratedCode.deleteSingle(byKey(author, slug), _$Post._$table);
 }
 
+/// Pagination cursor referencing a row in [Post].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class PostCursor {
+  const PostCursor({required this.author, required this.slug});
+
+  final String author;
+
+  final String slug;
+
+  @override
+  String toString() => 'PostCursor(author: "$author", slug: "$slug")';
+}
+
+/// Sort direction for each _primary key_ field of [Post], used by
+/// `.fetchPage(...)`.
+final class PostDirection {
+  const PostDirection({
+    this.author = Order.ascending,
+    this.slug = Order.ascending,
+  });
+
+  final Order author;
+
+  final Order slug;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Post].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class PostPageRequest implements PageRequest<Post, PostCursor> {
+  const PostPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const PostDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final PostCursor? cursor;
+
+  final PostDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Post> post) => [
+    (post.author, direction.author),
+    (post.slug, direction.slug),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Post> post) =>
+      (direction.author == Order.ascending
+              ? post.author > toExpr(cursor!.author)
+              : post.author < toExpr(cursor!.author))
+          .or(
+            post.author.equalsValue(cursor!.author) &
+                (direction.slug == Order.ascending
+                    ? post.slug > toExpr(cursor!.slug)
+                    : post.slug < toExpr(cursor!.slug)),
+          );
+
+  @override
+  PostCursor cursorOf(Post post) =>
+      PostCursor(author: post.author, slug: post.slug);
+
+  @override
+  PostPageRequest withCursor(PostCursor cursor) =>
+      PostPageRequest(pageSize: pageSize, cursor: cursor, direction: direction);
+}
+
 /// Extension methods for building queries against the `posts` table.
 extension QueryPostExt on Query<(Expr<Post>,)> {
   /// Lookup a single row in `posts` table using the _primary key_.
@@ -197,6 +273,30 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
   QuerySingle<(Expr<Post>,)> byKey(String author, String slug) => where(
     (post) => post.author.equalsValue(author) & post.slug.equalsValue(slug),
   ).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Post, PostCursor>? request =
+  ///     PostPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [PostCursor].
+  Future<Page<Post, PostCursor>> fetchPage(
+    PageRequest<Post, PostCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Post, PostCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `posts` table matching this [Query].
   ///
@@ -774,6 +874,71 @@ extension TableCommentExt on Table<Comment> {
       $ForGeneratedCode.deleteSingle(byKey(commentId), _$Comment._$table);
 }
 
+/// Pagination cursor referencing a row in [Comment].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class CommentCursor {
+  const CommentCursor({required this.commentId});
+
+  final int commentId;
+
+  @override
+  String toString() => 'CommentCursor(commentId: "$commentId")';
+}
+
+/// Sort direction for each _primary key_ field of [Comment], used by
+/// `.fetchPage(...)`.
+final class CommentDirection {
+  const CommentDirection({this.commentId = Order.ascending});
+
+  final Order commentId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Comment].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class CommentPageRequest implements PageRequest<Comment, CommentCursor> {
+  const CommentPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const CommentDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final CommentCursor? cursor;
+
+  final CommentDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Comment> comment) => [
+    (comment.commentId, direction.commentId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Comment> comment) =>
+      direction.commentId == Order.ascending
+      ? comment.commentId > toExpr(cursor!.commentId)
+      : comment.commentId < toExpr(cursor!.commentId);
+
+  @override
+  CommentCursor cursorOf(Comment comment) =>
+      CommentCursor(commentId: comment.commentId);
+
+  @override
+  CommentPageRequest withCursor(CommentCursor cursor) => CommentPageRequest(
+    pageSize: pageSize,
+    cursor: cursor,
+    direction: direction,
+  );
+}
+
 /// Extension methods for building queries against the `comments` table.
 extension QueryCommentExt on Query<(Expr<Comment>,)> {
   /// Lookup a single row in `comments` table using the _primary key_.
@@ -782,6 +947,30 @@ extension QueryCommentExt on Query<(Expr<Comment>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Comment>,)> byKey(int commentId) =>
       where((comment) => comment.commentId.equalsValue(commentId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Comment, CommentCursor>? request =
+  ///     CommentPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [CommentCursor].
+  Future<Page<Comment, CommentCursor>> fetchPage(
+    PageRequest<Comment, CommentCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Comment, CommentCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `comments` table matching this [Query].
   ///

@@ -264,6 +264,73 @@ extension TableComplexMappedItemExt on Table<ComplexMappedItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$ComplexMappedItem._$table);
 }
 
+/// Pagination cursor referencing a row in [ComplexMappedItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class ComplexMappedItemCursor {
+  const ComplexMappedItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'ComplexMappedItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [ComplexMappedItem], used by
+/// `.fetchPage(...)`.
+final class ComplexMappedItemDirection {
+  const ComplexMappedItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [ComplexMappedItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class ComplexMappedItemPageRequest
+    implements PageRequest<ComplexMappedItem, ComplexMappedItemCursor> {
+  const ComplexMappedItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const ComplexMappedItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final ComplexMappedItemCursor? cursor;
+
+  final ComplexMappedItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(
+    Expr<ComplexMappedItem> complexMappedItem,
+  ) => [(complexMappedItem.id, direction.id)];
+
+  @override
+  Expr<bool?> where(Expr<ComplexMappedItem> complexMappedItem) =>
+      direction.id == Order.ascending
+      ? complexMappedItem.id > toExpr(cursor!.id)
+      : complexMappedItem.id < toExpr(cursor!.id);
+
+  @override
+  ComplexMappedItemCursor cursorOf(ComplexMappedItem complexMappedItem) =>
+      ComplexMappedItemCursor(id: complexMappedItem.id);
+
+  @override
+  ComplexMappedItemPageRequest withCursor(ComplexMappedItemCursor cursor) =>
+      ComplexMappedItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `complexMappedItems` table.
 extension QueryComplexMappedItemExt on Query<(Expr<ComplexMappedItem>,)> {
   /// Lookup a single row in `complexMappedItems` table using the _primary key_.
@@ -272,6 +339,30 @@ extension QueryComplexMappedItemExt on Query<(Expr<ComplexMappedItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<ComplexMappedItem>,)> byKey(int id) =>
       where((complexMappedItem) => complexMappedItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<ComplexMappedItem, ComplexMappedItemCursor>? request =
+  ///     ComplexMappedItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [ComplexMappedItemCursor].
+  Future<Page<ComplexMappedItem, ComplexMappedItemCursor>> fetchPage(
+    PageRequest<ComplexMappedItem, ComplexMappedItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<ComplexMappedItem, ComplexMappedItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `complexMappedItems` table matching this [Query].
   ///

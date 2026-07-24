@@ -186,6 +186,73 @@ extension TableMappedItemExt on Table<MappedItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$MappedItem._$table);
 }
 
+/// Pagination cursor referencing a row in [MappedItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class MappedItemCursor {
+  const MappedItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'MappedItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [MappedItem], used by
+/// `.fetchPage(...)`.
+final class MappedItemDirection {
+  const MappedItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [MappedItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class MappedItemPageRequest
+    implements PageRequest<MappedItem, MappedItemCursor> {
+  const MappedItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const MappedItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final MappedItemCursor? cursor;
+
+  final MappedItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<MappedItem> mappedItem) => [
+    (mappedItem.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<MappedItem> mappedItem) =>
+      direction.id == Order.ascending
+      ? mappedItem.id > toExpr(cursor!.id)
+      : mappedItem.id < toExpr(cursor!.id);
+
+  @override
+  MappedItemCursor cursorOf(MappedItem mappedItem) =>
+      MappedItemCursor(id: mappedItem.id);
+
+  @override
+  MappedItemPageRequest withCursor(MappedItemCursor cursor) =>
+      MappedItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `mappedItems` table.
 extension QueryMappedItemExt on Query<(Expr<MappedItem>,)> {
   /// Lookup a single row in `mappedItems` table using the _primary key_.
@@ -194,6 +261,30 @@ extension QueryMappedItemExt on Query<(Expr<MappedItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<MappedItem>,)> byKey(int id) =>
       where((mappedItem) => mappedItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<MappedItem, MappedItemCursor>? request =
+  ///     MappedItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [MappedItemCursor].
+  Future<Page<MappedItem, MappedItemCursor>> fetchPage(
+    PageRequest<MappedItem, MappedItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<MappedItem, MappedItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `mappedItems` table matching this [Query].
   ///

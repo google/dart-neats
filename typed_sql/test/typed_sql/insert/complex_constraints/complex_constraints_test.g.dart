@@ -190,6 +190,89 @@ extension TableCompositePkItemExt on Table<CompositePkItem> {
       .deleteSingle(byKey(pkA, pkB), _$CompositePkItem._$table);
 }
 
+/// Pagination cursor referencing a row in [CompositePkItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class CompositePkItemCursor {
+  const CompositePkItemCursor({required this.pkA, required this.pkB});
+
+  final int pkA;
+
+  final String pkB;
+
+  @override
+  String toString() => 'CompositePkItemCursor(pkA: "$pkA", pkB: "$pkB")';
+}
+
+/// Sort direction for each _primary key_ field of [CompositePkItem], used by
+/// `.fetchPage(...)`.
+final class CompositePkItemDirection {
+  const CompositePkItemDirection({
+    this.pkA = Order.ascending,
+    this.pkB = Order.ascending,
+  });
+
+  final Order pkA;
+
+  final Order pkB;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [CompositePkItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class CompositePkItemPageRequest
+    implements PageRequest<CompositePkItem, CompositePkItemCursor> {
+  const CompositePkItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const CompositePkItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final CompositePkItemCursor? cursor;
+
+  final CompositePkItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(
+    Expr<CompositePkItem> compositePkItem,
+  ) => [
+    (compositePkItem.pkA, direction.pkA),
+    (compositePkItem.pkB, direction.pkB),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<CompositePkItem> compositePkItem) =>
+      (direction.pkA == Order.ascending
+              ? compositePkItem.pkA > toExpr(cursor!.pkA)
+              : compositePkItem.pkA < toExpr(cursor!.pkA))
+          .or(
+            compositePkItem.pkA.equalsValue(cursor!.pkA) &
+                (direction.pkB == Order.ascending
+                    ? compositePkItem.pkB > toExpr(cursor!.pkB)
+                    : compositePkItem.pkB < toExpr(cursor!.pkB)),
+          );
+
+  @override
+  CompositePkItemCursor cursorOf(CompositePkItem compositePkItem) =>
+      CompositePkItemCursor(pkA: compositePkItem.pkA, pkB: compositePkItem.pkB);
+
+  @override
+  CompositePkItemPageRequest withCursor(CompositePkItemCursor cursor) =>
+      CompositePkItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `compositePkItems` table.
 extension QueryCompositePkItemExt on Query<(Expr<CompositePkItem>,)> {
   /// Lookup a single row in `compositePkItems` table using the _primary key_.
@@ -201,6 +284,30 @@ extension QueryCompositePkItemExt on Query<(Expr<CompositePkItem>,)> {
         compositePkItem.pkA.equalsValue(pkA) &
         compositePkItem.pkB.equalsValue(pkB),
   ).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<CompositePkItem, CompositePkItemCursor>? request =
+  ///     CompositePkItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [CompositePkItemCursor].
+  Future<Page<CompositePkItem, CompositePkItemCursor>> fetchPage(
+    PageRequest<CompositePkItem, CompositePkItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<CompositePkItem, CompositePkItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `compositePkItems` table matching this [Query].
   ///
@@ -700,6 +807,73 @@ extension TableMultiUniqueItemExt on Table<MultiUniqueItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$MultiUniqueItem._$table);
 }
 
+/// Pagination cursor referencing a row in [MultiUniqueItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class MultiUniqueItemCursor {
+  const MultiUniqueItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'MultiUniqueItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [MultiUniqueItem], used by
+/// `.fetchPage(...)`.
+final class MultiUniqueItemDirection {
+  const MultiUniqueItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [MultiUniqueItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class MultiUniqueItemPageRequest
+    implements PageRequest<MultiUniqueItem, MultiUniqueItemCursor> {
+  const MultiUniqueItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const MultiUniqueItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final MultiUniqueItemCursor? cursor;
+
+  final MultiUniqueItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(
+    Expr<MultiUniqueItem> multiUniqueItem,
+  ) => [(multiUniqueItem.id, direction.id)];
+
+  @override
+  Expr<bool?> where(Expr<MultiUniqueItem> multiUniqueItem) =>
+      direction.id == Order.ascending
+      ? multiUniqueItem.id > toExpr(cursor!.id)
+      : multiUniqueItem.id < toExpr(cursor!.id);
+
+  @override
+  MultiUniqueItemCursor cursorOf(MultiUniqueItem multiUniqueItem) =>
+      MultiUniqueItemCursor(id: multiUniqueItem.id);
+
+  @override
+  MultiUniqueItemPageRequest withCursor(MultiUniqueItemCursor cursor) =>
+      MultiUniqueItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `multiUniqueItems` table.
 extension QueryMultiUniqueItemExt on Query<(Expr<MultiUniqueItem>,)> {
   /// Lookup a single row in `multiUniqueItems` table using the _primary key_.
@@ -708,6 +882,30 @@ extension QueryMultiUniqueItemExt on Query<(Expr<MultiUniqueItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<MultiUniqueItem>,)> byKey(int id) =>
       where((multiUniqueItem) => multiUniqueItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<MultiUniqueItem, MultiUniqueItemCursor>? request =
+  ///     MultiUniqueItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [MultiUniqueItemCursor].
+  Future<Page<MultiUniqueItem, MultiUniqueItemCursor>> fetchPage(
+    PageRequest<MultiUniqueItem, MultiUniqueItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<MultiUniqueItem, MultiUniqueItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `multiUniqueItems` table matching this [Query].
   ///
@@ -1285,6 +1483,73 @@ extension TableForeignKeyItemExt on Table<ForeignKeyItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$ForeignKeyItem._$table);
 }
 
+/// Pagination cursor referencing a row in [ForeignKeyItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class ForeignKeyItemCursor {
+  const ForeignKeyItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'ForeignKeyItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [ForeignKeyItem], used by
+/// `.fetchPage(...)`.
+final class ForeignKeyItemDirection {
+  const ForeignKeyItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [ForeignKeyItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class ForeignKeyItemPageRequest
+    implements PageRequest<ForeignKeyItem, ForeignKeyItemCursor> {
+  const ForeignKeyItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const ForeignKeyItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final ForeignKeyItemCursor? cursor;
+
+  final ForeignKeyItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(
+    Expr<ForeignKeyItem> foreignKeyItem,
+  ) => [(foreignKeyItem.id, direction.id)];
+
+  @override
+  Expr<bool?> where(Expr<ForeignKeyItem> foreignKeyItem) =>
+      direction.id == Order.ascending
+      ? foreignKeyItem.id > toExpr(cursor!.id)
+      : foreignKeyItem.id < toExpr(cursor!.id);
+
+  @override
+  ForeignKeyItemCursor cursorOf(ForeignKeyItem foreignKeyItem) =>
+      ForeignKeyItemCursor(id: foreignKeyItem.id);
+
+  @override
+  ForeignKeyItemPageRequest withCursor(ForeignKeyItemCursor cursor) =>
+      ForeignKeyItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `foreignKeyItems` table.
 extension QueryForeignKeyItemExt on Query<(Expr<ForeignKeyItem>,)> {
   /// Lookup a single row in `foreignKeyItems` table using the _primary key_.
@@ -1293,6 +1558,30 @@ extension QueryForeignKeyItemExt on Query<(Expr<ForeignKeyItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<ForeignKeyItem>,)> byKey(int id) =>
       where((foreignKeyItem) => foreignKeyItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<ForeignKeyItem, ForeignKeyItemCursor>? request =
+  ///     ForeignKeyItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [ForeignKeyItemCursor].
+  Future<Page<ForeignKeyItem, ForeignKeyItemCursor>> fetchPage(
+    PageRequest<ForeignKeyItem, ForeignKeyItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<ForeignKeyItem, ForeignKeyItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `foreignKeyItems` table matching this [Query].
   ///

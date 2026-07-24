@@ -267,6 +267,72 @@ extension TableHierarchyUserExt on Table<HierarchyUser> {
       $ForGeneratedCode.deleteSingle(byKey(userId), _$HierarchyUser._$table);
 }
 
+/// Pagination cursor referencing a row in [HierarchyUser].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class HierarchyUserCursor {
+  const HierarchyUserCursor({required this.userId});
+
+  final int userId;
+
+  @override
+  String toString() => 'HierarchyUserCursor(userId: "$userId")';
+}
+
+/// Sort direction for each _primary key_ field of [HierarchyUser], used by
+/// `.fetchPage(...)`.
+final class HierarchyUserDirection {
+  const HierarchyUserDirection({this.userId = Order.ascending});
+
+  final Order userId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [HierarchyUser].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class HierarchyUserPageRequest
+    implements PageRequest<HierarchyUser, HierarchyUserCursor> {
+  const HierarchyUserPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const HierarchyUserDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final HierarchyUserCursor? cursor;
+
+  final HierarchyUserDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<HierarchyUser> hierarchyUser) =>
+      [(hierarchyUser.userId, direction.userId)];
+
+  @override
+  Expr<bool?> where(Expr<HierarchyUser> hierarchyUser) =>
+      direction.userId == Order.ascending
+      ? hierarchyUser.userId > toExpr(cursor!.userId)
+      : hierarchyUser.userId < toExpr(cursor!.userId);
+
+  @override
+  HierarchyUserCursor cursorOf(HierarchyUser hierarchyUser) =>
+      HierarchyUserCursor(userId: hierarchyUser.userId);
+
+  @override
+  HierarchyUserPageRequest withCursor(HierarchyUserCursor cursor) =>
+      HierarchyUserPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `hierarchyUsers` table.
 extension QueryHierarchyUserExt on Query<(Expr<HierarchyUser>,)> {
   /// Lookup a single row in `hierarchyUsers` table using the _primary key_.
@@ -275,6 +341,30 @@ extension QueryHierarchyUserExt on Query<(Expr<HierarchyUser>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<HierarchyUser>,)> byKey(int userId) =>
       where((hierarchyUser) => hierarchyUser.userId.equalsValue(userId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<HierarchyUser, HierarchyUserCursor>? request =
+  ///     HierarchyUserPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [HierarchyUserCursor].
+  Future<Page<HierarchyUser, HierarchyUserCursor>> fetchPage(
+    PageRequest<HierarchyUser, HierarchyUserCursor> request,
+  ) => $ForGeneratedCode.fetchPage<HierarchyUser, HierarchyUserCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `hierarchyUsers` table matching this [Query].
   ///
@@ -859,6 +949,73 @@ extension TableHierarchyProfileExt on Table<HierarchyProfile> {
       .deleteSingle(byKey(profileId), _$HierarchyProfile._$table);
 }
 
+/// Pagination cursor referencing a row in [HierarchyProfile].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class HierarchyProfileCursor {
+  const HierarchyProfileCursor({required this.profileId});
+
+  final int profileId;
+
+  @override
+  String toString() => 'HierarchyProfileCursor(profileId: "$profileId")';
+}
+
+/// Sort direction for each _primary key_ field of [HierarchyProfile], used by
+/// `.fetchPage(...)`.
+final class HierarchyProfileDirection {
+  const HierarchyProfileDirection({this.profileId = Order.ascending});
+
+  final Order profileId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [HierarchyProfile].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class HierarchyProfilePageRequest
+    implements PageRequest<HierarchyProfile, HierarchyProfileCursor> {
+  const HierarchyProfilePageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const HierarchyProfileDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final HierarchyProfileCursor? cursor;
+
+  final HierarchyProfileDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(
+    Expr<HierarchyProfile> hierarchyProfile,
+  ) => [(hierarchyProfile.profileId, direction.profileId)];
+
+  @override
+  Expr<bool?> where(Expr<HierarchyProfile> hierarchyProfile) =>
+      direction.profileId == Order.ascending
+      ? hierarchyProfile.profileId > toExpr(cursor!.profileId)
+      : hierarchyProfile.profileId < toExpr(cursor!.profileId);
+
+  @override
+  HierarchyProfileCursor cursorOf(HierarchyProfile hierarchyProfile) =>
+      HierarchyProfileCursor(profileId: hierarchyProfile.profileId);
+
+  @override
+  HierarchyProfilePageRequest withCursor(HierarchyProfileCursor cursor) =>
+      HierarchyProfilePageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `hierarchyProfiles` table.
 extension QueryHierarchyProfileExt on Query<(Expr<HierarchyProfile>,)> {
   /// Lookup a single row in `hierarchyProfiles` table using the _primary key_.
@@ -868,6 +1025,30 @@ extension QueryHierarchyProfileExt on Query<(Expr<HierarchyProfile>,)> {
   QuerySingle<(Expr<HierarchyProfile>,)> byKey(int profileId) => where(
     (hierarchyProfile) => hierarchyProfile.profileId.equalsValue(profileId),
   ).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<HierarchyProfile, HierarchyProfileCursor>? request =
+  ///     HierarchyProfilePageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [HierarchyProfileCursor].
+  Future<Page<HierarchyProfile, HierarchyProfileCursor>> fetchPage(
+    PageRequest<HierarchyProfile, HierarchyProfileCursor> request,
+  ) => $ForGeneratedCode.fetchPage<HierarchyProfile, HierarchyProfileCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `hierarchyProfiles` table matching this [Query].
   ///

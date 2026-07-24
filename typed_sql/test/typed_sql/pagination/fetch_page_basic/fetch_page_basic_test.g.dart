@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'distinct_model_test.dart';
+part of 'fetch_page_basic_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
@@ -43,26 +43,20 @@ String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
     .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
 final class _$Item extends Item {
-  _$Item._(this.id, this.text, this.integer, this.real, this.json);
+  _$Item._(this.id, this.name, this.value);
 
   @override
   final int id;
 
   @override
-  final String text;
+  final String name;
 
   @override
-  final int integer;
-
-  @override
-  final double real;
-
-  @override
-  final JsonValue json;
+  final int value;
 
   static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'items',
-    columns: <String>['id', 'text', 'integer', 'real', 'json'],
+    columns: <String>['id', 'name', 'value'],
     columnInfo: [
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
@@ -85,20 +79,6 @@ final class _$Item extends Item {
         autoIncrement: false,
         overrides: [],
       ),
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.real,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: [],
-      ),
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.jsonValue,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: [],
-      ),
     ],
     primaryKey: <String>['id'],
     unique: <List<String>>[],
@@ -109,23 +89,16 @@ final class _$Item extends Item {
 
   static Item? _$fromDatabase(RowReader row) {
     final id = row.readInt();
-    final text = row.readString();
-    final integer = row.readInt();
-    final real = row.readDouble();
-    final json = row.readJsonValue();
-    if (id == null &&
-        text == null &&
-        integer == null &&
-        real == null &&
-        json == null) {
+    final name = row.readString();
+    final value = row.readInt();
+    if (id == null && name == null && value == null) {
       return null;
     }
-    return _$Item._(id!, text!, integer!, real!, json!);
+    return _$Item._(id!, name!, value!);
   }
 
   @override
-  String toString() =>
-      'Item(id: "$id", text: "$text", integer: "$integer", real: "$real", json: "$json")';
+  String toString() => 'Item(id: "$id", name: "$name", value: "$value")';
 }
 
 /// Extension methods for table defined in [Item].
@@ -136,14 +109,9 @@ extension TableItemExt on Table<Item> {
   /// called for the row to be inserted.
   InsertSingle<Item> insert({
     Expr<int>? id,
-    required Expr<String> text,
-    required Expr<int> integer,
-    required Expr<double> real,
-    required Expr<JsonValue> json,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [id, text, integer, real, json],
-  );
+    required Expr<String> name,
+    required Expr<int> value,
+  }) => $ForGeneratedCode.insertInto(table: this, values: [id, name, value]);
 
   /// Insert row into the `items` table.
   ///
@@ -151,13 +119,11 @@ extension TableItemExt on Table<Item> {
   /// called for the row to be inserted.
   InsertSingle<Item> insertValue({
     int? id,
-    required String text,
-    required int integer,
-    required double real,
-    required JsonValue json,
+    required String name,
+    required int value,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [id?.asExpr, text.asExpr, integer.asExpr, real.asExpr, json.asExpr],
+    values: [id?.asExpr, name.asExpr, value.asExpr],
   );
 
   /// Bulk insert rows into the `items` table.
@@ -180,14 +146,12 @@ extension TableItemExt on Table<Item> {
   Insert<Item> insertValuesMapped<T>(
     Iterable<T> rows, {
     int Function(T row)? id,
-    required String Function(T row) text,
-    required int Function(T row) integer,
-    required double Function(T row) real,
-    required JsonValue Function(T row) json,
+    required String Function(T row) name,
+    required int Function(T row) value,
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mappings: [id, text, integer, real, json],
+    mappings: [id, name, value],
   );
 
   /// Delete a single row from the `items` table, specified by
@@ -328,10 +292,8 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
       Expr<Item> item,
       UpdateSet<Item> Function({
         Expr<int> id,
-        Expr<String> text,
-        Expr<int> integer,
-        Expr<double> real,
-        Expr<JsonValue> json,
+        Expr<String> name,
+        Expr<int> value,
       })
       set,
     )
@@ -341,14 +303,8 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
     _$Item._$table,
     (item) => updateBuilder(
       item,
-      ({
-        Expr<int>? id,
-        Expr<String>? text,
-        Expr<int>? integer,
-        Expr<double>? real,
-        Expr<JsonValue>? json,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+      ({Expr<int>? id, Expr<String>? name, Expr<int>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, name, value]),
     ),
   );
 
@@ -395,10 +351,8 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
       Expr<Item> item,
       UpdateSet<Item> Function({
         Expr<int> id,
-        Expr<String> text,
-        Expr<int> integer,
-        Expr<double> real,
-        Expr<JsonValue> json,
+        Expr<String> name,
+        Expr<int> value,
       })
       set,
     )
@@ -408,14 +362,8 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
     _$Item._$table,
     (item) => updateBuilder(
       item,
-      ({
-        Expr<int>? id,
-        Expr<String>? text,
-        Expr<int>? integer,
-        Expr<double>? real,
-        Expr<JsonValue>? json,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+      ({Expr<int>? id, Expr<String>? name, Expr<int>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, name, value]),
     ),
   );
 
@@ -433,34 +381,22 @@ extension ExpressionItemExt on Expr<Item> {
   Expr<int> get id =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String> get text =>
+  Expr<String> get name =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
-  Expr<int> get integer =>
+  Expr<int> get value =>
       $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
-
-  Expr<double> get real =>
-      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.real);
-
-  Expr<JsonValue> get json =>
-      $ForGeneratedCode.field(this, 4, $ForGeneratedCode.jsonValue);
 }
 
 extension ExpressionNullableItemExt on Expr<Item?> {
   Expr<int?> get id =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String?> get text =>
+  Expr<String?> get name =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
-  Expr<int?> get integer =>
+  Expr<int?> get value =>
       $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
-
-  Expr<double?> get real =>
-      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.real);
-
-  Expr<JsonValue?> get json =>
-      $ForGeneratedCode.field(this, 4, $ForGeneratedCode.jsonValue);
 
   /// Check if the row is not `NULL`.
   ///
@@ -561,10 +497,8 @@ extension InsertOnConflictItemExt on InsertOnConflict<Item> {
       Expr<Item> excluded,
       UpdateSet<Item> Function({
         Expr<int> id,
-        Expr<String> text,
-        Expr<int> integer,
-        Expr<double> real,
-        Expr<JsonValue> json,
+        Expr<String> name,
+        Expr<int> value,
       })
       set,
     )
@@ -574,14 +508,8 @@ extension InsertOnConflictItemExt on InsertOnConflict<Item> {
     (item, excluded) => updateBuilder(
       item,
       excluded,
-      ({
-        Expr<int>? id,
-        Expr<String>? text,
-        Expr<int>? integer,
-        Expr<double>? real,
-        Expr<JsonValue>? json,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+      ({Expr<int>? id, Expr<String>? name, Expr<int>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, name, value]),
     ),
   );
 }
@@ -655,10 +583,8 @@ extension InsertOnConflictSingleItemExt on InsertOnConflictSingle<Item> {
       Expr<Item> excluded,
       UpdateSet<Item> Function({
         Expr<int> id,
-        Expr<String> text,
-        Expr<int> integer,
-        Expr<double> real,
-        Expr<JsonValue> json,
+        Expr<String> name,
+        Expr<int> value,
       })
       set,
     )
@@ -668,14 +594,8 @@ extension InsertOnConflictSingleItemExt on InsertOnConflictSingle<Item> {
     (item, excluded) => updateBuilder(
       item,
       excluded,
-      ({
-        Expr<int>? id,
-        Expr<String>? text,
-        Expr<int>? integer,
-        Expr<double>? real,
-        Expr<JsonValue>? json,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+      ({Expr<int>? id, Expr<String>? name, Expr<int>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, name, value]),
     ),
   );
 }
@@ -688,15 +608,9 @@ extension ItemChecks on Subject<Item> {
   /// Create assertions on [Item.id].
   Subject<int> get id => has((m) => m.id, 'id');
 
-  /// Create assertions on [Item.text].
-  Subject<String> get text => has((m) => m.text, 'text');
+  /// Create assertions on [Item.name].
+  Subject<String> get name => has((m) => m.name, 'name');
 
-  /// Create assertions on [Item.integer].
-  Subject<int> get integer => has((m) => m.integer, 'integer');
-
-  /// Create assertions on [Item.real].
-  Subject<double> get real => has((m) => m.real, 'real');
-
-  /// Create assertions on [Item.json].
-  Subject<JsonValue> get json => has((m) => m.json, 'json');
+  /// Create assertions on [Item.value].
+  Subject<int> get value => has((m) => m.value, 'value');
 }

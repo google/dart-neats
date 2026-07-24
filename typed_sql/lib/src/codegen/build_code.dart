@@ -356,6 +356,39 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
     ''';
   }
 
+  // Build the "row is after cursor" where predicate, as a lexicographic
+  // OR-chain over the primary key fields:
+  //   (k1 < c1) | (k1 == c1 & k2 < c2) | ... | (k1 == c1 & ... & kn < cn)
+  //
+  // Each field has its own sort direction.
+  String wherePredicateExpr() {
+    String comparison(ParsedField f) =>
+        'direction.${f.name} == Order.ascending'
+        ' ? $rowInstanceName.${f.name} > toExpr(cursor!.${f.name})'
+        ' : $rowInstanceName.${f.name} < toExpr(cursor!.${f.name})';
+
+    final pk = rowClass.primaryKey;
+    if (pk.length == 1) {
+      return comparison(pk.single);
+    }
+
+    // condition snippets with `==` on PK fields
+    final eqParts = List.generate(
+      pk.length - 1,
+      (i) =>
+          '$rowInstanceName.${pk[i].name}.equalsValue(cursor!.${pk[i].name})',
+    );
+
+    // conditions parts with `k1 == c1 & kn < cn`
+    final items = List.generate(
+      pk.length,
+      (i) => [...eqParts.take(i), '(${comparison(pk[i])})'].join(' & '),
+    );
+
+    // creates the complete a.or(b).or(c) expression
+    return items.mapIndexed((i, s) => i == 0 ? s : '($s)').join('.or');
+  }
+
   // Create implementation class for Row
   yield Class(
     (b) => b
@@ -715,6 +748,224 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
       ),
   );
 
+  // Cursor class for `.fetchPage()`, generated only when every primary key
+  // field supports pagination comparisons.
+  final isAllPkOrderable = rowClass.primaryKey.every((f) => f.isOrderable);
+  if (isAllPkOrderable) {
+    yield Class(
+      (b) => b
+        ..name = '${rowClassName}Cursor'
+        ..modifier = ClassModifier.final$
+        ..documentation(docs.fetchPageCursor(rowClassName))
+        ..constructors.add(
+          Constructor(
+            (b) => b
+              ..constant = true
+              ..optionalParameters.addAll(
+                rowClass.primaryKey.map(
+                  (pk) => Parameter(
+                    (b) => b
+                      ..name = pk.name
+                      ..named = true
+                      ..required = true
+                      ..toThis = true,
+                  ),
+                ),
+              ),
+          ),
+        )
+        ..fields.addAll(
+          rowClass.primaryKey.map(
+            (pk) => Field(
+              (b) => b
+                ..name = pk.name
+                ..modifier = FieldModifier.final$
+                ..type = refer(pk.typeName),
+            ),
+          ),
+        )
+        ..methods.add(
+          Method(
+            (b) => b
+              ..name = 'toString'
+              ..annotations.add(refer('override'))
+              ..returns = refer('String')
+              ..lambda = true
+              ..body = Code(
+                '\'${rowClassName}Cursor(${rowClass.primaryKey.map((f) => '${f.name}: "\$${f.name}"').join(', ')})\'',
+              ),
+          ),
+        ),
+    );
+
+    // Sort direction for `.fetchPage()`, one field per primary key column,
+    // each individually defaulting to ascending.
+    yield Class(
+      (b) => b
+        ..name = '${rowClassName}Direction'
+        ..modifier = ClassModifier.final$
+        ..documentation(docs.fetchPageDirection(rowClassName))
+        ..constructors.add(
+          Constructor(
+            (b) => b
+              ..constant = true
+              ..optionalParameters.addAll(
+                rowClass.primaryKey.map(
+                  (pk) => Parameter(
+                    (b) => b
+                      ..name = pk.name
+                      ..named = true
+                      ..toThis = true
+                      ..defaultTo = Code('Order.ascending'),
+                  ),
+                ),
+              ),
+          ),
+        )
+        ..fields.addAll(
+          rowClass.primaryKey.map(
+            (pk) => Field(
+              (b) => b
+                ..name = pk.name
+                ..modifier = FieldModifier.final$
+                ..type = refer('Order'),
+            ),
+          ),
+        ),
+    );
+
+    // Table-specific pagination request fields, based on the primary keys.
+    final orderByExprs = rowClass.primaryKey
+        .map((f) => '($rowInstanceName.${f.name}, direction.${f.name})')
+        .join(', ');
+    final cursorFields = rowClass.primaryKey
+        .map((f) => '${f.name}: $rowInstanceName.${f.name}')
+        .join(', ');
+    yield Class(
+      (b) => b
+        ..name = '${rowClassName}PageRequest'
+        ..modifier = ClassModifier.final$
+        ..implements.add(
+          refer('PageRequest<$rowClassName, ${rowClassName}Cursor>'),
+        )
+        ..documentation(docs.fetchPageRequest(rowClassName))
+        ..constructors.add(
+          Constructor(
+            (b) => b
+              ..constant = true
+              ..optionalParameters.addAll([
+                Parameter(
+                  (b) => b
+                    ..name = 'pageSize'
+                    ..named = true
+                    ..required = true
+                    ..toThis = true,
+                ),
+                Parameter(
+                  (b) => b
+                    ..name = 'cursor'
+                    ..named = true
+                    ..toThis = true,
+                ),
+                Parameter(
+                  (b) => b
+                    ..name = 'direction'
+                    ..named = true
+                    ..toThis = true
+                    ..defaultTo = Code('const ${rowClassName}Direction()'),
+                ),
+              ]),
+          ),
+        )
+        ..fields.addAll([
+          Field(
+            (b) => b
+              ..name = 'pageSize'
+              ..annotations.add(refer('override'))
+              ..modifier = FieldModifier.final$
+              ..type = refer('int'),
+          ),
+          Field(
+            (b) => b
+              ..name = 'cursor'
+              ..annotations.add(refer('override'))
+              ..modifier = FieldModifier.final$
+              ..type = refer('${rowClassName}Cursor?'),
+          ),
+          Field(
+            (b) => b
+              ..name = 'direction'
+              ..modifier = FieldModifier.final$
+              ..type = refer('${rowClassName}Direction'),
+          ),
+        ])
+        ..methods.addAll([
+          Method(
+            (b) => b
+              ..name = 'orderBy'
+              ..annotations.add(refer('override'))
+              ..returns = refer('List<(Expr<Comparable?>, Order)>')
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = rowInstanceName
+                    ..type = refer('Expr<$rowClassName>'),
+                ),
+              )
+              ..lambda = true
+              ..body = Code('[$orderByExprs]'),
+          ),
+          Method(
+            (b) => b
+              ..name = 'where'
+              ..annotations.add(refer('override'))
+              ..returns = refer('Expr<bool?>')
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = rowInstanceName
+                    ..type = refer('Expr<$rowClassName>'),
+                ),
+              )
+              ..lambda = true
+              ..body = Code(wherePredicateExpr()),
+          ),
+          Method(
+            (b) => b
+              ..name = 'cursorOf'
+              ..annotations.add(refer('override'))
+              ..returns = refer('${rowClassName}Cursor')
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = rowInstanceName
+                    ..type = refer(rowClassName),
+                ),
+              )
+              ..lambda = true
+              ..body = Code('${rowClassName}Cursor($cursorFields)'),
+          ),
+          Method(
+            (b) => b
+              ..name = 'withCursor'
+              ..annotations.add(refer('override'))
+              ..returns = refer('${rowClassName}PageRequest')
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = 'cursor'
+                    ..type = refer('${rowClassName}Cursor'),
+                ),
+              )
+              ..lambda = true
+              ..body = Code(
+                '${rowClassName}PageRequest(pageSize: pageSize, cursor: cursor, direction: direction)',
+              ),
+          ),
+        ]),
+    );
+  }
+
   // Extension for Query<(Expr<Row>,)>
   yield Extension(
     (b) => b
@@ -756,6 +1007,33 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ..body = Code('where(($rowInstanceName) => $whereExpr).first');
         }),
       )
+      ..methods.addAll([
+        if (isAllPkOrderable)
+          Method(
+            (b) => b
+              ..name = 'fetchPage'
+              ..documentation(docs.fetchPage(rowClassName))
+              ..returns = refer(
+                'Future<Page<$rowClassName, ${rowClassName}Cursor>>',
+              )
+              ..requiredParameters.add(
+                Parameter(
+                  (b) => b
+                    ..name = 'request'
+                    ..type = refer(
+                      'PageRequest<$rowClassName, ${rowClassName}Cursor>',
+                    ),
+                ),
+              )
+              ..lambda = true
+              ..body = Code('''
+                \$ForGeneratedCode.fetchPage<$rowClassName, ${rowClassName}Cursor>(
+                  query: this,
+                  request: request,
+                )
+              '''),
+          ),
+      ])
       ..methods.add(
         Method(
           (b) => b
@@ -1716,6 +1994,11 @@ extension on ParsedField {
 
   bool get isCustomType => backingType != typeName;
 
+  /// Whether this field has `<`, `<=`, `>` and `>=` comparison operators,
+  /// and is usable in a pagination.
+  bool get isOrderable =>
+      !isCustomType && _orderableBackingTypes.contains(backingType);
+
   String get sqlName {
     final nameOverride = overrides.map((o) => o.name).nonNulls.lastOrNull;
     if (nameOverride != null) {
@@ -1794,6 +2077,14 @@ extension on List<ParsedField> {
   List<ParsedField> get whereDefaultAndNullable =>
       where((f) => f.hasDefault && f.isNullable).toList();
 }
+
+const _orderableBackingTypes = {
+  'String',
+  'int',
+  'double',
+  'DateTime',
+  'Uint8List',
+};
 
 String backingExprType(String backingType) {
   return switch (backingType) {

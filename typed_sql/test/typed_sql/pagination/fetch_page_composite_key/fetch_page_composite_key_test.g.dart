@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'distinct_model_test.dart';
+part of 'fetch_page_composite_key_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
@@ -43,32 +43,26 @@ String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
     .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
 final class _$Item extends Item {
-  _$Item._(this.id, this.text, this.integer, this.real, this.json);
+  _$Item._(this.id, this.name, this.value);
 
   @override
   final int id;
 
   @override
-  final String text;
+  final String name;
 
   @override
-  final int integer;
-
-  @override
-  final double real;
-
-  @override
-  final JsonValue json;
+  final String? value;
 
   static final _$table = $ForGeneratedCode.tableDefinition(
     tableName: 'items',
-    columns: <String>['id', 'text', 'integer', 'real', 'json'],
+    columns: <String>['id', 'name', 'value'],
     columnInfo: [
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
-        autoIncrement: true,
+        autoIncrement: false,
         overrides: [],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -76,31 +70,24 @@ final class _$Item extends Item {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: [],
+        overrides: [
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
+        ],
       ),
       $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: [],
-      ),
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.real,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: [],
-      ),
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.jsonValue,
-        isNotNull: true,
+        type: $ForGeneratedCode.text,
+        isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
         overrides: [],
       ),
     ],
-    primaryKey: <String>['id'],
+    primaryKey: <String>['id', 'name'],
     unique: <List<String>>[],
     foreignKeys: [],
     indexes: [],
@@ -109,23 +96,16 @@ final class _$Item extends Item {
 
   static Item? _$fromDatabase(RowReader row) {
     final id = row.readInt();
-    final text = row.readString();
-    final integer = row.readInt();
-    final real = row.readDouble();
-    final json = row.readJsonValue();
-    if (id == null &&
-        text == null &&
-        integer == null &&
-        real == null &&
-        json == null) {
+    final name = row.readString();
+    final value = row.readString();
+    if (id == null && name == null && value == null) {
       return null;
     }
-    return _$Item._(id!, text!, integer!, real!, json!);
+    return _$Item._(id!, name!, value);
   }
 
   @override
-  String toString() =>
-      'Item(id: "$id", text: "$text", integer: "$integer", real: "$real", json: "$json")';
+  String toString() => 'Item(id: "$id", name: "$name", value: "$value")';
 }
 
 /// Extension methods for table defined in [Item].
@@ -135,29 +115,22 @@ extension TableItemExt on Table<Item> {
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
   InsertSingle<Item> insert({
-    Expr<int>? id,
-    required Expr<String> text,
-    required Expr<int> integer,
-    required Expr<double> real,
-    required Expr<JsonValue> json,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [id, text, integer, real, json],
-  );
+    required Expr<int> id,
+    required Expr<String> name,
+    Expr<String?>? value,
+  }) => $ForGeneratedCode.insertInto(table: this, values: [id, name, value]);
 
   /// Insert row into the `items` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
   InsertSingle<Item> insertValue({
-    int? id,
-    required String text,
-    required int integer,
-    required double real,
-    required JsonValue json,
+    required int id,
+    required String name,
+    String? value,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [id?.asExpr, text.asExpr, integer.asExpr, real.asExpr, json.asExpr],
+    values: [id.asExpr, name.asExpr, value.asExpr],
   );
 
   /// Bulk insert rows into the `items` table.
@@ -179,15 +152,13 @@ extension TableItemExt on Table<Item> {
   /// called for the rows to be inserted.
   Insert<Item> insertValuesMapped<T>(
     Iterable<T> rows, {
-    int Function(T row)? id,
-    required String Function(T row) text,
-    required int Function(T row) integer,
-    required double Function(T row) real,
-    required JsonValue Function(T row) json,
+    required int Function(T row) id,
+    required String Function(T row) name,
+    String? Function(T row)? value,
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mappings: [id, text, integer, real, json],
+    mappings: [id, name, value],
   );
 
   /// Delete a single row from the `items` table, specified by
@@ -199,8 +170,8 @@ extension TableItemExt on Table<Item> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Item> delete(int id) =>
-      $ForGeneratedCode.deleteSingle(byKey(id), _$Item._$table);
+  DeleteSingle<Item> delete(int id, String name) =>
+      $ForGeneratedCode.deleteSingle(byKey(id, name), _$Item._$table);
 }
 
 /// Pagination cursor referencing a row in [Item].
@@ -208,20 +179,24 @@ extension TableItemExt on Table<Item> {
 /// This identifies the row after which the next page of results begins,
 /// using the values of the _primary key_ fields from that row.
 final class ItemCursor {
-  const ItemCursor({required this.id});
+  const ItemCursor({required this.id, required this.name});
 
   final int id;
 
+  final String name;
+
   @override
-  String toString() => 'ItemCursor(id: "$id")';
+  String toString() => 'ItemCursor(id: "$id", name: "$name")';
 }
 
 /// Sort direction for each _primary key_ field of [Item], used by
 /// `.fetchPage(...)`.
 final class ItemDirection {
-  const ItemDirection({this.id = Order.ascending});
+  const ItemDirection({this.id = Order.ascending, this.name = Order.ascending});
 
   final Order id;
+
+  final Order name;
 }
 
 /// Parameters for a `.fetchPage(...)` call against [Item].
@@ -248,15 +223,23 @@ final class ItemPageRequest implements PageRequest<Item, ItemCursor> {
   @override
   List<(Expr<Comparable?>, Order)> orderBy(Expr<Item> item) => [
     (item.id, direction.id),
+    (item.name, direction.name),
   ];
 
   @override
-  Expr<bool?> where(Expr<Item> item) => direction.id == Order.ascending
-      ? item.id > toExpr(cursor!.id)
-      : item.id < toExpr(cursor!.id);
+  Expr<bool?> where(Expr<Item> item) =>
+      (direction.id == Order.ascending
+              ? item.id > toExpr(cursor!.id)
+              : item.id < toExpr(cursor!.id))
+          .or(
+            item.id.equalsValue(cursor!.id) &
+                (direction.name == Order.ascending
+                    ? item.name > toExpr(cursor!.name)
+                    : item.name < toExpr(cursor!.name)),
+          );
 
   @override
-  ItemCursor cursorOf(Item item) => ItemCursor(id: item.id);
+  ItemCursor cursorOf(Item item) => ItemCursor(id: item.id, name: item.name);
 
   @override
   ItemPageRequest withCursor(ItemCursor cursor) =>
@@ -269,8 +252,9 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Item>,)> byKey(int id) =>
-      where((item) => item.id.equalsValue(id)).first;
+  QuerySingle<(Expr<Item>,)> byKey(int id, String name) => where(
+    (item) => item.id.equalsValue(id) & item.name.equalsValue(name),
+  ).first;
 
   /// Fetch a page of at most `request.pageSize` rows.
   ///
@@ -328,10 +312,8 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
       Expr<Item> item,
       UpdateSet<Item> Function({
         Expr<int> id,
-        Expr<String> text,
-        Expr<int> integer,
-        Expr<double> real,
-        Expr<JsonValue> json,
+        Expr<String> name,
+        Expr<String?> value,
       })
       set,
     )
@@ -341,14 +323,8 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
     _$Item._$table,
     (item) => updateBuilder(
       item,
-      ({
-        Expr<int>? id,
-        Expr<String>? text,
-        Expr<int>? integer,
-        Expr<double>? real,
-        Expr<JsonValue>? json,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+      ({Expr<int>? id, Expr<String>? name, Expr<String?>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, name, value]),
     ),
   );
 
@@ -395,10 +371,8 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
       Expr<Item> item,
       UpdateSet<Item> Function({
         Expr<int> id,
-        Expr<String> text,
-        Expr<int> integer,
-        Expr<double> real,
-        Expr<JsonValue> json,
+        Expr<String> name,
+        Expr<String?> value,
       })
       set,
     )
@@ -408,14 +382,8 @@ extension QuerySingleItemExt on QuerySingle<(Expr<Item>,)> {
     _$Item._$table,
     (item) => updateBuilder(
       item,
-      ({
-        Expr<int>? id,
-        Expr<String>? text,
-        Expr<int>? integer,
-        Expr<double>? real,
-        Expr<JsonValue>? json,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+      ({Expr<int>? id, Expr<String>? name, Expr<String?>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, name, value]),
     ),
   );
 
@@ -433,34 +401,22 @@ extension ExpressionItemExt on Expr<Item> {
   Expr<int> get id =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String> get text =>
+  Expr<String> get name =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
-  Expr<int> get integer =>
-      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
-
-  Expr<double> get real =>
-      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.real);
-
-  Expr<JsonValue> get json =>
-      $ForGeneratedCode.field(this, 4, $ForGeneratedCode.jsonValue);
+  Expr<String?> get value =>
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 }
 
 extension ExpressionNullableItemExt on Expr<Item?> {
   Expr<int?> get id =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String?> get text =>
+  Expr<String?> get name =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
-  Expr<int?> get integer =>
-      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
-
-  Expr<double?> get real =>
-      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.real);
-
-  Expr<JsonValue?> get json =>
-      $ForGeneratedCode.field(this, 4, $ForGeneratedCode.jsonValue);
+  Expr<String?> get value =>
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
   /// Check if the row is not `NULL`.
   ///
@@ -468,7 +424,7 @@ extension ExpressionNullableItemExt on Expr<Item?> {
   ///
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
-  Expr<bool> isNotNull() => id.isNotNull();
+  Expr<bool> isNotNull() => id.isNotNull() & name.isNotNull();
 
   /// Check if the row is `NULL`.
   ///
@@ -484,8 +440,8 @@ enum ItemConflict {
   /// Conflict with an existing row that has a matching primary key.
   ///
   /// Thus, the other row has matching values for:
-  /// `id`.
-  primaryKey(['id']);
+  /// `id`, `name`.
+  primaryKey(['id', 'name']);
 
   const ItemConflict(this._fields);
 
@@ -561,10 +517,8 @@ extension InsertOnConflictItemExt on InsertOnConflict<Item> {
       Expr<Item> excluded,
       UpdateSet<Item> Function({
         Expr<int> id,
-        Expr<String> text,
-        Expr<int> integer,
-        Expr<double> real,
-        Expr<JsonValue> json,
+        Expr<String> name,
+        Expr<String?> value,
       })
       set,
     )
@@ -574,14 +528,8 @@ extension InsertOnConflictItemExt on InsertOnConflict<Item> {
     (item, excluded) => updateBuilder(
       item,
       excluded,
-      ({
-        Expr<int>? id,
-        Expr<String>? text,
-        Expr<int>? integer,
-        Expr<double>? real,
-        Expr<JsonValue>? json,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+      ({Expr<int>? id, Expr<String>? name, Expr<String?>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, name, value]),
     ),
   );
 }
@@ -655,10 +603,8 @@ extension InsertOnConflictSingleItemExt on InsertOnConflictSingle<Item> {
       Expr<Item> excluded,
       UpdateSet<Item> Function({
         Expr<int> id,
-        Expr<String> text,
-        Expr<int> integer,
-        Expr<double> real,
-        Expr<JsonValue> json,
+        Expr<String> name,
+        Expr<String?> value,
       })
       set,
     )
@@ -668,14 +614,8 @@ extension InsertOnConflictSingleItemExt on InsertOnConflictSingle<Item> {
     (item, excluded) => updateBuilder(
       item,
       excluded,
-      ({
-        Expr<int>? id,
-        Expr<String>? text,
-        Expr<int>? integer,
-        Expr<double>? real,
-        Expr<JsonValue>? json,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Item>([id, text, integer, real, json]),
+      ({Expr<int>? id, Expr<String>? name, Expr<String?>? value}) =>
+          $ForGeneratedCode.buildUpdate<Item>([id, name, value]),
     ),
   );
 }
@@ -688,15 +628,9 @@ extension ItemChecks on Subject<Item> {
   /// Create assertions on [Item.id].
   Subject<int> get id => has((m) => m.id, 'id');
 
-  /// Create assertions on [Item.text].
-  Subject<String> get text => has((m) => m.text, 'text');
+  /// Create assertions on [Item.name].
+  Subject<String> get name => has((m) => m.name, 'name');
 
-  /// Create assertions on [Item.integer].
-  Subject<int> get integer => has((m) => m.integer, 'integer');
-
-  /// Create assertions on [Item.real].
-  Subject<double> get real => has((m) => m.real, 'real');
-
-  /// Create assertions on [Item.json].
-  Subject<JsonValue> get json => has((m) => m.json, 'json');
+  /// Create assertions on [Item.value].
+  Subject<String?> get value => has((m) => m.value, 'value');
 }

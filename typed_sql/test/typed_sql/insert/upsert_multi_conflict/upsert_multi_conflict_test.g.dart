@@ -206,6 +206,73 @@ extension TableMultiItemExt on Table<MultiItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$MultiItem._$table);
 }
 
+/// Pagination cursor referencing a row in [MultiItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class MultiItemCursor {
+  const MultiItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'MultiItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [MultiItem], used by
+/// `.fetchPage(...)`.
+final class MultiItemDirection {
+  const MultiItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [MultiItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class MultiItemPageRequest
+    implements PageRequest<MultiItem, MultiItemCursor> {
+  const MultiItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const MultiItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final MultiItemCursor? cursor;
+
+  final MultiItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<MultiItem> multiItem) => [
+    (multiItem.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<MultiItem> multiItem) =>
+      direction.id == Order.ascending
+      ? multiItem.id > toExpr(cursor!.id)
+      : multiItem.id < toExpr(cursor!.id);
+
+  @override
+  MultiItemCursor cursorOf(MultiItem multiItem) =>
+      MultiItemCursor(id: multiItem.id);
+
+  @override
+  MultiItemPageRequest withCursor(MultiItemCursor cursor) =>
+      MultiItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `multiItems` table.
 extension QueryMultiItemExt on Query<(Expr<MultiItem>,)> {
   /// Lookup a single row in `multiItems` table using the _primary key_.
@@ -214,6 +281,30 @@ extension QueryMultiItemExt on Query<(Expr<MultiItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<MultiItem>,)> byKey(int id) =>
       where((multiItem) => multiItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<MultiItem, MultiItemCursor>? request =
+  ///     MultiItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [MultiItemCursor].
+  Future<Page<MultiItem, MultiItemCursor>> fetchPage(
+    PageRequest<MultiItem, MultiItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<MultiItem, MultiItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `multiItems` table matching this [Query].
   ///

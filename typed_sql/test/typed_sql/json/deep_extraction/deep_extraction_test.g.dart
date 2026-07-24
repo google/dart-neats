@@ -169,6 +169,69 @@ extension TableProductExt on Table<Product> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$Product._$table);
 }
 
+/// Pagination cursor referencing a row in [Product].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class ProductCursor {
+  const ProductCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'ProductCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [Product], used by
+/// `.fetchPage(...)`.
+final class ProductDirection {
+  const ProductDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Product].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class ProductPageRequest implements PageRequest<Product, ProductCursor> {
+  const ProductPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const ProductDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final ProductCursor? cursor;
+
+  final ProductDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Product> product) => [
+    (product.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Product> product) => direction.id == Order.ascending
+      ? product.id > toExpr(cursor!.id)
+      : product.id < toExpr(cursor!.id);
+
+  @override
+  ProductCursor cursorOf(Product product) => ProductCursor(id: product.id);
+
+  @override
+  ProductPageRequest withCursor(ProductCursor cursor) => ProductPageRequest(
+    pageSize: pageSize,
+    cursor: cursor,
+    direction: direction,
+  );
+}
+
 /// Extension methods for building queries against the `products` table.
 extension QueryProductExt on Query<(Expr<Product>,)> {
   /// Lookup a single row in `products` table using the _primary key_.
@@ -177,6 +240,30 @@ extension QueryProductExt on Query<(Expr<Product>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Product>,)> byKey(int id) =>
       where((product) => product.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Product, ProductCursor>? request =
+  ///     ProductPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [ProductCursor].
+  Future<Page<Product, ProductCursor>> fetchPage(
+    PageRequest<Product, ProductCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Product, ProductCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `products` table matching this [Query].
   ///

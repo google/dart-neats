@@ -275,6 +275,73 @@ extension TableSnakeUserExt on Table<SnakeUser> {
       $ForGeneratedCode.deleteSingle(byKey(userId), _$SnakeUser._$table);
 }
 
+/// Pagination cursor referencing a row in [SnakeUser].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class SnakeUserCursor {
+  const SnakeUserCursor({required this.userId});
+
+  final int userId;
+
+  @override
+  String toString() => 'SnakeUserCursor(userId: "$userId")';
+}
+
+/// Sort direction for each _primary key_ field of [SnakeUser], used by
+/// `.fetchPage(...)`.
+final class SnakeUserDirection {
+  const SnakeUserDirection({this.userId = Order.ascending});
+
+  final Order userId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [SnakeUser].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class SnakeUserPageRequest
+    implements PageRequest<SnakeUser, SnakeUserCursor> {
+  const SnakeUserPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const SnakeUserDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final SnakeUserCursor? cursor;
+
+  final SnakeUserDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<SnakeUser> snakeUser) => [
+    (snakeUser.userId, direction.userId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<SnakeUser> snakeUser) =>
+      direction.userId == Order.ascending
+      ? snakeUser.userId > toExpr(cursor!.userId)
+      : snakeUser.userId < toExpr(cursor!.userId);
+
+  @override
+  SnakeUserCursor cursorOf(SnakeUser snakeUser) =>
+      SnakeUserCursor(userId: snakeUser.userId);
+
+  @override
+  SnakeUserPageRequest withCursor(SnakeUserCursor cursor) =>
+      SnakeUserPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `snakeUsers` table.
 extension QuerySnakeUserExt on Query<(Expr<SnakeUser>,)> {
   /// Lookup a single row in `snakeUsers` table using the _primary key_.
@@ -283,6 +350,30 @@ extension QuerySnakeUserExt on Query<(Expr<SnakeUser>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<SnakeUser>,)> byKey(int userId) =>
       where((snakeUser) => snakeUser.userId.equalsValue(userId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<SnakeUser, SnakeUserCursor>? request =
+  ///     SnakeUserPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [SnakeUserCursor].
+  Future<Page<SnakeUser, SnakeUserCursor>> fetchPage(
+    PageRequest<SnakeUser, SnakeUserCursor> request,
+  ) => $ForGeneratedCode.fetchPage<SnakeUser, SnakeUserCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `snakeUsers` table matching this [Query].
   ///
@@ -865,6 +956,73 @@ extension TableSnakeProfileExt on Table<SnakeProfile> {
       $ForGeneratedCode.deleteSingle(byKey(profileId), _$SnakeProfile._$table);
 }
 
+/// Pagination cursor referencing a row in [SnakeProfile].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class SnakeProfileCursor {
+  const SnakeProfileCursor({required this.profileId});
+
+  final int profileId;
+
+  @override
+  String toString() => 'SnakeProfileCursor(profileId: "$profileId")';
+}
+
+/// Sort direction for each _primary key_ field of [SnakeProfile], used by
+/// `.fetchPage(...)`.
+final class SnakeProfileDirection {
+  const SnakeProfileDirection({this.profileId = Order.ascending});
+
+  final Order profileId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [SnakeProfile].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class SnakeProfilePageRequest
+    implements PageRequest<SnakeProfile, SnakeProfileCursor> {
+  const SnakeProfilePageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const SnakeProfileDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final SnakeProfileCursor? cursor;
+
+  final SnakeProfileDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<SnakeProfile> snakeProfile) => [
+    (snakeProfile.profileId, direction.profileId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<SnakeProfile> snakeProfile) =>
+      direction.profileId == Order.ascending
+      ? snakeProfile.profileId > toExpr(cursor!.profileId)
+      : snakeProfile.profileId < toExpr(cursor!.profileId);
+
+  @override
+  SnakeProfileCursor cursorOf(SnakeProfile snakeProfile) =>
+      SnakeProfileCursor(profileId: snakeProfile.profileId);
+
+  @override
+  SnakeProfilePageRequest withCursor(SnakeProfileCursor cursor) =>
+      SnakeProfilePageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `snakeProfiles` table.
 extension QuerySnakeProfileExt on Query<(Expr<SnakeProfile>,)> {
   /// Lookup a single row in `snakeProfiles` table using the _primary key_.
@@ -874,6 +1032,30 @@ extension QuerySnakeProfileExt on Query<(Expr<SnakeProfile>,)> {
   QuerySingle<(Expr<SnakeProfile>,)> byKey(int profileId) => where(
     (snakeProfile) => snakeProfile.profileId.equalsValue(profileId),
   ).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<SnakeProfile, SnakeProfileCursor>? request =
+  ///     SnakeProfilePageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [SnakeProfileCursor].
+  Future<Page<SnakeProfile, SnakeProfileCursor>> fetchPage(
+    PageRequest<SnakeProfile, SnakeProfileCursor> request,
+  ) => $ForGeneratedCode.fetchPage<SnakeProfile, SnakeProfileCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `snakeProfiles` table matching this [Query].
   ///

@@ -179,6 +179,66 @@ extension TableUserExt on Table<User> {
       $ForGeneratedCode.deleteSingle(byKey(userId), _$User._$table);
 }
 
+/// Pagination cursor referencing a row in [User].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class UserCursor {
+  const UserCursor({required this.userId});
+
+  final int userId;
+
+  @override
+  String toString() => 'UserCursor(userId: "$userId")';
+}
+
+/// Sort direction for each _primary key_ field of [User], used by
+/// `.fetchPage(...)`.
+final class UserDirection {
+  const UserDirection({this.userId = Order.ascending});
+
+  final Order userId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [User].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class UserPageRequest implements PageRequest<User, UserCursor> {
+  const UserPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const UserDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final UserCursor? cursor;
+
+  final UserDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<User> user) => [
+    (user.userId, direction.userId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<User> user) => direction.userId == Order.ascending
+      ? user.userId > toExpr(cursor!.userId)
+      : user.userId < toExpr(cursor!.userId);
+
+  @override
+  UserCursor cursorOf(User user) => UserCursor(userId: user.userId);
+
+  @override
+  UserPageRequest withCursor(UserCursor cursor) =>
+      UserPageRequest(pageSize: pageSize, cursor: cursor, direction: direction);
+}
+
 /// Extension methods for building queries against the `users` table.
 extension QueryUserExt on Query<(Expr<User>,)> {
   /// Lookup a single row in `users` table using the _primary key_.
@@ -187,6 +247,30 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<User>,)> byKey(int userId) =>
       where((user) => user.userId.equalsValue(userId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<User, UserCursor>? request =
+  ///     UserPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [UserCursor].
+  Future<Page<User, UserCursor>> fetchPage(
+    PageRequest<User, UserCursor> request,
+  ) => $ForGeneratedCode.fetchPage<User, UserCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `users` table matching this [Query].
   ///
@@ -776,6 +860,71 @@ extension TablePackageExt on Table<Package> {
       $ForGeneratedCode.deleteSingle(byKey(packageName), _$Package._$table);
 }
 
+/// Pagination cursor referencing a row in [Package].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class PackageCursor {
+  const PackageCursor({required this.packageName});
+
+  final String packageName;
+
+  @override
+  String toString() => 'PackageCursor(packageName: "$packageName")';
+}
+
+/// Sort direction for each _primary key_ field of [Package], used by
+/// `.fetchPage(...)`.
+final class PackageDirection {
+  const PackageDirection({this.packageName = Order.ascending});
+
+  final Order packageName;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Package].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class PackagePageRequest implements PageRequest<Package, PackageCursor> {
+  const PackagePageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const PackageDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final PackageCursor? cursor;
+
+  final PackageDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Package> package) => [
+    (package.packageName, direction.packageName),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Package> package) =>
+      direction.packageName == Order.ascending
+      ? package.packageName > toExpr(cursor!.packageName)
+      : package.packageName < toExpr(cursor!.packageName);
+
+  @override
+  PackageCursor cursorOf(Package package) =>
+      PackageCursor(packageName: package.packageName);
+
+  @override
+  PackagePageRequest withCursor(PackageCursor cursor) => PackagePageRequest(
+    pageSize: pageSize,
+    cursor: cursor,
+    direction: direction,
+  );
+}
+
 /// Extension methods for building queries against the `packages` table.
 extension QueryPackageExt on Query<(Expr<Package>,)> {
   /// Lookup a single row in `packages` table using the _primary key_.
@@ -784,6 +933,30 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Package>,)> byKey(String packageName) =>
       where((package) => package.packageName.equalsValue(packageName)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Package, PackageCursor>? request =
+  ///     PackagePageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [PackageCursor].
+  Future<Page<Package, PackageCursor>> fetchPage(
+    PageRequest<Package, PackageCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Package, PackageCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `packages` table matching this [Query].
   ///
@@ -1336,6 +1509,83 @@ extension TableLikeExt on Table<Like> {
       .deleteSingle(byKey(userId, packageName), _$Like._$table);
 }
 
+/// Pagination cursor referencing a row in [Like].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class LikeCursor {
+  const LikeCursor({required this.userId, required this.packageName});
+
+  final int userId;
+
+  final String packageName;
+
+  @override
+  String toString() =>
+      'LikeCursor(userId: "$userId", packageName: "$packageName")';
+}
+
+/// Sort direction for each _primary key_ field of [Like], used by
+/// `.fetchPage(...)`.
+final class LikeDirection {
+  const LikeDirection({
+    this.userId = Order.ascending,
+    this.packageName = Order.ascending,
+  });
+
+  final Order userId;
+
+  final Order packageName;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Like].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class LikePageRequest implements PageRequest<Like, LikeCursor> {
+  const LikePageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const LikeDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final LikeCursor? cursor;
+
+  final LikeDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Like> like) => [
+    (like.userId, direction.userId),
+    (like.packageName, direction.packageName),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Like> like) =>
+      (direction.userId == Order.ascending
+              ? like.userId > toExpr(cursor!.userId)
+              : like.userId < toExpr(cursor!.userId))
+          .or(
+            like.userId.equalsValue(cursor!.userId) &
+                (direction.packageName == Order.ascending
+                    ? like.packageName > toExpr(cursor!.packageName)
+                    : like.packageName < toExpr(cursor!.packageName)),
+          );
+
+  @override
+  LikeCursor cursorOf(Like like) =>
+      LikeCursor(userId: like.userId, packageName: like.packageName);
+
+  @override
+  LikePageRequest withCursor(LikeCursor cursor) =>
+      LikePageRequest(pageSize: pageSize, cursor: cursor, direction: direction);
+}
+
 /// Extension methods for building queries against the `likes` table.
 extension QueryLikeExt on Query<(Expr<Like>,)> {
   /// Lookup a single row in `likes` table using the _primary key_.
@@ -1347,6 +1597,30 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
         like.userId.equalsValue(userId) &
         like.packageName.equalsValue(packageName),
   ).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Like, LikeCursor>? request =
+  ///     LikePageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [LikeCursor].
+  Future<Page<Like, LikeCursor>> fetchPage(
+    PageRequest<Like, LikeCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Like, LikeCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `likes` table matching this [Query].
   ///

@@ -155,6 +155,73 @@ extension TableNotNullItemExt on Table<NotNullItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$NotNullItem._$table);
 }
 
+/// Pagination cursor referencing a row in [NotNullItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class NotNullItemCursor {
+  const NotNullItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'NotNullItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [NotNullItem], used by
+/// `.fetchPage(...)`.
+final class NotNullItemDirection {
+  const NotNullItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [NotNullItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class NotNullItemPageRequest
+    implements PageRequest<NotNullItem, NotNullItemCursor> {
+  const NotNullItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const NotNullItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final NotNullItemCursor? cursor;
+
+  final NotNullItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<NotNullItem> notNullItem) => [
+    (notNullItem.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<NotNullItem> notNullItem) =>
+      direction.id == Order.ascending
+      ? notNullItem.id > toExpr(cursor!.id)
+      : notNullItem.id < toExpr(cursor!.id);
+
+  @override
+  NotNullItemCursor cursorOf(NotNullItem notNullItem) =>
+      NotNullItemCursor(id: notNullItem.id);
+
+  @override
+  NotNullItemPageRequest withCursor(NotNullItemCursor cursor) =>
+      NotNullItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `notNullItems` table.
 extension QueryNotNullItemExt on Query<(Expr<NotNullItem>,)> {
   /// Lookup a single row in `notNullItems` table using the _primary key_.
@@ -163,6 +230,30 @@ extension QueryNotNullItemExt on Query<(Expr<NotNullItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<NotNullItem>,)> byKey(int id) =>
       where((notNullItem) => notNullItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<NotNullItem, NotNullItemCursor>? request =
+  ///     NotNullItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [NotNullItemCursor].
+  Future<Page<NotNullItem, NotNullItemCursor>> fetchPage(
+    PageRequest<NotNullItem, NotNullItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<NotNullItem, NotNullItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `notNullItems` table matching this [Query].
   ///

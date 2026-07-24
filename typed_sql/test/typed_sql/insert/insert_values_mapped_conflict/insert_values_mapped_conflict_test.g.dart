@@ -184,6 +184,73 @@ extension TableConflictMappedItemExt on Table<ConflictMappedItem> {
       .deleteSingle(byKey(complexId), _$ConflictMappedItem._$table);
 }
 
+/// Pagination cursor referencing a row in [ConflictMappedItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class ConflictMappedItemCursor {
+  const ConflictMappedItemCursor({required this.complexId});
+
+  final int complexId;
+
+  @override
+  String toString() => 'ConflictMappedItemCursor(complexId: "$complexId")';
+}
+
+/// Sort direction for each _primary key_ field of [ConflictMappedItem], used by
+/// `.fetchPage(...)`.
+final class ConflictMappedItemDirection {
+  const ConflictMappedItemDirection({this.complexId = Order.ascending});
+
+  final Order complexId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [ConflictMappedItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class ConflictMappedItemPageRequest
+    implements PageRequest<ConflictMappedItem, ConflictMappedItemCursor> {
+  const ConflictMappedItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const ConflictMappedItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final ConflictMappedItemCursor? cursor;
+
+  final ConflictMappedItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(
+    Expr<ConflictMappedItem> conflictMappedItem,
+  ) => [(conflictMappedItem.complexId, direction.complexId)];
+
+  @override
+  Expr<bool?> where(Expr<ConflictMappedItem> conflictMappedItem) =>
+      direction.complexId == Order.ascending
+      ? conflictMappedItem.complexId > toExpr(cursor!.complexId)
+      : conflictMappedItem.complexId < toExpr(cursor!.complexId);
+
+  @override
+  ConflictMappedItemCursor cursorOf(ConflictMappedItem conflictMappedItem) =>
+      ConflictMappedItemCursor(complexId: conflictMappedItem.complexId);
+
+  @override
+  ConflictMappedItemPageRequest withCursor(ConflictMappedItemCursor cursor) =>
+      ConflictMappedItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `conflictMappedItems` table.
 extension QueryConflictMappedItemExt on Query<(Expr<ConflictMappedItem>,)> {
   /// Lookup a single row in `conflictMappedItems` table using the _primary key_.
@@ -193,6 +260,31 @@ extension QueryConflictMappedItemExt on Query<(Expr<ConflictMappedItem>,)> {
   QuerySingle<(Expr<ConflictMappedItem>,)> byKey(int complexId) => where(
     (conflictMappedItem) => conflictMappedItem.complexId.equalsValue(complexId),
   ).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<ConflictMappedItem, ConflictMappedItemCursor>? request =
+  ///     ConflictMappedItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [ConflictMappedItemCursor].
+  Future<Page<ConflictMappedItem, ConflictMappedItemCursor>> fetchPage(
+    PageRequest<ConflictMappedItem, ConflictMappedItemCursor> request,
+  ) =>
+      $ForGeneratedCode.fetchPage<ConflictMappedItem, ConflictMappedItemCursor>(
+        query: this,
+        request: request,
+      );
 
   /// Update all rows in the `conflictMappedItems` table matching this [Query].
   ///

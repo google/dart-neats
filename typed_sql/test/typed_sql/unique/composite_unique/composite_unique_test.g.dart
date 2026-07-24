@@ -190,6 +190,66 @@ extension TableUserExt on Table<User> {
       $ForGeneratedCode.deleteSingle(byKey(accountId), _$User._$table);
 }
 
+/// Pagination cursor referencing a row in [User].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class UserCursor {
+  const UserCursor({required this.accountId});
+
+  final int accountId;
+
+  @override
+  String toString() => 'UserCursor(accountId: "$accountId")';
+}
+
+/// Sort direction for each _primary key_ field of [User], used by
+/// `.fetchPage(...)`.
+final class UserDirection {
+  const UserDirection({this.accountId = Order.ascending});
+
+  final Order accountId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [User].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class UserPageRequest implements PageRequest<User, UserCursor> {
+  const UserPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const UserDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final UserCursor? cursor;
+
+  final UserDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<User> user) => [
+    (user.accountId, direction.accountId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<User> user) => direction.accountId == Order.ascending
+      ? user.accountId > toExpr(cursor!.accountId)
+      : user.accountId < toExpr(cursor!.accountId);
+
+  @override
+  UserCursor cursorOf(User user) => UserCursor(accountId: user.accountId);
+
+  @override
+  UserPageRequest withCursor(UserCursor cursor) =>
+      UserPageRequest(pageSize: pageSize, cursor: cursor, direction: direction);
+}
+
 /// Extension methods for building queries against the `users` table.
 extension QueryUserExt on Query<(Expr<User>,)> {
   /// Lookup a single row in `users` table using the _primary key_.
@@ -198,6 +258,30 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<User>,)> byKey(int accountId) =>
       where((user) => user.accountId.equalsValue(accountId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<User, UserCursor>? request =
+  ///     UserPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [UserCursor].
+  Future<Page<User, UserCursor>> fetchPage(
+    PageRequest<User, UserCursor> request,
+  ) => $ForGeneratedCode.fetchPage<User, UserCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `users` table matching this [Query].
   ///

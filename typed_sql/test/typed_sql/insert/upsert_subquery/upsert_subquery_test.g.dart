@@ -158,6 +158,73 @@ extension TableSourceItemExt on Table<SourceItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$SourceItem._$table);
 }
 
+/// Pagination cursor referencing a row in [SourceItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class SourceItemCursor {
+  const SourceItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'SourceItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [SourceItem], used by
+/// `.fetchPage(...)`.
+final class SourceItemDirection {
+  const SourceItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [SourceItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class SourceItemPageRequest
+    implements PageRequest<SourceItem, SourceItemCursor> {
+  const SourceItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const SourceItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final SourceItemCursor? cursor;
+
+  final SourceItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<SourceItem> sourceItem) => [
+    (sourceItem.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<SourceItem> sourceItem) =>
+      direction.id == Order.ascending
+      ? sourceItem.id > toExpr(cursor!.id)
+      : sourceItem.id < toExpr(cursor!.id);
+
+  @override
+  SourceItemCursor cursorOf(SourceItem sourceItem) =>
+      SourceItemCursor(id: sourceItem.id);
+
+  @override
+  SourceItemPageRequest withCursor(SourceItemCursor cursor) =>
+      SourceItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `sourceItems` table.
 extension QuerySourceItemExt on Query<(Expr<SourceItem>,)> {
   /// Lookup a single row in `sourceItems` table using the _primary key_.
@@ -166,6 +233,30 @@ extension QuerySourceItemExt on Query<(Expr<SourceItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<SourceItem>,)> byKey(int id) =>
       where((sourceItem) => sourceItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<SourceItem, SourceItemCursor>? request =
+  ///     SourceItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [SourceItemCursor].
+  Future<Page<SourceItem, SourceItemCursor>> fetchPage(
+    PageRequest<SourceItem, SourceItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<SourceItem, SourceItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `sourceItems` table matching this [Query].
   ///
@@ -644,6 +735,73 @@ extension TableSubQueryItemExt on Table<SubQueryItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$SubQueryItem._$table);
 }
 
+/// Pagination cursor referencing a row in [SubQueryItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class SubQueryItemCursor {
+  const SubQueryItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'SubQueryItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [SubQueryItem], used by
+/// `.fetchPage(...)`.
+final class SubQueryItemDirection {
+  const SubQueryItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [SubQueryItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class SubQueryItemPageRequest
+    implements PageRequest<SubQueryItem, SubQueryItemCursor> {
+  const SubQueryItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const SubQueryItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final SubQueryItemCursor? cursor;
+
+  final SubQueryItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<SubQueryItem> subQueryItem) => [
+    (subQueryItem.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<SubQueryItem> subQueryItem) =>
+      direction.id == Order.ascending
+      ? subQueryItem.id > toExpr(cursor!.id)
+      : subQueryItem.id < toExpr(cursor!.id);
+
+  @override
+  SubQueryItemCursor cursorOf(SubQueryItem subQueryItem) =>
+      SubQueryItemCursor(id: subQueryItem.id);
+
+  @override
+  SubQueryItemPageRequest withCursor(SubQueryItemCursor cursor) =>
+      SubQueryItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `subQueryItems` table.
 extension QuerySubQueryItemExt on Query<(Expr<SubQueryItem>,)> {
   /// Lookup a single row in `subQueryItems` table using the _primary key_.
@@ -652,6 +810,30 @@ extension QuerySubQueryItemExt on Query<(Expr<SubQueryItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<SubQueryItem>,)> byKey(int id) =>
       where((subQueryItem) => subQueryItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<SubQueryItem, SubQueryItemCursor>? request =
+  ///     SubQueryItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [SubQueryItemCursor].
+  Future<Page<SubQueryItem, SubQueryItemCursor>> fetchPage(
+    PageRequest<SubQueryItem, SubQueryItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<SubQueryItem, SubQueryItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `subQueryItems` table matching this [Query].
   ///

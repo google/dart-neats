@@ -181,6 +181,71 @@ extension TableAccountExt on Table<Account> {
       $ForGeneratedCode.deleteSingle(byKey(accountId), _$Account._$table);
 }
 
+/// Pagination cursor referencing a row in [Account].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class AccountCursor {
+  const AccountCursor({required this.accountId});
+
+  final int accountId;
+
+  @override
+  String toString() => 'AccountCursor(accountId: "$accountId")';
+}
+
+/// Sort direction for each _primary key_ field of [Account], used by
+/// `.fetchPage(...)`.
+final class AccountDirection {
+  const AccountDirection({this.accountId = Order.ascending});
+
+  final Order accountId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Account].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class AccountPageRequest implements PageRequest<Account, AccountCursor> {
+  const AccountPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const AccountDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final AccountCursor? cursor;
+
+  final AccountDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Account> account) => [
+    (account.accountId, direction.accountId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Account> account) =>
+      direction.accountId == Order.ascending
+      ? account.accountId > toExpr(cursor!.accountId)
+      : account.accountId < toExpr(cursor!.accountId);
+
+  @override
+  AccountCursor cursorOf(Account account) =>
+      AccountCursor(accountId: account.accountId);
+
+  @override
+  AccountPageRequest withCursor(AccountCursor cursor) => AccountPageRequest(
+    pageSize: pageSize,
+    cursor: cursor,
+    direction: direction,
+  );
+}
+
 /// Extension methods for building queries against the `accounts` table.
 extension QueryAccountExt on Query<(Expr<Account>,)> {
   /// Lookup a single row in `accounts` table using the _primary key_.
@@ -189,6 +254,30 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Account>,)> byKey(int accountId) =>
       where((account) => account.accountId.equalsValue(accountId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Account, AccountCursor>? request =
+  ///     AccountPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [AccountCursor].
+  Future<Page<Account, AccountCursor>> fetchPage(
+    PageRequest<Account, AccountCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Account, AccountCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `accounts` table matching this [Query].
   ///

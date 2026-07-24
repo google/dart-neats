@@ -39,6 +39,12 @@ extension ExtensionBuilderExt on ExtensionBuilder {
   }
 }
 
+extension ClassBuilderExt on ClassBuilder {
+  void documentation(String content) {
+    docs.addAll(_documentationCommentLines(content));
+  }
+}
+
 Iterable<String> _documentationCommentLines(String content) sync* {
   final lines = _trimLines(content).split('\n');
 

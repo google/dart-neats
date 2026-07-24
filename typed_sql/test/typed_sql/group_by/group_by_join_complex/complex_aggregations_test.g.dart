@@ -175,6 +175,73 @@ extension TableDepartmentExt on Table<Department> {
       $ForGeneratedCode.deleteSingle(byKey(departmentId), _$Department._$table);
 }
 
+/// Pagination cursor referencing a row in [Department].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class DepartmentCursor {
+  const DepartmentCursor({required this.departmentId});
+
+  final int departmentId;
+
+  @override
+  String toString() => 'DepartmentCursor(departmentId: "$departmentId")';
+}
+
+/// Sort direction for each _primary key_ field of [Department], used by
+/// `.fetchPage(...)`.
+final class DepartmentDirection {
+  const DepartmentDirection({this.departmentId = Order.ascending});
+
+  final Order departmentId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Department].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class DepartmentPageRequest
+    implements PageRequest<Department, DepartmentCursor> {
+  const DepartmentPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const DepartmentDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final DepartmentCursor? cursor;
+
+  final DepartmentDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Department> department) => [
+    (department.departmentId, direction.departmentId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Department> department) =>
+      direction.departmentId == Order.ascending
+      ? department.departmentId > toExpr(cursor!.departmentId)
+      : department.departmentId < toExpr(cursor!.departmentId);
+
+  @override
+  DepartmentCursor cursorOf(Department department) =>
+      DepartmentCursor(departmentId: department.departmentId);
+
+  @override
+  DepartmentPageRequest withCursor(DepartmentCursor cursor) =>
+      DepartmentPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `departments` table.
 extension QueryDepartmentExt on Query<(Expr<Department>,)> {
   /// Lookup a single row in `departments` table using the _primary key_.
@@ -184,6 +251,30 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
   QuerySingle<(Expr<Department>,)> byKey(int departmentId) => where(
     (department) => department.departmentId.equalsValue(departmentId),
   ).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Department, DepartmentCursor>? request =
+  ///     DepartmentPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [DepartmentCursor].
+  Future<Page<Department, DepartmentCursor>> fetchPage(
+    PageRequest<Department, DepartmentCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Department, DepartmentCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `departments` table matching this [Query].
   ///
@@ -655,6 +746,72 @@ extension TableEmployeeExt on Table<Employee> {
       $ForGeneratedCode.deleteSingle(byKey(employeeId), _$Employee._$table);
 }
 
+/// Pagination cursor referencing a row in [Employee].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class EmployeeCursor {
+  const EmployeeCursor({required this.employeeId});
+
+  final int employeeId;
+
+  @override
+  String toString() => 'EmployeeCursor(employeeId: "$employeeId")';
+}
+
+/// Sort direction for each _primary key_ field of [Employee], used by
+/// `.fetchPage(...)`.
+final class EmployeeDirection {
+  const EmployeeDirection({this.employeeId = Order.ascending});
+
+  final Order employeeId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Employee].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class EmployeePageRequest
+    implements PageRequest<Employee, EmployeeCursor> {
+  const EmployeePageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const EmployeeDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final EmployeeCursor? cursor;
+
+  final EmployeeDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Employee> employee) => [
+    (employee.employeeId, direction.employeeId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Employee> employee) =>
+      direction.employeeId == Order.ascending
+      ? employee.employeeId > toExpr(cursor!.employeeId)
+      : employee.employeeId < toExpr(cursor!.employeeId);
+
+  @override
+  EmployeeCursor cursorOf(Employee employee) =>
+      EmployeeCursor(employeeId: employee.employeeId);
+
+  @override
+  EmployeePageRequest withCursor(EmployeeCursor cursor) => EmployeePageRequest(
+    pageSize: pageSize,
+    cursor: cursor,
+    direction: direction,
+  );
+}
+
 /// Extension methods for building queries against the `employees` table.
 extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// Lookup a single row in `employees` table using the _primary key_.
@@ -663,6 +820,30 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Employee>,)> byKey(int employeeId) =>
       where((employee) => employee.employeeId.equalsValue(employeeId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Employee, EmployeeCursor>? request =
+  ///     EmployeePageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [EmployeeCursor].
+  Future<Page<Employee, EmployeeCursor>> fetchPage(
+    PageRequest<Employee, EmployeeCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Employee, EmployeeCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `employees` table matching this [Query].
   ///
@@ -1182,6 +1363,71 @@ extension TableProjectExt on Table<Project> {
       $ForGeneratedCode.deleteSingle(byKey(projectId), _$Project._$table);
 }
 
+/// Pagination cursor referencing a row in [Project].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class ProjectCursor {
+  const ProjectCursor({required this.projectId});
+
+  final int projectId;
+
+  @override
+  String toString() => 'ProjectCursor(projectId: "$projectId")';
+}
+
+/// Sort direction for each _primary key_ field of [Project], used by
+/// `.fetchPage(...)`.
+final class ProjectDirection {
+  const ProjectDirection({this.projectId = Order.ascending});
+
+  final Order projectId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Project].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class ProjectPageRequest implements PageRequest<Project, ProjectCursor> {
+  const ProjectPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const ProjectDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final ProjectCursor? cursor;
+
+  final ProjectDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Project> project) => [
+    (project.projectId, direction.projectId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Project> project) =>
+      direction.projectId == Order.ascending
+      ? project.projectId > toExpr(cursor!.projectId)
+      : project.projectId < toExpr(cursor!.projectId);
+
+  @override
+  ProjectCursor cursorOf(Project project) =>
+      ProjectCursor(projectId: project.projectId);
+
+  @override
+  ProjectPageRequest withCursor(ProjectCursor cursor) => ProjectPageRequest(
+    pageSize: pageSize,
+    cursor: cursor,
+    direction: direction,
+  );
+}
+
 /// Extension methods for building queries against the `projects` table.
 extension QueryProjectExt on Query<(Expr<Project>,)> {
   /// Lookup a single row in `projects` table using the _primary key_.
@@ -1190,6 +1436,30 @@ extension QueryProjectExt on Query<(Expr<Project>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Project>,)> byKey(int projectId) =>
       where((project) => project.projectId.equalsValue(projectId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Project, ProjectCursor>? request =
+  ///     ProjectPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [ProjectCursor].
+  Future<Page<Project, ProjectCursor>> fetchPage(
+    PageRequest<Project, ProjectCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Project, ProjectCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `projects` table matching this [Query].
   ///

@@ -1,3 +1,6 @@
+## 0.1.14
+ * Support paginated table fetching using primary keys as cursor.
+
 ## 0.1.13
  * Support `CREATE INDEX` DDLs through `@Index` annotations.
 

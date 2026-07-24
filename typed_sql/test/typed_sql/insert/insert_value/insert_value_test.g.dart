@@ -152,6 +152,73 @@ extension TableValueItemExt on Table<ValueItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$ValueItem._$table);
 }
 
+/// Pagination cursor referencing a row in [ValueItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class ValueItemCursor {
+  const ValueItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'ValueItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [ValueItem], used by
+/// `.fetchPage(...)`.
+final class ValueItemDirection {
+  const ValueItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [ValueItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class ValueItemPageRequest
+    implements PageRequest<ValueItem, ValueItemCursor> {
+  const ValueItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const ValueItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final ValueItemCursor? cursor;
+
+  final ValueItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<ValueItem> valueItem) => [
+    (valueItem.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<ValueItem> valueItem) =>
+      direction.id == Order.ascending
+      ? valueItem.id > toExpr(cursor!.id)
+      : valueItem.id < toExpr(cursor!.id);
+
+  @override
+  ValueItemCursor cursorOf(ValueItem valueItem) =>
+      ValueItemCursor(id: valueItem.id);
+
+  @override
+  ValueItemPageRequest withCursor(ValueItemCursor cursor) =>
+      ValueItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `valueItems` table.
 extension QueryValueItemExt on Query<(Expr<ValueItem>,)> {
   /// Lookup a single row in `valueItems` table using the _primary key_.
@@ -160,6 +227,30 @@ extension QueryValueItemExt on Query<(Expr<ValueItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<ValueItem>,)> byKey(int id) =>
       where((valueItem) => valueItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<ValueItem, ValueItemCursor>? request =
+  ///     ValueItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [ValueItemCursor].
+  Future<Page<ValueItem, ValueItemCursor>> fetchPage(
+    PageRequest<ValueItem, ValueItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<ValueItem, ValueItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `valueItems` table matching this [Query].
   ///

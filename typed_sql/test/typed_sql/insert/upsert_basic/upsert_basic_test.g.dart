@@ -177,6 +177,73 @@ extension TableBasicItemExt on Table<BasicItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$BasicItem._$table);
 }
 
+/// Pagination cursor referencing a row in [BasicItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class BasicItemCursor {
+  const BasicItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'BasicItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [BasicItem], used by
+/// `.fetchPage(...)`.
+final class BasicItemDirection {
+  const BasicItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [BasicItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class BasicItemPageRequest
+    implements PageRequest<BasicItem, BasicItemCursor> {
+  const BasicItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const BasicItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final BasicItemCursor? cursor;
+
+  final BasicItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<BasicItem> basicItem) => [
+    (basicItem.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<BasicItem> basicItem) =>
+      direction.id == Order.ascending
+      ? basicItem.id > toExpr(cursor!.id)
+      : basicItem.id < toExpr(cursor!.id);
+
+  @override
+  BasicItemCursor cursorOf(BasicItem basicItem) =>
+      BasicItemCursor(id: basicItem.id);
+
+  @override
+  BasicItemPageRequest withCursor(BasicItemCursor cursor) =>
+      BasicItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `basicItems` table.
 extension QueryBasicItemExt on Query<(Expr<BasicItem>,)> {
   /// Lookup a single row in `basicItems` table using the _primary key_.
@@ -185,6 +252,30 @@ extension QueryBasicItemExt on Query<(Expr<BasicItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<BasicItem>,)> byKey(int id) =>
       where((basicItem) => basicItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<BasicItem, BasicItemCursor>? request =
+  ///     BasicItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [BasicItemCursor].
+  Future<Page<BasicItem, BasicItemCursor>> fetchPage(
+    PageRequest<BasicItem, BasicItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<BasicItem, BasicItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `basicItems` table matching this [Query].
   ///

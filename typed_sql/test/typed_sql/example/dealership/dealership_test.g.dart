@@ -197,6 +197,66 @@ extension TableCarExt on Table<Car> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$Car._$table);
 }
 
+/// Pagination cursor referencing a row in [Car].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class CarCursor {
+  const CarCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'CarCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [Car], used by
+/// `.fetchPage(...)`.
+final class CarDirection {
+  const CarDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Car].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class CarPageRequest implements PageRequest<Car, CarCursor> {
+  const CarPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const CarDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final CarCursor? cursor;
+
+  final CarDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Car> car) => [
+    (car.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Car> car) => direction.id == Order.ascending
+      ? car.id > toExpr(cursor!.id)
+      : car.id < toExpr(cursor!.id);
+
+  @override
+  CarCursor cursorOf(Car car) => CarCursor(id: car.id);
+
+  @override
+  CarPageRequest withCursor(CarCursor cursor) =>
+      CarPageRequest(pageSize: pageSize, cursor: cursor, direction: direction);
+}
+
 /// Extension methods for building queries against the `cars` table.
 extension QueryCarExt on Query<(Expr<Car>,)> {
   /// Lookup a single row in `cars` table using the _primary key_.
@@ -205,6 +265,29 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Car>,)> byKey(int id) =>
       where((car) => car.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Car, CarCursor>? request =
+  ///     CarPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [CarCursor].
+  Future<Page<Car, CarCursor>> fetchPage(PageRequest<Car, CarCursor> request) =>
+      $ForGeneratedCode.fetchPage<Car, CarCursor>(
+        query: this,
+        request: request,
+      );
 
   /// Update all rows in the `cars` table matching this [Query].
   ///

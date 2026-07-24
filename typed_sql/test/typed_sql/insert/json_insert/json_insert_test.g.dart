@@ -155,6 +155,70 @@ extension TableJsonItemExt on Table<JsonItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$JsonItem._$table);
 }
 
+/// Pagination cursor referencing a row in [JsonItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class JsonItemCursor {
+  const JsonItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'JsonItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [JsonItem], used by
+/// `.fetchPage(...)`.
+final class JsonItemDirection {
+  const JsonItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [JsonItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class JsonItemPageRequest
+    implements PageRequest<JsonItem, JsonItemCursor> {
+  const JsonItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const JsonItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final JsonItemCursor? cursor;
+
+  final JsonItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<JsonItem> jsonItem) => [
+    (jsonItem.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<JsonItem> jsonItem) => direction.id == Order.ascending
+      ? jsonItem.id > toExpr(cursor!.id)
+      : jsonItem.id < toExpr(cursor!.id);
+
+  @override
+  JsonItemCursor cursorOf(JsonItem jsonItem) => JsonItemCursor(id: jsonItem.id);
+
+  @override
+  JsonItemPageRequest withCursor(JsonItemCursor cursor) => JsonItemPageRequest(
+    pageSize: pageSize,
+    cursor: cursor,
+    direction: direction,
+  );
+}
+
 /// Extension methods for building queries against the `jsonItems` table.
 extension QueryJsonItemExt on Query<(Expr<JsonItem>,)> {
   /// Lookup a single row in `jsonItems` table using the _primary key_.
@@ -163,6 +227,30 @@ extension QueryJsonItemExt on Query<(Expr<JsonItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<JsonItem>,)> byKey(int id) =>
       where((jsonItem) => jsonItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<JsonItem, JsonItemCursor>? request =
+  ///     JsonItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [JsonItemCursor].
+  Future<Page<JsonItem, JsonItemCursor>> fetchPage(
+    PageRequest<JsonItem, JsonItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<JsonItem, JsonItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `jsonItems` table matching this [Query].
   ///

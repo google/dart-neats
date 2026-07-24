@@ -284,6 +284,90 @@ extension TableLegacyUserExt on Table<LegacyUser> {
       .deleteSingle(byKey(tenantId, userId), _$LegacyUser._$table);
 }
 
+/// Pagination cursor referencing a row in [LegacyUser].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class LegacyUserCursor {
+  const LegacyUserCursor({required this.tenantId, required this.userId});
+
+  final int tenantId;
+
+  final int userId;
+
+  @override
+  String toString() =>
+      'LegacyUserCursor(tenantId: "$tenantId", userId: "$userId")';
+}
+
+/// Sort direction for each _primary key_ field of [LegacyUser], used by
+/// `.fetchPage(...)`.
+final class LegacyUserDirection {
+  const LegacyUserDirection({
+    this.tenantId = Order.ascending,
+    this.userId = Order.ascending,
+  });
+
+  final Order tenantId;
+
+  final Order userId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [LegacyUser].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class LegacyUserPageRequest
+    implements PageRequest<LegacyUser, LegacyUserCursor> {
+  const LegacyUserPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const LegacyUserDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final LegacyUserCursor? cursor;
+
+  final LegacyUserDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<LegacyUser> legacyUser) => [
+    (legacyUser.tenantId, direction.tenantId),
+    (legacyUser.userId, direction.userId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<LegacyUser> legacyUser) =>
+      (direction.tenantId == Order.ascending
+              ? legacyUser.tenantId > toExpr(cursor!.tenantId)
+              : legacyUser.tenantId < toExpr(cursor!.tenantId))
+          .or(
+            legacyUser.tenantId.equalsValue(cursor!.tenantId) &
+                (direction.userId == Order.ascending
+                    ? legacyUser.userId > toExpr(cursor!.userId)
+                    : legacyUser.userId < toExpr(cursor!.userId)),
+          );
+
+  @override
+  LegacyUserCursor cursorOf(LegacyUser legacyUser) => LegacyUserCursor(
+    tenantId: legacyUser.tenantId,
+    userId: legacyUser.userId,
+  );
+
+  @override
+  LegacyUserPageRequest withCursor(LegacyUserCursor cursor) =>
+      LegacyUserPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `users` table.
 extension QueryLegacyUserExt on Query<(Expr<LegacyUser>,)> {
   /// Lookup a single row in `users` table using the _primary key_.
@@ -295,6 +379,30 @@ extension QueryLegacyUserExt on Query<(Expr<LegacyUser>,)> {
         legacyUser.tenantId.equalsValue(tenantId) &
         legacyUser.userId.equalsValue(userId),
   ).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<LegacyUser, LegacyUserCursor>? request =
+  ///     LegacyUserPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [LegacyUserCursor].
+  Future<Page<LegacyUser, LegacyUserCursor>> fetchPage(
+    PageRequest<LegacyUser, LegacyUserCursor> request,
+  ) => $ForGeneratedCode.fetchPage<LegacyUser, LegacyUserCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `users` table matching this [Query].
   ///
@@ -898,6 +1006,72 @@ extension TableLegacyCommentExt on Table<LegacyComment> {
       $ForGeneratedCode.deleteSingle(byKey(commentId), _$LegacyComment._$table);
 }
 
+/// Pagination cursor referencing a row in [LegacyComment].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class LegacyCommentCursor {
+  const LegacyCommentCursor({required this.commentId});
+
+  final int commentId;
+
+  @override
+  String toString() => 'LegacyCommentCursor(commentId: "$commentId")';
+}
+
+/// Sort direction for each _primary key_ field of [LegacyComment], used by
+/// `.fetchPage(...)`.
+final class LegacyCommentDirection {
+  const LegacyCommentDirection({this.commentId = Order.ascending});
+
+  final Order commentId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [LegacyComment].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class LegacyCommentPageRequest
+    implements PageRequest<LegacyComment, LegacyCommentCursor> {
+  const LegacyCommentPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const LegacyCommentDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final LegacyCommentCursor? cursor;
+
+  final LegacyCommentDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<LegacyComment> legacyComment) =>
+      [(legacyComment.commentId, direction.commentId)];
+
+  @override
+  Expr<bool?> where(Expr<LegacyComment> legacyComment) =>
+      direction.commentId == Order.ascending
+      ? legacyComment.commentId > toExpr(cursor!.commentId)
+      : legacyComment.commentId < toExpr(cursor!.commentId);
+
+  @override
+  LegacyCommentCursor cursorOf(LegacyComment legacyComment) =>
+      LegacyCommentCursor(commentId: legacyComment.commentId);
+
+  @override
+  LegacyCommentPageRequest withCursor(LegacyCommentCursor cursor) =>
+      LegacyCommentPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `comments` table.
 extension QueryLegacyCommentExt on Query<(Expr<LegacyComment>,)> {
   /// Lookup a single row in `comments` table using the _primary key_.
@@ -907,6 +1081,30 @@ extension QueryLegacyCommentExt on Query<(Expr<LegacyComment>,)> {
   QuerySingle<(Expr<LegacyComment>,)> byKey(int commentId) => where(
     (legacyComment) => legacyComment.commentId.equalsValue(commentId),
   ).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<LegacyComment, LegacyCommentCursor>? request =
+  ///     LegacyCommentPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [LegacyCommentCursor].
+  Future<Page<LegacyComment, LegacyCommentCursor>> fetchPage(
+    PageRequest<LegacyComment, LegacyCommentCursor> request,
+  ) => $ForGeneratedCode.fetchPage<LegacyComment, LegacyCommentCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `comments` table matching this [Query].
   ///

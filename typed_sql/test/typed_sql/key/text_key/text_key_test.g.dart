@@ -160,6 +160,66 @@ extension TableItemExt on Table<Item> {
       $ForGeneratedCode.deleteSingle(byKey(key), _$Item._$table);
 }
 
+/// Pagination cursor referencing a row in [Item].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class ItemCursor {
+  const ItemCursor({required this.key});
+
+  final String key;
+
+  @override
+  String toString() => 'ItemCursor(key: "$key")';
+}
+
+/// Sort direction for each _primary key_ field of [Item], used by
+/// `.fetchPage(...)`.
+final class ItemDirection {
+  const ItemDirection({this.key = Order.ascending});
+
+  final Order key;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Item].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class ItemPageRequest implements PageRequest<Item, ItemCursor> {
+  const ItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const ItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final ItemCursor? cursor;
+
+  final ItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Item> item) => [
+    (item.key, direction.key),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Item> item) => direction.key == Order.ascending
+      ? item.key > toExpr(cursor!.key)
+      : item.key < toExpr(cursor!.key);
+
+  @override
+  ItemCursor cursorOf(Item item) => ItemCursor(key: item.key);
+
+  @override
+  ItemPageRequest withCursor(ItemCursor cursor) =>
+      ItemPageRequest(pageSize: pageSize, cursor: cursor, direction: direction);
+}
+
 /// Extension methods for building queries against the `items` table.
 extension QueryItemExt on Query<(Expr<Item>,)> {
   /// Lookup a single row in `items` table using the _primary key_.
@@ -168,6 +228,30 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Item>,)> byKey(String key) =>
       where((item) => item.key.equalsValue(key)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Item, ItemCursor>? request =
+  ///     ItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [ItemCursor].
+  Future<Page<Item, ItemCursor>> fetchPage(
+    PageRequest<Item, ItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Item, ItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `items` table matching this [Query].
   ///

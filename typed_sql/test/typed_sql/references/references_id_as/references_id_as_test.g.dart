@@ -174,6 +174,71 @@ extension TableAuthorExt on Table<Author> {
       $ForGeneratedCode.deleteSingle(byKey(authorId), _$Author._$table);
 }
 
+/// Pagination cursor referencing a row in [Author].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class AuthorCursor {
+  const AuthorCursor({required this.authorId});
+
+  final int authorId;
+
+  @override
+  String toString() => 'AuthorCursor(authorId: "$authorId")';
+}
+
+/// Sort direction for each _primary key_ field of [Author], used by
+/// `.fetchPage(...)`.
+final class AuthorDirection {
+  const AuthorDirection({this.authorId = Order.ascending});
+
+  final Order authorId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Author].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class AuthorPageRequest implements PageRequest<Author, AuthorCursor> {
+  const AuthorPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const AuthorDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final AuthorCursor? cursor;
+
+  final AuthorDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Author> author) => [
+    (author.authorId, direction.authorId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Author> author) =>
+      direction.authorId == Order.ascending
+      ? author.authorId > toExpr(cursor!.authorId)
+      : author.authorId < toExpr(cursor!.authorId);
+
+  @override
+  AuthorCursor cursorOf(Author author) =>
+      AuthorCursor(authorId: author.authorId);
+
+  @override
+  AuthorPageRequest withCursor(AuthorCursor cursor) => AuthorPageRequest(
+    pageSize: pageSize,
+    cursor: cursor,
+    direction: direction,
+  );
+}
+
 /// Extension methods for building queries against the `authors` table.
 extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// Lookup a single row in `authors` table using the _primary key_.
@@ -182,6 +247,30 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Author>,)> byKey(int authorId) =>
       where((author) => author.authorId.equalsValue(authorId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Author, AuthorCursor>? request =
+  ///     AuthorPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [AuthorCursor].
+  Future<Page<Author, AuthorCursor>> fetchPage(
+    PageRequest<Author, AuthorCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Author, AuthorCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `authors` table matching this [Query].
   ///
@@ -751,6 +840,66 @@ extension TableBookExt on Table<Book> {
       $ForGeneratedCode.deleteSingle(byKey(bookId), _$Book._$table);
 }
 
+/// Pagination cursor referencing a row in [Book].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class BookCursor {
+  const BookCursor({required this.bookId});
+
+  final int bookId;
+
+  @override
+  String toString() => 'BookCursor(bookId: "$bookId")';
+}
+
+/// Sort direction for each _primary key_ field of [Book], used by
+/// `.fetchPage(...)`.
+final class BookDirection {
+  const BookDirection({this.bookId = Order.ascending});
+
+  final Order bookId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [Book].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class BookPageRequest implements PageRequest<Book, BookCursor> {
+  const BookPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const BookDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final BookCursor? cursor;
+
+  final BookDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<Book> book) => [
+    (book.bookId, direction.bookId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<Book> book) => direction.bookId == Order.ascending
+      ? book.bookId > toExpr(cursor!.bookId)
+      : book.bookId < toExpr(cursor!.bookId);
+
+  @override
+  BookCursor cursorOf(Book book) => BookCursor(bookId: book.bookId);
+
+  @override
+  BookPageRequest withCursor(BookCursor cursor) =>
+      BookPageRequest(pageSize: pageSize, cursor: cursor, direction: direction);
+}
+
 /// Extension methods for building queries against the `books` table.
 extension QueryBookExt on Query<(Expr<Book>,)> {
   /// Lookup a single row in `books` table using the _primary key_.
@@ -759,6 +908,30 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Book>,)> byKey(int bookId) =>
       where((book) => book.bookId.equalsValue(bookId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<Book, BookCursor>? request =
+  ///     BookPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [BookCursor].
+  Future<Page<Book, BookCursor>> fetchPage(
+    PageRequest<Book, BookCursor> request,
+  ) => $ForGeneratedCode.fetchPage<Book, BookCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `books` table matching this [Query].
   ///

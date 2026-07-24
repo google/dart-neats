@@ -270,6 +270,73 @@ extension TableDefaultsItemExt on Table<DefaultsItem> {
       $ForGeneratedCode.deleteSingle(byKey(id), _$DefaultsItem._$table);
 }
 
+/// Pagination cursor referencing a row in [DefaultsItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class DefaultsItemCursor {
+  const DefaultsItemCursor({required this.id});
+
+  final int id;
+
+  @override
+  String toString() => 'DefaultsItemCursor(id: "$id")';
+}
+
+/// Sort direction for each _primary key_ field of [DefaultsItem], used by
+/// `.fetchPage(...)`.
+final class DefaultsItemDirection {
+  const DefaultsItemDirection({this.id = Order.ascending});
+
+  final Order id;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [DefaultsItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class DefaultsItemPageRequest
+    implements PageRequest<DefaultsItem, DefaultsItemCursor> {
+  const DefaultsItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const DefaultsItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final DefaultsItemCursor? cursor;
+
+  final DefaultsItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<DefaultsItem> defaultsItem) => [
+    (defaultsItem.id, direction.id),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<DefaultsItem> defaultsItem) =>
+      direction.id == Order.ascending
+      ? defaultsItem.id > toExpr(cursor!.id)
+      : defaultsItem.id < toExpr(cursor!.id);
+
+  @override
+  DefaultsItemCursor cursorOf(DefaultsItem defaultsItem) =>
+      DefaultsItemCursor(id: defaultsItem.id);
+
+  @override
+  DefaultsItemPageRequest withCursor(DefaultsItemCursor cursor) =>
+      DefaultsItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `defaultsItems` table.
 extension QueryDefaultsItemExt on Query<(Expr<DefaultsItem>,)> {
   /// Lookup a single row in `defaultsItems` table using the _primary key_.
@@ -278,6 +345,30 @@ extension QueryDefaultsItemExt on Query<(Expr<DefaultsItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<DefaultsItem>,)> byKey(int id) =>
       where((defaultsItem) => defaultsItem.id.equalsValue(id)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<DefaultsItem, DefaultsItemCursor>? request =
+  ///     DefaultsItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [DefaultsItemCursor].
+  Future<Page<DefaultsItem, DefaultsItemCursor>> fetchPage(
+    PageRequest<DefaultsItem, DefaultsItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<DefaultsItem, DefaultsItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `defaultsItems` table matching this [Query].
   ///

@@ -273,6 +273,73 @@ extension TableDialectItemExt on Table<DialectItem> {
       $ForGeneratedCode.deleteSingle(byKey(itemId), _$DialectItem._$table);
 }
 
+/// Pagination cursor referencing a row in [DialectItem].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class DialectItemCursor {
+  const DialectItemCursor({required this.itemId});
+
+  final int itemId;
+
+  @override
+  String toString() => 'DialectItemCursor(itemId: "$itemId")';
+}
+
+/// Sort direction for each _primary key_ field of [DialectItem], used by
+/// `.fetchPage(...)`.
+final class DialectItemDirection {
+  const DialectItemDirection({this.itemId = Order.ascending});
+
+  final Order itemId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [DialectItem].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class DialectItemPageRequest
+    implements PageRequest<DialectItem, DialectItemCursor> {
+  const DialectItemPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const DialectItemDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final DialectItemCursor? cursor;
+
+  final DialectItemDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<DialectItem> dialectItem) => [
+    (dialectItem.itemId, direction.itemId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<DialectItem> dialectItem) =>
+      direction.itemId == Order.ascending
+      ? dialectItem.itemId > toExpr(cursor!.itemId)
+      : dialectItem.itemId < toExpr(cursor!.itemId);
+
+  @override
+  DialectItemCursor cursorOf(DialectItem dialectItem) =>
+      DialectItemCursor(itemId: dialectItem.itemId);
+
+  @override
+  DialectItemPageRequest withCursor(DialectItemCursor cursor) =>
+      DialectItemPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `dialectItems` table.
 extension QueryDialectItemExt on Query<(Expr<DialectItem>,)> {
   /// Lookup a single row in `dialectItems` table using the _primary key_.
@@ -281,6 +348,30 @@ extension QueryDialectItemExt on Query<(Expr<DialectItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<DialectItem>,)> byKey(int itemId) =>
       where((dialectItem) => dialectItem.itemId.equalsValue(itemId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<DialectItem, DialectItemCursor>? request =
+  ///     DialectItemPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [DialectItemCursor].
+  Future<Page<DialectItem, DialectItemCursor>> fetchPage(
+    PageRequest<DialectItem, DialectItemCursor> request,
+  ) => $ForGeneratedCode.fetchPage<DialectItem, DialectItemCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `dialectItems` table matching this [Query].
   ///
@@ -833,6 +924,73 @@ extension TableDialectLogExt on Table<DialectLog> {
       $ForGeneratedCode.deleteSingle(byKey(logId), _$DialectLog._$table);
 }
 
+/// Pagination cursor referencing a row in [DialectLog].
+///
+/// This identifies the row after which the next page of results begins,
+/// using the values of the _primary key_ fields from that row.
+final class DialectLogCursor {
+  const DialectLogCursor({required this.logId});
+
+  final int logId;
+
+  @override
+  String toString() => 'DialectLogCursor(logId: "$logId")';
+}
+
+/// Sort direction for each _primary key_ field of [DialectLog], used by
+/// `.fetchPage(...)`.
+final class DialectLogDirection {
+  const DialectLogDirection({this.logId = Order.ascending});
+
+  final Order logId;
+}
+
+/// Parameters for a `.fetchPage(...)` call against [DialectLog].
+///
+/// > [!WARNING]
+/// > Always use the same [direction] for every page in a single pagination.
+/// > Using a cursor obtained with one direction while fetching
+/// > with a different direction will paginate the wrong way.
+final class DialectLogPageRequest
+    implements PageRequest<DialectLog, DialectLogCursor> {
+  const DialectLogPageRequest({
+    required this.pageSize,
+    this.cursor,
+    this.direction = const DialectLogDirection(),
+  });
+
+  @override
+  final int pageSize;
+
+  @override
+  final DialectLogCursor? cursor;
+
+  final DialectLogDirection direction;
+
+  @override
+  List<(Expr<Comparable?>, Order)> orderBy(Expr<DialectLog> dialectLog) => [
+    (dialectLog.logId, direction.logId),
+  ];
+
+  @override
+  Expr<bool?> where(Expr<DialectLog> dialectLog) =>
+      direction.logId == Order.ascending
+      ? dialectLog.logId > toExpr(cursor!.logId)
+      : dialectLog.logId < toExpr(cursor!.logId);
+
+  @override
+  DialectLogCursor cursorOf(DialectLog dialectLog) =>
+      DialectLogCursor(logId: dialectLog.logId);
+
+  @override
+  DialectLogPageRequest withCursor(DialectLogCursor cursor) =>
+      DialectLogPageRequest(
+        pageSize: pageSize,
+        cursor: cursor,
+        direction: direction,
+      );
+}
+
 /// Extension methods for building queries against the `dialectLogs` table.
 extension QueryDialectLogExt on Query<(Expr<DialectLog>,)> {
   /// Lookup a single row in `dialectLogs` table using the _primary key_.
@@ -841,6 +999,30 @@ extension QueryDialectLogExt on Query<(Expr<DialectLog>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<DialectLog>,)> byKey(int logId) =>
       where((dialectLog) => dialectLog.logId.equalsValue(logId)).first;
+
+  /// Fetch a page of at most `request.pageSize` rows.
+  ///
+  /// For continuing an existing pagination, pass `page.nextPageRequest`
+  /// from the previous page as [request]:
+  /// ```dart
+  /// PageRequest<DialectLog, DialectLogCursor>? request =
+  ///     DialectLogPageRequest(pageSize: 100);
+  /// while (request != null) {
+  ///   final page = await db.myTable.fetchPage(request);
+  ///   // ... process page.items ...
+  ///   request = page.nextPageRequest;
+  /// }
+  /// ```
+  ///
+  /// If you only need a resume point to persist (e.g. in a URL or a stored
+  /// checkpoint) rather than the whole request, use `page.nextCursor`
+  /// instead -- see [DialectLogCursor].
+  Future<Page<DialectLog, DialectLogCursor>> fetchPage(
+    PageRequest<DialectLog, DialectLogCursor> request,
+  ) => $ForGeneratedCode.fetchPage<DialectLog, DialectLogCursor>(
+    query: this,
+    request: request,
+  );
 
   /// Update all rows in the `dialectLogs` table matching this [Query].
   ///
