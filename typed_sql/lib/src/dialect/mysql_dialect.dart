@@ -186,7 +186,14 @@ final class _MysqlSqlDialect extends SqlDialect {
         );
       }),
       // Indexes are emitted as separate statements after the tables.
-      ...statements.expand((table) => createIndexStatements(table, escape)),
+      ...statements.expand(
+        (table) => createIndexStatements(
+          table,
+          escape,
+          supportedMethods: {.hash},
+          typeClausePosition: .beforeOn,
+        ),
+      ),
     ];
     return ScriptSqlTask(sqlStatements.toList());
   }

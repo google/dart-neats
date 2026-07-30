@@ -132,10 +132,18 @@ final class IndexDefinition {
 
   final List<String> columns;
 
+  /// The access method used to build this index.
+  final IndexAccessMethod method;
+
+  /// Non-key columns included for index-only scans.
+  final List<String> covering;
+
   const IndexDefinition({
     required this.name,
     required this.sqlName,
     required this.columns,
+    required this.method,
+    required this.covering,
   });
 }
 
@@ -478,11 +486,15 @@ final class $ForGeneratedCode {
     required String? name,
     required String? sqlName,
     required List<String> columns,
+    required IndexAccessMethod method,
+    required List<String> covering,
   }) {
     return IndexDefinition(
       name: name,
       sqlName: sqlName,
       columns: columns,
+      method: method,
+      covering: covering,
     );
   }
 

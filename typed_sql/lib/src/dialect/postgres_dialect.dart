@@ -112,7 +112,14 @@ final class _PostgresDialect extends SqlDialect {
         );
       }),
       // Indexes are emitted as separate statements after the tables.
-      ...statements.expand((table) => createIndexStatements(table, escape)),
+      ...statements.expand(
+        (table) => createIndexStatements(
+          table,
+          escape,
+          supportedMethods: {.brin, .gin, .gist, .hash, .spgist},
+          supportsCoveringColumns: true,
+        ),
+      ),
     ];
     if (resolver.context.parameters.isNotEmpty) {
       throw AssertionError('Parameters are not allowed in DDL');

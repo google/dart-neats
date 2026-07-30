@@ -1,3 +1,7 @@
+## 0.1.14
+ * Support `brin`, `hash`, `gin`, `gist` and `spgist` indexes through `@Index` annotations' `method` field.
+ * Support covering (`INCLUDE`) columns through `@Index` annotations' `covering` field.
+
 ## 0.1.13
  * Support `CREATE INDEX` DDLs through `@Index` annotations.
 

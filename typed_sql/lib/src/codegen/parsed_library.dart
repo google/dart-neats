@@ -130,14 +130,32 @@ final class ParsedUniqueConstraint {
   });
 }
 
+/// Parsed representation of [IndexAccessMethod].
+///
+/// This should always stay in sync with the [IndexAccessMethod] enum.
+enum ParsedIndexAccessMethod {
+  brin,
+  btree,
+  gin,
+  gist,
+  hash,
+  spgist,
+}
+
 final class ParsedIndex {
   /// The user-provided name segment for the index, or `null` to derive it from the indexed columns.
   final String? name;
   final List<ParsedField> fields;
+  final ParsedIndexAccessMethod method;
+
+  /// Non-key columns included for index-only scans.
+  final List<ParsedField> covering;
 
   ParsedIndex({
     required this.name,
     required this.fields,
+    required this.method,
+    required this.covering,
   });
 }
 

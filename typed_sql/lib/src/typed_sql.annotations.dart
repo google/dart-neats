@@ -268,6 +268,45 @@ final class Unique {
   const Unique.field({String? name}) : _name = name, _fields = null;
 }
 
+/// The index access method used to build a database `INDEX`.
+///
+/// {@category schema}
+enum IndexAccessMethod {
+  /// Block Range Index (BRIN), for huge tables whose rows correlate with
+  /// physical storage order, e.g. an append-only `createdAt` column.
+  ///
+  /// Only supported by PostgreSQL; other dialects fall back to a plain index.
+  brin,
+
+  /// Balanced tree (B-tree) index. The default, supported by all dialects.
+  btree,
+
+  /// Generalized Inverted Index (GIN), for indexing composite values such
+  /// as JSON documents or arrays (e.g. containment queries `@>`, `?`, `?|`,
+  /// `?&`).
+  ///
+  /// Only supported by PostgreSQL; other dialects fall back to a plain index.
+  gin,
+
+  /// Generalized Search Tree (GiST), for indexing geometric and range
+  /// types, or building exclusion constraints.
+  ///
+  /// Only supported by PostgreSQL; other dialects fall back to a plain index.
+  gist,
+
+  /// Hash index, for equality lookups only (no ordering or range queries).
+  ///
+  /// Not supported by SQLite, which falls back to a plain index.
+  hash,
+
+  /// Space-Partitioned GiST (SP-GiST), for non-balanced data structures
+  /// such as quad-trees, k-d trees, and radix trees (e.g. IP ranges or
+  /// phone number prefixes).
+  ///
+  /// Only supported by PostgreSQL; other dialects fall back to a plain index.
+  spgist,
+}
+
 /// Annotation to define a database `INDEX`.
 ///
 /// The index is emitted as a separate `CREATE INDEX` statement following the
@@ -283,10 +322,16 @@ final class Index {
   final String? _name; // used by code-gen ('-' means derive from columns)
   // ignore: unused_field
   final List<String>? _fields; // used by code-gen (null => field-level)
+  // ignore: unused_field
+  final IndexAccessMethod _method; // used by code-gen
+  // ignore: unused_field
+  final List<String> _covering; // used by code-gen
 
   /// Add a composite index covering multiple [fields].
   ///
-  /// If [name] is not given it'll be derived from indexed fields.
+  /// If [name] is not given it'll be derived from indexed fields. Use
+  /// [method] to pick an [IndexAccessMethod] and [covering] to add non-key
+  /// columns for index-only scans.
   ///
   /// **Example:**
   /// ```dart
@@ -306,15 +351,18 @@ final class Index {
   const Index({
     String? name,
     required List<String> fields,
+    IndexAccessMethod method = .btree,
+    List<String> covering = const [],
   }) : _name = name ?? '-',
-       _fields = fields;
+       _fields = fields,
+       _method = method,
+       _covering = covering;
 
   /// Add an index covering a single field.
   ///
-  /// To create a _composite index_, use the [Index] annotation at the
-  /// _row class_ level.
-  ///
-  /// If [name] is not given, it'll be derived from indexed field.
+  /// To create a _composite index_, use the [Index] annotation instead. Use
+  /// [method] to pick an [IndexAccessMethod] (e.g. `.gin` for a JSON field)
+  /// and [covering] to add non-key columns for index-only scans.
   ///
   /// **Example:**
   /// ```dart
@@ -326,7 +374,14 @@ final class Index {
   ///   String get email;
   /// }
   /// ```
-  const Index.field({String? name}) : _name = name, _fields = null;
+  const Index.field({
+    String? name,
+    IndexAccessMethod method = .btree,
+    List<String> covering = const [],
+  }) : _name = name,
+       _fields = null,
+       _method = method,
+       _covering = covering;
 }
 
 /// Naming scheme for deriving SQL _table_ and _column_ names from Dart

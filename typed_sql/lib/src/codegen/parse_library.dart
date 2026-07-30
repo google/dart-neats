@@ -654,18 +654,36 @@ Future<ParsedRowClass> _parseRowClass(
         );
       }
 
-      if (field.backingType == 'JsonValue') {
+      final method = ParsedIndexAccessMethod.values.firstWhere(
+        (m) => value.getField('_method')?.variable?.name == m.name,
+        orElse: () => .btree,
+      );
+
+      if (field.backingType == 'JsonValue' && method != .gin) {
         await throwInvalidAnnotationInSource(
-          'JsonValue field cannot be used in an `Index` annotation',
+          'JsonValue field cannot be used in an `Index` annotation, '
+          'unless `method: .gin` is given',
           annotatedElement: a,
           annotation: elementAnnotation,
         );
       }
 
+      final covering = await _parseCoveringFields(
+        value: value,
+        fields: fields,
+        keyFields: [field],
+        method: method,
+        context: 'Index.field',
+        annotatedElement: a,
+        annotation: elementAnnotation,
+      );
+
       indexes.add(
         ParsedIndex(
           name: name,
           fields: [field],
+          method: method,
+          covering: covering,
         ),
       );
     }
@@ -706,6 +724,11 @@ Future<ParsedRowClass> _parseRowClass(
       );
     }
 
+    final method = ParsedIndexAccessMethod.values.firstWhere(
+      (m) => a.getField('_method')?.variable?.name == m.name,
+      orElse: () => .btree,
+    );
+
     final indexFieldRefs = <ParsedField>[];
     for (final fieldName in indexFields) {
       final field = fields.firstWhereOrNull((f) => f.name == fieldName);
@@ -717,9 +740,10 @@ Future<ParsedRowClass> _parseRowClass(
           annotation: ea,
         );
       }
-      if (field.backingType == 'JsonValue') {
+      if (field.backingType == 'JsonValue' && method != .gin) {
         await throwInvalidAnnotationInSource(
-          'JsonValue field cannot be used in an `Index` annotation',
+          'JsonValue field cannot be used in an `Index` annotation, '
+          'unless `method: .gin` is given',
           annotatedElement: cls,
           annotation: ea,
         );
@@ -727,10 +751,22 @@ Future<ParsedRowClass> _parseRowClass(
       indexFieldRefs.add(field);
     }
 
+    final covering = await _parseCoveringFields(
+      value: a,
+      fields: fields,
+      keyFields: indexFieldRefs,
+      method: method,
+      context: 'Index',
+      annotatedElement: cls,
+      annotation: ea,
+    );
+
     indexes.add(
       ParsedIndex(
         name: name == '-' ? null : name,
         fields: indexFieldRefs,
+        method: method,
+        covering: covering,
       ),
     );
   }
@@ -1033,6 +1069,66 @@ Future<ParsedReferentialAction> _parseReferentialAction(
     );
   }
   return first;
+}
+
+/// Parses the `covering` field of an `Index`/`Index.field` annotation,
+/// resolving field names and validating they exist, don't overlap the key
+/// fields, and are only used with [ParsedIndexAccessMethod.btree] or
+/// [ParsedIndexAccessMethod.gist].
+Future<List<ParsedField>> _parseCoveringFields({
+  required DartObject value,
+  required List<ParsedField> fields,
+  required List<ParsedField> keyFields,
+  required ParsedIndexAccessMethod method,
+  required String context,
+  required Element annotatedElement,
+  required ElementAnnotation annotation,
+}) async {
+  final coveringNames =
+      value
+          .getField('_covering')
+          ?.toListValue()
+          ?.map(
+            (v) => v.toStringValue()!,
+          ) ??
+      const <String>[];
+
+  if (coveringNames.isEmpty) {
+    return const [];
+  }
+
+  if (method != ParsedIndexAccessMethod.btree &&
+      method != ParsedIndexAccessMethod.gist) {
+    await throwInvalidAnnotationInSource(
+      '`$context(covering: ...)` is only supported for `method: .btree` or '
+      '`method: .gist` indexes',
+      annotatedElement: annotatedElement,
+      annotation: annotation,
+    );
+  }
+
+  final coveringFields = <ParsedField>[];
+  for (final fieldName in coveringNames) {
+    final field = fields.firstWhereOrNull((f) => f.name == fieldName);
+    if (field == null) {
+      await throwInvalidAnnotationInSource(
+        '`$context(covering: ...)` references unknown field "$fieldName", '
+        'no such field on row class.',
+        annotatedElement: annotatedElement,
+        annotation: annotation,
+      );
+    }
+    if (keyFields.any((f) => f.name == fieldName)) {
+      await throwInvalidAnnotationInSource(
+        '`$context(covering: ...)` references field "$fieldName", which is '
+        'already part of the index key.',
+        annotatedElement: annotatedElement,
+        annotation: annotation,
+      );
+    }
+    coveringFields.add(field);
+  }
+  return coveringFields;
 }
 
 String? _tryGetColumnType(DartType t) {

@@ -433,6 +433,8 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                     name: ${idx.name == null ? 'null' : '\'${idx.name}\''},
                     sqlName: ${idx.sqlName == null ? 'null' : '\'${idx.sqlName}\''},
                     columns: [${idx.fields.map((f) => '\'${f.sqlName}\'').join(', ')}],
+                    method: .${idx.method.name},
+                    covering: [${idx.covering.map((f) => '\'${f.sqlName}\'').join(', ')}],
                   )
                 ''').join(', ')}
               ],

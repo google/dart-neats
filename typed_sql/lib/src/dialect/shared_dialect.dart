@@ -48,11 +48,28 @@ String foreignKeyConstraintName(
   ].join('_');
 }
 
+/// Where the `USING ...` index-type clause goes in `CREATE INDEX`; differs
+/// by dialect.
+enum IndexTypeClausePosition {
+  /// `... ON table USING method (columns)` (PostgreSQL).
+  afterOn,
+
+  /// `... USING method ON table (columns)` (MySQL/MariaDB).
+  beforeOn,
+}
+
 /// Returns the `CREATE INDEX` statements for the indexes defined on [table].
+///
+/// [supportedMethods] are the [IndexAccessMethod]s supported beyond
+/// [IndexAccessMethod.btree]; unsupported methods fall back to a plain index.
+/// [supportsCoveringColumns] controls whether `INCLUDE` columns are emitted.
 Iterable<String> createIndexStatements(
   CreateTableStatement table,
-  String Function(String) escape,
-) {
+  String Function(String) escape, {
+  Set<IndexAccessMethod> supportedMethods = const {},
+  IndexTypeClausePosition typeClausePosition = .afterOn,
+  bool supportsCoveringColumns = false,
+}) {
   return table.indexes.map((index) {
     final indexName = [
       table.tableName,
@@ -60,10 +77,32 @@ Iterable<String> createIndexStatements(
       if (index.sqlName == null) ...index.columns else index.sqlName,
     ].join('_');
 
+    final usingClause = switch (index.method) {
+      .brin when supportedMethods.contains(IndexAccessMethod.brin) =>
+        'USING BRIN',
+      .btree => null,
+      .gin when supportedMethods.contains(IndexAccessMethod.gin) => 'USING GIN',
+      .gist when supportedMethods.contains(IndexAccessMethod.gist) =>
+        'USING GIST',
+      .hash when supportedMethods.contains(IndexAccessMethod.hash) =>
+        'USING HASH',
+      .spgist when supportedMethods.contains(IndexAccessMethod.spgist) =>
+        'USING SPGIST',
+      _ => null,
+    };
+    final beforeOnClause = typeClausePosition == .beforeOn ? usingClause : null;
+    final afterOnClause = typeClausePosition == .afterOn ? usingClause : null;
+    final covering = supportsCoveringColumns
+        ? index.covering
+        : const <String>[];
+
     return <String>[
       'CREATE INDEX ${escape(indexName)}',
+      ?beforeOnClause,
       'ON ${escape(table.tableName)}',
+      ?afterOnClause,
       '(${index.columns.map(escape).join(', ')})',
+      if (covering.isNotEmpty) 'INCLUDE (${covering.map(escape).join(', ')})',
     ].join(' ');
   });
 }
