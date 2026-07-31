@@ -660,6 +660,46 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
       CastExpression._(ExpressionJsonExtract._(this), ColumnType.boolean);
 }
 
+/// PostgreSQL-only JSONB condition operators for [JsonValue] expressions.
+///
+/// SQLite and MySQL/MariaDB throw `UnsupportedError` if asked to render
+/// one of these, since neither has an equivalent operator.
+extension PostgresJsonConditions on Expr<JsonValue?> {
+  /// {@template jsonContains}
+  /// Check if this JSON value contains [other], using the PostgreSQL `@>`
+  /// containment operator.
+  /// {@endtemplate}
+  Expr<bool?> contains(Expr<JsonValue?> other) =>
+      ExpressionJsonContains._(this, other);
+
+  /// {@macro jsonContains}
+  Expr<bool?> containsValue(JsonValue other) => contains(toExpr(other));
+
+  /// {@template jsonContainedBy}
+  /// Check if this JSON value is contained by [other], using the PostgreSQL
+  /// `<@` containment operator.
+  /// {@endtemplate}
+  Expr<bool?> containedBy(Expr<JsonValue?> other) =>
+      ExpressionJsonContainedBy._(this, other);
+
+  /// {@macro jsonContainedBy}
+  Expr<bool?> containedByValue(JsonValue other) => containedBy(toExpr(other));
+
+  /// Check if this JSON value is an object with the top-level key [key],
+  /// using the PostgreSQL `?` operator.
+  Expr<bool?> hasKey(String key) => ExpressionJsonHasKey._(this, key);
+
+  /// Check if this JSON value is an object with any of the top-level [keys],
+  /// using the PostgreSQL `?|` operator.
+  Expr<bool?> hasAnyKey(List<String> keys) =>
+      ExpressionJsonHasAnyKey._(this, keys);
+
+  /// Check if this JSON value is an object with all of the top-level [keys],
+  /// using the PostgreSQL `?&` operator.
+  Expr<bool?> hasAllKeys(List<String> keys) =>
+      ExpressionJsonHasAllKeys._(this, keys);
+}
+
 /// Extension methods for [bool] expressions.
 extension ExpressionBool on Expr<bool> {
   /// {@template equals}

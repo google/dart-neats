@@ -934,3 +934,58 @@ final class ExpressionJsonExtract extends SingleValueExpr<String?> {
   @override
   _ExprType<String?> get _type => ColumnType.text;
 }
+
+/// PostgreSQL `@>` JSON containment operator.
+final class ExpressionJsonContains extends SingleValueExpr<bool?> {
+  final Expr<JsonValue?> value;
+  final Expr<JsonValue?> other;
+
+  ExpressionJsonContains._(this.value, this.other) : super._();
+
+  @override
+  final _type = ColumnType.boolean;
+}
+
+/// PostgreSQL `<@` JSON containment operator.
+final class ExpressionJsonContainedBy extends SingleValueExpr<bool?> {
+  final Expr<JsonValue?> value;
+  final Expr<JsonValue?> other;
+
+  ExpressionJsonContainedBy._(this.value, this.other) : super._();
+
+  @override
+  final _type = ColumnType.boolean;
+}
+
+/// PostgreSQL `?` JSON key-existence operator.
+final class ExpressionJsonHasKey extends SingleValueExpr<bool?> {
+  final Expr<JsonValue?> value;
+  final String key;
+
+  ExpressionJsonHasKey._(this.value, this.key) : super._();
+
+  @override
+  final _type = ColumnType.boolean;
+}
+
+/// PostgreSQL `?|` JSON any-key-existence operator.
+final class ExpressionJsonHasAnyKey extends SingleValueExpr<bool?> {
+  final Expr<JsonValue?> value;
+  final List<String> keys;
+
+  ExpressionJsonHasAnyKey._(this.value, this.keys) : super._();
+
+  @override
+  final _type = ColumnType.boolean;
+}
+
+/// PostgreSQL `?&` JSON all-keys-existence operator.
+final class ExpressionJsonHasAllKeys extends SingleValueExpr<bool?> {
+  final Expr<JsonValue?> value;
+  final List<String> keys;
+
+  ExpressionJsonHasAllKeys._(this.value, this.keys) : super._();
+
+  @override
+  final _type = ColumnType.boolean;
+}

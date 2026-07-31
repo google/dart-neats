@@ -653,6 +653,16 @@ extension on ExpressionResolver<SqlContext> {
     CurrentTimestampExpression _ => '(NOW() AT TIME ZONE \'UTC\')',
     ExpressionJsonRef e => extractJsonRef(e),
     ExpressionJsonExtract(:final value) => '(${expr(value)} #>> \'{}\')',
+    ExpressionJsonContains(:final value, :final other) =>
+      '(${expr(value)} @> ${expr(other)})',
+    ExpressionJsonContainedBy(:final value, :final other) =>
+      '(${expr(value)} <@ ${expr(other)})',
+    ExpressionJsonHasKey(:final value, :final key) =>
+      '(${expr(value)} ? ${_escapeStringLiteral(key)})',
+    ExpressionJsonHasAnyKey(:final value, :final keys) =>
+      '(${expr(value)} ?| ARRAY[${keys.map(_escapeStringLiteral).join(', ')}]::text[])',
+    ExpressionJsonHasAllKeys(:final value, :final keys) =>
+      '(${expr(value)} ?& ARRAY[${keys.map(_escapeStringLiteral).join(', ')}]::text[])',
   };
 
   String extractJsonRef(ExpressionJsonRef ref) {

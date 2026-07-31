@@ -691,6 +691,14 @@ extension on ExpressionResolver<SqlContext> {
     ExpressionJsonRef e => extractJsonRef(e),
     ExpressionJsonExtract(:final value) =>
       'CASE WHEN JSON_TYPE(${expr(value)}) = \'NULL\' THEN NULL ELSE JSON_UNQUOTE(${expr(value)}) END',
+    ExpressionJsonContains() ||
+    ExpressionJsonContainedBy() ||
+    ExpressionJsonHasKey() ||
+    ExpressionJsonHasAnyKey() ||
+    ExpressionJsonHasAllKeys() => throw UnsupportedError(
+      'JSONB containment/existence operators are not supported by '
+      'MySQL/MariaDB',
+    ),
   };
 
   String extractJsonRef(ExpressionJsonRef ref) {

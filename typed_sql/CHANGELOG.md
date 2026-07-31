@@ -1,3 +1,7 @@
+## 0.1.14
+ * Support `JSON` condition operators (as PostgreSQL-only helper library).
+
+
 ## 0.1.13
  * Support `CREATE INDEX` DDLs through `@Index` annotations.
 

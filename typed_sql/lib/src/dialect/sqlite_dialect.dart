@@ -635,6 +635,13 @@ extension on ExpressionResolver<SqlContext> {
       extractJsonRefAsText(value),
     ExpressionJsonExtract(:final value) =>
       'json_extract(${expr(value)}, \'\$\')',
+    ExpressionJsonContains() ||
+    ExpressionJsonContainedBy() ||
+    ExpressionJsonHasKey() ||
+    ExpressionJsonHasAnyKey() ||
+    ExpressionJsonHasAllKeys() => throw UnsupportedError(
+      'JSONB containment/existence operators are not supported by SQLite',
+    ),
   };
 
   String extractJsonRef(ExpressionJsonRef ref) {
