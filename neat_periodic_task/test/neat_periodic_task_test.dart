@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async' show Future;
+import 'dart:async' show Future, Completer;
 import 'package:test/test.dart';
 import 'package:neat_periodic_task/neat_periodic_task.dart';
+import 'package:neat_periodic_task/src/neat_status.dart';
 import 'package:logging/logging.dart';
 import 'package:collection/collection.dart' show ListEquality;
 
@@ -119,5 +120,122 @@ void main() {
     await schedulerB.stop();
 
     expect(count, inInclusiveRange(6, 7));
+  });
+
+  test('heartbeat updates while task is running', () async {
+    final statusStore = _StatusStore();
+    final taskStarted = Completer<void>();
+    final allowFinish = Completer<void>();
+
+    final scheduler = NeatPeriodicTaskScheduler(
+      name: 'heartbeat-test',
+      interval: Duration(milliseconds: 500),
+      timeout: Duration(seconds: 10),
+      minCycle: Duration(milliseconds: 50),
+      maxCycle: Duration(milliseconds: 100),
+      heartbeatInterval: Duration(milliseconds: 30),
+      heartbeatTimeout: Duration(milliseconds: 100),
+      status: statusStore.provider(),
+      task: () async {
+        taskStarted.complete();
+        await allowFinish.future;
+      },
+    );
+
+    scheduler.start();
+    await taskStarted.future;
+
+    // Give it time to send a few heartbeats.
+    await Future.delayed(Duration(milliseconds: 40));
+    final status1 = NeatTaskStatus.deserialize(statusStore._value);
+    expect(status1.state, equals('running'));
+    expect(status1.heartbeat, isNotNull);
+
+    await Future.delayed(Duration(milliseconds: 60));
+    final status2 = NeatTaskStatus.deserialize(statusStore._value);
+    expect(status2.state, equals('running'));
+    expect(status2.heartbeat!.isAfter(status1.heartbeat!), isTrue);
+
+    allowFinish.complete();
+    await Future.delayed(Duration(milliseconds: 50));
+    await scheduler.stop();
+
+    final statusFinal = NeatTaskStatus.deserialize(statusStore._value);
+    expect(statusFinal.state, equals('finished'));
+  });
+
+  test(
+      'abandoned task with expired heartbeat is reclaimed without waiting for full timeout',
+      () async {
+    final statusStore = _StatusStore();
+    final now = DateTime.now().toUtc();
+
+    // Simulate an abandoned task that started 1 minute ago, last heartbeat 200ms ago.
+    // Full timeout is 1 hour!
+    final abandoned = NeatTaskStatus.create(
+      state: 'running',
+      started: now.subtract(Duration(minutes: 1)),
+      heartbeat: now.subtract(Duration(milliseconds: 200)),
+      owner: 'dead-worker',
+    );
+    statusStore._value = abandoned.serialize();
+
+    var reclaimed = false;
+    final scheduler = NeatPeriodicTaskScheduler(
+      name: 'recovery-test',
+      interval: Duration(seconds: 10),
+      timeout: Duration(hours: 1),
+      minCycle: Duration(milliseconds: 50),
+      maxCycle: Duration(milliseconds: 100),
+      heartbeatInterval: Duration(milliseconds: 30),
+      heartbeatTimeout: Duration(milliseconds: 100),
+      status: statusStore.provider(),
+      task: () async {
+        reclaimed = true;
+      },
+    );
+
+    scheduler.start();
+    await Future.delayed(Duration(milliseconds: 150));
+    await scheduler.stop();
+
+    expect(reclaimed, isTrue);
+    final status = NeatTaskStatus.deserialize(statusStore._value);
+    expect(status.state, equals('finished'));
+    expect(status.owner, isNot(equals('dead-worker')));
+  });
+
+  test('trigger reclaims task if heartbeat is expired', () async {
+    final statusStore = _StatusStore();
+    final now = DateTime.now().toUtc();
+
+    // Abandoned task with expired heartbeat, but overall timeout not reached.
+    final abandoned = NeatTaskStatus.create(
+      state: 'running',
+      started: now.subtract(Duration(minutes: 1)),
+      heartbeat: now.subtract(Duration(milliseconds: 200)),
+      owner: 'dead-worker',
+    );
+    statusStore._value = abandoned.serialize();
+
+    var ran = false;
+    final scheduler = NeatPeriodicTaskScheduler(
+      name: 'trigger-test',
+      interval: Duration(seconds: 10),
+      timeout: Duration(hours: 1),
+      minCycle: Duration(milliseconds: 50),
+      maxCycle: Duration(milliseconds: 100),
+      heartbeatInterval: Duration(milliseconds: 30),
+      heartbeatTimeout: Duration(milliseconds: 100),
+      status: statusStore.provider(),
+      task: () async {
+        ran = true;
+      },
+    );
+
+    await scheduler.trigger();
+    expect(ran, isTrue);
+    final status = NeatTaskStatus.deserialize(statusStore._value);
+    expect(status.state, equals('finished'));
   });
 }

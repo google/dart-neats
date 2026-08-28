@@ -14,7 +14,8 @@
 
 library;
 
-import 'dart:async' show Future, Completer, scheduleMicrotask, TimeoutException;
+import 'dart:async'
+    show Future, Completer, scheduleMicrotask, TimeoutException, Timer;
 
 import 'package:logging/logging.dart' show Logger;
 import 'package:retry/retry.dart' show RetryOptions;
@@ -114,6 +115,8 @@ class NeatPeriodicTaskScheduler {
   final NeatStatusProvider _statusProvider;
   final Duration _minCycle;
   final Duration _maxCycle;
+  final Duration? _heartbeatInterval;
+  final Duration? _heartbeatTimeout;
 
   bool _started = false;
   final _stopping = Completer<void>();
@@ -145,6 +148,17 @@ class NeatPeriodicTaskScheduler {
   /// If the task fails consistently, it will be retried at [timeout] delay,
   /// this will continue indefinitely. Thus, it is sensible to pick a high
   /// [timeout], if the operation is expensive and this can be tolerated.
+  ///
+  /// If [heartbeatInterval] and/or [heartbeatTimeout] is provided, the scheduler
+  /// will periodically update a heartbeat timestamp in the status while the
+  /// [task] is running. Other schedulers will then detect if a running task has
+  /// stopped heartbeating for longer than [heartbeatTimeout] (e.g. because the
+  /// process crashed or was killed) and will reclaim and rerun the task
+  /// without having to wait for the full [timeout].
+  ///
+  /// If only [heartbeatInterval] is provided, [heartbeatTimeout] defaults to
+  /// `3 * heartbeatInterval`. If only [heartbeatTimeout] is provided,
+  /// [heartbeatInterval] defaults to `heartbeatTimeout ~/ 3`.
   NeatPeriodicTaskScheduler({
     required String name,
     required Duration interval,
@@ -153,13 +167,19 @@ class NeatPeriodicTaskScheduler {
     NeatStatusProvider? status,
     Duration minCycle = const Duration(minutes: 5),
     Duration maxCycle = const Duration(hours: 3),
+    Duration? heartbeatInterval,
+    Duration? heartbeatTimeout,
   })  : _name = name,
         _interval = interval,
         _timeout = timeout,
         _task = task,
         _statusProvider = status ?? _InMemoryNeatStatusProvider(),
         _minCycle = minCycle,
-        _maxCycle = maxCycle {
+        _maxCycle = maxCycle,
+        _heartbeatInterval = heartbeatInterval ??
+            (heartbeatTimeout != null ? heartbeatTimeout ~/ 3 : null),
+        _heartbeatTimeout = heartbeatTimeout ??
+            (heartbeatInterval != null ? heartbeatInterval * 3 : null) {
     if (maxCycle <= minCycle) {
       throw ArgumentError.value(
           maxCycle, 'maxCycle', 'maxCycle must larger than minCycle');
@@ -167,6 +187,14 @@ class NeatPeriodicTaskScheduler {
     if (interval < minCycle * 2) {
       throw ArgumentError.value(interval, 'interval',
           'interval must be large than 2 * minCycle for reasonable behavior');
+    }
+    if (_heartbeatInterval != null && _heartbeatInterval <= Duration.zero) {
+      throw ArgumentError.value(_heartbeatInterval, 'heartbeatInterval',
+          'heartbeatInterval must be positive');
+    }
+    if (_heartbeatTimeout != null && _heartbeatTimeout <= _heartbeatInterval!) {
+      throw ArgumentError.value(_heartbeatTimeout, 'heartbeatTimeout',
+          'heartbeatTimeout must be larger than heartbeatInterval');
     }
   }
 
@@ -239,48 +267,77 @@ class NeatPeriodicTaskScheduler {
       return;
     }
 
-    // Find time elapsed since last time the task started running.
     final now = DateTime.now().toUtc();
-    final elapsed = now.difference(status.started);
-    _log.finest(() => 'time elapsed since "$_name" was last started $elapsed');
 
-    // If state is 'finished' the delay before next run is _interval, otherwise
-    // we assume state is 'running' as delay is only _timeout.
-    var delay = _interval;
-    if (status.state != 'finished') {
-      delay = _timeout;
+    if (status.state == 'finished') {
+      // Find time elapsed since last time the task started running.
+      final elapsed = now.difference(status.started);
+      _log.finest(
+          () => 'time elapsed since "$_name" was last started $elapsed');
+
+      // If state is 'finished' the delay before next run is _interval.
+      final delay = _interval;
+      if (elapsed < delay) {
+        var d = delay ~/ 2;
+        // Always sleep at least minCycle to ensure the iteration doesn't spin too
+        // fast as we approach the next iteration.
+        if (d < _minCycle) {
+          d = _minCycle;
+        }
+        // Never sleep more than maxCycle, as we must wake-up and print a log line
+        // that says we've checked the status of the task. Operators can either
+        // monitor the message saying this was done, or they can monitor the
+        // message saying that the status was monitored.
+        if (d > _maxCycle) {
+          d = _maxCycle;
+        }
+        if (status.state == 'finished') {
+          _log.info('### [ALIVE] neat-periodic-task: "$_name"');
+        }
+        _log.finest(() => 'NeatPeriodicTaskScheduler "$_name" sleeps $d');
+        await _sleep(d);
+
+        // Return such that we do another _iteration() call..
+        return;
+      }
+    } else if (status.state == 'running') {
+      final totalElapsed = now.difference(status.started);
+      final isTimeoutExpired = totalElapsed >= _timeout;
+      final heartbeat = status.heartbeat;
+      final isHeartbeatExpired = _heartbeatTimeout != null &&
+          heartbeat != null &&
+          now.difference(heartbeat) >= _heartbeatTimeout;
+
+      if (!isTimeoutExpired && !isHeartbeatExpired) {
+        var remaining = _timeout - totalElapsed;
+        if (_heartbeatTimeout != null && heartbeat != null) {
+          final heartbeatRemaining =
+              _heartbeatTimeout - now.difference(heartbeat);
+          if (heartbeatRemaining < remaining) {
+            remaining = heartbeatRemaining;
+          }
+        }
+        var d = remaining ~/ 2;
+        if (d < _minCycle) {
+          d = _minCycle;
+        }
+        if (d > _maxCycle) {
+          d = _maxCycle;
+        }
+        _log.finest(
+            () => 'NeatPeriodicTaskScheduler "$_name" is running, sleeps $d');
+        await _sleep(d);
+
+        return;
+      }
     }
 
-    // If delay isn't past yet, we sleep.
-    if (elapsed < delay) {
-      var d = delay ~/ 2;
-      // Always sleep at least minCycle to ensure the iteration doesn't spin too
-      // fast as we approach the next iteration.
-      if (d < _minCycle) {
-        d = _minCycle;
-      }
-      // Never sleep more than maxCycle, as we must wake-up and print a log line
-      // that says we've checked the status of the task. Operators can either
-      // monitor the message saying this was done, or they can monitor the
-      // message saying that the status was monitored.
-      if (d > _maxCycle) {
-        d = _maxCycle;
-      }
-      if (status.state == 'finished') {
-        _log.info('### [ALIVE] neat-periodic-task: "$_name"');
-      }
-      _log.finest(() => 'NeatPeriodicTaskScheduler "$_name" sleeps $d');
-      await _sleep(d);
-
-      // Return such that we do another _iteration() call..
-      return;
-    }
-
-    // If elapsed >= delay, then we claim and run the task.
+    // If state is not running (or lock/heartbeat expired), we claim and run.
     await _claimAndRun(status.update(
       owner: Slugid.nice().toString(),
       state: 'running',
       started: now,
+      heartbeat: now,
     ));
   }
 
@@ -294,6 +351,37 @@ class NeatPeriodicTaskScheduler {
       return;
     }
 
+    var currentStatus = status;
+    Timer? heartbeatTimer;
+    Future<void>? pendingHeartbeat;
+    var isSendingHeartbeat = false;
+    var isRunning = true;
+
+    if (_heartbeatInterval != null) {
+      heartbeatTimer = Timer.periodic(_heartbeatInterval, (_) {
+        if (!isRunning || isSendingHeartbeat) return;
+        isSendingHeartbeat = true;
+        pendingHeartbeat = () async {
+          try {
+            final now = DateTime.now().toUtc();
+            _log.finest(() => 'Sending heartbeat for "$_name"');
+            final nextStatus = currentStatus.update(heartbeat: now);
+            final ok = await _statusProvider.set(nextStatus.serialize());
+            if (ok) {
+              currentStatus = nextStatus;
+            } else {
+              _log.warning(
+                  'Failed to send heartbeat for "$_name", lock may be lost');
+            }
+          } catch (e, st) {
+            _log.warning('Error sending heartbeat for "$_name"', e, st);
+          } finally {
+            isSendingHeartbeat = false;
+          }
+        }();
+      });
+    }
+
     try {
       _log.info('### [START] neat-periodic-task: "$_name"');
       await _task().timeout(_timeout);
@@ -305,10 +393,14 @@ class NeatPeriodicTaskScheduler {
     } catch (e, st) {
       _log.shout('### [FAILED] neat-periodic-task: "$_name"', e, st);
       return;
+    } finally {
+      isRunning = false;
+      heartbeatTimer?.cancel();
+      await pendingHeartbeat;
     }
 
     _log.finest(() => 'Attempting to set finished status for "$_name"');
-    final st = status.update(state: 'finished').serialize();
+    final st = currentStatus.update(state: 'finished').serialize();
     if (!await _statusProvider.set(st)) {
       _log.warning(
         'Failed to set finished status for "$_name" '
@@ -330,13 +422,19 @@ class NeatPeriodicTaskScheduler {
     // Find time elapsed since last time the task was started.
     final now = DateTime.now().toUtc();
     final elapsed = now.difference(status.started);
+    final isTimeoutExpired = elapsed > _timeout;
+    final heartbeat = status.heartbeat;
+    final isHeartbeatExpired = _heartbeatTimeout != null &&
+        heartbeat != null &&
+        now.difference(heartbeat) > _heartbeatTimeout;
 
     // If not running, or timed-out we run the task again.
-    if (status.state != 'running' || elapsed > _timeout) {
+    if (status.state != 'running' || isTimeoutExpired || isHeartbeatExpired) {
       await _claimAndRun(status.update(
         owner: Slugid.nice().toString(),
         state: 'running',
         started: now,
+        heartbeat: now,
       ));
     } else {
       _log.info('trigger() call on "$_name" ignored, as task is running');
