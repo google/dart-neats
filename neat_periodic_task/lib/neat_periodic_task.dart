@@ -291,9 +291,7 @@ class NeatPeriodicTaskScheduler {
         if (d > _maxCycle) {
           d = _maxCycle;
         }
-        if (status.state == 'finished') {
-          _log.info('### [ALIVE] neat-periodic-task: "$_name"');
-        }
+        _log.info('### [ALIVE] neat-periodic-task: "$_name"');
         _log.finest(() => 'NeatPeriodicTaskScheduler "$_name" sleeps $d');
         await _sleep(d);
 
