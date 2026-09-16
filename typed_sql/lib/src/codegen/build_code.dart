@@ -75,21 +75,22 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
           `package:typed_sql`.
         ''')
         // We define a static exprType here, and use it in other parts of the
-        // generated code!
-        ..fields.add(
-          Field(
-            (b) => b
-              ..name = '_exprType'
-              ..modifier = FieldModifier.final$
-              ..static = true
-              ..assignment = Code('''
+            // generated code!
+            ..fields
+            .add(
+              Field(
+                (b) => b
+                  ..name = '_exprType'
+                  ..modifier = FieldModifier.final$
+                  ..static = true
+                  ..assignment = Code('''
               \$ForGeneratedCode.customDataType(
                 $backingTypeExpr,
                 $typeName.fromDatabase,
               )
             '''),
-          ),
-        )
+              ),
+            )
         ..methods.add(
           Method(
             (b) => b
