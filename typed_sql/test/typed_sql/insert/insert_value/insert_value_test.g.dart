@@ -112,6 +112,21 @@ extension TableValueItemExt on Table<ValueItem> {
         values: [id?.asExpr, value.asExpr],
       );
 
+  /// Insert row into the `valueItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<ValueItem> upsertValue({int? id, required String value}) =>
+      insertValue(id: id, value: value)
+          .onConflict(.primaryKey)
+          .update((_, excluded, set) => set(value: excluded.value));
+
   /// Bulk insert rows into the `valueItems` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

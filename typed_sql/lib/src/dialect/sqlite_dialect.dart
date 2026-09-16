@@ -144,6 +144,13 @@ final class _Sqlite extends SqlDialect {
           '(${c.conflictTarget.map(escape).join(', ')})',
           'DO NOTHING',
         ].join(' ');
+      case final UpdateOnConflictClause c when c.columns.isEmpty:
+        // `DO UPDATE SET` requires at least one column, using `DO NOTHING` as no-op.
+        conflictClause = [
+          'ON CONFLICT',
+          '(${c.conflictTarget.map(escape).join(', ')})',
+          'DO NOTHING',
+        ].join(' ');
       case final UpdateOnConflictClause c:
         final r = resolver
             .withScope(

@@ -131,6 +131,24 @@ extension TableAuthorExt on Table<Author> {
     values: [firstName.asExpr, lastName.asExpr],
   );
 
+  /// Insert row into the `authors` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// nothing, as all fields are part of the _primary key_,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Author> upsertValue({
+    required String firstName,
+    required String lastName,
+  }) => insertValue(
+    firstName: firstName,
+    lastName: lastName,
+  ).onConflict(.primaryKey).update((_, excluded, set) => set());
+
   /// Bulk insert rows into the `authors` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -740,6 +758,40 @@ extension TableBookExt on Table<Book> {
       stock.asExpr,
     ],
   );
+
+  /// Insert row into the `books` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `title`, `authorFirstName`, `authorLastName`, `stock`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Book> upsertValue({
+    int? bookId,
+    required String title,
+    String? authorFirstName,
+    String? authorLastName,
+    required int stock,
+  }) =>
+      insertValue(
+            bookId: bookId,
+            title: title,
+            authorFirstName: authorFirstName,
+            authorLastName: authorLastName,
+            stock: stock,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              title: excluded.title,
+              authorFirstName: excluded.authorFirstName,
+              authorLastName: excluded.authorLastName,
+              stock: excluded.stock,
+            ),
+          );
 
   /// Bulk insert rows into the `books` table.
   ///

@@ -155,6 +155,37 @@ extension TableCarExt on Table<Car> {
     values: [id?.asExpr, model.asExpr, licensePlate.asExpr, color.asExpr],
   );
 
+  /// Insert row into the `cars` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `model`, `licensePlate`, `color`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Car> upsertValue({
+    int? id,
+    required String model,
+    required String licensePlate,
+    required Color color,
+  }) =>
+      insertValue(
+            id: id,
+            model: model,
+            licensePlate: licensePlate,
+            color: color,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              model: excluded.model,
+              licensePlate: excluded.licensePlate,
+              color: excluded.color,
+            ),
+          );
+
   /// Bulk insert rows into the `cars` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

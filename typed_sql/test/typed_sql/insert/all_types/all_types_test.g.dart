@@ -542,6 +542,94 @@ extension TableAllTypesItemExt on Table<AllTypesItem> {
     ],
   );
 
+  /// Insert row into the `allTypesItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `b`, `i`, `d`, `s`, `dt`, `blob`, `json`, `custom`, `nb`, `ni`, `nd`, `ns`, `ndt`, `nblob`, `njson`, `ncustom`, `db`, `di`, `dd`, `ds`, `ddt`, `djson`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<AllTypesItem> upsertValue({
+    int? id,
+    required bool b,
+    required int i,
+    required double d,
+    required String s,
+    required DateTime dt,
+    required Uint8List blob,
+    required JsonValue json,
+    required MyCustomType custom,
+    bool? nb,
+    int? ni,
+    double? nd,
+    String? ns,
+    DateTime? ndt,
+    Uint8List? nblob,
+    JsonValue? njson,
+    MyCustomType? ncustom,
+    bool? db,
+    int? di,
+    double? dd,
+    String? ds,
+    DateTime? ddt,
+    JsonValue? djson,
+  }) =>
+      insertValue(
+            id: id,
+            b: b,
+            i: i,
+            d: d,
+            s: s,
+            dt: dt,
+            blob: blob,
+            json: json,
+            custom: custom,
+            nb: nb,
+            ni: ni,
+            nd: nd,
+            ns: ns,
+            ndt: ndt,
+            nblob: nblob,
+            njson: njson,
+            ncustom: ncustom,
+            db: db,
+            di: di,
+            dd: dd,
+            ds: ds,
+            ddt: ddt,
+            djson: djson,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              b: excluded.b,
+              i: excluded.i,
+              d: excluded.d,
+              s: excluded.s,
+              dt: excluded.dt,
+              blob: excluded.blob,
+              json: excluded.json,
+              custom: excluded.custom,
+              nb: excluded.nb,
+              ni: excluded.ni,
+              nd: excluded.nd,
+              ns: excluded.ns,
+              ndt: excluded.ndt,
+              nblob: excluded.nblob,
+              njson: excluded.njson,
+              ncustom: excluded.ncustom,
+              db: excluded.db,
+              di: excluded.di,
+              dd: excluded.dd,
+              ds: excluded.ds,
+              ddt: excluded.ddt,
+              djson: excluded.djson,
+            ),
+          );
+
   /// Bulk insert rows into the `allTypesItems` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

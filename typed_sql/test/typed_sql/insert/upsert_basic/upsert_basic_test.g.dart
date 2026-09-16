@@ -136,6 +136,26 @@ extension TableBasicItemExt on Table<BasicItem> {
     values: [id?.asExpr, name.asExpr, value.asExpr],
   );
 
+  /// Insert row into the `basicItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<BasicItem> upsertValue({
+    int? id,
+    required String name,
+    required int value,
+  }) => insertValue(id: id, name: name, value: value)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(name: excluded.name, value: excluded.value),
+      );
+
   /// Bulk insert rows into the `basicItems` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

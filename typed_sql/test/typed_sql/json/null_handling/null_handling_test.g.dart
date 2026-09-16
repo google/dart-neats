@@ -128,6 +128,27 @@ extension TableProductExt on Table<Product> {
     values: [id?.asExpr, name.asExpr, metadata?.asExpr],
   );
 
+  /// Insert row into the `products` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `metadata`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Product> upsertValue({
+    int? id,
+    required String name,
+    JsonValue? metadata,
+  }) => insertValue(id: id, name: name, metadata: metadata)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) =>
+            set(name: excluded.name, metadata: excluded.metadata),
+      );
+
   /// Bulk insert rows into the `products` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

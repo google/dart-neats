@@ -135,6 +135,23 @@ extension TableDepartmentExt on Table<Department> {
     values: [departmentId?.asExpr, name.asExpr],
   );
 
+  /// Insert row into the `departments` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Department> upsertValue({
+    int? departmentId,
+    required String name,
+  }) => insertValue(departmentId: departmentId, name: name)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(name: excluded.name));
+
   /// Bulk insert rows into the `departments` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -613,6 +630,32 @@ extension TableEmployeeExt on Table<Employee> {
     table: this,
     values: [employeeId?.asExpr, name.asExpr, departmentId.asExpr],
   );
+
+  /// Insert row into the `employees` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `departmentId`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Employee> upsertValue({
+    int? employeeId,
+    required String name,
+    required int departmentId,
+  }) =>
+      insertValue(
+            employeeId: employeeId,
+            name: name,
+            departmentId: departmentId,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) =>
+                set(name: excluded.name, departmentId: excluded.departmentId),
+          );
 
   /// Bulk insert rows into the `employees` table.
   ///
@@ -1139,6 +1182,37 @@ extension TableProjectExt on Table<Project> {
       budget.asExpr,
     ],
   );
+
+  /// Insert row into the `projects` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `departmentId`, `budget`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Project> upsertValue({
+    int? projectId,
+    required String name,
+    required int departmentId,
+    required int budget,
+  }) =>
+      insertValue(
+            projectId: projectId,
+            name: name,
+            departmentId: departmentId,
+            budget: budget,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              name: excluded.name,
+              departmentId: excluded.departmentId,
+              budget: excluded.budget,
+            ),
+          );
 
   /// Bulk insert rows into the `projects` table.
   ///

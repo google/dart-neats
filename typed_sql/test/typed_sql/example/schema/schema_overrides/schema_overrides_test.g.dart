@@ -130,6 +130,21 @@ extension TableAuthorExt on Table<Author> {
         values: [authorId?.asExpr, name.asExpr],
       );
 
+  /// Insert row into the `authors` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Author> upsertValue({int? authorId, required String name}) =>
+      insertValue(authorId: authorId, name: name)
+          .onConflict(.primaryKey)
+          .update((_, excluded, set) => set(name: excluded.name));
+
   /// Bulk insert rows into the `authors` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -678,6 +693,37 @@ extension TableBookExt on Table<Book> {
     table: this,
     values: [bookId?.asExpr, title.asExpr, authorId.asExpr, stock?.asExpr],
   );
+
+  /// Insert row into the `booksInStock` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `title`, `authorId`, `stock`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Book> upsertValue({
+    int? bookId,
+    String? title,
+    required int authorId,
+    int? stock,
+  }) =>
+      insertValue(
+            bookId: bookId,
+            title: title,
+            authorId: authorId,
+            stock: stock,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              title: excluded.title,
+              authorId: excluded.authorId,
+              stock: excluded.stock,
+            ),
+          );
 
   /// Bulk insert rows into the `booksInStock` table.
   ///

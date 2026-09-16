@@ -160,6 +160,34 @@ extension TableItemExt on Table<Item> {
     values: [id?.asExpr, text.asExpr, integer.asExpr, real.asExpr, json.asExpr],
   );
 
+  /// Insert row into the `items` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `text`, `integer`, `real`, `json`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Item> upsertValue({
+    int? id,
+    required String text,
+    required int integer,
+    required double real,
+    required JsonValue json,
+  }) =>
+      insertValue(id: id, text: text, integer: integer, real: real, json: json)
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              text: excluded.text,
+              integer: excluded.integer,
+              real: excluded.real,
+              json: excluded.json,
+            ),
+          );
+
   /// Bulk insert rows into the `items` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

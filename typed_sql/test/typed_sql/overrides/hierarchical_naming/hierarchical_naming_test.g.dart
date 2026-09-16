@@ -218,6 +218,40 @@ extension TableHierarchyUserExt on Table<HierarchyUser> {
     ],
   );
 
+  /// Insert row into the `hierarchyUsers` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `firstName`, `lastName`, `emailAddress`, `userColor`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<HierarchyUser> upsertValue({
+    int? userId,
+    required String firstName,
+    required String lastName,
+    required String emailAddress,
+    required Color userColor,
+  }) =>
+      insertValue(
+            userId: userId,
+            firstName: firstName,
+            lastName: lastName,
+            emailAddress: emailAddress,
+            userColor: userColor,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              firstName: excluded.firstName,
+              lastName: excluded.lastName,
+              emailAddress: excluded.emailAddress,
+              userColor: excluded.userColor,
+            ),
+          );
+
   /// Bulk insert rows into the `hierarchyUsers` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -817,6 +851,34 @@ extension TableHierarchyProfileExt on Table<HierarchyProfile> {
     table: this,
     values: [profileId?.asExpr, userRefId.asExpr, profileType.asExpr],
   );
+
+  /// Insert row into the `hierarchyProfiles` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `userRefId`, `profileType`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<HierarchyProfile> upsertValue({
+    int? profileId,
+    required int userRefId,
+    required String profileType,
+  }) =>
+      insertValue(
+            profileId: profileId,
+            userRefId: userRefId,
+            profileType: profileType,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              userRefId: excluded.userRefId,
+              profileType: excluded.profileType,
+            ),
+          );
 
   /// Bulk insert rows into the `hierarchyProfiles` table.
   ///

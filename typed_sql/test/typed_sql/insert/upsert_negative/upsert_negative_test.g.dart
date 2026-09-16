@@ -115,6 +115,21 @@ extension TableNotNullItemExt on Table<NotNullItem> {
         values: [id?.asExpr, name.asExpr],
       );
 
+  /// Insert row into the `notNullItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<NotNullItem> upsertValue({int? id, required String name}) =>
+      insertValue(id: id, name: name)
+          .onConflict(.primaryKey)
+          .update((_, excluded, set) => set(name: excluded.name));
+
   /// Bulk insert rows into the `notNullItems` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

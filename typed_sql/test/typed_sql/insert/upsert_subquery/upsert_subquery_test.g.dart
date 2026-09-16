@@ -118,6 +118,21 @@ extension TableSourceItemExt on Table<SourceItem> {
         values: [id?.asExpr, value.asExpr],
       );
 
+  /// Insert row into the `sourceItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<SourceItem> upsertValue({int? id, required String value}) =>
+      insertValue(id: id, value: value)
+          .onConflict(.primaryKey)
+          .update((_, excluded, set) => set(value: excluded.value));
+
   /// Bulk insert rows into the `sourceItems` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -601,6 +616,31 @@ extension TableSubQueryItemExt on Table<SubQueryItem> {
     table: this,
     values: [id?.asExpr, tag.asExpr, refId.asExpr, count.asExpr],
   );
+
+  /// Insert row into the `subQueryItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `tag`, `refId`, `count`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<SubQueryItem> upsertValue({
+    int? id,
+    required String tag,
+    required int refId,
+    required int count,
+  }) => insertValue(id: id, tag: tag, refId: refId, count: count)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          tag: excluded.tag,
+          refId: excluded.refId,
+          count: excluded.count,
+        ),
+      );
 
   /// Bulk insert rows into the `subQueryItems` table.
   ///

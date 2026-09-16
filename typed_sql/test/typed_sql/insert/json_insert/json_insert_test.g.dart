@@ -115,6 +115,21 @@ extension TableJsonItemExt on Table<JsonItem> {
         values: [id?.asExpr, data.asExpr],
       );
 
+  /// Insert row into the `jsonItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `data`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<JsonItem> upsertValue({int? id, required JsonValue data}) =>
+      insertValue(id: id, data: data)
+          .onConflict(.primaryKey)
+          .update((_, excluded, set) => set(data: excluded.data));
+
   /// Bulk insert rows into the `jsonItems` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

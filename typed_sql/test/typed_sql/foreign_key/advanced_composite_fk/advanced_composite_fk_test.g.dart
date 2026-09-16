@@ -147,6 +147,24 @@ extension TablePostExt on Table<Post> {
     values: [author.asExpr, slug.asExpr, content.asExpr],
   );
 
+  /// Insert row into the `posts` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `content`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Post> upsertValue({
+    required String author,
+    required String slug,
+    required String content,
+  }) => insertValue(author: author, slug: slug, content: content)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(content: excluded.content));
+
   /// Bulk insert rows into the `posts` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -731,6 +749,37 @@ extension TableCommentExt on Table<Comment> {
     table: this,
     values: [commentId?.asExpr, author.asExpr, postSlug.asExpr, comment.asExpr],
   );
+
+  /// Insert row into the `comments` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `author`, `postSlug`, `comment`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Comment> upsertValue({
+    int? commentId,
+    required String author,
+    required String postSlug,
+    required String comment,
+  }) =>
+      insertValue(
+            commentId: commentId,
+            author: author,
+            postSlug: postSlug,
+            comment: comment,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              author: excluded.author,
+              postSlug: excluded.postSlug,
+              comment: excluded.comment,
+            ),
+          );
 
   /// Bulk insert rows into the `comments` table.
   ///

@@ -132,6 +132,23 @@ extension TableCustomDataItemExt on Table<CustomDataItem> {
     values: [id.asExpr, stringVal.asExpr],
   );
 
+  /// Insert row into the `customDataItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `stringVal`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<CustomDataItem> upsertValue({
+    required CustomIntType id,
+    required CustomStringType stringVal,
+  }) => insertValue(id: id, stringVal: stringVal)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(stringVal: excluded.stringVal));
+
   /// Bulk insert rows into the `customDataItems` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

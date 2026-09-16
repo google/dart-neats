@@ -233,6 +233,42 @@ extension TableLegacyUserExt on Table<LegacyUser> {
     ],
   );
 
+  /// Insert row into the `users` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `firstName`, `lastName`, `email`, `color`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<LegacyUser> upsertValue({
+    required int tenantId,
+    required int userId,
+    required String firstName,
+    required String lastName,
+    required String email,
+    required Color color,
+  }) =>
+      insertValue(
+            tenantId: tenantId,
+            userId: userId,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            color: color,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              firstName: excluded.firstName,
+              lastName: excluded.lastName,
+              email: excluded.email,
+              color: excluded.color,
+            ),
+          );
+
   /// Bulk insert rows into the `users` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -855,6 +891,28 @@ extension TableLegacyCommentExt on Table<LegacyComment> {
     table: this,
     values: [commentId?.asExpr, tId.asExpr, uId.asExpr, text.asExpr],
   );
+
+  /// Insert row into the `comments` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `tId`, `uId`, `text`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<LegacyComment> upsertValue({
+    int? commentId,
+    required int tId,
+    required int uId,
+    required String text,
+  }) => insertValue(commentId: commentId, tId: tId, uId: uId, text: text)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) =>
+            set(tId: excluded.tId, uId: excluded.uId, text: excluded.text),
+      );
 
   /// Bulk insert rows into the `comments` table.
   ///

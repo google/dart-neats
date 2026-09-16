@@ -224,6 +224,40 @@ extension TableDialectItemExt on Table<DialectItem> {
     ],
   );
 
+  /// Insert row into the `dialectItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `category`, `status`, `itemColor`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<DialectItem> upsertValue({
+    int? itemId,
+    required String name,
+    required String category,
+    required String status,
+    required Color itemColor,
+  }) =>
+      insertValue(
+            itemId: itemId,
+            name: name,
+            category: category,
+            status: status,
+            itemColor: itemColor,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              name: excluded.name,
+              category: excluded.category,
+              status: excluded.status,
+              itemColor: excluded.itemColor,
+            ),
+          );
+
   /// Bulk insert rows into the `dialectItems` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -792,6 +826,21 @@ extension TableDialectLogExt on Table<DialectLog> {
         table: this,
         values: [logId?.asExpr, refItemId.asExpr],
       );
+
+  /// Insert row into the `dialectLogs` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `refItemId`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<DialectLog> upsertValue({int? logId, required int refItemId}) =>
+      insertValue(logId: logId, refItemId: refItemId)
+          .onConflict(.primaryKey)
+          .update((_, excluded, set) => set(refItemId: excluded.refItemId));
 
   /// Bulk insert rows into the `dialectLogs` table.
   ///

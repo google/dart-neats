@@ -224,6 +224,49 @@ extension TableDefaultsItemExt on Table<DefaultsItem> {
     ],
   );
 
+  /// Insert row into the `defaultsItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `b`, `i`, `d`, `s`, `dtNow`, `dtEpoch`, `json`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<DefaultsItem> upsertValue({
+    int? id,
+    bool? b,
+    int? i,
+    double? d,
+    String? s,
+    DateTime? dtNow,
+    DateTime? dtEpoch,
+    JsonValue? json,
+  }) =>
+      insertValue(
+            id: id,
+            b: b,
+            i: i,
+            d: d,
+            s: s,
+            dtNow: dtNow,
+            dtEpoch: dtEpoch,
+            json: json,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              b: excluded.b,
+              i: excluded.i,
+              d: excluded.d,
+              s: excluded.s,
+              dtNow: excluded.dtNow,
+              dtEpoch: excluded.dtEpoch,
+              json: excluded.json,
+            ),
+          );
+
   /// Bulk insert rows into the `defaultsItems` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide

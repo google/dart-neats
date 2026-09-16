@@ -1,3 +1,6 @@
+## 0.1.14
+ * Support `upsertValue` as a shortcut to `insertValue` + `onConflict` + `update`.
+
 ## 0.1.13
  * Support `CREATE INDEX` DDLs through `@Index` annotations.
 

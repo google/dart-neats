@@ -138,6 +138,26 @@ extension TableUserExt on Table<User> {
     values: [userId?.asExpr, name.asExpr, email.asExpr],
   );
 
+  /// Insert row into the `users` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `email`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<User> upsertValue({
+    int? userId,
+    required String name,
+    required String email,
+  }) => insertValue(userId: userId, name: name, email: email)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(name: excluded.name, email: excluded.email),
+      );
+
   /// Bulk insert rows into the `users` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -734,6 +754,37 @@ extension TablePackageExt on Table<Package> {
     ],
   );
 
+  /// Insert row into the `packages` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `likes`, `ownerId`, `publisher`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Package> upsertValue({
+    required String packageName,
+    int? likes,
+    required int ownerId,
+    String? publisher,
+  }) =>
+      insertValue(
+            packageName: packageName,
+            likes: likes,
+            ownerId: ownerId,
+            publisher: publisher,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              likes: excluded.likes,
+              ownerId: excluded.ownerId,
+              publisher: excluded.publisher,
+            ),
+          );
+
   /// Bulk insert rows into the `packages` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
@@ -1295,6 +1346,24 @@ extension TableLikeExt on Table<Like> {
     table: this,
     values: [userId.asExpr, packageName.asExpr],
   );
+
+  /// Insert row into the `likes` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// nothing, as all fields are part of the _primary key_,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Like> upsertValue({
+    required int userId,
+    required String packageName,
+  }) => insertValue(
+    userId: userId,
+    packageName: packageName,
+  ).onConflict(.primaryKey).update((_, excluded, set) => set());
 
   /// Bulk insert rows into the `likes` table.
   ///

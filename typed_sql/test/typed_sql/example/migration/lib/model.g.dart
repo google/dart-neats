@@ -127,6 +127,23 @@ extension TableAccountExt on Table<Account> {
     values: [accountId?.asExpr, accountNumber.asExpr],
   );
 
+  /// Insert row into the `accounts` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `accountNumber`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Account> upsertValue({
+    int? accountId,
+    required String accountNumber,
+  }) => insertValue(accountId: accountId, accountNumber: accountNumber)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(accountNumber: excluded.accountNumber));
+
   /// Bulk insert rows into the `accounts` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
