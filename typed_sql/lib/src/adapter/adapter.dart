@@ -109,6 +109,8 @@ abstract base class DatabaseAdapter extends Executor {
   /// This assumes that a postgres server is running and admin priviledges are
   /// available when connecting with:
   ///  * [host], read from `$PGHOST` if `null`, and defaults to `'127.0.0.1'`,
+  ///  * [unixSocket], path of a unix socket to connect to, instead of [host]
+  ///    and [port]. Only one of [host] and [unixSocket] can be given,
   ///  * [port], read from `$PGPORT` if `null`, and defaults to `5432`,
   ///  * [database], read from `$PGDATABASE` if `null`, and defaults to
   ///    `'postgres'`,
@@ -153,6 +155,7 @@ abstract base class DatabaseAdapter extends Executor {
   /// for details.
   factory DatabaseAdapter.postgresTestDatabase({
     String? host,
+    String? unixSocket,
     int? port,
     String? database,
     String? user,
@@ -160,6 +163,7 @@ abstract base class DatabaseAdapter extends Executor {
   }) => futureDatabaseAdapter(
     postgresTestingDatabaseAdapter(
       host: host,
+      unixSocket: unixSocket,
       port: port,
       database: database,
       user: user,

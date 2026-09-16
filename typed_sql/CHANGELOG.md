@@ -1,6 +1,8 @@
 ## 0.1.14
  * Support `upsertValue` as a shortcut to `insertValue` + `onConflict` + `update`.
  * Support `upsert` as a shortcut to `insert` + `onConflict` + `update`.
+ * Added `unixSocket` option to `DatabaseAdapter.postgresTestDatabase`, allowing
+   a _relative path_ to be used when connecting over a unix socket.
 
 ## 0.1.13
  * Support `CREATE INDEX` DDLs through `@Index` annotations.
