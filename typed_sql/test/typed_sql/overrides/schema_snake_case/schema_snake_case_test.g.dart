@@ -205,6 +205,40 @@ extension TableSnakeUserExt on Table<SnakeUser> {
     values: [userId, firstName, lastName, emailAddress, favoriteColor],
   );
 
+  /// Insert row into the `snakeUsers` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `firstName`, `lastName`, `emailAddress`, `favoriteColor`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<SnakeUser> upsert({
+    Expr<int>? userId,
+    required Expr<String> firstName,
+    required Expr<String> lastName,
+    required Expr<String> emailAddress,
+    required Expr<Color> favoriteColor,
+  }) =>
+      insert(
+            userId: userId,
+            firstName: firstName,
+            lastName: lastName,
+            emailAddress: emailAddress,
+            favoriteColor: favoriteColor,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              firstName: excluded.firstName,
+              lastName: excluded.lastName,
+              emailAddress: excluded.emailAddress,
+              favoriteColor: excluded.favoriteColor,
+            ),
+          );
+
   /// Insert row into the `snakeUsers` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -844,6 +878,34 @@ extension TableSnakeProfileExt on Table<SnakeProfile> {
     table: this,
     values: [profileId, userRefId, profileType],
   );
+
+  /// Insert row into the `snakeProfiles` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `userRefId`, `profileType`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<SnakeProfile> upsert({
+    Expr<int>? profileId,
+    required Expr<int> userRefId,
+    required Expr<String> profileType,
+  }) =>
+      insert(
+            profileId: profileId,
+            userRefId: userRefId,
+            profileType: profileType,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              userRefId: excluded.userRefId,
+              profileType: excluded.profileType,
+            ),
+          );
 
   /// Insert row into the `snakeProfiles` table.
   ///

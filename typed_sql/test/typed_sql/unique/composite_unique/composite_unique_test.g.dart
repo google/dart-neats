@@ -136,6 +136,27 @@ extension TableUserExt on Table<User> {
     values: [accountId, firstName, lastName],
   );
 
+  /// Insert row into the `users` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `firstName`, `lastName`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<User> upsert({
+    Expr<int>? accountId,
+    required Expr<String> firstName,
+    required Expr<String> lastName,
+  }) => insert(accountId: accountId, firstName: firstName, lastName: lastName)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) =>
+            set(firstName: excluded.firstName, lastName: excluded.lastName),
+      );
+
   /// Insert row into the `users` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

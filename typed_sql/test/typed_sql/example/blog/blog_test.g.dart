@@ -134,6 +134,24 @@ extension TablePostExt on Table<Post> {
     values: [author, slug, content],
   );
 
+  /// Insert row into the `posts` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `content`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Post> upsert({
+    required Expr<String> author,
+    required Expr<String> slug,
+    required Expr<String> content,
+  }) => insert(author: author, slug: slug, content: content)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(content: excluded.content));
+
   /// Insert row into the `posts` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -735,6 +753,37 @@ extension TableCommentExt on Table<Comment> {
     table: this,
     values: [commentId, author, postSlug, comment],
   );
+
+  /// Insert row into the `comments` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `author`, `postSlug`, `comment`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Comment> upsert({
+    required Expr<int> commentId,
+    required Expr<String> author,
+    required Expr<String> postSlug,
+    required Expr<String> comment,
+  }) =>
+      insert(
+            commentId: commentId,
+            author: author,
+            postSlug: postSlug,
+            comment: comment,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              author: excluded.author,
+              postSlug: excluded.postSlug,
+              comment: excluded.comment,
+            ),
+          );
 
   /// Insert row into the `comments` table.
   ///

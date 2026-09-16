@@ -130,6 +130,31 @@ extension TableEmployeeExt on Table<Employee> {
     values: [id, surname, seniority, salary],
   );
 
+  /// Insert row into the `employees` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `surname`, `seniority`, `salary`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Employee> upsert({
+    Expr<int>? id,
+    required Expr<String> surname,
+    required Expr<String> seniority,
+    Expr<int?>? salary,
+  }) => insert(id: id, surname: surname, seniority: seniority, salary: salary)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          surname: excluded.surname,
+          seniority: excluded.seniority,
+          salary: excluded.salary,
+        ),
+      );
+
   /// Insert row into the `employees` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

@@ -203,6 +203,40 @@ extension TableDialectItemExt on Table<DialectItem> {
     values: [itemId, name, category, status, itemColor],
   );
 
+  /// Insert row into the `dialectItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `category`, `status`, `itemColor`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<DialectItem> upsert({
+    Expr<int>? itemId,
+    required Expr<String> name,
+    required Expr<String> category,
+    required Expr<String> status,
+    required Expr<Color> itemColor,
+  }) =>
+      insert(
+            itemId: itemId,
+            name: name,
+            category: category,
+            status: status,
+            itemColor: itemColor,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              name: excluded.name,
+              category: excluded.category,
+              status: excluded.status,
+              itemColor: excluded.itemColor,
+            ),
+          );
+
   /// Insert row into the `dialectItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -816,6 +850,23 @@ extension TableDialectLogExt on Table<DialectLog> {
     Expr<int>? logId,
     required Expr<int> refItemId,
   }) => $ForGeneratedCode.insertInto(table: this, values: [logId, refItemId]);
+
+  /// Insert row into the `dialectLogs` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `refItemId`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<DialectLog> upsert({
+    Expr<int>? logId,
+    required Expr<int> refItemId,
+  }) => insert(logId: logId, refItemId: refItemId)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(refItemId: excluded.refItemId));
 
   /// Insert row into the `dialectLogs` table.
   ///

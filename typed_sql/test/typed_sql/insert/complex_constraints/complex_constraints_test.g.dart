@@ -136,6 +136,24 @@ extension TableCompositePkItemExt on Table<CompositePkItem> {
     required Expr<String> data,
   }) => $ForGeneratedCode.insertInto(table: this, values: [pkA, pkB, data]);
 
+  /// Insert row into the `compositePkItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `data`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<CompositePkItem> upsert({
+    required Expr<int> pkA,
+    required Expr<String> pkB,
+    required Expr<String> data,
+  }) => insert(pkA: pkA, pkB: pkB, data: data)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(data: excluded.data));
+
   /// Insert row into the `compositePkItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -661,6 +679,31 @@ extension TableMultiUniqueItemExt on Table<MultiUniqueItem> {
     table: this,
     values: [id, fieldA, fieldB, data],
   );
+
+  /// Insert row into the `multiUniqueItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `fieldA`, `fieldB`, `data`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<MultiUniqueItem> upsert({
+    Expr<int>? id,
+    required Expr<String> fieldA,
+    required Expr<int> fieldB,
+    required Expr<String> data,
+  }) => insert(id: id, fieldA: fieldA, fieldB: fieldB, data: data)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          fieldA: excluded.fieldA,
+          fieldB: excluded.fieldB,
+          data: excluded.data,
+        ),
+      );
 
   /// Insert row into the `multiUniqueItems` table.
   ///
@@ -1271,6 +1314,31 @@ extension TableForeignKeyItemExt on Table<ForeignKeyItem> {
     table: this,
     values: [id, refPkA, refPkB, data],
   );
+
+  /// Insert row into the `foreignKeyItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `refPkA`, `refPkB`, `data`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<ForeignKeyItem> upsert({
+    Expr<int>? id,
+    required Expr<int> refPkA,
+    required Expr<String> refPkB,
+    required Expr<String> data,
+  }) => insert(id: id, refPkA: refPkA, refPkB: refPkB, data: data)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          refPkA: excluded.refPkA,
+          refPkB: excluded.refPkB,
+          data: excluded.data,
+        ),
+      );
 
   /// Insert row into the `foreignKeyItems` table.
   ///

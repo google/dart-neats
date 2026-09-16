@@ -115,6 +115,27 @@ extension TableProductExt on Table<Product> {
     Expr<JsonValue>? metadata,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, name, metadata]);
 
+  /// Insert row into the `products` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `metadata`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Product> upsert({
+    Expr<int>? id,
+    required Expr<String> name,
+    Expr<JsonValue>? metadata,
+  }) => insert(id: id, name: name, metadata: metadata)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) =>
+            set(name: excluded.name, metadata: excluded.metadata),
+      );
+
   /// Insert row into the `products` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

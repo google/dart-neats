@@ -105,6 +105,23 @@ extension TableDepartmentExt on Table<Department> {
     required Expr<String> name,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, name]);
 
+  /// Insert row into the `departments` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Department> upsert({
+    Expr<int>? id,
+    required Expr<String> name,
+  }) => insert(id: id, name: name)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(name: excluded.name));
+
   /// Insert row into the `departments` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -590,6 +607,31 @@ extension TableEmployeeExt on Table<Employee> {
     table: this,
     values: [id, name, deptId, salary],
   );
+
+  /// Insert row into the `employees` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `deptId`, `salary`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Employee> upsert({
+    Expr<int>? id,
+    required Expr<String> name,
+    required Expr<int> deptId,
+    required Expr<int> salary,
+  }) => insert(id: id, name: name, deptId: deptId, salary: salary)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          name: excluded.name,
+          deptId: excluded.deptId,
+          salary: excluded.salary,
+        ),
+      );
 
   /// Insert row into the `employees` table.
   ///

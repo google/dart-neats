@@ -186,6 +186,38 @@ extension TableComplexMappedItemExt on Table<ComplexMappedItem> {
     values: [id, s, dt, blob, custom, i, json],
   );
 
+  /// Insert row into the `complexMappedItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `s`, `dt`, `blob`, `custom`, `i`, `json`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<ComplexMappedItem> upsert({
+    Expr<int>? id,
+    Expr<String?>? s,
+    Expr<DateTime?>? dt,
+    Expr<Uint8List?>? blob,
+    Expr<MyCustomType?>? custom,
+    Expr<int?>? i,
+    Expr<JsonValue?>? json,
+  }) =>
+      insert(id: id, s: s, dt: dt, blob: blob, custom: custom, i: i, json: json)
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              s: excluded.s,
+              dt: excluded.dt,
+              blob: excluded.blob,
+              custom: excluded.custom,
+              i: excluded.i,
+              json: excluded.json,
+            ),
+          );
+
   /// Insert row into the `complexMappedItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

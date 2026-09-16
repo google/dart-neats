@@ -133,6 +133,27 @@ extension TableEmployeeExt on Table<Employee> {
     values: [employeeId, name, departmentId],
   );
 
+  /// Insert row into the `employees` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `departmentId`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Employee> upsert({
+    Expr<int>? employeeId,
+    required Expr<String> name,
+    Expr<int?>? departmentId,
+  }) => insert(employeeId: employeeId, name: name, departmentId: departmentId)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) =>
+            set(name: excluded.name, departmentId: excluded.departmentId),
+      );
+
   /// Insert row into the `employees` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -707,6 +728,27 @@ extension TableDepartmentExt on Table<Department> {
     table: this,
     values: [departmentId, name, location],
   );
+
+  /// Insert row into the `departments` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `location`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Department> upsert({
+    Expr<int>? departmentId,
+    required Expr<String> name,
+    required Expr<String> location,
+  }) => insert(departmentId: departmentId, name: name, location: location)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) =>
+            set(name: excluded.name, location: excluded.location),
+      );
 
   /// Insert row into the `departments` table.
   ///

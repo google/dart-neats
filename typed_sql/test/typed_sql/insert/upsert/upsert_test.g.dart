@@ -145,6 +145,26 @@ extension TableSimpleItemExt on Table<SimpleItem> {
     required Expr<int> value,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, name, value]);
 
+  /// Insert row into the `simpleItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<SimpleItem> upsert({
+    Expr<int>? id,
+    required Expr<String> name,
+    required Expr<int> value,
+  }) => insert(id: id, name: name, value: value)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(name: excluded.name, value: excluded.value),
+      );
+
   /// Insert row into the `simpleItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -720,6 +740,39 @@ extension TableCompositeItemExt on Table<CompositeItem> {
     table: this,
     values: [partA, partB, firstName, lastName, data],
   );
+
+  /// Insert row into the `compositeItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `firstName`, `lastName`, `data`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<CompositeItem> upsert({
+    required Expr<String> partA,
+    required Expr<int> partB,
+    required Expr<String> firstName,
+    required Expr<String> lastName,
+    required Expr<String> data,
+  }) =>
+      insert(
+            partA: partA,
+            partB: partB,
+            firstName: firstName,
+            lastName: lastName,
+            data: data,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              firstName: excluded.firstName,
+              lastName: excluded.lastName,
+              data: excluded.data,
+            ),
+          );
 
   /// Insert row into the `compositeItems` table.
   ///
@@ -1349,6 +1402,27 @@ extension TableNullableUniqueItemExt on Table<NullableUniqueItem> {
     values: [id, code, description],
   );
 
+  /// Insert row into the `nullableUniqueItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `code`, `description`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<NullableUniqueItem> upsert({
+    Expr<int>? id,
+    Expr<String?>? code,
+    required Expr<String> description,
+  }) => insert(id: id, code: code, description: description)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) =>
+            set(code: excluded.code, description: excluded.description),
+      );
+
   /// Insert row into the `nullableUniqueItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -1921,6 +1995,31 @@ extension TableSubQueryItemExt on Table<SubQueryItem> {
     table: this,
     values: [id, tag, refId, count],
   );
+
+  /// Insert row into the `subQueryItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `tag`, `refId`, `count`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<SubQueryItem> upsert({
+    Expr<int>? id,
+    required Expr<String> tag,
+    required Expr<int> refId,
+    required Expr<int> count,
+  }) => insert(id: id, tag: tag, refId: refId, count: count)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          tag: excluded.tag,
+          refId: excluded.refId,
+          count: excluded.count,
+        ),
+      );
 
   /// Insert row into the `subQueryItems` table.
   ///
@@ -2549,6 +2648,42 @@ extension TableComplexItemExt on Table<ComplexItem> {
     table: this,
     values: [id, createdAt, name, doubleValue, boolValue, value],
   );
+
+  /// Insert row into the `complexItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `doubleValue`, `boolValue`, `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<ComplexItem> upsert({
+    required Expr<int> id,
+    Expr<DateTime>? createdAt,
+    required Expr<String> name,
+    Expr<double>? doubleValue,
+    Expr<bool>? boolValue,
+    required Expr<int> value,
+  }) =>
+      insert(
+            id: id,
+            createdAt: createdAt,
+            name: name,
+            doubleValue: doubleValue,
+            boolValue: boolValue,
+            value: value,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              name: excluded.name,
+              doubleValue: excluded.doubleValue,
+              boolValue: excluded.boolValue,
+              value: excluded.value,
+            ),
+          );
 
   /// Insert row into the `complexItems` table.
   ///
@@ -3182,6 +3317,23 @@ extension TableCustomTypeItemExt on Table<CustomTypeItem> {
     Expr<int>? id,
     required Expr<MyCustomType> value,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, value]);
+
+  /// Insert row into the `customTypeItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<CustomTypeItem> upsert({
+    Expr<int>? id,
+    required Expr<MyCustomType> value,
+  }) => insert(id: id, value: value)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(value: excluded.value));
 
   /// Insert row into the `customTypeItems` table.
   ///

@@ -271,6 +271,58 @@ extension TableItemExt on Table<Item> {
     ],
   );
 
+  /// Insert row into the `items` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `text`, `real`, `integer`, `timestamp`, `json`, `optText`, `optReal`, `optInteger`, `optTimestamp`, `optJson`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Item> upsert({
+    Expr<int>? id,
+    required Expr<String> text,
+    required Expr<double> real,
+    required Expr<int> integer,
+    required Expr<DateTime> timestamp,
+    required Expr<JsonValue> json,
+    Expr<String?>? optText,
+    Expr<double?>? optReal,
+    Expr<int?>? optInteger,
+    Expr<DateTime?>? optTimestamp,
+    Expr<JsonValue?>? optJson,
+  }) =>
+      insert(
+            id: id,
+            text: text,
+            real: real,
+            integer: integer,
+            timestamp: timestamp,
+            json: json,
+            optText: optText,
+            optReal: optReal,
+            optInteger: optInteger,
+            optTimestamp: optTimestamp,
+            optJson: optJson,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              text: excluded.text,
+              real: excluded.real,
+              integer: excluded.integer,
+              timestamp: excluded.timestamp,
+              json: excluded.json,
+              optText: excluded.optText,
+              optReal: excluded.optReal,
+              optInteger: excluded.optInteger,
+              optTimestamp: excluded.optTimestamp,
+              optJson: excluded.optJson,
+            ),
+          );
+
   /// Insert row into the `items` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

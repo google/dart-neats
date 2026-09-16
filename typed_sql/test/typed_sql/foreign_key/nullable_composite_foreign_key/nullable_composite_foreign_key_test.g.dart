@@ -119,6 +119,24 @@ extension TableAuthorExt on Table<Author> {
   }) =>
       $ForGeneratedCode.insertInto(table: this, values: [firstName, lastName]);
 
+  /// Insert row into the `authors` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// nothing, as all fields are part of the _primary key_,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Author> upsert({
+    required Expr<String> firstName,
+    required Expr<String> lastName,
+  }) => insert(
+    firstName: firstName,
+    lastName: lastName,
+  ).onConflict(.primaryKey).update((_, excluded, set) => set());
+
   /// Insert row into the `authors` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -737,6 +755,40 @@ extension TableBookExt on Table<Book> {
     table: this,
     values: [bookId, title, authorFirstName, authorLastName, stock],
   );
+
+  /// Insert row into the `books` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `title`, `authorFirstName`, `authorLastName`, `stock`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Book> upsert({
+    Expr<int>? bookId,
+    required Expr<String> title,
+    Expr<String?>? authorFirstName,
+    Expr<String?>? authorLastName,
+    required Expr<int> stock,
+  }) =>
+      insert(
+            bookId: bookId,
+            title: title,
+            authorFirstName: authorFirstName,
+            authorLastName: authorLastName,
+            stock: stock,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              title: excluded.title,
+              authorFirstName: excluded.authorFirstName,
+              authorLastName: excluded.authorLastName,
+              stock: excluded.stock,
+            ),
+          );
 
   /// Insert row into the `books` table.
   ///

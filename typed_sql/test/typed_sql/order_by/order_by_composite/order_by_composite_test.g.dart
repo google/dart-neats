@@ -145,6 +145,40 @@ extension TableItemExt on Table<Item> {
     values: [id, text, real, timestamp, integer],
   );
 
+  /// Insert row into the `items` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `text`, `real`, `timestamp`, `integer`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Item> upsert({
+    Expr<int>? id,
+    required Expr<String> text,
+    required Expr<double> real,
+    required Expr<DateTime> timestamp,
+    Expr<int?>? integer,
+  }) =>
+      insert(
+            id: id,
+            text: text,
+            real: real,
+            timestamp: timestamp,
+            integer: integer,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              text: excluded.text,
+              real: excluded.real,
+              timestamp: excluded.timestamp,
+              integer: excluded.integer,
+            ),
+          );
+
   /// Insert row into the `items` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
