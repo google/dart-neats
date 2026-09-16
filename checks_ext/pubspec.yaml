@@ -1,0 +1,12 @@
+name: checks_ext
+description: Extensions for package:checks to make testing standard library types easier and more expressive.
+version: 0.0.0
+publish_to: none
+environment:
+  sdk: ^3.12.0
+dependencies:
+  checks: ^0.3.1
+  collection: ^1.19.1
+dev_dependencies:
+  test: ^1.31.1
+  stack_trace: ^1.12.1

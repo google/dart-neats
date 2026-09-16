@@ -1,0 +1,3 @@
+analyzer:
+  errors:
+    doc_directive_unknown: ignore # TODO Remove then when @example is supported
