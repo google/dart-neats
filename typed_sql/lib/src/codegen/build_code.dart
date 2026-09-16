@@ -518,7 +518,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
   /// NOTE: We do not set the default value as _default value_ in
   ///       dart, because this does not work for auto-increment or
   ///       for NOW() and similar annotations.
-  Iterable<Parameter> insertValueParameters() => rowClass.fields.map((field) {
+  final insertValueParameters = rowClass.fields.map((field) {
     final isOptional = field.hasDefault ^ field.isNullable;
     final nullablePostfix = field.hasDefault || field.isNullable ? '?' : '';
 
@@ -529,10 +529,29 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
         ..required = !isOptional
         ..type = refer('${field.typeName}$nullablePostfix'),
     );
-  });
+  }).toList();
+
+  /// Parameters for `.insert()` and `.upsert()`: one named parameter per
+  /// field, each taking an `Expr<T>`.
+  ///
+  /// Fields that are nullable, have a default value, or are auto-increment can
+  /// be omitted, in which case the _default value_ is used.
+  final insertParameters = rowClass.fields.map((field) {
+    final hasDefault =
+        field.defaultValue != null || field.isNullable || field.autoIncrement;
+    final nullable = hasDefault ? '?' : '';
+    return Parameter(
+      (b) => b
+        ..name = field.name
+        ..named = true
+        ..required = !hasDefault
+        ..type = refer('Expr<${field.type}>$nullable'),
+    );
+  }).toList();
 
   // Fields that are not part of the _primary key_, these are the fields
-  // `.upsertValue()` will overwrite when a _primary key_ conflict occurs.
+  // `.upsert()` and `.upsertValue()` will overwrite when a _primary key_
+  // conflict occurs.
   final nonPrimaryKeyFields = rowClass.fields
       .where((field) => !rowClass.primaryKey.contains(field))
       .toList();
@@ -555,22 +574,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             Returns a [InsertSingle] statement on which `.execute` must be
             called for the row to be inserted.
           ''')
-            ..optionalParameters.addAll(
-              rowClass.fields.map((field) {
-                final hasDefault =
-                    field.defaultValue != null ||
-                    field.isNullable ||
-                    field.autoIncrement;
-                final nullable = hasDefault ? '?' : '';
-                return Parameter(
-                  (b) => b
-                    ..name = field.name
-                    ..named = true
-                    ..required = !hasDefault
-                    ..type = refer('Expr<${field.type}>$nullable'),
-                );
-              }),
-            )
+            ..optionalParameters.addAll(insertParameters)
             ..returns = refer('InsertSingle<$rowClassName>')
             ..lambda = true
             ..body = Code('''
@@ -581,6 +585,34 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               ],
             )
           '''),
+        ),
+      )
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'upsert'
+            ..documentation('''
+              Insert row into the `${table.name}` table, or update the
+              existing row if it conflicts with the _primary key_.
+
+              This is a shorthand for calling `.insert(...)` followed by
+              `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+              ${nonPrimaryKeyFields.isEmpty ? 'nothing, as all fields are part of the _primary key_,' : 'the fields ${nonPrimaryKeyFields.map((f) => '`${f.name}`').join(', ')},'}
+              with the values given, leaving the _primary key_ untouched.
+
+              Returns an [UpsertSingle] statement on which `.execute()` must be
+              called for the row to be inserted or updated.
+            ''')
+            ..optionalParameters.addAll(insertParameters)
+            ..returns = refer('UpsertSingle<$rowClassName>')
+            ..lambda = true
+            ..body = Code('''
+              insert(
+                ${rowClass.fields.map((field) => '${field.name}: ${field.name}').join(', ')},
+              ).onConflict(.primaryKey).update(
+                (_, excluded, set) => set(${nonPrimaryKeyFields.map((f) => '${f.name}: excluded.${f.name}').join(', ')}),
+              )
+            '''),
         ),
       )
       ..methods.add(
@@ -600,7 +632,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               Returns a [InsertSingle] statement on which `.execute` must be
               called for the row to be inserted.
             ''')
-            ..optionalParameters.addAll(insertValueParameters())
+            ..optionalParameters.addAll(insertValueParameters)
             ..returns = refer('InsertSingle<$rowClassName>')
             ..lambda = true
             ..body = Code('''
@@ -640,7 +672,7 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
               Returns an [UpsertSingle] statement on which `.execute()` must be
               called for the row to be inserted or updated.
             ''')
-            ..optionalParameters.addAll(insertValueParameters())
+            ..optionalParameters.addAll(insertValueParameters)
             ..returns = refer('UpsertSingle<$rowClassName>')
             ..lambda = true
             ..body = Code('''
