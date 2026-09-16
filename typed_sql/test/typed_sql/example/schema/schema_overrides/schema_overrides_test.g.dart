@@ -120,6 +120,23 @@ extension TableAuthorExt on Table<Author> {
     required Expr<String> name,
   }) => $ForGeneratedCode.insertInto(table: this, values: [authorId, name]);
 
+  /// Insert row into the `authors` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Author> upsert({
+    Expr<int>? authorId,
+    required Expr<String> name,
+  }) => insert(authorId: authorId, name: name)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(name: excluded.name));
+
   /// Insert row into the `authors` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -679,6 +696,31 @@ extension TableBookExt on Table<Book> {
     table: this,
     values: [bookId, title, authorId, stock],
   );
+
+  /// Insert row into the `booksInStock` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `title`, `authorId`, `stock`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Book> upsert({
+    Expr<int>? bookId,
+    Expr<String?>? title,
+    required Expr<int> authorId,
+    Expr<int>? stock,
+  }) => insert(bookId: bookId, title: title, authorId: authorId, stock: stock)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          title: excluded.title,
+          authorId: excluded.authorId,
+          stock: excluded.stock,
+        ),
+      );
 
   /// Insert row into the `booksInStock` table.
   ///

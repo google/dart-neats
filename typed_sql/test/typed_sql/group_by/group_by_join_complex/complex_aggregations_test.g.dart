@@ -123,6 +123,23 @@ extension TableDepartmentExt on Table<Department> {
     required Expr<String> name,
   }) => $ForGeneratedCode.insertInto(table: this, values: [departmentId, name]);
 
+  /// Insert row into the `departments` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Department> upsert({
+    Expr<int>? departmentId,
+    required Expr<String> name,
+  }) => insert(departmentId: departmentId, name: name)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(name: excluded.name));
+
   /// Insert row into the `departments` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -617,6 +634,27 @@ extension TableEmployeeExt on Table<Employee> {
     table: this,
     values: [employeeId, name, departmentId],
   );
+
+  /// Insert row into the `employees` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `departmentId`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Employee> upsert({
+    Expr<int>? employeeId,
+    required Expr<String> name,
+    required Expr<int> departmentId,
+  }) => insert(employeeId: employeeId, name: name, departmentId: departmentId)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) =>
+            set(name: excluded.name, departmentId: excluded.departmentId),
+      );
 
   /// Insert row into the `employees` table.
   ///
@@ -1163,6 +1201,37 @@ extension TableProjectExt on Table<Project> {
     table: this,
     values: [projectId, name, departmentId, budget],
   );
+
+  /// Insert row into the `projects` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `departmentId`, `budget`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Project> upsert({
+    Expr<int>? projectId,
+    required Expr<String> name,
+    required Expr<int> departmentId,
+    required Expr<int> budget,
+  }) =>
+      insert(
+            projectId: projectId,
+            name: name,
+            departmentId: departmentId,
+            budget: budget,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              name: excluded.name,
+              departmentId: excluded.departmentId,
+              budget: excluded.budget,
+            ),
+          );
 
   /// Insert row into the `projects` table.
   ///

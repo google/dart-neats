@@ -105,6 +105,23 @@ extension TableJsonItemExt on Table<JsonItem> {
     required Expr<JsonValue> data,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, data]);
 
+  /// Insert row into the `jsonItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `data`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<JsonItem> upsert({
+    Expr<int>? id,
+    required Expr<JsonValue> data,
+  }) => insert(id: id, data: data)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(data: excluded.data));
+
   /// Insert row into the `jsonItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

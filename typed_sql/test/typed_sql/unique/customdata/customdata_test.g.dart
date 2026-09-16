@@ -120,6 +120,23 @@ extension TableCustomDataItemExt on Table<CustomDataItem> {
     required Expr<CustomStringType> stringVal,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, stringVal]);
 
+  /// Insert row into the `customDataItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `stringVal`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<CustomDataItem> upsert({
+    required Expr<CustomIntType> id,
+    required Expr<CustomStringType> stringVal,
+  }) => insert(id: id, stringVal: stringVal)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(stringVal: excluded.stringVal));
+
   /// Insert row into the `customDataItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

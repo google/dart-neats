@@ -123,6 +123,26 @@ extension TableBasicItemExt on Table<BasicItem> {
     required Expr<int> value,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, name, value]);
 
+  /// Insert row into the `basicItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<BasicItem> upsert({
+    Expr<int>? id,
+    required Expr<String> name,
+    required Expr<int> value,
+  }) => insert(id: id, name: name, value: value)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(name: excluded.name, value: excluded.value),
+      );
+
   /// Insert row into the `basicItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

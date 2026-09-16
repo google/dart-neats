@@ -99,6 +99,21 @@ extension TableItemExt on Table<Item> {
   InsertSingle<Item> insert({Expr<int>? id, Expr<bool>? value}) =>
       $ForGeneratedCode.insertInto(table: this, values: [id, value]);
 
+  /// Insert row into the `items` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Item> upsert({Expr<int>? id, Expr<bool>? value}) =>
+      insert(id: id, value: value)
+          .onConflict(.primaryKey)
+          .update((_, excluded, set) => set(value: excluded.value));
+
   /// Insert row into the `items` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

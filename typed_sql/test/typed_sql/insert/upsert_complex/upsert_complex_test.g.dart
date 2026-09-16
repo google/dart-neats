@@ -192,6 +192,42 @@ extension TableComplexItemExt on Table<ComplexItem> {
     values: [id, createdAt, name, doubleValue, boolValue, value],
   );
 
+  /// Insert row into the `complexItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `doubleValue`, `boolValue`, `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<ComplexItem> upsert({
+    required Expr<int> id,
+    Expr<DateTime>? createdAt,
+    required Expr<String> name,
+    Expr<double>? doubleValue,
+    Expr<bool>? boolValue,
+    required Expr<int> value,
+  }) =>
+      insert(
+            id: id,
+            createdAt: createdAt,
+            name: name,
+            doubleValue: doubleValue,
+            boolValue: boolValue,
+            value: value,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              name: excluded.name,
+              doubleValue: excluded.doubleValue,
+              boolValue: excluded.boolValue,
+              value: excluded.value,
+            ),
+          );
+
   /// Insert row into the `complexItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

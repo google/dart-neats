@@ -130,6 +130,26 @@ extension TableConflictMappedItemExt on Table<ConflictMappedItem> {
     values: [complexId, name, value],
   );
 
+  /// Insert row into the `conflictMappedItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<ConflictMappedItem> upsert({
+    required Expr<int> complexId,
+    required Expr<String> name,
+    required Expr<int> value,
+  }) => insert(complexId: complexId, name: name, value: value)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(name: excluded.name, value: excluded.value),
+      );
+
   /// Insert row into the `conflictMappedItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

@@ -116,6 +116,27 @@ extension TableEmployeeExt on Table<Employee> {
   }) =>
       $ForGeneratedCode.insertInto(table: this, values: [id, surname, salary]);
 
+  /// Insert row into the `employees` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `surname`, `salary`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Employee> upsert({
+    Expr<int>? id,
+    required Expr<String> surname,
+    required Expr<int> salary,
+  }) => insert(id: id, surname: surname, salary: salary)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) =>
+            set(surname: excluded.surname, salary: excluded.salary),
+      );
+
   /// Insert row into the `employees` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

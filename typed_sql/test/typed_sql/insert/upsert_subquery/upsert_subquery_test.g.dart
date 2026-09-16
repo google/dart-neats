@@ -108,6 +108,23 @@ extension TableSourceItemExt on Table<SourceItem> {
     required Expr<String> value,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, value]);
 
+  /// Insert row into the `sourceItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<SourceItem> upsert({
+    Expr<int>? id,
+    required Expr<String> value,
+  }) => insert(id: id, value: value)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(value: excluded.value));
+
   /// Insert row into the `sourceItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -602,6 +619,31 @@ extension TableSubQueryItemExt on Table<SubQueryItem> {
     table: this,
     values: [id, tag, refId, count],
   );
+
+  /// Insert row into the `subQueryItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `tag`, `refId`, `count`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<SubQueryItem> upsert({
+    Expr<int>? id,
+    required Expr<String> tag,
+    required Expr<int> refId,
+    required Expr<int> count,
+  }) => insert(id: id, tag: tag, refId: refId, count: count)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          tag: excluded.tag,
+          refId: excluded.refId,
+          count: excluded.count,
+        ),
+      );
 
   /// Insert row into the `subQueryItems` table.
   ///

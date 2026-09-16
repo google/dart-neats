@@ -125,6 +125,26 @@ extension TableUserExt on Table<User> {
   }) =>
       $ForGeneratedCode.insertInto(table: this, values: [userId, name, email]);
 
+  /// Insert row into the `users` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `email`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<User> upsert({
+    Expr<int>? userId,
+    required Expr<String> name,
+    required Expr<String> email,
+  }) => insert(userId: userId, name: name, email: email)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(name: excluded.name, email: excluded.email),
+      );
+
   /// Insert row into the `users` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -715,6 +735,37 @@ extension TablePackageExt on Table<Package> {
     table: this,
     values: [packageName, likes, ownerId, publisher],
   );
+
+  /// Insert row into the `packages` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `likes`, `ownerId`, `publisher`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Package> upsert({
+    required Expr<String> packageName,
+    Expr<int>? likes,
+    required Expr<int> ownerId,
+    Expr<String?>? publisher,
+  }) =>
+      insert(
+            packageName: packageName,
+            likes: likes,
+            ownerId: ownerId,
+            publisher: publisher,
+          )
+          .onConflict(.primaryKey)
+          .update(
+            (_, excluded, set) => set(
+              likes: excluded.likes,
+              ownerId: excluded.ownerId,
+              publisher: excluded.publisher,
+            ),
+          );
 
   /// Insert row into the `packages` table.
   ///
@@ -1315,6 +1366,24 @@ extension TableLikeExt on Table<Like> {
     required Expr<String> packageName,
   }) =>
       $ForGeneratedCode.insertInto(table: this, values: [userId, packageName]);
+
+  /// Insert row into the `likes` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// nothing, as all fields are part of the _primary key_,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Like> upsert({
+    required Expr<int> userId,
+    required Expr<String> packageName,
+  }) => insert(
+    userId: userId,
+    packageName: packageName,
+  ).onConflict(.primaryKey).update((_, excluded, set) => set());
 
   /// Insert row into the `likes` table.
   ///

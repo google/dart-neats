@@ -150,6 +150,31 @@ extension TableMultiItemExt on Table<MultiItem> {
     values: [id, name, email, value],
   );
 
+  /// Insert row into the `multiItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `email`, `value`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<MultiItem> upsert({
+    Expr<int>? id,
+    required Expr<String> name,
+    required Expr<String> email,
+    required Expr<int> value,
+  }) => insert(id: id, name: name, email: email, value: value)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          name: excluded.name,
+          email: excluded.email,
+          value: excluded.value,
+        ),
+      );
+
   /// Insert row into the `multiItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

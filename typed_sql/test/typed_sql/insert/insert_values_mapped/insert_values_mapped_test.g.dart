@@ -130,6 +130,31 @@ extension TableMappedItemExt on Table<MappedItem> {
     values: [id, value, count, nullableValue],
   );
 
+  /// Insert row into the `mappedItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `value`, `count`, `nullableValue`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<MappedItem> upsert({
+    Expr<int>? id,
+    required Expr<String> value,
+    Expr<int>? count,
+    Expr<String?>? nullableValue,
+  }) => insert(id: id, value: value, count: count, nullableValue: nullableValue)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          value: excluded.value,
+          count: excluded.count,
+          nullableValue: excluded.nullableValue,
+        ),
+      );
+
   /// Insert row into the `mappedItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be

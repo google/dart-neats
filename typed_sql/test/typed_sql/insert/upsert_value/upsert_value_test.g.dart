@@ -139,6 +139,31 @@ extension TableUpsertValueItemExt on Table<UpsertValueItem> {
     values: [id, name, value, note],
   );
 
+  /// Insert row into the `items` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`, `value`, `note`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<UpsertValueItem> upsert({
+    Expr<int>? id,
+    required Expr<String> name,
+    required Expr<int> value,
+    Expr<String?>? note,
+  }) => insert(id: id, name: name, value: value, note: note)
+      .onConflict(.primaryKey)
+      .update(
+        (_, excluded, set) => set(
+          name: excluded.name,
+          value: excluded.value,
+          note: excluded.note,
+        ),
+      );
+
   /// Insert row into the `items` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
@@ -679,6 +704,24 @@ extension TableUpsertValueLinkExt on Table<UpsertValueLink> {
     required Expr<int> a,
     required Expr<int> b,
   }) => $ForGeneratedCode.insertInto(table: this, values: [a, b]);
+
+  /// Insert row into the `links` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// nothing, as all fields are part of the _primary key_,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<UpsertValueLink> upsert({
+    required Expr<int> a,
+    required Expr<int> b,
+  }) => insert(
+    a: a,
+    b: b,
+  ).onConflict(.primaryKey).update((_, excluded, set) => set());
 
   /// Insert row into the `links` table.
   ///

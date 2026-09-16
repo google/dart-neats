@@ -105,6 +105,23 @@ extension TableNotNullItemExt on Table<NotNullItem> {
     required Expr<String> name,
   }) => $ForGeneratedCode.insertInto(table: this, values: [id, name]);
 
+  /// Insert row into the `notNullItems` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// the fields `name`,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<NotNullItem> upsert({
+    Expr<int>? id,
+    required Expr<String> name,
+  }) => insert(id: id, name: name)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(name: excluded.name));
+
   /// Insert row into the `notNullItems` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
