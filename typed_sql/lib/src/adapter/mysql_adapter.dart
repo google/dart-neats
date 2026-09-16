@@ -23,11 +23,13 @@ import 'package:mysql1/mysql1.dart';
 import '../types/json_value.dart';
 import '../utils/normalize_json.dart';
 import '../utils/notifier.dart';
+import '../utils/socket_path.dart';
 import '../utils/uuid.dart';
 import 'adapter.dart'; // ignore: implementation_imports
 
 DatabaseAdapter mysqlTestingAdapter({
   String? host,
+  String? unixSocket,
   int? port,
   String? database,
   String? user,
@@ -36,6 +38,7 @@ DatabaseAdapter mysqlTestingAdapter({
   return DatabaseAdapter.fromFuture(
     _mysqlTestingAdapter(
       host: host,
+      unixSocket: unixSocket,
       port: port,
       database: database,
       user: user,
@@ -46,31 +49,45 @@ DatabaseAdapter mysqlTestingAdapter({
 
 Future<DatabaseAdapter> _mysqlTestingAdapter({
   String? host,
+  String? unixSocket,
   int? port,
   String? database,
   String? user,
   String? password,
 }) async {
-  host ??= Platform.environment['MYSQL_HOST'] ?? '127.0.0.1';
+  if (host != null && unixSocket != null) {
+    throw ArgumentError(
+      'Only one of `host` and `unixSocket` can be specified',
+    );
+  }
+  if (host == null && unixSocket == null) {
+    // `MYSQL_HOST` holds a path when connecting over a unix socket.
+    final envHost = Platform.environment['MYSQL_HOST'];
+    if (envHost != null && isSocketPath(envHost)) {
+      unixSocket = envHost;
+    } else {
+      host = envHost ?? '127.0.0.1';
+    }
+  }
   port ??= int.tryParse(Platform.environment['MYSQL_PORT'] ?? '') ?? 3306;
   database ??= Platform.environment['MYSQL_DATABASE'] ?? '';
   user ??= Platform.environment['MYSQL_USER'] ?? 'root';
   password ??= Platform.environment['MYSQL_PASSWORD'] ?? 'root';
 
-  final isUnixSocket = Platform.isWindows
-      ? host.startsWith(RegExp(r'[a-zA-Z]+:\\'))
-      : host.startsWith('/');
+  // Note: `unixSocket` may be a _relative path_, see unix(7).
+  final socket = unixSocket;
+  final isUnixSocket = socket != null;
 
   final admin = await MySqlConnection.connect(
     isUnixSocket
         ? ConnectionSettings.socket(
-            path: host,
+            path: socket,
             db: database,
             user: user,
             password: password,
           )
         : ConnectionSettings(
-            host: host,
+            host: host!,
             db: database,
             port: port,
             user: user,
@@ -89,7 +106,7 @@ Future<DatabaseAdapter> _mysqlTestingAdapter({
     return await MySqlConnection.connect(
       isUnixSocket
           ? ConnectionSettings.socket(
-              path: host!,
+              path: socket,
               db: testdb,
               user: user,
               password: password,
