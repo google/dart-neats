@@ -1,3 +1,6 @@
+## v2.3.0
+ * Support `allowElements` to allow custom tag names. 
+
 ## v2.2.0
  * Allow the `<picture>` and `<source>` elements, with `srcset` on `<source>`,
    matching the [`html-pipeline` allowlist](https://github.com/gjtorikian/html-pipeline/blob/main/lib/html_pipeline/sanitization_filter.rb)

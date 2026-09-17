@@ -29,6 +29,7 @@ void main() {
 
     return sanitizeHtml(
       template,
+      allowElements: (tagName) => tagName == 'ONLY-ALLOWED-TAG',
       allowElementId: (id) => id == 'only-allowed-id',
       allowClassName: (className) => className == 'only-allowed-class',
       addLinkRel: (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : null,
@@ -64,6 +65,13 @@ void main() {
   testContains('<p>hello', 'hello');
   testContains('<p>hello', '</p>');
   testContains('<p>hello', '<p>');
+
+  // test tag name filtering
+  testContains(
+      '<only-allowed-tag>hello</only-allowed-tag>', '<only-allowed-tag>');
+  testContains('<only-allowed-tag>hello</only-allowed-tag>', 'hello');
+  testNotContains('<disallowed-tag>hello</disallowed-tag>', 'disallowed-tag');
+  testNotContains('<disallowed-tag>hello</disallowed-tag>', 'hello');
 
   // test id filtering..
   testContains('<span id="only-allowed-id">hello</span>', 'id');
@@ -184,6 +192,8 @@ void main() {
     testContains('<a href="any-href">hey', 'href=',
         withOptionalConfiguration: false);
     testNotContains('<a href="any-href">hey', 'rel=',
+        withOptionalConfiguration: false);
+    testNotContains('<any-tag>hello</any-tag>', 'hello',
         withOptionalConfiguration: false);
     testNotContains('<span id="any-id">hello</span>', 'id=',
         withOptionalConfiguration: false);
