@@ -83,5 +83,5 @@ final class Database<T extends Schema> {
   /// This can be useful for evaluating multiple point-queries in a single
   /// database query.
   QuerySingle<S> select<S extends Record>(S expressions) =>
-      QuerySingle._(Query._(this, expressions, SelectClause._));
+      QuerySingle._(Query._(this, expressions, SelectClause.internal));
 }

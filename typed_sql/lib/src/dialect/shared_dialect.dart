@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import '../ast.query.dart';
 import '../typed_sql.dart';
 
 /// Returns the default SQL clause expression for the given referential actions.

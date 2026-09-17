@@ -74,8 +74,8 @@ final class Update<T extends Row> {
   /// Execute this `UPDATE` statement in the database.
   Future<void> execute() async => await _query._context._execute(
     _query._context._dialect.update(
-      UpdateStatement._(
-        TableClause._(_table),
+      UpdateStatement.internal(
+        TableClause.internal(_table),
         _table.columns
             .whereIndexed((index, value) => _set._values[index] != null)
             .toList(),
@@ -99,14 +99,14 @@ final class Update<T extends Row> {
   ) {
     final handle = Object();
     final projection = projectionBuilder(
-      RowExpression._(0, _table, Object())._standin(0, handle),
+      RowExpression.internal(0, _table, Object()).$standin(0, handle),
     );
 
-    final table = TableClause._(_table);
+    final table = TableClause.internal(_table);
 
     return Return._(_query._context, projection, (e) {
       return _query._context._dialect.update(
-        UpdateStatement._(
+        UpdateStatement.internal(
           table,
           table.columns
               .whereIndexed((index, value) => _set._values[index] != null)
@@ -114,7 +114,7 @@ final class Update<T extends Row> {
           _set._values.nonNulls.toList(),
           _handle,
           _query._from(_query._expressions.toList()),
-          ReturningClause._(handle, table.columns, e),
+          ReturningClause.internal(handle, table.columns, e),
         ),
       );
     });
@@ -154,7 +154,7 @@ final class Insert<T extends Row> {
   SqlTask _render({
     ReturningClause? returning,
   }) => _table._context._dialect.insertInto(
-    InsertStatement._(
+    InsertStatement.internal(
       _table._tableClause.name,
       _values,
       _onConflictClause,
@@ -181,14 +181,18 @@ final class Insert<T extends Row> {
   ) {
     final handle = Object();
     final projection = projectionBuilder(
-      _table._expressions.$1._standin(0, handle),
+      _table._expressions.$1.$standin(0, handle),
     );
 
     return Return._(
       _table._context,
       projection,
       (e) => _render(
-        returning: ReturningClause._(handle, _table._tableClause.columns, e),
+        returning: ReturningClause.internal(
+          handle,
+          _table._tableClause.columns,
+          e,
+        ),
       ),
     );
   }
@@ -227,7 +231,7 @@ final class InsertOnConflict<T extends Row> {
   /// This is equivalent to `INSERT ... ON CONFLICT (...) DO NOTHING` in SQL.
   InsertOrIgnore<T> doNothing() => InsertOrIgnore._(
     _insert._with(
-      onConflictClause: DoNothingOnConflictClause._(_conflictTarget),
+      onConflictClause: DoNothingOnConflictClause.internal(_conflictTarget),
     ),
   );
 
@@ -237,20 +241,20 @@ final class InsertOnConflict<T extends Row> {
     final table = _insert._table;
 
     final handle = Object();
-    final row = table._expressions.$1._standin(0, handle);
+    final row = table._expressions.$1.$standin(0, handle);
     final excludedHandle = Object();
-    final excluded = table._expressions.$1._standin(0, excludedHandle);
+    final excluded = table._expressions.$1.$standin(0, excludedHandle);
 
     final set = updateBuilder(row, excluded);
 
     return Upsert._(
       _insert._with(
-        onConflictClause: UpdateOnConflictClause._(
+        onConflictClause: UpdateOnConflictClause.internal(
           handle,
           _conflictTarget,
           table._tableClause,
-          ExpressionContext._(excludedHandle),
-          table._tableClause._definition.columns
+          ExpressionContext.internal(excludedHandle),
+          table._tableClause.columns
               .whereIndexed((index, value) => set._values[index] != null)
               .toList(),
           set._values.nonNulls.toList(),
@@ -379,13 +383,13 @@ final class Upsert<T extends Row> {
     final conflictClause = _insert._onConflictClause as UpdateOnConflictClause;
 
     final expr = _insert._table._expressions.$1;
-    final row = expr._standin(0, conflictClause._handle);
-    final excluded = expr._standin(0, conflictClause.excluded._handle);
+    final row = expr.$standin(0, conflictClause.$handle);
+    final excluded = expr.$standin(0, conflictClause.excluded.$handle);
 
     return UpsertConditional._(
       _insert._with(
-        onConflictClause: UpdateOnConflictClause._(
-          conflictClause._handle,
+        onConflictClause: UpdateOnConflictClause.internal(
+          conflictClause.$handle,
           conflictClause.conflictTarget,
           conflictClause.table,
           conflictClause.excluded,
@@ -497,7 +501,7 @@ final class InsertOnConflictSingle<T extends Row> {
   /// This is equivalent to `INSERT ... ON CONFLICT (...) DO NOTHING` in SQL.
   InsertOrIgnoreSingle<T> doNothing() => InsertOrIgnoreSingle._(
     _insert._with(
-      onConflictClause: DoNothingOnConflictClause._(_conflictTarget),
+      onConflictClause: DoNothingOnConflictClause.internal(_conflictTarget),
     ),
   );
 
@@ -507,20 +511,20 @@ final class InsertOnConflictSingle<T extends Row> {
     final table = _insert._table;
 
     final handle = Object();
-    final row = table._expressions.$1._standin(0, handle);
+    final row = table._expressions.$1.$standin(0, handle);
     final excludedHandle = Object();
-    final excluded = table._expressions.$1._standin(0, excludedHandle);
+    final excluded = table._expressions.$1.$standin(0, excludedHandle);
 
     final set = updateBuilder(row, excluded);
 
     return UpsertSingle._(
       _insert._with(
-        onConflictClause: UpdateOnConflictClause._(
+        onConflictClause: UpdateOnConflictClause.internal(
           handle,
           _conflictTarget,
           table._tableClause,
-          ExpressionContext._(excludedHandle),
-          table._tableClause._definition.columns
+          ExpressionContext.internal(excludedHandle),
+          table._tableClause.columns
               .whereIndexed((index, value) => set._values[index] != null)
               .toList(),
           set._values.nonNulls.toList(),
@@ -652,13 +656,13 @@ final class UpsertSingle<T extends Row> {
     final conflictClause = _insert._onConflictClause as UpdateOnConflictClause;
 
     final expr = _insert._table._expressions.$1;
-    final row = expr._standin(0, conflictClause._handle);
-    final excluded = expr._standin(0, conflictClause.excluded._handle);
+    final row = expr.$standin(0, conflictClause.$handle);
+    final excluded = expr.$standin(0, conflictClause.excluded.$handle);
 
     return UpsertConditionalSingle._(
       _insert._with(
-        onConflictClause: UpdateOnConflictClause._(
-          conflictClause._handle,
+        onConflictClause: UpdateOnConflictClause.internal(
+          conflictClause.$handle,
           conflictClause.conflictTarget,
           conflictClause.table,
           conflictClause.excluded,
@@ -722,8 +726,8 @@ final class Delete<T extends Row> {
   /// Execute this `DELETE` statement in the database.
   Future<void> execute() async => await _query._context._execute(
     _query._context._dialect.delete(
-      DeleteStatement._(
-        TableClause._(_table),
+      DeleteStatement.internal(
+        TableClause.internal(_table),
         _query._from(_query._expressions.toList()),
         null,
       ),
@@ -742,17 +746,17 @@ final class Delete<T extends Row> {
   ) {
     final handle = Object();
     final projection = projectionBuilder(
-      RowExpression._(0, _table, Object())._standin(0, handle),
+      RowExpression.internal(0, _table, Object()).$standin(0, handle),
     );
 
-    final table = TableClause._(_table);
+    final table = TableClause.internal(_table);
 
     return Return._(_query._context, projection, (e) {
       return _query._context._dialect.delete(
-        DeleteStatement._(
+        DeleteStatement.internal(
           table,
           _query._from(_query._expressions.toList()),
-          ReturningClause._(handle, table.columns, e),
+          ReturningClause.internal(handle, table.columns, e),
         ),
       );
     });

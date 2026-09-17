@@ -22,6 +22,9 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta_meta.dart';
 
 import 'adapter/adapter.dart';
+import 'ast.expr.dart';
+import 'ast.expr_types.dart';
+import 'ast.query.dart';
 import 'dialect/dialect.dart'
     show PipelinedSqlTask, ScriptSqlTask, SingleSqlTask, SqlDialect, SqlTask;
 import 'types/custom_data_type.dart' show CustomDataType;
@@ -29,13 +32,11 @@ import 'types/json_value.dart' show JsonValue;
 
 part 'typed_sql.annotations.dart';
 part 'typed_sql.database.dart';
-part 'typed_sql.expr.dart';
 part 'typed_sql.expr_ext.dart';
 part 'typed_sql.g.dart';
 part 'typed_sql.mutation.dart';
 part 'typed_sql.query.dart';
 part 'typed_sql.query_ext.dart';
-part 'typed_sql.statements.dart';
 
 /// Marker class which all schema definitions must extend.
 ///
@@ -221,7 +222,7 @@ final class $ForGeneratedCode {
     final task = dialect.createTables(
       tables
           .map(
-            (t) => CreateTableStatement._(
+            (t) => CreateTableStatement.internal(
               tableName: t.tableName,
               primaryKey: t.primaryKey,
               columns: t.columns
@@ -264,7 +265,7 @@ final class $ForGeneratedCode {
     TableDefinition<T> table,
   ) => Table._(
     context,
-    TableClause._(table),
+    TableClause.internal(table),
     table,
   );
 
@@ -274,11 +275,11 @@ final class $ForGeneratedCode {
     required List<Object? Function(S)?> mappings,
   }) => Insert._(
     table: table,
-    values: BulkValuesSource._(
+    values: BulkValuesSource.internal(
       table._tableClause.columns
           .whereIndexed((index, value) => mappings[index] != null)
           .toList(),
-      table._tableClause._definition.columnInfo
+      table._tableClause.columnInfo
           .whereIndexed((index, value) => mappings[index] != null)
           .map((c) => c.type)
           .toList(),
@@ -292,7 +293,7 @@ final class $ForGeneratedCode {
   }) => InsertSingle._(
     Insert._(
       table: table,
-      values: ExprValuesSource._(
+      values: ExprValuesSource.internal(
         table._tableClause.columns
             .whereIndexed((index, value) => values[index] != null)
             .toList(),
@@ -307,7 +308,7 @@ final class $ForGeneratedCode {
     UpdateSet<T> Function(Expr<T> row) updateBuilder,
   ) {
     final handle = Object();
-    final row = query._expressions.$1._standin(0, handle);
+    final row = query._expressions.$1.$standin(0, handle);
 
     return Update._(
       query,
@@ -325,7 +326,7 @@ final class $ForGeneratedCode {
     final q = query.asQuery;
 
     final handle = Object();
-    final row = q._expressions.$1._standin(0, handle);
+    final row = q._expressions.$1.$standin(0, handle);
 
     return UpdateSingle._(
       Update._(
@@ -354,7 +355,7 @@ final class $ForGeneratedCode {
     Expr<M> row,
     int index,
     FieldType<T> type,
-  ) => row._field(index, type);
+  ) => row.$field(index, type);
 
   static Query<S> renamedRecord<T extends Record, S extends Record>(
     Query<T> query,
@@ -371,8 +372,8 @@ final class $ForGeneratedCode {
     TableDefinition<T> table,
   ) {
     return SubQuery._(
-      (RowExpression._(0, table, Object()),),
-      (_) => TableClause._(table),
+      (RowExpression.internal(0, table, Object()),),
+      (_) => TableClause.internal(table),
     );
   }
 
@@ -389,17 +390,17 @@ final class $ForGeneratedCode {
   static CustomExprType<S, T> customDataType<S, T extends CustomDataType<S>>(
     ColumnType<S> backingType,
     T Function(S) fromDatabase,
-  ) => CustomExprType<S, T>._(backingType, fromDatabase);
+  ) => CustomExprType<S, T>.internal(backingType, fromDatabase);
 
   static Expr<T?> customDataTypeAsExpr<S, T extends CustomDataType<S>>(
     T? value,
     CustomExprType<S, T> type,
-  ) => ValueExpression<T?>._(value, type);
+  ) => ValueExpression<T?>.internal(value, type);
 
   static Expr<T?> customDataTypeAsExprLiteral<S, T extends CustomDataType<S>>(
     T? value,
     CustomExprType<S, T> type,
-  ) => LiteralExpression<T?>._(value, type);
+  ) => LiteralExpression<T?>.internal(value, type);
 
   static const ColumnType<Uint8List> blob = ColumnType.blob;
   static const ColumnType<bool> boolean = ColumnType.boolean;

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of 'typed_sql.dart';
+part of 'ast.query.dart';
 
 sealed class SqlStatement {}
 
@@ -42,7 +42,7 @@ final class CreateTableStatement extends SqlStatement {
   final List<ForeignKeyDefinition> foreignKeys;
   final List<IndexDefinition> indexes;
 
-  CreateTableStatement._({
+  CreateTableStatement.internal({
     required this.tableName,
     required this.primaryKey,
     required this.columns,
@@ -54,7 +54,7 @@ final class CreateTableStatement extends SqlStatement {
 
 final class SelectStatement extends SqlStatement {
   final QueryClause query;
-  SelectStatement._(this.query);
+  SelectStatement.internal(this.query);
 }
 
 final class InsertStatement extends SqlStatement {
@@ -63,7 +63,7 @@ final class InsertStatement extends SqlStatement {
   final ConflictClause? onConflict;
   final ReturningClause? returning;
 
-  InsertStatement._(
+  InsertStatement.internal(
     this.table,
     this.values,
     this.onConflict,
@@ -83,7 +83,7 @@ final class ExprValuesSource extends ValuesSource {
   final List<String> columns;
   final List<Expr> values;
 
-  ExprValuesSource._(this.columns, this.values);
+  ExprValuesSource.internal(this.columns, this.values);
 }
 
 /// Source of values for an [InsertStatement] that inserts multiple rows from
@@ -98,17 +98,17 @@ final class BulkValuesSource extends ValuesSource {
   /// The `j` row for `columns[i]` has the value `columnValues[i][j]`.
   final List<Iterable<Object?>> columnValues;
 
-  BulkValuesSource._(this.columns, this.types, this.columnValues);
+  BulkValuesSource.internal(this.columns, this.types, this.columnValues);
 }
 
 sealed class ConflictClause {
   final List<String> conflictTarget;
 
-  ConflictClause._(this.conflictTarget);
+  ConflictClause.internal(this.conflictTarget);
 }
 
 final class DoNothingOnConflictClause extends ConflictClause {
-  DoNothingOnConflictClause._(super.conflictTarget) : super._();
+  DoNothingOnConflictClause.internal(super.conflictTarget) : super.internal();
 }
 
 final class UpdateOnConflictClause extends ConflictClause
@@ -122,7 +122,7 @@ final class UpdateOnConflictClause extends ConflictClause
   final List<Expr> values;
   final Expr<bool?> where;
 
-  UpdateOnConflictClause._(
+  UpdateOnConflictClause.internal(
     this._handle,
     super.conflictTarget,
     this.table,
@@ -130,7 +130,7 @@ final class UpdateOnConflictClause extends ConflictClause
     this.columns,
     this.values,
     this.where,
-  ) : super._();
+  ) : super.internal();
 }
 
 final class ReturningClause implements ExpressionContext {
@@ -139,9 +139,9 @@ final class ReturningClause implements ExpressionContext {
   final List<String> columns;
   final List<Expr> _projection;
 
-  Iterable<Expr> get projection => _projection.expand((e) => e._explode());
+  Iterable<Expr> get projection => _projection.expand((e) => e.$explode());
 
-  ReturningClause._(this._handle, this.columns, this._projection);
+  ReturningClause.internal(this._handle, this.columns, this._projection);
 }
 
 final class UpdateStatement extends SqlStatement implements ExpressionContext {
@@ -153,7 +153,7 @@ final class UpdateStatement extends SqlStatement implements ExpressionContext {
   final QueryClause where;
   final ReturningClause? returning;
 
-  UpdateStatement._(
+  UpdateStatement.internal(
     this.table,
     this.columns,
     this.values,
@@ -168,5 +168,5 @@ final class DeleteStatement extends SqlStatement {
   final QueryClause where;
   final ReturningClause? returning;
 
-  DeleteStatement._(this.table, this.where, this.returning);
+  DeleteStatement.internal(this.table, this.where, this.returning);
 }
