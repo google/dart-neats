@@ -77,9 +77,35 @@ class RedisCacheProvider extends CacheProvider<List<int>> {
       ).timeout(_connectTimeLimit);
       socket.setOption(SocketOption.tcpNoDelay, true);
 
+      final client = RespClient(socket, socket);
+
+      final userInfo =
+          _connectionString.userInfo; // "user:password" or ":password"
+      if (userInfo.isNotEmpty) {
+        final List<String> parts = userInfo.split(':');
+        String? password;
+        if (parts.length == 2) {
+          // If it's user:password
+          password = parts[1];
+        } else if (parts.length == 1 && userInfo.startsWith(':')) {
+          // If it's :password
+          password = parts[0].substring(1); // Remove the leading colon
+        }
+
+        if (password != null && password.isNotEmpty) {
+          _log.info('Authenticating with Redis...');
+
+          final authResponse = await client
+              .command(['AUTH', password]).timeout(_commandTimeLimit);
+          if (authResponse != 'OK') {
+            _log.severe('Redis authentication unsuccessful.');
+          }
+        }
+      }
+
       // Create context
       return _RedisContext(
-        client: RespClient(socket, socket),
+        client: client, // Use the client after potential authentication
       );
     } on RedisConnectionException {
       throw IntermittentCacheException('connection failed');
