@@ -131,5 +131,12 @@ void main() {
       await expectLater(f, throwsA(isException));
       expect(count, equals(2));
     });
+
+    test('retry when orElse is not omitted', () async {
+      final result = await retry(() {
+        throw Exception();
+      }, orElse: (_) => 1, maxAttempts: 2);
+      expect(result, 1);
+    });
   });
 }
