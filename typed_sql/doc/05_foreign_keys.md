@@ -98,6 +98,26 @@ abstract final class Book extends Row {
 > support for composite foreign keys in the future. But in most cases, you
 > should probably avoid such constructs when possible.
 
+## Referential actions
+
+When defining a foreign key, you can specify how the database should react when the referenced row is updated or deleted. This is done using the `onDelete` and `onUpdate` parameters of the `@References` and `@ForeignKey` annotations, passing a `ReferentialAction` enum value:
+
+* `ReferentialAction.noAction`: Prevent the action, or defer the check until the end of the transaction (default).
+* `ReferentialAction.restrict`: Prevent the deletion or update of a referenced row immediately.
+* `ReferentialAction.cascade`: Delete or update the child table when the referenced row is deleted or updated.
+* `ReferentialAction.setNull`: Set the foreign key columns in the child table to `NULL`.
+* `ReferentialAction.setDefault`: Set the foreign key columns in the child table to their default values (not supported by InnoDB in MySQL/MariaDB).
+
+```dart schema_references_test.dart#book-model-actions
+  @References(
+    table: 'authors',
+    field: 'authorId',
+    onDelete: ReferentialAction.cascade,
+    onUpdate: ReferentialAction.restrict,
+  )
+  int get authorId;
+```
+
 
 ## Following references in a query (using reference `name`)
 With the `@References` annotation in place, `package:typed_sql` will use
