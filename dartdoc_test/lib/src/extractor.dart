@@ -130,10 +130,12 @@ List<DocumentationCodeSample> extractCodeSamples(DocumentationComment comment) {
       final child = element.children!.first as Element;
       // get code block only if it's a dart code block.
       // when no class is specified, it's considered as dart code block.
-      if (child.tag == 'code' &&
-          (child.attributes['class'] == 'language-dart' ||
-              child.attributes['class'] == 'language-dart#no-test' ||
-              child.attributes['class'] == null)) {
+      final className = child.attributes['class'] ?? '';
+      final isDart = className == 'language-dart' || className.isEmpty;
+      final noTest = className == 'language-dart#no-test';
+      final shouldRun = className == 'language-dart#test';
+
+      if (isDart || noTest || shouldRun) {
         var code = '';
         element.children?.accept(_ForEachText((text) {
           code += text.textContent;
@@ -142,7 +144,8 @@ List<DocumentationCodeSample> extractCodeSamples(DocumentationComment comment) {
           samples.add(DocumentationCodeSample(
             comment: comment,
             code: code,
-            noTest: child.attributes['class'] == 'language-dart#no-test',
+            noTest: noTest,
+            shouldRun: shouldRun,
           ));
         }
       }

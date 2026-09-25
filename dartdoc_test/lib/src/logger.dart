@@ -90,13 +90,24 @@ class Summary {
 
   /// Get summery from [DartdocAnalysisResult].
   factory Summary.from(List<DartdocAnalysisResult> results) {
-    final isFailed = results.indexWhere((r) => r.errors.isNotEmpty) != -1;
-    final errors =
-        results.expand((r) => r.errors).where((e) => e.commentSpan != null);
+    // Get all errors from all results
+    final allErrors = results.expand((r) => r.errors);
+
+    // Check if there are any errors at all
+    final isFailed = allErrors.isNotEmpty;
+
+    // Count only errors that have a comment span (user-facing errors)
+    final errorsWithSpan = allErrors.where((e) => e.commentSpan != null);
+
+    // Get all code samples
     final samples = results.map((r) => r.file);
+
+    // Get unique file paths
     final files =
         samples.map((s) => s.sample.comment.span.sourceUrl?.path).toSet();
-    return Summary(isFailed, errors.length, samples.length, files.length);
+
+    return Summary(
+        isFailed, errorsWithSpan.length, samples.length, files.length);
   }
 
   @override

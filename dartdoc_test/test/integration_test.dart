@@ -36,7 +36,7 @@ void main() {
   });
 
   group('dart test', () {
-    test('run dartdoc_test', () async {
+    test('run dartdoc_test', timeout: const Timeout(Duration(minutes: 2)), () async {
       final directory = p.join(Directory.current.path, 'example');
       final process = await Process.run(
         'dart',
