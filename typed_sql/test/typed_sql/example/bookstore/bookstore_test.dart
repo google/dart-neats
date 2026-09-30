@@ -685,6 +685,45 @@ void main() {
     // #endregion
   });
 
+  r.addTest('Query.pagedByKey', (db) async {
+    // #region query-pagedbykey
+    final titles = <String?>[];
+    // Fetch books ordered by primary key in pages of 2 rows.
+    await for (final book in db.books.pagedByKey(pageSize: 2)) {
+      titles.add(book.title);
+    }
+
+    check(titles).deepEquals([
+      'Are Bunnies Unhealthy?',
+      'Cooking with Chocolate Eggs',
+      'Hiding Eggs for dummies',
+      'Vegetarian Dining',
+      'Vegan Dining',
+    ]);
+    // #endregion
+  });
+
+  r.addTest('Query.pagedBy', (db) async {
+    // #region query-pagedby
+    final books = db.books.pagedBy(
+      // Order by stock, with bookId as tie-breaker to make the order unique.
+      (b) => [(b.stock, .descending), (b.bookId, .ascending)],
+      pageSize: 2,
+    );
+
+    final result = await books.map((b) => (b.title, b.stock)).toList();
+
+    check(result).deepEquals([
+      // title, stock
+      ('Vegetarian Dining', 42),
+      ('Hiding Eggs for dummies', 12),
+      ('Are Bunnies Unhealthy?', 10),
+      ('Vegan Dining', 3),
+      ('Cooking with Chocolate Eggs', 0),
+    ]);
+    // #endregion
+  });
+
   r.addTest('Query.where.orderBy.limit', (db) async {
     // #region query-where-orderby-limit
     final result = await db.books
