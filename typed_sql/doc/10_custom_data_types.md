@@ -66,6 +66,10 @@ details see [Effective Dart](https://dart.dev/effective-dart/design#equality).
 > is strongly recommended. The analyzer can help with you this if you use the
 > `@immutable` annotation from [`package:meta`](https://pub.dev/packages/meta).
 
+Loading and saving a custom type must not alter the value, that is
+`fromDatabase(v).toDatabase()` **must** return `v`. If values should be
+normalized, do so when they are created in Dart, not in `fromDatabase`.
+
 Finally, it's important to note that if your custom type implements
 `Comparable<T>` from `dart:core`, then the serialized value **should** satisfy
 this ordering! As `Expr<Comparable>` can be used for `.min` and `.max`
