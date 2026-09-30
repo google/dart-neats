@@ -367,6 +367,18 @@ enum Order {
   descending,
 }
 
+/// Alias for [Order] used by generated code, which is part of a user library
+/// that may declare a class named `Order`.
+///
+/// @nodoc
+typedef $Order = Order;
+
+/// Alias for [Stream] used by generated code, which is part of a user library
+/// that may declare a class named `Stream`.
+///
+/// @nodoc
+typedef $Stream<T> = Stream<T>;
+
 /// Fetch all rows in pages of [pageSize] using _keyset pagination_.
 ///
 /// The first page is fetched with [fetchFirstPage], unless [startFrom] is

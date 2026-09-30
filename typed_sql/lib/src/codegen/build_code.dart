@@ -938,6 +938,26 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
           );
         }),
       )
+      ..methods.addAll([
+        if (rowClass.primaryKey.every((f) => f.isOrderable))
+          _buildPagedBy(
+            rowClassName: rowClassName,
+            name: 'pagedByKey',
+            fields: rowClass.primaryKey,
+            orderedBy: 'the _primary key_',
+          ),
+        for (final uc in rowClass.uniqueConstraints)
+          if (uc.name != null && uc.fields.every((f) => f.isOrderable))
+            _buildPagedBy(
+              rowClassName: rowClassName,
+              name: 'pagedBy${upperCamelCase(uc.name!)}',
+              fields: uc.fields,
+              orderedBy: uc.fields.length == 1
+                  ? 'the unique `${uc.fields.single.name}` field'
+                  : 'the unique combination of '
+                        '${uc.fields.map((f) => '`${f.name}`').join(', ')}',
+            ),
+      ])
       ..methods.add(
         Method(
           (b) => b
@@ -1769,6 +1789,68 @@ extension on ParsedRecord {
       ).join(', ')},})';
 }
 
+/// Build a method [name] on `Query<(Expr<Row>,)>` which calls `.pagedBy`
+/// with [fields] as keys.
+///
+/// All [fields] must be `isOrderable`, and [fields] must be
+/// unique for rows in the table.
+Method _buildPagedBy({
+  required String rowClassName,
+  required String name,
+  required List<ParsedField> fields,
+  required String orderedBy,
+}) => Method(
+  (b) => b
+    ..name = name
+    ..documentation('''
+      Query the database for rows in this [Query] in pages of [pageSize]
+      rows, ordered by $orderedBy, using _keyset pagination_.
+
+      This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+      a separate query. If [startFrom] is given, only rows after [startFrom]
+      in the given [order] are returned.
+
+      > [!WARNING]
+      > Rows in this [Query] must be unique, otherwise rows may be skipped.
+      > Avoid using this on a `.join` projected to a single row or on a
+      > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+      > use `.take` on the returned [Stream].
+    ''')
+    ..returns = refer('\$Stream<$rowClassName>')
+    ..optionalParameters.addAll([
+      Parameter(
+        (b) => b
+          ..name = 'order'
+          ..named = true
+          ..type = refer(r'$Order')
+          ..defaultTo = Code(r'$Order.ascending'),
+      ),
+      Parameter(
+        (b) => b
+          ..name = 'pageSize'
+          ..named = true
+          ..type = refer('int')
+          ..defaultTo = Code('100'),
+      ),
+      Parameter(
+        (b) => b
+          ..name = 'startFrom'
+          ..named = true
+          ..type = refer('$rowClassName?'),
+      ),
+    ])
+    ..lambda = true
+    ..body = Code('''
+      pagedBy(
+        (row) => [
+          ${fields.map((f) => '(${f.orderableExpr('row')}, order)').join(', ')},
+        ],
+        pageSize: pageSize,
+        startFrom: startFrom,
+      )
+    '''),
+);
+
 typedef DialectSpecificOverride = ({
   String? dialect,
   String? columnType,
@@ -1791,6 +1873,20 @@ extension on ParsedField {
   bool get hasDefault => defaultValue != null || autoIncrement;
 
   bool get isCustomType => backingType != typeName;
+
+  /// `true`, if this field can be used for keyset pagination.
+  ///
+  /// This requires a non-nullable field, for which `Expr<T>` has both
+  /// `.orderBy` support and comparison operators like `<` and `>`. For
+  /// custom types we use `.asEncoded()`, so we only consider [backingType].
+  bool get isOrderable =>
+      !isNullable &&
+      const {'String', 'int', 'double', 'DateTime'}.contains(backingType);
+
+  /// Expression for this field on [row], which can be used in `.orderBy`
+  /// and compared with `<` and `>`, see [isOrderable].
+  String orderableExpr(String row) =>
+      isCustomType ? '$row.$name.asEncoded()' : '$row.$name';
 
   String get sqlName {
     final nameOverride = overrides.map((o) => o.name).nonNulls.lastOrNull;
