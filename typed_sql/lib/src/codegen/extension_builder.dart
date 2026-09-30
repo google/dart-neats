@@ -599,6 +599,69 @@ Iterable<Spec> _buildQueryExtension(int i) sync* {
             ..lambda = true
             ..body = Code('await stream().toList()'),
         ),
+
+        //   Stream<(A, B)> pagedBy(
+        //     List<(Expr<Comparable>, Order)> Function(Expr<A> a, Expr<B> b) keys, {
+        //     int pageSize = 100,
+        //     (A, B)? startFrom,
+        //   }) => _paged(
+        //     pageSize,
+        //     startFrom,
+        //     () => orderBy(keys).limit(pageSize).fetch(),
+        //     (last) => where((a, b) => _whereAfter(
+        //       keys(a, b),
+        //       keys(_toValueExpr(a, last.$1), _toValueExpr(b, last.$2)),
+        //     )).orderBy(keys).limit(pageSize).fetch(),
+        //   );
+        Method(
+          (b) => b
+            ..name = 'pagedBy'
+            ..documentation(docs.pagedBy)
+            ..returns = refer(
+              // Query1 return A, while Query2 returns (A, B)
+              'Stream<${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}>',
+            )
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = 'keys'
+                  ..type = refer(
+                    'List<(Expr<Comparable>, Order)> Function(${typArgedExprArgumentList(i)})',
+                  ),
+              ),
+            )
+            ..optionalParameters.addAll([
+              Parameter(
+                (b) => b
+                  ..name = 'pageSize'
+                  ..named = true
+                  ..type = refer('int')
+                  ..defaultTo = Code('100'),
+              ),
+              Parameter(
+                (b) => b
+                  ..name = 'startFrom'
+                  ..named = true
+                  ..type = refer(
+                    '${i == 1 ? typeArg[0] : '(${typeArg.take(i).join(',')})'}?',
+                  ),
+              ),
+            ])
+            ..lambda = true
+            ..body = Code('''
+                  _paged(
+                    pageSize,
+                    startFrom,
+                    () => orderBy(keys).limit(pageSize).fetch(),
+                    (last) => where(
+                      (${arg.take(i).join(',')}) => _whereAfter(
+                        keys(${arg.take(i).join(',')}),
+                        keys(${List.generate(i, (j) => '_toValueExpr(${arg[j]}, ${i == 1 ? 'last' : 'last.\$${j + 1}'})').join(',')}),
+                      ),
+                    ).orderBy(keys).limit(pageSize).fetch(),
+                  )
+                '''),
+        ),
       ]),
   );
 }

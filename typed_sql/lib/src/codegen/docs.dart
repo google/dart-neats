@@ -199,6 +199,50 @@ final fetchQuery = '''
     Query the database for rows in this [Query] as a [List].
 ''';
 
+/// Documentation for `.pagedBy` on [Query].
+final pagedBy = '''
+    Query the database for rows in this [Query] ordered by [keys], in pages
+    of [pageSize] rows, using _keyset pagination_.
+
+    The [keys] are given as for `.orderBy`, except they must be
+    non-nullable. Each page is fetched by a separate query ordered by [keys]
+    with a `LIMIT` clause. Pages after the
+    first are filtered to rows that come after the last row of the previous
+    page, when ordered by [keys]. This filter can be served by an index on
+    [keys].
+
+    If [startFrom] is given, the first page is the rows that come after
+    [startFrom]. If [startFrom] is `null`, paging starts from the first row.
+    Paging stops when a page with fewer than [pageSize] rows is returned.
+
+    **Example:** paging through `users` ordered by `created` with `id` as
+    tie-breaker.
+    ```dart
+    final users = db.users.pagedBy(
+      (u) => [(u.created, Order.ascending), (u.id, Order.ascending)],
+    );
+    await for (final user in users) {
+      // ...
+    }
+    ```
+
+    > [!WARNING]
+    > The ordering given by [keys] must be _unique_. Otherwise, rows that
+    > are equal to the last row of a page will be skipped. Always include a
+    > _primary key_ or unique column as final tie-breaker. When paging
+    > through a table, prefer `.pagedByKey`.
+
+    Values from the last row are sent back to the database, so they must
+    round-trip the database unaltered. The default data types in
+    `package:typed_sql` do, but take care when using [CustomDataType] or
+    [SqlOverride] on columns used for paging.
+
+    Unlike `.stream()`, this does not hold a database connection open while
+    rows are consumed, unless used inside a transaction. Rows inserted,
+    updated or deleted between pages may or may not be returned, depending
+    on the transaction isolation level.
+''';
+
 /// Documentation for `.fetch` on [QuerySingle].
 final fetchQuerySingle = '''
     Query the database for the row matching this [QuerySingle], if any.
