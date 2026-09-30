@@ -428,6 +428,27 @@ final _cases = [
 
   // Test for DateTime with sub-second precision
   (
+    name: '12:00:00 < 12:00:00.000001',
+    expr:
+        toExpr(DateTime.utc(2025, 1, 1, 12)) <
+        toExpr(DateTime.utc(2025, 1, 1, 12, 0, 0, 0, 1)),
+    expected: true,
+  ),
+  (
+    name: '12:00:00.100 < 12:00:00.100001',
+    expr:
+        toExpr(DateTime.utc(2025, 1, 1, 12, 0, 0, 100)) <
+        toExpr(DateTime.utc(2025, 1, 1, 12, 0, 0, 100, 1)),
+    expected: true,
+  ),
+  (
+    name: '12:00:00.100001 > 12:00:00.100',
+    expr:
+        toExpr(DateTime.utc(2025, 1, 1, 12, 0, 0, 100, 1)) >
+        toExpr(DateTime.utc(2025, 1, 1, 12, 0, 0, 100)),
+    expected: true,
+  ),
+  (
     name: '12:00:00.600 > 12:00:00.400',
     expr:
         toExpr(DateTime.utc(2025, 1, 1, 12, 0, 0, 600)) >

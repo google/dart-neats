@@ -18,6 +18,7 @@ import 'dart:typed_data' show Uint8List;
 import 'package:collection/collection.dart';
 
 import '../utils/normalize_json.dart';
+import '../utils/sqlite_datetime.dart';
 import 'dialect.dart';
 import 'shared_dialect.dart';
 
@@ -30,7 +31,7 @@ String _literal(Object? value) => switch (value) {
   int i => i.toString(),
   double d => d.toString(),
   String s => _escapeStringLiteral(s),
-  DateTime d => '\'${d.toUtc().toIso8601String()}\'',
+  DateTime d => '\'${encodeSqliteDateTime(d)}\'',
   JsonValue j =>
     'jsonb(${_escapeStringLiteral(json.encode(normalizeJson(j.value)))})',
   Uint8List b =>
@@ -636,7 +637,8 @@ extension on ExpressionResolver<SqlContext> {
     NotNullExpression<T>(:final value) => expr(value),
     final CastExpression e => 'CAST(${expr(e.value)} AS ${e.type.sqlType})',
     EncodedCustomDataTypeExpression(:final value) => expr(value),
-    CurrentTimestampExpression _ => 'strftime(\'%Y-%m-%dT%H:%M:%SZ\', \'now\')',
+    CurrentTimestampExpression _ =>
+      'strftime(\'%Y-%m-%dT%H:%M:%f000Z\', \'now\')',
     ExpressionJsonRef e => extractJsonRef(e),
     ExpressionJsonExtract(:final ExpressionJsonRef value) =>
       extractJsonRefAsText(value),
