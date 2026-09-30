@@ -66,6 +66,14 @@ final class TableDefinition<T extends Row> {
   final List<IndexDefinition> indexes;
   final T? Function(RowReader) readRow;
 
+  /// Functions for reading the value of each column from a row, one for each
+  /// entry in [columns].
+  ///
+  /// This is private, because reading a `List<Object? Function(T)>` through a
+  /// `TableDefinition<Row>` fails the runtime covariance check, use
+  /// [_readField] instead.
+  final List<Object? Function(T row)> _fieldReaders;
+
   const TableDefinition({
     required this.tableName,
     required this.columns,
@@ -75,7 +83,14 @@ final class TableDefinition<T extends Row> {
     required this.foreignKeys,
     required this.indexes,
     required this.readRow,
-  });
+    required List<Object? Function(T row)> fieldReaders,
+  }) : _fieldReaders = fieldReaders;
+
+  /// Read the value of the column at [index] from [row].
+  ///
+  /// Returns `null`, if [row] is `null`.
+  Object? _readField(Row? row, int index) =>
+      row == null ? null : _fieldReaders[index](row as T);
 }
 
 final class ColumnDefinition {
@@ -419,6 +434,7 @@ final class $ForGeneratedCode {
     required List<ForeignKeyDefinition> foreignKeys,
     required List<IndexDefinition> indexes,
     required T? Function(RowReader) readRow,
+    required List<Object? Function(T row)> fieldReaders,
   }) {
     return TableDefinition<T>(
       tableName: tableName,
@@ -429,6 +445,7 @@ final class $ForGeneratedCode {
       foreignKeys: foreignKeys,
       indexes: indexes,
       readRow: readRow,
+      fieldReaders: fieldReaders,
     );
   }
 

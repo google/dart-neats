@@ -437,6 +437,9 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
                 ''').join(', ')}
               ],
               readRow: _\$${rowClass.name}._\$fromDatabase,
+              fieldReaders: [
+                ${rowClass.fields.map((f) => '($rowClassName r) => r.${f.name}').join(', ')}
+              ],
             )
           '''),
         ),

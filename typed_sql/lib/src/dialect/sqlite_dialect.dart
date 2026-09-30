@@ -625,6 +625,9 @@ extension on ExpressionResolver<SqlContext> {
     RowExpression<Row>() => throw AssertionError(
       'RowExpression exist in a context where they are rendered',
     ),
+    RowValueExpression<Object?>() => throw AssertionError(
+      'RowValueExpression exist in a context where they are rendered',
+    ),
     ExistsExpression(:final query) => 'EXISTS (${selectExpression(query).$1})',
     SumExpression<num>(:final value) =>
       'TOTAL(${expr(value)})', // We'll need to use COALESCE(SUM(a), 0.0) in postgres!

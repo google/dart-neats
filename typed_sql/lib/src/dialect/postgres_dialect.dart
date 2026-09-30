@@ -643,6 +643,9 @@ extension on ExpressionResolver<SqlContext> {
     RowExpression<Row>() => throw AssertionError(
       'RowExpression exist in a context where they are rendered',
     ),
+    RowValueExpression<Object?>() => throw AssertionError(
+      'RowValueExpression exist in a context where they are rendered',
+    ),
     ExistsExpression(:final query) => 'EXISTS (${selectExpression(query).$1})',
     SumExpression<num>(:final value) => 'COALESCE(SUM(${expr(value)}), 0)',
     AvgExpression(:final value) => 'AVG(${expr(value)})',
