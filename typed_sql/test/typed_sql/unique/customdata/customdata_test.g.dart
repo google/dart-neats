@@ -88,6 +88,10 @@ final class _$CustomDataItem extends CustomDataItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$CustomDataItem._$fromDatabase,
+    fieldReaders: [
+      (CustomDataItem r) => r.id,
+      (CustomDataItem r) => r.stringVal,
+    ],
   );
 
   static CustomDataItem? _$fromDatabase(RowReader row) {
@@ -279,6 +283,50 @@ extension QueryCustomDataItemExt on Query<(Expr<CustomDataItem>,)> {
       stringVal.toDatabase(),
     ),
   ).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<CustomDataItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    CustomDataItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id.asEncoded(), order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `stringVal` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<CustomDataItem> pagedByStringVal({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    CustomDataItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.stringVal.asEncoded(), order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `customDataItems` table matching this [Query].
   ///

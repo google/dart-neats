@@ -242,4 +242,43 @@ void main() {
       '`Unique()` annotation references unknown field "noSuchField"',
     ),
   );
+
+  testCodeGeneration(
+    name: 'Unique.field() on a field named key conflicts with byKey',
+    source: r'''
+      abstract final class BankVault extends Schema {
+        Table<Account> get accounts;
+      }
+
+      @PrimaryKey(['accountId'])
+      abstract final class Account extends Row {
+        int get accountId;
+
+        @Unique.field()
+        String get key;
+      }
+    ''',
+    error: (s) => s.contains(
+      '`Unique.field(name: "key")`: name conflicts with `byKey`',
+    ),
+  );
+
+  testCodeGeneration(
+    name: 'Unique(name: "key") conflicts with byKey',
+    source: r'''
+      abstract final class BankVault extends Schema {
+        Table<Account> get accounts;
+      }
+
+      @PrimaryKey(['accountId'])
+      @Unique(name: 'key', fields: ['accountNumber'])
+      abstract final class Account extends Row {
+        int get accountId;
+        String get accountNumber;
+      }
+    ''',
+    error: (s) => s.contains(
+      '`Unique(name: "key")`: name conflicts with `byKey`',
+    ),
+  );
 }

@@ -137,6 +137,15 @@ final class _$ComplexMappedItem extends ComplexMappedItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$ComplexMappedItem._$fromDatabase,
+    fieldReaders: [
+      (ComplexMappedItem r) => r.id,
+      (ComplexMappedItem r) => r.s,
+      (ComplexMappedItem r) => r.dt,
+      (ComplexMappedItem r) => r.blob,
+      (ComplexMappedItem r) => r.custom,
+      (ComplexMappedItem r) => r.i,
+      (ComplexMappedItem r) => r.json,
+    ],
   );
 
   static ComplexMappedItem? _$fromDatabase(RowReader row) {
@@ -410,6 +419,28 @@ extension QueryComplexMappedItemExt on Query<(Expr<ComplexMappedItem>,)> {
         json,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<ComplexMappedItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    ComplexMappedItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `complexMappedItems` table matching this [Query].

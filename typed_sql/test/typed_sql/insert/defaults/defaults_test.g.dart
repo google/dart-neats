@@ -148,6 +148,16 @@ final class _$DefaultsItem extends DefaultsItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$DefaultsItem._$fromDatabase,
+    fieldReaders: [
+      (DefaultsItem r) => r.id,
+      (DefaultsItem r) => r.b,
+      (DefaultsItem r) => r.i,
+      (DefaultsItem r) => r.d,
+      (DefaultsItem r) => r.s,
+      (DefaultsItem r) => r.dtNow,
+      (DefaultsItem r) => r.dtEpoch,
+      (DefaultsItem r) => r.json,
+    ],
   );
 
   static DefaultsItem? _$fromDatabase(RowReader row) {
@@ -433,6 +443,28 @@ extension QueryDefaultsItemExt on Query<(Expr<DefaultsItem>,)> {
         json,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<DefaultsItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    DefaultsItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `defaultsItems` table matching this [Query].

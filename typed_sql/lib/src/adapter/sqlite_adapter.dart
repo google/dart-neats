@@ -20,6 +20,7 @@ import 'package:sqlite3/sqlite3.dart';
 import '../types/json_value.dart' show JsonValue;
 import '../utils/normalize_json.dart' show normalizeJson;
 import '../utils/notifier.dart';
+import '../utils/sqlite_datetime.dart';
 import 'adapter.dart';
 
 DatabaseAdapter sqlite3Adapter(Uri uri) => _SqliteDatabaseAdapter(uri);
@@ -502,7 +503,7 @@ final class _SqliteRowReader extends RowReader {
 List<Object?> _paramsForSqlite(List<Object?> params) => params
     .map(
       (p) => switch (p) {
-        DateTime d => d.toUtc().toIso8601String(),
+        DateTime d => encodeSqliteDateTime(d),
         String s => s,
         null => null,
         bool b => b,

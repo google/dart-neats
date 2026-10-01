@@ -156,6 +156,13 @@ final class _$SnakeUser extends SnakeUser {
       ),
     ],
     readRow: _$SnakeUser._$fromDatabase,
+    fieldReaders: [
+      (SnakeUser r) => r.userId,
+      (SnakeUser r) => r.firstName,
+      (SnakeUser r) => r.lastName,
+      (SnakeUser r) => r.emailAddress,
+      (SnakeUser r) => r.favoriteColor,
+    ],
   );
 
   static SnakeUser? _$fromDatabase(RowReader row) {
@@ -424,6 +431,50 @@ extension QuerySnakeUserExt on Query<(Expr<SnakeUser>,)> {
   QuerySingle<(Expr<SnakeUser>,)> byEmailAddress(String emailAddress) => where(
     (snakeUser) => snakeUser.emailAddress.equalsValue(emailAddress),
   ).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<SnakeUser> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    SnakeUser? startFrom,
+  }) => pagedBy(
+    (row) => [(row.userId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `emailAddress` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<SnakeUser> pagedByEmailAddress({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    SnakeUser? startFrom,
+  }) => pagedBy(
+    (row) => [(row.emailAddress, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `snakeUsers` table matching this [Query].
   ///
@@ -847,6 +898,11 @@ final class _$SnakeProfile extends SnakeProfile {
     ],
     indexes: [],
     readRow: _$SnakeProfile._$fromDatabase,
+    fieldReaders: [
+      (SnakeProfile r) => r.profileId,
+      (SnakeProfile r) => r.userRefId,
+      (SnakeProfile r) => r.profileType,
+    ],
   );
 
   static SnakeProfile? _$fromDatabase(RowReader row) {
@@ -1065,6 +1121,50 @@ extension QuerySnakeProfileExt on Query<(Expr<SnakeProfile>,)> {
   QuerySingle<(Expr<SnakeProfile>,)> byProfileType(String profileType) => where(
     (snakeProfile) => snakeProfile.profileType.equalsValue(profileType),
   ).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<SnakeProfile> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    SnakeProfile? startFrom,
+  }) => pagedBy(
+    (row) => [(row.profileId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `profileType` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<SnakeProfile> pagedByProfileType({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    SnakeProfile? startFrom,
+  }) => pagedBy(
+    (row) => [(row.profileType, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `snakeProfiles` table matching this [Query].
   ///

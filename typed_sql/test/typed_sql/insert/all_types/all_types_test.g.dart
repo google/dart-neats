@@ -337,6 +337,31 @@ final class _$AllTypesItem extends AllTypesItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$AllTypesItem._$fromDatabase,
+    fieldReaders: [
+      (AllTypesItem r) => r.id,
+      (AllTypesItem r) => r.b,
+      (AllTypesItem r) => r.i,
+      (AllTypesItem r) => r.d,
+      (AllTypesItem r) => r.s,
+      (AllTypesItem r) => r.dt,
+      (AllTypesItem r) => r.blob,
+      (AllTypesItem r) => r.json,
+      (AllTypesItem r) => r.custom,
+      (AllTypesItem r) => r.nb,
+      (AllTypesItem r) => r.ni,
+      (AllTypesItem r) => r.nd,
+      (AllTypesItem r) => r.ns,
+      (AllTypesItem r) => r.ndt,
+      (AllTypesItem r) => r.nblob,
+      (AllTypesItem r) => r.njson,
+      (AllTypesItem r) => r.ncustom,
+      (AllTypesItem r) => r.db,
+      (AllTypesItem r) => r.di,
+      (AllTypesItem r) => r.dd,
+      (AllTypesItem r) => r.ds,
+      (AllTypesItem r) => r.ddt,
+      (AllTypesItem r) => r.djson,
+    ],
   );
 
   static AllTypesItem? _$fromDatabase(RowReader row) {
@@ -925,6 +950,28 @@ extension QueryAllTypesItemExt on Query<(Expr<AllTypesItem>,)> {
         djson,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<AllTypesItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    AllTypesItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `allTypesItems` table matching this [Query].

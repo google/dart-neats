@@ -27,6 +27,7 @@ import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../types/json_value.dart' show JsonValue;
+import '../utils/camelcase.dart';
 import 'analyzer_utils.dart';
 import 'parsed_default_value.dart';
 import 'parsed_library.dart';
@@ -562,6 +563,15 @@ Future<ParsedRowClass> _parseRowClass(
         );
       }
 
+      if (upperCamelCase(name) == 'Key') {
+        await throwInvalidAnnotationInSource(
+          '`Unique.field(name: "$name")`: name conflicts with `byKey` for the '
+          'primary key, specify a different name',
+          annotatedElement: a,
+          annotation: elementAnnotation,
+        );
+      }
+
       uniqueConstraints.add(
         ParsedUniqueConstraint(
           name: name == '-' ? null : name,
@@ -593,6 +603,15 @@ Future<ParsedRowClass> _parseRowClass(
     if (name != '-' && !isValidIdentifier(name)) {
       await throwInvalidAnnotationInSource(
         '`Unique(name: "$name")`: name is not a valid Dart identifier',
+        annotatedElement: cls,
+        annotation: ea,
+      );
+    }
+
+    if (upperCamelCase(name) == 'Key') {
+      await throwInvalidAnnotationInSource(
+        '`Unique(name: "$name")`: name conflicts with `byKey` for the '
+        'primary key, specify a different name',
         annotatedElement: cls,
         annotation: ea,
       );

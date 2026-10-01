@@ -81,6 +81,7 @@ final class _$CustomTypeItem extends CustomTypeItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$CustomTypeItem._$fromDatabase,
+    fieldReaders: [(CustomTypeItem r) => r.id, (CustomTypeItem r) => r.value],
   );
 
   static CustomTypeItem? _$fromDatabase(RowReader row) {
@@ -264,6 +265,50 @@ extension QueryCustomTypeItemExt on Query<(Expr<CustomTypeItem>,)> {
     (customTypeItem) =>
         customTypeItem.value.asEncoded().equalsValue(value.toDatabase()),
   ).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<CustomTypeItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    CustomTypeItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `value` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<CustomTypeItem> pagedByValue({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    CustomTypeItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.value.asEncoded(), order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `customTypeItems` table matching this [Query].
   ///

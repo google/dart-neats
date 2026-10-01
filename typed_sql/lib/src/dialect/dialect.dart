@@ -93,6 +93,7 @@ export '../typed_sql.dart'
         QueryClause,
         Row,
         RowExpression,
+        RowValueExpression,
         SelectClause,
         SelectFromClause,
         SelectStatement,

@@ -104,6 +104,12 @@ final class _$Car extends Car {
     foreignKeys: [],
     indexes: [],
     readRow: _$Car._$fromDatabase,
+    fieldReaders: [
+      (Car r) => r.id,
+      (Car r) => r.model,
+      (Car r) => r.licensePlate,
+      (Car r) => r.color,
+    ],
   );
 
   static Car? _$fromDatabase(RowReader row) {
@@ -326,6 +332,50 @@ extension QueryCarExt on Query<(Expr<Car>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Car>,)> byLicensePlate(String licensePlate) =>
       where((car) => car.licensePlate.equalsValue(licensePlate)).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Car> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Car? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `licensePlate` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Car> pagedByLicensePlate({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Car? startFrom,
+  }) => pagedBy(
+    (row) => [(row.licensePlate, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `cars` table matching this [Query].
   ///

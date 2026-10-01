@@ -367,6 +367,90 @@ enum Order {
   descending,
 }
 
+/// Alias for [Order] used by generated code, which is part of a user library
+/// that may declare a class named `Order`.
+///
+/// @nodoc
+typedef $Order = Order;
+
+/// Alias for [Stream] used by generated code, which is part of a user library
+/// that may declare a class named `Stream`.
+///
+/// @nodoc
+typedef $Stream<T> = Stream<T>;
+
+/// Fetch all rows in pages of [pageSize] using _keyset pagination_.
+///
+/// The first page is fetched with [fetchFirstPage], unless [startFrom] is
+/// given, in which case [fetchNextPage] is used for the first page too.
+/// Subsequent pages are fetched with [fetchNextPage] given the last row from
+/// the previous page. Pagination stops when a page has fewer than [pageSize]
+/// rows.
+///
+/// This powers the generated `.pagedBy` methods on [Query].
+Stream<T> _paged<T>(
+  int pageSize,
+  T? startFrom,
+  Future<List<T>> Function() fetchFirstPage,
+  Future<List<T>> Function(T last) fetchNextPage,
+) {
+  // Check pageSize synchronously, so errors are thrown at the call site.
+  if (pageSize < 1) {
+    throw RangeError.range(pageSize, 1, null, 'pageSize');
+  }
+
+  return () async* {
+    var page = await (startFrom == null
+        ? fetchFirstPage()
+        : fetchNextPage(startFrom));
+    while (true) {
+      for (final row in page) {
+        yield row;
+      }
+      if (page.length < pageSize) {
+        return;
+      }
+      page = await fetchNextPage(page.last);
+    }
+  }();
+}
+
+/// Condition that [row] comes after [last] when ordered by the keys.
+///
+/// [row] and [last] are the same ordering keys, built from the row being
+/// filtered and from the last row of the previous page, respectively.
+///
+/// For keys `(x, ascending), (y, descending)` this produces:
+///
+/// ```sql
+/// x >= lastX AND (x > lastX OR y < lastY)
+/// ```
+///
+/// The leading `x >= lastX` is redundant, but allows the database to use an
+/// index on `x` to seek directly to the next page.
+Expr<bool> _whereAfter(
+  List<(Expr<Comparable>, Order)> row,
+  List<(Expr<Comparable>, Order)> last, [
+  int i = 0,
+]) {
+  final (a, order) = row[i];
+  final (b, _) = last[i];
+  final (after, afterOrEqual) = switch (order) {
+    Order.ascending => (
+      ExpressionGreaterThan(a, b),
+      ExpressionGreaterThanOrEqual(a, b),
+    ),
+    Order.descending => (
+      ExpressionLessThan(a, b),
+      ExpressionLessThanOrEqual(a, b),
+    ),
+  };
+  if (i == row.length - 1) {
+    return after;
+  }
+  return afterOrEqual & (after | _whereAfter(row, last, i + 1));
+}
+
 final class JoinClause extends FromClause implements ExpressionContext {
   @override
   final Object _handle;
