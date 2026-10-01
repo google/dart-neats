@@ -1,25 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'group_by_reference_test.dart';
+part of 'paged_by_order_class_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-/// Extension methods for a [Database] operating on [Bookstore].
-extension BookstoreSchema on Database<Bookstore> {
-  static final _$tables = [_$Author._$table, _$Book._$table];
+/// Extension methods for a [Database] operating on [TestDatabase].
+extension TestDatabaseSchema on Database<TestDatabase> {
+  static final _$tables = [_$Order._$table, _$Stream._$table];
 
-  Table<Author> get authors =>
-      $ForGeneratedCode.declareTable(this, _$Author._$table);
+  Table<Order> get orders =>
+      $ForGeneratedCode.declareTable(this, _$Order._$table);
 
-  Table<Book> get books => $ForGeneratedCode.declareTable(this, _$Book._$table);
+  Table<Stream> get streams =>
+      $ForGeneratedCode.declareTable(this, _$Stream._$table);
 
-  /// Create tables defined in [Bookstore].
+  /// Create tables defined in [TestDatabase].
   ///
   /// Calling this on an empty database will create the tables
-  /// defined in [Bookstore]. In production it's often better to
-  /// use [createBookstoreTables] and manage migrations using
+  /// defined in [TestDatabase]. In production it's often better to
+  /// use [createTestDatabaseTables] and manage migrations using
   /// external tools.
   ///
   /// This method is mostly useful for testing.
@@ -31,123 +32,127 @@ extension BookstoreSchema on Database<Bookstore> {
       $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
-/// Get SQL [DDL statements][1] for tables defined in [Bookstore].
+/// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
 ///
 /// This returns a SQL script with multiple DDL statements separated by `;`
 /// using the specified [dialect].
 ///
 /// Executing these statements in an empty database will create the tables
-/// defined in [Bookstore]. In practice, this method is often used for
+/// defined in [TestDatabase]. In practice, this method is often used for
 /// printing the DDL statements, such that migrations can be managed by
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBookstoreTables(SqlDialect dialect) => $ForGeneratedCode
-    .createTableSchema(dialect: dialect, tables: BookstoreSchema._$tables);
+String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
-final class _$Author extends Author {
-  _$Author._(this.authorId, this.name);
-
-  @override
-  final int authorId;
+final class _$Order extends Order {
+  _$Order._(this.orderId, this.quantity);
 
   @override
-  final String name;
+  final int orderId;
+
+  @override
+  final int quantity;
 
   static final _$table = $ForGeneratedCode.tableDefinition(
-    tableName: 'authors',
-    columns: <String>['authorId', 'name'],
+    tableName: 'orders',
+    columns: <String>['orderId', 'quantity'],
     columnInfo: [
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
-        autoIncrement: true,
+        autoIncrement: false,
         overrides: [],
       ),
       $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.text,
+        type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
         overrides: [],
       ),
     ],
-    primaryKey: <String>['authorId'],
+    primaryKey: <String>['orderId'],
     unique: <List<String>>[],
     foreignKeys: [],
     indexes: [],
-    readRow: _$Author._$fromDatabase,
-    fieldReaders: [(Author r) => r.authorId, (Author r) => r.name],
+    readRow: _$Order._$fromDatabase,
+    fieldReaders: [(Order r) => r.orderId, (Order r) => r.quantity],
   );
 
-  static Author? _$fromDatabase(RowReader row) {
-    final authorId = row.readInt();
-    final name = row.readString();
-    if (authorId == null && name == null) {
+  static Order? _$fromDatabase(RowReader row) {
+    final orderId = row.readInt();
+    final quantity = row.readInt();
+    if (orderId == null && quantity == null) {
       return null;
     }
-    return _$Author._(authorId!, name!);
+    return _$Order._(orderId!, quantity!);
   }
 
   @override
-  String toString() => 'Author(authorId: "$authorId", name: "$name")';
+  String toString() => 'Order(orderId: "$orderId", quantity: "$quantity")';
 }
 
-/// Extension methods for table defined in [Author].
-extension TableAuthorExt on Table<Author> {
-  /// Insert row into the `authors` table.
+/// Extension methods for table defined in [Order].
+extension TableOrderExt on Table<Order> {
+  /// Insert row into the `orders` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Author> insert({
-    Expr<int>? authorId,
-    required Expr<String> name,
-  }) => $ForGeneratedCode.insertInto(table: this, values: [authorId, name]);
+  InsertSingle<Order> insert({
+    required Expr<int> orderId,
+    required Expr<int> quantity,
+  }) => $ForGeneratedCode.insertInto(table: this, values: [orderId, quantity]);
 
-  /// Insert row into the `authors` table, or update the
+  /// Insert row into the `orders` table, or update the
   /// existing row if it conflicts with the _primary key_.
   ///
   /// This is a shorthand for calling `.insert(...)` followed by
   /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
-  /// the fields `name`,
+  /// the fields `quantity`,
   /// with the values given, leaving the _primary key_ untouched.
   ///
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
-  UpsertSingle<Author> upsert({
-    Expr<int>? authorId,
-    required Expr<String> name,
-  }) => insert(authorId: authorId, name: name)
+  UpsertSingle<Order> upsert({
+    required Expr<int> orderId,
+    required Expr<int> quantity,
+  }) => insert(orderId: orderId, quantity: quantity)
       .onConflict(.primaryKey)
-      .update((_, excluded, set) => set(name: excluded.name));
+      .update((_, excluded, set) => set(quantity: excluded.quantity));
 
-  /// Insert row into the `authors` table.
+  /// Insert row into the `orders` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Author> insertValue({int? authorId, required String name}) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [authorId?.asExpr, name.asExpr],
-      );
+  InsertSingle<Order> insertValue({
+    required int orderId,
+    required int quantity,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [orderId.asExpr, quantity.asExpr],
+  );
 
-  /// Insert row into the `authors` table, or update the
+  /// Insert row into the `orders` table, or update the
   /// existing row if it conflicts with the _primary key_.
   ///
   /// This is a shorthand for calling `.insertValue(...)` followed by
   /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
-  /// the fields `name`,
+  /// the fields `quantity`,
   /// with the values given, leaving the _primary key_ untouched.
   ///
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
-  UpsertSingle<Author> upsertValue({int? authorId, required String name}) =>
-      insertValue(authorId: authorId, name: name)
-          .onConflict(.primaryKey)
-          .update((_, excluded, set) => set(name: excluded.name));
+  UpsertSingle<Order> upsertValue({
+    required int orderId,
+    required int quantity,
+  }) => insertValue(orderId: orderId, quantity: quantity)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(quantity: excluded.quantity));
 
-  /// Bulk insert rows into the `authors` table.
+  /// Bulk insert rows into the `orders` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
   /// a _mapping function_ from `T` to each column to be inserted.
@@ -164,17 +169,17 @@ extension TableAuthorExt on Table<Author> {
   ///
   /// Returns a [Insert] statement on which `.execute` must be
   /// called for the rows to be inserted.
-  Insert<Author> insertValuesMapped<T>(
+  Insert<Order> insertValuesMapped<T>(
     Iterable<T> rows, {
-    int Function(T row)? authorId,
-    required String Function(T row) name,
+    required int Function(T row) orderId,
+    required int Function(T row) quantity,
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mappings: [authorId, name],
+    mappings: [orderId, quantity],
   );
 
-  /// Delete a single row from the `authors` table, specified by
+  /// Delete a single row from the `orders` table, specified by
   /// _primary key_.
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be
@@ -183,20 +188,20 @@ extension TableAuthorExt on Table<Author> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Author> delete(int authorId) =>
-      $ForGeneratedCode.deleteSingle(byKey(authorId), _$Author._$table);
+  DeleteSingle<Order> delete(int orderId) =>
+      $ForGeneratedCode.deleteSingle(byKey(orderId), _$Order._$table);
 }
 
-/// Extension methods for building queries against the `authors` table.
-extension QueryAuthorExt on Query<(Expr<Author>,)> {
-  /// Lookup a single row in `authors` table using the _primary key_.
+/// Extension methods for building queries against the `orders` table.
+extension QueryOrderExt on Query<(Expr<Order>,)> {
+  /// Lookup a single row in `orders` table using the _primary key_.
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Author>,)> byKey(int authorId) =>
-      where((author) => author.authorId.equalsValue(authorId)).first;
+  QuerySingle<(Expr<Order>,)> byKey(int orderId) =>
+      where((order) => order.orderId.equalsValue(orderId)).first;
 
-  /// Update all rows in the `authors` table matching this [Query].
+  /// Update all rows in the `orders` table matching this [Query].
   ///
   /// The changes to be applied to each row matching this [Query] are
   /// defined using the [updateBuilder], which is given an [Expr]
@@ -223,19 +228,19 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Author> update(
-    UpdateSet<Author> Function(
-      Expr<Author> author,
-      UpdateSet<Author> Function({Expr<int> authorId, Expr<String> name}) set,
+  Update<Order> update(
+    UpdateSet<Order> Function(
+      Expr<Order> order,
+      UpdateSet<Order> Function({Expr<int> orderId, Expr<int> quantity}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.update<Author>(
+  ) => $ForGeneratedCode.update<Order>(
     this,
-    _$Author._$table,
-    (author) => updateBuilder(
-      author,
-      ({Expr<int>? authorId, Expr<String>? name}) =>
-          $ForGeneratedCode.buildUpdate<Author>([authorId, name]),
+    _$Order._$table,
+    (order) => updateBuilder(
+      order,
+      ({Expr<int>? orderId, Expr<int>? quantity}) =>
+          $ForGeneratedCode.buildUpdate<Order>([orderId, quantity]),
     ),
   );
 
@@ -251,26 +256,26 @@ extension QueryAuthorExt on Query<(Expr<Author>,)> {
   /// > Avoid using this on a `.join` projected to a single row or on a
   /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
   /// > use `.take` on the returned [Stream].
-  $Stream<Author> pagedByKey({
+  $Stream<Order> pagedByKey({
     $Order order = $Order.ascending,
     int pageSize = 100,
-    Author? startFrom,
+    Order? startFrom,
   }) => pagedBy(
-    (row) => [(row.authorId, order)],
+    (row) => [(row.orderId, order)],
     pageSize: pageSize,
     startFrom: startFrom,
   );
 
-  /// Delete all rows in the `authors` table matching this [Query].
+  /// Delete all rows in the `orders` table matching this [Query].
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Author> delete() => $ForGeneratedCode.delete(this, _$Author._$table);
+  Delete<Order> delete() => $ForGeneratedCode.delete(this, _$Order._$table);
 }
 
-/// Extension methods for building point queries against the `authors` table.
-extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
-  /// Update the row (if any) in the `authors` table matching this
+/// Extension methods for building point queries against the `orders` table.
+extension QuerySingleOrderExt on QuerySingle<(Expr<Order>,)> {
+  /// Update the row (if any) in the `orders` table matching this
   /// [QuerySingle].
   ///
   /// The changes to be applied to the row matching this [QuerySingle] are
@@ -299,70 +304,46 @@ extension QuerySingleAuthorExt on QuerySingle<(Expr<Author>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  UpdateSingle<Author> update(
-    UpdateSet<Author> Function(
-      Expr<Author> author,
-      UpdateSet<Author> Function({Expr<int> authorId, Expr<String> name}) set,
+  UpdateSingle<Order> update(
+    UpdateSet<Order> Function(
+      Expr<Order> order,
+      UpdateSet<Order> Function({Expr<int> orderId, Expr<int> quantity}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateSingle<Author>(
+  ) => $ForGeneratedCode.updateSingle<Order>(
     this,
-    _$Author._$table,
-    (author) => updateBuilder(
-      author,
-      ({Expr<int>? authorId, Expr<String>? name}) =>
-          $ForGeneratedCode.buildUpdate<Author>([authorId, name]),
+    _$Order._$table,
+    (order) => updateBuilder(
+      order,
+      ({Expr<int>? orderId, Expr<int>? quantity}) =>
+          $ForGeneratedCode.buildUpdate<Order>([orderId, quantity]),
     ),
   );
 
-  /// Delete the row (if any) in the `authors` table matching this [QuerySingle].
+  /// Delete the row (if any) in the `orders` table matching this [QuerySingle].
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be called
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
-  DeleteSingle<Author> delete() =>
-      $ForGeneratedCode.deleteSingle(this, _$Author._$table);
+  DeleteSingle<Order> delete() =>
+      $ForGeneratedCode.deleteSingle(this, _$Order._$table);
 }
 
-/// Extension methods for expressions on a row in the `authors` table.
-extension ExpressionAuthorExt on Expr<Author> {
-  Expr<int> get authorId =>
+/// Extension methods for expressions on a row in the `orders` table.
+extension ExpressionOrderExt on Expr<Order> {
+  Expr<int> get orderId =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String> get name =>
-      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  /// Get [SubQuery] of rows from the `books` table which
-  /// reference this row.
-  ///
-  /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId]
-  /// references [Author.authorId]
-  /// in this row.
-  SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
-      .subqueryTable(_$Book._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId));
+  Expr<int> get quantity =>
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.integer);
 }
 
-extension ExpressionNullableAuthorExt on Expr<Author?> {
-  Expr<int?> get authorId =>
+extension ExpressionNullableOrderExt on Expr<Order?> {
+  Expr<int?> get orderId =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String?> get name =>
-      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  /// Get [SubQuery] of rows from the `books` table which
-  /// reference this row.
-  ///
-  /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId]
-  /// references [Author.authorId]
-  /// in this row, if any.
-  ///
-  /// If this row is `NULL` the subquery is always be empty.
-  SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
-      .subqueryTable(_$Book._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId));
+  Expr<int?> get quantity =>
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.integer);
 
   /// Check if the row is not `NULL`.
   ///
@@ -370,7 +351,7 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   ///
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
-  Expr<bool> isNotNull() => authorId.isNotNull();
+  Expr<bool> isNotNull() => orderId.isNotNull();
 
   /// Check if the row is `NULL`.
   ///
@@ -381,44 +362,20 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
-extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Author.authorId] = [Book.authorId].
-  Query<(Expr<Author>, Expr<Book>)> usingAuthor() =>
-      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
-}
-
-extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Author.authorId] = [Book.authorId].
-  Query<(Expr<Author>, Expr<Book?>)> usingAuthor() =>
-      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
-}
-
-extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Author.authorId] = [Book.authorId].
-  Query<(Expr<Author?>, Expr<Book>)> usingAuthor() =>
-      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
-}
-
-/// `Table<Author>` conflict targets for use with `.onConflict`.
-enum AuthorConflict {
+/// `Table<Order>` conflict targets for use with `.onConflict`.
+enum OrderConflict {
   /// Conflict with an existing row that has a matching primary key.
   ///
   /// Thus, the other row has matching values for:
-  /// `authorId`.
-  primaryKey(['authorId']);
+  /// `orderId`.
+  primaryKey(['orderId']);
 
-  const AuthorConflict(this._fields);
+  const OrderConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertAuthorExt on Insert<Author> {
+extension InsertOrderExt on Insert<Order> {
   /// Build an `INSERT` statement with an `ON CONFLICT` clause.
   ///
   /// The [target] argument specifies the _conflict target_ to be
@@ -428,7 +385,7 @@ extension InsertAuthorExt on Insert<Author> {
   /// If a row to be inserted violates the _conflict target_ constraint,
   /// then the conflict action is triggered:
   /// * `.doNothing()` to skip insertion of the new row, and,
-  /// * `.update((author, excluded, set) => set(...))` to
+  /// * `.update((order, excluded, set) => set(...))` to
   ///   update the conflicting row.
   ///
   /// If a row to be inserted violates a constraint other than the one
@@ -436,18 +393,18 @@ extension InsertAuthorExt on Insert<Author> {
   /// will fail.
   ///
   /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
-  InsertOnConflict<Author> onConflict(AuthorConflict target) =>
+  InsertOnConflict<Order> onConflict(OrderConflict target) =>
       $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictAuthorExt on InsertOnConflict<Author> {
+extension InsertOnConflictOrderExt on InsertOnConflict<Order> {
   /// Build an `INSERT` statement an [upsert-clause][1].
   ///
   /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
   /// constraint previously specified as _conflict target_, the existing
   /// row is updated using the expressions defined with the
   /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
-  ///   * `author` an [Expr] representing the existing row in
+  ///   * `order` an [Expr] representing the existing row in
   ///     the database,
   ///   * `excluded` an [Expr] representing the row to be inserted in the
   ///     database, and,
@@ -481,25 +438,25 @@ extension InsertOnConflictAuthorExt on InsertOnConflict<Author> {
   /// > be returned immediately.
   ///
   /// [1]: https://www.sqlite.org/lang_upsert.html
-  Upsert<Author> update(
-    UpdateSet<Author> Function(
-      Expr<Author> author,
-      Expr<Author> excluded,
-      UpdateSet<Author> Function({Expr<int> authorId, Expr<String> name}) set,
+  Upsert<Order> update(
+    UpdateSet<Order> Function(
+      Expr<Order> order,
+      Expr<Order> excluded,
+      UpdateSet<Order> Function({Expr<int> orderId, Expr<int> quantity}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateOnConflict<Author>(
+  ) => $ForGeneratedCode.updateOnConflict<Order>(
     this,
-    (author, excluded) => updateBuilder(
-      author,
+    (order, excluded) => updateBuilder(
+      order,
       excluded,
-      ({Expr<int>? authorId, Expr<String>? name}) =>
-          $ForGeneratedCode.buildUpdate<Author>([authorId, name]),
+      ({Expr<int>? orderId, Expr<int>? quantity}) =>
+          $ForGeneratedCode.buildUpdate<Order>([orderId, quantity]),
     ),
   );
 }
 
-extension InsertSingleAuthorExt on InsertSingle<Author> {
+extension InsertSingleOrderExt on InsertSingle<Order> {
   /// Build an `INSERT` statement with an `ON CONFLICT` clause.
   ///
   /// The [target] argument specifies the _conflict target_ to be
@@ -509,7 +466,7 @@ extension InsertSingleAuthorExt on InsertSingle<Author> {
   /// If a row to be inserted violates the _conflict target_ constraint,
   /// then the conflict action is triggered:
   /// * `.doNothing()` to skip insertion of the new row, and,
-  /// * `.update((author, excluded, set) => set(...))` to
+  /// * `.update((order, excluded, set) => set(...))` to
   ///   update the conflicting row.
   ///
   /// If a row to be inserted violates a constraint other than the one
@@ -517,18 +474,18 @@ extension InsertSingleAuthorExt on InsertSingle<Author> {
   /// will fail.
   ///
   /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
-  InsertOnConflictSingle<Author> onConflict(AuthorConflict target) =>
+  InsertOnConflictSingle<Order> onConflict(OrderConflict target) =>
       $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
 }
 
-extension InsertOnConflictSingleAuthorExt on InsertOnConflictSingle<Author> {
+extension InsertOnConflictSingleOrderExt on InsertOnConflictSingle<Order> {
   /// Build an `INSERT` statement an [upsert-clause][1].
   ///
   /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
   /// constraint previously specified as _conflict target_, the existing
   /// row is updated using the expressions defined with the
   /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
-  ///   * `author` an [Expr] representing the existing row in
+  ///   * `order` an [Expr] representing the existing row in
   ///     the database,
   ///   * `excluded` an [Expr] representing the row to be inserted in the
   ///     database, and,
@@ -562,61 +519,41 @@ extension InsertOnConflictSingleAuthorExt on InsertOnConflictSingle<Author> {
   /// > be returned immediately.
   ///
   /// [1]: https://www.sqlite.org/lang_upsert.html
-  UpsertSingle<Author> update(
-    UpdateSet<Author> Function(
-      Expr<Author> author,
-      Expr<Author> excluded,
-      UpdateSet<Author> Function({Expr<int> authorId, Expr<String> name}) set,
+  UpsertSingle<Order> update(
+    UpdateSet<Order> Function(
+      Expr<Order> order,
+      Expr<Order> excluded,
+      UpdateSet<Order> Function({Expr<int> orderId, Expr<int> quantity}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateOnConflictSingle<Author>(
+  ) => $ForGeneratedCode.updateOnConflictSingle<Order>(
     this,
-    (author, excluded) => updateBuilder(
-      author,
+    (order, excluded) => updateBuilder(
+      order,
       excluded,
-      ({Expr<int>? authorId, Expr<String>? name}) =>
-          $ForGeneratedCode.buildUpdate<Author>([authorId, name]),
+      ({Expr<int>? orderId, Expr<int>? quantity}) =>
+          $ForGeneratedCode.buildUpdate<Order>([orderId, quantity]),
     ),
   );
 }
 
-final class _$Book extends Book {
-  _$Book._(this.bookId, this.title, this.authorId, this.stock);
+final class _$Stream extends Stream {
+  _$Stream._(this.streamId, this.viewers);
 
   @override
-  final int bookId;
+  final int streamId;
 
   @override
-  final String title;
-
-  @override
-  final int authorId;
-
-  @override
-  final int stock;
+  final int viewers;
 
   static final _$table = $ForGeneratedCode.tableDefinition(
-    tableName: 'books',
-    columns: <String>['bookId', 'title', 'authorId', 'stock'],
+    tableName: 'streams',
+    columns: <String>['streamId', 'viewers'],
     columnInfo: [
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
-        autoIncrement: true,
-        overrides: [],
-      ),
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: [],
-      ),
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.integer,
-        isNotNull: true,
-        defaultValue: null,
         autoIncrement: false,
         overrides: [],
       ),
@@ -628,131 +565,85 @@ final class _$Book extends Book {
         overrides: [],
       ),
     ],
-    primaryKey: <String>['bookId'],
+    primaryKey: <String>['streamId'],
     unique: <List<String>>[],
-    foreignKeys: [
-      $ForGeneratedCode.foreignKeyDefinition(
-        name: 'author',
-        columns: ['authorId'],
-        referencedTable: 'authors',
-        referencedColumns: ['authorId'],
-        onDelete: .noAction,
-        onUpdate: .noAction,
-      ),
-    ],
+    foreignKeys: [],
     indexes: [],
-    readRow: _$Book._$fromDatabase,
-    fieldReaders: [
-      (Book r) => r.bookId,
-      (Book r) => r.title,
-      (Book r) => r.authorId,
-      (Book r) => r.stock,
-    ],
+    readRow: _$Stream._$fromDatabase,
+    fieldReaders: [(Stream r) => r.streamId, (Stream r) => r.viewers],
   );
 
-  static Book? _$fromDatabase(RowReader row) {
-    final bookId = row.readInt();
-    final title = row.readString();
-    final authorId = row.readInt();
-    final stock = row.readInt();
-    if (bookId == null && title == null && authorId == null && stock == null) {
+  static Stream? _$fromDatabase(RowReader row) {
+    final streamId = row.readInt();
+    final viewers = row.readInt();
+    if (streamId == null && viewers == null) {
       return null;
     }
-    return _$Book._(bookId!, title!, authorId!, stock!);
+    return _$Stream._(streamId!, viewers!);
   }
 
   @override
-  String toString() =>
-      'Book(bookId: "$bookId", title: "$title", authorId: "$authorId", stock: "$stock")';
+  String toString() => 'Stream(streamId: "$streamId", viewers: "$viewers")';
 }
 
-/// Extension methods for table defined in [Book].
-extension TableBookExt on Table<Book> {
-  /// Insert row into the `books` table.
+/// Extension methods for table defined in [Stream].
+extension TableStreamExt on Table<Stream> {
+  /// Insert row into the `streams` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Book> insert({
-    Expr<int>? bookId,
-    required Expr<String> title,
-    required Expr<int> authorId,
-    required Expr<int> stock,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [bookId, title, authorId, stock],
-  );
+  InsertSingle<Stream> insert({
+    required Expr<int> streamId,
+    required Expr<int> viewers,
+  }) => $ForGeneratedCode.insertInto(table: this, values: [streamId, viewers]);
 
-  /// Insert row into the `books` table, or update the
+  /// Insert row into the `streams` table, or update the
   /// existing row if it conflicts with the _primary key_.
   ///
   /// This is a shorthand for calling `.insert(...)` followed by
   /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
-  /// the fields `title`, `authorId`, `stock`,
+  /// the fields `viewers`,
   /// with the values given, leaving the _primary key_ untouched.
   ///
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
-  UpsertSingle<Book> upsert({
-    Expr<int>? bookId,
-    required Expr<String> title,
-    required Expr<int> authorId,
-    required Expr<int> stock,
-  }) => insert(bookId: bookId, title: title, authorId: authorId, stock: stock)
+  UpsertSingle<Stream> upsert({
+    required Expr<int> streamId,
+    required Expr<int> viewers,
+  }) => insert(streamId: streamId, viewers: viewers)
       .onConflict(.primaryKey)
-      .update(
-        (_, excluded, set) => set(
-          title: excluded.title,
-          authorId: excluded.authorId,
-          stock: excluded.stock,
-        ),
-      );
+      .update((_, excluded, set) => set(viewers: excluded.viewers));
 
-  /// Insert row into the `books` table.
+  /// Insert row into the `streams` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Book> insertValue({
-    int? bookId,
-    required String title,
-    required int authorId,
-    required int stock,
+  InsertSingle<Stream> insertValue({
+    required int streamId,
+    required int viewers,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [bookId?.asExpr, title.asExpr, authorId.asExpr, stock.asExpr],
+    values: [streamId.asExpr, viewers.asExpr],
   );
 
-  /// Insert row into the `books` table, or update the
+  /// Insert row into the `streams` table, or update the
   /// existing row if it conflicts with the _primary key_.
   ///
   /// This is a shorthand for calling `.insertValue(...)` followed by
   /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
-  /// the fields `title`, `authorId`, `stock`,
+  /// the fields `viewers`,
   /// with the values given, leaving the _primary key_ untouched.
   ///
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
-  UpsertSingle<Book> upsertValue({
-    int? bookId,
-    required String title,
-    required int authorId,
-    required int stock,
-  }) =>
-      insertValue(
-            bookId: bookId,
-            title: title,
-            authorId: authorId,
-            stock: stock,
-          )
-          .onConflict(.primaryKey)
-          .update(
-            (_, excluded, set) => set(
-              title: excluded.title,
-              authorId: excluded.authorId,
-              stock: excluded.stock,
-            ),
-          );
+  UpsertSingle<Stream> upsertValue({
+    required int streamId,
+    required int viewers,
+  }) => insertValue(streamId: streamId, viewers: viewers)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(viewers: excluded.viewers));
 
-  /// Bulk insert rows into the `books` table.
+  /// Bulk insert rows into the `streams` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
   /// a _mapping function_ from `T` to each column to be inserted.
@@ -769,19 +660,17 @@ extension TableBookExt on Table<Book> {
   ///
   /// Returns a [Insert] statement on which `.execute` must be
   /// called for the rows to be inserted.
-  Insert<Book> insertValuesMapped<T>(
+  Insert<Stream> insertValuesMapped<T>(
     Iterable<T> rows, {
-    int Function(T row)? bookId,
-    required String Function(T row) title,
-    required int Function(T row) authorId,
-    required int Function(T row) stock,
+    required int Function(T row) streamId,
+    required int Function(T row) viewers,
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mappings: [bookId, title, authorId, stock],
+    mappings: [streamId, viewers],
   );
 
-  /// Delete a single row from the `books` table, specified by
+  /// Delete a single row from the `streams` table, specified by
   /// _primary key_.
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be
@@ -790,20 +679,20 @@ extension TableBookExt on Table<Book> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Book> delete(int bookId) =>
-      $ForGeneratedCode.deleteSingle(byKey(bookId), _$Book._$table);
+  DeleteSingle<Stream> delete(int streamId) =>
+      $ForGeneratedCode.deleteSingle(byKey(streamId), _$Stream._$table);
 }
 
-/// Extension methods for building queries against the `books` table.
-extension QueryBookExt on Query<(Expr<Book>,)> {
-  /// Lookup a single row in `books` table using the _primary key_.
+/// Extension methods for building queries against the `streams` table.
+extension QueryStreamExt on Query<(Expr<Stream>,)> {
+  /// Lookup a single row in `streams` table using the _primary key_.
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Book>,)> byKey(int bookId) =>
-      where((book) => book.bookId.equalsValue(bookId)).first;
+  QuerySingle<(Expr<Stream>,)> byKey(int streamId) =>
+      where((stream) => stream.streamId.equalsValue(streamId)).first;
 
-  /// Update all rows in the `books` table matching this [Query].
+  /// Update all rows in the `streams` table matching this [Query].
   ///
   /// The changes to be applied to each row matching this [Query] are
   /// defined using the [updateBuilder], which is given an [Expr]
@@ -830,30 +719,19 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Book> update(
-    UpdateSet<Book> Function(
-      Expr<Book> book,
-      UpdateSet<Book> Function({
-        Expr<int> bookId,
-        Expr<String> title,
-        Expr<int> authorId,
-        Expr<int> stock,
-      })
-      set,
+  Update<Stream> update(
+    UpdateSet<Stream> Function(
+      Expr<Stream> stream,
+      UpdateSet<Stream> Function({Expr<int> streamId, Expr<int> viewers}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.update<Book>(
+  ) => $ForGeneratedCode.update<Stream>(
     this,
-    _$Book._$table,
-    (book) => updateBuilder(
-      book,
-      ({
-        Expr<int>? bookId,
-        Expr<String>? title,
-        Expr<int>? authorId,
-        Expr<int>? stock,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
+    _$Stream._$table,
+    (stream) => updateBuilder(
+      stream,
+      ({Expr<int>? streamId, Expr<int>? viewers}) =>
+          $ForGeneratedCode.buildUpdate<Stream>([streamId, viewers]),
     ),
   );
 
@@ -869,26 +747,26 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
   /// > Avoid using this on a `.join` projected to a single row or on a
   /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
   /// > use `.take` on the returned [Stream].
-  $Stream<Book> pagedByKey({
+  $Stream<Stream> pagedByKey({
     $Order order = $Order.ascending,
     int pageSize = 100,
-    Book? startFrom,
+    Stream? startFrom,
   }) => pagedBy(
-    (row) => [(row.bookId, order)],
+    (row) => [(row.streamId, order)],
     pageSize: pageSize,
     startFrom: startFrom,
   );
 
-  /// Delete all rows in the `books` table matching this [Query].
+  /// Delete all rows in the `streams` table matching this [Query].
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Book> delete() => $ForGeneratedCode.delete(this, _$Book._$table);
+  Delete<Stream> delete() => $ForGeneratedCode.delete(this, _$Stream._$table);
 }
 
-/// Extension methods for building point queries against the `books` table.
-extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
-  /// Update the row (if any) in the `books` table matching this
+/// Extension methods for building point queries against the `streams` table.
+extension QuerySingleStreamExt on QuerySingle<(Expr<Stream>,)> {
+  /// Update the row (if any) in the `streams` table matching this
   /// [QuerySingle].
   ///
   /// The changes to be applied to the row matching this [QuerySingle] are
@@ -917,96 +795,46 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  UpdateSingle<Book> update(
-    UpdateSet<Book> Function(
-      Expr<Book> book,
-      UpdateSet<Book> Function({
-        Expr<int> bookId,
-        Expr<String> title,
-        Expr<int> authorId,
-        Expr<int> stock,
-      })
-      set,
+  UpdateSingle<Stream> update(
+    UpdateSet<Stream> Function(
+      Expr<Stream> stream,
+      UpdateSet<Stream> Function({Expr<int> streamId, Expr<int> viewers}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateSingle<Book>(
+  ) => $ForGeneratedCode.updateSingle<Stream>(
     this,
-    _$Book._$table,
-    (book) => updateBuilder(
-      book,
-      ({
-        Expr<int>? bookId,
-        Expr<String>? title,
-        Expr<int>? authorId,
-        Expr<int>? stock,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
+    _$Stream._$table,
+    (stream) => updateBuilder(
+      stream,
+      ({Expr<int>? streamId, Expr<int>? viewers}) =>
+          $ForGeneratedCode.buildUpdate<Stream>([streamId, viewers]),
     ),
   );
 
-  /// Delete the row (if any) in the `books` table matching this [QuerySingle].
+  /// Delete the row (if any) in the `streams` table matching this [QuerySingle].
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be called
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
-  DeleteSingle<Book> delete() =>
-      $ForGeneratedCode.deleteSingle(this, _$Book._$table);
+  DeleteSingle<Stream> delete() =>
+      $ForGeneratedCode.deleteSingle(this, _$Stream._$table);
 }
 
-/// Extension methods for expressions on a row in the `books` table.
-extension ExpressionBookExt on Expr<Book> {
-  Expr<int> get bookId =>
+/// Extension methods for expressions on a row in the `streams` table.
+extension ExpressionStreamExt on Expr<Stream> {
+  Expr<int> get streamId =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String> get title =>
-      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  Expr<int> get authorId =>
-      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
-
-  Expr<int> get stock =>
-      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.integer);
-
-  /// Do a subquery lookup of the row from table
-  /// `authors` referenced in
-  /// [authorId].
-  ///
-  /// The gets the row from table `authors` where
-  /// [Author.authorId]
-  /// is equal to [authorId].
-  Expr<Author> get author => $ForGeneratedCode
-      .subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId))
-      .first
-      .asNotNull();
+  Expr<int> get viewers =>
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.integer);
 }
 
-extension ExpressionNullableBookExt on Expr<Book?> {
-  Expr<int?> get bookId =>
+extension ExpressionNullableStreamExt on Expr<Stream?> {
+  Expr<int?> get streamId =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String?> get title =>
-      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  Expr<int?> get authorId =>
-      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
-
-  Expr<int?> get stock =>
-      $ForGeneratedCode.field(this, 3, $ForGeneratedCode.integer);
-
-  /// Do a subquery lookup of the row from table
-  /// `authors` referenced in
-  /// [authorId].
-  ///
-  /// The gets the row from table `authors` where
-  /// [Author.authorId]
-  /// is equal to [authorId], if any.
-  ///
-  /// If this row is `NULL` the subquery is always return `NULL`.
-  Expr<Author?> get author => $ForGeneratedCode
-      .subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId))
-      .first;
+  Expr<int?> get viewers =>
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.integer);
 
   /// Check if the row is not `NULL`.
   ///
@@ -1014,7 +842,7 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   ///
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
-  Expr<bool> isNotNull() => bookId.isNotNull();
+  Expr<bool> isNotNull() => streamId.isNotNull();
 
   /// Check if the row is `NULL`.
   ///
@@ -1025,44 +853,20 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
-extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Book.authorId] = [Author.authorId].
-  Query<(Expr<Book>, Expr<Author>)> usingAuthor() =>
-      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
-}
-
-extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Book.authorId] = [Author.authorId].
-  Query<(Expr<Book>, Expr<Author?>)> usingAuthor() =>
-      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
-}
-
-extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Book.authorId] = [Author.authorId].
-  Query<(Expr<Book?>, Expr<Author>)> usingAuthor() =>
-      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
-}
-
-/// `Table<Book>` conflict targets for use with `.onConflict`.
-enum BookConflict {
+/// `Table<Stream>` conflict targets for use with `.onConflict`.
+enum StreamConflict {
   /// Conflict with an existing row that has a matching primary key.
   ///
   /// Thus, the other row has matching values for:
-  /// `bookId`.
-  primaryKey(['bookId']);
+  /// `streamId`.
+  primaryKey(['streamId']);
 
-  const BookConflict(this._fields);
+  const StreamConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertBookExt on Insert<Book> {
+extension InsertStreamExt on Insert<Stream> {
   /// Build an `INSERT` statement with an `ON CONFLICT` clause.
   ///
   /// The [target] argument specifies the _conflict target_ to be
@@ -1072,7 +876,7 @@ extension InsertBookExt on Insert<Book> {
   /// If a row to be inserted violates the _conflict target_ constraint,
   /// then the conflict action is triggered:
   /// * `.doNothing()` to skip insertion of the new row, and,
-  /// * `.update((book, excluded, set) => set(...))` to
+  /// * `.update((stream, excluded, set) => set(...))` to
   ///   update the conflicting row.
   ///
   /// If a row to be inserted violates a constraint other than the one
@@ -1080,18 +884,18 @@ extension InsertBookExt on Insert<Book> {
   /// will fail.
   ///
   /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
-  InsertOnConflict<Book> onConflict(BookConflict target) =>
+  InsertOnConflict<Stream> onConflict(StreamConflict target) =>
       $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictBookExt on InsertOnConflict<Book> {
+extension InsertOnConflictStreamExt on InsertOnConflict<Stream> {
   /// Build an `INSERT` statement an [upsert-clause][1].
   ///
   /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
   /// constraint previously specified as _conflict target_, the existing
   /// row is updated using the expressions defined with the
   /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
-  ///   * `book` an [Expr] representing the existing row in
+  ///   * `stream` an [Expr] representing the existing row in
   ///     the database,
   ///   * `excluded` an [Expr] representing the row to be inserted in the
   ///     database, and,
@@ -1125,36 +929,25 @@ extension InsertOnConflictBookExt on InsertOnConflict<Book> {
   /// > be returned immediately.
   ///
   /// [1]: https://www.sqlite.org/lang_upsert.html
-  Upsert<Book> update(
-    UpdateSet<Book> Function(
-      Expr<Book> book,
-      Expr<Book> excluded,
-      UpdateSet<Book> Function({
-        Expr<int> bookId,
-        Expr<String> title,
-        Expr<int> authorId,
-        Expr<int> stock,
-      })
-      set,
+  Upsert<Stream> update(
+    UpdateSet<Stream> Function(
+      Expr<Stream> stream,
+      Expr<Stream> excluded,
+      UpdateSet<Stream> Function({Expr<int> streamId, Expr<int> viewers}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateOnConflict<Book>(
+  ) => $ForGeneratedCode.updateOnConflict<Stream>(
     this,
-    (book, excluded) => updateBuilder(
-      book,
+    (stream, excluded) => updateBuilder(
+      stream,
       excluded,
-      ({
-        Expr<int>? bookId,
-        Expr<String>? title,
-        Expr<int>? authorId,
-        Expr<int>? stock,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
+      ({Expr<int>? streamId, Expr<int>? viewers}) =>
+          $ForGeneratedCode.buildUpdate<Stream>([streamId, viewers]),
     ),
   );
 }
 
-extension InsertSingleBookExt on InsertSingle<Book> {
+extension InsertSingleStreamExt on InsertSingle<Stream> {
   /// Build an `INSERT` statement with an `ON CONFLICT` clause.
   ///
   /// The [target] argument specifies the _conflict target_ to be
@@ -1164,7 +957,7 @@ extension InsertSingleBookExt on InsertSingle<Book> {
   /// If a row to be inserted violates the _conflict target_ constraint,
   /// then the conflict action is triggered:
   /// * `.doNothing()` to skip insertion of the new row, and,
-  /// * `.update((book, excluded, set) => set(...))` to
+  /// * `.update((stream, excluded, set) => set(...))` to
   ///   update the conflicting row.
   ///
   /// If a row to be inserted violates a constraint other than the one
@@ -1172,18 +965,18 @@ extension InsertSingleBookExt on InsertSingle<Book> {
   /// will fail.
   ///
   /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
-  InsertOnConflictSingle<Book> onConflict(BookConflict target) =>
+  InsertOnConflictSingle<Stream> onConflict(StreamConflict target) =>
       $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
 }
 
-extension InsertOnConflictSingleBookExt on InsertOnConflictSingle<Book> {
+extension InsertOnConflictSingleStreamExt on InsertOnConflictSingle<Stream> {
   /// Build an `INSERT` statement an [upsert-clause][1].
   ///
   /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
   /// constraint previously specified as _conflict target_, the existing
   /// row is updated using the expressions defined with the
   /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
-  ///   * `book` an [Expr] representing the existing row in
+  ///   * `stream` an [Expr] representing the existing row in
   ///     the database,
   ///   * `excluded` an [Expr] representing the row to be inserted in the
   ///     database, and,
@@ -1217,61 +1010,44 @@ extension InsertOnConflictSingleBookExt on InsertOnConflictSingle<Book> {
   /// > be returned immediately.
   ///
   /// [1]: https://www.sqlite.org/lang_upsert.html
-  UpsertSingle<Book> update(
-    UpdateSet<Book> Function(
-      Expr<Book> book,
-      Expr<Book> excluded,
-      UpdateSet<Book> Function({
-        Expr<int> bookId,
-        Expr<String> title,
-        Expr<int> authorId,
-        Expr<int> stock,
-      })
-      set,
+  UpsertSingle<Stream> update(
+    UpdateSet<Stream> Function(
+      Expr<Stream> stream,
+      Expr<Stream> excluded,
+      UpdateSet<Stream> Function({Expr<int> streamId, Expr<int> viewers}) set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateOnConflictSingle<Book>(
+  ) => $ForGeneratedCode.updateOnConflictSingle<Stream>(
     this,
-    (book, excluded) => updateBuilder(
-      book,
+    (stream, excluded) => updateBuilder(
+      stream,
       excluded,
-      ({
-        Expr<int>? bookId,
-        Expr<String>? title,
-        Expr<int>? authorId,
-        Expr<int>? stock,
-      }) =>
-          $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
+      ({Expr<int>? streamId, Expr<int>? viewers}) =>
+          $ForGeneratedCode.buildUpdate<Stream>([streamId, viewers]),
     ),
   );
 }
 
-/// Extension methods for assertions on [Author] using
+/// Extension methods for assertions on [Order] using
 /// [`package:checks`][1].
 ///
 /// [1]: https://pub.dev/packages/checks
-extension AuthorChecks on Subject<Author> {
-  /// Create assertions on [Author.authorId].
-  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
+extension OrderChecks on Subject<Order> {
+  /// Create assertions on [Order.orderId].
+  Subject<int> get orderId => has((m) => m.orderId, 'orderId');
 
-  /// Create assertions on [Author.name].
-  Subject<String> get name => has((m) => m.name, 'name');
+  /// Create assertions on [Order.quantity].
+  Subject<int> get quantity => has((m) => m.quantity, 'quantity');
 }
 
-/// Extension methods for assertions on [Book] using
+/// Extension methods for assertions on [Stream] using
 /// [`package:checks`][1].
 ///
 /// [1]: https://pub.dev/packages/checks
-extension BookChecks on Subject<Book> {
-  /// Create assertions on [Book.bookId].
-  Subject<int> get bookId => has((m) => m.bookId, 'bookId');
+extension StreamChecks on Subject<Stream> {
+  /// Create assertions on [Stream.streamId].
+  Subject<int> get streamId => has((m) => m.streamId, 'streamId');
 
-  /// Create assertions on [Book.title].
-  Subject<String> get title => has((m) => m.title, 'title');
-
-  /// Create assertions on [Book.authorId].
-  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
-
-  /// Create assertions on [Book.stock].
-  Subject<int> get stock => has((m) => m.stock, 'stock');
+  /// Create assertions on [Stream.viewers].
+  Subject<int> get viewers => has((m) => m.viewers, 'viewers');
 }

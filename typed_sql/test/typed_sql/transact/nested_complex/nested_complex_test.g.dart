@@ -95,6 +95,11 @@ final class _$Account extends Account {
     foreignKeys: [],
     indexes: [],
     readRow: _$Account._$fromDatabase,
+    fieldReaders: [
+      (Account r) => r.accountId,
+      (Account r) => r.accountNumber,
+      (Account r) => r.balance,
+    ],
   );
 
   static Account? _$fromDatabase(RowReader row) {
@@ -312,6 +317,50 @@ extension QueryAccountExt on Query<(Expr<Account>,)> {
   QuerySingle<(Expr<Account>,)> byAccountNumber(String accountNumber) => where(
     (account) => account.accountNumber.equalsValue(accountNumber),
   ).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Account> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Account? startFrom,
+  }) => pagedBy(
+    (row) => [(row.accountId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `accountNumber` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Account> pagedByAccountNumber({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Account? startFrom,
+  }) => pagedBy(
+    (row) => [(row.accountNumber, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `accounts` table matching this [Query].
   ///

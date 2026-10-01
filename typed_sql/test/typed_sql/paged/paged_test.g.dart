@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'group_by_reference_test.dart';
+part of 'paged_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-/// Extension methods for a [Database] operating on [Bookstore].
-extension BookstoreSchema on Database<Bookstore> {
+/// Extension methods for a [Database] operating on [TestDatabase].
+extension TestDatabaseSchema on Database<TestDatabase> {
   static final _$tables = [_$Author._$table, _$Book._$table];
 
   Table<Author> get authors =>
@@ -15,11 +15,11 @@ extension BookstoreSchema on Database<Bookstore> {
 
   Table<Book> get books => $ForGeneratedCode.declareTable(this, _$Book._$table);
 
-  /// Create tables defined in [Bookstore].
+  /// Create tables defined in [TestDatabase].
   ///
   /// Calling this on an empty database will create the tables
-  /// defined in [Bookstore]. In production it's often better to
-  /// use [createBookstoreTables] and manage migrations using
+  /// defined in [TestDatabase]. In production it's often better to
+  /// use [createTestDatabaseTables] and manage migrations using
   /// external tools.
   ///
   /// This method is mostly useful for testing.
@@ -31,19 +31,19 @@ extension BookstoreSchema on Database<Bookstore> {
       $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
-/// Get SQL [DDL statements][1] for tables defined in [Bookstore].
+/// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
 ///
 /// This returns a SQL script with multiple DDL statements separated by `;`
 /// using the specified [dialect].
 ///
 /// Executing these statements in an empty database will create the tables
-/// defined in [Bookstore]. In practice, this method is often used for
+/// defined in [TestDatabase]. In practice, this method is often used for
 /// printing the DDL statements, such that migrations can be managed by
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBookstoreTables(SqlDialect dialect) => $ForGeneratedCode
-    .createTableSchema(dialect: dialect, tables: BookstoreSchema._$tables);
+String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
 final class _$Author extends Author {
   _$Author._(this.authorId, this.name);
@@ -62,7 +62,7 @@ final class _$Author extends Author {
         type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
-        autoIncrement: true,
+        autoIncrement: false,
         overrides: [],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -70,7 +70,14 @@ final class _$Author extends Author {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: [],
+        overrides: [
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
+        ],
       ),
     ],
     primaryKey: <String>['authorId'],
@@ -101,7 +108,7 @@ extension TableAuthorExt on Table<Author> {
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
   InsertSingle<Author> insert({
-    Expr<int>? authorId,
+    required Expr<int> authorId,
     required Expr<String> name,
   }) => $ForGeneratedCode.insertInto(table: this, values: [authorId, name]);
 
@@ -116,7 +123,7 @@ extension TableAuthorExt on Table<Author> {
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
   UpsertSingle<Author> upsert({
-    Expr<int>? authorId,
+    required Expr<int> authorId,
     required Expr<String> name,
   }) => insert(authorId: authorId, name: name)
       .onConflict(.primaryKey)
@@ -126,11 +133,13 @@ extension TableAuthorExt on Table<Author> {
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Author> insertValue({int? authorId, required String name}) =>
-      $ForGeneratedCode.insertInto(
-        table: this,
-        values: [authorId?.asExpr, name.asExpr],
-      );
+  InsertSingle<Author> insertValue({
+    required int authorId,
+    required String name,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [authorId.asExpr, name.asExpr],
+  );
 
   /// Insert row into the `authors` table, or update the
   /// existing row if it conflicts with the _primary key_.
@@ -142,10 +151,12 @@ extension TableAuthorExt on Table<Author> {
   ///
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
-  UpsertSingle<Author> upsertValue({int? authorId, required String name}) =>
-      insertValue(authorId: authorId, name: name)
-          .onConflict(.primaryKey)
-          .update((_, excluded, set) => set(name: excluded.name));
+  UpsertSingle<Author> upsertValue({
+    required int authorId,
+    required String name,
+  }) => insertValue(authorId: authorId, name: name)
+      .onConflict(.primaryKey)
+      .update((_, excluded, set) => set(name: excluded.name));
 
   /// Bulk insert rows into the `authors` table.
   ///
@@ -166,7 +177,7 @@ extension TableAuthorExt on Table<Author> {
   /// called for the rows to be inserted.
   Insert<Author> insertValuesMapped<T>(
     Iterable<T> rows, {
-    int Function(T row)? authorId,
+    required int Function(T row) authorId,
     required String Function(T row) name,
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
@@ -331,17 +342,6 @@ extension ExpressionAuthorExt on Expr<Author> {
 
   Expr<String> get name =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  /// Get [SubQuery] of rows from the `books` table which
-  /// reference this row.
-  ///
-  /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId]
-  /// references [Author.authorId]
-  /// in this row.
-  SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
-      .subqueryTable(_$Book._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId));
 }
 
 extension ExpressionNullableAuthorExt on Expr<Author?> {
@@ -350,19 +350,6 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
 
   Expr<String?> get name =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  /// Get [SubQuery] of rows from the `books` table which
-  /// reference this row.
-  ///
-  /// This returns a [SubQuery] of [Book] rows,
-  /// where [Book.authorId]
-  /// references [Author.authorId]
-  /// in this row, if any.
-  ///
-  /// If this row is `NULL` the subquery is always be empty.
-  SubQuery<(Expr<Book>,)> get books => $ForGeneratedCode
-      .subqueryTable(_$Book._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId));
 
   /// Check if the row is not `NULL`.
   ///
@@ -379,30 +366,6 @@ extension ExpressionNullableAuthorExt on Expr<Author?> {
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
-}
-
-extension InnerJoinAuthorBookExt on InnerJoin<(Expr<Author>,), (Expr<Book>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Author.authorId] = [Book.authorId].
-  Query<(Expr<Author>, Expr<Book>)> usingAuthor() =>
-      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
-}
-
-extension LeftJoinAuthorBookExt on LeftJoin<(Expr<Author>,), (Expr<Book>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Author.authorId] = [Book.authorId].
-  Query<(Expr<Author>, Expr<Book?>)> usingAuthor() =>
-      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
-}
-
-extension RightJoinAuthorBookExt on RightJoin<(Expr<Author>,), (Expr<Book>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Author.authorId] = [Book.authorId].
-  Query<(Expr<Author?>, Expr<Book>)> usingAuthor() =>
-      on((a, b) => a.authorId.equalsUnlessNull(b.authorId));
 }
 
 /// `Table<Author>` conflict targets for use with `.onConflict`.
@@ -590,7 +553,7 @@ final class _$Book extends Book {
   final String title;
 
   @override
-  final int authorId;
+  final int? authorId;
 
   @override
   final int stock;
@@ -603,7 +566,7 @@ final class _$Book extends Book {
         type: $ForGeneratedCode.integer,
         isNotNull: true,
         defaultValue: null,
-        autoIncrement: true,
+        autoIncrement: false,
         overrides: [],
       ),
       $ForGeneratedCode.columnDefinition(
@@ -611,11 +574,18 @@ final class _$Book extends Book {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: [],
+        overrides: [
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
+        ],
       ),
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
-        isNotNull: true,
+        isNotNull: false,
         defaultValue: null,
         autoIncrement: false,
         overrides: [],
@@ -630,16 +600,7 @@ final class _$Book extends Book {
     ],
     primaryKey: <String>['bookId'],
     unique: <List<String>>[],
-    foreignKeys: [
-      $ForGeneratedCode.foreignKeyDefinition(
-        name: 'author',
-        columns: ['authorId'],
-        referencedTable: 'authors',
-        referencedColumns: ['authorId'],
-        onDelete: .noAction,
-        onUpdate: .noAction,
-      ),
-    ],
+    foreignKeys: [],
     indexes: [],
     readRow: _$Book._$fromDatabase,
     fieldReaders: [
@@ -658,7 +619,7 @@ final class _$Book extends Book {
     if (bookId == null && title == null && authorId == null && stock == null) {
       return null;
     }
-    return _$Book._(bookId!, title!, authorId!, stock!);
+    return _$Book._(bookId!, title!, authorId, stock!);
   }
 
   @override
@@ -673,9 +634,9 @@ extension TableBookExt on Table<Book> {
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
   InsertSingle<Book> insert({
-    Expr<int>? bookId,
+    required Expr<int> bookId,
     required Expr<String> title,
-    required Expr<int> authorId,
+    Expr<int?>? authorId,
     required Expr<int> stock,
   }) => $ForGeneratedCode.insertInto(
     table: this,
@@ -693,9 +654,9 @@ extension TableBookExt on Table<Book> {
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
   UpsertSingle<Book> upsert({
-    Expr<int>? bookId,
+    required Expr<int> bookId,
     required Expr<String> title,
-    required Expr<int> authorId,
+    Expr<int?>? authorId,
     required Expr<int> stock,
   }) => insert(bookId: bookId, title: title, authorId: authorId, stock: stock)
       .onConflict(.primaryKey)
@@ -712,13 +673,13 @@ extension TableBookExt on Table<Book> {
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
   InsertSingle<Book> insertValue({
-    int? bookId,
+    required int bookId,
     required String title,
-    required int authorId,
+    int? authorId,
     required int stock,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [bookId?.asExpr, title.asExpr, authorId.asExpr, stock.asExpr],
+    values: [bookId.asExpr, title.asExpr, authorId.asExpr, stock.asExpr],
   );
 
   /// Insert row into the `books` table, or update the
@@ -732,9 +693,9 @@ extension TableBookExt on Table<Book> {
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
   UpsertSingle<Book> upsertValue({
-    int? bookId,
+    required int bookId,
     required String title,
-    required int authorId,
+    int? authorId,
     required int stock,
   }) =>
       insertValue(
@@ -771,9 +732,9 @@ extension TableBookExt on Table<Book> {
   /// called for the rows to be inserted.
   Insert<Book> insertValuesMapped<T>(
     Iterable<T> rows, {
-    int Function(T row)? bookId,
+    required int Function(T row) bookId,
     required String Function(T row) title,
-    required int Function(T row) authorId,
+    int? Function(T row)? authorId,
     required int Function(T row) stock,
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
@@ -836,7 +797,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
       UpdateSet<Book> Function({
         Expr<int> bookId,
         Expr<String> title,
-        Expr<int> authorId,
+        Expr<int?> authorId,
         Expr<int> stock,
       })
       set,
@@ -850,7 +811,7 @@ extension QueryBookExt on Query<(Expr<Book>,)> {
       ({
         Expr<int>? bookId,
         Expr<String>? title,
-        Expr<int>? authorId,
+        Expr<int?>? authorId,
         Expr<int>? stock,
       }) =>
           $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
@@ -923,7 +884,7 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
       UpdateSet<Book> Function({
         Expr<int> bookId,
         Expr<String> title,
-        Expr<int> authorId,
+        Expr<int?> authorId,
         Expr<int> stock,
       })
       set,
@@ -937,7 +898,7 @@ extension QuerySingleBookExt on QuerySingle<(Expr<Book>,)> {
       ({
         Expr<int>? bookId,
         Expr<String>? title,
-        Expr<int>? authorId,
+        Expr<int?>? authorId,
         Expr<int>? stock,
       }) =>
           $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
@@ -961,24 +922,11 @@ extension ExpressionBookExt on Expr<Book> {
   Expr<String> get title =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
-  Expr<int> get authorId =>
+  Expr<int?> get authorId =>
       $ForGeneratedCode.field(this, 2, $ForGeneratedCode.integer);
 
   Expr<int> get stock =>
       $ForGeneratedCode.field(this, 3, $ForGeneratedCode.integer);
-
-  /// Do a subquery lookup of the row from table
-  /// `authors` referenced in
-  /// [authorId].
-  ///
-  /// The gets the row from table `authors` where
-  /// [Author.authorId]
-  /// is equal to [authorId].
-  Expr<Author> get author => $ForGeneratedCode
-      .subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId))
-      .first
-      .asNotNull();
 }
 
 extension ExpressionNullableBookExt on Expr<Book?> {
@@ -993,20 +941,6 @@ extension ExpressionNullableBookExt on Expr<Book?> {
 
   Expr<int?> get stock =>
       $ForGeneratedCode.field(this, 3, $ForGeneratedCode.integer);
-
-  /// Do a subquery lookup of the row from table
-  /// `authors` referenced in
-  /// [authorId].
-  ///
-  /// The gets the row from table `authors` where
-  /// [Author.authorId]
-  /// is equal to [authorId], if any.
-  ///
-  /// If this row is `NULL` the subquery is always return `NULL`.
-  Expr<Author?> get author => $ForGeneratedCode
-      .subqueryTable(_$Author._$table)
-      .where((r) => r.authorId.equalsUnlessNull(authorId))
-      .first;
 
   /// Check if the row is not `NULL`.
   ///
@@ -1023,30 +957,6 @@ extension ExpressionNullableBookExt on Expr<Book?> {
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
   Expr<bool> isNull() => isNotNull().not();
-}
-
-extension InnerJoinBookAuthorExt on InnerJoin<(Expr<Book>,), (Expr<Author>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Book.authorId] = [Author.authorId].
-  Query<(Expr<Book>, Expr<Author>)> usingAuthor() =>
-      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
-}
-
-extension LeftJoinBookAuthorExt on LeftJoin<(Expr<Book>,), (Expr<Author>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Book.authorId] = [Author.authorId].
-  Query<(Expr<Book>, Expr<Author?>)> usingAuthor() =>
-      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
-}
-
-extension RightJoinBookAuthorExt on RightJoin<(Expr<Book>,), (Expr<Author>,)> {
-  /// Join using the `author` _foreign key_.
-  ///
-  /// This will match rows where [Book.authorId] = [Author.authorId].
-  Query<(Expr<Book?>, Expr<Author>)> usingAuthor() =>
-      on((a, b) => b.authorId.equalsUnlessNull(a.authorId));
 }
 
 /// `Table<Book>` conflict targets for use with `.onConflict`.
@@ -1132,7 +1042,7 @@ extension InsertOnConflictBookExt on InsertOnConflict<Book> {
       UpdateSet<Book> Function({
         Expr<int> bookId,
         Expr<String> title,
-        Expr<int> authorId,
+        Expr<int?> authorId,
         Expr<int> stock,
       })
       set,
@@ -1146,7 +1056,7 @@ extension InsertOnConflictBookExt on InsertOnConflict<Book> {
       ({
         Expr<int>? bookId,
         Expr<String>? title,
-        Expr<int>? authorId,
+        Expr<int?>? authorId,
         Expr<int>? stock,
       }) =>
           $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
@@ -1224,7 +1134,7 @@ extension InsertOnConflictSingleBookExt on InsertOnConflictSingle<Book> {
       UpdateSet<Book> Function({
         Expr<int> bookId,
         Expr<String> title,
-        Expr<int> authorId,
+        Expr<int?> authorId,
         Expr<int> stock,
       })
       set,
@@ -1238,7 +1148,7 @@ extension InsertOnConflictSingleBookExt on InsertOnConflictSingle<Book> {
       ({
         Expr<int>? bookId,
         Expr<String>? title,
-        Expr<int>? authorId,
+        Expr<int?>? authorId,
         Expr<int>? stock,
       }) =>
           $ForGeneratedCode.buildUpdate<Book>([bookId, title, authorId, stock]),
@@ -1270,7 +1180,7 @@ extension BookChecks on Subject<Book> {
   Subject<String> get title => has((m) => m.title, 'title');
 
   /// Create assertions on [Book.authorId].
-  Subject<int> get authorId => has((m) => m.authorId, 'authorId');
+  Subject<int?> get authorId => has((m) => m.authorId, 'authorId');
 
   /// Create assertions on [Book.stock].
   Subject<int> get stock => has((m) => m.stock, 'stock');

@@ -96,6 +96,12 @@ final class _$Employee extends Employee {
     foreignKeys: [],
     indexes: [],
     readRow: _$Employee._$fromDatabase,
+    fieldReaders: [
+      (Employee r) => r.id,
+      (Employee r) => r.surname,
+      (Employee r) => r.seniority,
+      (Employee r) => r.salary,
+    ],
   );
 
   static Employee? _$fromDatabase(RowReader row) {
@@ -307,6 +313,28 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
         salary,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Employee> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Employee? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `employees` table matching this [Query].

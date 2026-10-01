@@ -95,6 +95,11 @@ final class _$BasicItem extends BasicItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$BasicItem._$fromDatabase,
+    fieldReaders: [
+      (BasicItem r) => r.id,
+      (BasicItem r) => r.name,
+      (BasicItem r) => r.value,
+    ],
   );
 
   static BasicItem? _$fromDatabase(RowReader row) {
@@ -284,6 +289,50 @@ extension QueryBasicItemExt on Query<(Expr<BasicItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<BasicItem>,)> byName(String name) =>
       where((basicItem) => basicItem.name.equalsValue(name)).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<BasicItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    BasicItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `name` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<BasicItem> pagedByName({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    BasicItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.name, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `basicItems` table matching this [Query].
   ///

@@ -79,6 +79,7 @@ final class _$NotNullItem extends NotNullItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$NotNullItem._$fromDatabase,
+    fieldReaders: [(NotNullItem r) => r.id, (NotNullItem r) => r.name],
   );
 
   static NotNullItem? _$fromDatabase(RowReader row) {
@@ -237,6 +238,28 @@ extension QueryNotNullItemExt on Query<(Expr<NotNullItem>,)> {
       ({Expr<int>? id, Expr<String>? name}) =>
           $ForGeneratedCode.buildUpdate<NotNullItem>([id, name]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<NotNullItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    NotNullItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `notNullItems` table matching this [Query].

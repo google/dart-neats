@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'blog_test.dart';
+part of 'paged_by_test.dart';
 
 // **************************************************************************
 // Generator: _TypedSqlBuilder
 // **************************************************************************
 
-/// Extension methods for a [Database] operating on [BlogDatabase].
-extension BlogDatabaseSchema on Database<BlogDatabase> {
-  static final _$tables = [_$Post._$table, _$Comment._$table];
+/// Extension methods for a [Database] operating on [TestDatabase].
+extension TestDatabaseSchema on Database<TestDatabase> {
+  static final _$tables = [_$User._$table, _$Event._$table];
 
-  Table<Post> get posts => $ForGeneratedCode.declareTable(this, _$Post._$table);
+  Table<User> get users => $ForGeneratedCode.declareTable(this, _$User._$table);
 
-  Table<Comment> get comments =>
-      $ForGeneratedCode.declareTable(this, _$Comment._$table);
+  Table<Event> get events =>
+      $ForGeneratedCode.declareTable(this, _$Event._$table);
 
-  /// Create tables defined in [BlogDatabase].
+  /// Create tables defined in [TestDatabase].
   ///
   /// Calling this on an empty database will create the tables
-  /// defined in [BlogDatabase]. In production it's often better to
-  /// use [createBlogDatabaseTables] and manage migrations using
+  /// defined in [TestDatabase]. In production it's often better to
+  /// use [createTestDatabaseTables] and manage migrations using
   /// external tools.
   ///
   /// This method is mostly useful for testing.
@@ -31,661 +31,47 @@ extension BlogDatabaseSchema on Database<BlogDatabase> {
       $ForGeneratedCode.createTables(context: this, tables: _$tables);
 }
 
-/// Get SQL [DDL statements][1] for tables defined in [BlogDatabase].
+/// Get SQL [DDL statements][1] for tables defined in [TestDatabase].
 ///
 /// This returns a SQL script with multiple DDL statements separated by `;`
 /// using the specified [dialect].
 ///
 /// Executing these statements in an empty database will create the tables
-/// defined in [BlogDatabase]. In practice, this method is often used for
+/// defined in [TestDatabase]. In practice, this method is often used for
 /// printing the DDL statements, such that migrations can be managed by
 /// external tools.
 ///
 /// [1]: https://en.wikipedia.org/wiki/Data_definition_language
-String createBlogDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
-    .createTableSchema(dialect: dialect, tables: BlogDatabaseSchema._$tables);
+String createTestDatabaseTables(SqlDialect dialect) => $ForGeneratedCode
+    .createTableSchema(dialect: dialect, tables: TestDatabaseSchema._$tables);
 
-final class _$Post extends Post {
-  _$Post._(this.author, this.slug, this.content);
+final class _$User extends User {
+  _$User._(
+    this.userId,
+    this.email,
+    this.firstName,
+    this.lastName,
+    this.nickname,
+  );
 
   @override
-  final String author;
+  final int userId;
 
   @override
-  final String slug;
+  final String email;
 
   @override
-  final String content;
+  final String firstName;
+
+  @override
+  final String lastName;
+
+  @override
+  final String? nickname;
 
   static final _$table = $ForGeneratedCode.tableDefinition(
-    tableName: 'posts',
-    columns: <String>['author', 'slug', 'content'],
-    columnInfo: [
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: [
-          (
-            dialect: 'mysql',
-            columnType: 'VARCHAR(255)',
-            defaultValue: null,
-            collation: null,
-          ),
-        ],
-      ),
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: [
-          (
-            dialect: 'mysql',
-            columnType: 'VARCHAR(255)',
-            defaultValue: null,
-            collation: null,
-          ),
-        ],
-      ),
-      $ForGeneratedCode.columnDefinition(
-        type: $ForGeneratedCode.text,
-        isNotNull: true,
-        defaultValue: null,
-        autoIncrement: false,
-        overrides: [],
-      ),
-    ],
-    primaryKey: <String>['author', 'slug'],
-    unique: <List<String>>[],
-    foreignKeys: [],
-    indexes: [],
-    readRow: _$Post._$fromDatabase,
-    fieldReaders: [
-      (Post r) => r.author,
-      (Post r) => r.slug,
-      (Post r) => r.content,
-    ],
-  );
-
-  static Post? _$fromDatabase(RowReader row) {
-    final author = row.readString();
-    final slug = row.readString();
-    final content = row.readString();
-    if (author == null && slug == null && content == null) {
-      return null;
-    }
-    return _$Post._(author!, slug!, content!);
-  }
-
-  @override
-  String toString() =>
-      'Post(author: "$author", slug: "$slug", content: "$content")';
-}
-
-/// Extension methods for table defined in [Post].
-extension TablePostExt on Table<Post> {
-  /// Insert row into the `posts` table.
-  ///
-  /// Returns a [InsertSingle] statement on which `.execute` must be
-  /// called for the row to be inserted.
-  InsertSingle<Post> insert({
-    required Expr<String> author,
-    required Expr<String> slug,
-    required Expr<String> content,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [author, slug, content],
-  );
-
-  /// Insert row into the `posts` table, or update the
-  /// existing row if it conflicts with the _primary key_.
-  ///
-  /// This is a shorthand for calling `.insert(...)` followed by
-  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
-  /// the fields `content`,
-  /// with the values given, leaving the _primary key_ untouched.
-  ///
-  /// Returns an [UpsertSingle] statement on which `.execute()` must be
-  /// called for the row to be inserted or updated.
-  UpsertSingle<Post> upsert({
-    required Expr<String> author,
-    required Expr<String> slug,
-    required Expr<String> content,
-  }) => insert(author: author, slug: slug, content: content)
-      .onConflict(.primaryKey)
-      .update((_, excluded, set) => set(content: excluded.content));
-
-  /// Insert row into the `posts` table.
-  ///
-  /// Returns a [InsertSingle] statement on which `.execute` must be
-  /// called for the row to be inserted.
-  InsertSingle<Post> insertValue({
-    required String author,
-    required String slug,
-    required String content,
-  }) => $ForGeneratedCode.insertInto(
-    table: this,
-    values: [author.asExpr, slug.asExpr, content.asExpr],
-  );
-
-  /// Insert row into the `posts` table, or update the
-  /// existing row if it conflicts with the _primary key_.
-  ///
-  /// This is a shorthand for calling `.insertValue(...)` followed by
-  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
-  /// the fields `content`,
-  /// with the values given, leaving the _primary key_ untouched.
-  ///
-  /// Returns an [UpsertSingle] statement on which `.execute()` must be
-  /// called for the row to be inserted or updated.
-  UpsertSingle<Post> upsertValue({
-    required String author,
-    required String slug,
-    required String content,
-  }) => insertValue(author: author, slug: slug, content: content)
-      .onConflict(.primaryKey)
-      .update((_, excluded, set) => set(content: excluded.content));
-
-  /// Bulk insert rows into the `posts` table.
-  ///
-  /// This method takes an `Iterable<T>` and requires that you provide
-  /// a _mapping function_ from `T` to each column to be inserted.
-  ///
-  /// If a mapping function is omitted, the _default value_ will be
-  /// inserted, or `NULL` if column is nullable and as no default value.
-  /// To explicitely insert `NULL`, use a _mapping function_ that maps
-  /// `T` to `null`.
-  ///
-  /// > [!NOTE]
-  /// > This method aims utilize database specific bulk insertion logic
-  /// > to ensure good performance. Database adapters may pipeline bulk
-  /// > insertions through multiple statements inside a transaction.
-  ///
-  /// Returns a [Insert] statement on which `.execute` must be
-  /// called for the rows to be inserted.
-  Insert<Post> insertValuesMapped<T>(
-    Iterable<T> rows, {
-    required String Function(T row) author,
-    required String Function(T row) slug,
-    required String Function(T row) content,
-  }) => $ForGeneratedCode.insertValuesMapped(
-    table: this,
-    rows: rows,
-    mappings: [author, slug, content],
-  );
-
-  /// Delete a single row from the `posts` table, specified by
-  /// _primary key_.
-  ///
-  /// Returns a [DeleteSingle] statement on which `.execute()` must be
-  /// called for the row to be deleted.
-  ///
-  /// To delete multiple rows, using `.where()` to filter which rows
-  /// should be deleted. If you wish to delete all rows, use
-  /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Post> delete(String author, String slug) =>
-      $ForGeneratedCode.deleteSingle(byKey(author, slug), _$Post._$table);
-}
-
-/// Extension methods for building queries against the `posts` table.
-extension QueryPostExt on Query<(Expr<Post>,)> {
-  /// Lookup a single row in `posts` table using the _primary key_.
-  ///
-  /// Returns a [QuerySingle] object, which returns at-most one row,
-  /// when `.fetch()` is called.
-  QuerySingle<(Expr<Post>,)> byKey(String author, String slug) => where(
-    (post) => post.author.equalsValue(author) & post.slug.equalsValue(slug),
-  ).first;
-
-  /// Update all rows in the `posts` table matching this [Query].
-  ///
-  /// The changes to be applied to each row matching this [Query] are
-  /// defined using the [updateBuilder], which is given an [Expr]
-  /// representation of the row being updated and a `set` function to
-  /// specify which fields should be updated. The result of the `set`
-  /// function should always be returned from the `updateBuilder`.
-  ///
-  /// Returns an [Update] statement on which `.execute()` must be called
-  /// for the rows to be updated.
-  ///
-  /// **Example:** decrementing `1` from the `value` field for each row
-  /// where `value > 0`.
-  /// ```dart
-  /// await db.mytable
-  ///   .where((row) => row.value > toExpr(0))
-  ///   .update((row, set) => set(
-  ///     value: row.value - toExpr(1),
-  ///   ))
-  ///   .execute();
-  /// ```
-  ///
-  /// > [!WARNING]
-  /// > The `updateBuilder` callback does not make the update, it builds
-  /// > the expressions for updating the rows. You should **never** invoke
-  /// > the `set` function more than once, and the result should always
-  /// > be returned immediately.
-  Update<Post> update(
-    UpdateSet<Post> Function(
-      Expr<Post> post,
-      UpdateSet<Post> Function({
-        Expr<String> author,
-        Expr<String> slug,
-        Expr<String> content,
-      })
-      set,
-    )
-    updateBuilder,
-  ) => $ForGeneratedCode.update<Post>(
-    this,
-    _$Post._$table,
-    (post) => updateBuilder(
-      post,
-      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
-          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
-    ),
-  );
-
-  /// Query the database for rows in this [Query] in pages of [pageSize]
-  /// rows, ordered by the _primary key_, using _keyset pagination_.
-  ///
-  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
-  /// a separate query. If [startFrom] is given, only rows after [startFrom]
-  /// in the given [order] are returned.
-  ///
-  /// > [!WARNING]
-  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
-  /// > Avoid using this on a `.join` projected to a single row or on a
-  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
-  /// > use `.take` on the returned [Stream].
-  $Stream<Post> pagedByKey({
-    $Order order = $Order.ascending,
-    int pageSize = 100,
-    Post? startFrom,
-  }) => pagedBy(
-    (row) => [(row.author, order), (row.slug, order)],
-    pageSize: pageSize,
-    startFrom: startFrom,
-  );
-
-  /// Delete all rows in the `posts` table matching this [Query].
-  ///
-  /// Returns a [Delete] statement on which `.execute()` must be called
-  /// for the rows to be deleted.
-  Delete<Post> delete() => $ForGeneratedCode.delete(this, _$Post._$table);
-}
-
-/// Extension methods for building point queries against the `posts` table.
-extension QuerySinglePostExt on QuerySingle<(Expr<Post>,)> {
-  /// Update the row (if any) in the `posts` table matching this
-  /// [QuerySingle].
-  ///
-  /// The changes to be applied to the row matching this [QuerySingle] are
-  /// defined using the [updateBuilder], which is given an [Expr]
-  /// representation of the row being updated and a `set` function to
-  /// specify which fields should be updated. The result of the `set`
-  /// function should always be returned from the `updateBuilder`.
-  ///
-  /// Returns an [UpdateSingle] statement on which `.execute()` must be
-  /// called for the row to be updated. The resulting statement will
-  /// **not** fail, if there are no rows matching this query exists.
-  ///
-  /// **Example:** decrementing `1` from the `value` field the row with
-  /// `id = 1`.
-  /// ```dart
-  /// await db.mytable
-  ///   .byKey(1)
-  ///   .update((row, set) => set(
-  ///     value: row.value - toExpr(1),
-  ///   ))
-  ///   .execute();
-  /// ```
-  ///
-  /// > [!WARNING]
-  /// > The `updateBuilder` callback does not make the update, it builds
-  /// > the expressions for updating the rows. You should **never** invoke
-  /// > the `set` function more than once, and the result should always
-  /// > be returned immediately.
-  UpdateSingle<Post> update(
-    UpdateSet<Post> Function(
-      Expr<Post> post,
-      UpdateSet<Post> Function({
-        Expr<String> author,
-        Expr<String> slug,
-        Expr<String> content,
-      })
-      set,
-    )
-    updateBuilder,
-  ) => $ForGeneratedCode.updateSingle<Post>(
-    this,
-    _$Post._$table,
-    (post) => updateBuilder(
-      post,
-      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
-          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
-    ),
-  );
-
-  /// Delete the row (if any) in the `posts` table matching this [QuerySingle].
-  ///
-  /// Returns a [DeleteSingle] statement on which `.execute()` must be called
-  /// for the row to be deleted. The resulting statement will **not**
-  /// fail, if there are no rows matching this query exists.
-  DeleteSingle<Post> delete() =>
-      $ForGeneratedCode.deleteSingle(this, _$Post._$table);
-}
-
-/// Extension methods for expressions on a row in the `posts` table.
-extension ExpressionPostExt on Expr<Post> {
-  Expr<String> get author =>
-      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.text);
-
-  Expr<String> get slug =>
-      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  Expr<String> get content =>
-      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
-
-  /// Get [SubQuery] of rows from the `comments` table which
-  /// reference this row.
-  ///
-  /// This returns a [SubQuery] of [Comment] rows,
-  /// where [Comment.author], [Comment.postSlug]
-  /// references [Post.author], [Post.slug]
-  /// in this row.
-  SubQuery<(Expr<Comment>,)> get comments => $ForGeneratedCode
-      .subqueryTable(_$Comment._$table)
-      .where(
-        (r) =>
-            r.author.equalsUnlessNull(author) &
-            r.postSlug.equalsUnlessNull(slug),
-      );
-}
-
-extension ExpressionNullablePostExt on Expr<Post?> {
-  Expr<String?> get author =>
-      $ForGeneratedCode.field(this, 0, $ForGeneratedCode.text);
-
-  Expr<String?> get slug =>
-      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
-
-  Expr<String?> get content =>
-      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
-
-  /// Get [SubQuery] of rows from the `comments` table which
-  /// reference this row.
-  ///
-  /// This returns a [SubQuery] of [Comment] rows,
-  /// where [Comment.author], [Comment.postSlug]
-  /// references [Post.author], [Post.slug]
-  /// in this row, if any.
-  ///
-  /// If this row is `NULL` the subquery is always be empty.
-  SubQuery<(Expr<Comment>,)> get comments => $ForGeneratedCode
-      .subqueryTable(_$Comment._$table)
-      .where(
-        (r) =>
-            r.author.equalsUnlessNull(author) &
-            r.postSlug.equalsUnlessNull(slug),
-      );
-
-  /// Check if the row is not `NULL`.
-  ///
-  /// This will check if _primary key_ fields in this row are `NULL`.
-  ///
-  /// If this is a reference lookup by subquery it might be more efficient
-  /// to check if the referencing field is `NULL`.
-  Expr<bool> isNotNull() => author.isNotNull() & slug.isNotNull();
-
-  /// Check if the row is `NULL`.
-  ///
-  /// This will check if _primary key_ fields in this row are `NULL`.
-  ///
-  /// If this is a reference lookup by subquery it might be more efficient
-  /// to check if the referencing field is `NULL`.
-  Expr<bool> isNull() => isNotNull().not();
-}
-
-extension InnerJoinPostCommentExt
-    on InnerJoin<(Expr<Post>,), (Expr<Comment>,)> {
-  /// Join using the `post` _foreign key_.
-  ///
-  /// This will match rows where [Post.author] = [Comment.author] and [Post.slug] = [Comment.postSlug].
-  Query<(Expr<Post>, Expr<Comment>)> usingPost() => on(
-    (a, b) =>
-        a.author.equalsUnlessNull(b.author) &
-        a.slug.equalsUnlessNull(b.postSlug),
-  );
-}
-
-extension LeftJoinPostCommentExt on LeftJoin<(Expr<Post>,), (Expr<Comment>,)> {
-  /// Join using the `post` _foreign key_.
-  ///
-  /// This will match rows where [Post.author] = [Comment.author] and [Post.slug] = [Comment.postSlug].
-  Query<(Expr<Post>, Expr<Comment?>)> usingPost() => on(
-    (a, b) =>
-        a.author.equalsUnlessNull(b.author) &
-        a.slug.equalsUnlessNull(b.postSlug),
-  );
-}
-
-extension RightJoinPostCommentExt
-    on RightJoin<(Expr<Post>,), (Expr<Comment>,)> {
-  /// Join using the `post` _foreign key_.
-  ///
-  /// This will match rows where [Post.author] = [Comment.author] and [Post.slug] = [Comment.postSlug].
-  Query<(Expr<Post?>, Expr<Comment>)> usingPost() => on(
-    (a, b) =>
-        a.author.equalsUnlessNull(b.author) &
-        a.slug.equalsUnlessNull(b.postSlug),
-  );
-}
-
-/// `Table<Post>` conflict targets for use with `.onConflict`.
-enum PostConflict {
-  /// Conflict with an existing row that has a matching primary key.
-  ///
-  /// Thus, the other row has matching values for:
-  /// `author`, `slug`.
-  primaryKey(['author', 'slug']);
-
-  const PostConflict(this._fields);
-
-  final List<String> _fields;
-}
-
-extension InsertPostExt on Insert<Post> {
-  /// Build an `INSERT` statement with an `ON CONFLICT` clause.
-  ///
-  /// The [target] argument specifies the _conflict target_ to be
-  /// handled. The _conflict target_ is always a `UNIQUE` constraint or
-  /// `PRIMARY KEY` constraint.
-  ///
-  /// If a row to be inserted violates the _conflict target_ constraint,
-  /// then the conflict action is triggered:
-  /// * `.doNothing()` to skip insertion of the new row, and,
-  /// * `.update((post, excluded, set) => set(...))` to
-  ///   update the conflicting row.
-  ///
-  /// If a row to be inserted violates a constraint other than the one
-  /// specified in _conflict target_ then the entire `INSERT` statement
-  /// will fail.
-  ///
-  /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
-  InsertOnConflict<Post> onConflict(PostConflict target) =>
-      $ForGeneratedCode.insertOnConflict(this, target._fields);
-}
-
-extension InsertOnConflictPostExt on InsertOnConflict<Post> {
-  /// Build an `INSERT` statement an [upsert-clause][1].
-  ///
-  /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
-  /// constraint previously specified as _conflict target_, the existing
-  /// row is updated using the expressions defined with the
-  /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
-  ///   * `post` an [Expr] representing the existing row in
-  ///     the database,
-  ///   * `excluded` an [Expr] representing the row to be inserted in the
-  ///     database, and,
-  ///   * `set` a function to specify which fields should be updated and
-  ///     build the [UpdateSet].
-  ///
-  /// The result of the `set` function should always be immediately
-  /// returned from the [updateBuilder].
-  ///
-  /// **Example:** Insert a counter with `count = 2` or increment the
-  /// existing row, if a `PRIMARY KEY` conflict occurs.
-  /// ```dart
-  /// await db.counters.insertValue(
-  ///     name: 'my-counter', // primary key
-  ///     count: 2,
-  ///   )
-  ///   .onConflict(.primaryKey)
-  ///   .update((counter, excluded, set) => set(
-  ///     count: counter.count + excluded.count,
-  ///   ))
-  ///   .execute();
-  /// ```
-  ///
-  /// This is equivalent to
-  /// `INSERT ... ON CONFLICT (...) UPDATE SET ...` in SQL.
-  ///
-  /// > [!WARNING]
-  /// > The `updateBuilder` callback does not make the update, it builds
-  /// > the expressions for updating the rows. You should **never** invoke
-  /// > the `set` function more than once, and the result should always
-  /// > be returned immediately.
-  ///
-  /// [1]: https://www.sqlite.org/lang_upsert.html
-  Upsert<Post> update(
-    UpdateSet<Post> Function(
-      Expr<Post> post,
-      Expr<Post> excluded,
-      UpdateSet<Post> Function({
-        Expr<String> author,
-        Expr<String> slug,
-        Expr<String> content,
-      })
-      set,
-    )
-    updateBuilder,
-  ) => $ForGeneratedCode.updateOnConflict<Post>(
-    this,
-    (post, excluded) => updateBuilder(
-      post,
-      excluded,
-      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
-          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
-    ),
-  );
-}
-
-extension InsertSinglePostExt on InsertSingle<Post> {
-  /// Build an `INSERT` statement with an `ON CONFLICT` clause.
-  ///
-  /// The [target] argument specifies the _conflict target_ to be
-  /// handled. The _conflict target_ is always a `UNIQUE` constraint or
-  /// `PRIMARY KEY` constraint.
-  ///
-  /// If a row to be inserted violates the _conflict target_ constraint,
-  /// then the conflict action is triggered:
-  /// * `.doNothing()` to skip insertion of the new row, and,
-  /// * `.update((post, excluded, set) => set(...))` to
-  ///   update the conflicting row.
-  ///
-  /// If a row to be inserted violates a constraint other than the one
-  /// specified in _conflict target_ then the entire `INSERT` statement
-  /// will fail.
-  ///
-  /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
-  InsertOnConflictSingle<Post> onConflict(PostConflict target) =>
-      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
-}
-
-extension InsertOnConflictSinglePostExt on InsertOnConflictSingle<Post> {
-  /// Build an `INSERT` statement an [upsert-clause][1].
-  ///
-  /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
-  /// constraint previously specified as _conflict target_, the existing
-  /// row is updated using the expressions defined with the
-  /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
-  ///   * `post` an [Expr] representing the existing row in
-  ///     the database,
-  ///   * `excluded` an [Expr] representing the row to be inserted in the
-  ///     database, and,
-  ///   * `set` a function to specify which fields should be updated and
-  ///     build the [UpdateSet].
-  ///
-  /// The result of the `set` function should always be immediately
-  /// returned from the [updateBuilder].
-  ///
-  /// **Example:** Insert a counter with `count = 2` or increment the
-  /// existing row, if a `PRIMARY KEY` conflict occurs.
-  /// ```dart
-  /// await db.counters.insertValue(
-  ///     name: 'my-counter', // primary key
-  ///     count: 2,
-  ///   )
-  ///   .onConflict(.primaryKey)
-  ///   .update((counter, excluded, set) => set(
-  ///     count: counter.count + excluded.count,
-  ///   ))
-  ///   .execute();
-  /// ```
-  ///
-  /// This is equivalent to
-  /// `INSERT ... ON CONFLICT (...) UPDATE SET ...` in SQL.
-  ///
-  /// > [!WARNING]
-  /// > The `updateBuilder` callback does not make the update, it builds
-  /// > the expressions for updating the rows. You should **never** invoke
-  /// > the `set` function more than once, and the result should always
-  /// > be returned immediately.
-  ///
-  /// [1]: https://www.sqlite.org/lang_upsert.html
-  UpsertSingle<Post> update(
-    UpdateSet<Post> Function(
-      Expr<Post> post,
-      Expr<Post> excluded,
-      UpdateSet<Post> Function({
-        Expr<String> author,
-        Expr<String> slug,
-        Expr<String> content,
-      })
-      set,
-    )
-    updateBuilder,
-  ) => $ForGeneratedCode.updateOnConflictSingle<Post>(
-    this,
-    (post, excluded) => updateBuilder(
-      post,
-      excluded,
-      ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
-          $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
-    ),
-  );
-}
-
-final class _$Comment extends Comment {
-  _$Comment._(this.commentId, this.author, this.postSlug, this.comment);
-
-  @override
-  final int commentId;
-
-  @override
-  final String author;
-
-  @override
-  final String postSlug;
-
-  @override
-  final String comment;
-
-  static final _$table = $ForGeneratedCode.tableDefinition(
-    tableName: 'comments',
-    columns: <String>['commentId', 'author', 'postSlug', 'comment'],
+    tableName: 'users',
+    columns: <String>['userId', 'email', 'firstName', 'lastName', 'nickname'],
     columnInfo: [
       $ForGeneratedCode.columnDefinition(
         type: $ForGeneratedCode.integer,
@@ -727,143 +113,176 @@ final class _$Comment extends Comment {
         isNotNull: true,
         defaultValue: null,
         autoIncrement: false,
-        overrides: [],
+        overrides: [
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
+        ],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: false,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
+        ],
       ),
     ],
-    primaryKey: <String>['commentId'],
-    unique: <List<String>>[],
-    foreignKeys: [
-      $ForGeneratedCode.foreignKeyDefinition(
-        name: 'post',
-        columns: ['author', 'postSlug'],
-        referencedTable: 'posts',
-        referencedColumns: ['author', 'slug'],
-        onDelete: .noAction,
-        onUpdate: .noAction,
-      ),
+    primaryKey: <String>['userId'],
+    unique: <List<String>>[
+      ['email'],
+      ['nickname'],
+      ['firstName', 'lastName'],
     ],
+    foreignKeys: [],
     indexes: [],
-    readRow: _$Comment._$fromDatabase,
+    readRow: _$User._$fromDatabase,
     fieldReaders: [
-      (Comment r) => r.commentId,
-      (Comment r) => r.author,
-      (Comment r) => r.postSlug,
-      (Comment r) => r.comment,
+      (User r) => r.userId,
+      (User r) => r.email,
+      (User r) => r.firstName,
+      (User r) => r.lastName,
+      (User r) => r.nickname,
     ],
   );
 
-  static Comment? _$fromDatabase(RowReader row) {
-    final commentId = row.readInt();
-    final author = row.readString();
-    final postSlug = row.readString();
-    final comment = row.readString();
-    if (commentId == null &&
-        author == null &&
-        postSlug == null &&
-        comment == null) {
+  static User? _$fromDatabase(RowReader row) {
+    final userId = row.readInt();
+    final email = row.readString();
+    final firstName = row.readString();
+    final lastName = row.readString();
+    final nickname = row.readString();
+    if (userId == null &&
+        email == null &&
+        firstName == null &&
+        lastName == null &&
+        nickname == null) {
       return null;
     }
-    return _$Comment._(commentId!, author!, postSlug!, comment!);
+    return _$User._(userId!, email!, firstName!, lastName!, nickname);
   }
 
   @override
   String toString() =>
-      'Comment(commentId: "$commentId", author: "$author", postSlug: "$postSlug", comment: "$comment")';
+      'User(userId: "$userId", email: "$email", firstName: "$firstName", lastName: "$lastName", nickname: "$nickname")';
 }
 
-/// Extension methods for table defined in [Comment].
-extension TableCommentExt on Table<Comment> {
-  /// Insert row into the `comments` table.
+/// Extension methods for table defined in [User].
+extension TableUserExt on Table<User> {
+  /// Insert row into the `users` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Comment> insert({
-    required Expr<int> commentId,
-    required Expr<String> author,
-    required Expr<String> postSlug,
-    required Expr<String> comment,
+  InsertSingle<User> insert({
+    required Expr<int> userId,
+    required Expr<String> email,
+    required Expr<String> firstName,
+    required Expr<String> lastName,
+    Expr<String?>? nickname,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [commentId, author, postSlug, comment],
+    values: [userId, email, firstName, lastName, nickname],
   );
 
-  /// Insert row into the `comments` table, or update the
+  /// Insert row into the `users` table, or update the
   /// existing row if it conflicts with the _primary key_.
   ///
   /// This is a shorthand for calling `.insert(...)` followed by
   /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
-  /// the fields `author`, `postSlug`, `comment`,
+  /// the fields `email`, `firstName`, `lastName`, `nickname`,
   /// with the values given, leaving the _primary key_ untouched.
   ///
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
-  UpsertSingle<Comment> upsert({
-    required Expr<int> commentId,
-    required Expr<String> author,
-    required Expr<String> postSlug,
-    required Expr<String> comment,
+  UpsertSingle<User> upsert({
+    required Expr<int> userId,
+    required Expr<String> email,
+    required Expr<String> firstName,
+    required Expr<String> lastName,
+    Expr<String?>? nickname,
   }) =>
       insert(
-            commentId: commentId,
-            author: author,
-            postSlug: postSlug,
-            comment: comment,
+            userId: userId,
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            nickname: nickname,
           )
           .onConflict(.primaryKey)
           .update(
             (_, excluded, set) => set(
-              author: excluded.author,
-              postSlug: excluded.postSlug,
-              comment: excluded.comment,
+              email: excluded.email,
+              firstName: excluded.firstName,
+              lastName: excluded.lastName,
+              nickname: excluded.nickname,
             ),
           );
 
-  /// Insert row into the `comments` table.
+  /// Insert row into the `users` table.
   ///
   /// Returns a [InsertSingle] statement on which `.execute` must be
   /// called for the row to be inserted.
-  InsertSingle<Comment> insertValue({
-    required int commentId,
-    required String author,
-    required String postSlug,
-    required String comment,
+  InsertSingle<User> insertValue({
+    required int userId,
+    required String email,
+    required String firstName,
+    required String lastName,
+    String? nickname,
   }) => $ForGeneratedCode.insertInto(
     table: this,
-    values: [commentId.asExpr, author.asExpr, postSlug.asExpr, comment.asExpr],
+    values: [
+      userId.asExpr,
+      email.asExpr,
+      firstName.asExpr,
+      lastName.asExpr,
+      nickname.asExpr,
+    ],
   );
 
-  /// Insert row into the `comments` table, or update the
+  /// Insert row into the `users` table, or update the
   /// existing row if it conflicts with the _primary key_.
   ///
   /// This is a shorthand for calling `.insertValue(...)` followed by
   /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
-  /// the fields `author`, `postSlug`, `comment`,
+  /// the fields `email`, `firstName`, `lastName`, `nickname`,
   /// with the values given, leaving the _primary key_ untouched.
   ///
   /// Returns an [UpsertSingle] statement on which `.execute()` must be
   /// called for the row to be inserted or updated.
-  UpsertSingle<Comment> upsertValue({
-    required int commentId,
-    required String author,
-    required String postSlug,
-    required String comment,
+  UpsertSingle<User> upsertValue({
+    required int userId,
+    required String email,
+    required String firstName,
+    required String lastName,
+    String? nickname,
   }) =>
       insertValue(
-            commentId: commentId,
-            author: author,
-            postSlug: postSlug,
-            comment: comment,
+            userId: userId,
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            nickname: nickname,
           )
           .onConflict(.primaryKey)
           .update(
             (_, excluded, set) => set(
-              author: excluded.author,
-              postSlug: excluded.postSlug,
-              comment: excluded.comment,
+              email: excluded.email,
+              firstName: excluded.firstName,
+              lastName: excluded.lastName,
+              nickname: excluded.nickname,
             ),
           );
 
-  /// Bulk insert rows into the `comments` table.
+  /// Bulk insert rows into the `users` table.
   ///
   /// This method takes an `Iterable<T>` and requires that you provide
   /// a _mapping function_ from `T` to each column to be inserted.
@@ -880,19 +299,20 @@ extension TableCommentExt on Table<Comment> {
   ///
   /// Returns a [Insert] statement on which `.execute` must be
   /// called for the rows to be inserted.
-  Insert<Comment> insertValuesMapped<T>(
+  Insert<User> insertValuesMapped<T>(
     Iterable<T> rows, {
-    required int Function(T row) commentId,
-    required String Function(T row) author,
-    required String Function(T row) postSlug,
-    required String Function(T row) comment,
+    required int Function(T row) userId,
+    required String Function(T row) email,
+    required String Function(T row) firstName,
+    required String Function(T row) lastName,
+    String? Function(T row)? nickname,
   }) => $ForGeneratedCode.insertValuesMapped(
     table: this,
     rows: rows,
-    mappings: [commentId, author, postSlug, comment],
+    mappings: [userId, email, firstName, lastName, nickname],
   );
 
-  /// Delete a single row from the `comments` table, specified by
+  /// Delete a single row from the `users` table, specified by
   /// _primary key_.
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be
@@ -901,20 +321,20 @@ extension TableCommentExt on Table<Comment> {
   /// To delete multiple rows, using `.where()` to filter which rows
   /// should be deleted. If you wish to delete all rows, use
   /// `.where((_) => toExpr(true)).delete()`.
-  DeleteSingle<Comment> delete(int commentId) =>
-      $ForGeneratedCode.deleteSingle(byKey(commentId), _$Comment._$table);
+  DeleteSingle<User> delete(int userId) =>
+      $ForGeneratedCode.deleteSingle(byKey(userId), _$User._$table);
 }
 
-/// Extension methods for building queries against the `comments` table.
-extension QueryCommentExt on Query<(Expr<Comment>,)> {
-  /// Lookup a single row in `comments` table using the _primary key_.
+/// Extension methods for building queries against the `users` table.
+extension QueryUserExt on Query<(Expr<User>,)> {
+  /// Lookup a single row in `users` table using the _primary key_.
   ///
   /// Returns a [QuerySingle] object, which returns at-most one row,
   /// when `.fetch()` is called.
-  QuerySingle<(Expr<Comment>,)> byKey(int commentId) =>
-      where((comment) => comment.commentId.equalsValue(commentId)).first;
+  QuerySingle<(Expr<User>,)> byKey(int userId) =>
+      where((user) => user.userId.equalsValue(userId)).first;
 
-  /// Update all rows in the `comments` table matching this [Query].
+  /// Update all rows in the `users` table matching this [Query].
   ///
   /// The changes to be applied to each row matching this [Query] are
   /// defined using the [updateBuilder], which is given an [Expr]
@@ -941,36 +361,76 @@ extension QueryCommentExt on Query<(Expr<Comment>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  Update<Comment> update(
-    UpdateSet<Comment> Function(
-      Expr<Comment> comment,
-      UpdateSet<Comment> Function({
-        Expr<int> commentId,
-        Expr<String> author,
-        Expr<String> postSlug,
-        Expr<String> comment,
+  Update<User> update(
+    UpdateSet<User> Function(
+      Expr<User> user,
+      UpdateSet<User> Function({
+        Expr<int> userId,
+        Expr<String> email,
+        Expr<String> firstName,
+        Expr<String> lastName,
+        Expr<String?> nickname,
       })
       set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.update<Comment>(
+  ) => $ForGeneratedCode.update<User>(
     this,
-    _$Comment._$table,
-    (comment) => updateBuilder(
-      comment,
+    _$User._$table,
+    (user) => updateBuilder(
+      user,
       ({
-        Expr<int>? commentId,
-        Expr<String>? author,
-        Expr<String>? postSlug,
-        Expr<String>? comment,
-      }) => $ForGeneratedCode.buildUpdate<Comment>([
-        commentId,
-        author,
-        postSlug,
-        comment,
+        Expr<int>? userId,
+        Expr<String>? email,
+        Expr<String>? firstName,
+        Expr<String>? lastName,
+        Expr<String?>? nickname,
+      }) => $ForGeneratedCode.buildUpdate<User>([
+        userId,
+        email,
+        firstName,
+        lastName,
+        nickname,
       ]),
     ),
   );
+
+  /// Lookup a single row in `users` table using the
+  /// `email` field
+  ///
+  /// We know that lookup by the `email` field returns
+  /// at-most one row because the [Unique] annotation in [User].
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
+  QuerySingle<(Expr<User>,)> byEmail(String email) =>
+      where((user) => user.email.equalsValue(email)).first;
+
+  /// Lookup a single row in `users` table using the
+  /// `nickname` field
+  ///
+  /// We know that lookup by the `nickname` field returns
+  /// at-most one row because the [Unique] annotation in [User].
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
+  QuerySingle<(Expr<User>,)> byNickname(String nickname) =>
+      where((user) => user.nickname.equalsValue(nickname)).first;
+
+  /// Lookup a single row in `users` table using the
+  /// `firstName`, `lastName` fields
+  ///
+  /// We know that lookup by the `firstName`, `lastName` fields returns
+  /// at-most one row because the [Unique] annotation in [User].
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
+  QuerySingle<(Expr<User>,)> byFullName(String firstName, String lastName) =>
+      where(
+        (user) =>
+            user.firstName.equalsValue(firstName) &
+            user.lastName.equalsValue(lastName),
+      ).first;
 
   /// Query the database for rows in this [Query] in pages of [pageSize]
   /// rows, ordered by the _primary key_, using _keyset pagination_.
@@ -984,26 +444,70 @@ extension QueryCommentExt on Query<(Expr<Comment>,)> {
   /// > Avoid using this on a `.join` projected to a single row or on a
   /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
   /// > use `.take` on the returned [Stream].
-  $Stream<Comment> pagedByKey({
+  $Stream<User> pagedByKey({
     $Order order = $Order.ascending,
     int pageSize = 100,
-    Comment? startFrom,
+    User? startFrom,
   }) => pagedBy(
-    (row) => [(row.commentId, order)],
+    (row) => [(row.userId, order)],
     pageSize: pageSize,
     startFrom: startFrom,
   );
 
-  /// Delete all rows in the `comments` table matching this [Query].
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `email` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<User> pagedByEmail({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    User? startFrom,
+  }) => pagedBy(
+    (row) => [(row.email, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique combination of `firstName`, `lastName`, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<User> pagedByFullName({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    User? startFrom,
+  }) => pagedBy(
+    (row) => [(row.firstName, order), (row.lastName, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Delete all rows in the `users` table matching this [Query].
   ///
   /// Returns a [Delete] statement on which `.execute()` must be called
   /// for the rows to be deleted.
-  Delete<Comment> delete() => $ForGeneratedCode.delete(this, _$Comment._$table);
+  Delete<User> delete() => $ForGeneratedCode.delete(this, _$User._$table);
 }
 
-/// Extension methods for building point queries against the `comments` table.
-extension QuerySingleCommentExt on QuerySingle<(Expr<Comment>,)> {
-  /// Update the row (if any) in the `comments` table matching this
+/// Extension methods for building point queries against the `users` table.
+extension QuerySingleUserExt on QuerySingle<(Expr<User>,)> {
+  /// Update the row (if any) in the `users` table matching this
   /// [QuerySingle].
   ///
   /// The changes to be applied to the row matching this [QuerySingle] are
@@ -1032,108 +536,84 @@ extension QuerySingleCommentExt on QuerySingle<(Expr<Comment>,)> {
   /// > the expressions for updating the rows. You should **never** invoke
   /// > the `set` function more than once, and the result should always
   /// > be returned immediately.
-  UpdateSingle<Comment> update(
-    UpdateSet<Comment> Function(
-      Expr<Comment> comment,
-      UpdateSet<Comment> Function({
-        Expr<int> commentId,
-        Expr<String> author,
-        Expr<String> postSlug,
-        Expr<String> comment,
+  UpdateSingle<User> update(
+    UpdateSet<User> Function(
+      Expr<User> user,
+      UpdateSet<User> Function({
+        Expr<int> userId,
+        Expr<String> email,
+        Expr<String> firstName,
+        Expr<String> lastName,
+        Expr<String?> nickname,
       })
       set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateSingle<Comment>(
+  ) => $ForGeneratedCode.updateSingle<User>(
     this,
-    _$Comment._$table,
-    (comment) => updateBuilder(
-      comment,
+    _$User._$table,
+    (user) => updateBuilder(
+      user,
       ({
-        Expr<int>? commentId,
-        Expr<String>? author,
-        Expr<String>? postSlug,
-        Expr<String>? comment,
-      }) => $ForGeneratedCode.buildUpdate<Comment>([
-        commentId,
-        author,
-        postSlug,
-        comment,
+        Expr<int>? userId,
+        Expr<String>? email,
+        Expr<String>? firstName,
+        Expr<String>? lastName,
+        Expr<String?>? nickname,
+      }) => $ForGeneratedCode.buildUpdate<User>([
+        userId,
+        email,
+        firstName,
+        lastName,
+        nickname,
       ]),
     ),
   );
 
-  /// Delete the row (if any) in the `comments` table matching this [QuerySingle].
+  /// Delete the row (if any) in the `users` table matching this [QuerySingle].
   ///
   /// Returns a [DeleteSingle] statement on which `.execute()` must be called
   /// for the row to be deleted. The resulting statement will **not**
   /// fail, if there are no rows matching this query exists.
-  DeleteSingle<Comment> delete() =>
-      $ForGeneratedCode.deleteSingle(this, _$Comment._$table);
+  DeleteSingle<User> delete() =>
+      $ForGeneratedCode.deleteSingle(this, _$User._$table);
 }
 
-/// Extension methods for expressions on a row in the `comments` table.
-extension ExpressionCommentExt on Expr<Comment> {
-  Expr<int> get commentId =>
+/// Extension methods for expressions on a row in the `users` table.
+extension ExpressionUserExt on Expr<User> {
+  Expr<int> get userId =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String> get author =>
+  Expr<String> get email =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
-  Expr<String> get postSlug =>
+  Expr<String> get firstName =>
       $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
-  Expr<String> get comment =>
+  Expr<String> get lastName =>
       $ForGeneratedCode.field(this, 3, $ForGeneratedCode.text);
 
-  /// Do a subquery lookup of the row from table
-  /// `posts` referenced in
-  /// [author], [postSlug].
-  ///
-  /// The gets the row from table `posts` where
-  /// [Post.author], [Post.slug]
-  /// is equal to [author], [postSlug].
-  Expr<Post> get post => $ForGeneratedCode
-      .subqueryTable(_$Post._$table)
-      .where(
-        (r) =>
-            r.author.equalsUnlessNull(author) &
-            r.slug.equalsUnlessNull(postSlug),
-      )
-      .first
-      .asNotNull();
+  /// Nullable, so `.pagedByNickname` is not generated.
+  Expr<String?> get nickname =>
+      $ForGeneratedCode.field(this, 4, $ForGeneratedCode.text);
 }
 
-extension ExpressionNullableCommentExt on Expr<Comment?> {
-  Expr<int?> get commentId =>
+extension ExpressionNullableUserExt on Expr<User?> {
+  Expr<int?> get userId =>
       $ForGeneratedCode.field(this, 0, $ForGeneratedCode.integer);
 
-  Expr<String?> get author =>
+  Expr<String?> get email =>
       $ForGeneratedCode.field(this, 1, $ForGeneratedCode.text);
 
-  Expr<String?> get postSlug =>
+  Expr<String?> get firstName =>
       $ForGeneratedCode.field(this, 2, $ForGeneratedCode.text);
 
-  Expr<String?> get comment =>
+  Expr<String?> get lastName =>
       $ForGeneratedCode.field(this, 3, $ForGeneratedCode.text);
 
-  /// Do a subquery lookup of the row from table
-  /// `posts` referenced in
-  /// [author], [postSlug].
-  ///
-  /// The gets the row from table `posts` where
-  /// [Post.author], [Post.slug]
-  /// is equal to [author], [postSlug], if any.
-  ///
-  /// If this row is `NULL` the subquery is always return `NULL`.
-  Expr<Post?> get post => $ForGeneratedCode
-      .subqueryTable(_$Post._$table)
-      .where(
-        (r) =>
-            r.author.equalsUnlessNull(author) &
-            r.slug.equalsUnlessNull(postSlug),
-      )
-      .first;
+  /// Nullable, so `.pagedByNickname` is not generated.
+  Expr<String?> get nickname =>
+      $ForGeneratedCode.field(this, 4, $ForGeneratedCode.text);
 
   /// Check if the row is not `NULL`.
   ///
@@ -1141,7 +621,7 @@ extension ExpressionNullableCommentExt on Expr<Comment?> {
   ///
   /// If this is a reference lookup by subquery it might be more efficient
   /// to check if the referencing field is `NULL`.
-  Expr<bool> isNotNull() => commentId.isNotNull();
+  Expr<bool> isNotNull() => userId.isNotNull();
 
   /// Check if the row is `NULL`.
   ///
@@ -1152,55 +632,44 @@ extension ExpressionNullableCommentExt on Expr<Comment?> {
   Expr<bool> isNull() => isNotNull().not();
 }
 
-extension InnerJoinCommentPostExt
-    on InnerJoin<(Expr<Comment>,), (Expr<Post>,)> {
-  /// Join using the `post` _foreign key_.
-  ///
-  /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
-  Query<(Expr<Comment>, Expr<Post>)> usingPost() => on(
-    (a, b) =>
-        b.author.equalsUnlessNull(a.author) &
-        b.slug.equalsUnlessNull(a.postSlug),
-  );
-}
-
-extension LeftJoinCommentPostExt on LeftJoin<(Expr<Comment>,), (Expr<Post>,)> {
-  /// Join using the `post` _foreign key_.
-  ///
-  /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
-  Query<(Expr<Comment>, Expr<Post?>)> usingPost() => on(
-    (a, b) =>
-        b.author.equalsUnlessNull(a.author) &
-        b.slug.equalsUnlessNull(a.postSlug),
-  );
-}
-
-extension RightJoinCommentPostExt
-    on RightJoin<(Expr<Comment>,), (Expr<Post>,)> {
-  /// Join using the `post` _foreign key_.
-  ///
-  /// This will match rows where [Comment.author] = [Post.author] and [Comment.postSlug] = [Post.slug].
-  Query<(Expr<Comment?>, Expr<Post>)> usingPost() => on(
-    (a, b) =>
-        b.author.equalsUnlessNull(a.author) &
-        b.slug.equalsUnlessNull(a.postSlug),
-  );
-}
-
-/// `Table<Comment>` conflict targets for use with `.onConflict`.
-enum CommentConflict {
+/// `Table<User>` conflict targets for use with `.onConflict`.
+enum UserConflict {
   /// Conflict with an existing row that has a matching primary key.
   ///
   /// Thus, the other row has matching values for:
-  /// `commentId`.
-  primaryKey(['commentId']);
+  /// `userId`.
+  primaryKey(['userId']),
 
-  const CommentConflict(this._fields);
+  /// `email` conflict.
+  ///
+  /// Due to violation of the `UNIQUE` constraint on
+  /// `email`.
+  ///
+  /// Thus, the conflicting row has matching values for these fields.
+  email(['email']),
+
+  /// `nickname` conflict.
+  ///
+  /// Due to violation of the `UNIQUE` constraint on
+  /// `nickname`.
+  ///
+  /// Thus, the conflicting row has matching values for these fields.
+  nickname(['nickname']),
+
+  /// `firstName`, `lastName` conflict.
+  ///
+  /// Due to violation of the `UNIQUE` constraint on
+  /// `firstName`, `lastName`.
+  ///
+  /// Thus, the conflicting row has matching values for these fields.
+  fullName(['firstName', 'lastName']);
+
+  const UserConflict(this._fields);
 
   final List<String> _fields;
 }
 
-extension InsertCommentExt on Insert<Comment> {
+extension InsertUserExt on Insert<User> {
   /// Build an `INSERT` statement with an `ON CONFLICT` clause.
   ///
   /// The [target] argument specifies the _conflict target_ to be
@@ -1210,7 +679,7 @@ extension InsertCommentExt on Insert<Comment> {
   /// If a row to be inserted violates the _conflict target_ constraint,
   /// then the conflict action is triggered:
   /// * `.doNothing()` to skip insertion of the new row, and,
-  /// * `.update((comment, excluded, set) => set(...))` to
+  /// * `.update((user, excluded, set) => set(...))` to
   ///   update the conflicting row.
   ///
   /// If a row to be inserted violates a constraint other than the one
@@ -1218,18 +687,18 @@ extension InsertCommentExt on Insert<Comment> {
   /// will fail.
   ///
   /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
-  InsertOnConflict<Comment> onConflict(CommentConflict target) =>
+  InsertOnConflict<User> onConflict(UserConflict target) =>
       $ForGeneratedCode.insertOnConflict(this, target._fields);
 }
 
-extension InsertOnConflictCommentExt on InsertOnConflict<Comment> {
+extension InsertOnConflictUserExt on InsertOnConflict<User> {
   /// Build an `INSERT` statement an [upsert-clause][1].
   ///
   /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
   /// constraint previously specified as _conflict target_, the existing
   /// row is updated using the expressions defined with the
   /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
-  ///   * `comment` an [Expr] representing the existing row in
+  ///   * `user` an [Expr] representing the existing row in
   ///     the database,
   ///   * `excluded` an [Expr] representing the row to be inserted in the
   ///     database, and,
@@ -1263,40 +732,43 @@ extension InsertOnConflictCommentExt on InsertOnConflict<Comment> {
   /// > be returned immediately.
   ///
   /// [1]: https://www.sqlite.org/lang_upsert.html
-  Upsert<Comment> update(
-    UpdateSet<Comment> Function(
-      Expr<Comment> comment,
-      Expr<Comment> excluded,
-      UpdateSet<Comment> Function({
-        Expr<int> commentId,
-        Expr<String> author,
-        Expr<String> postSlug,
-        Expr<String> comment,
+  Upsert<User> update(
+    UpdateSet<User> Function(
+      Expr<User> user,
+      Expr<User> excluded,
+      UpdateSet<User> Function({
+        Expr<int> userId,
+        Expr<String> email,
+        Expr<String> firstName,
+        Expr<String> lastName,
+        Expr<String?> nickname,
       })
       set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateOnConflict<Comment>(
+  ) => $ForGeneratedCode.updateOnConflict<User>(
     this,
-    (comment, excluded) => updateBuilder(
-      comment,
+    (user, excluded) => updateBuilder(
+      user,
       excluded,
       ({
-        Expr<int>? commentId,
-        Expr<String>? author,
-        Expr<String>? postSlug,
-        Expr<String>? comment,
-      }) => $ForGeneratedCode.buildUpdate<Comment>([
-        commentId,
-        author,
-        postSlug,
-        comment,
+        Expr<int>? userId,
+        Expr<String>? email,
+        Expr<String>? firstName,
+        Expr<String>? lastName,
+        Expr<String?>? nickname,
+      }) => $ForGeneratedCode.buildUpdate<User>([
+        userId,
+        email,
+        firstName,
+        lastName,
+        nickname,
       ]),
     ),
   );
 }
 
-extension InsertSingleCommentExt on InsertSingle<Comment> {
+extension InsertSingleUserExt on InsertSingle<User> {
   /// Build an `INSERT` statement with an `ON CONFLICT` clause.
   ///
   /// The [target] argument specifies the _conflict target_ to be
@@ -1306,7 +778,7 @@ extension InsertSingleCommentExt on InsertSingle<Comment> {
   /// If a row to be inserted violates the _conflict target_ constraint,
   /// then the conflict action is triggered:
   /// * `.doNothing()` to skip insertion of the new row, and,
-  /// * `.update((comment, excluded, set) => set(...))` to
+  /// * `.update((user, excluded, set) => set(...))` to
   ///   update the conflicting row.
   ///
   /// If a row to be inserted violates a constraint other than the one
@@ -1314,18 +786,18 @@ extension InsertSingleCommentExt on InsertSingle<Comment> {
   /// will fail.
   ///
   /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
-  InsertOnConflictSingle<Comment> onConflict(CommentConflict target) =>
+  InsertOnConflictSingle<User> onConflict(UserConflict target) =>
       $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
 }
 
-extension InsertOnConflictSingleCommentExt on InsertOnConflictSingle<Comment> {
+extension InsertOnConflictSingleUserExt on InsertOnConflictSingle<User> {
   /// Build an `INSERT` statement an [upsert-clause][1].
   ///
   /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
   /// constraint previously specified as _conflict target_, the existing
   /// row is updated using the expressions defined with the
   /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
-  ///   * `comment` an [Expr] representing the existing row in
+  ///   * `user` an [Expr] representing the existing row in
   ///     the database,
   ///   * `excluded` an [Expr] representing the row to be inserted in the
   ///     database, and,
@@ -1359,68 +831,689 @@ extension InsertOnConflictSingleCommentExt on InsertOnConflictSingle<Comment> {
   /// > be returned immediately.
   ///
   /// [1]: https://www.sqlite.org/lang_upsert.html
-  UpsertSingle<Comment> update(
-    UpdateSet<Comment> Function(
-      Expr<Comment> comment,
-      Expr<Comment> excluded,
-      UpdateSet<Comment> Function({
-        Expr<int> commentId,
-        Expr<String> author,
-        Expr<String> postSlug,
-        Expr<String> comment,
+  UpsertSingle<User> update(
+    UpdateSet<User> Function(
+      Expr<User> user,
+      Expr<User> excluded,
+      UpdateSet<User> Function({
+        Expr<int> userId,
+        Expr<String> email,
+        Expr<String> firstName,
+        Expr<String> lastName,
+        Expr<String?> nickname,
       })
       set,
     )
     updateBuilder,
-  ) => $ForGeneratedCode.updateOnConflictSingle<Comment>(
+  ) => $ForGeneratedCode.updateOnConflictSingle<User>(
     this,
-    (comment, excluded) => updateBuilder(
-      comment,
+    (user, excluded) => updateBuilder(
+      user,
       excluded,
       ({
-        Expr<int>? commentId,
-        Expr<String>? author,
-        Expr<String>? postSlug,
-        Expr<String>? comment,
-      }) => $ForGeneratedCode.buildUpdate<Comment>([
-        commentId,
-        author,
-        postSlug,
-        comment,
+        Expr<int>? userId,
+        Expr<String>? email,
+        Expr<String>? firstName,
+        Expr<String>? lastName,
+        Expr<String?>? nickname,
+      }) => $ForGeneratedCode.buildUpdate<User>([
+        userId,
+        email,
+        firstName,
+        lastName,
+        nickname,
       ]),
     ),
   );
 }
 
-/// Extension methods for assertions on [Comment] using
-/// [`package:checks`][1].
-///
-/// [1]: https://pub.dev/packages/checks
-extension CommentChecks on Subject<Comment> {
-  /// Create assertions on [Comment.commentId].
-  Subject<int> get commentId => has((m) => m.commentId, 'commentId');
+final class _$Event extends Event {
+  _$Event._(this.source, this.created, this.seq);
 
-  /// Create assertions on [Comment.author].
-  Subject<String> get author => has((m) => m.author, 'author');
+  @override
+  final Source source;
 
-  /// Create assertions on [Comment.postSlug].
-  Subject<String> get postSlug => has((m) => m.postSlug, 'postSlug');
+  @override
+  final DateTime created;
 
-  /// Create assertions on [Comment.comment].
-  Subject<String> get comment => has((m) => m.comment, 'comment');
+  @override
+  final double seq;
+
+  static final _$table = $ForGeneratedCode.tableDefinition(
+    tableName: 'events',
+    columns: <String>['source', 'created', 'seq'],
+    columnInfo: [
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.text,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [
+          (
+            dialect: 'mysql',
+            columnType: 'VARCHAR(255)',
+            defaultValue: null,
+            collation: null,
+          ),
+        ],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.dateTime,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+      $ForGeneratedCode.columnDefinition(
+        type: $ForGeneratedCode.real,
+        isNotNull: true,
+        defaultValue: null,
+        autoIncrement: false,
+        overrides: [],
+      ),
+    ],
+    primaryKey: <String>['source', 'created', 'seq'],
+    unique: <List<String>>[],
+    foreignKeys: [],
+    indexes: [],
+    readRow: _$Event._$fromDatabase,
+    fieldReaders: [
+      (Event r) => r.source,
+      (Event r) => r.created,
+      (Event r) => r.seq,
+    ],
+  );
+
+  static Event? _$fromDatabase(RowReader row) {
+    final source = $ForGeneratedCode.customDataTypeOrNull(
+      row.readString(),
+      Source.fromDatabase,
+    );
+    final created = row.readDateTime();
+    final seq = row.readDouble();
+    if (source == null && created == null && seq == null) {
+      return null;
+    }
+    return _$Event._(source!, created!, seq!);
+  }
+
+  @override
+  String toString() =>
+      'Event(source: "$source", created: "$created", seq: "$seq")';
 }
 
-/// Extension methods for assertions on [Post] using
+/// Extension methods for table defined in [Event].
+extension TableEventExt on Table<Event> {
+  /// Insert row into the `events` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Event> insert({
+    required Expr<Source> source,
+    required Expr<DateTime> created,
+    required Expr<double> seq,
+  }) =>
+      $ForGeneratedCode.insertInto(table: this, values: [source, created, seq]);
+
+  /// Insert row into the `events` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insert(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// nothing, as all fields are part of the _primary key_,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Event> upsert({
+    required Expr<Source> source,
+    required Expr<DateTime> created,
+    required Expr<double> seq,
+  }) => insert(
+    source: source,
+    created: created,
+    seq: seq,
+  ).onConflict(.primaryKey).update((_, excluded, set) => set());
+
+  /// Insert row into the `events` table.
+  ///
+  /// Returns a [InsertSingle] statement on which `.execute` must be
+  /// called for the row to be inserted.
+  InsertSingle<Event> insertValue({
+    required Source source,
+    required DateTime created,
+    required double seq,
+  }) => $ForGeneratedCode.insertInto(
+    table: this,
+    values: [source.asExpr, created.asExpr, seq.asExpr],
+  );
+
+  /// Insert row into the `events` table, or update the
+  /// existing row if it conflicts with the _primary key_.
+  ///
+  /// This is a shorthand for calling `.insertValue(...)` followed by
+  /// `.onConflict(.primaryKey)` and `.update(...)` to overwrite
+  /// nothing, as all fields are part of the _primary key_,
+  /// with the values given, leaving the _primary key_ untouched.
+  ///
+  /// Returns an [UpsertSingle] statement on which `.execute()` must be
+  /// called for the row to be inserted or updated.
+  UpsertSingle<Event> upsertValue({
+    required Source source,
+    required DateTime created,
+    required double seq,
+  }) => insertValue(
+    source: source,
+    created: created,
+    seq: seq,
+  ).onConflict(.primaryKey).update((_, excluded, set) => set());
+
+  /// Bulk insert rows into the `events` table.
+  ///
+  /// This method takes an `Iterable<T>` and requires that you provide
+  /// a _mapping function_ from `T` to each column to be inserted.
+  ///
+  /// If a mapping function is omitted, the _default value_ will be
+  /// inserted, or `NULL` if column is nullable and as no default value.
+  /// To explicitely insert `NULL`, use a _mapping function_ that maps
+  /// `T` to `null`.
+  ///
+  /// > [!NOTE]
+  /// > This method aims utilize database specific bulk insertion logic
+  /// > to ensure good performance. Database adapters may pipeline bulk
+  /// > insertions through multiple statements inside a transaction.
+  ///
+  /// Returns a [Insert] statement on which `.execute` must be
+  /// called for the rows to be inserted.
+  Insert<Event> insertValuesMapped<T>(
+    Iterable<T> rows, {
+    required Source Function(T row) source,
+    required DateTime Function(T row) created,
+    required double Function(T row) seq,
+  }) => $ForGeneratedCode.insertValuesMapped(
+    table: this,
+    rows: rows,
+    mappings: [(T v) => source(v).toDatabase(), created, seq],
+  );
+
+  /// Delete a single row from the `events` table, specified by
+  /// _primary key_.
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be
+  /// called for the row to be deleted.
+  ///
+  /// To delete multiple rows, using `.where()` to filter which rows
+  /// should be deleted. If you wish to delete all rows, use
+  /// `.where((_) => toExpr(true)).delete()`.
+  DeleteSingle<Event> delete(Source source, DateTime created, double seq) =>
+      $ForGeneratedCode.deleteSingle(
+        byKey(source, created, seq),
+        _$Event._$table,
+      );
+}
+
+/// Extension methods for building queries against the `events` table.
+extension QueryEventExt on Query<(Expr<Event>,)> {
+  /// Lookup a single row in `events` table using the _primary key_.
+  ///
+  /// Returns a [QuerySingle] object, which returns at-most one row,
+  /// when `.fetch()` is called.
+  QuerySingle<(Expr<Event>,)> byKey(
+    Source source,
+    DateTime created,
+    double seq,
+  ) => where(
+    (event) =>
+        event.source.asEncoded().equalsValue(source.toDatabase()) &
+        event.created.equalsValue(created) &
+        event.seq.equalsValue(seq),
+  ).first;
+
+  /// Update all rows in the `events` table matching this [Query].
+  ///
+  /// The changes to be applied to each row matching this [Query] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [Update] statement on which `.execute()` must be called
+  /// for the rows to be updated.
+  ///
+  /// **Example:** decrementing `1` from the `value` field for each row
+  /// where `value > 0`.
+  /// ```dart
+  /// await db.mytable
+  ///   .where((row) => row.value > toExpr(0))
+  ///   .update((row, set) => set(
+  ///     value: row.value - toExpr(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
+  Update<Event> update(
+    UpdateSet<Event> Function(
+      Expr<Event> event,
+      UpdateSet<Event> Function({
+        Expr<Source> source,
+        Expr<DateTime> created,
+        Expr<double> seq,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.update<Event>(
+    this,
+    _$Event._$table,
+    (event) => updateBuilder(
+      event,
+      ({Expr<Source>? source, Expr<DateTime>? created, Expr<double>? seq}) =>
+          $ForGeneratedCode.buildUpdate<Event>([source, created, seq]),
+    ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Event> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Event? startFrom,
+  }) => pagedBy(
+    (row) => [
+      (row.source.asEncoded(), order),
+      (row.created, order),
+      (row.seq, order),
+    ],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Delete all rows in the `events` table matching this [Query].
+  ///
+  /// Returns a [Delete] statement on which `.execute()` must be called
+  /// for the rows to be deleted.
+  Delete<Event> delete() => $ForGeneratedCode.delete(this, _$Event._$table);
+}
+
+/// Extension methods for building point queries against the `events` table.
+extension QuerySingleEventExt on QuerySingle<(Expr<Event>,)> {
+  /// Update the row (if any) in the `events` table matching this
+  /// [QuerySingle].
+  ///
+  /// The changes to be applied to the row matching this [QuerySingle] are
+  /// defined using the [updateBuilder], which is given an [Expr]
+  /// representation of the row being updated and a `set` function to
+  /// specify which fields should be updated. The result of the `set`
+  /// function should always be returned from the `updateBuilder`.
+  ///
+  /// Returns an [UpdateSingle] statement on which `.execute()` must be
+  /// called for the row to be updated. The resulting statement will
+  /// **not** fail, if there are no rows matching this query exists.
+  ///
+  /// **Example:** decrementing `1` from the `value` field the row with
+  /// `id = 1`.
+  /// ```dart
+  /// await db.mytable
+  ///   .byKey(1)
+  ///   .update((row, set) => set(
+  ///     value: row.value - toExpr(1),
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
+  UpdateSingle<Event> update(
+    UpdateSet<Event> Function(
+      Expr<Event> event,
+      UpdateSet<Event> Function({
+        Expr<Source> source,
+        Expr<DateTime> created,
+        Expr<double> seq,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateSingle<Event>(
+    this,
+    _$Event._$table,
+    (event) => updateBuilder(
+      event,
+      ({Expr<Source>? source, Expr<DateTime>? created, Expr<double>? seq}) =>
+          $ForGeneratedCode.buildUpdate<Event>([source, created, seq]),
+    ),
+  );
+
+  /// Delete the row (if any) in the `events` table matching this [QuerySingle].
+  ///
+  /// Returns a [DeleteSingle] statement on which `.execute()` must be called
+  /// for the row to be deleted. The resulting statement will **not**
+  /// fail, if there are no rows matching this query exists.
+  DeleteSingle<Event> delete() =>
+      $ForGeneratedCode.deleteSingle(this, _$Event._$table);
+}
+
+/// Extension methods for expressions on a row in the `events` table.
+extension ExpressionEventExt on Expr<Event> {
+  Expr<Source> get source =>
+      $ForGeneratedCode.field(this, 0, SourceExt._exprType);
+
+  Expr<DateTime> get created =>
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.dateTime);
+
+  Expr<double> get seq =>
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.real);
+}
+
+extension ExpressionNullableEventExt on Expr<Event?> {
+  Expr<Source?> get source =>
+      $ForGeneratedCode.field(this, 0, SourceExt._exprType);
+
+  Expr<DateTime?> get created =>
+      $ForGeneratedCode.field(this, 1, $ForGeneratedCode.dateTime);
+
+  Expr<double?> get seq =>
+      $ForGeneratedCode.field(this, 2, $ForGeneratedCode.real);
+
+  /// Check if the row is not `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
+  Expr<bool> isNotNull() =>
+      source.asEncoded().isNotNull() & created.isNotNull() & seq.isNotNull();
+
+  /// Check if the row is `NULL`.
+  ///
+  /// This will check if _primary key_ fields in this row are `NULL`.
+  ///
+  /// If this is a reference lookup by subquery it might be more efficient
+  /// to check if the referencing field is `NULL`.
+  Expr<bool> isNull() => isNotNull().not();
+}
+
+/// `Table<Event>` conflict targets for use with `.onConflict`.
+enum EventConflict {
+  /// Conflict with an existing row that has a matching primary key.
+  ///
+  /// Thus, the other row has matching values for:
+  /// `source`, `created`, `seq`.
+  primaryKey(['source', 'created', 'seq']);
+
+  const EventConflict(this._fields);
+
+  final List<String> _fields;
+}
+
+extension InsertEventExt on Insert<Event> {
+  /// Build an `INSERT` statement with an `ON CONFLICT` clause.
+  ///
+  /// The [target] argument specifies the _conflict target_ to be
+  /// handled. The _conflict target_ is always a `UNIQUE` constraint or
+  /// `PRIMARY KEY` constraint.
+  ///
+  /// If a row to be inserted violates the _conflict target_ constraint,
+  /// then the conflict action is triggered:
+  /// * `.doNothing()` to skip insertion of the new row, and,
+  /// * `.update((event, excluded, set) => set(...))` to
+  ///   update the conflicting row.
+  ///
+  /// If a row to be inserted violates a constraint other than the one
+  /// specified in _conflict target_ then the entire `INSERT` statement
+  /// will fail.
+  ///
+  /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
+  InsertOnConflict<Event> onConflict(EventConflict target) =>
+      $ForGeneratedCode.insertOnConflict(this, target._fields);
+}
+
+extension InsertOnConflictEventExt on InsertOnConflict<Event> {
+  /// Build an `INSERT` statement an [upsert-clause][1].
+  ///
+  /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
+  /// constraint previously specified as _conflict target_, the existing
+  /// row is updated using the expressions defined with the
+  /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
+  ///   * `event` an [Expr] representing the existing row in
+  ///     the database,
+  ///   * `excluded` an [Expr] representing the row to be inserted in the
+  ///     database, and,
+  ///   * `set` a function to specify which fields should be updated and
+  ///     build the [UpdateSet].
+  ///
+  /// The result of the `set` function should always be immediately
+  /// returned from the [updateBuilder].
+  ///
+  /// **Example:** Insert a counter with `count = 2` or increment the
+  /// existing row, if a `PRIMARY KEY` conflict occurs.
+  /// ```dart
+  /// await db.counters.insertValue(
+  ///     name: 'my-counter', // primary key
+  ///     count: 2,
+  ///   )
+  ///   .onConflict(.primaryKey)
+  ///   .update((counter, excluded, set) => set(
+  ///     count: counter.count + excluded.count,
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// This is equivalent to
+  /// `INSERT ... ON CONFLICT (...) UPDATE SET ...` in SQL.
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
+  ///
+  /// [1]: https://www.sqlite.org/lang_upsert.html
+  Upsert<Event> update(
+    UpdateSet<Event> Function(
+      Expr<Event> event,
+      Expr<Event> excluded,
+      UpdateSet<Event> Function({
+        Expr<Source> source,
+        Expr<DateTime> created,
+        Expr<double> seq,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflict<Event>(
+    this,
+    (event, excluded) => updateBuilder(
+      event,
+      excluded,
+      ({Expr<Source>? source, Expr<DateTime>? created, Expr<double>? seq}) =>
+          $ForGeneratedCode.buildUpdate<Event>([source, created, seq]),
+    ),
+  );
+}
+
+extension InsertSingleEventExt on InsertSingle<Event> {
+  /// Build an `INSERT` statement with an `ON CONFLICT` clause.
+  ///
+  /// The [target] argument specifies the _conflict target_ to be
+  /// handled. The _conflict target_ is always a `UNIQUE` constraint or
+  /// `PRIMARY KEY` constraint.
+  ///
+  /// If a row to be inserted violates the _conflict target_ constraint,
+  /// then the conflict action is triggered:
+  /// * `.doNothing()` to skip insertion of the new row, and,
+  /// * `.update((event, excluded, set) => set(...))` to
+  ///   update the conflicting row.
+  ///
+  /// If a row to be inserted violates a constraint other than the one
+  /// specified in _conflict target_ then the entire `INSERT` statement
+  /// will fail.
+  ///
+  /// This is equivalent to `INSERT ... ON CONFLICT (...)` in SQL.
+  InsertOnConflictSingle<Event> onConflict(EventConflict target) =>
+      $ForGeneratedCode.insertOnConflictSingle(this, target._fields);
+}
+
+extension InsertOnConflictSingleEventExt on InsertOnConflictSingle<Event> {
+  /// Build an `INSERT` statement an [upsert-clause][1].
+  ///
+  /// When a row to be inserted violates the `UNIQUE` or `PRIMARY KEY`
+  /// constraint previously specified as _conflict target_, the existing
+  /// row is updated using the expressions defined with the
+  /// [updateBuilder]. The [updateBuilder] is given 3 parameters:
+  ///   * `event` an [Expr] representing the existing row in
+  ///     the database,
+  ///   * `excluded` an [Expr] representing the row to be inserted in the
+  ///     database, and,
+  ///   * `set` a function to specify which fields should be updated and
+  ///     build the [UpdateSet].
+  ///
+  /// The result of the `set` function should always be immediately
+  /// returned from the [updateBuilder].
+  ///
+  /// **Example:** Insert a counter with `count = 2` or increment the
+  /// existing row, if a `PRIMARY KEY` conflict occurs.
+  /// ```dart
+  /// await db.counters.insertValue(
+  ///     name: 'my-counter', // primary key
+  ///     count: 2,
+  ///   )
+  ///   .onConflict(.primaryKey)
+  ///   .update((counter, excluded, set) => set(
+  ///     count: counter.count + excluded.count,
+  ///   ))
+  ///   .execute();
+  /// ```
+  ///
+  /// This is equivalent to
+  /// `INSERT ... ON CONFLICT (...) UPDATE SET ...` in SQL.
+  ///
+  /// > [!WARNING]
+  /// > The `updateBuilder` callback does not make the update, it builds
+  /// > the expressions for updating the rows. You should **never** invoke
+  /// > the `set` function more than once, and the result should always
+  /// > be returned immediately.
+  ///
+  /// [1]: https://www.sqlite.org/lang_upsert.html
+  UpsertSingle<Event> update(
+    UpdateSet<Event> Function(
+      Expr<Event> event,
+      Expr<Event> excluded,
+      UpdateSet<Event> Function({
+        Expr<Source> source,
+        Expr<DateTime> created,
+        Expr<double> seq,
+      })
+      set,
+    )
+    updateBuilder,
+  ) => $ForGeneratedCode.updateOnConflictSingle<Event>(
+    this,
+    (event, excluded) => updateBuilder(
+      event,
+      excluded,
+      ({Expr<Source>? source, Expr<DateTime>? created, Expr<double>? seq}) =>
+          $ForGeneratedCode.buildUpdate<Event>([source, created, seq]),
+    ),
+  );
+}
+
+/// Wrap this [Source] as [Expr<Source>] for use queries with
+/// `package:typed_sql`.
+extension SourceExt on Source {
+  static final _exprType = $ForGeneratedCode.customDataType(
+    $ForGeneratedCode.text,
+    Source.fromDatabase,
+  );
+
+  /// Wrap this [Source] as [Expr<Source>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
+  Expr<Source> get asExpr =>
+      $ForGeneratedCode.customDataTypeAsExpr(this, _exprType).asNotNull();
+
+  /// Wrap this [Source] as [Expr<Source>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<Source> get asExprLiteral => $ForGeneratedCode
+      .customDataTypeAsExprLiteral(this, _exprType)
+      .asNotNull();
+}
+
+/// Wrap this [Source] as [Expr<Source>] for use queries with
+/// `package:typed_sql`.
+extension SourceNullableExt on Source? {
+  /// Wrap this [Source] as [Expr<Source?>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExpr] will inject this value as an SQL parameter,
+  /// use [asExprLiteral] if you wish to inject as SQL literal instead.
+  Expr<Source?> get asExpr =>
+      $ForGeneratedCode.customDataTypeAsExpr(this, SourceExt._exprType);
+
+  /// Wrap this [Source] as [Expr<Source?>] for use queries with
+  /// `package:typed_sql`.
+  ///
+  /// Using [asExprLiteral] will inject this value as an SQL literal,
+  /// use [asExpr] if you wish to inject as SQL parameter instead.
+  Expr<Source?> get asExprLiteral =>
+      $ForGeneratedCode.customDataTypeAsExprLiteral(this, SourceExt._exprType);
+}
+
+/// Extension methods for assertions on [Event] using
 /// [`package:checks`][1].
 ///
 /// [1]: https://pub.dev/packages/checks
-extension PostChecks on Subject<Post> {
-  /// Create assertions on [Post.author].
-  Subject<String> get author => has((m) => m.author, 'author');
+extension EventChecks on Subject<Event> {
+  /// Create assertions on [Event.source].
+  Subject<Source> get source => has((m) => m.source, 'source');
 
-  /// Create assertions on [Post.slug].
-  Subject<String> get slug => has((m) => m.slug, 'slug');
+  /// Create assertions on [Event.created].
+  Subject<DateTime> get created => has((m) => m.created, 'created');
 
-  /// Create assertions on [Post.content].
-  Subject<String> get content => has((m) => m.content, 'content');
+  /// Create assertions on [Event.seq].
+  Subject<double> get seq => has((m) => m.seq, 'seq');
+}
+
+/// Extension methods for assertions on [User] using
+/// [`package:checks`][1].
+///
+/// [1]: https://pub.dev/packages/checks
+extension UserChecks on Subject<User> {
+  /// Create assertions on [User.userId].
+  Subject<int> get userId => has((m) => m.userId, 'userId');
+
+  /// Create assertions on [User.email].
+  Subject<String> get email => has((m) => m.email, 'email');
+
+  /// Create assertions on [User.firstName].
+  Subject<String> get firstName => has((m) => m.firstName, 'firstName');
+
+  /// Create assertions on [User.lastName].
+  Subject<String> get lastName => has((m) => m.lastName, 'lastName');
+
+  /// Create assertions on [User.nickname].
+  Subject<String?> get nickname => has((m) => m.nickname, 'nickname');
 }

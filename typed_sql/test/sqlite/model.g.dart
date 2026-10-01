@@ -95,6 +95,11 @@ final class _$User extends User {
     foreignKeys: [],
     indexes: [],
     readRow: _$User._$fromDatabase,
+    fieldReaders: [
+      (User r) => r.userId,
+      (User r) => r.name,
+      (User r) => r.email,
+    ],
   );
 
   static User? _$fromDatabase(RowReader row) {
@@ -286,6 +291,50 @@ extension QueryUserExt on Query<(Expr<User>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<User>,)> byEmail(String email) =>
       where((user) => user.email.equalsValue(email)).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<User> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    User? startFrom,
+  }) => pagedBy(
+    (row) => [(row.userId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `email` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<User> pagedByEmail({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    User? startFrom,
+  }) => pagedBy(
+    (row) => [(row.email, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `users` table matching this [Query].
   ///
@@ -718,6 +767,12 @@ final class _$Package extends Package {
       ),
     ],
     readRow: _$Package._$fromDatabase,
+    fieldReaders: [
+      (Package r) => r.packageName,
+      (Package r) => r.likes,
+      (Package r) => r.ownerId,
+      (Package r) => r.publisher,
+    ],
   );
 
   static Package? _$fromDatabase(RowReader row) {
@@ -943,6 +998,28 @@ extension QueryPackageExt on Query<(Expr<Package>,)> {
         publisher,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Package> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Package? startFrom,
+  }) => pagedBy(
+    (row) => [(row.packageName, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `packages` table matching this [Query].
@@ -1359,6 +1436,7 @@ final class _$Like extends Like {
     foreignKeys: [],
     indexes: [],
     readRow: _$Like._$fromDatabase,
+    fieldReaders: [(Like r) => r.userId, (Like r) => r.packageName],
   );
 
   static Like? _$fromDatabase(RowReader row) {
@@ -1528,6 +1606,28 @@ extension QueryLikeExt on Query<(Expr<Like>,)> {
       ({Expr<int>? userId, Expr<String>? packageName}) =>
           $ForGeneratedCode.buildUpdate<Like>([userId, packageName]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Like> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Like? startFrom,
+  }) => pagedBy(
+    (row) => [(row.userId, order), (row.packageName, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `likes` table matching this [Query].
