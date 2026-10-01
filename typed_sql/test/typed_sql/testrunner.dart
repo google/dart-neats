@@ -66,31 +66,35 @@ final class TestRunner<T extends Schema> {
     skipMysql: skipMysql,
   ));
 
+  // Note: These paths are deliberately _relative_ to the current working
+  //       directory, which `package:test` sets to the package root.
+  //       The path of a unix socket is limited to ~107 characters, see unix(7),
+  //       and absolute paths easily exceed this limit in nested checkouts.
   late final String? _getPostgresSocket = () {
     final socketFile = File('.dart_tool/run/postgresql/.s.PGSQL.5432');
     if (socketFile.existsSync()) {
-      return socketFile.absolute.path;
+      return socketFile.path;
     }
     return null;
   }();
   late final String? _getMariadbSocket = () {
     final socketFile = File('.dart_tool/run/mariadb/mysqld.sock');
     if (socketFile.existsSync()) {
-      return socketFile.absolute.path;
+      return socketFile.path;
     }
     return null;
   }();
 
   DatabaseAdapter _getPostgres() {
     return DatabaseAdapter.postgresTestDatabase(
-      host: _getPostgresSocket,
+      unixSocket: _getPostgresSocket,
       port: int.tryParse(Platform.environment['POSTGRES_PORT'] ?? ''),
     );
   }
 
   DatabaseAdapter _getMariadb() {
     return mysqlTestingAdapter(
-      host: _getMariadbSocket,
+      unixSocket: _getMariadbSocket,
       port: int.tryParse(Platform.environment['MARIADB_PORT'] ?? ''),
     );
   }

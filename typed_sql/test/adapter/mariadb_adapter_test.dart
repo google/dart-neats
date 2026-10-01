@@ -14,10 +14,12 @@ extension on Stream<RowReader> {
       (await toList()).map((row) => [row.readInt(), row.readString()]).toList();
 }
 
+// Note: deliberately a _relative_ path, the path of a unix socket is limited
+//       to ~107 characters, see unix(7).
 final String? _getMariadbSocket = () {
   final socketFile = File('.dart_tool/run/mariadb/mysqld.sock');
   if (socketFile.existsSync()) {
-    return socketFile.absolute.path;
+    return socketFile.path;
   }
   return null;
 }();
@@ -27,7 +29,7 @@ void main() {
 
   setUp(() async {
     adapter = mysqlTestingAdapter(
-      host: _getMariadbSocket,
+      unixSocket: _getMariadbSocket,
       port: int.tryParse(Platform.environment['MARIADB_PORT'] ?? ''),
     );
   });
