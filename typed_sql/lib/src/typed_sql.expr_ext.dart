@@ -45,7 +45,9 @@ extension CustomTypeExt<S> on Expr<CustomDataType<S>> {
   /// Get an expression containing the encoded value of the [CustomDataType]
   /// implementation.
   Expr<S> asEncoded() =>
-      EncodedCustomDataTypeExpression<S, CustomDataType<S>>._(this).asNotNull();
+      EncodedCustomDataTypeExpression<S, CustomDataType<S>>.internal(
+        this,
+      ).asNotNull();
 }
 
 /// Extension methods for accessing the encoded value of a custom data type
@@ -53,7 +55,7 @@ extension CustomTypeExt<S> on Expr<CustomDataType<S>> {
 extension CustomTypeNullableExt<S> on Expr<CustomDataType<S>?> {
   /// Get an expression containing the encoded value of the [CustomDataType]
   /// implementation.
-  Expr<S?> asEncoded() => EncodedCustomDataTypeExpression._(this);
+  Expr<S?> asEncoded() => EncodedCustomDataTypeExpression.internal(this);
 }
 
 /// Extension methods for wrapping an [int] as an expression.
@@ -168,42 +170,43 @@ extension ExpressionNull on Expr<Null> {
   /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<int?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
-  Expr<int?> asInt() => CastExpression._(this, ColumnType.integer);
+  Expr<int?> asInt() => CastExpression.internal(this, ColumnType.integer);
 
   /// Cast as [Expr<String?>] using `CAST(NULL AS TEXT)`.
   ///
   /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<String?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
-  Expr<String?> asString() => CastExpression._(this, ColumnType.text);
+  Expr<String?> asString() => CastExpression.internal(this, ColumnType.text);
 
   /// Cast as [Expr<double?>] using `CAST(NULL AS DOUBLE PRECISION)`.
   ///
   /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<double?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
-  Expr<double?> asDouble() => CastExpression._(this, ColumnType.real);
+  Expr<double?> asDouble() => CastExpression.internal(this, ColumnType.real);
 
   /// Cast as [Expr<bool?>] using `CAST(NULL AS BOOLEAN)`.
   ///
   /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<bool?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
-  Expr<bool?> asBool() => CastExpression._(this, ColumnType.boolean);
+  Expr<bool?> asBool() => CastExpression.internal(this, ColumnType.boolean);
 
   /// Cast as [Expr<DateTime?>] using `CAST(NULL AS TIMESTAMP)`.
   ///
   /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<DateTime?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
-  Expr<DateTime?> asDateTime() => CastExpression._(this, ColumnType.dateTime);
+  Expr<DateTime?> asDateTime() =>
+      CastExpression.internal(this, ColumnType.dateTime);
 
   /// Cast as [Expr<Uint8List?>] using `CAST(NULL AS BLOB)`.
   ///
   /// This method is rarely necessary, as you can generally pass `toExpr(null)`
   /// to any method expecting an `Expr<Uint8List?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
-  Expr<Uint8List?> asBlob() => CastExpression._(this, ColumnType.blob);
+  Expr<Uint8List?> asBlob() => CastExpression.internal(this, ColumnType.blob);
 
   /// Cast as [Expr<JsonValue?>] using `CAST(NULL AS JSONB)`.
   ///
@@ -211,7 +214,7 @@ extension ExpressionNull on Expr<Null> {
   /// to any method expecting an `Expr<JsonValue?>`. But in some complex scenarios
   /// this can alleviate type inference issues.
   Expr<JsonValue?> asJsonValue() =>
-      CastExpression._(this, ColumnType.jsonValue);
+      CastExpression.internal(this, ColumnType.jsonValue);
 
   // TODO: Generate cast for CustomDataType!
 }
@@ -230,7 +233,7 @@ extension ExpressionNullable<T> on Expr<T?> {
   /// > This is a no-op in SQL, there is no enforcement. This merely casts the
   /// > current expression to a non-nullable expression and does not cause an
   /// > error if the assertion is violated.
-  Expr<T> asNotNull() => NotNullExpression._(this);
+  Expr<T> asNotNull() => NotNullExpression.internal(this);
 }
 
 /// Extension methods for nullable [int] and [double] expressions.
@@ -240,7 +243,7 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
   ///
   /// This is equivalent to `COALESCE(this, value)`.
   /// {@endtemplate}
-  Expr<T> orElse(Expr<T> value) => OrElseExpression._(this, value);
+  Expr<T> orElse(Expr<T> value) => OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   Expr<T> orElseValue(T value) => orElse(toExpr(value));
@@ -289,7 +292,8 @@ extension ExpressionNullableNum<T extends num> on Expr<T?> {
 /// Extension methods for nullable [String] expressions.
 extension ExpressionNullableString on Expr<String?> {
   /// {@macro orElse}
-  Expr<String> orElse(Expr<String> value) => OrElseExpression._(this, value);
+  Expr<String> orElse(Expr<String> value) =>
+      OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   Expr<String> orElseValue(String value) => orElse(toExpr(value));
@@ -318,7 +322,7 @@ extension ExpressionNullableString on Expr<String?> {
 /// Extension methods for nullable [bool] expressions.
 extension ExpressionNullableBool on Expr<bool?> {
   /// {@macro orElse}
-  Expr<bool> orElse(Expr<bool> value) => OrElseExpression._(this, value);
+  Expr<bool> orElse(Expr<bool> value) => OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   Expr<bool> orElseValue(bool value) => orElse(toExpr(value));
@@ -408,7 +412,7 @@ extension ExpressionNullableBool on Expr<bool?> {
 extension ExpressionNullableDateTime on Expr<DateTime?> {
   /// {@macro orElse}
   Expr<DateTime> orElse(Expr<DateTime> value) =>
-      OrElseExpression._(this, value);
+      OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   Expr<DateTime> orElseValue(DateTime value) => orElse(toExpr(value));
@@ -438,7 +442,7 @@ extension ExpressionNullableDateTime on Expr<DateTime?> {
 extension ExpressionNullableUint8List on Expr<Uint8List?> {
   /// {@macro orElse}
   Expr<Uint8List> orElse(Expr<Uint8List> value) =>
-      OrElseExpression._(this, value);
+      OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   Expr<Uint8List> orElseValue(Uint8List value) => orElse(toExpr(value));
@@ -475,7 +479,7 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// > If `this` is an `JsonValue(null)`, then `this` will be returned.
   /// {@endtemplate}
   Expr<JsonValue> orElse(Expr<JsonValue> value) =>
-      OrElseExpression._(this, value);
+      OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   /// {@macro orElse-not-json-null}
@@ -510,10 +514,10 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// ```sql
   /// this -> key
   /// ```
-  Expr<JsonValue?> field(String key) => ExpressionJsonRefKey._(
+  Expr<JsonValue?> field(String key) => ExpressionJsonRefKey.internal(
     this is ExpressionJsonRef
         ? this as ExpressionJsonRef
-        : ExpressionJsonRefRoot._(this),
+        : ExpressionJsonRefRoot.internal(this),
     key,
   );
 
@@ -530,10 +534,10 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// ```sql
   /// this -> index
   /// ```
-  Expr<JsonValue?> elementAt(int index) => ExpressionJsonRefIndex._(
+  Expr<JsonValue?> elementAt(int index) => ExpressionJsonRefIndex.internal(
     this is ExpressionJsonRef
         ? this as ExpressionJsonRef
-        : ExpressionJsonRefRoot._(this),
+        : ExpressionJsonRefRoot.internal(this),
     index,
   );
 
@@ -553,12 +557,12 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   Expr<JsonValue?> operator [](Object keyOrIndex) {
     final ref = this is ExpressionJsonRef
         ? this as ExpressionJsonRef
-        : ExpressionJsonRefRoot._(this);
+        : ExpressionJsonRefRoot.internal(this);
 
     if (keyOrIndex is String) {
-      return ExpressionJsonRefKey._(ref, keyOrIndex);
+      return ExpressionJsonRefKey.internal(ref, keyOrIndex);
     } else if (keyOrIndex is int) {
-      return ExpressionJsonRefIndex._(ref, keyOrIndex);
+      return ExpressionJsonRefIndex.internal(ref, keyOrIndex);
     }
     throw ArgumentError.value(
       keyOrIndex,
@@ -600,8 +604,10 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// > If the JSON data does not match your expectations, the cast may cause
   /// > runtime failures or silently return unexpected values (like `0`).
   /// {@endtemplate}
-  Expr<int?> asInt() =>
-      CastExpression._(ExpressionJsonExtract._(this), ColumnType.integer);
+  Expr<int?> asInt() => CastExpression.internal(
+    ExpressionJsonExtract.internal(this),
+    ColumnType.integer,
+  );
 
   /// Extract the value as unquoted text.
   ///
@@ -614,8 +620,10 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// ```
   ///
   /// {@macro json-extraction-behavior}
-  Expr<String?> asString() =>
-      CastExpression._(ExpressionJsonExtract._(this), ColumnType.text);
+  Expr<String?> asString() => CastExpression.internal(
+    ExpressionJsonExtract.internal(this),
+    ColumnType.text,
+  );
 
   /// Extract the value as unquoted text and cast it to a double.
   ///
@@ -635,8 +643,10 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// * **SQLite:** Parses the numeric prefix of the string (e.g. `"3.14abc"` becomes `3.14`). Returns `0.0` if no valid prefix exists.
   ///
   /// {@macro unsafe-json-cast}
-  Expr<double?> asDouble() =>
-      CastExpression._(ExpressionJsonExtract._(this), ColumnType.real);
+  Expr<double?> asDouble() => CastExpression.internal(
+    ExpressionJsonExtract.internal(this),
+    ColumnType.real,
+  );
 
   /// Extract the value as unquoted text and cast it to a boolean.
   ///
@@ -656,8 +666,10 @@ extension ExpressionNullableJsonValue on Expr<JsonValue?> {
   /// * **SQLite:** Returns `TRUE` if the text is `true`, otherwise `FALSE`.
   ///
   /// {@macro unsafe-json-cast}
-  Expr<bool?> asBool() =>
-      CastExpression._(ExpressionJsonExtract._(this), ColumnType.boolean);
+  Expr<bool?> asBool() => CastExpression.internal(
+    ExpressionJsonExtract.internal(this),
+    ColumnType.boolean,
+  );
 }
 
 /// Extension methods for [bool] expressions.
@@ -738,7 +750,7 @@ extension ExpressionBool on Expr<bool> {
   /// {@endtemplate}
   /// @nodoc
   @Deprecated(_orElseOnNonNullableDeprecation)
-  Expr<bool> orElse(Expr<bool> value) => OrElseExpression._(this, value);
+  Expr<bool> orElse(Expr<bool> value) => OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   ///
@@ -813,7 +825,7 @@ extension ExpressionBool on Expr<bool> {
   /// Results:
   /// * `true` -> `1`
   /// * `false` -> `0`
-  Expr<int> asInt() => CastExpression._(this, ColumnType.integer);
+  Expr<int> asInt() => CastExpression.internal(this, ColumnType.integer);
   // Remark we could support casting to double it works, but requires an extra
   // step in postgres. It's not really a sensible thing to do. Should you ever
   // find it useful, just use `.asInt().asDouble()`.
@@ -854,7 +866,8 @@ extension ExpressionString on Expr<String> {
   /// {@macro orElse-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_orElseOnNonNullableDeprecation)
-  Expr<String> orElse(Expr<String> value) => OrElseExpression._(this, value);
+  Expr<String> orElse(Expr<String> value) =>
+      OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   ///
@@ -1037,7 +1050,7 @@ extension ExpressionString on Expr<String> {
   ///
   /// Example:
   /// * `'123'` -> `123`
-  Expr<int> asInt() => CastExpression._(this, ColumnType.integer);
+  Expr<int> asInt() => CastExpression.internal(this, ColumnType.integer);
 
   /// Cast as double.
   ///
@@ -1051,7 +1064,7 @@ extension ExpressionString on Expr<String> {
   ///
   /// Example:
   /// * `'3.14'` -> `3.14`
-  Expr<double> asDouble() => CastExpression._(this, ColumnType.real);
+  Expr<double> asDouble() => CastExpression.internal(this, ColumnType.real);
 }
 
 /// Extension methods for [int] expressions.
@@ -1143,7 +1156,7 @@ extension ExpressionInt on Expr<int> {
   ///
   /// Example:
   /// * `12345` -> `'12345'`
-  Expr<String> asString() => CastExpression._(this, ColumnType.text);
+  Expr<String> asString() => CastExpression.internal(this, ColumnType.text);
 
   /// Cast as double.
   ///
@@ -1154,7 +1167,7 @@ extension ExpressionInt on Expr<int> {
   ///
   /// Example:
   /// * `123` -> `123.0`
-  Expr<double> asDouble() => CastExpression._(this, ColumnType.real);
+  Expr<double> asDouble() => CastExpression.internal(this, ColumnType.real);
 }
 
 /// Extension methods for [double] expressions.
@@ -1219,7 +1232,7 @@ extension ExpressionDouble on Expr<double> {
   ///
   /// Example:
   /// * `3.14` -> `'3.14'`
-  Expr<String> asString() => CastExpression._(this, ColumnType.text);
+  Expr<String> asString() => CastExpression.internal(this, ColumnType.text);
 
   /// Cast as integer.
   ///
@@ -1230,7 +1243,7 @@ extension ExpressionDouble on Expr<double> {
   ///
   /// Example:
   /// * `3.14` -> `3`
-  Expr<int> asInt() => CastExpression._(this, ColumnType.integer);
+  Expr<int> asInt() => CastExpression.internal(this, ColumnType.integer);
 }
 
 /// Extension methods for [int] and [double] expressions.
@@ -1267,7 +1280,7 @@ extension ExpressionNum<T extends num> on Expr<T> {
   /// {@macro orElse-non-nullable-deprecation}
   /// @nodoc
   @Deprecated(_orElseOnNonNullableDeprecation)
-  Expr<T> orElse(Expr<T> value) => OrElseExpression._(this, value);
+  Expr<T> orElse(Expr<T> value) => OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   ///
@@ -1356,7 +1369,7 @@ extension ExpressionDateTime on Expr<DateTime> {
   /// @nodoc
   @Deprecated(_orElseOnNonNullableDeprecation)
   Expr<DateTime> orElse(Expr<DateTime> value) =>
-      OrElseExpression._(this, value);
+      OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   ///
@@ -1446,7 +1459,7 @@ extension ExpressionUint8List on Expr<Uint8List> {
   /// @nodoc
   @Deprecated(_orElseOnNonNullableDeprecation)
   Expr<Uint8List> orElse(Expr<Uint8List> value) =>
-      OrElseExpression._(this, value);
+      OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   ///
@@ -1501,7 +1514,7 @@ extension ExpressionJsonValue on Expr<JsonValue> {
   /// @nodoc
   @Deprecated(_orElseOnNonNullableDeprecation)
   Expr<JsonValue> orElse(Expr<JsonValue> value) =>
-      OrElseExpression._(this, value);
+      OrElseExpression.internal(this, value);
 
   /// {@macro orElse}
   ///

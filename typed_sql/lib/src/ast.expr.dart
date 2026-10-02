@@ -12,139 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of 'typed_sql.dart';
-
-sealed class _ExprType<T extends Object?> {
-  T? _read(RowReader r);
-
-  const _ExprType._();
-}
-
-sealed class FieldType<T extends Object?> extends _ExprType<T> {
-  const FieldType._() : super._();
-}
-
-/// A type that can appear in a database column.
+/// The SQL expression AST shared between the query-builder
+/// (`typed_sql.dart`) and the SQL dialects (`dialect/`).
 ///
-/// @nodoc
-sealed class ColumnType<T extends Object?> extends FieldType<T> {
-  const ColumnType._() : super._();
+/// This library is never exported from `package:typed_sql/typed_sql.dart`
+/// (except for [Expr] itself, which is genuinely public API).
+library;
 
-  static const ColumnType<Uint8List> blob = _BlobExprType._();
-  static const ColumnType<bool> boolean = _BooleanExprType._();
-  static const ColumnType<DateTime> dateTime = _DateTimeExprType._();
-  static const ColumnType<int> integer = _IntegerExprType._();
-  static const ColumnType<double> real = _RealExprType._();
-  static const ColumnType<String> text = _TextExprType._();
-  static const ColumnType<Null> nullType = _NullExprType._();
-  static const ColumnType<JsonValue> jsonValue = _JsonValueExprType._();
-}
+import 'dart:typed_data' show Uint8List;
 
-final class _BlobExprType extends ColumnType<Uint8List> {
-  const _BlobExprType._() : super._();
-
-  @override
-  Uint8List? _read(RowReader r) => r.readUint8List();
-}
-
-final class _BooleanExprType extends ColumnType<bool> {
-  const _BooleanExprType._() : super._();
-
-  @override
-  bool? _read(RowReader r) => r.readBool();
-}
-
-final class _DateTimeExprType extends ColumnType<DateTime> {
-  const _DateTimeExprType._() : super._();
-
-  @override
-  DateTime? _read(RowReader r) => r.readDateTime();
-}
-
-final class _IntegerExprType extends ColumnType<int> {
-  const _IntegerExprType._() : super._();
-
-  @override
-  int? _read(RowReader r) => r.readInt();
-}
-
-final class _RealExprType extends ColumnType<double> {
-  const _RealExprType._() : super._();
-
-  @override
-  double? _read(RowReader r) => r.readDouble();
-}
-
-final class _TextExprType extends ColumnType<String> {
-  const _TextExprType._() : super._();
-
-  @override
-  String? _read(RowReader r) => r.readString();
-}
-
-final class _JsonValueExprType extends ColumnType<JsonValue> {
-  const _JsonValueExprType._() : super._();
-
-  @override
-  JsonValue? _read(RowReader r) => r.readJsonValue();
-}
-
-final class _NullExprType extends ColumnType<Null> {
-  const _NullExprType._() : super._();
-
-  @override
-  Null _read(RowReader r) => r.tryReadNull()
-      ? null
-      : throw AssertionError(
-          'Expr<Null> should always be `null`!',
-        );
-
-  static Iterable<Expr> _explodedCastAs<T, S>(
-    Expr<T> value,
-    _ExprType<S> type,
-  ) => switch (type) {
-    _RowExprType<Row> type => type.fields.map(
-      (f) => CastExpression._(value, f),
-    ),
-    CustomExprType type => [CastExpression._(value, type._backingType)],
-    ColumnType type => [CastExpression._(value, type)],
-  };
-}
-
-final class CustomExprType<S, T extends CustomDataType<S>>
-    extends FieldType<T> {
-  final ColumnType<S> _backingType;
-  final T Function(S value) _fromDatabase;
-
-  const CustomExprType._(this._backingType, this._fromDatabase) : super._();
-
-  @override
-  T? _read(RowReader r) {
-    final value = _backingType._read(r);
-    if (value != null) {
-      return _fromDatabase(value);
-    }
-    return null;
-  }
-}
-
-final class _RowExprType<T extends Row> extends _ExprType<T> {
-  final List<ColumnType> fields;
-  final T? Function(RowReader r) _readRow;
-
-  // TODO: This class should probably be part of a table
-  // definition, instead of this way around, but we can refactor that later.
-  _RowExprType._(TableDefinition<T> table)
-    : _readRow = table.readRow,
-      fields = table.columnInfo.map((c) => c.type).toList(),
-      super._();
-
-  @override
-  T? _read(RowReader r) => _readRow(r);
-}
+import 'adapter/adapter.dart' show RowReader;
+import 'ast.expr_types.dart'
+    show
+        ColumnType,
+        CustomExprType,
+        CustomExprTypeInternal,
+        ExprType,
+        ExprTypeInternal,
+        FieldType,
+        rowExprType,
+        rowFieldsOf;
+import 'ast.query.dart' show QueryClause, SelectFromClause;
+import 'typed_sql.dart' show DefaultValue, Row, TableDefinition;
+import 'types/custom_data_type.dart' show CustomDataType;
+import 'types/json_value.dart' show JsonValue;
 
 abstract final class _ExprTyped<T extends Object?> {
-  _ExprType<T> get _type;
+  ExprType<T> get _type;
 }
 
 /// A representation of an SQL expression with type `T`.
@@ -155,13 +49,13 @@ abstract final class _ExprTyped<T extends Object?> {
 sealed class Expr<T extends Object?> implements _ExprTyped<T> {
   factory Expr(T value) => toExpr(value);
 
-  const Expr._();
+  const Expr.internal();
 
   int get _columns;
 
   Expr<T> _standin(int index, Object handle);
   Expr<R> _field<R>(int index, FieldType<R> type);
-  T? _decode(RowReader r) => _type._read(r);
+  T? _decode(RowReader r) => _type.$read(r);
 
   Iterable<Expr<Object?>> _explode();
 
@@ -187,14 +81,14 @@ sealed class Expr<T extends Object?> implements _ExprTyped<T> {
 }
 
 sealed class SingleValueExpr<T extends Object?> extends Expr<T> {
-  const SingleValueExpr._() : super._();
+  const SingleValueExpr.internal() : super.internal();
 
   @override
   Iterable<Expr<T>> _explode() => [this];
 
   @override
   Expr<T> _standin(int index, Object handle) =>
-      FieldExpression._(index, handle, _type);
+      FieldExpression.internal(index, handle, _type);
 
   @override
   Expr<R> _field<R>(int index, FieldType<R> type) =>
@@ -295,13 +189,13 @@ final class RowExpression<T extends Row> extends Expr<T> {
 
   @override
   Expr<T> _standin(int index, Object handle) =>
-      RowExpression._(index, _table, handle);
+      RowExpression.internal(index, _table, handle);
 
   @override
   int get _columns => _table.columns.length;
 
   @override
-  Expr<R> _field<R>(int index, _ExprType<R> type) {
+  Expr<R> _field<R>(int index, ExprType<R> type) {
     if (index < 0 || index >= _table.columns.length) {
       throw ArgumentError.value(
         index,
@@ -310,56 +204,61 @@ final class RowExpression<T extends Row> extends Expr<T> {
             'at index $index',
       );
     }
-    return FieldExpression._(_index + index, _handle, type);
+    return FieldExpression.internal(_index + index, _handle, type);
   }
 
   @override
   Iterable<Expr<Object?>> _explode() => Iterable.generate(
     _columns,
-    (index) => _field<void>(index, _type.fields[index]),
+    (index) => _field<void>(index, _table.columnInfo[index].type),
   );
 
-  RowExpression._(this._index, this._table, this._handle) : super._();
+  RowExpression.internal(this._index, this._table, this._handle)
+    : super.internal();
 
   @override
-  _RowExprType<T> get _type => _RowExprType._(_table);
+  ExprType<T> get _type => rowExprType(_table);
 }
 
 final class FieldExpression<T> extends SingleValueExpr<T> {
   final int _index;
   final Object _handle;
   @override
-  final _ExprType<T> _type;
+  final ExprType<T> _type;
 
-  FieldExpression._(this._index, this._handle, this._type) : super._();
+  FieldExpression.internal(this._index, this._handle, this._type)
+    : super.internal();
 }
 
 final class SubQueryExpression<T> extends Expr<T> {
   final QueryClause query;
   final Expr<T> _value;
 
-  SubQueryExpression._(this.query, this._value) : super._();
+  SubQueryExpression.internal(this.query, this._value) : super.internal();
 
   @override
   int get _columns => _value._columns;
 
   @override
-  Iterable<Expr<Object?>> _explode() => switch (_type) {
-    _RowExprType<Row> type => Iterable.generate(
-      _columns,
-      (index) => _field<void>(index, type.fields[index]),
-    ),
-    _ => [this],
-  };
+  Iterable<Expr<Object?>> _explode() {
+    final fields = rowFieldsOf(_type);
+    if (fields != null) {
+      return Iterable.generate(
+        _columns,
+        (index) => _field<void>(index, fields[index]),
+      );
+    }
+    return [this];
+  }
 
   @override
   Expr<R> _field<R>(int index, FieldType<R> type) {
     final handle = Object();
-    return SubQueryExpression._(
-      SelectFromClause._(
+    return SubQueryExpression.internal(
+      SelectFromClause.internal(
         query,
         handle,
-        [FieldExpression._(index, handle, type)],
+        [FieldExpression.internal(index, handle, type)],
       ),
       _value._field<R>(index, type), // TODO: Is this correct?
     );
@@ -369,27 +268,27 @@ final class SubQueryExpression<T> extends Expr<T> {
   Expr<T> _standin(int index, Object handle) => _value._standin(index, handle);
 
   @override
-  _ExprType<T> get _type => _value._type;
+  ExprType<T> get _type => _value._type;
 }
 
 final class ExistsExpression extends SingleValueExpr<bool> with _ExprBoolean {
   final QueryClause query;
-  ExistsExpression._(this.query) : super._();
+  ExistsExpression.internal(this.query) : super.internal();
 }
 
 final class SumExpression<T extends num> extends SingleValueExpr<T> {
   final Expr<T?> value;
-  SumExpression._(this.value) : super._();
+  SumExpression.internal(this.value) : super.internal();
 
   @override
-  _ExprType<T> get _type => value._type as _ExprType<T>;
+  ExprType<T> get _type => value._type as ExprType<T>;
 }
 
 // NOTE: AVG returns NULL, if applied to the empty set of values, also it
 //       ignores NULL and will return NULL if applied to set of NULLs.
 final class AvgExpression extends SingleValueExpr<double?> {
   final Expr<num?> value;
-  AvgExpression._(this.value) : super._();
+  AvgExpression.internal(this.value) : super.internal();
 
   @override
   final _type = ColumnType.real;
@@ -397,36 +296,36 @@ final class AvgExpression extends SingleValueExpr<double?> {
 
 final class MinExpression<T extends Comparable> extends SingleValueExpr<T?> {
   final Expr<T?> value;
-  MinExpression._(this.value) : super._();
+  MinExpression.internal(this.value) : super.internal();
 
   @override
-  _ExprType<T?> get _type => value._type;
+  ExprType<T?> get _type => value._type;
 }
 
 final class MaxExpression<T extends Comparable> extends SingleValueExpr<T?> {
   final Expr<T?> value;
-  MaxExpression._(this.value) : super._();
+  MaxExpression.internal(this.value) : super.internal();
 
   @override
-  _ExprType<T?> get _type => value._type;
+  ExprType<T?> get _type => value._type;
 }
 
 final class CountAllExpression extends SingleValueExpr<int> with _ExprInteger {
-  CountAllExpression._() : super._();
+  CountAllExpression.internal() : super.internal();
 }
 
 final class OrElseExpression<T> extends SingleValueExpr<T> {
   final Expr<T?> value;
   final Expr<T> orElse;
 
-  OrElseExpression._(this.value, this.orElse) : super._();
+  OrElseExpression.internal(this.value, this.orElse) : super.internal();
 
   @override
-  _ExprType<T> get _type {
+  ExprType<T> get _type {
     if (value._type == ColumnType.nullType) {
       return orElse._type;
     }
-    return value._type as _ExprType<T>; // TODO: Is this actually correct?
+    return value._type as ExprType<T>; // TODO: Is this actually correct?
   }
 }
 
@@ -438,19 +337,19 @@ final class NotNullExpression<T> extends Expr<T> {
 
   // TODO: Does this actually work?
   @override
-  _ExprType<T> get _type => value._type as _ExprType<T>;
+  ExprType<T> get _type => value._type as ExprType<T>;
 
   @override
   Iterable<Expr<Object?>> _explode() => value._explode();
 
   @override
   Expr<T> _standin(int index, Object handle) =>
-      NotNullExpression._(value._standin(index, handle));
+      NotNullExpression.internal(value._standin(index, handle));
 
   @override
   Expr<R> _field<R>(int index, FieldType<R> type) => value._field(index, type);
 
-  NotNullExpression._(this.value) : super._();
+  NotNullExpression.internal(this.value) : super.internal();
 }
 
 final class EncodedCustomDataTypeExpression<S, T extends CustomDataType<S>>
@@ -461,19 +360,19 @@ final class EncodedCustomDataTypeExpression<S, T extends CustomDataType<S>>
   int get _columns => value._columns;
 
   @override
-  _ExprType<S> get _type => (value._type as CustomExprType<S, T>)._backingType;
+  ExprType<S> get _type => (value._type as CustomExprType<S, T>).$backingType;
 
-  EncodedCustomDataTypeExpression._(this.value) : super._();
+  EncodedCustomDataTypeExpression.internal(this.value) : super.internal();
 }
 
 final class CastExpression<T, R> extends SingleValueExpr<R> {
   final Expr<T> value;
   final ColumnType<R> type;
 
-  CastExpression._(this.value, this.type) : super._();
+  CastExpression.internal(this.value, this.type) : super.internal();
 
   @override
-  _ExprType<R> get _type => type;
+  ExprType<R> get _type => type;
 }
 
 final class LiteralExpression<T> extends SingleValueExpr<T> {
@@ -484,26 +383,38 @@ final class LiteralExpression<T> extends SingleValueExpr<T> {
 
   ColumnType<Object?> get type => switch (_type) {
     ColumnType<T> t => t,
-    CustomExprType t => t._backingType,
+    CustomExprType t => t.$backingType,
   };
 
-  static final _true$ = LiteralExpression._(true, ColumnType.boolean);
-  static final _false$ = LiteralExpression._(false, ColumnType.boolean);
+  static final _true$ = LiteralExpression.internal(true, ColumnType.boolean);
+  static final _false$ = LiteralExpression.internal(false, ColumnType.boolean);
 
-  LiteralExpression._(this.value, this._type) : super._();
+  LiteralExpression.internal(this.value, this._type) : super.internal();
 
   factory LiteralExpression(T value) {
     // Switch over _Dummy<T> such that toExprLiteral<T?>(value) becomes an
     // instance of Expr<T?> even if value is `null`.
     switch (_Dummy<T>()) {
       case _Dummy<Null>():
-        return LiteralExpression._(value, ColumnType.nullType as FieldType<T>);
+        return LiteralExpression.internal(
+          value,
+          ColumnType.nullType as FieldType<T>,
+        );
       case _Dummy<String?>():
-        return LiteralExpression._(value, ColumnType.text as FieldType<T>);
+        return LiteralExpression.internal(
+          value,
+          ColumnType.text as FieldType<T>,
+        );
       case _Dummy<int?>():
-        return LiteralExpression._(value, ColumnType.integer as FieldType<T>);
+        return LiteralExpression.internal(
+          value,
+          ColumnType.integer as FieldType<T>,
+        );
       case _Dummy<double?>():
-        return LiteralExpression._(value, ColumnType.real as FieldType<T>);
+        return LiteralExpression.internal(
+          value,
+          ColumnType.real as FieldType<T>,
+        );
       case _Dummy<bool?>():
         switch (value) {
           case true:
@@ -511,20 +422,29 @@ final class LiteralExpression<T> extends SingleValueExpr<T> {
           case false:
             return _false$ as LiteralExpression<T>;
           default: // null
-            return LiteralExpression._(
+            return LiteralExpression.internal(
               value,
               ColumnType.boolean as FieldType<T>,
             );
         }
       case _Dummy<DateTime?>():
-        return LiteralExpression._(value, ColumnType.dateTime as FieldType<T>);
+        return LiteralExpression.internal(
+          value,
+          ColumnType.dateTime as FieldType<T>,
+        );
       case _Dummy<Uint8List?>():
-        return LiteralExpression._(value, ColumnType.blob as FieldType<T>);
+        return LiteralExpression.internal(
+          value,
+          ColumnType.blob as FieldType<T>,
+        );
       case _Dummy<JsonValue?>():
-        return LiteralExpression._(value, ColumnType.jsonValue as FieldType<T>);
+        return LiteralExpression.internal(
+          value,
+          ColumnType.jsonValue as FieldType<T>,
+        );
       case _Dummy<CustomDataType?>():
         if (value == null) {
-          return LiteralExpression<Null>._(null, ColumnType.nullType)
+          return LiteralExpression<Null>.internal(null, ColumnType.nullType)
               as LiteralExpression<T>;
         }
         throw ArgumentError.value(
@@ -541,13 +461,13 @@ final class LiteralExpression<T> extends SingleValueExpr<T> {
         // we shall recover it.
         switch (value) {
           case String v:
-            return LiteralExpression<String>._(v, ColumnType.text)
+            return LiteralExpression<String>.internal(v, ColumnType.text)
                 as LiteralExpression<T>;
           case int v:
-            return LiteralExpression<int>._(v, ColumnType.integer)
+            return LiteralExpression<int>.internal(v, ColumnType.integer)
                 as LiteralExpression<T>;
           case double v:
-            return LiteralExpression<double>._(v, ColumnType.real)
+            return LiteralExpression<double>.internal(v, ColumnType.real)
                 as LiteralExpression<T>;
           case bool v:
             switch (v) {
@@ -557,16 +477,19 @@ final class LiteralExpression<T> extends SingleValueExpr<T> {
                 return _false$ as LiteralExpression<T>;
             }
           case DateTime v:
-            return LiteralExpression<DateTime>._(v, ColumnType.dateTime)
+            return LiteralExpression<DateTime>.internal(v, ColumnType.dateTime)
                 as LiteralExpression<T>;
           case Uint8List v:
-            return LiteralExpression<Uint8List>._(v, ColumnType.blob)
+            return LiteralExpression<Uint8List>.internal(v, ColumnType.blob)
                 as LiteralExpression<T>;
           case JsonValue v:
-            return LiteralExpression<JsonValue>._(v, ColumnType.jsonValue)
+            return LiteralExpression<JsonValue>.internal(
+                  v,
+                  ColumnType.jsonValue,
+                )
                 as LiteralExpression<T>;
           case null:
-            return LiteralExpression<Null>._(null, ColumnType.nullType)
+            return LiteralExpression<Null>.internal(null, ColumnType.nullType)
                 as LiteralExpression<T>;
           default:
             throw ArgumentError.value(
@@ -588,34 +511,58 @@ final class ValueExpression<T> extends SingleValueExpr<T> {
 
   ColumnType<Object?> get type => switch (_type) {
     ColumnType<T> t => t,
-    CustomExprType t => t._backingType,
+    CustomExprType t => t.$backingType,
   };
 
-  ValueExpression._(this.value, this._type) : super._();
+  ValueExpression.internal(this.value, this._type) : super.internal();
 
   factory ValueExpression(T value) {
     // Switch over _Dummy<T> such that toExpr<T?>(value) becomes an
     // instance of Expr<T?> even if value is `null`.
     switch (_Dummy<T>()) {
       case _Dummy<Null>():
-        return ValueExpression._(value, ColumnType.nullType as ColumnType<T>);
+        return ValueExpression.internal(
+          value,
+          ColumnType.nullType as ColumnType<T>,
+        );
       case _Dummy<String?>():
-        return ValueExpression._(value, ColumnType.text as ColumnType<T>);
+        return ValueExpression.internal(
+          value,
+          ColumnType.text as ColumnType<T>,
+        );
       case _Dummy<int?>():
-        return ValueExpression._(value, ColumnType.integer as ColumnType<T>);
+        return ValueExpression.internal(
+          value,
+          ColumnType.integer as ColumnType<T>,
+        );
       case _Dummy<double?>():
-        return ValueExpression._(value, ColumnType.real as ColumnType<T>);
+        return ValueExpression.internal(
+          value,
+          ColumnType.real as ColumnType<T>,
+        );
       case _Dummy<bool?>():
-        return ValueExpression._(value, ColumnType.boolean as ColumnType<T>);
+        return ValueExpression.internal(
+          value,
+          ColumnType.boolean as ColumnType<T>,
+        );
       case _Dummy<DateTime?>():
-        return ValueExpression._(value, ColumnType.dateTime as ColumnType<T>);
+        return ValueExpression.internal(
+          value,
+          ColumnType.dateTime as ColumnType<T>,
+        );
       case _Dummy<Uint8List?>():
-        return ValueExpression._(value, ColumnType.blob as ColumnType<T>);
+        return ValueExpression.internal(
+          value,
+          ColumnType.blob as ColumnType<T>,
+        );
       case _Dummy<JsonValue?>():
-        return ValueExpression._(value, ColumnType.jsonValue as ColumnType<T>);
+        return ValueExpression.internal(
+          value,
+          ColumnType.jsonValue as ColumnType<T>,
+        );
       case _Dummy<CustomDataType?>():
         if (value == null) {
-          return ValueExpression<Null>._(null, ColumnType.nullType)
+          return ValueExpression<Null>.internal(null, ColumnType.nullType)
               as ValueExpression<T>;
         }
         throw ArgumentError.value(
@@ -632,28 +579,28 @@ final class ValueExpression<T> extends SingleValueExpr<T> {
         // we shall recover it.
         switch (value) {
           case String v:
-            return ValueExpression<String>._(v, ColumnType.text)
+            return ValueExpression<String>.internal(v, ColumnType.text)
                 as ValueExpression<T>;
           case int v:
-            return ValueExpression<int>._(v, ColumnType.integer)
+            return ValueExpression<int>.internal(v, ColumnType.integer)
                 as ValueExpression<T>;
           case double v:
-            return ValueExpression<double>._(v, ColumnType.real)
+            return ValueExpression<double>.internal(v, ColumnType.real)
                 as ValueExpression<T>;
           case bool v:
-            return ValueExpression<bool>._(v, ColumnType.boolean)
+            return ValueExpression<bool>.internal(v, ColumnType.boolean)
                 as ValueExpression<T>;
           case DateTime v:
-            return ValueExpression<DateTime>._(v, ColumnType.dateTime)
+            return ValueExpression<DateTime>.internal(v, ColumnType.dateTime)
                 as ValueExpression<T>;
           case Uint8List v:
-            return ValueExpression<Uint8List>._(v, ColumnType.blob)
+            return ValueExpression<Uint8List>.internal(v, ColumnType.blob)
                 as ValueExpression<T>;
           case JsonValue v:
-            return ValueExpression<JsonValue>._(v, ColumnType.jsonValue)
+            return ValueExpression<JsonValue>.internal(v, ColumnType.jsonValue)
                 as ValueExpression<T>;
           case null:
-            return ValueExpression<Null>._(null, ColumnType.nullType)
+            return ValueExpression<Null>.internal(null, ColumnType.nullType)
                 as ValueExpression<T>;
           default:
             throw ArgumentError.value(
@@ -670,9 +617,9 @@ final class ValueExpression<T> extends SingleValueExpr<T> {
 final class _Dummy<T> {}
 
 final class CurrentTimestampExpression extends SingleValueExpr<DateTime> {
-  const CurrentTimestampExpression._() : super._();
+  const CurrentTimestampExpression.internal() : super.internal();
 
-  static const currentTimestamp = CurrentTimestampExpression._();
+  static const currentTimestamp = CurrentTimestampExpression.internal();
 
   @override
   final _type = ColumnType.dateTime;
@@ -681,15 +628,15 @@ final class CurrentTimestampExpression extends SingleValueExpr<DateTime> {
 sealed class BinaryOperationExpression<T, R> extends SingleValueExpr<R> {
   final Expr<T> left;
   final Expr<T> right;
-  BinaryOperationExpression(this.left, this.right) : super._();
+  BinaryOperationExpression(this.left, this.right) : super.internal();
 }
 
 final class ExpressionBoolNot<T extends bool?> extends SingleValueExpr<T> {
   final Expr<T> value;
-  ExpressionBoolNot(this.value) : super._();
+  ExpressionBoolNot(this.value) : super.internal();
 
   @override
-  _ExprType<T> get _type => ColumnType.boolean as _ExprType<T>;
+  ExprType<T> get _type => ColumnType.boolean as ExprType<T>;
 }
 
 /// SQL Expression using `IS TRUE`.
@@ -697,7 +644,7 @@ final class ExpressionBoolNot<T extends bool?> extends SingleValueExpr<T> {
 /// Collapsing `Expr<bool?>` to `Expr<bool>` by interpreting `NULL` as `FALSE`.
 final class ExpressionIsTrue extends SingleValueExpr<bool> with _ExprBoolean {
   final Expr<bool?> value;
-  ExpressionIsTrue(this.value) : super._();
+  ExpressionIsTrue(this.value) : super.internal();
 }
 
 /// SQL Expression using `IS FALSE`.
@@ -705,13 +652,13 @@ final class ExpressionIsTrue extends SingleValueExpr<bool> with _ExprBoolean {
 /// Collapsing `Expr<bool?>` to `Expr<bool>` by interpreting `NULL` as `TRUE`.
 final class ExpressionIsFalse extends SingleValueExpr<bool> with _ExprBoolean {
   final Expr<bool?> value;
-  ExpressionIsFalse(this.value) : super._();
+  ExpressionIsFalse(this.value) : super.internal();
 }
 
 final class ExpressionBoolAnd<T extends bool?>
     extends BinaryOperationExpression<T, T> {
   @override
-  _ExprType<T> get _type => ColumnType.boolean as _ExprType<T>;
+  ExprType<T> get _type => ColumnType.boolean as ExprType<T>;
 
   ExpressionBoolAnd(super.left, super.right);
 }
@@ -719,7 +666,7 @@ final class ExpressionBoolAnd<T extends bool?>
 final class ExpressionBoolOr<T extends bool?>
     extends BinaryOperationExpression<T, T> {
   @override
-  _ExprType<T> get _type => ColumnType.boolean as _ExprType<T>;
+  ExprType<T> get _type => ColumnType.boolean as ExprType<T>;
 
   ExpressionBoolOr(super.left, super.right);
 }
@@ -780,53 +727,53 @@ final class ExpressionGreaterThanOrEqual<T extends Object>
 final class ExpressionStringIsEmpty extends SingleValueExpr<bool>
     with _ExprBoolean {
   final Expr<String> value;
-  ExpressionStringIsEmpty(this.value) : super._();
+  ExpressionStringIsEmpty(this.value) : super.internal();
 }
 
 final class ExpressionStringLength extends SingleValueExpr<int>
     with _ExprInteger {
   final Expr<String> value;
-  ExpressionStringLength(this.value) : super._();
+  ExpressionStringLength(this.value) : super.internal();
 }
 
 final class ExpressionStringStartsWith extends SingleValueExpr<bool>
     with _ExprBoolean {
   final Expr<String> value;
   final Expr<String> prefix;
-  ExpressionStringStartsWith(this.value, this.prefix) : super._();
+  ExpressionStringStartsWith(this.value, this.prefix) : super.internal();
 }
 
 final class ExpressionStringEndsWith extends SingleValueExpr<bool>
     with _ExprBoolean {
   final Expr<String> value;
   final Expr<String> suffix;
-  ExpressionStringEndsWith(this.value, this.suffix) : super._();
+  ExpressionStringEndsWith(this.value, this.suffix) : super.internal();
 }
 
 final class ExpressionStringLike extends SingleValueExpr<bool>
     with _ExprBoolean {
   final Expr<String> value;
   final String pattern;
-  ExpressionStringLike(this.value, this.pattern) : super._();
+  ExpressionStringLike(this.value, this.pattern) : super.internal();
 }
 
 final class ExpressionStringContains extends SingleValueExpr<bool>
     with _ExprBoolean {
   final Expr<String> value;
   final Expr<String> needle;
-  ExpressionStringContains(this.value, this.needle) : super._();
+  ExpressionStringContains(this.value, this.needle) : super.internal();
 }
 
 final class ExpressionStringToUpperCase extends SingleValueExpr<String>
     with _ExprText {
   final Expr<String> value;
-  ExpressionStringToUpperCase(this.value) : super._();
+  ExpressionStringToUpperCase(this.value) : super.internal();
 }
 
 final class ExpressionStringToLowerCase extends SingleValueExpr<String>
     with _ExprText {
   final Expr<String> value;
-  ExpressionStringToLowerCase(this.value) : super._();
+  ExpressionStringToLowerCase(this.value) : super.internal();
 }
 
 final class ExpressionNumAdd<T extends num>
@@ -834,7 +781,7 @@ final class ExpressionNumAdd<T extends num>
   ExpressionNumAdd(super.left, super.right);
 
   @override
-  _ExprType<T> get _type => left._type;
+  ExprType<T> get _type => left._type;
 }
 
 final class ExpressionNumSubtract<T extends num>
@@ -842,7 +789,7 @@ final class ExpressionNumSubtract<T extends num>
   ExpressionNumSubtract(super.left, super.right);
 
   @override
-  _ExprType<T> get _type => left._type;
+  ExprType<T> get _type => left._type;
 }
 
 final class ExpressionNumMultiply<T extends num>
@@ -850,7 +797,7 @@ final class ExpressionNumMultiply<T extends num>
   ExpressionNumMultiply(super.left, super.right);
 
   @override
-  _ExprType<T> get _type => left._type;
+  ExprType<T> get _type => left._type;
 }
 
 final class ExpressionNumDivide<T extends num>
@@ -862,7 +809,7 @@ final class ExpressionNumDivide<T extends num>
 final class ExpressionBlobLength extends SingleValueExpr<int>
     with _ExprInteger {
   final Expr<Uint8List> value;
-  ExpressionBlobLength(this.value) : super._();
+  ExpressionBlobLength(this.value) : super.internal();
 }
 
 final class ExpressionBlobConcat
@@ -873,7 +820,7 @@ final class ExpressionBlobConcat
 
 final class ExpressionBlobToHex extends SingleValueExpr<String> with _ExprText {
   final Expr<Uint8List> value;
-  ExpressionBlobToHex(this.value) : super._();
+  ExpressionBlobToHex(this.value) : super.internal();
 }
 
 final class ExpressionBlobSublist extends SingleValueExpr<Uint8List>
@@ -883,19 +830,20 @@ final class ExpressionBlobSublist extends SingleValueExpr<Uint8List>
   /// Start index of the substring, zero-indexed (like in Dart).
   final Expr<int> start;
   final Expr<int>? length;
-  ExpressionBlobSublist(this.value, this.start, [this.length]) : super._();
+  ExpressionBlobSublist(this.value, this.start, [this.length])
+    : super.internal();
 }
 
 final class ExpressionBlobDecodeUtf8 extends SingleValueExpr<String>
     with _ExprText {
   final Expr<Uint8List> value;
-  ExpressionBlobDecodeUtf8(this.value) : super._();
+  ExpressionBlobDecodeUtf8(this.value) : super.internal();
 }
 
 /// Base class for JSON expressions reference a property or index in a
 /// [JsonValue].
 sealed class ExpressionJsonRef extends SingleValueExpr<JsonValue?> {
-  ExpressionJsonRef._() : super._();
+  ExpressionJsonRef.internal() : super.internal();
 
   @override
   final _type = ColumnType.jsonValue;
@@ -905,7 +853,7 @@ sealed class ExpressionJsonRef extends SingleValueExpr<JsonValue?> {
 final class ExpressionJsonRefRoot extends ExpressionJsonRef {
   final Expr<JsonValue?> value;
 
-  ExpressionJsonRefRoot._(this.value) : super._();
+  ExpressionJsonRefRoot.internal(this.value) : super.internal();
 }
 
 /// Accessing a key in a JSON object, using `value -> 'key'` in SQL.
@@ -913,7 +861,7 @@ final class ExpressionJsonRefKey extends ExpressionJsonRef {
   final ExpressionJsonRef value;
   final String key;
 
-  ExpressionJsonRefKey._(this.value, this.key) : super._();
+  ExpressionJsonRefKey.internal(this.value, this.key) : super.internal();
 }
 
 /// Accessing a key in a JSON object, using `value -> index` in SQL.
@@ -921,7 +869,7 @@ final class ExpressionJsonRefIndex extends ExpressionJsonRef {
   final ExpressionJsonRef value;
   final int index;
 
-  ExpressionJsonRefIndex._(this.value, this.index) : super._();
+  ExpressionJsonRefIndex.internal(this.value, this.index) : super.internal();
 }
 
 /// Extract a raw TEXT representation from a ExpressionJsonRef into a
@@ -929,8 +877,32 @@ final class ExpressionJsonRefIndex extends ExpressionJsonRef {
 final class ExpressionJsonExtract extends SingleValueExpr<String?> {
   final Expr<JsonValue?> value;
 
-  ExpressionJsonExtract._(this.value) : super._();
+  ExpressionJsonExtract.internal(this.value) : super.internal();
 
   @override
-  _ExprType<String?> get _type => ColumnType.text;
+  ExprType<String?> get _type => ColumnType.text;
+}
+
+/// Package-internal view of [Expr], exposing members used by the
+/// query-builder and SQL dialects without making them part of [Expr]'s own
+/// (public) API.
+///
+/// Members are prefixed with `$` (matching the `$ForGeneratedCode`
+/// convention) so they can't collide with a generated per-model extension
+/// member named after a user's column (e.g. a column named `field`).
+extension ExprInternal<T extends Object?> on Expr<T> {
+  ExprType<T> get $exprType => _type;
+  int get $columnCount => _columns;
+  Expr<T> $standin(int index, Object handle) => _standin(index, handle);
+  Expr<R> $field<R>(int index, FieldType<R> type) => _field(index, type);
+  T? $decode(RowReader r) => _decode(r);
+  Iterable<Expr<Object?>> $explode() => _explode();
+}
+
+/// Package-internal view of [FieldExpression], exposing members used by the
+/// query-builder without making them part of [FieldExpression]'s own
+/// (still private) API.
+extension FieldExpressionInternal<T extends Object?> on FieldExpression<T> {
+  Object get $handle => _handle;
+  int get $index => _index;
 }

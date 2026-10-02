@@ -19,7 +19,7 @@ extension QuerySingle1AsExpr<T> on QuerySingle<(Expr<T>,)> {
   /// Use this [QuerySingle] as subquery expression.
   ///
   /// This is equivalent to `(SELECT * FROM this LIMIT 1)` in SQL.
-  Expr<T?> get asExpr => SubQueryExpression._(
+  Expr<T?> get asExpr => SubQueryExpression.internal(
     _query._from(_query._expressions.toList()),
     _query._expressions.$1,
   );
@@ -34,8 +34,8 @@ extension SubQuery1Ext<T> on SubQuery<(Expr<T>,)> {
   ///
   /// This is equivalent to `(SELECT * FROM this LIMIT 1)` in SQL.
   /// {@endtemplate}
-  Expr<T?> get first => SubQueryExpression._(
-    LimitClause._(_from(_expressions.toList()), 1),
+  Expr<T?> get first => SubQueryExpression.internal(
+    LimitClause.internal(_from(_expressions.toList()), 1),
     _expressions.$1,
   );
 }
@@ -79,7 +79,8 @@ extension QueryInteger on Query<(Expr<int?>,)> {
   /// > zero, if there are no rows, or all if all rows are `NULL`.
   /// > Where as `SUM` in SQL would return `NULL`.
   /// {@endtemplate}
-  QuerySingle<(Expr<int>,)> sum() => select((a) => (SumExpression._(a),)).first;
+  QuerySingle<(Expr<int>,)> sum() =>
+      select((a) => (SumExpression.internal(a),)).first;
 
   /// {@template avg-query}
   /// Take the average of the rows in this query using the `AVG`
@@ -93,7 +94,7 @@ extension QueryInteger on Query<(Expr<int?>,)> {
   /// > Similarly, `NULL` rows will not figure in the average value.
   /// {@endtemplate}
   QuerySingle<(Expr<double?>,)> avg() =>
-      select((a) => (AvgExpression._(a),)).first;
+      select((a) => (AvgExpression.internal(a),)).first;
 
   /// {@template min-query}
   /// Take the smallest row of the rows in this query using the `MIN`
@@ -106,7 +107,7 @@ extension QueryInteger on Query<(Expr<int?>,)> {
   /// > `NULL` if there are no rows or if all rows are `NULL`.
   /// {@endtemplate}
   QuerySingle<(Expr<int?>,)> min() =>
-      select((a) => (MinExpression._(a),)).first;
+      select((a) => (MinExpression.internal(a),)).first;
 
   /// {@template max-query}
   /// Take the largest row of the rows in this query using the `MAX`
@@ -119,96 +120,98 @@ extension QueryInteger on Query<(Expr<int?>,)> {
   /// > `NULL` if there are no rows or if all rows are `NULL`.
   /// {@endtemplate}
   QuerySingle<(Expr<int?>,)> max() =>
-      select((a) => (MaxExpression._(a),)).first;
+      select((a) => (MaxExpression.internal(a),)).first;
 }
 
 /// Extension methods for queries projected to a [double] expression.
 extension QueryReal on Query<(Expr<double?>,)> {
   /// {@macro sum-query}
   QuerySingle<(Expr<double>,)> sum() =>
-      select((a) => (SumExpression._(a),)).first;
+      select((a) => (SumExpression.internal(a),)).first;
 
   /// {@macro avg-query}
   QuerySingle<(Expr<double?>,)> avg() =>
-      select((a) => (AvgExpression._(a),)).first;
+      select((a) => (AvgExpression.internal(a),)).first;
 
   /// {@macro min-query}
   QuerySingle<(Expr<double?>,)> min() =>
-      select((a) => (MinExpression._(a),)).first;
+      select((a) => (MinExpression.internal(a),)).first;
 
   /// {@macro max-query}
   QuerySingle<(Expr<double?>,)> max() =>
-      select((a) => (MaxExpression._(a),)).first;
+      select((a) => (MaxExpression.internal(a),)).first;
 }
 
 /// Extension methods for queries projected to a [DateTime] expression.
 extension QueryDateTime on Query<(Expr<DateTime?>,)> {
   /// {@macro min-query}
   QuerySingle<(Expr<DateTime?>,)> min() =>
-      select((a) => (MinExpression._(a),)).first;
+      select((a) => (MinExpression.internal(a),)).first;
 
   /// {@macro max-query}
   QuerySingle<(Expr<DateTime?>,)> max() =>
-      select((a) => (MaxExpression._(a),)).first;
+      select((a) => (MaxExpression.internal(a),)).first;
 }
 
 /// Extension methods for queries projected to a [String] expression.
 extension QueryString on Query<(Expr<String?>,)> {
   /// {@macro min-query}
   QuerySingle<(Expr<String?>,)> min() =>
-      select((a) => (MinExpression._(a),)).first;
+      select((a) => (MinExpression.internal(a),)).first;
 
   /// {@macro max-query}
   QuerySingle<(Expr<String?>,)> max() =>
-      select((a) => (MaxExpression._(a),)).first;
+      select((a) => (MaxExpression.internal(a),)).first;
 }
 
 /// Extension methods for subqueries projected to an [int] expression.
 extension SubQueryInteger on SubQuery<(Expr<int?>,)> {
   /// {@macro sum-query}
-  Expr<int> sum() => select((a) => (SumExpression._(a),)).first.asNotNull();
+  Expr<int> sum() =>
+      select((a) => (SumExpression.internal(a),)).first.asNotNull();
 
   /// {@macro avg-query}
-  Expr<double?> avg() => select((a) => (AvgExpression._(a),)).first;
+  Expr<double?> avg() => select((a) => (AvgExpression.internal(a),)).first;
 
   /// {@macro min-query}
-  Expr<int?> min() => select((a) => (MinExpression._(a),)).first;
+  Expr<int?> min() => select((a) => (MinExpression.internal(a),)).first;
 
   /// {@macro max-query}
-  Expr<int?> max() => select((a) => (MaxExpression._(a),)).first;
+  Expr<int?> max() => select((a) => (MaxExpression.internal(a),)).first;
 }
 
 /// Extension methods for subqueries projected to a [double] expression.
 extension SubQueryReal on SubQuery<(Expr<double?>,)> {
   /// {@macro sum-query}
-  Expr<double> sum() => select((a) => (SumExpression._(a),)).first.asNotNull();
+  Expr<double> sum() =>
+      select((a) => (SumExpression.internal(a),)).first.asNotNull();
 
   /// {@macro avg-query}
-  Expr<double?> avg() => select((a) => (AvgExpression._(a),)).first;
+  Expr<double?> avg() => select((a) => (AvgExpression.internal(a),)).first;
 
   /// {@macro min-query}
-  Expr<double?> min() => select((a) => (MinExpression._(a),)).first;
+  Expr<double?> min() => select((a) => (MinExpression.internal(a),)).first;
 
   /// {@macro max-query}
-  Expr<double?> max() => select((a) => (MaxExpression._(a),)).first;
+  Expr<double?> max() => select((a) => (MaxExpression.internal(a),)).first;
 }
 
 /// Extension methods for subqueries projected to a [DateTime] expression.
 extension SubQueryDateTime on SubQuery<(Expr<DateTime?>,)> {
   /// {@macro min-query}
-  Expr<DateTime?> min() => select((a) => (MinExpression._(a),)).first;
+  Expr<DateTime?> min() => select((a) => (MinExpression.internal(a),)).first;
 
   /// {@macro max-query}
-  Expr<DateTime?> max() => select((a) => (MaxExpression._(a),)).first;
+  Expr<DateTime?> max() => select((a) => (MaxExpression.internal(a),)).first;
 }
 
 /// Extension methods for subqueries projected to a [String] expression.
 extension SubQueryString on SubQuery<(Expr<String?>,)> {
   /// {@macro min-query}
-  Expr<String?> min() => select((a) => (MinExpression._(a),)).first;
+  Expr<String?> min() => select((a) => (MinExpression.internal(a),)).first;
 
   /// {@macro max-query}
-  Expr<String?> max() => select((a) => (MaxExpression._(a),)).first;
+  Expr<String?> max() => select((a) => (MaxExpression.internal(a),)).first;
 }
 
 /// Extension methods for all queries.
@@ -220,7 +223,7 @@ extension QueryExt<T extends Record> on Query<T> {
   /// This is equivalent to `SELECT DISTINCT * FROM this` in SQL.
   /// {@endtemplate}
   Query<T> distinct() =>
-      Query._(_context, _expressions, (e) => DistinctClause._(_from(e)));
+      Query._(_context, _expressions, (e) => DistinctClause.internal(_from(e)));
 
   /// Use this [Query] as a [SubQuery].
   ///
@@ -281,7 +284,7 @@ extension ProjectedOrderedQueryRangeExt<T extends Record>
 extension QuerySubExt<T extends Record> on SubQuery<T> {
   /// {@macro distinct-query}
   SubQuery<T> distinct() =>
-      SubQuery._(_expressions, (e) => DistinctClause._(_from(e)));
+      SubQuery._(_expressions, (e) => DistinctClause.internal(_from(e)));
 }
 
 /// {@template OrderedSubQueryExt}
