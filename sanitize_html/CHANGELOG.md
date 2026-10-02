@@ -1,3 +1,8 @@
+## v3.0.3
+* ci: add the `sanitize_html` GitHub Actions workflow: `dart analyze --fatal-infos` and `dart test` on the Dart VM and Chrome, for every pull request and every push to `support_mail` / `master`
+* ci: remove the upstream mono_repo `Dart CI` workflow (`.github/workflows/dart.yml`)
+* No library code changes since v3.0.2
+
 ## v3.0.2
 * fix(sanitizer): tighten unicodeEscapeReg to require 3+ consecutive \XX sequences
 
