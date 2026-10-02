@@ -131,5 +131,18 @@ void main() {
       await expectLater(f, throwsA(isException));
       expect(count, equals(2));
     });
+
+    test('call onRetryFailure when exception on retry', () async {
+      var count = 0;
+      await retry(() {
+        count++;
+        if (count == 1) {
+          throw FormatException('Retry will be okay');
+        }
+      }, onRetryFailure: (e, st) {
+        expect(e, isA<FormatException>());
+        expect(st, isA<StackTrace>());
+      });
+    });
   });
 }
