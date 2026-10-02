@@ -46,6 +46,11 @@ class NeatTaskStatus {
   /// Time the task started running.
   final DateTime started;
 
+  /// Time of the last heartbeat sent by the running task.
+  ///
+  /// Only relevant if [state] is 'running'.
+  final DateTime? heartbeat;
+
   /// Owner if this status object, only relevant if [state] is 'running'.
   ///
   /// The [owner] is a random slugid that identifies the process that owns the
@@ -57,12 +62,14 @@ class NeatTaskStatus {
     required this.version,
     required this.state,
     required this.started,
+    this.heartbeat,
     required this.owner,
   });
 
   NeatTaskStatus.create({
     required this.state,
     required this.started,
+    this.heartbeat,
     required this.owner,
   })  : format = formatIdentifier,
         version = currentVersion;
@@ -71,6 +78,7 @@ class NeatTaskStatus {
   NeatTaskStatus update({
     String? state,
     DateTime? started,
+    DateTime? heartbeat,
     String? owner,
   }) {
     return NeatTaskStatus(
@@ -78,6 +86,7 @@ class NeatTaskStatus {
       version: currentVersion,
       state: state ?? this.state,
       started: started ?? this.started,
+      heartbeat: heartbeat ?? this.heartbeat,
       owner: owner ?? this.owner,
     );
   }
@@ -87,6 +96,7 @@ class NeatTaskStatus {
         version: currentVersion,
         state: 'idle',
         started: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+        heartbeat: null,
         owner: '-',
       );
 
