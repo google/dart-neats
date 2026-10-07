@@ -99,6 +99,68 @@ abstract final class Book extends Row {
 > should probably avoid such constructs when possible.
 
 
+## Referential actions
+
+When a row in a referenced table is deleted or updated, the database must decide
+what to do with rows in the referencing table that point to it. This is
+controlled by a _referential action_, specified via the `onDelete` and `onUpdate`
+parameters of `@References` or `@ForeignKey`. Both default to
+`ReferentialAction.noAction`.
+
+The available actions are:
+
+| Value | SQL keyword | Behavior |
+|---|---|---|
+| `ReferentialAction.noAction` | `NO ACTION` | Prevents the deletion or update of a referenced row. The check is deferred until the end of the transaction. This is the **default**. |
+| `ReferentialAction.restrict` | `RESTRICT` | Same as `noAction`, but the check is performed immediately, before the statement completes. |
+| `ReferentialAction.cascade` | `CASCADE` | Automatically deletes or updates the referencing rows to match. |
+| `ReferentialAction.setNull` | `SET NULL` | Sets the foreign key column(s) in the referencing rows to `NULL`. The column(s) must be nullable. |
+| `ReferentialAction.setDefault` | `SET DEFAULT` | Sets the foreign key column(s) in the referencing rows to their declared default values. |
+
+The following example shows how to use `onDelete` and `onUpdate` with
+`@References`:
+
+```dart
+@PrimaryKey(['bookId'])
+abstract final class Book extends Row {
+  @AutoIncrement()
+  int get bookId;
+
+  @Unique.field()
+  String? get title;
+
+  @References(
+    table: 'authors',
+    field: 'authorId',
+    name: 'author',
+    as: 'books',
+    onDelete: ReferentialAction.cascade,  // delete books when their author is deleted
+    onUpdate: ReferentialAction.noAction, // prevent author ID from changing
+  )
+  int get authorId;
+
+  @DefaultValue(0)
+  int get stock;
+}
+```
+
+The same `onDelete` and `onUpdate` parameters are also available on `@ForeignKey`
+for composite foreign keys.
+
+> [!WARNING]
+> `ReferentialAction.cascade` will silently delete or update referencing rows.
+> Use it only when that is the intended behavior.
+
+> [!NOTE]
+> `ReferentialAction.setNull` requires the foreign key column to be nullable
+> (e.g. `int?` instead of `int`).
+
+> [!NOTE]
+> `ReferentialAction.setDefault` is **not supported** by MySQL/MariaDB's InnoDB
+> engine and will generally result in an error or be silently ignored on those
+> databases.
+
+
 ## Following references in a query (using reference `name`)
 With the `@References` annotation in place, `package:typed_sql` will use
 the `name: 'author'` parameter to generate an extension method
