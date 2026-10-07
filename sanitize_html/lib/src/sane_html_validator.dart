@@ -237,11 +237,13 @@ final _elementAttributeValidators =
 ///
 /// [1]: https://github.com/gjtorikian/html-pipeline/blob/main/lib/html_pipeline/sanitization_filter.rb
 class SaneHtmlValidator {
+  final bool Function(String)? allowElements;
   final bool Function(String)? allowElementId;
   final bool Function(String)? allowClassName;
   final Iterable<String>? Function(String)? addLinkRel;
 
   SaneHtmlValidator({
+    required this.allowElements,
     required this.allowElementId,
     required this.allowClassName,
     required this.addLinkRel,
@@ -256,7 +258,8 @@ class SaneHtmlValidator {
   void _sanitize(Node node) {
     if (node is Element) {
       final tagName = node.localName!.toUpperCase();
-      if (!_allowedElements.contains(tagName)) {
+      if (!_allowedElements.contains(tagName) &&
+          !(allowElements?.call(tagName) ?? false)) {
         node.remove();
         return;
       }

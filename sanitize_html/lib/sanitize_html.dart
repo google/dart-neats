@@ -26,6 +26,8 @@ import 'src/sane_html_validator.dart' show SaneHtmlValidator;
 /// guard against XSS as this sanitizer also attempts to prevent the sanitized
 /// HTML from interfering with the page it is injected into.
 ///
+/// The optional [allowElements] callback will be called with uppercase tag names.
+///
 /// For example, while it is possible to allow many CSS properties, this
 /// sanitizer does not allow any CSS. This creates a sanitizer that is easy to
 /// validate and is usually fine when sanitizing HTML from rendered markdown.
@@ -71,11 +73,13 @@ import 'src/sane_html_validator.dart' show SaneHtmlValidator;
 /// [3]: https://support.google.com/webmasters/answer/81749
 String sanitizeHtml(
   String htmlString, {
+  bool Function(String)? allowElements,
   bool Function(String)? allowElementId,
   bool Function(String)? allowClassName,
   Iterable<String>? Function(String)? addLinkRel,
 }) {
   return SaneHtmlValidator(
+    allowElements: allowElements,
     allowElementId: allowElementId,
     allowClassName: allowClassName,
     addLinkRel: addLinkRel,
