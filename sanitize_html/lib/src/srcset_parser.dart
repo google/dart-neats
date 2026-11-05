@@ -25,7 +25,6 @@ class SrcsetParser {
   const SrcsetParser._();
 
   static final RegExp _space = RegExp(r'\s');
-  static final RegExp _trailingCommas = RegExp(r',+$');
 
   static List<SrcsetCandidate> parse(String input) {
     final candidates = <SrcsetCandidate>[];
@@ -34,7 +33,7 @@ class SrcsetParser {
       final urlEnd = _endOfUrl(input, pos);
       final url = input.substring(pos, urlEnd);
       if (url.endsWith(',')) {
-        candidates.add(SrcsetCandidate(url.replaceFirst(_trailingCommas, ''), ''));
+        candidates.add(SrcsetCandidate(_trimTrailingCommas(url), ''));
         pos = _skipSeparators(input, urlEnd);
         continue;
       }
@@ -46,6 +45,15 @@ class SrcsetParser {
       pos = _skipSeparators(input, descriptorsEnd);
     }
     return candidates;
+  }
+
+  /// A regex like `,+$` backtracks quadratically on a long run of commas.
+  static String _trimTrailingCommas(String url) {
+    var end = url.length;
+    while (end > 0 && url[end - 1] == ',') {
+      end--;
+    }
+    return url.substring(0, end);
   }
 
   static bool _isSeparator(String char) => char == ',' || _space.hasMatch(char);

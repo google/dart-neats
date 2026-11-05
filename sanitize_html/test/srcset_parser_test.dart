@@ -42,6 +42,13 @@ void main() {
       ]);
     });
 
+    test('parses a long comma run in linear time', () {
+      final commas = ',' * 200000;
+      expect(SrcsetParser.parse('a${commas}a,'), [
+        SrcsetCandidate('a${commas}a', ''),
+      ]);
+    }, timeout: const Timeout(Duration(seconds: 5)));
+
     test('skips empty candidates', () {
       expect(SrcsetParser.parse('a.png 1x,,, '), [
         SrcsetCandidate('a.png', '1x'),
