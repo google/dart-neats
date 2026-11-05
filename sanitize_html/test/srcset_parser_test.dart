@@ -35,6 +35,13 @@ void main() {
       ]);
     });
 
+    test('closes parentheses at the first ")" like the browser', () {
+      expect(SrcsetParser.parse('a.png 1x (( ), file:///etc/passwd 2x'), [
+        SrcsetCandidate('a.png', '1x (( )'),
+        SrcsetCandidate('file:///etc/passwd', '2x'),
+      ]);
+    });
+
     test('skips empty candidates', () {
       expect(SrcsetParser.parse('a.png 1x,,, '), [
         SrcsetCandidate('a.png', '1x'),

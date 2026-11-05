@@ -128,6 +128,13 @@ void main() {
         });
       }
 
+      test('drops a candidate hidden behind unbalanced parentheses', () {
+        expect(
+          sanitizeSrcset('https://h/a.png 1x (( ), file:///etc/passwd 2x'),
+          'https://h/a.png 1x (( )',
+        );
+      });
+
       test('drops only the unsafe candidate', () {
         expect(
           sanitizeSrcset('https://h/a.png 1x, file:///x 2x'),

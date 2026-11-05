@@ -29,36 +29,51 @@ class SrcsetParser {
 
   static List<SrcsetCandidate> parse(String input) {
     final candidates = <SrcsetCandidate>[];
-    var pos = 0;
+    var pos = _skipSeparators(input, 0);
     while (pos < input.length) {
-      while (pos < input.length &&
-          (_space.hasMatch(input[pos]) || input[pos] == ',')) {
-        pos++;
-      }
-      if (pos >= input.length) break;
-
-      final urlStart = pos;
-      while (pos < input.length && !_space.hasMatch(input[pos])) {
-        pos++;
-      }
-      final url = input.substring(urlStart, pos);
+      final urlEnd = _endOfUrl(input, pos);
+      final url = input.substring(pos, urlEnd);
       if (url.endsWith(',')) {
         candidates.add(SrcsetCandidate(url.replaceFirst(_trailingCommas, ''), ''));
+        pos = _skipSeparators(input, urlEnd);
         continue;
       }
 
-      final descriptorsStart = pos;
-      var depth = 0;
-      while (pos < input.length && !(input[pos] == ',' && depth == 0)) {
-        if (input[pos] == '(') depth++;
-        if (input[pos] == ')' && depth > 0) depth--;
-        pos++;
-      }
+      final descriptorsEnd = _endOfDescriptors(input, urlEnd);
       candidates.add(
-        SrcsetCandidate(url, input.substring(descriptorsStart, pos).trim()),
+        SrcsetCandidate(url, input.substring(urlEnd, descriptorsEnd).trim()),
       );
-      pos++; // skip the separating comma
+      pos = _skipSeparators(input, descriptorsEnd);
     }
     return candidates;
+  }
+
+  static bool _isSeparator(String char) => char == ',' || _space.hasMatch(char);
+
+  static int _skipSeparators(String input, int pos) {
+    while (pos < input.length && _isSeparator(input[pos])) {
+      pos++;
+    }
+    return pos;
+  }
+
+  static int _endOfUrl(String input, int pos) {
+    while (pos < input.length && !_space.hasMatch(input[pos])) {
+      pos++;
+    }
+    return pos;
+  }
+
+  /// Like the browser, parentheses do not nest. The first `)` closes them.
+  static int _endOfDescriptors(String input, int pos) {
+    var inParens = false;
+    while (pos < input.length) {
+      final char = input[pos];
+      if (char == ',' && !inParens) break;
+      if (char == '(') inParens = true;
+      if (char == ')') inParens = false;
+      pos++;
+    }
+    return pos;
   }
 }
