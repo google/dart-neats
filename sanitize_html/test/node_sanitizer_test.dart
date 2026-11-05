@@ -105,5 +105,47 @@ void main() {
         expect(doc.body!.innerHtml, isNot(contains('\\6a\\61\\76')));
       });
     });
+
+    group('srcset', () {
+      String? sanitizeSrcset(String srcset) {
+        final doc = parse('<img srcset="$srcset">');
+        sanitizer.sanitize(doc.body!, allowUnwrap: false);
+        return doc.querySelector('img')?.attributes['srcset'];
+      }
+
+      const removed = <String>[
+        'file:///etc/passwd 1x',
+        'FILE:///x 1x',
+        '\tfile:///x 1x',
+        'ftp://h/a.png 1x',
+        '//evil/a.png 1x',
+        'javascript:alert(1) 1x',
+        'data:image/svg+xml;base64,AAAA 1x',
+      ];
+      for (final srcset in removed) {
+        test('removes the attribute for "${srcset.trim()}"', () {
+          expect(sanitizeSrcset(srcset), isNull);
+        });
+      }
+
+      test('drops only the unsafe candidate', () {
+        expect(
+          sanitizeSrcset('https://h/a.png 1x, file:///x 2x'),
+          'https://h/a.png 1x',
+        );
+      });
+
+      const kept = <String>[
+        'a.png 1x, /b.png 2x',
+        'cid:img1 1x',
+        'data:image/png;base64,AAAA 1x',
+        'https://h/a.png 300w, https://h/b.png 600w',
+      ];
+      for (final srcset in kept) {
+        test('keeps "$srcset"', () {
+          expect(sanitizeSrcset(srcset), srcset);
+        });
+      }
+    });
   });
 }

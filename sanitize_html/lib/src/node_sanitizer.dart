@@ -2,6 +2,8 @@ import 'package:html/dom.dart';
 import 'package:sanitize_html/src/attribute_policy.dart';
 import 'package:sanitize_html/src/css_sanitizer.dart';
 import 'package:sanitize_html/src/html_sanitize_config.dart';
+import 'package:sanitize_html/src/srcset_parser.dart';
+import 'package:sanitize_html/src/url_validators.dart';
 
 class NodeSanitizer {
   final bool Function(String)? allowId;
@@ -125,6 +127,28 @@ class NodeSanitizer {
     return HtmlSanitizeConfig.dangerousMarkupRegex.hasMatch(v);
   }
 
+  /// Same allowlist as `src`: http(s), relative, cid:, raster data:image.
+  List<String> _safeSrcsetEntries(String value) {
+    final safeEntries = <String>[];
+    for (final candidate in SrcsetParser.parse(value)) {
+      final url = _normalizeUrl(candidate.url);
+      final lower = url.toLowerCase();
+      if (url.isEmpty || lower.startsWith('//') || _isEncodedJs(lower)) {
+        continue;
+      }
+      final isSafe = lower.startsWith('data:')
+          ? HtmlSanitizeConfig.safeBase64ImageRegex.hasMatch(lower)
+          : UrlValidators.validUrl(url) || UrlValidators.validCIDImage(lower);
+      if (!isSafe) continue;
+      safeEntries.add(
+        candidate.descriptors.isEmpty
+            ? candidate.url
+            : '${candidate.url} ${candidate.descriptors}',
+      );
+    }
+    return safeEntries;
+  }
+
   String _normalizeUrl(String value) {
     // Remove whitespace and control characters that a browser ignores when it
     // resolves the URL's scheme, so the checks below see the same value the
@@ -144,42 +168,7 @@ class NodeSanitizer {
 
       // === Handle SRCSET ===
       if (attrLower == 'srcset') {
-        final entries = value.split(',');
-        final safeEntries = <String>[];
-
-        for (final entry in entries) {
-          final trimmed = entry.trim();
-          final url = trimmed.split(' ').first;
-          final lower = url.toLowerCase();
-
-          // Remove unsafe URLs
-          if (lower.startsWith('javascript:') ||
-              lower.startsWith('vbscript:') ||
-              lower.startsWith('data:application') ||
-              lower.startsWith('data:text') ||
-              _isEncodedJs(lower)) {
-            continue;
-          }
-
-          // Allow http/https and relative URLs
-          // Block protocol-relative URLs (//) which can bypass scheme checks
-          if (lower.startsWith('//')) {
-            continue;
-          }
-
-          // Allow data:image URLs for inline images (restrict to safe formats)
-          if (lower.startsWith('data:image/')) {
-            // Only allow safe raster formats, not SVG
-            if (HtmlSanitizeConfig.safeBase64ImageRegex.hasMatch(lower)) {
-              safeEntries.add(trimmed);
-              continue;
-            }
-            continue; // skip unsafe data:image types
-          }
-
-          safeEntries.add(trimmed);
-        }
-
+        final safeEntries = _safeSrcsetEntries(value);
         if (safeEntries.isEmpty) {
           return true; // drop attribute
         }
