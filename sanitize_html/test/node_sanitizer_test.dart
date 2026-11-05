@@ -119,6 +119,8 @@ void main() {
         '\tfile:///x 1x',
         'ftp://h/a.png 1x',
         '//evil/a.png 1x',
+        r'\\evil/a.png 1x',
+        r'/\evil/a.png 1x',
         'javascript:alert(1) 1x',
         'data:image/svg+xml;base64,AAAA 1x',
       ];

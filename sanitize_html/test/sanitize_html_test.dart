@@ -71,6 +71,8 @@ void main() {
   testContains('<a href="test.html">hello', 'test.html');
   testNotContains(
       '<a href="//example.com/test.html">hello', '//example.com/test.html');
+  testNotContains(
+      r'<a href="\\example.com/test.html">hello', r'\\example.com/test.html');
   testContains('<a href="/test.html">hello', '/test.html');
   testContains('<a href="https://example.com/test.html">hello',
       'https://example.com/test.html');
@@ -87,6 +89,8 @@ void main() {
   testContains('<img src="test.jpg"/>', 'src=');
   testContains('<img src="test.jpg"/>', 'test.jpg');
   testNotContains('<img src="//test.jpg"/>', '//test.jpg');
+  testNotContains(r'<img src="\\test.jpg"/>', r'\\test.jpg');
+  testNotContains(r'<img src="/\test.jpg"/>', r'/\test.jpg');
   testContains('<img src="/test.jpg"/>', '/test.jpg');
   testContains('<img src="https://example.com/test.jpg"/>',
       'https://example.com/test.jpg');

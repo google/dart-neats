@@ -133,7 +133,9 @@ class NodeSanitizer {
     for (final candidate in SrcsetParser.parse(value)) {
       final url = _normalizeUrl(candidate.url);
       final lower = url.toLowerCase();
-      if (url.isEmpty || lower.startsWith('//') || _isEncodedJs(lower)) {
+      if (url.isEmpty ||
+          UrlValidators.isProtocolRelative(url) ||
+          _isEncodedJs(lower)) {
         continue;
       }
       final isSafe = lower.startsWith('data:')
@@ -209,7 +211,7 @@ class NodeSanitizer {
         }
 
         // block protocol-relative URL
-        if (lower.startsWith('//')) {
+        if (UrlValidators.isProtocolRelative(lower)) {
           return true; // remove
         }
 

@@ -45,6 +45,10 @@ class UrlValidators {
     return uri.isScheme('https') || uri.isScheme('http') || !uri.hasScheme;
   }
 
+  /// Browsers read `\` as `/` in http(s) URLs, so `\\host` is protocol-relative too.
+  static bool isProtocolRelative(String url) =>
+      url.trimLeft().replaceAll('\\', '/').startsWith('//');
+
   /// Check base64 image header
   static bool validBase64Image(String v) {
     return HtmlSanitizeConfig.base64ImageRegex.hasMatch(v);

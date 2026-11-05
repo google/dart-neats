@@ -82,8 +82,7 @@ class AttributePolicy {
     }
 
     if (normalizedAttr == 'src' || normalizedAttr == 'href') {
-      final raw = value.trim().toLowerCase();
-      if (raw.startsWith('//')) return false;
+      if (UrlValidators.isProtocolRelative(value)) return false;
     }
 
     // 4. Inline style sanitization
