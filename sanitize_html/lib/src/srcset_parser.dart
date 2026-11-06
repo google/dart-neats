@@ -24,7 +24,8 @@ class SrcsetCandidate {
 class SrcsetParser {
   const SrcsetParser._();
 
-  static final RegExp _space = RegExp(r'\s');
+  // The browser splits srcset on ASCII whitespace only.
+  static final RegExp _space = RegExp(r'[ \t\n\f\r]');
 
   static List<SrcsetCandidate> parse(String input) {
     final candidates = <SrcsetCandidate>[];

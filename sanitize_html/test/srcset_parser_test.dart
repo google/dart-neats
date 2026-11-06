@@ -56,5 +56,11 @@ void main() {
       expect(SrcsetParser.parse(''), isEmpty);
       expect(SrcsetParser.parse(' , ,'), isEmpty);
     });
+
+    test('keeps a non-ASCII space inside the URL like the browser', () {
+      expect(SrcsetParser.parse('https://h.example/a\u00a0b.png 2x'), [
+        SrcsetCandidate('https://h.example/a\u00a0b.png', '2x'),
+      ]);
+    });
   });
 }
