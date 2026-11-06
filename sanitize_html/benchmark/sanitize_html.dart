@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,54 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:sanitize_html/sanitize_html.dart' show sanitizeHtml;
-import 'dart:io' show Platform, File;
+import 'dart:io' show File, Platform;
+
+import 'package:bench_press/bench_press.dart';
 import 'package:markdown/markdown.dart' show markdownToHtml;
-import 'dart:math' as math;
+import 'package:sanitize_html/sanitize_html.dart';
 
-Duration measure(void Function() fn, [int iterations = 1]) {
-  final w = Stopwatch();
-  w.start();
-  for (var i = 0; i < iterations; i++) {
-    fn();
-  }
-  w.stop();
-  return Duration(microseconds: w.elapsedMicroseconds);
-}
-
-void benchmark(String name, void Function() fn) {
-  final initialIterations = 100;
-  final d = measure(fn, initialIterations) ~/ initialIterations;
-  final iterations = math.max(
-    Duration(seconds: 10).inMicroseconds ~/ d.inMicroseconds,
-    5,
-  );
-  final time = measure(fn, iterations) ~/ iterations;
-  print('$name took ${time.inMicroseconds} μs ($iterations iterations)');
-}
-
-Future<void> main() async {
+Future<void> main(List<String> args) async {
   final testFile = Platform.script.resolve('testdata/lorem-ipsum.md');
   final testData = await File(testFile.toFilePath()).readAsString();
-
-  benchmark('renderMarkdown', () {
-    markdownToHtml(testData);
-  });
-
   final html = markdownToHtml(testData);
-  benchmark('sanitizeHtml', () {
-    sanitizeHtml(
-      html,
-      allowClassName: (_) => true,
-      allowElementId: (_) => true,
-    );
-  });
 
-  benchmark('renderMarkdown + sanitizeHtml', () {
-    sanitizeHtml(
-      markdownToHtml(testData),
-      allowClassName: (_) => true,
-      allowElementId: (_) => true,
-    );
-  });
+  final rules = RuleSet.gfm();
+  String streaming(String html) =>
+      sanitizeHtml(html, rules: rules, tokenizer: HtmlTokenizer.streaming);
+  String simple(String html) =>
+      sanitizeHtml(html, rules: rules, tokenizer: HtmlTokenizer.simple);
+  String dom(String html) =>
+      sanitizeHtml(html, rules: rules, tokenizer: HtmlTokenizer.dom);
+  String withRel(String html) => sanitizeHtml(
+        html,
+        rules: rules,
+        rewriters: [
+          HtmlRewriter.addLinkRel((_) => const ['ugc', 'nofollow'])
+        ],
+      );
+
+  final group = BenchmarkGroup.compare(
+    name: 'HtmlSanitizer',
+    baseline: ('HtmlTokenizer.streaming', () => streaming(html)),
+    candidates: {
+      'HtmlTokenizer.simple': () => simple(html),
+      'HtmlTokenizer.dom (package:html)': () => dom(html),
+      'streaming + addLinkRel': () => withRel(html),
+      'sanitizeHtml (default rules)': () => sanitizeHtml(html),
+      'markdownToHtml': () => markdownToHtml(testData),
+      'markdownToHtml + sanitizeHtml': () =>
+          streaming(markdownToHtml(testData)),
+    },
+    throughput: ByteThroughput(html.length),
+  );
+
+  await mainBenchmarkGroup(group, args);
 }

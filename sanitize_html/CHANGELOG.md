@@ -1,3 +1,44 @@
+## v2.3.0
+Behaviour changes for every caller, including the deprecated version 2
+parameters:
+ * Elements the rules do not allow are now _unwrapped_: their tags are
+   removed and their content is kept. Content of `script`, `style`,
+   `template` and other elements a browser never renders as text is still
+   removed. Use `HtmlRewriter.dropElements(...)` to remove subtrees.
+ * Output is normalized: tag and attribute names are lower-case, attribute
+   values are double-quoted and escaped, void elements are written without
+   `/`, unclosed elements are closed and elements the HTML tree builder would
+   close are closed.
+ * `addLinkRel` sets the `rel` of each link to what the callback returns,
+   replacing any `rel` the author wrote.
+ * `rel` is kept only with link types that describe the link (`nofollow`,
+   `noopener`, `noreferrer`, `ugc`, `sponsored`, `external`, `help`); `name`,
+   `target`, `accesskey`, `tabindex`, `aria-describedby`, `aria-labelledby`,
+   `color`, `vspace`, `cellpadding`, `cellspacing`, `h7` and `h8` are no
+   longer kept; `img[loading]`, `<picture>`, `<source srcset>` and `<section>`
+   are.
+
+New API:
+ * `sanitizeHtml` takes `rules`, `rewriters` and `tokenizer`. The version 2
+   parameters `allowElementId`, `allowClassName` and `addLinkRel` are
+   deprecated and cannot be combined with `rules` or `rewriters`.
+ * `RuleSet`, `ElementRule`, `ElementPattern` and `AttributeRule` (`any`,
+   `url`, `srcset`, `rel`, `where`) declare which elements and attributes are
+   kept, composed with `union`, `without`, `restrict` and `withExemptions`.
+   `RuleSet()` refuses rules that could let through script, control over the
+   page or an unchecked URL; `RuleSet.unsafe()` does not.
+ * `RuleSet.gfm()`, the rules for rendered Markdown, following html-pipeline
+   v3 and what `package:markdown` emits; `RuleSet.html()`, the rules for
+   arbitrary HTML, following Google's safevalues sanitizer; and the
+   exemptions `ElementPattern.checkbox()` and
+   `ElementPattern.iframe(where:, sandbox:)`.
+ * `HtmlRewriter` with `rewriteAttributes`, `addLinkRel`, `prefixIds`,
+   `dropClasses`, `dropElements`, `impliedEndTags` and `sanitizer`, composed
+   with `fuse`, for changes to the input before the rules are applied.
+ * `HtmlTokenizer` (`streaming`, `simple`, `dom`), `HtmlTokenSink` and
+   `htmlWriter` for custom pipelines.
+ * `package:html` is only used by `HtmlTokenizer.dom`.
+
 ## v2.2.0
  * Allow the `<picture>` and `<source>` elements, with `srcset` on `<source>`,
    matching the [`html-pipeline` allowlist](https://github.com/gjtorikian/html-pipeline/blob/main/lib/html_pipeline/sanitization_filter.rb)
