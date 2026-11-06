@@ -75,22 +75,21 @@ Iterable<Spec> _buildCustomTypeExtensions(ParsedLibrary library) sync* {
           `package:typed_sql`.
         ''')
         // We define a static exprType here, and use it in other parts of the
-            // generated code!
-            ..fields
-            .add(
-              Field(
-                (b) => b
-                  ..name = '_exprType'
-                  ..modifier = FieldModifier.final$
-                  ..static = true
-                  ..assignment = Code('''
+        // generated code!
+        ..fields.add(
+          Field(
+            (b) => b
+              ..name = '_exprType'
+              ..modifier = FieldModifier.final$
+              ..static = true
+              ..assignment = Code('''
               \$ForGeneratedCode.customDataType(
                 $backingTypeExpr,
                 $typeName.fromDatabase,
               )
             '''),
-              ),
-            )
+          ),
+        )
         ..methods.add(
           Method(
             (b) => b
@@ -1287,7 +1286,13 @@ Iterable<Spec> buildTable(ParsedTable table, ParsedSchema schema) sync* {
             ...relatedReferencedFrom.map(
               (ref) => Method(
                 (b) => b
-                  ..name = 'using${upperCamelCase(ref.fk.name!)}'
+                  // A self-referencing foreign key also gets a foreign-key-side
+                  // method (generated below) named after `fk.name`. Name this
+                  // referenced-side method after `fk.as` instead, so the two
+                  // don't clash.
+                  ..name = relatedTable == table
+                      ? 'using${upperCamelCase(ref.fk.as!)}'
+                      : 'using${upperCamelCase(ref.fk.name!)}'
                   ..documentation('''
                   Join using the `${ref.fk.name!}` _foreign key_.
 
