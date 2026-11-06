@@ -121,6 +121,7 @@ void main() {
         '//evil/a.png 1x',
         r'\\evil/a.png 1x',
         r'/\evil/a.png 1x',
+        r'\/evil/a.png 1x',
         'javascript:alert(1) 1x',
         'data:image/svg+xml;base64,AAAA 1x',
       ];
@@ -145,6 +146,7 @@ void main() {
       });
 
       const kept = <String>[
+        r'\a.png 1x',
         'a.png 1x, /b.png 2x',
         'cid:img1 1x',
         'data:image/png;base64,AAAA 1x',
