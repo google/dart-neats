@@ -20,10 +20,37 @@ void main() {
       String s(String html) => sanitizeHtml(
             html,
             rewriters: [
-              HtmlRewriter.dropElements({'x', 'br'})
+              HtmlRewriter.dropElements(tagNames: {'x', 'br'})
             ],
           );
       expect(s('a<x>b<x>c</x>d</x>e<br>f'), 'aef');
+    });
+
+    test('a misnested end tag ends the dropped element, as in a browser', () {
+      for (final tokenizer in [HtmlTokenizer.streaming, HtmlTokenizer.dom]) {
+        expect(
+            sanitizeHtml('<div><x>a</div>b</x>c',
+                tokenizer: tokenizer,
+                rewriters: [
+                  HtmlRewriter.dropElements(tagNames: {'x'})
+                ]),
+            '<div></div>bc');
+      }
+    });
+
+    test('HtmlRewriter.dropElements by attribute, with or without names', () {
+      const html = '<p class="ad">x</p><b class="ad">y</b><p>z</p>';
+      expect(
+          sanitizeHtml(html, rules: RuleSet.html(), rewriters: [
+            HtmlRewriter.dropElements(where: (a) => a['class'] == 'ad')
+          ]),
+          '<p>z</p>');
+      expect(
+          sanitizeHtml(html, rules: RuleSet.html(), rewriters: [
+            HtmlRewriter.dropElements(
+                tagNames: {'b'}, where: (a) => a['class'] == 'ad')
+          ]),
+          '<p>x</p><p>z</p>');
     });
   });
 }

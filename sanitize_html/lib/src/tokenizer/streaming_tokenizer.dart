@@ -12,26 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # UNTRUSTED: streaming tokenizer following the WHATWG tokenizer states.
+/// A streaming tokenizer following the WHATWG [tokenizer states][1].
 ///
-/// Handles comments (including `<!-->`, `--!>`), bogus comments, doctypes,
-/// RAWTEXT / RCDATA elements, script data escaping and `plaintext` without
-/// building a tree. Content of RAWTEXT, RCDATA and script elements is not
-/// reported: it is never rendered as markup, and `iframe` content, the only
-/// such element a rule set can allow, is never rendered at all. `template`
-/// content is skipped the same way: the browser parses it into an inert
-/// fragment that never renders, so unwrapping a `<template>` must not make
-/// its content live.
+/// Handles comments (including `<!-->` and `--!>`), bogus comments,
+/// doctypes, RAWTEXT and RCDATA elements, script data escaping and
+/// `plaintext` without building a tree. The content of RAWTEXT, RCDATA,
+/// script and `template` elements is not reported: a browser never renders
+/// it as markup, so unwrapping such an element must not make it live.
 ///
-/// Known deviations, all affecting fidelity only:
+/// Known deviations:
 ///
 ///  * `<![CDATA[` is a bogus comment even inside foreign content.
 ///  * `noscript` is always RAWTEXT (as with scripting enabled).
-///  * Character references in text are left to `HtmlWriter`.
-///  * `/>` is honoured on `svg` and `math` only, not on elements inside
-///    foreign content.
-///
-/// Spec: [tokenization][1].
+///  * Character references in text are left to the writer.
+///  * `/>` is honoured on `svg` and `math` only, not inside foreign content.
 ///
 /// [1]: https://html.spec.whatwg.org/multipage/parsing.html#tokenization
 library;
@@ -41,13 +35,11 @@ import '../util/ascii.dart';
 import 'elements.dart';
 import 'entities.dart';
 
-/// Elements whose content is text until the matching end tag, per the
-/// ["in body" insertion mode][1].
-///
-/// [1]: https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
 /// See `HtmlTokenizer.streaming`.
-void tokenizeStreaming(String html, HtmlTokenSink sink) =>
-    _StreamingTokenizer(html, sink)._run();
+void tokenizeStreaming(String html, HtmlTokenSink sink) {
+  _StreamingTokenizer(html, sink)._run();
+  sink.close();
+}
 
 final class _StreamingTokenizer {
   final String _html;
@@ -72,7 +64,7 @@ final class _StreamingTokenizer {
       if (isAsciiAlpha(next)) {
         _flushText(textStart, lt);
         _startTag();
-      } else if (next == 0x2F /* / */) {
+      } else if (next == $slash) {
         if (_pos + 1 >= _len) {
           continue; // `</` at EOF is text.
         }
@@ -88,11 +80,11 @@ final class _StreamingTokenizer {
           // `</>` is ignored, `</` + anything else is a bogus comment.
           _skipPast('>');
         }
-      } else if (next == 0x21 /* ! */) {
+      } else if (next == $exclamation) {
         _flushText(textStart, lt);
         _pos++;
         _markupDeclaration();
-      } else if (next == 0x3F /* ? */) {
+      } else if (next == $question) {
         _flushText(textStart, lt);
         _skipPast('>');
       } else {
@@ -140,7 +132,7 @@ final class _StreamingTokenizer {
     final start = _pos;
     while (_pos < _len) {
       final c = _html.codeUnitAt(_pos);
-      if (isHtmlWhitespace(c) || c == 0x2F /* / */ || c == 0x3E /* > */) {
+      if (isHtmlWhitespace(c) || c == $slash || c == $gt) {
         break;
       }
       _pos++;
@@ -162,13 +154,13 @@ final class _StreamingTokenizer {
         _pos++;
         continue;
       }
-      if (c == 0x3E /* > */) {
+      if (c == $gt) {
         _pos++;
         return attributes;
       }
-      if (c == 0x2F /* / */) {
+      if (c == $slash) {
         _pos++;
-        if (_pos < _len && _html.codeUnitAt(_pos) == 0x3E /* > */) {
+        if (_pos < _len && _html.codeUnitAt(_pos) == $gt) {
           _pos++;
           _selfClosing = true;
           return attributes;
@@ -179,9 +171,9 @@ final class _StreamingTokenizer {
       while (_pos < _len) {
         final c = _html.codeUnitAt(_pos);
         if (isHtmlWhitespace(c) ||
-            c == 0x2F /* / */ ||
-            c == 0x3E /* > */ ||
-            (c == 0x3D /* = */ && _pos > nameStart)) {
+            c == $slash ||
+            c == $gt ||
+            (c == $equal && _pos > nameStart)) {
           break;
         }
         _pos++;
@@ -189,7 +181,7 @@ final class _StreamingTokenizer {
       final name = asciiLowerSubstring(_html, nameStart, _pos);
       _skipWhitespace();
       var value = '';
-      if (_pos < _len && _html.codeUnitAt(_pos) == 0x3D /* = */) {
+      if (_pos < _len && _html.codeUnitAt(_pos) == $equal) {
         _pos++;
         _skipWhitespace();
         value = _attributeValue();
@@ -211,16 +203,16 @@ final class _StreamingTokenizer {
     }
     final quote = _html.codeUnitAt(_pos);
     final int start, end;
-    if (quote == 0x22 /* " */ || quote == 0x27 /* ' */) {
+    if (quote == $quot || quote == $apos) {
       start = ++_pos;
-      final close = _html.indexOf(quote == 0x22 ? '"' : "'", _pos);
+      final close = _html.indexOf(quote == $quot ? '"' : "'", _pos);
       end = close < 0 ? _len : close;
       _pos = close < 0 ? _len : close + 1;
     } else {
       start = _pos;
       while (_pos < _len) {
         final c = _html.codeUnitAt(_pos);
-        if (isHtmlWhitespace(c) || c == 0x3E /* > */) {
+        if (isHtmlWhitespace(c) || c == $gt) {
           break;
         }
         _pos++;
@@ -257,7 +249,7 @@ final class _StreamingTokenizer {
         return;
       }
       _pos = dashes + 2;
-      while (_pos < _len && _html.codeUnitAt(_pos) == 0x2D /* - */) {
+      while (_pos < _len && _html.codeUnitAt(_pos) == $minus) {
         _pos++;
       }
       if (_html.startsWith('>', _pos)) {
@@ -347,13 +339,13 @@ final class _StreamingTokenizer {
       return false;
     }
     for (var i = 0; i < name.length; i++) {
-      if ((_html.codeUnitAt(_pos + i) | 0x20) != name.codeUnitAt(i)) {
+      if (asciiLower(_html.codeUnitAt(_pos + i)) != name.codeUnitAt(i)) {
         return false;
       }
     }
     if (end < _len) {
       final c = _html.codeUnitAt(end);
-      if (!isHtmlWhitespace(c) && c != 0x2F /* / */ && c != 0x3E /* > */) {
+      if (!isHtmlWhitespace(c) && c != $slash && c != $gt) {
         return false;
       }
     }

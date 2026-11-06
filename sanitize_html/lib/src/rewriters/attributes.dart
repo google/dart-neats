@@ -12,63 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # UNTRUSTED: `HtmlRewriter.attributes` and `HtmlRewriter.addLinkRel`.
+/// Implements `HtmlRewriter.rewriteAttributes` and `HtmlRewriter.addLinkRel`.
 library;
 
+import '../delegating_html_token_sink.dart';
 import '../html_rewriter.dart';
-import '../html_token_sink.dart';
+import '../url_policy.dart';
 
-/// See `HtmlRewriter.attributes`.
+/// See `HtmlRewriter.rewriteAttributes`.
 HtmlRewriter rewriteAttributes(
-  String tagName,
-  void Function(Map<String, String> attributes) rewrite,
-) =>
-    HtmlRewriter((next) => _RewriteAttributes(tagName, rewrite, next));
+  void Function(Map<String, String> attributes) rewrite, {
+  String? tagName,
+}) =>
+    HtmlRewriter((sink) => _RewriteAttributes(tagName, rewrite, sink));
 
 /// See `HtmlRewriter.addLinkRel`.
-HtmlRewriter addLinkRel(List<String> Function(String href) rel) =>
-    rewriteAttributes('a', (attributes) {
-      final href = attributes['href'];
+HtmlRewriter addLinkRel(List<String> Function(Uri href) rel) =>
+    rewriteAttributes(tagName: 'a', (attributes) {
+      final value = attributes['href'];
+      if (value == null) {
+        return;
+      }
+      final href = safeUrl(value);
       if (href == null) {
         return;
       }
-      final added = rel(href);
-      if (added.isEmpty) {
-        return;
+      final tokens = rel(href);
+      if (tokens.isEmpty) {
+        attributes.remove('rel');
+      } else {
+        attributes['rel'] = tokens.join(' ');
       }
-      final tokens = (attributes['rel'] ?? '').split(' ')
-        ..removeWhere((t) => t.isEmpty);
-      for (final token in added) {
-        if (!tokens.contains(token)) {
-          tokens.add(token);
-        }
-      }
-      attributes['rel'] = tokens.join(' ');
     });
 
-final class _RewriteAttributes extends HtmlTokenSink {
-  final String _tagName;
+final class _RewriteAttributes extends DelegatingHtmlTokenSink {
+  final String? _tagName;
   final void Function(Map<String, String>) _rewrite;
-  final HtmlTokenSink _next;
 
-  _RewriteAttributes(this._tagName, this._rewrite, this._next);
-
-  @override
-  void text(String source, int start, int end) =>
-      _next.text(source, start, end);
+  _RewriteAttributes(this._tagName, this._rewrite, super.sink);
 
   @override
   void startTag(String name, Map<String, String> attributes) {
-    if (name == _tagName) {
+    if (_tagName == null || name == _tagName) {
       // Tags without attributes may carry a shared const map.
       if (attributes.isEmpty) {
         attributes = {};
       }
       _rewrite(attributes);
     }
-    _next.startTag(name, attributes);
+    super.startTag(name, attributes);
   }
-
-  @override
-  void endTag(String name) => _next.endTag(name);
 }

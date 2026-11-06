@@ -1,5 +1,5 @@
 name: sanitize_html
-version: 2.2.0
+version: 2.3.0
 description: >-
   Function for sanitizing HTML to prevent XSS by only emitting an allowlist of
   elements and attributes through a small, safe-by-construction serializer.

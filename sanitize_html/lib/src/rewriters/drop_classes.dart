@@ -12,45 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # UNTRUSTED: `HtmlRewriter.keepTokens`.
+/// Implements `HtmlRewriter.dropClasses`.
 library;
 
+import '../delegating_html_token_sink.dart';
 import '../html_rewriter.dart';
-import '../html_token_sink.dart';
 import '../util/space_separated_tokens.dart';
 
-/// See `HtmlRewriter.keepTokens`.
-HtmlRewriter keepTokens(String attribute, bool Function(String token) where) =>
-    HtmlRewriter((next) => _KeepTokens(attribute, where, next));
+/// See `HtmlRewriter.dropClasses`.
+HtmlRewriter dropClasses(bool Function(String className) where) =>
+    HtmlRewriter((sink) => _DropClasses(where, sink));
 
-final class _KeepTokens extends HtmlTokenSink {
-  final String _attribute;
+final class _DropClasses extends DelegatingHtmlTokenSink {
   final bool Function(String) _where;
-  final HtmlTokenSink _next;
 
-  _KeepTokens(this._attribute, this._where, this._next);
-
-  @override
-  void text(String source, int start, int end) =>
-      _next.text(source, start, end);
+  _DropClasses(this._where, super.sink);
 
   @override
   void startTag(String name, Map<String, String> attributes) {
-    final value = attributes[_attribute];
+    final value = attributes['class'];
     if (value != null) {
       final kept = value
           .split(asciiWhitespace)
-          .where((t) => t.isNotEmpty && _where(t))
+          .where((c) => c.isNotEmpty && !_where(c))
           .join(' ');
       if (kept.isEmpty) {
-        attributes.remove(_attribute);
+        attributes.remove('class');
       } else {
-        attributes[_attribute] = kept;
+        attributes['class'] = kept;
       }
     }
-    _next.startTag(name, attributes);
+    super.startTag(name, attributes);
   }
-
-  @override
-  void endTag(String name) => _next.endTag(name);
 }

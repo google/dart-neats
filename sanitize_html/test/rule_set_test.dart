@@ -18,10 +18,9 @@ void main() {
   group('RuleSet:', () {
     test('rejects names the writer cannot write', () {
       for (final name in ['', 'DIV', 'a b', 'a>', 'image']) {
-        expect(() => RuleSet({name: const ElementRule()}), throwsArgumentError,
+        expect(() => RuleSet({name: ElementRule()}), throwsArgumentError,
             reason: name);
-        expect(() => RuleSet.unsafe({name: const ElementRule()}),
-            throwsArgumentError,
+        expect(() => RuleSet.unsafe({name: ElementRule()}), throwsArgumentError,
             reason: name);
       }
       for (final name in ['Title', 'a"b', 'on click', '1x']) {
@@ -40,16 +39,34 @@ void main() {
         'frameset', 'frame', 'form', 'object', 'embed', 'applet', 'isindex',
         'noscript', 'noembed', 'noframes', 'svg', 'math',
       ]) {
-        expect(
-            () => RuleSet({tag: const ElementRule()}), throwsUnsupportedError,
+        expect(() => RuleSet({tag: ElementRule()}), throwsUnsupportedError,
             reason: tag);
-        RuleSet.unsafe({tag: const ElementRule()}); // Does not throw.
+        RuleSet.unsafe({tag: ElementRule()}); // Does not throw.
       }
       // Rendering-only oddities are allowed.
       RuleSet({
-        for (final t in ['plaintext', 'xmp', 'iframe', 'template'])
-          t: ElementRule()
+        for (final t in ['plaintext', 'xmp', 'template']) t: ElementRule()
       });
+      // `allow` delegates the host's permissions.
+      expect(
+          () => RuleSet(const {}, exemptions: [
+                ElementPattern('iframe', match: {
+                  'src': AttributeRule.url(),
+                  'sandbox': AttributeRule.any(),
+                  'allow': AttributeRule.any(),
+                }),
+              ]),
+          throwsUnsupportedError);
+      // An iframe only as an exemption that matches sandbox.
+      expect(() => RuleSet({'iframe': ElementRule()}), throwsUnsupportedError);
+      expect(
+          () => RuleSet(const {}, exemptions: [
+                ElementPattern('iframe', match: {'src': AttributeRule.url()}),
+              ]),
+          throwsUnsupportedError);
+      RuleSet(const {},
+          exemptions: [ElementPattern.iframe(where: (_) => true, sandbox: {})]);
+      RuleSet.unsafe({'iframe': ElementRule()}); // Does not throw.
     });
 
     test('grant assertions refuse dangerous attributes', () {
@@ -97,6 +114,33 @@ void main() {
       RuleSet({
         'img': ElementRule(attributes: {'srcset': AttributeRule.srcset()})
       });
+      // `rel` only through AttributeRule.rel: `opener` must stay ungrantable.
+      expect(
+          () => RuleSet({
+                'a': ElementRule(attributes: {'rel': AttributeRule.any()})
+              }),
+          throwsUnsupportedError);
+      final rel = RuleSet({
+        'a': ElementRule(attributes: {
+          'href': AttributeRule.url(),
+          'rel': AttributeRule.rel(),
+        })
+      });
+      String s(String html) => sanitizeHtml(html, rules: rel);
+      expect(s('<a href="/x" rel="NoFollow me">y</a>'),
+          '<a href="/x" rel="NoFollow me">y</a>');
+      expect(
+          s('<a href="/x" rel="nofollow opener">y</a>'), '<a href="/x">y</a>');
+      expect(s('<a href="/x" rel="">y</a>'), '<a href="/x">y</a>');
+      expect(
+          sanitizeHtml('<a href="/x" rel="ugc me">y</a>',
+              rules: RuleSet({
+                'a': ElementRule(attributes: {
+                  'href': AttributeRule.url(),
+                  'rel': AttributeRule.rel((t) => t.contains('ugc')),
+                })
+              })),
+          '<a href="/x" rel="ugc me">y</a>');
     });
 
     test('grant assertions survive union, without and restrict', () {
@@ -148,7 +192,7 @@ void main() {
     });
 
     test('ElementRule allows no attributes by default', () {
-      final rules = RuleSet({'b': const ElementRule()});
+      final rules = RuleSet({'b': ElementRule()});
       expect(sanitizeHtml('<b title="x" class="y">a</b>', rules: rules),
           '<b>a</b>');
     });
@@ -178,6 +222,10 @@ void main() {
           '<img srcset="https://example.com/a 1x, //example.com/b 2x">');
       expect(s('<img srcset="https://example.com/a 1x, //evil.com/b 2x">'),
           '<img>');
+      // A URL runs to the next whitespace, commas included, as in a browser.
+      expect(s('<img srcset="https://example.com,evil.com/a 1x">'), '<img>');
+      expect(s('<img srcset="https://example.com/a 1x,//example.com/b 2x">'),
+          '<img srcset="https://example.com/a 1x,//example.com/b 2x">');
     });
 
     test('url(where) sees the host the browser will use', () {
@@ -217,14 +265,14 @@ void main() {
         'b': ElementRule(attributes: {
           'title': AttributeRule.where((v) => v == 'a'),
         }),
-        'i': const ElementRule(),
+        'i': ElementRule(),
       });
       final b = RuleSet({
         'b': ElementRule(attributes: {
           'title': AttributeRule.where((v) => v == 'b'),
           'lang': AttributeRule.any(),
         }),
-        'u': const ElementRule(),
+        'u': ElementRule(),
       });
       String s(String html) => sanitizeHtml(html, rules: a.union(b));
       expect(s('<i>x</i><u>y</u>'), '<i>x</i><u>y</u>');
@@ -267,13 +315,12 @@ void main() {
                     'title': AttributeRule.where((_) => false)
                   }))),
           '<b>z</b>');
-      expect(() => RuleSet.gfm().restrict('iframe', const ElementRule()),
-          throwsArgumentError);
-      // A restriction can only narrow: unknown names are a mistake.
+      // A restriction can only narrow: what has no rule stays without one.
       expect(
-          () => RuleSet.gfm().restrict(
-              'b', ElementRule(attributes: {'nope': AttributeRule.any()})),
-          throwsArgumentError);
+          sanitizeHtml('<iframe src="https://x/"></iframe><b nope="1">z</b>',
+              rules: RuleSet.gfm().restrict('iframe', ElementRule()).restrict(
+                  'b', ElementRule(attributes: {'nope': AttributeRule.any()}))),
+          '<b>z</b>');
     });
 
     test('elements without a rule are unwrapped, not dropped', () {
@@ -285,11 +332,14 @@ void main() {
           '');
     });
 
-    test('closing an unwrapped element leaves kept elements above it open', () {
+    test('closing an unwrapped element closes what was opened inside it', () {
       for (final tokenizer in [HtmlTokenizer.streaming, HtmlTokenizer.simple]) {
         String s(String html) => sanitizeHtml(html, tokenizer: tokenizer);
+        // A browser would also reopen the <a> around " text" (adoption
+        // agency); HtmlTokenizer.dom does.
         expect(s('<x><a href="https://e.x/">link</x> text</a><p>more</p>'),
-            '<a href="https://e.x/">link text</a><p>more</p>');
+            '<a href="https://e.x/">link</a> text<p>more</p>');
+        // A special element (div) above the unwrapped one shields it.
         expect(s('<x><div>in</x>after</div><p>more</p>'),
             '<div>inafter</div><p>more</p>');
       }
@@ -362,6 +412,7 @@ void main() {
       final b = RuleSet(const {}, exemptions: [
         ElementPattern('iframe', match: {
           'src': AttributeRule.url((u) => u.host == 'b.example'),
+          'sandbox': AttributeRule.where((v) => v == ''),
         }, attributes: {
           'width': AttributeRule.any()
         }),
@@ -369,12 +420,12 @@ void main() {
       String s(String html) => sanitizeHtml(html, rules: a.union(b));
       expect(s('<iframe src="https://a.example/" sandbox="allow-scripts">'),
           '<iframe src="https://a.example/" sandbox="allow-scripts"></iframe>');
-      expect(s('<iframe src="https://b.example/" width="1">'),
-          '<iframe src="https://b.example/" width="1"></iframe>');
+      expect(s('<iframe src="https://b.example/" sandbox width="1">'),
+          '<iframe src="https://b.example/" sandbox="" width="1"></iframe>');
       // Neither pattern matches; nothing is borrowed from the other.
       expect(s('<iframe src="https://a.example/"></iframe>x'), 'x');
-      expect(s('<iframe src="https://b.example/" sandbox="allow-scripts">'),
-          '<iframe src="https://b.example/"></iframe>');
+      expect(
+          s('<iframe src="https://b.example/" sandbox="allow-scripts">'), '');
     });
 
     test('a rule in a union does not loosen a pattern', () {
@@ -384,7 +435,7 @@ void main() {
           'sandbox': AttributeRule.where((v) => v == 'allow-scripts'),
         }),
       ]);
-      final rule = RuleSet({
+      final rule = RuleSet.unsafe({
         'iframe': ElementRule(attributes: {'width': AttributeRule.any()}),
       });
       for (final rules in [pattern.union(rule), rule.union(pattern)]) {
@@ -398,7 +449,7 @@ void main() {
 
     test('withExemptions adds exemptions after the rule set\'s own', () {
       String s(String html) => sanitizeHtml(html,
-          rules: RuleSet.html().withExemptions([ElementPattern.checkbox]));
+          rules: RuleSet.html().withExemptions([ElementPattern.checkbox()]));
       expect(s('<input type="checkbox" checked disabled value="x">'),
           '<input type="checkbox" checked="" disabled="">');
       expect(s('<input type="text">x'), 'x');
@@ -406,11 +457,9 @@ void main() {
 
     test('an attribute cannot be both matched and optional', () {
       expect(
-        () => RuleSet(const {}, exemptions: [
-          ElementPattern('b',
-              match: {'title': AttributeRule.any()},
-              attributes: {'title': AttributeRule.any()}),
-        ]),
+        () => ElementPattern('b',
+            match: {'title': AttributeRule.any()},
+            attributes: {'title': AttributeRule.any()}),
         throwsArgumentError,
       );
     });
@@ -430,19 +479,22 @@ void main() {
                 where: (src) =>
                     src.host == 'www.youtube.com' &&
                     src.path.startsWith('/embed/'),
-                sandbox: 'allow-scripts',
+                sandbox: {'allow-scripts', 'allow-same-origin'},
               ),
             ]),
             rewriters: [
-              HtmlRewriter.attributes(
-                  'iframe', (a) => a['sandbox'] = 'allow-scripts'),
+              // Tokens in any order and case, as the browser reads them.
+              HtmlRewriter.rewriteAttributes(
+                  tagName: 'iframe',
+                  (a) => a['sandbox'] = 'Allow-Same-Origin allow-scripts'),
             ],
           );
       expect(
         s('<iframe src="https://www.youtube.com/embed/x" width="560" '
             'allow="camera" name="n" allowfullscreen></iframe>'),
         '<iframe src="https://www.youtube.com/embed/x" width="560" '
-        'allowfullscreen="" sandbox="allow-scripts"></iframe>',
+        'allowfullscreen="" sandbox="Allow-Same-Origin allow-scripts">'
+        '</iframe>',
       );
       expect(
           s('<iframe src="https://www.youtube.com/watch?v=x"></iframe>a'), 'a');

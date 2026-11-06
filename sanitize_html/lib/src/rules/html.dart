@@ -12,54 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # TRUSTED (policy data): the rules for arbitrary HTML.
+/// The rules for arbitrary HTML, `RuleSet.html`.
 ///
 /// The element and attribute tables of [safevalues][1], the sanitizer behind
 /// Google's safe HTML types, copied verbatim: it is maintained, published,
-/// and already applies the test this package applies — keep what cannot
-/// reach outside the sanitized content — so no element is allowed or
-/// dropped on this package's own authority, with one opinion stated last.
-/// Each deviation below is forced by the checked `RuleSet()` constructor or
-/// by a check safevalues leaves to its callers:
+/// and applies the test this package applies — keep what cannot reach
+/// outside the sanitized content. Each deviation is forced by the checked
+/// `RuleSet()` constructor or by a check safevalues leaves to its callers,
+/// except the one opinion stated last.
 ///
-///  * `<link>` is not allowed: the constructor refuses it (`rel=stylesheet`
-///    loads CSS, `rel=preload` fetches on the host's behalf), as it does
-///    `formenctype`. `enctype` goes with it: no form element is allowed, so
-///    it could do nothing.
+///  * `<link>` and `formenctype`: the constructor refuses them
+///    (`rel=stylesheet` loads CSS, `rel=preload` fetches on the host's
+///    behalf). `enctype` goes with them: with no form element it does
+///    nothing.
 ///  * URL attributes (`href`, `src`, `srcset`, `poster`, `cite`) go through
 ///    this package's URL policy; safevalues does not check resource URLs.
 ///  * `rel` only with the link types defined for `<a>`, never `opener`;
 ///    safevalues keeps any `rel`.
 ///  * `target` only `_self` or `_blank`, `dir` only `ltr`, `rtl` or `auto`,
-///    `loading` only `eager` or `lazy`: safevalues normalizes these to the
-///    same sets.
+///    `loading` only `eager` or `lazy`: the sets safevalues normalizes to.
 ///
 /// Like safevalues, no `id`, `name`, `class` or `style`: identifiers can
 /// shadow properties of `window` and `document` or ids the host relies on,
-/// classes hook into the host's stylesheet. Add them with `union` where
-/// the host can afford it.
+/// classes hook into the host's stylesheet. Add them with `union` where the
+/// host can afford it.
 ///
-/// The one opinion of this package's own: seven things safevalues keeps
-/// are dropped because each binds the content to something the host owns —
-/// its focus, its URLs, its shadow tree, its ids or its form — rather than
-/// composing with it the way embedded HTML does (a heading joins the host's
-/// outline, an `itemprop` joins an enclosing item, a `<select>` appears in
-/// an enclosing form: those are kept). It is the test safevalues itself
-/// applies to `<label>`, `<iframe>`, `<title>` and `tabindex`, carried to
-/// the end of its table:
+/// The one opinion of this package's own: seven things safevalues keeps are
+/// dropped because each binds the content to something the host owns — its
+/// focus, its URLs, its shadow tree, its ids or its form — rather than
+/// composing with it as embedded HTML does (a heading joins the host's
+/// outline, a `<select>` appears in an enclosing form: those are kept). It
+/// is the test safevalues applies to `<label>`, `<iframe>`, `<title>` and
+/// `tabindex`, carried to the end of its table:
 ///
 ///  * `autofocus`: moves focus, and scrolls, to the content on load — the
 ///    same page-global state as `tabindex`, which safevalues denies.
-///  * `download`: turns a link to the host's own origin into a file
-///    download — the one host-navigation modifier left after `target`,
-///    `ping` and `rel=opener`.
+///  * `download`: turns a link to the host's own origin into a file download
+///    — the one host-navigation modifier left after `target`, `ping` and
+///    `rel=opener`.
 ///  * `itemref` and `usemap`: references by id or name into the host
 ///    document — the two safevalues' identifier rule missed. With `id` and
 ///    `name` denied, a content `usemap` can only bind to a host image map.
-///  * `required`: with no form allowed it does nothing in the content, but a
-///    content `<select required>` inside a host form blocks the host's
-///    submission — meaningless for the reason safevalues denies form
-///    controls, and not harmless.
+///  * `required`: does nothing in the content, where no form is allowed, but
+///    a content `<select required>` inside a host form blocks the host's
+///    submission.
 ///  * `slot` and `<slot>`: inert outside a shadow tree; inside a shadow root
 ///    the host created, the attribute moves content into the host's slots
 ///    and the element captures the host's own children. The one call with no
@@ -72,7 +68,6 @@ library;
 
 import '../attribute_rule.dart';
 import '../element_rule.dart';
-import 'link_types.dart';
 import '../rule_set.dart';
 
 /// safevalues `ALLOWED_ELEMENTS`.
@@ -194,7 +189,7 @@ final _globalAttributes = <String, AttributeRule>{
   ])
     name: const AttributeRule.any(),
   'cite': const AttributeRule.url(), // URL policy
-  'rel': AttributeRule.where(isAnchorRelList), // link types, no `opener`
+  'rel': AttributeRule.rel(),
   'poster': const AttributeRule.url(), // safevalues: resource URL policy
   'dir': AttributeRule.where(const {'auto', 'ltr', 'rtl'}.contains),
   'async': AttributeRule.where((v) => v == 'async'),

@@ -15,21 +15,21 @@
 /// Assembles tokenizer, rewriters and writer into [sanitizeHtml].
 library;
 
+import 'dart:convert';
+
 import 'attribute_rule.dart';
 import 'element_rule.dart';
-import 'rules/gfm.dart' show gfmCheckbox, gfmElements;
+import 'rules/gfm.dart' show gfmElements;
 import 'html_rewriter.dart';
-import 'html_token_sink.dart';
 import 'html_tokenizer.dart';
 import 'html_writer.dart';
 import 'rule_set.dart';
 
 /// Sanitizes [html] with [rules].
 ///
-/// Returns HTML containing only the elements and attributes [rules] allow
-/// (by default [RuleSet.gfm], modelled on how GitHub sanitizes rendered
-/// Markdown), with text and attribute values escaped. Elements that are not
-/// allowed are unwrapped: their tags are removed, their content is kept.
+/// Returns HTML with only the elements and attributes [rules] allow, by
+/// default [RuleSet.gfm], with text and attribute values escaped. Elements
+/// not allowed are unwrapped: tags removed, content kept.
 ///
 /// ```dart
 /// print(sanitizeHtml('<a href="javascript:alert();">evil link</a>'));
@@ -44,42 +44,43 @@ import 'rule_set.dart';
 /// );
 /// ```
 ///
-/// [rewriters] run before the rules are applied, so they cannot introduce
-/// anything the rules would not allow. [tokenizer] selects how the input is
-/// split into tags and text; the tokenizers differ in speed and in how
-/// faithfully they reproduce browser behavior for broken markup, not in
-/// safety.
+/// [rewriters] run before the rules, so they cannot add anything the rules
+/// would not allow. [tokenizer] chooses how the input is split into tags and
+/// text; the tokenizers differ in speed and in fidelity to browsers on broken
+/// markup, not in safety.
 ///
 /// The output is safe to insert where an HTML parser is in its data state,
-/// i.e. as content of elements such as `<div>` or `<body>` in an HTML
-/// document. Do not insert it into attribute values, `<script>`, `<style>`,
-/// `<textarea>`, `<title>`, `<svg>`, `<math>` or XML documents.
+/// such as inside `<div>` or `<body>`, but not into:
 ///
-/// The sanitizer prevents script execution and limits the ways content can
-/// interfere with the host page (no unprefixed `id`, no `name`, no `class`
-/// outside `markdown-*`, no CSS, no forms). It does not protect against
-/// content that is merely misleading, such as links to malicious sites.
+///  * attribute values;
+///  * `<script>`, `<style>`, `<textarea>` or `<title>`;
+///  * `<svg>`, `<math>` or XML documents.
 ///
-/// [allowElementId], [allowClassName] and [addLinkRel] are the parameters
-/// of version 2, kept so that existing calls compile and mean the same:
-/// `id`s and `class` tokens are kept when the callback returns `true`, and
-/// `rel` tokens added to links with an `href`. They cannot be combined with
-/// [rules] or [rewriters]. Migrate to `RuleSet.gfm().union(...)`,
-/// [HtmlRewriter.keepTokens] and [HtmlRewriter.addLinkRel].
+/// No script runs. With the default rules, interference with the host page
+/// is limited too: no unprefixed `id`, no `name`, no CSS, no forms, `class`
+/// only as Markdown renderers emit it. Content that is merely misleading,
+/// such as links to malicious sites, is not prevented.
+///
+/// [allowElementId], [allowClassName] and [addLinkRel] are the version 2
+/// parameters, kept so that existing calls compile: `id`s and `class` tokens
+/// are kept when the callback returns `true`, and `rel` of links with an
+/// `href` is set to what the callback returns. Throws if they are combined
+/// with [rules] or [rewriters].
 String sanitizeHtml(
   String html, {
   RuleSet? rules,
   List<HtmlRewriter> rewriters = const [],
   HtmlTokenizer tokenizer = HtmlTokenizer.streaming,
   @Deprecated('Use rewriters: [HtmlRewriter.prefixIds(\'user-content-\')], '
-      'or rules: RuleSet.gfm().union(...) with HtmlRewriter.keepTokens')
+      'or rules: RuleSet.gfm().union(...) with HtmlRewriter.rewriteAttributes')
   bool Function(String id)? allowElementId,
   @Deprecated('Use rules: RuleSet.gfm().union(...) and '
-      'rewriters: [HtmlRewriter.keepTokens(\'class\', ...)]')
+      'rewriters: [HtmlRewriter.dropClasses(...)]')
   bool Function(String className)? allowClassName,
   @Deprecated('Use rewriters: [HtmlRewriter.addLinkRel(...)]')
   Iterable<String>? Function(String href)? addLinkRel,
 }) {
+  // Compatibility with sanitize_html version 2.
   if (allowElementId != null || allowClassName != null || addLinkRel != null) {
     if (rules != null || rewriters.isNotEmpty) {
       throw ArgumentError(
@@ -87,46 +88,44 @@ String sanitizeHtml(
         'with rules or rewriters',
       );
     }
-    rules = _legacyRules(
-      id: allowElementId != null,
-      className: allowClassName != null,
-    );
+    rules = _legacyRules;
+    final allowId = allowElementId ?? _never;
+    final allowClass = allowClassName ?? _never;
     rewriters = [
-      if (allowElementId != null) HtmlRewriter.keepTokens('id', allowElementId),
-      if (allowClassName != null)
-        HtmlRewriter.keepTokens('class', allowClassName),
+      HtmlRewriter.rewriteAttributes((attributes) {
+        if (attributes['id'] case final id? when !allowId(id)) {
+          attributes.remove('id');
+        }
+      }),
+      HtmlRewriter.dropClasses((c) => !allowClass(c)),
       if (addLinkRel != null)
         HtmlRewriter.addLinkRel(
-          (href) => addLinkRel(href)?.toList() ?? const [],
+          (href) => addLinkRel(href.toString())?.toList() ?? const [],
         ),
     ];
   }
-  final writer = HtmlWriter();
-  HtmlTokenSink sink =
-      HtmlRewriter.sanitizer(rules ?? RuleSet.gfm()).bind(writer);
-  for (final rewriter in rewriters.reversed) {
-    sink = rewriter.bind(sink);
-  }
-  tokenizer.tokenize(html, HtmlRewriter.impliedEndTags().bind(sink));
-  return writer.finish();
+
+  late final String output;
+  final writer =
+      htmlWriter(StringConversionSink.withCallback((s) => output = s));
+  tokenizer.tokenize(
+      html,
+      [
+        if (!tokenizer.buildsTree) HtmlRewriter.impliedEndTags(),
+        ...rewriters,
+        HtmlRewriter.sanitizer(rules ?? RuleSet.gfm()),
+      ].fuse().bind(writer));
+  return output;
 }
 
-final _legacyRuleSets = <(bool, bool), RuleSet>{};
+bool _never(String _) => false;
 
-/// [RuleSet.gfm] with any `id` and/or `class` allowed on every element, as
-/// version 2 allowed them before its callbacks filtered the values.
-///
-/// The checkbox exemption comes first so that it, too, keeps them.
-RuleSet _legacyRules({required bool id, required bool className}) =>
-    _legacyRuleSets.putIfAbsent((id, className), () {
-      final extra = <String, AttributeRule>{
-        if (id) 'id': const AttributeRule.any(),
-        if (className) 'class': const AttributeRule.any(),
-      };
-      return RuleSet(const {}, exemptions: [gfmCheckbox(extra)])
-          .union(RuleSet.gfm())
-          .union(RuleSet({
-            for (final element in gfmElements)
-              if (element != 'input') element: ElementRule(attributes: extra),
-          }));
-    });
+/// [RuleSet.gfm] with any `id` and `class` on every element, as version 2
+/// allowed them before its callbacks filtered the values.
+final _legacyRules = RuleSet.gfm().union(RuleSet({
+  for (final element in gfmElements)
+    element: ElementRule(attributes: {
+      'id': const AttributeRule.any(),
+      'class': const AttributeRule.any(),
+    }),
+}));

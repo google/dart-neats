@@ -12,33 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # UNTRUSTED: `HtmlRewriter.dropElements`.
+/// Implements `HtmlRewriter.dropElements`.
 library;
 
+import '../delegating_html_token_sink.dart';
 import '../html_rewriter.dart';
-import '../html_token_sink.dart';
 import '../html_writer.dart' show isVoidElement;
 
 /// See `HtmlRewriter.dropElements`.
-HtmlRewriter dropElements(Set<String> names) =>
-    HtmlRewriter((next) => _DropElements(names, next));
+HtmlRewriter dropElements({
+  Set<String>? tagNames,
+  bool Function(Map<String, String> attributes)? where,
+}) =>
+    HtmlRewriter((sink) => _DropElements(tagNames, where, sink));
 
-/// Drops named elements with their content, counting same-name nesting so
-/// that `<x><x></x>still dropped</x>` drops the whole subtree.
-final class _DropElements extends HtmlTokenSink {
-  final Set<String> _names;
-  final HtmlTokenSink _next;
+/// Drops matching elements with their content, counting same-name nesting
+/// so that `<x><x></x>still dropped</x>` drops the whole subtree.
+final class _DropElements extends DelegatingHtmlTokenSink {
+  final Set<String>? _tagNames;
+  final bool Function(Map<String, String>)? _where;
   String? _droppedName;
   int _droppedDepth = 0;
 
-  _DropElements(this._names, this._next);
+  _DropElements(this._tagNames, this._where, super.sink);
 
   @override
   void text(String source, int start, int end) {
     if (_droppedDepth > 0) {
       return;
     }
-    _next.text(source, start, end);
+    super.text(source, start, end);
   }
 
   @override
@@ -49,14 +52,15 @@ final class _DropElements extends HtmlTokenSink {
       }
       return;
     }
-    if (_names.contains(name)) {
+    if ((_tagNames?.contains(name) ?? true) &&
+        (_where?.call(attributes) ?? true)) {
       if (!isVoidElement(name)) {
         _droppedName = name;
         _droppedDepth = 1;
       }
       return;
     }
-    _next.startTag(name, attributes);
+    super.startTag(name, attributes);
   }
 
   @override
@@ -67,6 +71,6 @@ final class _DropElements extends HtmlTokenSink {
       }
       return;
     }
-    _next.endTag(name);
+    super.endTag(name);
   }
 }

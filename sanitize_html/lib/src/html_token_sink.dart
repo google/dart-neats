@@ -12,31 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// The token interface everything in this package speaks.
-///
-/// A tokenizer pushes tokens into an [HtmlTokenSink]; rewriters are sinks
-/// that push into the next sink; `HtmlWriter` is the sink that produces
-/// output.
+/// The interface HTML tokens are delivered through.
 library;
 
-/// Receives HTML tokens.
-///
-/// There are exactly three kinds of token, matching what `HtmlWriter` can
-/// write: comments, doctypes and CDATA sections are not tokens.
+/// A receiver of HTML tokens.
 abstract base class HtmlTokenSink {
-  /// Text `source[start..end)` as written in HTML source, _undecoded_: it is
-  /// the text as the HTML data state would see it, so `&amp;` is five
-  /// characters here, not one.
+  /// Pushes the text `source[start..end)`, undecoded.
+  ///
+  /// Character references are as written: `&amp;` is five characters.
   void text(String source, int start, int end);
 
-  /// A start tag.
+  /// Pushes a start tag.
   ///
   /// [name] and the keys of [attributes] are lowercase; values are decoded.
-  /// The sink takes ownership of [attributes]: it may mutate the map, must
-  /// consume it synchronously and must not retain it. A tag without
-  /// attributes may be passed a shared `const` map.
+  /// The map belongs to the sink until the call returns: it may be mutated
+  /// unless it is empty, which may be a shared `const` map, and must not be
+  /// retained.
   void startTag(String name, Map<String, String> attributes);
 
-  /// An end tag.
+  /// Pushes an end tag.
+  ///
+  /// Closes the innermost open element called [name] and every element
+  /// opened after it. With no such element open it means nothing.
   void endTag(String name);
+
+  /// Ends the input; no more tokens follow.
+  void close();
 }

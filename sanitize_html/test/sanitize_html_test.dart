@@ -227,8 +227,8 @@ void main() {
       final sanitized = configured(
           '<a href="bad-link" rel=\'ugc" onmouseover="alert(1)\'>test</a>');
       expect(sanitized, isNot(contains('onmouseover=')));
-      // The whole `rel` is dropped: `rel` tokens are all-or-nothing.
-      expect(sanitized, '<a href="bad-link">test</a>');
+      // The host's `rel` replaces the author's.
+      expect(sanitized, '<a href="bad-link" rel="ugc nofollow">test</a>');
     });
     test('< and > in attribute values are escaped', () {
       expect(
@@ -266,7 +266,8 @@ void main() {
         withConfiguration: false);
     testNotContains('<span class="any-class">hello</span>', 'class=',
         withConfiguration: false);
-    testContains('<a rel="nofollow me">x</a>', 'rel="nofollow me"',
+    testContains(
+        '<a rel="nofollow noreferrer">x</a>', 'rel="nofollow noreferrer"',
         withConfiguration: false);
     testNotContains('<a rel="nofollow x-y_1">x</a>', 'rel',
         withConfiguration: false);
@@ -285,15 +286,14 @@ void main() {
 
     test('Responsive image srcset is preserved', () {
       expect(
-        sanitizeHtml(
-            '<img src="pic.png" srcset="pic-1x.png 1x, pic-2x.png 2x">'),
-        '<img src="pic.png" srcset="pic-1x.png 1x, pic-2x.png 2x">',
+        sanitizeHtml('<source srcset="pic-1x.png 1x, pic-2x.png 2x">'),
+        '<source srcset="pic-1x.png 1x, pic-2x.png 2x">',
       );
       // Commas may appear inside a candidate URL.
       expect(
         sanitizeHtml(
-            '<img srcset="https://cdn.example/w_100,h_100/pic.png 1x">'),
-        '<img srcset="https://cdn.example/w_100,h_100/pic.png 1x">',
+            '<source srcset="https://cdn.example/w_100,h_100/pic.png 1x">'),
+        '<source srcset="https://cdn.example/w_100,h_100/pic.png 1x">',
       );
     });
 
@@ -332,8 +332,8 @@ void main() {
 
     test('xmp and plaintext close an open paragraph', () {
       final rules = RuleSet.gfm().union(RuleSet({
-        'xmp': const ElementRule(),
-        'plaintext': const ElementRule(),
+        'xmp': ElementRule(),
+        'plaintext': ElementRule(),
       }));
       expect(sanitizeHtml('<p>a<xmp>b</xmp>c</p>', rules: rules),
           '<p>a</p><xmp></xmp>c');
@@ -377,7 +377,7 @@ void main() {
     });
 
     test('Attribute name breakout on custom elements is strictly blocked', () {
-      final rules = RuleSet({'my-tag': const ElementRule()});
+      final rules = RuleSet({'my-tag': ElementRule()});
       expect(
         sanitizeHtml('<my-tag foo"onload="alert(1)"=bar>content</my-tag>',
             rules: rules),
@@ -402,9 +402,9 @@ void main() {
           '<h2 id="ok-a" class="ok-b">x</h2><p>y</p>');
       expect(s('<a href="https://e.x/">a</a><a href="/b">b</a>'),
           '<a href="https://e.x/" rel="ugc">a</a><a href="/b">b</a>');
-      // The checkbox exemption keeps them too; no other input gets through.
+      // Version 2 had no <input> at all; the checkbox is gfm's, as is.
       expect(s('<input type="checkbox" id="ok-c" class="ok-d bad">'),
-          '<input type="checkbox" id="ok-c" class="ok-d">');
+          '<input type="checkbox">');
       expect(s('<input type="password" class="ok-c" name="pw">x'), 'x');
       expect(
         // ignore: deprecated_member_use_from_same_package

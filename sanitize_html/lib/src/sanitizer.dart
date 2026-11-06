@@ -14,27 +14,11 @@
 
 /// The rewriter that applies a `RuleSet`.
 ///
-/// Trusted for _completeness_ (every token that reaches the writer went
-/// through the rules), not for what it writes: that is `HtmlWriter`.
-///
-/// An element the rules do not keep is _unwrapped_: its tags are dropped
-/// and its content passes through, to be judged on its own. Rules are about
-/// what is safe to keep, not about what the output should look like; a
-/// rewriter can drop whole subtrees beforehand.
-///
-/// Whether an element is kept can depend on its attributes (an
-/// `ElementPattern` may be the only thing allowing it), so the end tag of an
-/// unwrapped `<div>` must be dropped while that of a kept `<div>` is
-/// forwarded. The sanitizer keeps a
-/// stack of the start tags it has seen and matches end tags against it the
-/// way `HtmlWriter` does (an end tag closes the nearest open element of its
-/// name; without one it is ignored). Closing a kept element pops everything
-/// above it, as the writer will; closing an unwrapped one pops only itself,
-/// since the writer has nothing to close and the kept elements above it
-/// stay open in both stacks. The stack is capped at the writer's
-/// `maxDepth`, a start tag at the cap replacing the innermost entry, so
-/// memory is bounded and every operation on it is O(cap). A mismatch between this
-/// stack and the writer's only makes output uglier, never unsafe.
+/// Every start tag goes through the rules; an element they do not keep is
+/// unwrapped. Whether it was kept can depend on its attributes, so end tags
+/// are matched against a stack of start tags, capped at the writer's
+/// `maxDepth` and popped as the writer pops: closing a kept element pops
+/// everything above it, closing an unwrapped one pops only itself.
 library;
 
 import 'html_rewriter.dart';
@@ -44,20 +28,20 @@ import 'rule_set.dart';
 
 /// See `HtmlRewriter.sanitizer`.
 HtmlRewriter sanitizer(RuleSet rules) =>
-    HtmlRewriter((next) => _Sanitizer(rules, next));
+    HtmlRewriter((sink) => _Sanitizer(rules, sink));
 
 final class _Sanitizer extends HtmlTokenSink {
   final RuleSet _rules;
-  final HtmlTokenSink _next;
+  final HtmlTokenSink _sink;
 
-  /// Open non-void start tags, with whether each was forwarded.
+  /// Open elements, with whether each was kept.
   final List<(String, bool)> _open = [];
 
-  _Sanitizer(this._rules, this._next);
+  _Sanitizer(this._rules, this._sink);
 
   @override
   void text(String source, int start, int end) =>
-      _next.text(source, start, end);
+      _sink.text(source, start, end);
 
   @override
   void startTag(String name, Map<String, String> attributes) {
@@ -69,7 +53,7 @@ final class _Sanitizer extends HtmlTokenSink {
       _open.add((name, kept != null));
     }
     if (kept != null) {
-      _next.startTag(name, kept);
+      _sink.startTag(name, kept);
     }
   }
 
@@ -81,14 +65,18 @@ final class _Sanitizer extends HtmlTokenSink {
         continue;
       }
       if (kept) {
-        // The writer closes this element and everything above it.
         _open.length = i;
-        _next.endTag(name);
+        _sink.endTag(name);
       } else {
-        // The writer never saw this element, so nothing above it closes.
         _open.removeAt(i);
       }
       return;
     }
+  }
+
+  @override
+  void close() {
+    _open.clear();
+    _sink.close();
   }
 }

@@ -15,117 +15,128 @@
 /// A step in the pipeline between tokenizer and writer.
 library;
 
+import 'attribute_rule.dart';
 import 'html_token_sink.dart';
-import 'rewriters/attributes.dart' as attributes;
-import 'rewriters/drop_elements.dart' as drop_elements;
-import 'rewriters/implied_end_tags.dart' as implied_end_tags;
-import 'rewriters/keep_tokens.dart' as keep_tokens;
-import 'rewriters/prefix_ids.dart' as prefix_ids;
+import 'html_tokenizer.dart';
+import 'rewriters/attributes.dart';
+import 'rewriters/implied_end_tags.dart';
+import 'rewriters/drop_elements.dart';
+import 'rewriters/drop_classes.dart';
+import 'rewriters/prefix_ids.dart';
 import 'rule_set.dart';
-import 'sanitizer.dart' as sanitizer;
+import 'sanitizer.dart' show sanitizer;
 
-/// Rewrites the token stream on its way from the tokenizer to the writer.
+/// Rewrites the token stream between tokenizer and writer.
 ///
-/// A rewriter wraps the next [HtmlTokenSink] in a sink of its own. Rewriters
-/// compose right to left: `a.bind(b.bind(c.bind(writer)))` feeds `a` first
-/// and `c` last.
-///
-/// Rewriters passed to `sanitizeHtml` run before the rules are applied, so
-/// they need no trust and no knowledge of what is allowed: whatever they add
-/// is still filtered by the `RuleSet`.
+/// A rewriter wraps an [HtmlTokenSink] in a sink of its own; a custom one
+/// is `HtmlRewriter(MySink.new)` where `MySink(HtmlTokenSink sink)`.
+/// `a.fuse(b)` runs `a` then `b`, as does `[a, b].fuse()`; [bind] attaches
+/// the sink at the end.
 ///
 /// ```dart
 /// sanitizeHtml(html, rewriters: [
 ///   HtmlRewriter.addLinkRel((href) => ['ugc', 'nofollow']),
-///   HtmlRewriter.attributes('h2', (attributes) {
+///   HtmlRewriter.rewriteAttributes(tagName: 'h2', (attributes) {
 ///     attributes['id'] ??= slugify(attributes['title'] ?? '');
 ///   }),
 /// ]);
 /// ```
-///
-/// A custom rewriter is a sink that forwards to the next one:
-///
-/// ```dart
-/// HtmlRewriter(MySink.new) // where MySink(HtmlTokenSink next)
-/// ```
 final class HtmlRewriter {
-  final HtmlTokenSink Function(HtmlTokenSink next) _bind;
+  final HtmlTokenSink Function(HtmlTokenSink sink) _bind;
 
-  /// A rewriter whose sink for the next sink is given by [bind].
+  /// A rewriter that wraps a sink with the sink [bind] returns for it.
   const HtmlRewriter(this._bind);
 
-  /// Calls [rewrite] with the attributes of every [tagName] element, which
-  /// it may change in place.
-  factory HtmlRewriter.attributes(
-    String tagName,
-    void Function(Map<String, String> attributes) rewrite,
-  ) =>
-      attributes.rewriteAttributes(tagName, rewrite);
+  /// A rewriter that changes nothing.
+  const HtmlRewriter.identity() : _bind = _identity;
 
-  /// Adds the `rel` tokens returned by [rel] to every `<a>` with an `href`.
+  /// Calls [rewrite] with the attributes of every element, or of every
+  /// [tagName] element, which it may change in place.
+  factory HtmlRewriter.rewriteAttributes(
+    void Function(Map<String, String> attributes) rewrite, {
+    String? tagName,
+  }) =>
+      rewriteAttributes(rewrite, tagName: tagName);
+
+  /// Adds `rel="..."` to `<a href="url">` tags, replacing any existing `rel`.
   ///
-  /// Typically used to [qualify outbound links][1] in user generated content:
+  /// Every `<a>` whose `href` the URL policy accepts gets the tokens [rel]
+  /// returns, as in `HtmlRewriter.addLinkRel((href) => ['ugc', 'nofollow'])`
+  /// to [qualify outbound links][1]. The author's `rel` is replaced, so that
+  /// a token the rules refuse cannot cost the link the host's; an empty list
+  /// removes `rel`.
   ///
-  /// ```dart
-  /// HtmlRewriter.addLinkRel((href) => ['ugc', 'nofollow'])
-  /// ```
-  ///
-  /// Returning `const []` leaves the link as is. `href` is the attribute
-  /// value before the rule set has seen it; if the rule set later drops the
-  /// `href`, the added `rel` stays.
+  /// [rel] sees the `href` as [AttributeRule.url] will; a link whose `href`
+  /// the policy refuses is left alone, since the rules drop that `href`.
   ///
   /// [1]: https://support.google.com/webmasters/answer/96569
-  factory HtmlRewriter.addLinkRel(List<String> Function(String href) rel) =>
-      attributes.addLinkRel(rel);
+  factory HtmlRewriter.addLinkRel(List<String> Function(Uri href) rel) =>
+      addLinkRel(rel);
 
-  /// Prefixes every `id` with [prefix], and every `href` fragment (`#x`)
-  /// to match, leaving values that already have the prefix alone.
+  /// Prefixes every `id`, and every `href` fragment (`#x`) to match, with
+  /// [prefix] unless it already has it.
   ///
-  /// Namespaces author ids away from the host page's, as GitHub does with
-  /// `user-content-`: an unprefixed id can shadow a property of `window`
-  /// or `document` or an id the host relies on. `RuleSet.gfm` keeps only
-  /// ids with that prefix.
-  ///
-  /// ```dart
-  /// HtmlRewriter.prefixIds('user-content-')
-  /// ```
-  factory HtmlRewriter.prefixIds(String prefix) => prefix_ids.prefixIds(prefix);
+  /// Keeps author ids from clobbering the host page's, as GitHub does with
+  /// `user-content-`, the only prefix `RuleSet.gfm` keeps.
+  factory HtmlRewriter.prefixIds(String prefix) => prefixIds(prefix);
 
-  /// Keeps only the space-separated tokens of [attribute] for which [where]
-  /// returns `true`, dropping the attribute when none is left.
+  /// Drops the class names for which [where] returns `true`, and `class`
+  /// itself when none is left.
   ///
-  /// ```dart
-  /// HtmlRewriter.keepTokens('class', (c) => c.startsWith('language-'))
-  /// ```
-  factory HtmlRewriter.keepTokens(
-    String attribute,
-    bool Function(String token) where,
-  ) =>
-      keep_tokens.keepTokens(attribute, where);
+  /// Rules keep or drop a value whole; this drops the names a rule would
+  /// refuse, e.g. `dropClasses((c) => !c.startsWith('language-'))`.
+  factory HtmlRewriter.dropClasses(bool Function(String className) where) =>
+      dropClasses(where);
 
-  /// Drops every element named in [names] together with its content.
+  /// Drops elements with their content.
   ///
-  /// The rules only unwrap what they do not keep; use this to remove
-  /// subtrees instead, e.g. `HtmlRewriter.dropElements({'nav', 'aside'})`.
-  factory HtmlRewriter.dropElements(Set<String> names) =>
-      drop_elements.dropElements(names);
+  /// An element is dropped when its name is in [tagNames], or [tagNames] is
+  /// omitted, and its attributes satisfy [where], or [where] is omitted.
+  ///
+  /// Rules only unwrap what they do not keep; use this for whole subtrees,
+  /// e.g. `dropElements(tagNames: {'nav', 'aside'})`.
+  factory HtmlRewriter.dropElements({
+    Set<String>? tagNames,
+    bool Function(Map<String, String> attributes)? where,
+  }) =>
+      dropElements(tagNames: tagNames, where: where);
 
-  /// Closes open elements a start tag implicitly ends, as the browser's
-  /// tree builder would: `<p>` by block elements, `<li>` by `<li>`, cells
-  /// and rows by the next cell or row, headings by headings, `<option>` by
-  /// `<option>`, an open `<a>` by a nested `<a>`.
+  /// Closes elements as the browser's tree builder would, so that every end
+  /// tag after it closes exactly the innermost open element.
   ///
-  /// `sanitizeHtml` always applies it first. Unnecessary after
-  /// `HtmlTokenizer.dom`, which already builds a tree.
-  factory HtmlRewriter.impliedEndTags() => implied_end_tags.impliedEndTags();
+  ///  * an end tag also closes everything opened after its element, and an
+  ///    end tag with no open element is dropped;
+  ///  * `<p>` is closed by block elements;
+  ///  * `<li>`, `<dt>`, `<dd>`, `<option>` and headings by the next of their
+  ///    kind;
+  ///  * cells, rows and row groups by the next cell, row or row group;
+  ///  * an open `<a>` by a nested `<a>`.
+  ///
+  /// `sanitizeHtml` applies it first, except after [HtmlTokenizer.dom],
+  /// whose tokens already form the tree a browser builds.
+  factory HtmlRewriter.impliedEndTags() => impliedEndTags();
 
   /// Keeps the elements [rules] allow, with their attributes filtered, and
   /// unwraps every other element: its tags are dropped, its content kept.
   ///
-  /// Must be the last rewriter before the `HtmlWriter`: everything before it
-  /// is filtered by the rules, everything after it would be trusted.
-  factory HtmlRewriter.sanitizer(RuleSet rules) => sanitizer.sanitizer(rules);
+  /// Must be the last rewriter before the writer.
+  factory HtmlRewriter.sanitizer(RuleSet rules) => sanitizer(rules);
 
-  /// The sink that applies this rewriter and pushes the result into [next].
-  HtmlTokenSink bind(HtmlTokenSink next) => _bind(next);
+  /// This rewriter followed by [next].
+  HtmlRewriter fuse(HtmlRewriter next) =>
+      HtmlRewriter((sink) => bind(next.bind(sink)));
+
+  /// The sink that applies this rewriter and pushes the result into [sink].
+  HtmlTokenSink bind(HtmlTokenSink sink) => _bind(sink);
+}
+
+HtmlTokenSink _identity(HtmlTokenSink sink) => sink;
+
+/// Composition of a sequence of [HtmlRewriter]s.
+extension HtmlRewriters on Iterable<HtmlRewriter> {
+  /// These rewriters in order; an empty sequence is [HtmlRewriter.identity].
+  HtmlRewriter fuse() => fold(
+        const HtmlRewriter.identity(),
+        (fused, next) => fused.fuse(next),
+      );
 }

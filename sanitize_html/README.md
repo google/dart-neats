@@ -49,7 +49,7 @@ Two rule sets and two exemptions are provided:
    `<form>` or controls that could be typed into or submitted; add what the
    host can afford with `union`.
  * `ElementPattern.iframe(where: ..., sandbox: ...)` and
-   `ElementPattern.checkbox` — exemptions to add to either with
+   `ElementPattern.checkbox()` — exemptions to add to either with
    `withExemptions`.
 
 ## Rules
@@ -59,19 +59,22 @@ attributes and how their values are filtered. Elements without a rule are
 _unwrapped_ — their tags go, their content stays and is judged on its own;
 attributes without a rule are removed. Rules decide what is safe to keep,
 not what the output should look like: to remove whole subtrees, run
-`HtmlRewriter.dropElements({...})` before the rules.
+`HtmlRewriter.dropElements(tagNames: {...})` before the rules.
 
 ```dart
-final rules = RuleSet.gfm().union(RuleSet({
-  'video': ElementRule(attributes: {
-    'src': AttributeRule.url(),
-    'controls': AttributeRule.any(),
-  }),
-  'iframe': ElementRule(attributes: {
-    'src': AttributeRule.url((u) => u.host == 'www.youtube.com'),
-    'width': AttributeRule.where((v) => int.tryParse(v) != null),
-  }),
-}));
+final rules = RuleSet.gfm()
+    .union(RuleSet({
+      'video': ElementRule(attributes: {
+        'src': AttributeRule.url(),
+        'controls': AttributeRule.any(),
+      }),
+    }))
+    .withExemptions([
+      ElementPattern.iframe(
+        where: (src) => src.host == 'www.youtube.com',
+        sandbox: {'allow-scripts', 'allow-same-origin'},
+      ),
+    ]);
 ```
 
 An `AttributeRule` only ever keeps or drops a value; it never rewrites. So
@@ -82,16 +85,17 @@ An `AttributeRule` only ever keeps or drops a value; it never rewrites. So
 written, tried before the rule, never merged with anything. Rewriting — adding
 `rel="ugc"` to links, prefixing ids, keeping a few class tokens, removing
 subtrees — is done by `HtmlRewriter`s (`addLinkRel`, `prefixIds`,
-`keepTokens`, `dropElements`, `attributes`, or your own `HtmlTokenSink`),
+`dropClasses`, `dropElements`, `rewriteAttributes`, or your own `HtmlTokenSink`),
 which run before the rules and therefore cannot add anything the rules
 would not allow.
 
-`RuleSet(...)` refuses grants that defeat the purpose of sanitizing and throws
-`UnsupportedError`: `script`, `style`, `base`, `meta`, `link`, `form`, `svg`,
+`RuleSet(...)` refuses grants that defeat the purpose of sanitizing: `script`, `style`, `base`, `meta`, `link`, `form`, `svg`,
 `math`, ... as elements; `on*`, `style`, `srcdoc`, `is`, `form*`, `ping`, ...
-as attributes; and URL attributes (`href`, `src`, `cite`, ...) bound to
-anything but `AttributeRule.url` (`srcset` to `AttributeRule.srcset`). `RuleSet.unsafe(...)` waives these checks for callers
-who have reviewed what they allow.
+as attributes; URL attributes (`href`, `src`, `cite`, ...) bound to anything
+but `AttributeRule.url` (`srcset` to `AttributeRule.srcset`); and `rel` bound
+to anything but `AttributeRule.rel`, which never admits `opener`.
+`RuleSet.unsafe(...)` waives these checks for callers who have reviewed what
+they allow.
 
 ## The guarantee
 
@@ -108,8 +112,9 @@ not in it**. The tree builder may still re-nest misnested formatting elements
 and insert implied `tbody`, `tr`, `colgroup` or `p` elements, and a rule set
 that allows `plaintext` or `xmp` will see the browser turn later markup into
 text; but nothing new appears. With a `RuleSet()` built with the default
-checks, no script executes and no URL has a scheme other than `http`, `https`
-or `mailto`.
+checks, no script runs in the page's origin, nothing in the content can
+navigate the page, and no URL has a scheme other than `http`, `https` or
+`mailto`.
 
 The output is safe when inserted where the HTML parser is in its _data
 state_: as content of `<body>`, `<div>`, etc. in an HTML document. It is
@@ -136,12 +141,12 @@ the writer never emits a raw `<`, always double-quotes attribute values with
 is the whole argument; it does not depend on how the input was parsed.
 
 ```
-input ─► HtmlTokenizer ─► HtmlRewriter.impliedEndTags() ─► rewriters ─► HtmlRewriter.sanitizer(rules) ─► HtmlWriter ─► output
+input ─► HtmlTokenizer ─► HtmlRewriter.impliedEndTags() ─► rewriters ─► HtmlRewriter.sanitizer(rules) ─► htmlWriter ─► output
          (untrusted)      (untrusted)                    (untrusted)   (trusted)                       (trusted)
 ```
 
 Everything between tokenizer and writer is an `HtmlRewriter`; `HtmlTokenizer`,
-`HtmlTokenSink` and `HtmlWriter` are exported too, for custom pipelines.
+`HtmlTokenSink` and `htmlWriter` are exported too, for custom pipelines.
 
 The **trusted base** is small and reviewable:
 
@@ -152,12 +157,16 @@ The **trusted base** is small and reviewable:
    in URL attributes, and why `Uri.parse` is not used.
  * [`lib/src/attribute_rule.dart`](lib/src/attribute_rule.dart),
    [`lib/src/element_rule.dart`](lib/src/element_rule.dart),
+   [`lib/src/element_pattern.dart`](lib/src/element_pattern.dart),
    [`lib/src/rule_set.dart`](lib/src/rule_set.dart): how rules are applied.
  * [`lib/src/grant_assertions.dart`](lib/src/grant_assertions.dart): what a
    checked `RuleSet` refuses, and why.
  * [`lib/src/rules/`](lib/src/rules/): the default allowlists `gfm.dart`,
    `html.dart` and `link_types.dart` (policy data, no logic that affects
    escaping), each rule annotated with its source.
+ * [`lib/src/sanitizer.dart`](lib/src/sanitizer.dart): applies the rule set.
+   Trusted for completeness: every start tag must go through the rules; a
+   forwarding bug there would bypass them.
 
 Everything else is **untrusted** in the sense that a bug there can make
 output uglier (markup shown as text, content lost) but never unsafe:
@@ -165,18 +174,18 @@ output uglier (markup shown as text, content lost) but never unsafe:
  * `lib/src/util/`: ASCII and space-separated-token helpers.
  * `lib/src/tokenizer/`: three interchangeable tokenizers.
    `HtmlTokenizer.streaming` (default) follows the WHATWG tokenizer states
-   without building a tree; `HtmlTokenizer.simple` is about 120 lines for
+   without building a tree; `HtmlTokenizer.simple` is a small tokenizer for
    well-formed input; `HtmlTokenizer.dom` parses a full tree with
    `package:html` and handles misnested markup like a browser, at several
    times the cost (and `package:html`'s tree builder is superlinear on deeply
    nested input, so prefer the streaming tokenizers for input of unbounded
    size).
- * `lib/src/sanitizer.dart`: applies the rule set; its only state is a
-   capped stack telling which end tags belong to unwrapped start tags.
- * `lib/src/rewriters/`: the built-in `HtmlRewriter`s, one per file —
+ * `lib/src/html_rewriter.dart`, `lib/src/delegating_html_token_sink.dart`:
+   the rewriter class and the forwarding base of rewriter sinks.
+ * `lib/src/rewriters/`: the built-in `HtmlRewriter`s —
    `implied_end_tags.dart` (the tree builder's implied end tags, so sloppy
    input gives tidy output), `attributes.dart`, `prefix_ids.dart`,
-   `keep_tokens.dart`, `drop_elements.dart`.
+   `drop_classes.dart`, `drop_elements.dart`.
 
 Because the writer escapes attribute values exactly, the URL policy and the
 browser's URL parser see identical strings (up to the HTML parser's

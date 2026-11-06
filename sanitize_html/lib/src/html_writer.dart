@@ -12,100 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # TRUSTED: the only component that writes output.
+/// Writes text, start tags and end tags as HTML.
 ///
-/// [HtmlWriter] owns the output grammar, and nothing else: it has no
-/// opinion on which elements or attributes are acceptable (that is the
-/// `RuleSet`), it only guarantees that whatever it is handed is written in a
-/// way the browser cannot read as anything _more_.
+/// Inserted where the parser is in the [data state][1], the output creates
+/// no element and no attribute that was not pushed, because:
 ///
-/// ## Output grammar
+///  * text is always escaped: `<`, `>`, and `&` unless it begins a
+///    character reference;
+///  * attribute values are always double-quoted, with `&`, `"`, `<` and `>`
+///    escaped;
+///  * tag names must match `[a-z][a-z0-9._-]*` and attribute names
+///    `[a-z][a-z0-9_:.-]*`, otherwise the writer throws;
+///  * `image` is refused: the tree builder turns it into `img`;
+///  * every element opened is closed, nested at most [maxDepth] deep, so
+///    [RAWTEXT, RCDATA][2] and foreign content end where this writer ends
+///    them.
 ///
-///  * Start tags: `<` _name_ (` ` _attr_ `="` _value_ `"`)* `>`
-///  * End tags: `</` _name_ `>`
-///  * Text: characters with `<`, `>` and (most) `&` escaped
-///
-/// where _name_ matches `[a-z][a-z0-9._-]*`, _attr_ matches
-/// `[a-z][a-z0-9_:.-]*`, and _value_ has `&`, `"`, `<` and `>` escaped.
-/// Nothing else is escaped: newlines, tabs and other controls are plain
-/// character data both in the [data state][1] and in a
-/// [double-quoted attribute value][5]; the parser's input preprocessing
-/// turns U+0000 into U+FFFD and CR into LF, and that is all.
-///
-/// ## The promise
-///
-/// For output inserted where an HTML parser is in the _data state_ (as
-/// content of `<body>`, `<div>`, ...), the browser creates **no element and
-/// no attribute that was not pushed into the writer**. It may create fewer:
-/// after a `<plaintext>` or inside `<xmp>` the browser sees text where we
-/// wrote tags. That is a rendering problem for whoever allowed such an
-/// element, not a safety problem.
-///
-/// ## Why
-///
-/// 1. The tokenizer creates tags, comments and doctypes only from the
-///    [data state][1] on a `<` (the [tag open state][2]). Text never
-///    contains a raw `<` (it is written as `&lt;`), so text can never open
-///    anything. A `&` in text enters the [character reference state][3],
-///    which only ever produces character tokens.
-/// 2. Attribute values are double-quoted with `"` and `&` escaped, so a value
-///    cannot end the [double-quoted value][5] it is in, let alone the tag.
-/// 3. Tag and attribute names use only characters that the
-///    [tag name state][6] and [attribute name state][7] consume as part of
-///    the name, so a name cannot end the tag or start another attribute.
-/// 4. Elements that switch the tokenizer out of the data state (`script`,
-///    `style`, `title`, `textarea`, `xmp`, `iframe`, `noembed`, `noframes`,
-///    `noscript`, `plaintext`) or into foreign content (`svg`, `math`) make
-///    the browser create _fewer_ nodes, never more: [RAWTEXT, RCDATA][8] and
-///    PLAINTEXT content is text until the matching end tag, and the output
-///    contains `</name` only where this writer wrote an end tag.
-/// 5. The one start tag the tree builder renames is refused: an `image`
-///    start tag becomes an `img` element, which nobody pushed. From the
-///    [stack of open elements][9]:
-///    > An image start tag token is handled by the tree builder, but it is
-///    > not in this list because it is not an element; it gets turned into an
-///    > img element.
-/// 6. Every element the writer opens is closed by the writer. Nesting is
-///    capped at [maxDepth] the way Blink caps the document at 512: a start
-///    tag at the cap closes the innermost open element and becomes its
-///    sibling, so the stack stays bounded and the output balanced. (Blink's
-///    cap counts the host document's depth too; it only flattens, it never
-///    creates elements, so where it applies is irrelevant here.)
-///
-/// The tree builder may still re-nest elements, insert implied `tbody`,
-/// `tr`, `colgroup` and `p` elements, or clone a misnested formatting
-/// element (`a`, `b`, `nobr`, ...) with the same name and attributes; the
-/// implied ones carry no attributes and the clones only repeat an element
-/// that was pushed, so none of them is
-/// attacker-controlled.
+/// The tree builder may still re-nest or clone pushed elements and insert
+/// implied `tbody`, `tr`, `colgroup` and `p`; none of that adds a name or
+/// attribute that was not pushed.
 ///
 /// [1]: https://html.spec.whatwg.org/multipage/parsing.html#data-state
-/// [2]: https://html.spec.whatwg.org/multipage/parsing.html#tag-open-state
-/// [3]: https://html.spec.whatwg.org/multipage/parsing.html#character-reference-state
-/// [5]: https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(double-quoted)-state
-/// [6]: https://html.spec.whatwg.org/multipage/parsing.html#tag-name-state
-/// [7]: https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
-/// [8]: https://html.spec.whatwg.org/multipage/parsing.html#generic-raw-text-element-parsing-algorithm
-/// [9]: https://html.spec.whatwg.org/multipage/parsing.html#the-stack-of-open-elements
+/// [2]: https://html.spec.whatwg.org/multipage/parsing.html#generic-raw-text-element-parsing-algorithm
 library;
+
+import 'dart:convert';
 
 import 'html_token_sink.dart';
 import 'util/ascii.dart';
 
-/// Maximum number of simultaneously open elements in the output.
+/// Maximum number of simultaneously open elements.
 ///
-/// Blink flattens at 512 (`kMaximumHTMLParserDOMTreeDepth`), counting the
-/// host document's own depth, which this package cannot know. A quarter of
-/// that leaves any plausible host enough room that the browser never
-/// flattens sanitized output itself. Package-private; the sanitizer uses the
-/// same bound so its view of the open elements matches the writer's.
+/// Blink flattens at 512, counting the host document's depth; a quarter
+/// leaves any host room; the sanitizer and `impliedEndTags` use the same
+/// bound.
 const maxDepth = 128;
 
-/// Elements the parser never gives children or an end tag.
-///
-/// The ["in body" insertion mode][1] pops these immediately; the list is
-/// wider than the syntax section's void elements (`basefont`, `bgsound`,
-/// `keygen` and `param` are obsolete but still parsed as void).
+/// Elements the ["in body" insertion mode][1] pops immediately, including
+/// the obsolete ones it still treats so.
 ///
 /// [1]: https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
 const _voidElements = <String>{
@@ -129,12 +73,10 @@ const _voidElements = <String>{
   'wbr',
 };
 
-/// Whether [name] is a void element: written as `<br>`, never opened.
+/// Whether [name] is written as a lone start tag, like `<br>`.
 bool isVoidElement(String name) => _voidElements.contains(name);
 
-/// Whether [HtmlWriter] accepts [name] as a tag name.
-///
-/// `[a-z][a-z0-9._-]*`, except `image` (see point 5 above).
+/// Whether [name] matches `[a-z][a-z0-9._-]*` and is not `image`.
 bool isWritableTagName(String name) {
   if (name.isEmpty || !isAsciiLower(name.codeUnitAt(0))) {
     return false;
@@ -143,18 +85,16 @@ bool isWritableTagName(String name) {
     final c = name.codeUnitAt(i);
     if (!isAsciiLower(c) &&
         !isAsciiDigit(c) &&
-        c != 0x2E &&
-        c != 0x2D &&
-        c != 0x5F) {
+        c != $dot &&
+        c != $minus &&
+        c != $underscore) {
       return false;
     }
   }
   return name != 'image';
 }
 
-/// Whether [HtmlWriter] accepts [name] as an attribute name.
-///
-/// `[a-z][a-z0-9_:.-]*`.
+/// Whether [name] matches `[a-z][a-z0-9_:.-]*`.
 bool isWritableAttributeName(String name) {
   if (name.isEmpty || !isAsciiLower(name.codeUnitAt(0))) {
     return false;
@@ -163,40 +103,40 @@ bool isWritableAttributeName(String name) {
     final c = name.codeUnitAt(i);
     if (!isAsciiLower(c) &&
         !isAsciiDigit(c) &&
-        c != 0x2E &&
-        c != 0x2D &&
-        c != 0x5F &&
-        c != 0x3A) {
+        c != $dot &&
+        c != $minus &&
+        c != $underscore &&
+        c != $colon) {
       return false;
     }
   }
   return true;
 }
 
-/// Serializes tokens into HTML in which text cannot become markup.
+/// A sink writing tokens into [output] as HTML in which the browser finds
+/// exactly the elements and attributes pushed, no more.
 ///
-/// See the library documentation for the grammar and the argument. The
-/// writer is the last sink of a pipeline; call [finish] to close any open
-/// elements and get the output.
+/// Elements nest at most 128 deep: a start tag at that depth closes the
+/// innermost open element first, as browsers do. Closing the sink closes
+/// every open element, then [output]. Throws if:
 ///
-/// The writer guarantees that the browser sees exactly the elements and
-/// attributes pushed into it, no more. Whether those are safe to show is up
-/// to the `RuleSet` in front of it.
-final class HtmlWriter extends HtmlTokenSink {
-  final StringBuffer _out = StringBuffer();
+///  * a tag name does not match `[a-z][a-z0-9._-]*`, or is `image`;
+///  * an attribute name does not match `[a-z][a-z0-9_:.-]*`;
+///  * a token arrives after [HtmlTokenSink.close].
+HtmlTokenSink htmlWriter(StringConversionSink output) => _HtmlWriter(output);
 
-  /// Names of the currently open (non-void) elements, outermost first.
+final class _HtmlWriter extends HtmlTokenSink {
+  final StringConversionSink _out;
+  bool _closed = false;
+
+  /// Open elements, outermost first.
   final List<String> _open = [];
 
-  /// Writes a start tag for [name] with [attributes].
-  ///
-  /// Throws [ArgumentError] if [name] is not an [isWritableTagName] or any
-  /// attribute name is not an [isWritableAttributeName]. These are contract
-  /// violations by whatever feeds the writer: a `RuleSet` only admits names
-  /// that pass these checks, so with the sanitizer in front this never
-  /// depends on input.
+  _HtmlWriter(this._out);
+
   @override
   void startTag(String name, Map<String, String> attributes) {
+    _checkOpen();
     if (!isWritableTagName(name)) {
       throw ArgumentError.value(name, 'name', 'not a writable tag name');
     }
@@ -205,29 +145,28 @@ final class HtmlWriter extends HtmlTokenSink {
       _writeEndTag(_open.removeLast());
     }
     _out
-      ..write('<')
-      ..write(name);
+      ..add('<')
+      ..add(name);
     for (final MapEntry(:key, :value) in attributes.entries) {
       if (!isWritableAttributeName(key)) {
         throw ArgumentError.value(key, 'attributes', 'not a writable name');
       }
       _out
-        ..write(' ')
-        ..write(key)
-        ..write('="');
+        ..add(' ')
+        ..add(key)
+        ..add('="');
       _writeEscaped(value, 0, value.length, inAttribute: true);
-      _out.write('"');
+      _out.add('"');
     }
-    _out.write('>');
+    _out.add('>');
     if (!isVoid) {
       _open.add(name);
     }
   }
 
-  /// Closes the innermost open element called [name] and every element
-  /// opened after it. Does nothing if no such element is open.
   @override
   void endTag(String name) {
+    _checkOpen();
     final index = _open.lastIndexOf(name);
     if (index < 0) {
       return;
@@ -237,42 +176,41 @@ final class HtmlWriter extends HtmlTokenSink {
     }
   }
 
-  /// Writes `source[start..end)` as text.
-  ///
-  /// `<` and `>` are always escaped; `&` is escaped unless followed by `#` or
-  /// an ASCII alphanumeric, in which case it is passed through: in the data
-  /// state `&...` can only ever yield character tokens (point 1), and it
-  /// renders exactly as the input would have (`&copy;` stays `&copy;`,
-  /// `&bogus;` is shown literally either way, a lone `&` becomes `&amp;`).
   @override
   void text(String source, int start, int end) {
+    _checkOpen();
     _writeEscaped(source, start, end, inAttribute: false);
   }
 
-  /// Closes all open elements and returns the output, leaving the writer
-  /// empty and ready for reuse.
-  String finish() {
+  @override
+  void close() {
+    _checkOpen();
+    _closed = true;
     while (_open.isNotEmpty) {
       _writeEndTag(_open.removeLast());
     }
-    final output = _out.toString();
-    _out.clear();
-    return output;
+    _out.close();
+  }
+
+  void _checkOpen() {
+    if (_closed) {
+      throw StateError('closed');
+    }
   }
 
   void _writeEndTag(String name) {
     _out
-      ..write('</')
-      ..write(name)
-      ..write('>');
+      ..add('</')
+      ..add(name)
+      ..add('>');
   }
 
-  /// Escapes `source[start..end)` into [_out], copying unescaped runs with a
-  /// single `substring` each.
+  /// Escapes `source[start..end)` into [_out], copying unescaped runs whole.
+  /// (`add`, not `addSlice`: the SDK's `StringConversionSink`s copy a partial
+  /// slice one code unit at a time.)
   ///
-  /// In attribute values every `&` and `"` is escaped so the browser decodes
-  /// exactly the value the rules validated: the URL policy and the browser's
-  /// URL parser see the same string.
+  /// In attribute values every `&` is escaped, so the browser decodes
+  /// exactly the value the rules saw.
   void _writeEscaped(
     String source,
     int start,
@@ -283,36 +221,35 @@ final class HtmlWriter extends HtmlTokenSink {
     for (var i = start; i < end; i++) {
       final String replacement;
       switch (source.codeUnitAt(i)) {
-        case 0x3C: // <
+        case $lt:
           replacement = '&lt;';
-        case 0x3E: // >
+        case $gt:
           replacement = '&gt;';
-        case 0x22 when inAttribute: // "
+        case $quot when inAttribute:
           replacement = '&quot;';
-        case 0x26
+        case $amp
             when inAttribute || !_startsCharacterReference(source, i, end):
           replacement = '&amp;';
         default:
           continue;
       }
       if (i > runStart) {
-        _out.write(source.substring(runStart, i));
+        _out.add(source.substring(runStart, i));
       }
-      _out.write(replacement);
+      _out.add(replacement);
       runStart = i + 1;
     }
     if (end > runStart) {
-      _out.write(source.substring(runStart, end));
+      _out.add(source.substring(runStart, end));
     }
   }
 
-  /// Whether the `&` at `source[i]` is followed by `#` or an ASCII
-  /// alphanumeric, i.e. could plausibly be a character reference.
+  /// Whether the `&` at `source[i]` is followed by `#` or an alphanumeric.
   static bool _startsCharacterReference(String source, int i, int end) {
     if (i + 1 >= end) {
       return false;
     }
     final c = source.codeUnitAt(i + 1);
-    return c == 0x23 /* # */ || isAsciiDigit(c) || isAsciiAlpha(c);
+    return c == $hash || isAsciiDigit(c) || isAsciiAlpha(c);
   }
 }

@@ -1,85 +1,43 @@
-## v3.0.0-wip
- * **Breaking:** rewritten to be _safe by construction_: output is produced
-   only by a small, audited writer (`HtmlWriter`) that emits balanced
-   lower-case tags, always double-quoted and escaped attribute values, and
-   escaped text. See the README for the guarantee and what is trusted.
- * **Breaking:** elements the rules do not allow are _unwrapped_ (tags
-   removed, content kept) instead of removed with their content, as other
-   Markdown sanitizers do. `HtmlRewriter.dropElements({...})` removes
-   subtrees. Content of `script`, `style`, `template` and the other
-   RAWTEXT/RCDATA elements is still never kept.
- * Added `ElementPattern` and `RuleSet(..., exemptions: [...])`: exact forms
-   of an element kept as exemptions from the rules, e.g. an `<input>` only
-   with `type="checkbox"` or an `<iframe>` only from one origin and
-   sandboxed. Patterns are tried first and never merged.
- * **Breaking:** `sanitizeHtml` takes `rules`, `rewriters` and `tokenizer`.
-   The version 2 parameters `allowElementId`, `allowClassName` and
-   `addLinkRel` still work but are deprecated and cannot be combined with
-   `rules` or `rewriters`; `allowElements` is gone (use
-   `RuleSet.gfm().union(RuleSet({...}))`).
- * Added `RuleSet`, `ElementRule` and `AttributeRule` (`any`, `url([where])`,
-   `srcset([where])`, `where`) for declaring which elements and attributes are
-   kept, with `union`, `without` and `restrict`. Attribute rules only keep
-   or drop values, never rewrite them.
- * **Breaking:** `RuleSet.gfm()` takes no parameters and follows html-pipeline
-   v3 plus what `package:markdown` emits for `ExtensionSet.gitHubWeb`: `id`
-   only with the `user-content-` prefix (GitHub's namespace for author ids;
-   `HtmlRewriter.prefixIds` adds it, and `package:markdown` is expected to
-   emit it), `class` only with `markdown-*` tokens (plus the names
-   `package:markdown` emits today) and `language-*` on `<code>`,
-   `data-metadata` on `<pre>`, `<input type="checkbox">`, `<section>`;
-   `name`, `target`, `accesskey`, `tabindex`, `aria-describedby`,
-   `aria-labelledby`, `color`, `vspace`, `cellpadding`, `cellspacing`,
-   `h7` and `h8` are no longer kept; `img[loading]` is.
- * Added `RuleSet.html()`, the element and attribute tables of Google's
-   safevalues sanitizer with this package's URL and `rel` checks, and
-   `ElementPattern.iframe(where:, sandbox:)` and `ElementPattern.checkbox`
-   as ready-made exemptions, and `RuleSet.withExemptions`. `RuleSet.html()`
-   drops `autofocus`, `download`, `itemref`, `usemap`, `required`, `slot`
-   and `<slot>`, which safevalues keeps, because each binds the content to
-   something the host page owns.
- * `RuleSet(...)` throws `UnsupportedError` for grants that defeat the purpose
-   of sanitizing (elements `script`, `style`, `base`, `meta`, `link`, `html`,
-   `head`, `body`, `frameset`, `frame`, `form`, `object`, `embed`, `applet`,
-   `isindex`, `noscript`, `noembed`, `noframes`, `svg`, `math`; attributes
-   `on*`, `style`, `srcdoc`, `is`, `form*`, `ping`, `attributionsrc`,
-   `popovertarget*`, `command`, `commandfor`, `shadowrootmode`; URL
-   attributes not bound to `AttributeRule.url` / `srcset`) and
-   `ArgumentError` for names the writer cannot write (`'DIV'`, `'a b'`,
-   `'image'`). `RuleSet.unsafe(...)` waives the `UnsupportedError`s.
- * Added `HtmlRewriter` with `attributes`, `addLinkRel`, `prefixIds`,
-   `keepTokens` and `dropElements` rewriters, which run before the rules are
-   applied, and a constructor for custom rewriters.
- * Added the pipeline building blocks `HtmlTokenSink`, `HtmlTokenizer` and
-   `HtmlWriter` (with `HtmlRewriter.sanitizer` and
-   `HtmlRewriter.impliedEndTags`) and three interchangeable tokenizers
-   (`streaming` (default), `simple`, `dom`); tokenizers are not security
-   relevant. `package:html` is only used by `HtmlTokenizer.dom`.
- * **Breaking:** output is normalized rather than re-serialized: tag and
-   attribute names are lower-case, attribute values double-quoted, void
-   elements written without `/`, unclosed elements closed, and the tree
-   builder's implied end tags applied (`<p>` closed by block elements, list
-   items, cells, rows, row groups, options and headings closed by siblings,
-   `<a>` closed by a nested `<a>`). Sanitizing is idempotent.
- * **Breaking:** comments are no longer preserved, no implied `<tbody>` or
-   trailing `<p></p>` is inserted, and non-ASCII text is written as is rather
-   than re-encoded as named character references.
- * **Breaking:** character references in text are preserved as written
-   (`&copy;` stays `&copy;`, a lone `&` becomes `&amp;`); attribute values are
-   decoded and re-escaped.
- * **Breaking:** `name` is only kept on `<a>`; `accesskey`, `usemap`, and form
-   related attributes (`action`, `method`, `enctype`, `accept`,
-   `accept-charset`, `for`, `prompt`) are no longer kept. `rel` is dropped
-   unless every token is a link type the HTML specification defines for
-   `<a>` (or `ugc` / `sponsored`), and none is `opener`.
- * URL attributes (`href`, `src`, `cite`, `longdesc`, `srcset`, ...) must be
-   relative or use `http:`, `https:` or `mailto:`; URLs containing control
-   characters, `\`, userinfo (`https://user@host`), a percent-encoded host,
-   or anything but exactly `//` after `http:`/`https:` are rejected.
- * Nesting is capped at 128 levels: like Blink, a deeper start tag closes the
-   innermost open element and becomes its sibling.
- * Removed the dependency on `package:meta`.
- * Roughly 4x faster than `v2.1.0` on the included benchmark.
+## v2.3.0
+Behaviour changes for every caller, including the deprecated version 2
+parameters:
+ * Elements the rules do not allow are now _unwrapped_: their tags are
+   removed and their content is kept. Content of `script`, `style`,
+   `template` and other elements a browser never renders as text is still
+   removed. Use `HtmlRewriter.dropElements(...)` to remove subtrees.
+ * Output is normalized: tag and attribute names are lower-case, attribute
+   values are double-quoted and escaped, void elements are written without
+   `/`, unclosed elements are closed and elements the HTML tree builder would
+   close are closed.
+ * `addLinkRel` sets the `rel` of each link to what the callback returns,
+   replacing any `rel` the author wrote.
+ * `rel` is kept only with link types that describe the link (`nofollow`,
+   `noopener`, `noreferrer`, `ugc`, `sponsored`, `external`, `help`); `name`,
+   `target`, `accesskey`, `tabindex`, `aria-describedby`, `aria-labelledby`,
+   `color`, `vspace`, `cellpadding`, `cellspacing`, `h7` and `h8` are no
+   longer kept; `img[loading]`, `<picture>`, `<source srcset>` and `<section>`
+   are.
+
+New API:
+ * `sanitizeHtml` takes `rules`, `rewriters` and `tokenizer`. The version 2
+   parameters `allowElementId`, `allowClassName` and `addLinkRel` are
+   deprecated and cannot be combined with `rules` or `rewriters`.
+ * `RuleSet`, `ElementRule`, `ElementPattern` and `AttributeRule` (`any`,
+   `url`, `srcset`, `rel`, `where`) declare which elements and attributes are
+   kept, composed with `union`, `without`, `restrict` and `withExemptions`.
+   `RuleSet()` refuses rules that could let through script, control over the
+   page or an unchecked URL; `RuleSet.unsafe()` does not.
+ * `RuleSet.gfm()`, the rules for rendered Markdown, following html-pipeline
+   v3 and what `package:markdown` emits; `RuleSet.html()`, the rules for
+   arbitrary HTML, following Google's safevalues sanitizer; and the
+   exemptions `ElementPattern.checkbox()` and
+   `ElementPattern.iframe(where:, sandbox:)`.
+ * `HtmlRewriter` with `rewriteAttributes`, `addLinkRel`, `prefixIds`,
+   `dropClasses`, `dropElements`, `impliedEndTags` and `sanitizer`, composed
+   with `fuse`, for changes to the input before the rules are applied.
+ * `HtmlTokenizer` (`streaming`, `simple`, `dom`), `HtmlTokenSink` and
+   `htmlWriter` for custom pipelines.
+ * `package:html` is only used by `HtmlTokenizer.dom`.
 
 ## v2.2.0
  * Allow the `<picture>` and `<source>` elements, with `srcset` on `<source>`,

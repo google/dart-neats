@@ -12,22 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # UNTRUSTED: a deliberately small tokenizer for well-formed HTML.
+/// A deliberately small tokenizer for well-formed HTML.
 ///
 /// Every construct is handled by scanning for a delimiter with `indexOf`:
 ///
-///  * `<!--` ... `-->`, `<!` ... `>`, `<?` ... `>` are skipped
+///  * `<!--` ... `-->`, `<!` ... `>` and `<?` ... `>` are skipped
 ///  * `</name` ... `>` is an end tag
 ///  * `<name` attributes `>` is a start tag
 ///  * the content of `script`, `style`, `iframe` and friends is skipped up
 ///    to `</name`
 ///  * everything else is text
 ///
-/// It does not implement the script data escaping rules, `--!>`, or the
-/// finer points of attribute name states, so unusual markup may tokenize
-/// differently than in a browser. Since tokenizers are not security
-/// relevant (see `html_tokenizer.dart`), such differences only ever affect
-/// how the output looks.
+/// Without script data escaping, `--!>` or the finer attribute name states,
+/// unusual markup may tokenize differently than in a browser.
 library;
 
 import '../html_token_sink.dart';
@@ -52,7 +49,7 @@ void tokenizeSimple(String html, HtmlTokenSink sink) {
     final start = pos;
     while (pos < len) {
       final c = html.codeUnitAt(pos);
-      if (c <= 0x20 || c == 0x2F /* / */ || c == 0x3E /* > */ || c == 0x3D) {
+      if (c <= $space || c == $slash || c == $gt || c == $equal) {
         break;
       }
       pos++;
@@ -68,7 +65,7 @@ void tokenizeSimple(String html, HtmlTokenSink sink) {
     pos = lt + 1;
     final next = html.codeUnitAt(pos);
 
-    if (next == 0x21 /* ! */ || next == 0x3F /* ? */) {
+    if (next == $exclamation || next == $question) {
       if (lt > textStart) {
         sink.text(html, textStart, lt);
       }
@@ -78,7 +75,7 @@ void tokenizeSimple(String html, HtmlTokenSink sink) {
       } else {
         skipPast('>');
       }
-    } else if (next == 0x2F /* / */) {
+    } else if (next == $slash) {
       if (lt > textStart) {
         sink.text(html, textStart, lt);
       }
@@ -96,28 +93,28 @@ void tokenizeSimple(String html, HtmlTokenSink sink) {
       var selfClosing = false;
       while (pos < len) {
         final c = html.codeUnitAt(pos);
-        if (c == 0x3E /* > */) {
+        if (c == $gt) {
           pos++;
           break;
         }
-        if (c <= 0x20 || c == 0x2F /* / */ || c == 0x3D /* = */) {
-          selfClosing = c == 0x2F && html.startsWith('>', pos + 1);
+        if (c <= $space || c == $slash || c == $equal) {
+          selfClosing = c == $slash && html.startsWith('>', pos + 1);
           pos++;
           continue;
         }
         final attributeName = name();
         var value = '';
-        while (pos < len && html.codeUnitAt(pos) <= 0x20) {
+        while (pos < len && html.codeUnitAt(pos) <= $space) {
           pos++;
         }
         if (html.startsWith('=', pos)) {
           pos++;
-          while (pos < len && html.codeUnitAt(pos) <= 0x20) {
+          while (pos < len && html.codeUnitAt(pos) <= $space) {
             pos++;
           }
           final start = pos;
           final quote = pos < len ? html.codeUnitAt(pos) : 0;
-          if (quote == 0x22 /* " */ || quote == 0x27 /* ' */) {
+          if (quote == $quot || quote == $apos) {
             pos++;
             final close = html.indexOf(String.fromCharCode(quote), pos);
             final end = close < 0 ? len : close;
@@ -125,8 +122,8 @@ void tokenizeSimple(String html, HtmlTokenSink sink) {
             pos = close < 0 ? len : close + 1;
           } else {
             while (pos < len &&
-                html.codeUnitAt(pos) > 0x20 &&
-                html.codeUnitAt(pos) != 0x3E /* > */) {
+                html.codeUnitAt(pos) > $space &&
+                html.codeUnitAt(pos) != $gt) {
               pos++;
             }
             value = decodeCharacterReferences(html, start, pos);
@@ -155,6 +152,7 @@ void tokenizeSimple(String html, HtmlTokenSink sink) {
   if (len > textStart) {
     sink.text(html, textStart, len);
   }
+  sink.close();
 }
 
 /// Index just after `</name` (ASCII case-insensitive) at or after [pos], or

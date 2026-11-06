@@ -12,20 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # TRUSTED (policy data): the `rel` values the default rule sets keep.
-///
-/// The [link types][1] the HTML specification defines for `<a>` and
-/// `<area>`, plus `ugc` and `sponsored` (registered extensions search
-/// engines act on), without `opener`, which re-enables `window.opener` for
-/// `target="_blank"` links. The whole value is kept or dropped: a `rel` with
-/// an unknown token is dropped.
-///
-/// [1]: https://html.spec.whatwg.org/multipage/links.html#linkTypes
+/// The `rel` link types `AttributeRule.rel` and the default rule sets keep.
 library;
 
-import '../util/space_separated_tokens.dart';
-
-const _anchorLinkTypes = <String>{
+/// The [link types][1] defined for `<a>` and `<area>`, plus `ugc` and
+/// `sponsored` (registered extensions search engines act on), without
+/// `opener`, which re-enables `window.opener` for `target="_blank"` links.
+///
+/// [1]: https://html.spec.whatwg.org/multipage/links.html#linkTypes
+const anchorLinkTypes = <String>{
   'alternate',
   'author',
   'bookmark',
@@ -46,6 +41,19 @@ const _anchorLinkTypes = <String>{
   'ugc',
 };
 
-/// Whether [value] is a non-empty list of link types for `<a>`.
-bool isAnchorRelList(String value) =>
-    everyToken(value, _anchorLinkTypes.contains);
+/// The link types that describe the link itself.
+///
+/// The rest of [anchorLinkTypes] make a statement about the document the
+/// link is in — `me` verifies the host's URL as the author's identity on
+/// Mastodon and IndieAuth, `license`, `privacy-policy`, `terms-of-service`,
+/// `alternate`, `author`, `tag` and `bookmark` describe it, `next`, `prev`
+/// and `search` navigate it — which embedded Markdown has no business doing.
+const linkDescribingTypes = <String>{
+  'external',
+  'help',
+  'nofollow',
+  'noopener',
+  'noreferrer',
+  'sponsored',
+  'ugc',
+};

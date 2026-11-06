@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # TRUSTED: grants a checked `RuleSet` refuses.
+/// The checks a `RuleSet()` runs on its rules when built.
 ///
-/// `HtmlWriter` guarantees the browser sees exactly the elements and
-/// attributes a rule set lets through. These assertions make sure a rule set
-/// built with `RuleSet()` does not let through things that defeat the purpose
-/// of sanitizing: script execution, control over the host document, or URLs
-/// the URL policy never saw. They run once, when the rule set is built, and
-/// cost nothing per document. `RuleSet.unsafe()` skips them.
+/// They refuse rules that could let through:
 ///
-/// They are deliberately not a list of everything that can look wrong:
-/// `plaintext`, `xmp`, `template`, `title`, `textarea` and `iframe` are
-/// allowed because they only make content disappear or render as text.
+///  * script running in the page's origin;
+///  * control over the host document, navigating it included;
+///  * a URL the URL policy never saw.
+///
+/// `RuleSet.unsafe()` skips them. Elements that only make content disappear
+/// or render as text (`plaintext`, `xmp`, `template`, `title`, `textarea`)
+/// pass. An `iframe` passes only as an exemption that matches `sandbox`:
+/// unsandboxed, a frame from the host's own origin scripts the host page,
+/// and one from any origin can navigate it on a click.
 library;
 
 import 'attribute_rule.dart';
@@ -31,21 +32,18 @@ import 'attribute_rule.dart';
 /// Elements a checked rule set may not allow.
 ///
 ///  * `script`: executes. `noscript`, `noembed`, `noframes`: RAWTEXT only
-///    when scripting / plugins / frames are enabled, so the same output is
-///    parsed two different ways.
+///    when scripting, plugins or frames are enabled, so one output parses two
+///    ways.
 ///  * `style`, `link`, `base`, `meta`, `html`, `head`, `body`: alter the host
-///    document rather than the fragment (`base` rebases every relative URL on
-///    the page, `meta` refreshes, the parser copies `html`/`body` attributes
-///    onto the host's elements).
-///  * `frameset`, `frame`, `form`: hijack the host's frames and form
-///    controls. `object`, `embed`, `applet`: plugin content with unauditable
-///    attribute semantics.
-///  * `isindex`: expanded into a `<form>` with controls by parsers following
-///    older versions of the spec, including `package:html`.
-///  * `svg`, `math`: foreign content has case-sensitive attributes such as
-///    `xlink:href`, `<animate>` that retargets an `href` at runtime,
-///    `<foreignObject>` to get back into HTML, and a long history of
-///    mutation XSS.
+///    document (`base` rebases every relative URL, `meta` refreshes, the
+///    parser copies `html`/`body` attributes onto the host's elements).
+///  * `frameset`, `frame`, `form`: hijack the host's frames and controls.
+///    `object`, `embed`, `applet`: plugin content.
+///  * `isindex`: older parsers, `package:html` included, expand it into a
+///    `<form>`.
+///  * `svg`, `math`: foreign content, with case-sensitive attributes
+///    (`xlink:href`), `<animate>` retargeting `href`, `<foreignObject>` back
+///    into HTML, and a history of mutation XSS.
 const forbiddenElements = <String>{
   'applet',
   'base',
@@ -71,22 +69,20 @@ const forbiddenElements = <String>{
 
 /// Attributes a checked rule set may not allow on any element.
 ///
-///  * `style`: inline CSS can reposition content over the host page (and has
-///    executed script in older engines).
-///  * [`srcdoc`][1]: an entire inline document for `<iframe>`.
-///  * [`is`][2]: upgrades the element to a host-defined customized built-in.
+///  * `style`: positions content over the host page.
+///  * [`srcdoc`][1]: an inline document for `<iframe>`.
+///  * [`is`][2]: upgrades the element to a host-defined built-in.
 ///  * [`form`][3], `formaction`, `formtarget`, `formmethod`, `formenctype`:
-///    associate a control with, or override the submission of, one of the
-///    host page's forms.
-///  * [`ping`][4], `attributionsrc`: requests to arbitrary URLs on
-///    activation.
+///    bind a control to, or override the submission of, a host form.
+///  * [`ping`][4], `attributionsrc`: requests to arbitrary URLs on click.
 ///  * [`popovertarget`][5], `popovertargetaction`, [`command`][6],
-///    `commandfor`: a button that opens, closes or submits any element on
-///    the host page by id.
-///  * [`shadowrootmode`][7]: a `<template>` that becomes a shadow root of
-///    its parent, hiding or restyling the parent's content.
+///    `commandfor`: a button acting on any host element by id.
+///  * [`shadowrootmode`][7]: a `<template>` that becomes its parent's shadow
+///    root.
+///  * [`allow`][9], `allowpaymentrequest`: delegate the host's permissions to
+///    an `<iframe>`.
 ///
-/// [Event handler attributes][8] (`on*`) are refused by name prefix.
+/// [Event handlers][8] (`on*`) are refused by prefix.
 ///
 /// [1]: https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-srcdoc
 /// [2]: https://html.spec.whatwg.org/multipage/custom-elements.html#attr-is
@@ -96,7 +92,10 @@ const forbiddenElements = <String>{
 /// [6]: https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-commandfor
 /// [7]: https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootmode
 /// [8]: https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-content-attributes
+/// [9]: https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-allow
 const forbiddenAttributes = <String>{
+  'allow',
+  'allowpaymentrequest',
   'attributionsrc',
   'command',
   'commandfor',
@@ -114,12 +113,10 @@ const forbiddenAttributes = <String>{
   'style',
 };
 
-/// Attributes whose value a browser interprets as a URL; a checked rule set
-/// must bind them to [AttributeRule.url] (`srcset` to [AttributeRule.srcset]).
-///
-/// The list is deliberately broad and includes attributes of elements that
-/// can never be allowed, so it holds without knowing the element. See the
-/// [attribute index][1].
+/// Attributes a browser reads as URLs; a checked rule set must bind them to
+/// [AttributeRule.url] (`srcset` to [AttributeRule.srcset]). Broad on
+/// purpose, so it holds without knowing the element; see the [attribute
+/// index][1].
 ///
 /// [1]: https://html.spec.whatwg.org/multipage/indices.html#attributes-3
 const urlAttributes = <String>{
@@ -141,19 +138,44 @@ const urlAttributes = <String>{
   'xlink:href',
 };
 
-/// Throws [UnsupportedError] if [attributes] of a rule for [tagName] grant
-/// something a checked rule set refuses.
-void checkGrants(String tagName, Map<String, AttributeRule> attributes) {
+/// Elements a checked rule set allows only as an exemption matching the
+/// attribute that decides what they do.
+const _onlyAsPatternMatching = <String, String>{
+  'iframe': 'sandbox',
+};
+
+/// Checks a rule for [tagName] with [attributes] against the lists above;
+/// [matched] are the attributes an exemption requires.
+///
+/// Throws if it grants something a checked rule set refuses.
+void checkGrants(
+  String tagName,
+  Map<String, AttributeRule> attributes, {
+  Set<String> matched = const {},
+}) {
   if (forbiddenElements.contains(tagName)) {
     throw UnsupportedError(
       '<$tagName> cannot be allowed by RuleSet(); '
       'use RuleSet.unsafe() if you really mean it',
     );
   }
+  if (_onlyAsPatternMatching[tagName] case final attribute?
+      when !matched.contains(attribute)) {
+    throw UnsupportedError(
+      '<$tagName> can only be allowed by RuleSet() as an ElementPattern that '
+      'matches $attribute; use RuleSet.unsafe() if you really mean it',
+    );
+  }
   for (final MapEntry(key: name, value: rule) in attributes.entries) {
     if (forbiddenAttributes.contains(name) || name.startsWith('on')) {
       throw UnsupportedError(
         '<$tagName $name=""> cannot be allowed by RuleSet(); '
+        'use RuleSet.unsafe() if you really mean it',
+      );
+    }
+    if (name == 'rel' && !rule.isRelRestricted) {
+      throw UnsupportedError(
+        '<$tagName rel=""> must use AttributeRule.rel() in RuleSet(); '
         'use RuleSet.unsafe() if you really mean it',
       );
     }

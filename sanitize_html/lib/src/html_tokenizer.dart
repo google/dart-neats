@@ -12,14 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # UNTRUSTED: tokenizers split input into tags and text.
-///
-/// A tokenizer turns HTML source into [HtmlTokenSink] calls. It is _not_
-/// part of the trusted base: whatever it reports, the sanitizer unwraps
-/// elements and drops attributes without a rule and `HtmlWriter` escapes text
-/// and values, so a tokenizer bug can only make the output uglier (markup
-/// shown as text), never unsafe. Review tokenizers for performance,
-/// termination and fidelity, not for security.
+/// The tokenizers: how input is split into tags and text.
 library;
 
 import 'html_token_sink.dart';
@@ -29,27 +22,37 @@ import 'tokenizer/streaming_tokenizer.dart';
 
 /// Splits HTML into tokens.
 ///
-/// The tokenizers differ in speed and in how faithfully they reproduce
-/// browser behavior for broken markup, not in safety.
+/// The tokenizers differ in speed and in fidelity to browsers on broken
+/// markup, not in safety.
 final class HtmlTokenizer {
   final void Function(String html, HtmlTokenSink sink) _tokenize;
+  final bool _buildsTree;
 
-  const HtmlTokenizer._(this._tokenize);
+  const HtmlTokenizer._(this._tokenize, {bool buildsTree = false})
+      : _buildsTree = buildsTree;
 
-  /// Follows the WHATWG tokenizer states closely (comments, bogus comments,
-  /// script data escaping, RAWTEXT / RCDATA elements) without building a
-  /// tree. The default.
+  /// The default: follows the WHATWG tokenizer states, including comments,
+  /// script data escaping and RAWTEXT and RCDATA elements, without building
+  /// a tree.
   static const streaming = HtmlTokenizer._(tokenizeStreaming);
 
-  /// A small, easily reviewed tokenizer that handles well-formed HTML and
-  /// degrades gracefully on everything else.
+  /// A small tokenizer for well-formed HTML that degrades gracefully on
+  /// everything else.
   static const simple = HtmlTokenizer._(tokenizeSimple);
 
-  /// Parses a full DOM tree with `package:html` and walks it. Slowest, and
-  /// superlinear on deeply nested input, but handles misnested markup the
-  /// way browsers do.
-  static const dom = HtmlTokenizer._(tokenizeDom);
+  /// Parses a tree with `package:html` and walks it, so misnested markup is
+  /// handled as browsers do.
+  ///
+  /// Slowest, and superlinear on deep nesting.
+  static const dom = HtmlTokenizer._(tokenizeDom, buildsTree: true);
 
-  /// Feeds the tokens of [html] to [sink].
+  /// Feeds the tokens of [html] to [sink], then closes it.
   void tokenize(String html, HtmlTokenSink sink) => _tokenize(html, sink);
+}
+
+/// Package-private operations on [HtmlTokenizer]; not exported.
+extension HtmlTokenizerExtension on HtmlTokenizer {
+  /// Whether the tokens already form a tree, as a browser would build it,
+  /// so that `HtmlRewriter.impliedEndTags` has nothing to add.
+  bool get buildsTree => _buildsTree;
 }

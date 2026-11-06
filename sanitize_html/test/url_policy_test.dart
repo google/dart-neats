@@ -48,4 +48,24 @@ void main() {
     testContains('<a href="https://example.com/?u=a@b">link</a>', 'href');
     testContains('<a href="https://example.com/#@x">link</a>', 'href');
   });
+
+  group('Authority must be present:', () {
+    // Against an http(s) base a browser skips the extra slashes and goes to
+    // evil.com, while `Uri` sees an empty host.
+    testNotContains('<a href="///evil.com">link</a>', 'href');
+    testNotContains('<a href="https:///evil.com">link</a>', 'href');
+    testNotContains('<a href="//">link</a>', 'href');
+    testNotContains('<a href="//?x">link</a>', 'href');
+    testNotContains('<a href="https://">link</a>', 'href');
+    testNotContains('<a href="mailto://a@b">link</a>', 'href');
+    testContains('<a href="//example.com">link</a>', 'href');
+    testContains('<a href="mailto:a@b">link</a>', 'href');
+  });
+
+  group('Browser preprocessing:', () {
+    testContains('<a href="HTTPS://EXAMPLE.COM/">link</a>', 'href');
+    testContains('<a href="  https://example.com/  ">link</a>', 'href');
+    testContains('<a href="https://exam\nple.com/">link</a>', 'href');
+    testNotContains('<a href="https://example.com/\x7F">link</a>', 'href');
+  });
 }

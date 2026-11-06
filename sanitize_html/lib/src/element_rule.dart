@@ -12,23 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # TRUSTED: which attributes an allowed element keeps.
-///
-/// Each attribute is decided on its own, so combining rules is per-attribute
-/// set algebra: a union keeps an attribute if either rule keeps it, a
-/// restriction only if both do. Decisions that depend on several attributes
-/// at once belong in an `ElementPattern`.
+/// Which attributes an element keeps.
 library;
 
 import 'attribute_rule.dart';
 
-/// The attributes an allowed element keeps, and how each is filtered.
+/// The attributes an allowed element keeps.
 ///
-/// Each attribute is judged on its own by its [AttributeRule]; attributes
-/// without a rule are dropped. The element itself is always kept.
+/// Each is filtered by its [AttributeRule]; attributes without a rule are
+/// dropped. The element itself is always kept.
 ///
 /// ```dart
-/// const ElementRule(attributes: {
+/// ElementRule(attributes: {
 ///   'href': AttributeRule.url(),
 ///   'title': AttributeRule.any(),
 /// })
@@ -36,8 +31,8 @@ import 'attribute_rule.dart';
 final class ElementRule {
   final Map<String, AttributeRule> _attributes;
 
-  const ElementRule({Map<String, AttributeRule> attributes = const {}})
-      : _attributes = attributes;
+  ElementRule({Map<String, AttributeRule> attributes = const {}})
+      : _attributes = Map.unmodifiable(attributes);
 }
 
 /// Package-private operations on [ElementRule]; not exported.
@@ -45,8 +40,7 @@ extension ElementRuleExtension on ElementRule {
   /// The attribute rules.
   Map<String, AttributeRule> get attributes => _attributes;
 
-  /// Removes the attributes this rule does not keep from [attributes] and
-  /// returns it.
+  /// [attributes] with those this rule does not keep removed.
   Map<String, String> apply(Map<String, String> attributes) {
     if (attributes.isEmpty) {
       return attributes;
@@ -57,7 +51,7 @@ extension ElementRuleExtension on ElementRule {
     return attributes;
   }
 
-  /// A rule keeping attributes kept by this rule or [other].
+  /// Keeps what this rule or [other] keeps.
   ElementRule union(ElementRule other) => ElementRule(attributes: {
         ..._attributes,
         for (final MapEntry(key: name, value: rule)

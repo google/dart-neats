@@ -38,6 +38,18 @@ void main() {
           '<ul class="contains-task-list"><li class="task-list-item">'
           '<input type="checkbox" checked="true">x</li></ul>');
       expect(s('<input type="text" value="x">'), '');
+      // `rel` describing the link stays; a claim about the host page does not.
+      expect(s('<a href="/x" rel="nofollow noopener">y</a>'),
+          '<a href="/x" rel="nofollow noopener">y</a>');
+      expect(s('<a href="/x" rel="me nofollow">y</a>'), '<a href="/x">y</a>');
+      expect(
+          sanitizeHtml('<a href="/x" rel="me license">y</a>',
+              rules: RuleSet.html()),
+          '<a href="/x" rel="me license">y</a>');
+      // As on github.com: `srcset` on <source>, not on <img>.
+      expect(
+          s('<picture><source srcset="https://e.x/d.png 2x"><img src="https://e.x/a.png" srcset="https://e.x/b.png 2x" sizes="100vw"></picture>'),
+          '<picture><source srcset="https://e.x/d.png 2x"><img src="https://e.x/a.png"></picture>');
       expect(s('<input>'), '');
       expect(
           s('<ol start="3"><li>x</li></ol>'), '<ol start="3"><li>x</li></ol>');

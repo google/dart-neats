@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import 'package:sanitize_html/sanitize_html.dart';
+import 'dart:math';
+
 import 'package:test/test.dart';
 
 import '../helpers.dart';
@@ -64,5 +66,110 @@ void main() {
       // the output would close the <p>, which only changes nesting.
       expect(sanitizeHtml('<p><button>x<div>y'), '<p>x<div>y</div></p>');
     });
+
+    test('start tags close only what the tree builder closes', () {
+      final rules = RuleSet.html().union(RuleSet({
+        'li': ElementRule(),
+        'nav': ElementRule(),
+        'option': ElementRule(),
+      }));
+      String s(String html) => sanitizeHtml(html, rules: rules, rewriters: [
+            HtmlRewriter.dropElements(where: (a) => a['class'] == 'drop'),
+          ]);
+      // An <li> start tag stops at a special element other than
+      // address/div/p: the inner <li> does not close the outer one.
+      expect(
+          s('<li class=drop><blockquote><li>a</li>b</blockquote>c</li>after'),
+          'after');
+      // A heading start tag pops only a heading that is the current node.
+      expect(s('<h1 class=drop><b><h2>a</h2>b</b>c</h1>after'), 'after');
+      expect(sanitizeHtml('<h1>a<h2>b</h2>'), '<h1>a</h1><h2>b</h2>');
+      // Likewise <option>.
+      expect(
+          s('<option class=drop><b><option>a</option>b</b>c</option>x'), 'x');
+      // Since the 2025 "customizable select" parser, `select` is no longer
+      // its own insertion mode: `</nav>` closes a <nav> through it.
+      expect(
+          s('<nav class=drop><select></nav>a</select>b</nav>after'), 'abafter');
+    });
+
+    test('is the identity on a stream the tree builder already shaped', () {
+      // HtmlTokenizer.dom emits a browser-built tree; a faithful emulation
+      // of the tree builder changes nothing about it. (No tables, whose
+      // foster parenting nests what "in body" would not; no select/option,
+      // for which package:html still implements the pre-2025 insertion
+      // mode.)
+      final random = Random(7);
+      const atoms = [
+        '<p>',
+        '</p>',
+        '<li>',
+        '</li>',
+        '<ul>',
+        '</ul>',
+        '<dd>',
+        '<dt>',
+        '<dl>',
+        '</dl>',
+        '<h1>',
+        '</h1>',
+        '<h2>',
+        '</h2>',
+        '<b>',
+        '</b>',
+        '<a href=x>',
+        '</a>',
+        '<div>',
+        '</div>',
+        '<blockquote>',
+        '</blockquote>',
+        '<input>',
+        '<textarea>',
+        '</textarea>',
+        '<button>',
+        '</button>',
+        '<nav>',
+        '</nav>',
+        '<section>',
+        '<pre>',
+        '</pre>',
+        '<span>',
+        '</span>',
+        '<br>',
+        '<img>',
+        'x',
+        ' ',
+      ];
+      for (var n = 0; n < 2000; n++) {
+        final html = [
+          for (var i = 0; i < 6 + random.nextInt(10); i++)
+            atoms[random.nextInt(atoms.length)]
+        ].join();
+        final plain = _Tokens();
+        HtmlTokenizer.dom.tokenize(html, plain);
+        final balanced = _Tokens();
+        HtmlTokenizer.dom
+            .tokenize(html, HtmlRewriter.impliedEndTags().bind(balanced));
+        expect(balanced.tokens, plain.tokens, reason: html);
+      }
+    });
   });
+}
+
+final class _Tokens extends HtmlTokenSink {
+  final tokens = <String>[];
+
+  @override
+  void text(String source, int start, int end) =>
+      tokens.add(source.substring(start, end));
+
+  @override
+  void startTag(String name, Map<String, String> attributes) =>
+      tokens.add('<$name>');
+
+  @override
+  void endTag(String name) => tokens.add('</$name>');
+
+  @override
+  void close() => tokens.add('EOF');
 }

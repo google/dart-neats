@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Sanitizes HTML so it can be embedded in a page without allowing script
-/// execution or interference with the rest of the page.
+/// HTML sanitization for embedding untrusted content in a page without
+/// allowing script execution or interference with the rest of the page.
 ///
 /// ```dart
 /// import 'package:sanitize_html/sanitize_html.dart';
@@ -27,11 +27,8 @@
 /// );
 /// ```
 ///
-/// See [sanitizeHtml], [RuleSet] and the package README for how safety is
-/// achieved and what the guarantee covers.
-///
-/// Under the hood [sanitizeHtml] is a pipeline, whose parts are exported for
-/// custom pipelines:
+/// [sanitizeHtml] is a pipeline whose parts are exported for custom
+/// pipelines:
 ///
 /// ```
 /// untrusted String
@@ -39,21 +36,20 @@
 ///   -> HtmlTokenSink: HtmlRewriter.impliedEndTags()
 ///                  -> rewriters
 ///                  -> HtmlRewriter.sanitizer(rules)
-///   -> HtmlWriter
-///   -> trusted String
+///   -> htmlWriter
+///   -> sanitized String
 /// ```
 ///
-/// Everything between tokenizer and writer is an [HtmlRewriter]. The
-/// sanitizer must be the last rewriter: everything before it is filtered by
-/// the rules, everything after it is trusted.
+/// Everything between tokenizer and writer is an [HtmlRewriter]; the
+/// sanitizer must be the last one.
 library;
 
 export 'src/attribute_rule.dart' show AttributeRule;
 export 'src/sanitize_html.dart' show sanitizeHtml;
-export 'src/html_rewriter.dart' show HtmlRewriter;
+export 'src/html_rewriter.dart' show HtmlRewriter, HtmlRewriters;
 export 'src/rule_set.dart' show RuleSet;
 export 'src/element_pattern.dart' show ElementPattern;
 export 'src/element_rule.dart' show ElementRule;
 export 'src/html_token_sink.dart' show HtmlTokenSink;
 export 'src/html_tokenizer.dart' show HtmlTokenizer;
-export 'src/html_writer.dart' show HtmlWriter;
+export 'src/html_writer.dart' show htmlWriter;

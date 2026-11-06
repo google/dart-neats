@@ -12,48 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # TRUSTED (policy data): the rules for rendered Markdown.
+/// The rules for rendered Markdown, [RuleSet.gfm].
 ///
-/// Two sources, each rule annotated with the one it comes from:
+/// Two sources, each rule annotated with its own:
 ///
-///  * **html-pipeline** — the allowlist of [`HTMLPipeline::SanitizationFilter`][1]
-///    (v3.2.4), the open-source origin of GitHub's Markdown pipeline. GitHub
-///    no longer uses it, but it is the only published description of the
-///    raw HTML READMEs on GitHub rely on (`<details>`, `<kbd>`, `<img
-///    width align>`, ...).
-///  * **package:markdown** — what [`package:markdown`][2] emits when
-///    rendering with `ExtensionSet.gitHubWeb`: a handful of `class`, `id`
-///    and `data-` attributes html-pipeline would not keep.
+///  * [html-pipeline][1] v3.2.4, the open-source origin of GitHub's Markdown
+///    pipeline and the only published description of the raw HTML READMEs
+///    rely on (`<details>`, `<kbd>`, `<img width align>`, ...).
+///  * [package:markdown][2] with `ExtensionSet.gitHubWeb`: the `class`, `id`
+///    and `data-` attributes it emits that html-pipeline would not keep.
 ///
 /// Deviations from html-pipeline, each because the attribute reaches
-/// outside the sanitized content (the test applied by Google's
-/// [safevalues][3] sanitizer, which refuses all of them):
+/// outside the content, the test Google's [safevalues][3] applies:
 ///
-///  * `id` only with the `user-content-` prefix, the namespace GitHub,
-///    GitLab and Gitea put user ids in. An unprefixed id can shadow a
-///    property of `window` or `document` ([DOM clobbering][4]) or an id the
-///    host page relies on. `package:markdown` is expected to emit prefixed
-///    ids; `HtmlRewriter.prefixIds` does it meanwhile.
-///  * `name` is dropped: the same clobbering surface as `id`, and nothing a
-///    Markdown renderer emits.
-///  * `class` only with tokens `package:markdown` emits: `markdown-*`, and
-///    `language-*` on `<code>` (the CommonMark convention for fenced code).
-///    Any other class hooks into the host page's stylesheet.
+///  * `id` only with the `user-content-` prefix GitHub, GitLab and Gitea use:
+///    an unprefixed id can shadow a property of `window` or `document`
+///    ([DOM clobbering][4]) or an id the host relies on.
+///  * `name` dropped: the same clobbering surface, and never emitted.
+///  * `class` only with what `package:markdown` emits: `markdown-*`, and
+///    `language-*` on `<code>` (the CommonMark convention).
 ///  * Form attributes (`accept`, `accept-charset`, `action`, `enctype`,
-///    `method`, `prompt`, `for`) are dropped: no form element is allowed,
-///    and `for` attaches a label to a host control.
-///  * `accesskey` (hijacks the host's keyboard shortcuts), `tabindex`
-///    (reorders the host's tab sequence), `usemap` (no `<map>`),
-///    `aria-describedby` and `aria-labelledby` (point at host ids).
-///  * `rel` must consist of the [link types][5] defined for `<a>` (plus
-///    `ugc` and `sponsored`), except `opener`, which re-enables
-///    `window.opener` for `target="_blank"` links. html-pipeline keeps any
-///    `rel`.
-///  * `srcset` is parsed and every candidate URL checked; html-pipeline
-///    keeps it unchecked.
-///
-/// The rule set is built with `RuleSet()`, so it is subject to the same grant
-/// assertions as any user rule set.
+///    `method`, `prompt`, `for`) dropped: no form element is allowed, and
+///    `for` attaches a label to a host control.
+///  * `accesskey` (host keyboard shortcuts), `tabindex` (host tab order),
+///    `usemap` (no `<map>`), `aria-describedby` and `aria-labelledby` (host
+///    ids) dropped.
+///  * `rel` only with [link types][5] that describe the link (`nofollow`,
+///    `noopener`, `noreferrer`, `ugc`, `sponsored`, `external`, `help`), not
+///    the document it is in (`me`, `license`, `alternate`, ...); github.com
+///    replaces any author `rel`.
+///  * `srcset` parsed and every candidate checked; html-pipeline does not.
 ///
 /// [1]: https://github.com/gjtorikian/html-pipeline/blob/c99d76dbfe817598387c371af342e25abdccd363/lib/html_pipeline/sanitization_filter.rb
 /// [2]: https://pub.dev/packages/markdown
@@ -99,7 +87,6 @@ const gfmElements = <String>{
   'hr',
   'i',
   'img',
-  'input', // package:markdown: task list checkboxes
   'ins',
   'kbd',
   'li',
@@ -114,7 +101,7 @@ const gfmElements = <String>{
   'ruby',
   's',
   'samp',
-  'section', // package:markdown: footnotes
+  'section', // package:markdown footnotes; kept as raw HTML by github.com too
   'small',
   'source',
   'span',
@@ -180,7 +167,7 @@ final _globalAttributes = <String, AttributeRule>{
   'open': AttributeRule.any(),
   'progress': AttributeRule.any(),
   'readonly': AttributeRule.any(),
-  'rel': AttributeRule.where(isAnchorRelList),
+  'rel': AttributeRule.rel(_describesTheLink),
   'rev': AttributeRule.any(),
   'role': AttributeRule.any(),
   'rows': AttributeRule.any(),
@@ -217,8 +204,6 @@ final _elementAttributes = <String, Map<String, AttributeRule>>{
     'loading': AttributeRule.any(), // html-pipeline
     'longdesc': AttributeRule.url(), // html-pipeline
     'src': AttributeRule.url(), // html-pipeline
-    // sanitize_html 2.2.0; checked like `<source srcset>`.
-    'srcset': AttributeRule.srcset(),
   },
   'ins': {'cite': AttributeRule.url()}, // html-pipeline
   'pre': {
@@ -232,14 +217,11 @@ final _elementAttributes = <String, Map<String, AttributeRule>>{
 /// `package:markdown` task lists: `<input type="checkbox" checked>`. Any
 /// other `<input>` is unwrapped. A checkbox without a `name` is never
 /// submitted with a host form; `disabled` keeps it from being toggled.
-ElementPattern gfmCheckbox([
-  Map<String, AttributeRule> extraAttributes = const {},
-]) =>
-    ElementPattern(
-      'input',
-      match: {'type': AttributeRule.where((value) => value == 'checkbox')},
-      attributes: {..._globalAttributes, ...extraAttributes}..remove('type'),
-    );
+final gfmCheckbox = ElementPattern(
+  'input',
+  match: {'type': AttributeRule.where((value) => value == 'checkbox')},
+  attributes: {..._globalAttributes}..remove('type'),
+);
 
 /// Class names `package:markdown` emits that do not yet carry the
 /// `markdown-` prefix.
@@ -268,13 +250,15 @@ bool _isUserContentId(String value) => value.startsWith('user-content-');
 /// See `RuleSet.gfm`.
 final gfmRuleSet = RuleSet({
   for (final element in gfmElements)
-    if (element != 'input')
-      element: ElementRule(
-        attributes: switch (_elementAttributes[element]) {
-          null => _globalAttributes,
-          final specific => {..._globalAttributes, ...specific},
-        },
-      ),
+    element: ElementRule(
+      attributes: switch (_elementAttributes[element]) {
+        null => _globalAttributes,
+        final specific => {..._globalAttributes, ...specific},
+      },
+    ),
 }, exemptions: [
-  gfmCheckbox(),
+  gfmCheckbox,
 ]);
+
+bool _describesTheLink(Set<String> tokens) =>
+    tokens.every(linkDescribingTypes.contains);

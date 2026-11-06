@@ -15,10 +15,10 @@ import 'package:sanitize_html/sanitize_html.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('HtmlRewriter.attributes and addLinkRel:', () {
-    test('HtmlRewriter.attributes runs before the rules', () {
+  group('HtmlRewriter.rewriteAttributes and addLinkRel:', () {
+    test('HtmlRewriter.rewriteAttributes runs before the rules', () {
       String sanitize(String html) => sanitizeHtml(html, rewriters: [
-            HtmlRewriter.attributes('h2', (attributes) {
+            HtmlRewriter.rewriteAttributes(tagName: 'h2', (attributes) {
               attributes['id'] = 'heading';
               attributes['onclick'] = 'alert(1)';
             }),
@@ -28,7 +28,8 @@ void main() {
       String withIds(String html) => sanitizeHtml(
             html,
             rewriters: [
-              HtmlRewriter.attributes('h2',
+              HtmlRewriter.rewriteAttributes(
+                  tagName: 'h2',
                   (attributes) => attributes['id'] = 'user-content-heading'),
             ],
           );
@@ -36,16 +37,35 @@ void main() {
           '<h2 id="user-content-heading">x</h2><h3 id="user-content-y">y</h3>');
     });
 
-    test('HtmlRewriter.addLinkRel merges with existing tokens', () {
+    test('HtmlRewriter.addLinkRel replaces the author\'s rel', () {
       String sanitize(String html) => sanitizeHtml(
             html,
             rewriters: [
               HtmlRewriter.addLinkRel((href) => ['ugc', 'nofollow'])
             ],
           );
-      expect(sanitize('<a href="/x" rel="nofollow me">x</a>'),
-          '<a href="/x" rel="nofollow me ugc">x</a>');
+      // An author token the rules refuse must not cost the link the host's.
+      expect(sanitize('<a href="/x" rel="opener noreferrer">x</a>'),
+          '<a href="/x" rel="ugc nofollow">x</a>');
       expect(sanitize('<a>x</a>'), '<a>x</a>');
+      expect(
+          sanitizeHtml('<a href="/x" rel="nofollow">x</a>',
+              rewriters: [HtmlRewriter.addLinkRel((_) => const [])]),
+          '<a href="/x">x</a>');
+    });
+
+    test('HtmlRewriter.rewriteAttributes can target every element', () {
+      expect(
+          sanitizeHtml('<p title="a">x</p><b title="b">y</b>',
+              rules: RuleSet.html(),
+              rewriters: [
+                HtmlRewriter.rewriteAttributes((attributes) {
+                  if (attributes['title'] != 'a') {
+                    attributes.remove('title');
+                  }
+                })
+              ]),
+          '<p title="a">x</p><b>y</b>');
     });
   });
 }

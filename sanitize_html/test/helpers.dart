@@ -26,7 +26,7 @@ const tokenizers = {
 String configured(String html) => sanitizeHtml(
       html,
       rules: RuleSet.gfm().union(RuleSet({
-        'only-allowed-tag': const ElementRule(),
+        'only-allowed-tag': ElementRule(),
         'span': ElementRule(attributes: {
           'id': AttributeRule.any(),
           'class': AttributeRule.any(),
@@ -35,7 +35,7 @@ String configured(String html) => sanitizeHtml(
       rewriters: [
         HtmlRewriter(LimitIdAndClass.new),
         HtmlRewriter.addLinkRel(
-            (href) => href == 'bad-link' ? ['ugc', 'nofollow'] : const []),
+            (href) => href.path == 'bad-link' ? ['ugc', 'nofollow'] : const []),
       ],
     );
 
@@ -69,6 +69,9 @@ final class LimitIdAndClass extends HtmlTokenSink {
 
   @override
   void endTag(String name) => _next.endTag(name);
+
+  @override
+  void close() => _next.close();
 }
 
 /// Expects [needle] in the sanitized [template].

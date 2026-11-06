@@ -12,30 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # UNTRUSTED: `HtmlRewriter.prefixIds`.
+/// Implements `HtmlRewriter.prefixIds`.
 library;
 
+import '../delegating_html_token_sink.dart';
 import '../html_rewriter.dart';
-import '../html_token_sink.dart';
 
 /// See `HtmlRewriter.prefixIds`.
 HtmlRewriter prefixIds(String prefix) =>
-    HtmlRewriter((next) => _PrefixIds(prefix, next));
+    HtmlRewriter((sink) => _PrefixIds(prefix, sink));
 
-final class _PrefixIds extends HtmlTokenSink {
+final class _PrefixIds extends DelegatingHtmlTokenSink {
   final String _prefix;
-  final HtmlTokenSink _next;
 
-  _PrefixIds(this._prefix, this._next);
-
-  @override
-  void text(String source, int start, int end) =>
-      _next.text(source, start, end);
+  _PrefixIds(this._prefix, super.sink);
 
   @override
   void startTag(String name, Map<String, String> attributes) {
     if (attributes.isEmpty) {
-      _next.startTag(name, attributes);
+      super.startTag(name, attributes);
       return;
     }
     final id = attributes['id'];
@@ -49,9 +44,6 @@ final class _PrefixIds extends HtmlTokenSink {
         !href.startsWith(_prefix, 1)) {
       attributes['href'] = '#$_prefix${href.substring(1)}';
     }
-    _next.startTag(name, attributes);
+    super.startTag(name, attributes);
   }
-
-  @override
-  void endTag(String name) => _next.endTag(name);
 }

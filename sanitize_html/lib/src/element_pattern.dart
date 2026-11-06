@@ -12,28 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// # TRUSTED: an exact form of an element that is kept regardless of rules.
+/// An exact form of an element, kept as an exemption.
 ///
-/// A pattern is judged on the element as written, with the pattern's own
-/// attribute rules, and is never merged with other rules: a union keeps the
-/// patterns of both sides as they are, `without` removes them with their
-/// element, `restrict` leaves them alone. Nothing can loosen what a pattern
-/// matches once it is written.
+/// A pattern is judged on the element as written, with its own rules, and
+/// is never merged with another.
 library;
 
 import 'attribute_rule.dart';
+import 'util/space_separated_tokens.dart';
 
 /// An element kept in one exact form, as an exemption from the rules.
 ///
-/// Matches an element called [tagName] whose attributes include every
-/// attribute in [match], each passing its rule, judged on the element as
-/// written. A matching element keeps the attributes in [match] and those in
-/// [attributes] that pass; everything else is dropped. A pattern is tried
-/// before the element's `ElementRule`, and the first matching pattern
+/// Matches a `tagName` element that has every attribute in `match`, each
+/// passing its rule, judged on the element as written. It then keeps
+/// those attributes and the ones in `attributes` that pass, nothing else.
+/// Patterns are tried before the element's `ElementRule`; the first match
 /// decides.
 ///
-/// Use a pattern where an element is only acceptable in a particular form,
-/// which a per-attribute rule cannot say:
+/// For elements acceptable only in one form, which per-attribute rules
+/// cannot say:
 ///
 /// ```dart
 /// // An <input> only as a checkbox.
@@ -47,75 +44,87 @@ import 'attribute_rule.dart';
 /// // An <iframe> only from one origin, and only sandboxed.
 /// ElementPattern('iframe', match: {
 ///   'src': AttributeRule.url((u) => u.host == 'www.youtube.com'),
-///   'sandbox': AttributeRule.where((v) => v == 'allow-scripts'),
+///   'sandbox': AttributeRule.where((v) => v == 'allow-scripts allow-same-origin'),
 /// }, attributes: {
 ///   'width': AttributeRule.any(),
 ///   'height': AttributeRule.any(),
 /// })
 /// ```
 ///
-/// Patterns are never merged with other rules, so a `RuleSet.union` with
-/// a rule set allowing `src` from another origin cannot make the pattern
-/// above match a frame from that origin. Two acceptable forms are two
-/// patterns. `RuleSet.without` removes an element's exemptions together
-/// with its rule; `RuleSet.restrict` narrows rules only and leaves
-/// exemptions as they are.
+/// A pattern is never merged with other rules: no `RuleSet.union` can make
+/// the frame above match another origin. Two acceptable forms are two
+/// patterns.
+///
+/// Throws if an attribute is in both `match` and `attributes`.
 final class ElementPattern {
-  /// The element this pattern applies to.
-  final String tagName;
+  final String _tagName;
+  final Map<String, AttributeRule> _match;
+  final Map<String, AttributeRule> _attributes;
 
-  /// Attributes that must be present and pass their rule.
-  final Map<String, AttributeRule> match;
+  ElementPattern(
+    String tagName, {
+    required Map<String, AttributeRule> match,
+    Map<String, AttributeRule> attributes = const {},
+  })  : _tagName = tagName,
+        _match = Map.unmodifiable(match),
+        _attributes = Map.unmodifiable(attributes) {
+    for (final name in attributes.keys) {
+      if (match.containsKey(name)) {
+        throw ArgumentError.value(name, 'attributes', 'is also in match');
+      }
+    }
+  }
 
-  /// Attributes kept when present and passing their rule.
-  final Map<String, AttributeRule> attributes;
+  /// `<input type="checkbox">` with optional `checked` and `disabled`: the
+  /// one `<input>` that can neither be typed into nor submitted.
+  factory ElementPattern.checkbox() => ElementPattern(
+        'input',
+        match: {'type': AttributeRule.where((value) => value == 'checkbox')},
+        attributes: {
+          'checked': AttributeRule.any(),
+          'disabled': AttributeRule.any(),
+        },
+      );
 
-  const ElementPattern(
-    this.tagName, {
-    required this.match,
-    this.attributes = const {},
-  });
-
-  /// `<input type="checkbox">`, optionally `checked` and `disabled`: the
-  /// one form of `<input>` that cannot be submitted or typed into.
-  static const checkbox = ElementPattern(
-    'input',
-    match: {'type': AttributeRule.where(_isCheckbox)},
-    attributes: {
-      'checked': AttributeRule.any(),
-      'disabled': AttributeRule.any(),
-    },
-  );
-
-  /// An `<iframe>` embed from an origin [where] accepts, with a `sandbox`
-  /// attribute equal to [sandbox]; `width`, `height`, `title`, `loading` and
-  /// `allowfullscreen` are kept. Nothing else: `allow` would delegate the
-  /// host's permissions, `name` would catch the host's `target`s.
+  /// An `<iframe>` whose `src` [where] accepts and whose `sandbox` is
+  /// present with exactly the tokens in [sandbox].
+  ///
+  /// Keeps `width`, `height`, `title`, `loading` and `allowfullscreen`, but
+  /// not:
+  ///
+  ///  * `allow`: delegates the host's permissions;
+  ///  * `name`: catches the host's `target`s.
   ///
   /// ```dart
   /// RuleSet.gfm().withExemptions([
   ///   ElementPattern.iframe(
   ///     where: (src) =>
   ///         src.host == 'www.youtube.com' && src.path.startsWith('/embed/'),
-  ///     sandbox: 'allow-scripts',
+  ///     sandbox: {'allow-scripts', 'allow-same-origin'},
   ///   ),
   /// ])
   /// ```
   ///
-  /// Authors rarely write `sandbox`; set it with a rewriter before the
-  /// rules: `HtmlRewriter.attributes('iframe', (a) => a['sandbox'] =
-  /// 'allow-scripts')`. Never grant `allow-same-origin` together with
-  /// `allow-scripts` to a frame from the host's own origin: it could remove
-  /// its sandbox.
+  /// A checked `RuleSet` allows `<iframe>` only through a pattern like this
+  /// one. Authors rarely write `sandbox`; add it with
+  /// `HtmlRewriter.rewriteAttributes` before the rules. The YouTube player
+  /// needs `allow-same-origin` (it reads its cookies), which is safe for a
+  /// frame from another origin; never grant it together with
+  /// `allow-scripts` to a frame from the host's own origin, which could then
+  /// remove its sandbox.
   factory ElementPattern.iframe({
     required bool Function(Uri src) where,
-    String sandbox = '',
+    required Set<String> sandbox,
   }) =>
       ElementPattern(
         'iframe',
         match: {
           'src': AttributeRule.url(where),
-          'sandbox': AttributeRule.where((value) => value == sandbox),
+          'sandbox': AttributeRule.where((value) {
+            final tokens = _tokens(value);
+            return tokens.length == sandbox.length &&
+                tokens.every(sandbox.contains);
+          }),
         },
         attributes: {
           'allowfullscreen': const AttributeRule.any(),
@@ -127,11 +136,19 @@ final class ElementPattern {
       );
 }
 
-bool _isCheckbox(String value) => value == 'checkbox';
-
 /// Package-private operations on [ElementPattern]; not exported.
 extension ElementPatternExtension on ElementPattern {
-  /// Whether [attributes] contains every matched attribute, passing its rule.
+  /// The element this pattern applies to.
+  String get tagName => _tagName;
+
+  /// Attributes that must be present and pass their rule.
+  Map<String, AttributeRule> get match => _match;
+
+  /// Attributes kept when present and passing their rule.
+  Map<String, AttributeRule> get attributes => _attributes;
+
+  /// Whether every attribute in [match] is present in [attributes] and
+  /// passes.
   bool matches(Map<String, String> attributes) {
     for (final MapEntry(key: name, value: rule) in match.entries) {
       final value = attributes[name];
@@ -142,8 +159,8 @@ extension ElementPatternExtension on ElementPattern {
     return true;
   }
 
-  /// Removes the attributes this pattern does not keep from [attributes],
-  /// which it must [match], and returns it.
+  /// [attributes], which must match, with those this pattern does not keep
+  /// removed.
   Map<String, String> apply(Map<String, String> attributes) {
     if (attributes.isEmpty) {
       return attributes;
@@ -156,3 +173,9 @@ extension ElementPatternExtension on ElementPattern {
     return attributes;
   }
 }
+
+/// The lowercased tokens of a space-separated [value].
+Set<String> _tokens(String value) => {
+      for (final token in value.split(asciiWhitespace))
+        if (token.isNotEmpty) token.toLowerCase(),
+    };

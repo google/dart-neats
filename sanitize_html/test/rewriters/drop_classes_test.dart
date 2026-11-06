@@ -15,15 +15,15 @@ import 'package:sanitize_html/sanitize_html.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('HtmlRewriter.keepTokens:', () {
-    test('HtmlRewriter.keepTokens filters a token list', () {
+  group('HtmlRewriter.dropClasses:', () {
+    test('HtmlRewriter.dropClasses filters class names', () {
       String s(String html) => sanitizeHtml(
             html,
             rules: RuleSet.gfm().union(RuleSet({
               'span': ElementRule(attributes: {'class': AttributeRule.any()}),
             })),
             rewriters: [
-              HtmlRewriter.keepTokens('class', (c) => c.startsWith('ok-')),
+              HtmlRewriter.dropClasses((c) => !c.startsWith('ok-')),
             ],
           );
       expect(
