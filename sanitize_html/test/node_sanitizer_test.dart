@@ -124,6 +124,8 @@ void main() {
         r'\/evil/a.png 1x',
         'javascript:alert(1) 1x',
         'data:image/svg+xml;base64,AAAA 1x',
+        '\u0001file:///etc/passwd 1x',
+        '\u0001//evil.example/a.png 1x',
       ];
       for (final srcset in removed) {
         test('removes the attribute for "${srcset.trim()}"', () {
