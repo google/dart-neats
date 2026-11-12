@@ -1,0 +1,388 @@
+// Copyright 2026 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// re2c syntax file for Dart (re2c >= 4.0, `--lang none --syntax dart.syntax`).
+//
+// Defaults assume a `String` input scanned by UTF-16 code unit:
+//  * yyinput  -> the `String`
+//  * yycursor -> current position (code unit index)
+//  * yylimit  -> end position
+//  * yymarker -> backup position (only needed when the DFA backtracks)
+//  * end of input is reported as 0 and distinguished from a real NUL by a
+//    bounds check, so the `$` rule works and NUL may appear in the input.
+// Any of these can be overridden per file with the usual `re2c:` configs, except
+// the ones re2c only allows in syntax files (conditions, storable state, ...).
+
+// supported feature lists -----------------------------------------------------
+
+supported_apis = ["generic"];
+supported_api_styles = ["free-form"];
+supported_code_models = ["loop-switch"];
+supported_targets = ["code"];
+supported_features = ["nested-ifs", "bitmaps", "case-ranges", "tags", "captures", "captvars"];
+
+// language-specific options ---------------------------------------------------
+
+semicolons = 1;
+backtick_quoted_strings = 0;
+single_quoted_strings = 1;
+indentation_sensitive = 0;
+wrap_blocks_in_braces = 1;
+special_escapes = "\b\f\n\r\t\v\\'\"";
+
+// Dart backend choices --------------------------------------------------------
+//
+// Everything that differs from the upstream backends (include/syntax/js in the
+// re2c source tree). These shape the generated code; the rest of the
+// configurations below merely restate defaults.
+
+// Scan a `String` by UTF-16 code unit. The 16-bit alphabet (UCS-2) is selected
+// with `-w` on the command line by package:re2c, because re2c 4.4-4.6 ignore
+// `re2c:encoding:ucs2 = 1` when it is set in a syntax file. Literals in the
+// `.re` file are UTF-8, so "é" means code unit 0xE9 (and "😀" is an error unless
+// the file sets `re2c:encoding:utf16 = 1;`).
+re2c:input-encoding = utf8;
+
+// Generic API with free-form primitives over yyinput/yycursor/yylimit/yymarker.
+re2c:api = generic;
+re2c:YYPEEK = "yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0";
+re2c:YYSKIP = "yycursor++;";
+re2c:YYBACKUP = "yymarker = yycursor;";
+re2c:YYRESTORE = "yycursor = yymarker;";
+re2c:YYBACKUPCTX = "yyctxmarker = yycursor;";
+re2c:YYRESTORECTX = "yycursor = yyctxmarker;";
+re2c:YYSHIFT = "yycursor += " sigil "{shift};";
+re2c:YYLESSTHAN = "yylimit - yycursor < " sigil "{len}";
+re2c:YYEND = "yycursor >= yylimit";
+re2c:YYSTAGP = sigil "{tag} = yycursor;";
+re2c:YYSTAGN = sigil "{tag} = -1;";
+re2c:YYSHIFTSTAG = sigil "{tag} += " sigil "{shift};";
+re2c:YYRESTORETAG = "yycursor = " sigil "{tag};";
+re2c:YYCOPYSTAG = sigil "{lhs} = " sigil "{rhs};";
+re2c:YYCOPYMTAG = sigil "{lhs} = " sigil "{rhs};";
+re2c:YYSETACCEPT = sigil "{var} = " sigil "{val};";
+
+// End of input: YYPEEK yields 0 past yylimit, and YYLESSTHAN tells it apart from
+// a real NUL, so the `$` rule works. Files that use NUL as a sentinel in trailing
+// contexts set `re2c:eof = -1;` instead. No YYFILL: the whole input is in memory.
+re2c:eof = 0;
+re2c:yyfill:enable = 0;
+
+// Dart 3 relational patterns keep `switch` compact: `case >= 0x30 && <= 0x39:`.
+re2c:case-ranges = 1;
+
+// Dart has no typedefs for these; everything is an int.
+re2c:YYCTYPE = "int";
+re2c:YYCONDTYPE = "int";
+re2c:YYMAXFILL = "yymaxfill";
+re2c:YYMAXNMATCH = "yymaxnmatch";
+
+// Reproducible output: no date or re2c version in the generated file.
+re2c:date = 0;
+re2c:version = 0;
+
+// Two-space indentation, matching `dart format`, and no label on the state
+// loop (`continue;` instead of `continue yyl;`), since nothing nests inside it.
+re2c:indent:string = "  ";
+re2c:indent:top = 1;
+re2c:label:yyloop = "";
+
+// Features without built-in support: these call functions the `.re` file must
+// define (`yyfill`, `yymtagp`, `yymtagn`, `yyshiftmtag`, `yydebug`), so that
+// enabling them yields an analyzer error pointing at the call, not a parse error.
+re2c:cond:enumprefix = "yyc";
+re2c:YYFILL = "yyfill()";
+re2c:YYMTAGN = sigil "{tag} = yymtagn(" sigil "{tag});";
+re2c:YYMTAGP = sigil "{tag} = yymtagp(" sigil "{tag}, yycursor);";
+re2c:YYSHIFTMTAG = "yyshiftmtag(" sigil "{tag}, " sigil "{shift});";
+re2c:YYDEBUG = "yydebug";
+
+// Restating re2c defaults -----------------------------------------------------
+//
+// Identical to include/syntax/js in re2c 4.6. Upstream backends spell out every
+// configuration, and so do we: it pins the output to these values even if a
+// future re2c changes its built-in defaults. Diff against upstream when
+// bumping the supported re2c version.
+
+re2c:target = code;
+re2c:code-model = loop-switch;
+re2c:conditions = 0;
+re2c:storable-state = 0;
+re2c:flex-syntax = 0;
+re2c:verbose = 0;
+re2c:line-dirs = 0;
+re2c:api:style = free-form;
+re2c:api:sigil = "@@";
+re2c:YYGETCOND:naked = 0;
+re2c:YYSETCOND:naked = 0;
+re2c:YYSETCOND@cond = "@@";
+re2c:YYGETSTATE:naked = 0;
+re2c:YYSETSTATE:naked = 0;
+re2c:YYSETSTATE@state = "@@";
+re2c:YYFILL@len = "@@";
+re2c:YYFILL:naked = 0;
+re2c:YYFN = ["<undefined-function-name>;<undefined-function-type>"];
+re2c:yyfn:sep = ";";
+re2c:yyfn:throw = "";
+re2c:yycond = "yycond";
+re2c:yyctable = "yyctable";
+re2c:yyaccept = "yyaccept";
+re2c:yytarget = "yytarget";
+re2c:yystate = "yystate";
+re2c:yynmatch = "yynmatch";
+re2c:yypmatch = "yypmatch";
+re2c:yyrecord = "yyrecord";
+re2c:yych = "yych";
+re2c:yych:conversion = 0;
+re2c:yych:literals = hex;
+re2c:yych:emit = 1;
+re2c:yybm = "yybm";
+re2c:yybm:hex = 0;
+re2c:yystable = "";
+re2c:header = "";
+re2c:sentinel = -1;
+re2c:yyfill = "";
+re2c:yyfill:parameter = 1;
+re2c:yyfill:check = 1;
+re2c:tags = 0;
+re2c:tags:prefix = "yyt";
+re2c:captures = 0;
+re2c:captvars = 0;
+re2c:posix-captures = 0;
+re2c:posix-captvars = 0;
+re2c:invert-captures = 0;
+re2c:cond:abort = 0;
+re2c:cond:prefix = "yyc_";
+re2c:cond:divider@cond = "@@";
+re2c:cond:goto@cond = "@@";
+re2c:state:abort = 1;
+re2c:state:nextlabel = 0;
+re2c:bit-vectors = 0;
+re2c:debug-output = 0;
+re2c:computed-gotos = 0;
+re2c:computed-gotos:threshold = 9;
+re2c:computed-gotos:relative = 0;
+re2c:nested-ifs = 0;
+re2c:case-insensitive = 0;
+re2c:case-inverted = 0;
+re2c:unsafe = 0;
+re2c:monadic = 0;
+re2c:encoding:ebcdic = 0;
+re2c:encoding:utf32 = 0;
+re2c:encoding:utf16 = 0;
+re2c:encoding:utf8 = 0;
+re2c:encoding-policy = ignore;
+re2c:empty-class = match-empty;
+re2c:label:prefix = "";
+re2c:label:yyfill = "";
+re2c:label:yyNext = "";
+re2c:label:start = 0;
+re2c:YYCTXMARKER = (.api.record ? yyrecord ".") "yyctxmarker";
+re2c:YYCURSOR = (.api.record ? yyrecord ".") "yycursor";
+re2c:YYGETACCEPT = sigil "{var}";
+re2c:YYGETCOND = "yygetcond";
+re2c:YYGETSTATE = "yygetstate";
+re2c:YYINPUT = (.api.record ? yyrecord ".") "yyinput";
+re2c:YYLIMIT = (.api.record ? yyrecord ".") "yylimit";
+re2c:YYMARKER = (.api.record ? yyrecord ".") "yymarker";
+re2c:YYSETCOND = "yysetcond";
+re2c:YYSETSTATE = "yysetstate";
+re2c:tags:expression = (.api.record ? yyrecord ".") sigil;
+re2c:tags:negative = (.api.generic ? "@@" : "-1");
+re2c:cond:divider = "";
+re2c:cond:goto = "";
+
+// code templates --------------------------------------------------------------
+
+// Use `var` and `const` without explicit type annotations to satisfy
+// `omit_local_variable_types` in analysis_options.yaml.
+code:var_local = topindent "var " name " = " (.init ? init : "0") ";" nl;
+code:var_global = code:var_local;
+code:const_local = topindent "const " name " = " init ";" nl;
+code:const_global = code:const_local;
+
+code:array_local =
+    topindent "const " name " = <" type ">[" nl indent
+        [row: topindent [elem{0:-2}: elem ", "] [elem{-1}: elem ","] nl]
+    dedent topindent "];" nl;
+code:array_global = <undefined>;
+code:array_elem = array "[" index "]";
+
+code:enum = [elem: topindent "const " elem " = " init ";" nl];
+code:enum_elem = name;
+
+code:assign = topindent lhs " = " rhs ";" nl;
+
+code:type_int = "int";
+code:type_uint = "int";
+code:type_yybm = "int";
+code:type_yytarget = <undefined>;
+code:type_yyctable = <undefined>;
+
+code:cmp_eq = "==";
+code:cmp_ne = "!=";
+code:cmp_lt = "<";
+code:cmp_gt = ">";
+code:cmp_le = "<=";
+code:cmp_ge = ">=";
+
+code:if_then_else =
+    [branch{0}: topindent "if (" cond ") {" nl
+        indent [stmt: stmt] dedent]
+    [branch{1:-1}: topindent "} else " (.cond ? "if (" cond ") ") "{" nl
+        indent [stmt: stmt] dedent]
+    topindent "}" nl;
+
+code:if_then_else_oneline = <undefined>;
+
+code:switch =
+    topindent "switch (" expr ") {" nl
+        indent [case: case] dedent
+    topindent "}" nl;
+
+code:switch_cases =
+    [case: case nl]
+        indent [stmt: stmt] dedent;
+
+code:switch_cases_oneline = <undefined>;
+
+// Dart 3 pattern matching supports `case >= low && <= high:`
+code:switch_case_range = (.case_ranges
+    ? topindent "case " (.many ? ">= " [val{0}: val] " && <= " [val{-1}: val] : [val{0}: val]) ":"
+    : [val{0:-2}: topindent "case " val ":" nl]
+      [val{-1}:   topindent "case " val ":"]);
+
+code:switch_case_default =
+    topindent "default:";
+
+// Reject actions that fall off `switch (yystate)` (or `break;` out of it) at
+// compile time: when every case returns, throws, or continues, `break;` is
+// unreachable so definite-assignment joins only the `else` branch; otherwise
+// `throw yyactionMustReturnOrContinue;` fails to compile as unassigned.
+code:loop =
+    topindent "final Error yyactionMustReturnOrContinue;" nl
+    topindent "if (identical(0, 0)) {" nl
+        indent
+        topindent (.loop_label ? label ": ") "while (true) {" nl
+            indent [stmt: stmt]
+            topindent "// ignore: dead_code" nl
+            topindent "break;" nl dedent
+        topindent "}" nl
+        dedent
+    topindent "} else {" nl
+        indent topindent "yyactionMustReturnOrContinue = AssertionError('unreachable');" nl dedent
+    topindent "}" nl
+    topindent "throw yyactionMustReturnOrContinue;" nl;
+
+code:continue = topindent "continue" (.loop_label ? " " label) ";" nl;
+
+code:goto = <undefined>;
+code:cgoto = <undefined>;
+code:cgoto_data = <undefined>;
+code:fndecl = <undefined>;
+code:fndef = <undefined>;
+code:fncall = <undefined>;
+code:tailcall = <undefined>;
+code:recursive_functions = <undefined>;
+code:line_info = <undefined>;
+
+code:fingerprint =
+    "// GENERATED CODE - DO NOT MODIFY BY HAND" nl
+    "// Generated by re2c" (.version ? " " version) (.date ? " on " date)
+    ", regenerate with `dart run re2c`." nl
+    "// ignore_for_file: unused_local_variable" nl;
+
+code:abort = topindent "throw AssertionError('unreachable');" nl;
+
+code:yydebug =
+    topindent YYDEBUG "(" state ", " yych ");" nl;
+
+code:yypeek =
+    topindent yych " = " YYPEEK ";" nl;
+
+code:yyskip =
+    topindent (.api.generic ? YYSKIP : YYCURSOR " += 1;") nl;
+
+code:yybackup =
+    topindent (.api.generic ? YYBACKUP : YYMARKER " = " YYCURSOR ";") nl;
+
+code:yybackupctx =
+    topindent (.api.generic ? YYBACKUPCTX : YYCTXMARKER " = " YYCURSOR ";") nl;
+
+code:yyskip_yypeek = <undefined>;
+code:yypeek_yyskip = <undefined>;
+code:yyskip_yybackup = <undefined>;
+code:yybackup_yyskip = <undefined>;
+code:yybackup_yypeek = <undefined>;
+code:yyskip_yybackup_yypeek = <undefined>;
+code:yybackup_yypeek_yyskip = <undefined>;
+
+code:yyrestore =
+    topindent (.api.generic ? YYRESTORE : YYCURSOR " = " YYMARKER ";") nl;
+
+code:yyrestorectx =
+    topindent (.api.generic ? YYRESTORECTX : YYCURSOR " = " YYCTXMARKER ";") nl;
+
+code:yyrestoretag =
+    topindent (.api.generic ? YYRESTORETAG : YYCURSOR " = " tag ";") nl;
+
+code:yyshift =
+    topindent (.api.generic ? YYSHIFT : YYCURSOR " -= " offset ";") nl;
+
+code:yyshiftstag =
+    topindent (.nested ? "if (" tag " != " neg ") ") (.api.generic
+        ? YYSHIFTSTAG
+        : tag " -= " offset ";"
+    ) nl;
+
+code:yyshiftmtag = topindent YYSHIFTMTAG nl;
+
+code:yystagp =
+    topindent (.api.generic ? YYSTAGP : tag " = " YYCURSOR ";") nl;
+
+code:yymtagp = topindent YYMTAGP nl;
+
+code:yystagn =
+    topindent (.api.generic ? YYSTAGN : tag " = " neg ";") nl;
+
+code:yymtagn = topindent YYMTAGN nl;
+
+code:yycopystag =
+    topindent (.api.generic ? YYCOPYSTAG : lhs " = " rhs ";") nl;
+
+code:yycopymtag =
+    topindent (.api.generic ? YYCOPYMTAG : lhs " = " rhs ";") nl;
+
+code:yygetaccept = (.api.generic ? YYGETACCEPT : var);
+code:yysetaccept = topindent (.api.generic ? YYSETACCEPT : var " = " val ";") nl;
+code:yygetcond = (.api.generic ? YYGETCOND : var);
+code:yysetcond = topindent (.api.generic ? YYSETCOND : var " = " val ";") nl;
+code:yygetstate = (.api.generic ? YYGETSTATE : var);
+code:yysetstate = topindent (.api.generic ? YYSETSTATE : var " = " val ";") nl;
+
+code:yylessthan =
+    (.api.generic
+        ? YYLESSTHAN
+        : (.many
+            ? "(" YYLIMIT " - " YYCURSOR ") < " need
+            : YYLIMIT " <= " YYCURSOR));
+
+code:yyend =
+    (.api.generic | .yyfill.enable
+        ? YYEND
+        : YYLIMIT " <= " YYCURSOR);
+
+code:yybm_filter = "(" yych " & ~0xFF) != 0";
+code:yybm_match = "(" yybm "[" offset "+" yych "] & " mask ") != 0";
+code:yytarget_filter = <undefined>;
