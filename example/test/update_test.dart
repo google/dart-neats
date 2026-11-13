@@ -284,9 +284,9 @@ mount();
     });
 
     test('a reference outside the package is an error', () {
-      check(update('```dart file:///etc/passwd\n```\n'))
+      check(update('```dart x%2F..%2F..%2F..%2Fetc/hostname\n```\n'))
         ..updated.isNull()
-        ..diagnostics.isNotEmpty();
+        ..diagnostics.single.message.contains('outside the package');
     });
 
     test('a malformed example file is an error', () {

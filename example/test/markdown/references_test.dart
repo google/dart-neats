@@ -61,6 +61,15 @@ void main() {
         ..region.equals('greeting');
     });
 
+    test('treats a trailing # as a whole-file reference', () {
+      final (:reference, :diagnostics) =
+          readOne('```dart example/hello.dart#\n```\n');
+      check(diagnostics).isEmpty();
+      check(reference).isNotNull()
+        ..path.equals('example/hello.dart')
+        ..region.isNull();
+    });
+
     test('collects key=value options', () {
       final (:reference, :diagnostics) = readOne(
         '```dart a.dart indent=keep title=demo\n```\n',
@@ -153,6 +162,16 @@ void main() {
       );
       check(reference).isNull();
       check(diagnostics).isEmpty();
+    });
+
+    test('an empty @example comment is an error', () {
+      final (:reference, :diagnostics) = readOne(
+        '<!-- @example -->\n```dart\n```\n',
+      );
+      check(reference).isNull();
+      check(diagnostics).single
+        ..line.equals(0)
+        ..message.contains('names no file');
     });
 
     test('an unusable first token is an error, not something to ignore', () {

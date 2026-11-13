@@ -58,6 +58,8 @@ void greet() {
 
   test('the whole file is the default, keeping markers like dartdoc', () {
     check(extract(_file)).equals(_file);
+    const withHide = '// #region r\na;\nb; // #hide\n// #endregion\n';
+    check(extract(withHide)).equals(withHide);
   });
 
   test('preserves indentation as written', () {

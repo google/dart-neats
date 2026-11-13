@@ -169,6 +169,23 @@ Bye
           .content
           .equals('a\n\nb\n');
     });
+
+    test('an unclosed list item block ended by unindented text', () {
+      final blocks = locate('- ```dart\n  x\n\nafter\n\n```dart\ny\n```\n');
+      check(blocks).length.equals(2);
+      check(blocks[0])
+        ..closeFence.isNull()
+        ..content.equals('x\n\n');
+      check(blocks[1])
+        ..linePrefix.equals('')
+        ..content.equals('y\n');
+    });
+
+    test('a top-level fence after a list and unindented text', () {
+      check(locate('- item\n\nparagraph\n\n```dart\nx\n```\n')).single
+        ..linePrefix.equals('')
+        ..content.equals('x\n');
+    });
   });
 
   group('does not mistake', () {

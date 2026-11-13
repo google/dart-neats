@@ -12,11 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:checks/checks.dart';
 import 'package:example/example.dart';
 import 'package:test/scaffolding.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 void main() {
   test('examples are up to date', () async {
     await validateExamples();
+  });
+
+  test('throws AssertionError when a block is out of date', () async {
+    await d.dir('.dart_tool', [
+      d.file('package_config.json', '''
+{
+  "configVersion": 2,
+  "packages": [
+    {"name": "demo", "rootUri": "../", "packageUri": "lib/"}
+  ]
+}
+'''),
+    ]).create();
+    await d.file('a.dart', 'void main() {}\n').create();
+    await d.file('README.md', '```dart a.dart\n```\n').create();
+
+    await check(validateExamples(directory: d.sandbox)).throws<AssertionError>(
+      (it) => it
+          .has((e) => e.message.toString(), 'message')
+          .contains('out of date'),
+    );
   });
 }
