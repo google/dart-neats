@@ -62,7 +62,9 @@ Future<({String dart, String warnings})> generateDart(
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     );
-    final stderr = (result.stderr as String).replaceAll(input.path, path);
+    final stderr = (result.stderr as String)
+        .replaceAll(input.path.replaceAll(r'\', r'\\'), path)
+        .replaceAll(input.path, path);
     if (result.exitCode != 0) {
       throw Re2cException(
         'Failed to compile $path (re2c exited with ${result.exitCode})\n'
@@ -104,5 +106,5 @@ Future<String> _format(String dart, String path) async {
       'Generated Dart code for $path failed to parse:\n${await stderr}',
     );
   }
-  return await stdout;
+  return (await stdout).replaceAll('\r\n', '\n');
 }
