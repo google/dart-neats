@@ -42,6 +42,10 @@ print(message);
 ```
 ````
 
+A leading `/` resolves from the package root; any other path resolves relative
+to the markdown file. Pass `indent=keep` (default `indent=strip`) to keep shared
+leading indentation.
+
 Update all markdown files in your package:
 
 ```console
