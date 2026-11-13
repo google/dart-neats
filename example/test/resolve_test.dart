@@ -67,6 +67,11 @@ void main() {
         .equals(p.normalize('/pkg/example/hello world.dart'));
   });
 
+  test('spaces in the document directory are not double-encoded', () {
+    check(resolve('hello.dart', document: '/pkg/docs dir/guide.md'))
+        .equals(p.normalize('/pkg/docs dir/hello.dart'));
+  });
+
   test('the fragment is not part of the path', () {
     check(resolve('example/hello.dart#greeting'))
         .equals(p.normalize('/pkg/example/hello.dart'));

@@ -67,9 +67,9 @@ String resolveReference({
   // real filesystem: `/` then means the package root, and `..` runs out of
   // path at the root instead of escaping into the user's home directory.
   final directory = p.relative(p.dirname(document), from: root);
-  final base = Uri.directory(
-    directory == '.' ? '/' : '/${p.toUri(directory).path}',
-  );
+  final base = directory == '.'
+      ? Uri(path: '/')
+      : Uri(pathSegments: ['', ...p.split(directory), '']);
   final resolved = base.resolveUri(uri.removeFragment());
 
   final relative = p.fromUri(resolved.path.substring(1));
