@@ -200,6 +200,20 @@ void main() {
       ..contains('dart pub get');
   });
 
+  test('ignores markdown files in hidden directories and build/', () async {
+    await d.file('a.dart', 'void main() {}\n').create();
+    const stale = '```dart ../a.dart\n```\n';
+    await d.dir('.dart_tool', [d.file('stale.md', stale)]).create();
+    await d.dir('build', [d.file('stale.md', stale)]).create();
+
+    await check(runExample(['validate', '-C', d.sandbox], out: StringBuffer()))
+        .completes((it) => it.equals(0));
+    await check(runExample(['update', '-C', d.sandbox], out: StringBuffer()))
+        .completes((it) => it.equals(0));
+    await d.dir('.dart_tool', [d.file('stale.md', stale)]).validate();
+    await d.dir('build', [d.file('stale.md', stale)]).validate();
+  });
+
   test('-C may come before the command', () async {
     await d.file('README.md', '# hello\n').create();
     await check(runExample(['-C', d.sandbox, 'validate'], out: StringBuffer()))

@@ -18,13 +18,23 @@ import 'package:collection/collection.dart';
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 
-/// Every `.md` file under [root], in a stable order.
+/// Every `.md` file under [root] (skipping hidden directories and `build/`),
+/// in a stable order.
 List<String> markdownFiles(String root) => Directory(root)
     .listSync(recursive: true, followLinks: false)
     .whereType<File>()
     .map((file) => file.path)
-    .where((path) => path.toLowerCase().endsWith('.md'))
+    .where((path) =>
+        path.toLowerCase().endsWith('.md') &&
+        !_inIgnoredDirectory(p.relative(path, from: root)))
     .sorted();
+
+bool _inIgnoredDirectory(String relativePath) {
+  final parts = p.split(relativePath);
+  return parts
+      .take(parts.length - 1)
+      .any((dir) => dir.startsWith('.') || dir == 'build');
+}
 
 /// The package root directory for [path], resolved from the nearest enclosing
 /// `.dart_tool/package_config.json`.
