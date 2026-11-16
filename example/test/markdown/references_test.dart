@@ -42,216 +42,156 @@ import '../checks_ext.dart';
 }
 
 void main() {
-  group('info string', () {
-    test('finds a reference after the language', () {
-      final (:reference, :diagnostics) =
-          readOne('```dart example/hello.dart\n```\n');
-      check(diagnostics).isEmpty();
-      check(reference).isNotNull()
-        ..path.equals('example/hello.dart')
-        ..region.isNull();
-    });
-
-    test('reads the region from the fragment', () {
-      final (:reference, :diagnostics) =
-          readOne('```dart example/hello.dart#greeting\n```\n');
-      check(diagnostics).isEmpty();
-      check(reference).isNotNull()
-        ..path.equals('example/hello.dart')
-        ..region.equals('greeting');
-    });
-
-    test('treats a trailing # as a whole-file reference', () {
-      final (:reference, :diagnostics) =
-          readOne('```dart example/hello.dart#\n```\n');
-      check(diagnostics).isEmpty();
-      check(reference).isNotNull()
-        ..path.equals('example/hello.dart')
-        ..region.isNull();
-    });
-
-    test('collects key=value options', () {
-      final (:reference, :diagnostics) = readOne(
-        '```dart a.dart indent=keep title=demo\n```\n',
-      );
-      check(diagnostics).isEmpty();
-      check(reference).isNotNull()
-        ..path.equals('a.dart')
-        ..options.deepEquals({
-          'indent': 'keep',
-          'title': 'demo',
-        });
-    });
-
-    test('ignores tokens it does not understand', () {
-      final (:reference, :diagnostics) =
-          readOne('```dart {.copy} example/hello.dart showLineNumbers\n```\n');
-      check(diagnostics).isEmpty();
-      check(reference).isNotNull().path.equals('example/hello.dart');
-    });
-
-    test('finds a path that starts with ./ or ../', () {
-      for (final path in ['./hello.dart', '../example/hello.dart']) {
-        final (:reference, :diagnostics) = readOne('```dart $path\n```\n');
-        check(diagnostics).isEmpty();
-        check(reference).isNotNull().path.equals(path);
-      }
-    });
-
-    test('leaves ordinary code blocks alone', () {
-      for (final info in [
-        'dart',
-        '',
-        'console',
-        'dart {.copy}',
-        'dart .copy',
-        'pubspec.yaml',
-        'example/hello.dart',
-      ]) {
-        final (:reference, :diagnostics) = readOne('```$info\nx\n```\n');
-        check(reference, because: 'info string "$info"').isNull();
-        check(diagnostics, because: 'info string "$info"').isEmpty();
-      }
-    });
-
-    test('uses the first reference-shaped token', () {
-      final (:reference, :diagnostics) =
-          readOne('```dart a/one.dart b/two.dart\n```\n');
-      check(diagnostics).isEmpty();
-      check(reference).isNotNull().path.equals('a/one.dart');
-    });
-
-    test('works inside a block quote', () {
-      final (:reference, :diagnostics) =
-          readOne('> ```dart example/hello.dart\n> ```\n');
-      check(diagnostics).isEmpty();
-      check(reference).isNotNull().path.equals('example/hello.dart');
-    });
+  test('finds a reference after <lang> @example', () {
+    final (:reference, :diagnostics) =
+        readOne('```dart @example example/hello.dart\n```\n');
+    check(diagnostics).isEmpty();
+    check(reference).isNotNull()
+      ..path.equals('example/hello.dart')
+      ..region.isNull()
+      ..options.isEmpty();
   });
 
-  group('html comment', () {
-    test('finds a reference on the line above', () {
-      final (:reference, :diagnostics) = readOne(
-        '<!-- @example example/hello.dart#greeting -->\n```dart\n```\n',
-      );
+  test('reads the region from the fragment', () {
+    final (:reference, :diagnostics) =
+        readOne('```dart @example example/hello.dart#greeting\n```\n');
+    check(diagnostics).isEmpty();
+    check(reference).isNotNull()
+      ..path.equals('example/hello.dart')
+      ..region.equals('greeting');
+  });
+
+  test('treats a trailing # as a whole-file reference', () {
+    final (:reference, :diagnostics) =
+        readOne('```dart @example example/hello.dart#\n```\n');
+    check(diagnostics).isEmpty();
+    check(reference).isNotNull()
+      ..path.equals('example/hello.dart')
+      ..region.isNull();
+  });
+
+  test('collects key=value options', () {
+    final (:reference, :diagnostics) = readOne(
+      '```dart @example a.dart indent=keep title=demo\n```\n',
+    );
+    check(diagnostics).isEmpty();
+    check(reference).isNotNull()
+      ..path.equals('a.dart')
+      ..options.deepEquals({
+        'indent': 'keep',
+        'title': 'demo',
+      });
+  });
+
+  test('accepts extensionless and relative paths', () {
+    for (final path in ['LICENSE', './hello.dart', '../example/hello.dart']) {
+      final (:reference, :diagnostics) =
+          readOne('```text @example $path\n```\n');
       check(diagnostics).isEmpty();
-      check(reference).isNotNull()
-        ..path.equals('example/hello.dart')
-        ..region.equals('greeting');
+      check(reference).isNotNull().path.equals(path);
+    }
+  });
+
+  test('leaves code blocks without @example alone', () {
+    for (final info in [
+      'dart',
+      '',
+      'console',
+      'dart {.copy}',
+      'dart lib/main.dart',
+      'dart bank_test.dart#transfer-100',
+      'pubspec.yaml',
+      '{image} https://example.com/a.png',
+    ]) {
+      final (:reference, :diagnostics) = readOne('```$info\nx\n```\n');
+      check(reference, because: 'info string "$info"').isNull();
+      check(diagnostics, because: 'info string "$info"').isEmpty();
+    }
+  });
+
+  test('works inside a block quote', () {
+    final (:reference, :diagnostics) =
+        readOne('> ```dart @example example/hello.dart\n> ```\n');
+    check(diagnostics).isEmpty();
+    check(reference).isNotNull().path.equals('example/hello.dart');
+  });
+
+  test('finds multiple references in document order', () {
+    final (:references, :diagnostics) = readAll('''
+# Title
+
+```dart @example example/one.dart
+```
+
+```dart
+handwritten;
+```
+
+```dart @example example/two.dart#region
+```
+''');
+    check(diagnostics).isEmpty();
+    check(references.map((r) => r.reference)).deepEquals([
+      'example/one.dart',
+      'example/two.dart#region',
+    ]);
+  });
+
+  group('errors', () {
+    test('reports missing language before @example', () {
+      for (final info in ['@example a.dart', '   @example a.dart']) {
+        final (:reference, :diagnostics) = readOne('```$info\n```\n');
+        check(reference).isNull();
+        check(diagnostics).single
+          ..line.equals(0)
+          ..message.contains('missing language before `@example`');
+      }
     });
 
-    test('is case insensitive and tolerates spacing', () {
-      final (:reference, :diagnostics) = readOne(
-        '<!--@EXAMPLE   example/hello.dart-->\n```dart\n```\n',
-      );
-      check(diagnostics).isEmpty();
-      check(reference).isNotNull().path.equals('example/hello.dart');
-    });
-
-    test('must be on the immediately preceding line', () {
-      final (:reference, :diagnostics) = readOne(
-        '<!-- @example example/hello.dart -->\n\n```dart\n```\n',
-      );
+    test('reports @example that is not immediately after the language', () {
+      final (:reference, :diagnostics) =
+          readOne('```dart {.copy} @example a.dart\n```\n');
       check(reference).isNull();
-      check(diagnostics).isEmpty();
+      check(diagnostics).single
+        ..line.equals(0)
+        ..message.contains('immediately after the fence language');
     });
 
-    test('ignores other comments', () {
-      final (:reference, :diagnostics) = readOne(
-        '<!-- just a comment -->\n```dart\n```\n',
-      );
+    test('reports non-lowercase @EXAMPLE', () {
+      final (:reference, :diagnostics) =
+          readOne('```dart @EXAMPLE a.dart\n```\n');
       check(reference).isNull();
-      check(diagnostics).isEmpty();
+      check(diagnostics).single
+        ..line.equals(0)
+        ..message.contains('lowercase `@example`');
     });
 
-    test('an empty @example comment is an error', () {
-      final (:reference, :diagnostics) = readOne(
-        '<!-- @example -->\n```dart\n```\n',
-      );
+    test('reports @example with no file path', () {
+      final (:reference, :diagnostics) = readOne('```dart @example\n```\n');
       check(reference).isNull();
       check(diagnostics).single
         ..line.equals(0)
         ..message.contains('names no file');
     });
 
-    test('an unusable first token is an error, not something to ignore', () {
-      final (:reference, :diagnostics) = readOne(
-        '<!-- @example {.copy} -->\n```dart\n```\n',
-      );
+    test('reports option given where file path was expected', () {
+      final (:reference, :diagnostics) =
+          readOne('```dart @example indent=keep\n```\n');
       check(reference).isNull();
-      check(diagnostics).single.line.equals(0);
+      check(diagnostics).single
+        ..line.equals(0)
+        ..message.contains('expected a file path');
     });
 
-    test('rejects tokens that are not known options', () {
-      for (final token in ['nonsense', 'indnet=keep']) {
-        final (:reference, :diagnostics) = readOne(
-          '<!-- @example example/hello.dart $token -->\n```dart\n```\n',
-        );
+    test('reports tokens after the path that are not key=value', () {
+      for (final bad in ['nonsense', 'indent=']) {
+        final (:reference, :diagnostics) =
+            readOne('```dart @example example/hello.dart $bad\n```\n');
         check(reference).isNull();
         check(diagnostics).single
           ..line.equals(0)
-          ..message.contains(token);
+          ..message.contains(bad);
       }
-    });
-
-    test('works inside a block quote', () {
-      final (:reference, :diagnostics) = readOne(
-        '> <!-- @example example/hello.dart -->\n> ```dart\n> ```\n',
-      );
-      check(diagnostics).isEmpty();
-      check(reference).isNotNull().path.equals('example/hello.dart');
-    });
-  });
-
-  group('findReferences', () {
-    test('finds both syntaxes, in document order', () {
-      final (:references, :diagnostics) = readAll('''
-# Title
-
-```dart example/one.dart
-```
-
-Prose.
-
-<!-- @example example/two.dart#region -->
-```dart
-```
-
-```dart
-handwritten;
-```
-''');
-      check(diagnostics).isEmpty();
-      check(references.map((r) => r.reference)).deepEquals([
-        'example/one.dart',
-        'example/two.dart#region',
-      ]);
-    });
-
-    test('a document with no references yields nothing', () {
-      final (:references, :diagnostics) = readAll('```dart\nx;\n```\n');
-      check(references).isEmpty();
-      check(diagnostics).isEmpty();
-    });
-
-    test('two different references for one block is an error', () {
-      final (:references, :diagnostics) = readAll('''
-<!-- @example example/one.dart -->
-```dart example/two.dart
-```
-''');
-      check(references).isEmpty();
-      check(diagnostics).single.line.equals(1);
-    });
-
-    test('the same reference written twice is not an error', () {
-      final (:references, :diagnostics) = readAll('''
-<!-- @example example/one.dart -->
-```dart example/one.dart
-```
-''');
-      check(diagnostics).isEmpty();
-      check(references).single.reference.equals('example/one.dart');
     });
   });
 }

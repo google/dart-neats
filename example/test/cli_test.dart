@@ -27,23 +27,16 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 
 void main() {
   setUp(() async {
-    await d.dir('.dart_tool', [
-      d.file('package_config.json', '''
-{
-  "configVersion": 2,
-  "packages": [
-    {"name": "demo", "rootUri": "../", "packageUri": "lib/"}
-  ]
-}
-'''),
-    ]).create();
+    await d.file('pubspec.yaml', 'name: demo\n').create();
   });
 
   test('update updates a stale document', () async {
     await d.dir('example', [
       d.file('hello.dart', "void main() {\n  print('hi');\n}\n"),
     ]).create();
-    await d.file('README.md', '```dart example/hello.dart\n```\n').create();
+    await d
+        .file('README.md', '```dart @example example/hello.dart\n```\n')
+        .create();
 
     final out = StringBuffer();
     await check(runExample(['update', '-C', d.sandbox], out: out))
@@ -51,7 +44,7 @@ void main() {
 
     check(out.toString()).contains('updated README.md');
     await d.file('README.md', '''
-```dart example/hello.dart
+```dart @example example/hello.dart
 void main() {
   print('hi');
 }
@@ -63,7 +56,7 @@ void main() {
     await d.dir('example', [
       d.file('hello.dart', 'void main() {}\n'),
     ]).create();
-    const stale = '```dart example/hello.dart\n```\n';
+    const stale = '```dart @example example/hello.dart\n```\n';
     await d.file('README.md', stale).create();
 
     final out = StringBuffer();
@@ -87,7 +80,7 @@ void main() {
     await d.dir('example', [
       d.file('hello.dart', 'void main() {}\n'),
     ]).create();
-    const stale = '```dart example/hello.dart\nold;\n```\n';
+    const stale = '```dart @example example/hello.dart\nold;\n```\n';
     await d.file('README.md', stale).create();
 
     final err = StringBuffer();
@@ -102,7 +95,9 @@ void main() {
     await d.dir('example', [
       d.file('hello.dart', 'void main() {}\n'),
     ]).create();
-    await d.file('README.md', '```dart example/hello.dart\n```\n').create();
+    await d
+        .file('README.md', '```dart @example example/hello.dart\n```\n')
+        .create();
 
     await check(runExample(['update', '-C', d.sandbox], out: StringBuffer()))
         .completes((it) => it.equals(0));
@@ -111,7 +106,9 @@ void main() {
   });
 
   test('errors are reported and fail the command', () async {
-    await d.file('README.md', '```dart example/missing.dart\n```\n').create();
+    await d
+        .file('README.md', '```dart @example example/missing.dart\n```\n')
+        .create();
     final err = StringBuffer();
     await check(runExample(['update', '-C', d.sandbox], err: err))
         .completes((it) => it.equals(1));
@@ -126,18 +123,9 @@ void main() {
     await d.file('hello.dart', 'outer;\n').create();
     await d.dir('example', [
       d.dir('app', [
-        d.dir('.dart_tool', [
-          d.file('package_config.json', '''
-{
-  "configVersion": 2,
-  "packages": [
-    {"name": "demo_app", "rootUri": "../", "packageUri": "lib/"}
-  ]
-}
-'''),
-        ]),
+        d.file('pubspec.yaml', 'name: demo_app\n'),
         d.file('hello.dart', 'inner;\n'),
-        d.file('README.md', '```dart /hello.dart\n```\n'),
+        d.file('README.md', '```dart @example /hello.dart\n```\n'),
       ]),
     ]).create();
 
@@ -145,29 +133,19 @@ void main() {
         .completes((it) => it.equals(0));
     await d.dir('example', [
       d.dir('app', [
-        d.file('README.md', '```dart /hello.dart\ninner;\n```\n'),
+        d.file('README.md', '```dart @example /hello.dart\ninner;\n```\n'),
       ]),
     ]).validate();
   });
 
   test('workspace member packages resolve against their own package root',
       () async {
-    await d.dir('.dart_tool', [
-      d.file('package_config.json', '''
-{
-  "configVersion": 2,
-  "packages": [
-    {"name": "workspace", "rootUri": "../", "packageUri": "lib/"},
-    {"name": "pkg_a", "rootUri": "../pkgs/a", "packageUri": "lib/"}
-  ]
-}
-'''),
-    ]).create();
     await d.file('hello.dart', 'outer;\n').create();
     await d.dir('pkgs', [
       d.dir('a', [
+        d.file('pubspec.yaml', 'name: pkg_a\n'),
         d.file('hello.dart', 'inner;\n'),
-        d.file('README.md', '```dart /hello.dart\n```\n'),
+        d.file('README.md', '```dart @example /hello.dart\n```\n'),
       ]),
     ]).create();
 
@@ -175,34 +153,43 @@ void main() {
         .completes((it) => it.equals(0));
     await d.dir('pkgs', [
       d.dir('a', [
-        d.file('README.md', '```dart /hello.dart\ninner;\n```\n'),
+        d.file('README.md', '```dart @example /hello.dart\ninner;\n```\n'),
       ]),
     ]).validate();
   });
 
-  test('only requires package_config.json for files with references', () async {
-    await d.dir('.dart_tool', [
-      d.file('package_config.json', '{"configVersion": 2, "packages": []}'),
-    ]).create();
-    await d.file('README.md', '```dart\nvoid main() {}\n```\n').create();
+  test('only requires pubspec.yaml for files with references', () async {
+    final isolated = d.dir('no_pubspec');
+    await isolated.create();
+    await d
+        .file('no_pubspec/README.md', '```dart\nvoid main() {}\n```\n')
+        .create();
 
-    await check(runExample(['validate', '-C', d.sandbox], out: StringBuffer()))
-        .completes((it) => it.equals(0));
+    // Only safe if `d.sandbox` itself has no enclosing `pubspec.yaml` either:
+    d.file('pubspec.yaml').io.deleteSync();
+
+    await check(
+      runExample(['validate', '-C', isolated.io.path], out: StringBuffer()),
+    ).completes((it) => it.equals(0));
 
     await d
-        .file('README.md', '# Intro\n\n```dart example/hello.dart\n```\n')
+        .file(
+          'no_pubspec/README.md',
+          '# Intro\n\n```dart @example example/hello.dart\n```\n',
+        )
         .create();
     final err = StringBuffer();
-    await check(runExample(['validate', '-C', d.sandbox], err: err))
-        .completes((it) => it.equals(1));
+    await check(
+      runExample(['validate', '-C', isolated.io.path], err: err),
+    ).completes((it) => it.equals(1));
     check(err.toString())
       ..contains('line 3')
-      ..contains('dart pub get');
+      ..contains('pubspec.yaml');
   });
 
   test('ignores markdown files in hidden directories and build/', () async {
     await d.file('a.dart', 'void main() {}\n').create();
-    const stale = '```dart ../a.dart\n```\n';
+    const stale = '```dart @example ../a.dart\n```\n';
     await d.dir('.dart_tool', [d.file('stale.md', stale)]).create();
     await d.dir('build', [d.file('stale.md', stale)]).create();
 

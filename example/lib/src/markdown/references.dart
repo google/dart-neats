@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'package:source_span/source_span.dart';
-import 'package:string_scanner/string_scanner.dart';
 
 import '../diagnostic.dart';
 import '../util/scanner.dart';
@@ -27,13 +26,13 @@ final class ExampleReference {
   /// The region named after `#`, or `null` for the whole file.
   final String? region;
 
-  /// `key=value` tokens.
+  /// `key=value` tokens after the file reference.
   final Map<String, String> options;
 
   /// The block whose content this reference controls.
   final FencedCodeBlock block;
 
-  /// Span of the reference token in the markdown document.
+  /// Span of the `<path>[#<region>]` token in the markdown document.
   final FileSpan span;
 
   ExampleReference({
@@ -49,113 +48,70 @@ final class ExampleReference {
 }
 
 final _optionPattern = RegExp(r'^([a-zA-Z_][a-zA-Z0-9_-]*)=(.+)$');
-final _fileExtension = RegExp(r'[^./]\.[a-zA-Z0-9]{1,10}$');
-final _commentOpen =
-    RegExp(r'[ \t>]*<!--\s*@example(?=\s|-->)', caseSensitive: false);
-final _commentBody = RegExp(r'.*?(?=-->\s*$)');
 
 /// Collects every [ExampleReference] on [blocks] in document order.
 ///
-/// Checks both the info string on each block (` ```dart example/hello.dart `)
-/// and an optional `<!-- @example ... -->` comment on the line immediately
-/// above it.
+/// Matches fences with info string
+/// `<lang> @example <path>[#<region>] [<key>=<value>]*`.
 List<ExampleReference> findReferences(
   Iterable<FencedCodeBlock> blocks, {
   required ErrorSink report,
 }) =>
     blocks
-        .map((block) {
-          final fromInfo = _fromInfoString(block);
-          final fromComment = _fromHtmlComment(block, report: report);
-
-          if (fromInfo != null &&
-              fromComment != null &&
-              fromInfo.reference != fromComment.reference) {
-            report(ExampleFormatException(
-              'this code block is claimed by two different references: '
-              '`${fromComment.reference}` in an HTML comment and '
-              '`${fromInfo.reference}` in the info string',
-              fromInfo.span,
-            ));
-            return null;
-          }
-
-          return fromInfo ?? fromComment;
-        })
+        .map((block) => _fromInfoString(block, report: report))
         .nonNulls
         .toList();
 
-/// Syntax (B): `<lang> <reference>? <key=value>*` in [block]'s info string.
-///
-/// Tokens that are neither a reference nor an option are ignored, because
-/// info strings are also used by other tools.
-ExampleReference? _fromInfoString(FencedCodeBlock block) {
-  final tokens = block.infoSpan.scanTokens();
-
-  FileSpan? referenceToken;
-  final options = <String, String>{};
-  for (final token in tokens.skip(1)) {
-    final option = _optionPattern.firstMatch(token.text);
-    if (option != null) {
-      options[option[1]!] = option[2]!;
-      continue;
-    }
-    if (referenceToken == null && _looksLikeReference(token.text)) {
-      referenceToken = token;
-    }
-  }
-
-  if (referenceToken == null) return null;
-
-  return _buildReference(
-    referenceToken,
-    options: options,
-    block: block,
-  );
-}
-
-/// Syntax (A): `<!-- @example <reference> <key=value>* -->` on the line before
-/// [block].
-ExampleReference? _fromHtmlComment(
+ExampleReference? _fromInfoString(
   FencedCodeBlock block, {
   required ErrorSink report,
 }) {
-  final fenceLine = block.openFence.start.line;
-  if (fenceLine == 0) return null;
+  final tokens = block.infoSpan.scanTokens();
+  final atIndex = tokens.indexWhere((t) => t.text.toLowerCase() == '@example');
+  if (atIndex < 0) return null;
 
-  final file = block.openFence.file;
-  final commentLine = file.span(
-    file.getOffset(fenceLine - 1),
-    file.getOffset(fenceLine),
-  );
-  final scanner = SpanScanner.within(commentLine);
-  if (!scanner.scan(_commentOpen) || !scanner.scan(_commentBody)) return null;
-
-  final tokens = scanner.lastSpan!.scanTokens();
-  if (tokens.isEmpty) {
+  if (atIndex == 0) {
     report(ExampleFormatException(
-      'the `@example` comment names no file',
-      commentLine,
+      'missing language before `@example`; '
+      'expected e.g. ` ```text @example ... `',
+      tokens[0],
     ));
     return null;
   }
-
-  final first = tokens.first;
-  if (!_looksLikeReference(first.text)) {
+  if (atIndex > 1) {
     report(ExampleFormatException(
-      '`${first.text}` is not a file reference',
-      first,
+      '`@example` must come immediately after the fence language',
+      tokens[atIndex],
+    ));
+    return null;
+  }
+  if (tokens[1].text != '@example') {
+    report(ExampleFormatException(
+      'expected lowercase `@example`, got `${tokens[1].text}`',
+      tokens[1],
+    ));
+    return null;
+  }
+  if (tokens.length < 3) {
+    report(ExampleFormatException('`@example` names no file', tokens[1]));
+    return null;
+  }
+
+  final pathToken = tokens[2];
+  if (pathToken.text.contains('=')) {
+    report(ExampleFormatException(
+      'expected a file path after `@example`, got `${pathToken.text}`',
+      pathToken,
     ));
     return null;
   }
 
   final options = <String, String>{};
-  for (final token in tokens.skip(1)) {
+  for (final token in tokens.skip(3)) {
     final option = _optionPattern.firstMatch(token.text);
-    if (option == null || option[1] != 'indent') {
+    if (option == null) {
       report(ExampleFormatException(
-        'unexpected `${token.text}` in `@example` comment; '
-        'expected `indent=strip` or `indent=keep`',
+        'expected `key=value` option after `@example`, got `${token.text}`',
         token,
       ));
       return null;
@@ -164,16 +120,10 @@ ExampleReference? _fromHtmlComment(
   }
 
   return _buildReference(
-    first,
+    pathToken,
     options: options,
     block: block,
   );
-}
-
-bool _looksLikeReference(String token) {
-  if (token.contains('=') || token.startsWith('{')) return false;
-  final path = token.split('#').first;
-  return path.contains('/') || _fileExtension.hasMatch(path);
 }
 
 ExampleReference _buildReference(

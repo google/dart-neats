@@ -46,14 +46,14 @@ final class RunOutcome {
 /// With [write], out-of-date documents are rewritten; without it they are
 /// only reported, which is what `validate` does in CI.
 ///
-/// Each document is resolved against **its own** package root via
-/// `.dart_tool/package_config.json`, so a workspace of many packages, or a
-/// package with an `example/` application of its own, does the right thing
-/// without being told about it.
-Future<RunOutcome> updateDirectory({
+/// Each document is resolved against **its own** package root (the nearest
+/// enclosing directory containing `pubspec.yaml`), so a workspace of many
+/// packages, or a package with an `example/` application of its own, does the
+/// right thing without being told about it.
+RunOutcome updateDirectory({
   required String directory,
   required bool write,
-}) async {
+}) {
   final root = p.normalize(p.absolute(directory));
   final diagnostics = <ExampleFormatException>[];
   final stale = <String, int>{};
@@ -73,14 +73,12 @@ Future<RunOutcome> updateDirectory({
       continue;
     }
 
-    final packageRoot = source.contains('```') || source.contains('~~~')
-        ? await packageRootOf(file)
-        : null;
+    if (!source.toLowerCase().contains('@example')) continue;
 
     final result = updateDocument(
       source: source,
       documentPath: file,
-      packageRoot: packageRoot,
+      packageRoot: packageRootOf(file),
       sourceUrl: p.toUri(label),
       readFile: (path) {
         final example = File(path);
@@ -102,27 +100,4 @@ Future<RunOutcome> updateDirectory({
     stale: stale,
     diagnostics: diagnostics,
   );
-}
-
-/// Checks that all markdown example blocks under [directory] (defaulting to
-/// [Directory.current]) are up to date with the files they reference.
-///
-/// Throws an [AssertionError] if any referenced file or region is invalid or
-/// if any markdown code block is out of date (i.e., whenever
-/// `dart run example validate` would fail).
-Future<void> validateExamples({String? directory}) async {
-  final outcome = await updateDirectory(
-    directory: directory ?? Directory.current.path,
-    write: false,
-  );
-  final problems = <String>[
-    for (final error in outcome.diagnostics) error.toString(),
-    for (final MapEntry(key: file, value: count) in outcome.stale.entries)
-      '$file: error: $count code '
-          '${count == 1 ? 'block is' : 'blocks are'} out of date; run '
-          '`dart run example update`',
-  ];
-  if (problems.isNotEmpty) {
-    throw AssertionError(problems.join('\n\n'));
-  }
 }

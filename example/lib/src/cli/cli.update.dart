@@ -33,9 +33,9 @@ final class _UpdateCommand extends _Base {
       'reference.';
 
   @override
-  Future<int> run() async {
+  int run() {
     final dryRun = argResults!.flag('dry-run');
-    final outcome = await updateDirectory(directory: directory, write: !dryRun);
+    final outcome = updateDirectory(directory: directory, write: !dryRun);
     final failed = report(outcome.diagnostics);
 
     final prefix = dryRun ? 'would update' : 'updated';

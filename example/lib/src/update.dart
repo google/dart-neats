@@ -72,7 +72,7 @@ UpdateResult updateDocument({
   final diagnostics = <ExampleFormatException>[];
   final stale = <ExampleReference>[];
 
-  if (!source.contains('```') && !source.contains('~~~')) {
+  if (!source.toLowerCase().contains('@example')) {
     return UpdateResult(updated: null, stale: stale, diagnostics: diagnostics);
   }
 
@@ -89,7 +89,7 @@ UpdateResult updateDocument({
 
   if (packageRoot == null) {
     diagnostics.add(ExampleFormatException(
-      'no package configuration covers this file; run `dart pub get` first',
+      'no `pubspec.yaml` found in any parent directory of this file',
       references.first.span,
     ));
     return UpdateResult(updated: null, stale: stale, diagnostics: diagnostics);
@@ -161,6 +161,14 @@ String _contentFor(
       '(looked for `${p.relative(path, from: packageRoot)}`)',
       reference.span,
     );
+  }
+  for (final MapEntry(:key, :value) in reference.options.entries) {
+    if (key != 'indent') {
+      throw ExampleFormatException(
+        'unknown option `$key=$value`; expected `indent=strip` or `indent=keep`',
+        reference.span,
+      );
+    }
   }
   final indent = switch (reference.options['indent']) {
     null || 'strip' => true,

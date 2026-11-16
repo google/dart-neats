@@ -45,13 +45,13 @@ void main() {
 void main() {
   test('fills in an empty block', () {
     check(update(
-      '```dart example/hello.dart#greeting\n```\n',
+      '```dart @example example/hello.dart#greeting\n```\n',
       files: {'example/hello.dart': _hello},
     ))
       ..diagnostics.isEmpty()
       ..stale.length.equals(1)
       ..updated.equals('''
-```dart example/hello.dart#greeting
+```dart @example example/hello.dart#greeting
 void main() {
   print('hello');
 }
@@ -61,7 +61,7 @@ void main() {
 
   test('a block that is already correct is left alone', () {
     const source = '''
-```dart example/hello.dart#greeting
+```dart @example example/hello.dart#greeting
 void main() {
   print('hello');
 }
@@ -75,7 +75,7 @@ void main() {
 
   test('is idempotent', () {
     final once = update(
-      '```dart example/hello.dart#greeting\nstale;\n```\n',
+      '```dart @example example/hello.dart#greeting\nstale;\n```\n',
       files: {'example/hello.dart': _hello},
     );
     final twice = update(once.updated!, files: {'example/hello.dart': _hello});
@@ -88,7 +88,7 @@ void main() {
 
 Some prose with a ``` in it.
 
-```dart example/hello.dart#greeting
+```dart @example example/hello.dart#greeting
 ```
 
     an indented code block
@@ -102,11 +102,11 @@ Some prose with a ``` in it.
 
   test('writes the container prefix on every line', () {
     final result = update(
-      '> ```dart example/hello.dart#greeting\n> ```\n',
+      '> ```dart @example example/hello.dart#greeting\n> ```\n',
       files: {'example/hello.dart': _hello},
     );
     check(result.updated).equals('''
-> ```dart example/hello.dart#greeting
+> ```dart @example example/hello.dart#greeting
 > void main() {
 >   print('hello');
 > }
@@ -118,13 +118,13 @@ Some prose with a ``` in it.
     final result = update('''
 1. Run this:
 
-   ```dart example/hello.dart#greeting
+   ```dart @example example/hello.dart#greeting
    ```
 ''', files: {'example/hello.dart': _hello});
     check(result.updated).equals('''
 1. Run this:
 
-   ```dart example/hello.dart#greeting
+   ```dart @example example/hello.dart#greeting
    void main() {
      print('hello');
    }
@@ -134,28 +134,28 @@ Some prose with a ``` in it.
 
   test('blank lines carry no trailing whitespace', () {
     final result = update(
-      '> ```dart a.dart\n> ```\n',
+      '> ```dart @example a.dart\n> ```\n',
       files: {'a.dart': 'one;\n\ntwo;\n'},
     );
     check(result.updated)
-        .equals('> ```dart a.dart\n> one;\n>\n> two;\n> ```\n');
+        .equals('> ```dart @example a.dart\n> one;\n>\n> two;\n> ```\n');
   });
 
   test('preserves CRLF', () {
     final result = update(
-      '```dart a.dart\r\n```\r\n',
+      '```dart @example a.dart\r\n```\r\n',
       files: {'a.dart': 'x;\n'},
     );
-    check(result.updated).equals('```dart a.dart\r\nx;\r\n```\r\n');
+    check(result.updated).equals('```dart @example a.dart\r\nx;\r\n```\r\n');
   });
 
   test('lengthens the fence when the content contains one', () {
     final result = update(
-      '```markdown a.md\n```\n',
+      '```markdown @example a.md\n```\n',
       files: {'a.md': '```dart\nx;\n```\n'},
     );
     check(result.updated).equals('''
-````markdown a.md
+````markdown @example a.md
 ```dart
 x;
 ```
@@ -165,38 +165,29 @@ x;
 
   test('updates several blocks at once', () {
     final result = update('''
-```dart a.dart
+```dart @example a.dart
 ```
 
-```dart b.dart
+```dart @example b.dart
 ```
 ''', files: {'a.dart': 'a;\n', 'b.dart': 'b;\n'});
     check(result.updated).equals('''
-```dart a.dart
+```dart @example a.dart
 a;
 ```
 
-```dart b.dart
+```dart @example b.dart
 b;
 ```
 ''');
   });
 
-  test('the HTML comment syntax works too', () {
-    final result = update(
-      '<!-- @example a.dart -->\n```dart\n```\n',
-      files: {'a.dart': 'a;\n'},
-    );
-    check(result.updated)
-        .equals('<!-- @example a.dart -->\n```dart\na;\n```\n');
-  });
-
   test('updates regions from YAML and JS files', () {
     final result = update('''
-```yaml config.yaml#deps
+```yaml @example config.yaml#deps
 ```
 
-```js web/app.js#init
+```js @example web/app.js#init
 ```
 ''', files: {
       'config.yaml': '# #region deps\npath: ^1.9.0\n# #endregion\n',
@@ -204,11 +195,11 @@ b;
     });
     check(result.diagnostics).isEmpty();
     check(result.updated).equals('''
-```yaml config.yaml#deps
+```yaml @example config.yaml#deps
 path: ^1.9.0
 ```
 
-```js web/app.js#init
+```js @example web/app.js#init
 mount();
 ```
 ''');
@@ -216,31 +207,30 @@ mount();
 
   test('supports indent=strip|keep option', () {
     const file = '  a;\n';
-    check(update('```dart a.dart\n```\n', files: {'a.dart': file}).updated)
-        .equals('```dart a.dart\na;\n```\n');
     check(
-      update('```dart a.dart indent=keep\n```\n', files: {'a.dart': file})
-          .updated,
-    ).equals('```dart a.dart indent=keep\n  a;\n```\n');
+      update('```dart @example a.dart\n```\n', files: {'a.dart': file}).updated,
+    ).equals('```dart @example a.dart\na;\n```\n');
     check(
       update(
-        '<!-- @example a.dart indent=keep -->\n```dart\n```\n',
+        '```dart @example a.dart indent=keep\n```\n',
         files: {'a.dart': file},
       ).updated,
-    ).equals('<!-- @example a.dart indent=keep -->\n```dart\n  a;\n```\n');
+    ).equals('```dart @example a.dart indent=keep\n  a;\n```\n');
   });
 
-  test('rejects invalid indent= option value', () {
-    final badIndent = update(
-      '```dart a.dart indent=bogus\n```\n',
-      files: {'a.dart': 'a;\n'},
-    );
-    check(badIndent.diagnostics).single.message.contains('indent=bogus');
+  test('rejects unknown options and invalid indent= values', () {
+    for (final bad in ['indnet=keep', 'indent=bogus']) {
+      final result = update(
+        '```dart @example a.dart $bad\n```\n',
+        files: {'a.dart': 'a;\n'},
+      );
+      check(result.diagnostics).single.message.contains(bad);
+    }
   });
 
   group('errors', () {
     test('a missing file is an error, and nothing is written', () {
-      check(update('```dart missing.dart\n```\n'))
+      check(update('```dart @example missing.dart\n```\n'))
         ..updated.isNull()
         ..diagnostics.single.which((d) => d
           ..line.equals(0)
@@ -249,7 +239,7 @@ mount();
 
     test('a missing region is an error at the reference', () {
       check(update(
-        'intro\n\n```dart example/hello.dart#nope\n```\n',
+        'intro\n\n```dart @example example/hello.dart#nope\n```\n',
         files: {'example/hello.dart': _hello},
       ))
         ..updated.isNull()
@@ -265,10 +255,10 @@ mount();
 
     test('one broken reference does not stop the others', () {
       check(update('''
-```dart missing.dart
+```dart @example missing.dart
 ```
 
-```dart a.dart
+```dart @example a.dart
 ```
 ''', files: {'a.dart': 'a;\n'}))
         ..diagnostics.isNotEmpty()
@@ -276,7 +266,10 @@ mount();
     });
 
     test('an unclosed block is an error, even if its content matches', () {
-      for (final source in ['```dart a.dart\n', '```dart a.dart\na;\n']) {
+      for (final source in [
+        '```dart @example a.dart\n',
+        '```dart @example a.dart\na;\n',
+      ]) {
         check(update(source, files: {'a.dart': 'a;\n'}))
           ..updated.isNull()
           ..diagnostics.single.message.contains('closing fence');
@@ -284,14 +277,14 @@ mount();
     });
 
     test('a reference outside the package is an error', () {
-      check(update('```dart x%2F..%2F..%2F..%2Fetc/hostname\n```\n'))
+      check(update('```dart @example x%2F..%2F..%2F..%2Fetc/hostname\n```\n'))
         ..updated.isNull()
         ..diagnostics.single.message.contains('outside the package');
     });
 
     test('a malformed example file is an error', () {
       check(update(
-        '```dart a.dart#r\n```\n',
+        '```dart @example a.dart#r\n```\n',
         files: {'a.dart': '// #region r\na;\n'},
       ))
         ..updated.isNull()

@@ -150,42 +150,23 @@ directives. Instead, `package:example` keeps real fenced code blocks in
 `README.md` and `doc/*.md` up to date with your source files so the markdown
 renders everywhere and is still backed by analyzed/tested code.
 
-### Setup
-
-Add `package:example` as a `dev_dependency`:
-
-```console
-$ dart pub add dev:example
-```
-
 ### Referencing a File or Region in Markdown
 
-You can attach a reference to any fenced code block in two ways:
+Attach `@example <path>[#<region>]` immediately after the language in a fenced
+code block's info string:
 
-1. **In the fence's info string** (after the language name):
-   ````markdown
-   ```dart test/cache_test.dart#basic-usage
-   final cache = Cache(backend);
-   await cache.put('greeting', 'Hello, world!');
+````markdown
+```dart @example test/cache_test.dart#basic-usage
+final cache = Cache(backend);
+await cache.put('greeting', 'Hello, world!');
 
-   final value = await cache.get('greeting');
-   ```
-   ````
-2. **In an HTML comment on the line immediately above the fence** (if you don't
-   want the file path in the info string):
-   ````markdown
-   <!-- @example test/cache_test.dart#basic-usage -->
-   ```dart
-   final cache = Cache(backend);
-   await cache.put('greeting', 'Hello, world!');
-
-   final value = await cache.get('greeting');
-   ```
-   ````
+final value = await cache.get('greeting');
+```
+````
 
 Path resolution matches `dartdoc`: a leading `/` resolves from the nearest
 enclosing `pubspec.yaml` directory (package root), and a relative path resolves
-from the directory containing the Markdown file.
+from the directory containing the markdown file.
 
 Optional `key=value` settings can follow the reference:
 - `indent=strip|keep` (default `strip`): strip common leading space indentation
@@ -193,39 +174,23 @@ Optional `key=value` settings can follow the reference:
 
 ### Updating and Validating
 
-After editing an example or adding a new code block reference in Markdown, run:
-
-```console
-$ dart run example update
-```
-
-In CI (such as GitHub Actions) or `dart test`, verify that no markdown code
-block has drifted out of date by adding a test calling `validateExamples()`:
-
-```dart
-// test/example_test.dart
-import 'package:example/example.dart';
-import 'package:test/test.dart';
-
-void main() {
-  test('examples are up to date', () async {
-    await validateExamples();
-  });
-}
-```
-
-Or run the CLI check directly:
-
-```console
-$ dart run example validate
-```
-
-### Using `package:example` without `dev_dependencies`
-If you don't want a `dev_dependencies` on `package:example` you can just run:
+After editing an example or adding a new `@example` code block in markdown, run
+(requires Dart 3.12+):
 
 ```console
 $ dart run example@ update
 ```
 
-This also works in CI, but having a `dev_dependencies` ensures the behavior is
-consistent.
+In CI, verify that no markdown code block has drifted out of date:
+
+```console
+$ dart run example@ validate
+```
+
+Or call the reusable GitHub Actions workflow (pinned to a commit SHA):
+
+```yaml
+jobs:
+  examples:
+    uses: google/dart-neats/.github/workflows/validate-examples.yml@<commit-sha>
+```

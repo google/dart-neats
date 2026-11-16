@@ -15,7 +15,6 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 
 /// Every `.md` file under [root] (skipping hidden directories and `build/`),
@@ -36,10 +35,16 @@ bool _inIgnoredDirectory(String relativePath) {
       .any((dir) => dir.startsWith('.') || dir == 'build');
 }
 
-/// The package root directory for [path], resolved from the nearest enclosing
-/// `.dart_tool/package_config.json`.
-Future<String?> packageRootOf(String path) async {
-  final config = await findPackageConfig(Directory(p.dirname(path)));
-  final root = config?.packageOf(p.toUri(path))?.root;
-  return root == null ? null : p.normalize(p.fromUri(root));
+/// The nearest enclosing directory of [path] containing a `pubspec.yaml`, or
+/// `null` if none exists.
+String? packageRootOf(String path) {
+  var dir = Directory(p.normalize(p.absolute(p.dirname(path))));
+  while (true) {
+    if (File(p.join(dir.path, 'pubspec.yaml')).existsSync()) {
+      return dir.path;
+    }
+    final parent = dir.parent;
+    if (parent.path == dir.path) return null;
+    dir = parent;
+  }
 }

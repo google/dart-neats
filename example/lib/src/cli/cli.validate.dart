@@ -26,8 +26,8 @@ final class _ValidateCommand extends _Base {
       'changing anything.';
 
   @override
-  Future<int> run() async {
-    final outcome = await updateDirectory(directory: directory, write: false);
+  int run() {
+    final outcome = updateDirectory(directory: directory, write: false);
     final failed = report(outcome.diagnostics);
 
     for (final MapEntry(key: file, value: count) in outcome.stale.entries) {
