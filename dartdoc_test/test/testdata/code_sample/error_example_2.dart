@@ -1,4 +1,4 @@
-import 'package:example/error_example.dart';
+import 'package:dartdoc_test_example/error_example.dart';
 
 void main() {
   final gcd = gcd(48, 18);

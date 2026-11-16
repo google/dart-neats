@@ -1,4 +1,4 @@
-import 'package:example/example.dart';
+import 'package:dartdoc_test_example/example.dart';
 
 import 'dart:convert';
 
