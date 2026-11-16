@@ -5,6 +5,7 @@ workspace:
  - canonical_json/
  - chunked_stream/
  - dartdoc_test/
+ - example/
  - http_methods/
  - neat_cache/
  - neat_periodic_task/
