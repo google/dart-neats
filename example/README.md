@@ -1,6 +1,3 @@
-Example - keep markdown code samples up to date
-===============================================
-
 This tool updates examples in _fenced code blocks_ in markdown files to match
 source files in `example/` or `test/`, using the same `#region`, `#endregion`,
 and `#hide` markers as `dartdoc`'s `{@example}` directive.
