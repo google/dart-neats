@@ -1,4 +1,4 @@
-import 'package:dartdoc_test_example/example.dart';
+import 'package:_/example.dart';
 
 void main() {
   final result = add(2, 3);
