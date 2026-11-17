@@ -1,4 +1,4 @@
-name: _ # ignore: package_names
+name: dartdoc_test_example
 publish_to: none
 description: A sample command-line application.
 version: 1.0.0

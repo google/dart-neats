@@ -1,25 +1,25 @@
 $ dart run dartdoc_test analyze
 Extracting code samples ...
 Analyzing code samples ...
-package:_/error_example.dart:17:28: : 1 positional argument expected by 'factorial', but 0 found.
+package:dartdoc_test_example/error_example.dart:17:28: : 1 positional argument expected by 'factorial', but 0 found.
    ╷
 17 │ /// final fact = factorial();
    │                            ^
    ╵
 
-package:_/error_example.dart:31:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
+package:dartdoc_test_example/error_example.dart:31:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
    ╷
 31 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
    │           ^^^^^^^^^^^^
    ╵
 
-package:_/error_example.dart:39:36: : Local variable 'gcd' can't be referenced before it is declared.
+package:dartdoc_test_example/error_example.dart:39:36: : Local variable 'gcd' can't be referenced before it is declared.
    ╷
 39 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
    │                                    ^^^
    ╵
 
-package:_/error_example.dart:53:32: : The getter 'length' isn't defined for the type 'int'.
+package:dartdoc_test_example/error_example.dart:53:32: : The getter 'length' isn't defined for the type 'int'.
    ╷
 53 │ /// Should return: The getter 'length' isn't defined for the class 'int'.
    │                                ^^^^^^

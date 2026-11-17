@@ -3,7 +3,7 @@ Extracting code samples ...
 Analyzing code samples ...
 00:00 +0: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for )
 00:00 +0 -1: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for ) [E]
-  package:_/error_example.dart:17:28: : 1 positional argument expected by 'factorial', but 0 found.
+  package:dartdoc_test_example/error_example.dart:17:28: : 1 positional argument expected by 'factorial', but 0 found.
      ╷
   17 │ /// final fact = factorial();
      │                            ^
@@ -13,7 +13,7 @@ Analyzing code samples ...
   
 00:00 +0 -1: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for isPalindrome
 00:00 +0 -2: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for isPalindrome [E]
-  package:_/error_example.dart:31:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
+  package:dartdoc_test_example/error_example.dart:31:11: : Local variable 'isPalindrome' can't be referenced before it is declared.
      ╷
   31 │ /// final isPalindrome = isPalindrome('A man, a plan, a canal, Panama');
      │           ^^^^^^^^^^^^
@@ -23,7 +23,7 @@ Analyzing code samples ...
   
 00:00 +0 -2: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for gcd
 00:00 +0 -3: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for gcd [E]
-  package:_/error_example.dart:39:36: : Local variable 'gcd' can't be referenced before it is declared.
+  package:dartdoc_test_example/error_example.dart:39:36: : Local variable 'gcd' can't be referenced before it is declared.
      ╷
   39 │ /// Should return: Local variable 'gcd' can't be referenced before it is declared.
      │                                    ^^^
@@ -33,7 +33,7 @@ Analyzing code samples ...
   
 00:00 +0 -3: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for length
 00:00 +0 -4: test/dartdoc_test.dart: [dartdoc_test] lib/error_example.dart test for length [E]
-  package:_/error_example.dart:53:32: : The getter 'length' isn't defined for the type 'int'.
+  package:dartdoc_test_example/error_example.dart:53:32: : The getter 'length' isn't defined for the type 'int'.
      ╷
   53 │ /// Should return: The getter 'length' isn't defined for the class 'int'.
      │                                ^^^^^^

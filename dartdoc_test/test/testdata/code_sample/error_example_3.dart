@@ -1,4 +1,4 @@
-import 'package:_/error_example.dart';
+import 'package:dartdoc_test_example/error_example.dart';
 
 void main() {
   final length = 5.length;

@@ -1,4 +1,4 @@
-name: _ # ignore: package_names
+name: vendor_example
 publish_to: none
 dependencies:
   petitparser: ^4.0.2
