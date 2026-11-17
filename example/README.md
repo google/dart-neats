@@ -8,7 +8,7 @@ and `#hide` markers as `dartdoc`'s `{@example}` directive.
 
 Mark a region in an example or test file:
 
-```dart @example example/hello_world.dart
+```dart @example example/example.dart
 import 'package:test/test.dart';
 
 void main() {
@@ -26,7 +26,7 @@ Reference the file (or `#region`) after `@example` in your markdown fence's info
 string:
 
 ````markdown
-```dart @example example/hello_world.dart#greeting
+```dart @example example/example.dart#greeting
 final message = 'Hello, world!';
 print(message);
 ```
