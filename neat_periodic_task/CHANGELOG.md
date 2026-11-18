@@ -1,3 +1,12 @@
+## v2.1.0
+ * Added heartbeat support to `NeatPeriodicTaskScheduler`:
+   * `heartbeatInterval` and `heartbeatTimeout` parameters allow tasks to
+     periodically refresh a heartbeat timestamp in the status while running.
+   * If a running worker process crashes or is terminated abruptly, other
+     schedulers can detect the expired heartbeat after `heartbeatTimeout`
+     and reclaim the task without waiting for the full `timeout`.
+ * Added `heartbeat` property to `NeatTaskStatus`.
+
 ## v2.0.1
  * Added `topics` to `pubspec.yaml`.
 
