@@ -73,7 +73,7 @@ final class Table<T extends Row> extends Query<(Expr<T>,)> {
     TableDefinition<T> definition,
   ) : super._(
         context,
-        (RowExpression._(0, definition, Object()),),
+        (RowExpression.internal(0, definition, Object()),),
         (_) => _tableClause,
       );
 }
@@ -286,101 +286,10 @@ final class ProjectedOrderedSubQueryRange<T extends Record> {
   ProjectedOrderedSubQueryRange._(this._query);
 }
 
-/* --------------------- Query clauses ---------------------- */
-
-sealed class QueryClause {}
-
-final class TableClause extends QueryClause {
-  final TableDefinition _definition;
-
-  /// Name of table
-  String get name => _definition.tableName;
-  List<String> get columns => _definition.columns;
-  List<String> get primaryKey => _definition.primaryKey;
-
-  TableClause._(this._definition);
-}
-
-final class SelectClause extends QueryClause {
-  final List<Expr> _expressions;
-
-  Iterable<Expr> get expressions => _expressions.expand((e) => e._explode());
-
-  SelectClause._(this._expressions);
-}
-
-sealed class FromClause extends QueryClause {
-  final QueryClause from;
-  FromClause._(this.from);
-}
-
-/// Interface implemented by object with-in which expressions may exist.
-///
-/// Expressions can be bound to this context, that is the context from which
-/// they are referencing fields.
-final class ExpressionContext {
-  final Object _handle;
-
-  ExpressionContext._(this._handle);
-}
-
-final class SelectFromClause extends FromClause implements ExpressionContext {
-  @override
-  final Object _handle;
-  final List<Expr> _projection;
-
-  Iterable<Expr> get projection => _projection.expand((e) => e._explode());
-
-  SelectFromClause._(super.from, this._handle, this._projection) : super._();
-}
-
-final class WhereClause extends FromClause implements ExpressionContext {
-  @override
-  final Object _handle;
-  final Expr<bool?> where;
-  WhereClause._(super.from, this._handle, this.where) : super._();
-}
-
-final class OrderByClause extends FromClause implements ExpressionContext {
-  @override
-  final Object _handle;
-  final List<(Expr<Comparable?>, Order)> orderBy;
-
-  OrderByClause._(
-    super.from,
-    this._handle,
-    this.orderBy,
-  ) : super._() {
-    if (orderBy.any((e) => e.$1._columns > 1)) {
-      // This shouldn't be possible!
-      throw AssertionError(
-        'In Expr<T extends Row> T may not implement Comparable<T>, '
-        'using Expr<Row> in .orderBy is not supported!',
-      );
-    }
-  }
-}
-
 /// {@category writing_queries}
 enum Order {
   ascending,
   descending,
-}
-
-final class JoinClause extends FromClause implements ExpressionContext {
-  @override
-  final Object _handle;
-  final JoinType type;
-  final QueryClause join;
-  final Expr<bool?> on;
-
-  JoinClause._(
-    this._handle,
-    this.type,
-    super.from,
-    this.join,
-    this.on,
-  ) : super._();
 }
 
 enum JoinType {
@@ -400,117 +309,6 @@ enum JoinType {
   //   (.. LEFT JOIN .. ON ..) UNION ALL (NULL, .. WHERE NOT EXISTS (..))
   // It's not pretty or efficient, but possible, or users could simply opt to
   // write such SQL queries manually as SQL.
-}
-
-final class LimitClause extends FromClause {
-  final int limit;
-  LimitClause._(super.from, this.limit) : super._();
-}
-
-final class OffsetClause extends FromClause {
-  final int offset;
-  OffsetClause._(super.from, this.offset) : super._();
-}
-
-final class DistinctClause extends FromClause {
-  DistinctClause._(super.from) : super._();
-}
-
-final class GroupByClause extends FromClause implements ExpressionContext {
-  @override
-  final Object _handle;
-
-  final List<Expr> _group;
-  final List<Expr> _aggregation;
-
-  /// The grouped columns (exploded).
-  late final List<Expr> groupBy = _group.expand((e) => e._explode()).toList();
-
-  /// The projection is made up of the grouped columns followed by the
-  /// aggregations.
-  ///
-  /// We promise that [groupBy] is a prefix of [projection].
-  late final List<Expr> projection = [
-    ...groupBy,
-    ..._aggregation.expand((e) => e._explode()),
-  ];
-
-  GroupByClause._(
-    super.from,
-    this._handle,
-    this._group,
-    this._aggregation,
-  ) : super._();
-}
-
-sealed class CompositeQueryClause extends QueryClause {
-  final QueryClause left;
-  final QueryClause right;
-  CompositeQueryClause._(this.left, this.right);
-}
-
-// make these subclass of composite queryclause
-final class UnionClause extends CompositeQueryClause {
-  UnionClause._(super.left, super.right) : super._();
-}
-
-final class UnionAllClause extends CompositeQueryClause {
-  UnionAllClause._(super.left, super.right) : super._();
-}
-
-final class IntersectClause extends CompositeQueryClause {
-  IntersectClause._(super.left, super.right) : super._();
-}
-
-final class ExceptClause extends CompositeQueryClause {
-  ExceptClause._(super.left, super.right) : super._();
-}
-
-/* --------------------- Auxiliary utils for SQL rendering------------------- */
-
-final class ExpressionResolver<T> {
-  final ExpressionResolver? _parent;
-  final Object _handle;
-  final List<(String?, String)> _columns;
-  final T context;
-
-  /// Depth of the scope in the query tree.
-  final int depth;
-
-  ExpressionResolver._(
-    this.context,
-    this._parent,
-    this._handle,
-    this._columns,
-    this.depth,
-  );
-
-  ExpressionResolver(T context) : this._(context, null, Object(), [], 0);
-
-  ExpressionResolver<T> withScope(
-    ExpressionContext ctx,
-    List<(String?, String)> columns,
-  ) => ExpressionResolver._(
-    context,
-    this,
-    ctx._handle,
-    columns,
-    depth + 1,
-  );
-
-  (String?, String) resolve(FieldExpression field) {
-    if (_handle == field._handle) {
-      return _columns[field._index];
-    }
-    if (_parent != null) {
-      return _parent.resolve(field);
-    }
-    throw ArgumentError.value(
-      field,
-      'field',
-      'cannot be resolved in the given context',
-    );
-  }
 }
 
 /* --------------------- GroupBy / Aggregation ------------------- */

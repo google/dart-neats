@@ -12,32 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import '../ast.query.dart';
 import '../sql_task.dart';
-import '../typed_sql.dart';
 import 'postgres_dialect.dart';
 import 'sqlite_dialect.dart';
 
-export '../sql_task.dart';
-export '../typed_sql.dart'
+export '../ast.expr.dart'
     show
         AvgExpression,
         BinaryOperationExpression,
-        BulkValuesSource,
         CastExpression,
-        ColumnType,
-        CompositeQueryClause,
-        ConflictClause,
         CountAllExpression,
-        CreateTableStatement,
         CurrentTimestampExpression,
-        DeleteStatement,
-        DistinctClause,
-        DoNothingOnConflictClause,
         EncodedCustomDataTypeExpression,
-        ExceptClause,
         ExistsExpression,
         Expr,
-        ExprValuesSource,
         ExpressionBlobConcat,
         ExpressionBlobDecodeUtf8,
         ExpressionBlobLength,
@@ -46,7 +35,6 @@ export '../typed_sql.dart'
         ExpressionBoolAnd,
         ExpressionBoolNot,
         ExpressionBoolOr,
-        ExpressionContext,
         ExpressionEquals,
         ExpressionGreaterThan,
         ExpressionGreaterThanOrEqual,
@@ -65,7 +53,6 @@ export '../typed_sql.dart'
         ExpressionNumDivide,
         ExpressionNumMultiply,
         ExpressionNumSubtract,
-        ExpressionResolver,
         ExpressionStringContains,
         ExpressionStringEndsWith,
         ExpressionStringIsEmpty,
@@ -75,38 +62,51 @@ export '../typed_sql.dart'
         ExpressionStringToLowerCase,
         ExpressionStringToUpperCase,
         FieldExpression,
+        LiteralExpression,
+        MaxExpression,
+        MinExpression,
+        NotNullExpression,
+        OrElseExpression,
+        RowExpression,
+        SubQueryExpression,
+        SumExpression,
+        ValueExpression;
+export '../ast.expr_types.dart' show ColumnType;
+export '../ast.query.dart'
+    show
+        BulkValuesSource,
+        CompositeQueryClause,
+        ConflictClause,
+        CreateTableStatement,
+        DeleteStatement,
+        DistinctClause,
+        DoNothingOnConflictClause,
+        ExceptClause,
+        ExprValuesSource,
+        ExpressionContext,
+        ExpressionResolver,
         FromClause,
         GroupByClause,
         InsertStatement,
         IntersectClause,
         JoinClause,
-        JoinType,
         LimitClause,
-        LiteralExpression,
-        MaxExpression,
-        MinExpression,
-        NotNullExpression,
         OffsetClause,
-        OrElseExpression,
-        Order,
         OrderByClause,
         QueryClause,
-        Row,
-        RowExpression,
         SelectClause,
         SelectFromClause,
         SelectStatement,
         SqlStatement,
-        SubQueryExpression,
-        SumExpression,
         TableClause,
         UnionAllClause,
         UnionClause,
         UpdateOnConflictClause,
         UpdateStatement,
-        ValueExpression,
         ValuesSource,
         WhereClause;
+export '../sql_task.dart';
+export '../typed_sql.dart' show JoinType, Order, Row;
 export '../types/custom_data_type.dart' show CustomDataType;
 export '../types/json_value.dart' show JsonValue;
 
