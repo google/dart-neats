@@ -21,6 +21,8 @@ void main() {
     expect(isHttpMethod('BAD'), isFalse);
     expect(isHttpMethod('get'), isTrue);
     expect(isHttpMethod('bad'), isFalse);
+    expect(isHttpMethod('QUERY'), isTrue);
+    expect(isHttpMethod('query'), isTrue);
   });
 
   test('isSafeHttpMethod', () {
@@ -28,6 +30,8 @@ void main() {
     expect(isSafeHttpMethod('MKCOL'), isFalse);
     expect(isSafeHttpMethod('get'), isTrue);
     expect(isSafeHttpMethod('mkcol'), isFalse);
+    expect(isSafeHttpMethod('QUERY'), isTrue);
+    expect(isSafeHttpMethod('query'), isTrue);
   });
 
   test('isIdempotentHttpMethod', () {
@@ -35,6 +39,8 @@ void main() {
     expect(isIdempotentHttpMethod('POST'), isFalse);
     expect(isIdempotentHttpMethod('get'), isTrue);
     expect(isIdempotentHttpMethod('post'), isFalse);
+    expect(isIdempotentHttpMethod('QUERY'), isTrue);
+    expect(isIdempotentHttpMethod('query'), isTrue);
   });
 
   test('Cannot modify httpMethods', () {

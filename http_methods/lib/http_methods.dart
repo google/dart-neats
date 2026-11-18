@@ -72,6 +72,7 @@ const List<String> httpMethods = [
   'PROPFIND',
   'PROPPATCH',
   'PUT',
+  'QUERY',
   'REBIND',
   'REPORT',
   'SEARCH',
@@ -98,6 +99,7 @@ const List<String> safeHttpMethods = [
   'CONNECT',
   'OPTIONS',
   'TRACE',
+  'QUERY',
 ];
 
 /// List of all HTTP methods specified as idempotent.
@@ -126,6 +128,7 @@ const List<String> idempotentHttpMethods = [
   'PROPFIND',
   'PROPPATCH',
   'PUT',
+  'QUERY',
   'REBIND',
   'REPORT',
   'SEARCH',
