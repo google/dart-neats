@@ -157,6 +157,14 @@ final class _$LegacyUser extends LegacyUser {
     foreignKeys: [],
     indexes: [],
     readRow: _$LegacyUser._$fromDatabase,
+    fieldReaders: [
+      (LegacyUser r) => r.tenantId,
+      (LegacyUser r) => r.userId,
+      (LegacyUser r) => r.firstName,
+      (LegacyUser r) => r.lastName,
+      (LegacyUser r) => r.email,
+      (LegacyUser r) => r.color,
+    ],
   );
 
   static LegacyUser? _$fromDatabase(RowReader row) {
@@ -442,6 +450,50 @@ extension QueryLegacyUserExt on Query<(Expr<LegacyUser>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<LegacyUser>,)> byEmail(String email) =>
       where((legacyUser) => legacyUser.email.equalsValue(email)).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<LegacyUser> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    LegacyUser? startFrom,
+  }) => pagedBy(
+    (row) => [(row.tenantId, order), (row.userId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `email` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<LegacyUser> pagedByEmail({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    LegacyUser? startFrom,
+  }) => pagedBy(
+    (row) => [(row.email, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `users` table matching this [Query].
   ///
@@ -880,6 +932,12 @@ final class _$LegacyComment extends LegacyComment {
     ],
     indexes: [],
     readRow: _$LegacyComment._$fromDatabase,
+    fieldReaders: [
+      (LegacyComment r) => r.commentId,
+      (LegacyComment r) => r.tId,
+      (LegacyComment r) => r.uId,
+      (LegacyComment r) => r.text,
+    ],
   );
 
   static LegacyComment? _$fromDatabase(RowReader row) {
@@ -1080,6 +1138,28 @@ extension QueryLegacyCommentExt on Query<(Expr<LegacyComment>,)> {
         text,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<LegacyComment> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    LegacyComment? startFrom,
+  }) => pagedBy(
+    (row) => [(row.commentId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `comments` table matching this [Query].

@@ -96,6 +96,12 @@ final class _$MappedItem extends MappedItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$MappedItem._$fromDatabase,
+    fieldReaders: [
+      (MappedItem r) => r.id,
+      (MappedItem r) => r.value,
+      (MappedItem r) => r.count,
+      (MappedItem r) => r.nullableValue,
+    ],
   );
 
   static MappedItem? _$fromDatabase(RowReader row) {
@@ -307,6 +313,28 @@ extension QueryMappedItemExt on Query<(Expr<MappedItem>,)> {
         nullableValue,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<MappedItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    MappedItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `mappedItems` table matching this [Query].

@@ -160,6 +160,13 @@ final class _$DialectItem extends DialectItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$DialectItem._$fromDatabase,
+    fieldReaders: [
+      (DialectItem r) => r.itemId,
+      (DialectItem r) => r.name,
+      (DialectItem r) => r.category,
+      (DialectItem r) => r.status,
+      (DialectItem r) => r.itemColor,
+    ],
   );
 
   static DialectItem? _$fromDatabase(RowReader row) {
@@ -421,6 +428,50 @@ extension QueryDialectItemExt on Query<(Expr<DialectItem>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<DialectItem>,)> byStatus(String status) =>
       where((dialectItem) => dialectItem.status.equalsValue(status)).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<DialectItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    DialectItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.itemId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `status` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<DialectItem> pagedByStatus({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    DialectItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.status, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `dialectItems` table matching this [Query].
   ///
@@ -825,6 +876,7 @@ final class _$DialectLog extends DialectLog {
     ],
     indexes: [],
     readRow: _$DialectLog._$fromDatabase,
+    fieldReaders: [(DialectLog r) => r.logId, (DialectLog r) => r.refItemId],
   );
 
   static DialectLog? _$fromDatabase(RowReader row) {
@@ -984,6 +1036,28 @@ extension QueryDialectLogExt on Query<(Expr<DialectLog>,)> {
       ({Expr<int>? logId, Expr<int>? refItemId}) =>
           $ForGeneratedCode.buildUpdate<DialectLog>([logId, refItemId]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<DialectLog> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    DialectLog? startFrom,
+  }) => pagedBy(
+    (row) => [(row.logId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `dialectLogs` table matching this [Query].

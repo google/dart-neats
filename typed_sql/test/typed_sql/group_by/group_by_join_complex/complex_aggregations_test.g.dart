@@ -96,6 +96,7 @@ final class _$Department extends Department {
     foreignKeys: [],
     indexes: [],
     readRow: _$Department._$fromDatabase,
+    fieldReaders: [(Department r) => r.departmentId, (Department r) => r.name],
   );
 
   static Department? _$fromDatabase(RowReader row) {
@@ -264,6 +265,28 @@ extension QueryDepartmentExt on Query<(Expr<Department>,)> {
       ({Expr<int>? departmentId, Expr<String>? name}) =>
           $ForGeneratedCode.buildUpdate<Department>([departmentId, name]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Department> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Department? startFrom,
+  }) => pagedBy(
+    (row) => [(row.departmentId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `departments` table matching this [Query].
@@ -603,6 +626,11 @@ final class _$Employee extends Employee {
     ],
     indexes: [],
     readRow: _$Employee._$fromDatabase,
+    fieldReaders: [
+      (Employee r) => r.employeeId,
+      (Employee r) => r.name,
+      (Employee r) => r.departmentId,
+    ],
   );
 
   static Employee? _$fromDatabase(RowReader row) {
@@ -795,6 +823,28 @@ extension QueryEmployeeExt on Query<(Expr<Employee>,)> {
             departmentId,
           ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Employee> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Employee? startFrom,
+  }) => pagedBy(
+    (row) => [(row.employeeId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `employees` table matching this [Query].
@@ -1165,6 +1215,12 @@ final class _$Project extends Project {
     ],
     indexes: [],
     readRow: _$Project._$fromDatabase,
+    fieldReaders: [
+      (Project r) => r.projectId,
+      (Project r) => r.name,
+      (Project r) => r.departmentId,
+      (Project r) => r.budget,
+    ],
   );
 
   static Project? _$fromDatabase(RowReader row) {
@@ -1390,6 +1446,28 @@ extension QueryProjectExt on Query<(Expr<Project>,)> {
         budget,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Project> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Project? startFrom,
+  }) => pagedBy(
+    (row) => [(row.projectId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `projects` table matching this [Query].

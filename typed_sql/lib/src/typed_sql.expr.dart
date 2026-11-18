@@ -129,14 +129,15 @@ final class CustomExprType<S, T extends CustomDataType<S>>
 }
 
 final class _RowExprType<T extends Row> extends _ExprType<T> {
+  final TableDefinition<T> _table;
   final List<ColumnType> fields;
   final T? Function(RowReader r) _readRow;
 
   // TODO: This class should probably be part of a table
   // definition, instead of this way around, but we can refactor that later.
-  _RowExprType._(TableDefinition<T> table)
-    : _readRow = table.readRow,
-      fields = table.columnInfo.map((c) => c.type).toList(),
+  _RowExprType._(this._table)
+    : _readRow = _table.readRow,
+      fields = _table.columnInfo.map((c) => c.type).toList(),
       super._();
 
   @override
@@ -324,6 +325,57 @@ final class RowExpression<T extends Row> extends Expr<T> {
   @override
   _RowExprType<T> get _type => _RowExprType._(_table);
 }
+
+/// An [Expr<T>] wrapping a decoded [Row] value, where `T` is a [Row] or
+/// nullable [Row].
+///
+/// Fields of this expression are rendered as parameters, the row itself
+/// cannot be rendered.
+final class RowValueExpression<T> extends Expr<T> {
+  @override
+  final _ExprType<T> _type;
+  final TableDefinition _table;
+  final Row? _value;
+
+  RowValueExpression._(_RowExprType type, this._value)
+    : _type = type as _ExprType<T>,
+      _table = type._table,
+      super._();
+
+  @override
+  int get _columns => _table.columns.length;
+
+  @override
+  Expr<R> _field<R>(int index, FieldType<R> type) =>
+      switch (_table._readField(_value, index)) {
+        final R value => ValueExpression._(value, type),
+        // A null row may have been cast to non-null with .asNotNull()
+        _ => NotNullExpression._(ValueExpression<R?>._(null, type)),
+      };
+
+  @override
+  Iterable<Expr<Object?>> _explode() => Iterable.generate(_columns, (index) {
+    final value = _table._readField(_value, index);
+    return ValueExpression<Object?>._(
+      value is CustomDataType ? value.toDatabase() : value,
+      _table.columnInfo[index].type,
+    );
+  });
+
+  @override
+  Expr<T> _standin(int index, Object handle) => this;
+}
+
+/// Wrap [value] in an [Expr<V>] of the same type as [expr].
+///
+/// This is a top-level function rather than a method on [Expr], because
+/// `Expr<V>` is covariant in `V`, and [expr] might be an `Expr<Row>` or
+/// `Expr<int>` with static type `Expr<Row?>` or `Expr<int?>` (for example,
+/// after a `LEFT JOIN`), in which case [value] may still be `null`.
+Expr<V> _toValueExpr<V>(Expr<V> expr, V value) => switch (expr._type) {
+  final FieldType<V> type => ValueExpression<V>._(value, type),
+  final _RowExprType type => RowValueExpression<V>._(type, value as Row?),
+};
 
 final class FieldExpression<T> extends SingleValueExpr<T> {
   final int _index;

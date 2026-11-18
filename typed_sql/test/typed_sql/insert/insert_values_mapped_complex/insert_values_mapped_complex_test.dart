@@ -110,7 +110,7 @@ void main() {
 
     final item = await db.complexMappedItems.first.fetch();
     check(item).isNotNull();
-  });
+  }, skipMysql: 'MariaDB DATETIME does not support years before 0000');
 
   r.addTest('insertValuesMapped with [null, null, Uint8List]', (db) async {
     final blob = Uint8List.fromList([1, 2, 3]);

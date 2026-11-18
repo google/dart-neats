@@ -148,6 +148,13 @@ final class _$HierarchyUser extends HierarchyUser {
     foreignKeys: [],
     indexes: [],
     readRow: _$HierarchyUser._$fromDatabase,
+    fieldReaders: [
+      (HierarchyUser r) => r.userId,
+      (HierarchyUser r) => r.firstName,
+      (HierarchyUser r) => r.lastName,
+      (HierarchyUser r) => r.emailAddress,
+      (HierarchyUser r) => r.userColor,
+    ],
   );
 
   static HierarchyUser? _$fromDatabase(RowReader row) {
@@ -417,6 +424,50 @@ extension QueryHierarchyUserExt on Query<(Expr<HierarchyUser>,)> {
       where(
         (hierarchyUser) => hierarchyUser.emailAddress.equalsValue(emailAddress),
       ).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<HierarchyUser> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    HierarchyUser? startFrom,
+  }) => pagedBy(
+    (row) => [(row.userId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `emailAddress` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<HierarchyUser> pagedByEmailAddress({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    HierarchyUser? startFrom,
+  }) => pagedBy(
+    (row) => [(row.emailAddress, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `hierarchyUsers` table matching this [Query].
   ///
@@ -841,6 +892,11 @@ final class _$HierarchyProfile extends HierarchyProfile {
     ],
     indexes: [],
     readRow: _$HierarchyProfile._$fromDatabase,
+    fieldReaders: [
+      (HierarchyProfile r) => r.profileId,
+      (HierarchyProfile r) => r.userRefId,
+      (HierarchyProfile r) => r.profileType,
+    ],
   );
 
   static HierarchyProfile? _$fromDatabase(RowReader row) {
@@ -1061,6 +1117,50 @@ extension QueryHierarchyProfileExt on Query<(Expr<HierarchyProfile>,)> {
         (hierarchyProfile) =>
             hierarchyProfile.profileType.equalsValue(profileType),
       ).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<HierarchyProfile> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    HierarchyProfile? startFrom,
+  }) => pagedBy(
+    (row) => [(row.profileId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `profileType` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<HierarchyProfile> pagedByProfileType({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    HierarchyProfile? startFrom,
+  }) => pagedBy(
+    (row) => [(row.profileType, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `hierarchyProfiles` table matching this [Query].
   ///

@@ -369,7 +369,7 @@ final class StatmentContext extends SqlContext {
       case DateTime _:
         parameters.add(value.toUtc());
         final index = parameters.length;
-        return 'CAST(?$index AS DATETIME)';
+        return 'CAST(?$index AS DATETIME(6))';
       case String _:
         parameters.add(value);
         final index = parameters.length;
@@ -669,6 +669,9 @@ extension on ExpressionResolver<SqlContext> {
     RowExpression<Row>() => throw AssertionError(
       'RowExpression exist in a context where they are rendered',
     ),
+    RowValueExpression<Object?>() => throw AssertionError(
+      'RowValueExpression exist in a context where they are rendered',
+    ),
     ExistsExpression(:final query) => 'EXISTS (${selectExpression(query).$1})',
     SumExpression<int>(:final value) =>
       'CAST(COALESCE(SUM(${expr(value)}), 0.0) AS SIGNED)',
@@ -687,7 +690,7 @@ extension on ExpressionResolver<SqlContext> {
       'CASE LOWER(${expr(value)}) WHEN \'true\' THEN 1 WHEN \'false\' THEN 0 ELSE CAST(${expr(value)} AS SIGNED) END',
     final CastExpression e => 'CAST(${expr(e.value)} AS ${e.type.sqlCastType})',
     EncodedCustomDataTypeExpression(:final value) => expr(value),
-    CurrentTimestampExpression _ => 'UTC_TIMESTAMP()',
+    CurrentTimestampExpression _ => 'UTC_TIMESTAMP(6)',
     ExpressionJsonRef e => extractJsonRef(e),
     ExpressionJsonExtract(:final value) =>
       'CASE WHEN JSON_TYPE(${expr(value)}) = \'NULL\' THEN NULL ELSE JSON_UNQUOTE(${expr(value)}) END',
@@ -804,7 +807,7 @@ extension on ColumnType {
   String get sqlCastType => switch (this) {
     ColumnType<Uint8List> _ => 'BINARY',
     ColumnType<bool> _ => 'SIGNED',
-    ColumnType<DateTime> _ => 'DATETIME',
+    ColumnType<DateTime> _ => 'DATETIME(6)',
     ColumnType<int> _ => 'SIGNED',
     ColumnType<double> _ => 'DOUBLE',
     ColumnType<String> _ => 'CHAR',

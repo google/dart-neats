@@ -271,6 +271,59 @@ extension Query1<A> on Query<(Expr<A>,)> {
 
   /// Query the database for rows in this [Query] as a [List].
   Future<List<A>> fetch() async => await stream().toList();
+
+  /// Query the database for rows in this [Query] ordered by [keys], in pages
+  /// of [pageSize] rows, using _keyset pagination_.
+  ///
+  /// The [keys] are given as for `.orderBy`, except they must be
+  /// non-nullable. Each page is fetched by a separate query ordered by [keys]
+  /// with a `LIMIT` clause. Pages after the
+  /// first are filtered to rows that come after the last row of the previous
+  /// page, when ordered by [keys]. This filter can be served by an index on
+  /// [keys].
+  ///
+  /// If [startFrom] is given, the first page is the rows that come after
+  /// [startFrom]. If [startFrom] is `null`, paging starts from the first row.
+  /// Paging stops when a page with fewer than [pageSize] rows is returned.
+  ///
+  /// **Example:** paging through `users` ordered by `created` with `id` as
+  /// tie-breaker.
+  /// ```dart
+  /// final users = db.users.pagedBy(
+  ///   (u) => [(u.created, Order.ascending), (u.id, Order.ascending)],
+  /// );
+  /// await for (final user in users) {
+  ///   // ...
+  /// }
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The ordering given by [keys] must be _unique_. Otherwise, rows that
+  /// > are equal to the last row of a page will be skipped. Always include a
+  /// > _primary key_ or unique column as final tie-breaker. When paging
+  /// > through a table, prefer `.pagedByKey`.
+  ///
+  /// Values from the last row are sent back to the database, so they must
+  /// round-trip the database unaltered. The default data types in
+  /// `package:typed_sql` do, but take care when using [CustomDataType] or
+  /// [SqlOverride] on columns used for paging.
+  ///
+  /// Unlike `.stream()`, this does not hold a database connection open while
+  /// rows are consumed, unless used inside a transaction. Rows inserted,
+  /// updated or deleted between pages may or may not be returned, depending
+  /// on the transaction isolation level.
+  Stream<A> pagedBy(
+    List<(Expr<Comparable>, Order)> Function(Expr<A> a) keys, {
+    int pageSize = 100,
+    A? startFrom,
+  }) => _paged(
+    pageSize,
+    startFrom,
+    () => orderBy(keys).limit(pageSize).fetch(),
+    (last) => where(
+      (a) => _whereAfter(keys(a), keys(_toValueExpr(a, last))),
+    ).orderBy(keys).limit(pageSize).fetch(),
+  );
 }
 
 /// Extension methods for a subquery returning zero or more rows with
@@ -1137,6 +1190,62 @@ extension Query2<A, B> on Query<(Expr<A>, Expr<B>)> {
 
   /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B)>> fetch() async => await stream().toList();
+
+  /// Query the database for rows in this [Query] ordered by [keys], in pages
+  /// of [pageSize] rows, using _keyset pagination_.
+  ///
+  /// The [keys] are given as for `.orderBy`, except they must be
+  /// non-nullable. Each page is fetched by a separate query ordered by [keys]
+  /// with a `LIMIT` clause. Pages after the
+  /// first are filtered to rows that come after the last row of the previous
+  /// page, when ordered by [keys]. This filter can be served by an index on
+  /// [keys].
+  ///
+  /// If [startFrom] is given, the first page is the rows that come after
+  /// [startFrom]. If [startFrom] is `null`, paging starts from the first row.
+  /// Paging stops when a page with fewer than [pageSize] rows is returned.
+  ///
+  /// **Example:** paging through `users` ordered by `created` with `id` as
+  /// tie-breaker.
+  /// ```dart
+  /// final users = db.users.pagedBy(
+  ///   (u) => [(u.created, Order.ascending), (u.id, Order.ascending)],
+  /// );
+  /// await for (final user in users) {
+  ///   // ...
+  /// }
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The ordering given by [keys] must be _unique_. Otherwise, rows that
+  /// > are equal to the last row of a page will be skipped. Always include a
+  /// > _primary key_ or unique column as final tie-breaker. When paging
+  /// > through a table, prefer `.pagedByKey`.
+  ///
+  /// Values from the last row are sent back to the database, so they must
+  /// round-trip the database unaltered. The default data types in
+  /// `package:typed_sql` do, but take care when using [CustomDataType] or
+  /// [SqlOverride] on columns used for paging.
+  ///
+  /// Unlike `.stream()`, this does not hold a database connection open while
+  /// rows are consumed, unless used inside a transaction. Rows inserted,
+  /// updated or deleted between pages may or may not be returned, depending
+  /// on the transaction isolation level.
+  Stream<(A, B)> pagedBy(
+    List<(Expr<Comparable>, Order)> Function(Expr<A> a, Expr<B> b) keys, {
+    int pageSize = 100,
+    (A, B)? startFrom,
+  }) => _paged(
+    pageSize,
+    startFrom,
+    () => orderBy(keys).limit(pageSize).fetch(),
+    (last) => where(
+      (a, b) => _whereAfter(
+        keys(a, b),
+        keys(_toValueExpr(a, last.$1), _toValueExpr(b, last.$2)),
+      ),
+    ).orderBy(keys).limit(pageSize).fetch(),
+  );
 }
 
 /// Extension methods for a subquery returning zero or more rows with
@@ -2026,6 +2135,67 @@ extension Query3<A, B, C> on Query<(Expr<A>, Expr<B>, Expr<C>)> {
 
   /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C)>> fetch() async => await stream().toList();
+
+  /// Query the database for rows in this [Query] ordered by [keys], in pages
+  /// of [pageSize] rows, using _keyset pagination_.
+  ///
+  /// The [keys] are given as for `.orderBy`, except they must be
+  /// non-nullable. Each page is fetched by a separate query ordered by [keys]
+  /// with a `LIMIT` clause. Pages after the
+  /// first are filtered to rows that come after the last row of the previous
+  /// page, when ordered by [keys]. This filter can be served by an index on
+  /// [keys].
+  ///
+  /// If [startFrom] is given, the first page is the rows that come after
+  /// [startFrom]. If [startFrom] is `null`, paging starts from the first row.
+  /// Paging stops when a page with fewer than [pageSize] rows is returned.
+  ///
+  /// **Example:** paging through `users` ordered by `created` with `id` as
+  /// tie-breaker.
+  /// ```dart
+  /// final users = db.users.pagedBy(
+  ///   (u) => [(u.created, Order.ascending), (u.id, Order.ascending)],
+  /// );
+  /// await for (final user in users) {
+  ///   // ...
+  /// }
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The ordering given by [keys] must be _unique_. Otherwise, rows that
+  /// > are equal to the last row of a page will be skipped. Always include a
+  /// > _primary key_ or unique column as final tie-breaker. When paging
+  /// > through a table, prefer `.pagedByKey`.
+  ///
+  /// Values from the last row are sent back to the database, so they must
+  /// round-trip the database unaltered. The default data types in
+  /// `package:typed_sql` do, but take care when using [CustomDataType] or
+  /// [SqlOverride] on columns used for paging.
+  ///
+  /// Unlike `.stream()`, this does not hold a database connection open while
+  /// rows are consumed, unless used inside a transaction. Rows inserted,
+  /// updated or deleted between pages may or may not be returned, depending
+  /// on the transaction isolation level.
+  Stream<(A, B, C)> pagedBy(
+    List<(Expr<Comparable>, Order)> Function(Expr<A> a, Expr<B> b, Expr<C> c)
+    keys, {
+    int pageSize = 100,
+    (A, B, C)? startFrom,
+  }) => _paged(
+    pageSize,
+    startFrom,
+    () => orderBy(keys).limit(pageSize).fetch(),
+    (last) => where(
+      (a, b, c) => _whereAfter(
+        keys(a, b, c),
+        keys(
+          _toValueExpr(a, last.$1),
+          _toValueExpr(b, last.$2),
+          _toValueExpr(c, last.$3),
+        ),
+      ),
+    ).orderBy(keys).limit(pageSize).fetch(),
+  );
 }
 
 /// Extension methods for a subquery returning zero or more rows with
@@ -2950,6 +3120,73 @@ extension Query4<A, B, C, D> on Query<(Expr<A>, Expr<B>, Expr<C>, Expr<D>)> {
 
   /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D)>> fetch() async => await stream().toList();
+
+  /// Query the database for rows in this [Query] ordered by [keys], in pages
+  /// of [pageSize] rows, using _keyset pagination_.
+  ///
+  /// The [keys] are given as for `.orderBy`, except they must be
+  /// non-nullable. Each page is fetched by a separate query ordered by [keys]
+  /// with a `LIMIT` clause. Pages after the
+  /// first are filtered to rows that come after the last row of the previous
+  /// page, when ordered by [keys]. This filter can be served by an index on
+  /// [keys].
+  ///
+  /// If [startFrom] is given, the first page is the rows that come after
+  /// [startFrom]. If [startFrom] is `null`, paging starts from the first row.
+  /// Paging stops when a page with fewer than [pageSize] rows is returned.
+  ///
+  /// **Example:** paging through `users` ordered by `created` with `id` as
+  /// tie-breaker.
+  /// ```dart
+  /// final users = db.users.pagedBy(
+  ///   (u) => [(u.created, Order.ascending), (u.id, Order.ascending)],
+  /// );
+  /// await for (final user in users) {
+  ///   // ...
+  /// }
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The ordering given by [keys] must be _unique_. Otherwise, rows that
+  /// > are equal to the last row of a page will be skipped. Always include a
+  /// > _primary key_ or unique column as final tie-breaker. When paging
+  /// > through a table, prefer `.pagedByKey`.
+  ///
+  /// Values from the last row are sent back to the database, so they must
+  /// round-trip the database unaltered. The default data types in
+  /// `package:typed_sql` do, but take care when using [CustomDataType] or
+  /// [SqlOverride] on columns used for paging.
+  ///
+  /// Unlike `.stream()`, this does not hold a database connection open while
+  /// rows are consumed, unless used inside a transaction. Rows inserted,
+  /// updated or deleted between pages may or may not be returned, depending
+  /// on the transaction isolation level.
+  Stream<(A, B, C, D)> pagedBy(
+    List<(Expr<Comparable>, Order)> Function(
+      Expr<A> a,
+      Expr<B> b,
+      Expr<C> c,
+      Expr<D> d,
+    )
+    keys, {
+    int pageSize = 100,
+    (A, B, C, D)? startFrom,
+  }) => _paged(
+    pageSize,
+    startFrom,
+    () => orderBy(keys).limit(pageSize).fetch(),
+    (last) => where(
+      (a, b, c, d) => _whereAfter(
+        keys(a, b, c, d),
+        keys(
+          _toValueExpr(a, last.$1),
+          _toValueExpr(b, last.$2),
+          _toValueExpr(c, last.$3),
+          _toValueExpr(d, last.$4),
+        ),
+      ),
+    ).orderBy(keys).limit(pageSize).fetch(),
+  );
 }
 
 /// Extension methods for a subquery returning zero or more rows with
@@ -3947,6 +4184,75 @@ extension Query5<A, B, C, D, E>
 
   /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D, E)>> fetch() async => await stream().toList();
+
+  /// Query the database for rows in this [Query] ordered by [keys], in pages
+  /// of [pageSize] rows, using _keyset pagination_.
+  ///
+  /// The [keys] are given as for `.orderBy`, except they must be
+  /// non-nullable. Each page is fetched by a separate query ordered by [keys]
+  /// with a `LIMIT` clause. Pages after the
+  /// first are filtered to rows that come after the last row of the previous
+  /// page, when ordered by [keys]. This filter can be served by an index on
+  /// [keys].
+  ///
+  /// If [startFrom] is given, the first page is the rows that come after
+  /// [startFrom]. If [startFrom] is `null`, paging starts from the first row.
+  /// Paging stops when a page with fewer than [pageSize] rows is returned.
+  ///
+  /// **Example:** paging through `users` ordered by `created` with `id` as
+  /// tie-breaker.
+  /// ```dart
+  /// final users = db.users.pagedBy(
+  ///   (u) => [(u.created, Order.ascending), (u.id, Order.ascending)],
+  /// );
+  /// await for (final user in users) {
+  ///   // ...
+  /// }
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The ordering given by [keys] must be _unique_. Otherwise, rows that
+  /// > are equal to the last row of a page will be skipped. Always include a
+  /// > _primary key_ or unique column as final tie-breaker. When paging
+  /// > through a table, prefer `.pagedByKey`.
+  ///
+  /// Values from the last row are sent back to the database, so they must
+  /// round-trip the database unaltered. The default data types in
+  /// `package:typed_sql` do, but take care when using [CustomDataType] or
+  /// [SqlOverride] on columns used for paging.
+  ///
+  /// Unlike `.stream()`, this does not hold a database connection open while
+  /// rows are consumed, unless used inside a transaction. Rows inserted,
+  /// updated or deleted between pages may or may not be returned, depending
+  /// on the transaction isolation level.
+  Stream<(A, B, C, D, E)> pagedBy(
+    List<(Expr<Comparable>, Order)> Function(
+      Expr<A> a,
+      Expr<B> b,
+      Expr<C> c,
+      Expr<D> d,
+      Expr<E> e,
+    )
+    keys, {
+    int pageSize = 100,
+    (A, B, C, D, E)? startFrom,
+  }) => _paged(
+    pageSize,
+    startFrom,
+    () => orderBy(keys).limit(pageSize).fetch(),
+    (last) => where(
+      (a, b, c, d, e) => _whereAfter(
+        keys(a, b, c, d, e),
+        keys(
+          _toValueExpr(a, last.$1),
+          _toValueExpr(b, last.$2),
+          _toValueExpr(c, last.$3),
+          _toValueExpr(d, last.$4),
+          _toValueExpr(e, last.$5),
+        ),
+      ),
+    ).orderBy(keys).limit(pageSize).fetch(),
+  );
 }
 
 /// Extension methods for a subquery returning zero or more rows with
@@ -4989,6 +5295,77 @@ extension Query6<A, B, C, D, E, F>
 
   /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D, E, F)>> fetch() async => await stream().toList();
+
+  /// Query the database for rows in this [Query] ordered by [keys], in pages
+  /// of [pageSize] rows, using _keyset pagination_.
+  ///
+  /// The [keys] are given as for `.orderBy`, except they must be
+  /// non-nullable. Each page is fetched by a separate query ordered by [keys]
+  /// with a `LIMIT` clause. Pages after the
+  /// first are filtered to rows that come after the last row of the previous
+  /// page, when ordered by [keys]. This filter can be served by an index on
+  /// [keys].
+  ///
+  /// If [startFrom] is given, the first page is the rows that come after
+  /// [startFrom]. If [startFrom] is `null`, paging starts from the first row.
+  /// Paging stops when a page with fewer than [pageSize] rows is returned.
+  ///
+  /// **Example:** paging through `users` ordered by `created` with `id` as
+  /// tie-breaker.
+  /// ```dart
+  /// final users = db.users.pagedBy(
+  ///   (u) => [(u.created, Order.ascending), (u.id, Order.ascending)],
+  /// );
+  /// await for (final user in users) {
+  ///   // ...
+  /// }
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The ordering given by [keys] must be _unique_. Otherwise, rows that
+  /// > are equal to the last row of a page will be skipped. Always include a
+  /// > _primary key_ or unique column as final tie-breaker. When paging
+  /// > through a table, prefer `.pagedByKey`.
+  ///
+  /// Values from the last row are sent back to the database, so they must
+  /// round-trip the database unaltered. The default data types in
+  /// `package:typed_sql` do, but take care when using [CustomDataType] or
+  /// [SqlOverride] on columns used for paging.
+  ///
+  /// Unlike `.stream()`, this does not hold a database connection open while
+  /// rows are consumed, unless used inside a transaction. Rows inserted,
+  /// updated or deleted between pages may or may not be returned, depending
+  /// on the transaction isolation level.
+  Stream<(A, B, C, D, E, F)> pagedBy(
+    List<(Expr<Comparable>, Order)> Function(
+      Expr<A> a,
+      Expr<B> b,
+      Expr<C> c,
+      Expr<D> d,
+      Expr<E> e,
+      Expr<F> f,
+    )
+    keys, {
+    int pageSize = 100,
+    (A, B, C, D, E, F)? startFrom,
+  }) => _paged(
+    pageSize,
+    startFrom,
+    () => orderBy(keys).limit(pageSize).fetch(),
+    (last) => where(
+      (a, b, c, d, e, f) => _whereAfter(
+        keys(a, b, c, d, e, f),
+        keys(
+          _toValueExpr(a, last.$1),
+          _toValueExpr(b, last.$2),
+          _toValueExpr(c, last.$3),
+          _toValueExpr(d, last.$4),
+          _toValueExpr(e, last.$5),
+          _toValueExpr(f, last.$6),
+        ),
+      ),
+    ).orderBy(keys).limit(pageSize).fetch(),
+  );
 }
 
 /// Extension methods for a subquery returning zero or more rows with
@@ -6140,6 +6517,79 @@ extension Query7<A, B, C, D, E, F, G>
 
   /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D, E, F, G)>> fetch() async => await stream().toList();
+
+  /// Query the database for rows in this [Query] ordered by [keys], in pages
+  /// of [pageSize] rows, using _keyset pagination_.
+  ///
+  /// The [keys] are given as for `.orderBy`, except they must be
+  /// non-nullable. Each page is fetched by a separate query ordered by [keys]
+  /// with a `LIMIT` clause. Pages after the
+  /// first are filtered to rows that come after the last row of the previous
+  /// page, when ordered by [keys]. This filter can be served by an index on
+  /// [keys].
+  ///
+  /// If [startFrom] is given, the first page is the rows that come after
+  /// [startFrom]. If [startFrom] is `null`, paging starts from the first row.
+  /// Paging stops when a page with fewer than [pageSize] rows is returned.
+  ///
+  /// **Example:** paging through `users` ordered by `created` with `id` as
+  /// tie-breaker.
+  /// ```dart
+  /// final users = db.users.pagedBy(
+  ///   (u) => [(u.created, Order.ascending), (u.id, Order.ascending)],
+  /// );
+  /// await for (final user in users) {
+  ///   // ...
+  /// }
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The ordering given by [keys] must be _unique_. Otherwise, rows that
+  /// > are equal to the last row of a page will be skipped. Always include a
+  /// > _primary key_ or unique column as final tie-breaker. When paging
+  /// > through a table, prefer `.pagedByKey`.
+  ///
+  /// Values from the last row are sent back to the database, so they must
+  /// round-trip the database unaltered. The default data types in
+  /// `package:typed_sql` do, but take care when using [CustomDataType] or
+  /// [SqlOverride] on columns used for paging.
+  ///
+  /// Unlike `.stream()`, this does not hold a database connection open while
+  /// rows are consumed, unless used inside a transaction. Rows inserted,
+  /// updated or deleted between pages may or may not be returned, depending
+  /// on the transaction isolation level.
+  Stream<(A, B, C, D, E, F, G)> pagedBy(
+    List<(Expr<Comparable>, Order)> Function(
+      Expr<A> a,
+      Expr<B> b,
+      Expr<C> c,
+      Expr<D> d,
+      Expr<E> e,
+      Expr<F> f,
+      Expr<G> g,
+    )
+    keys, {
+    int pageSize = 100,
+    (A, B, C, D, E, F, G)? startFrom,
+  }) => _paged(
+    pageSize,
+    startFrom,
+    () => orderBy(keys).limit(pageSize).fetch(),
+    (last) => where(
+      (a, b, c, d, e, f, g) => _whereAfter(
+        keys(a, b, c, d, e, f, g),
+        keys(
+          _toValueExpr(a, last.$1),
+          _toValueExpr(b, last.$2),
+          _toValueExpr(c, last.$3),
+          _toValueExpr(d, last.$4),
+          _toValueExpr(e, last.$5),
+          _toValueExpr(f, last.$6),
+          _toValueExpr(g, last.$7),
+        ),
+      ),
+    ).orderBy(keys).limit(pageSize).fetch(),
+  );
 }
 
 /// Extension methods for a subquery returning zero or more rows with
@@ -7484,6 +7934,81 @@ extension Query8<A, B, C, D, E, F, G, H>
   /// Query the database for rows in this [Query] as a [List].
   Future<List<(A, B, C, D, E, F, G, H)>> fetch() async =>
       await stream().toList();
+
+  /// Query the database for rows in this [Query] ordered by [keys], in pages
+  /// of [pageSize] rows, using _keyset pagination_.
+  ///
+  /// The [keys] are given as for `.orderBy`, except they must be
+  /// non-nullable. Each page is fetched by a separate query ordered by [keys]
+  /// with a `LIMIT` clause. Pages after the
+  /// first are filtered to rows that come after the last row of the previous
+  /// page, when ordered by [keys]. This filter can be served by an index on
+  /// [keys].
+  ///
+  /// If [startFrom] is given, the first page is the rows that come after
+  /// [startFrom]. If [startFrom] is `null`, paging starts from the first row.
+  /// Paging stops when a page with fewer than [pageSize] rows is returned.
+  ///
+  /// **Example:** paging through `users` ordered by `created` with `id` as
+  /// tie-breaker.
+  /// ```dart
+  /// final users = db.users.pagedBy(
+  ///   (u) => [(u.created, Order.ascending), (u.id, Order.ascending)],
+  /// );
+  /// await for (final user in users) {
+  ///   // ...
+  /// }
+  /// ```
+  ///
+  /// > [!WARNING]
+  /// > The ordering given by [keys] must be _unique_. Otherwise, rows that
+  /// > are equal to the last row of a page will be skipped. Always include a
+  /// > _primary key_ or unique column as final tie-breaker. When paging
+  /// > through a table, prefer `.pagedByKey`.
+  ///
+  /// Values from the last row are sent back to the database, so they must
+  /// round-trip the database unaltered. The default data types in
+  /// `package:typed_sql` do, but take care when using [CustomDataType] or
+  /// [SqlOverride] on columns used for paging.
+  ///
+  /// Unlike `.stream()`, this does not hold a database connection open while
+  /// rows are consumed, unless used inside a transaction. Rows inserted,
+  /// updated or deleted between pages may or may not be returned, depending
+  /// on the transaction isolation level.
+  Stream<(A, B, C, D, E, F, G, H)> pagedBy(
+    List<(Expr<Comparable>, Order)> Function(
+      Expr<A> a,
+      Expr<B> b,
+      Expr<C> c,
+      Expr<D> d,
+      Expr<E> e,
+      Expr<F> f,
+      Expr<G> g,
+      Expr<H> h,
+    )
+    keys, {
+    int pageSize = 100,
+    (A, B, C, D, E, F, G, H)? startFrom,
+  }) => _paged(
+    pageSize,
+    startFrom,
+    () => orderBy(keys).limit(pageSize).fetch(),
+    (last) => where(
+      (a, b, c, d, e, f, g, h) => _whereAfter(
+        keys(a, b, c, d, e, f, g, h),
+        keys(
+          _toValueExpr(a, last.$1),
+          _toValueExpr(b, last.$2),
+          _toValueExpr(c, last.$3),
+          _toValueExpr(d, last.$4),
+          _toValueExpr(e, last.$5),
+          _toValueExpr(f, last.$6),
+          _toValueExpr(g, last.$7),
+          _toValueExpr(h, last.$8),
+        ),
+      ),
+    ).orderBy(keys).limit(pageSize).fetch(),
+  );
 }
 
 /// Extension methods for a subquery returning zero or more rows with

@@ -105,6 +105,12 @@ final class _$UpsertValueItem extends UpsertValueItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$UpsertValueItem._$fromDatabase,
+    fieldReaders: [
+      (UpsertValueItem r) => r.id,
+      (UpsertValueItem r) => r.name,
+      (UpsertValueItem r) => r.value,
+      (UpsertValueItem r) => r.note,
+    ],
   );
 
   static UpsertValueItem? _$fromDatabase(RowReader row) {
@@ -310,6 +316,28 @@ extension QueryUpsertValueItemExt on Query<(Expr<UpsertValueItem>,)> {
         note,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<UpsertValueItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    UpsertValueItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `items` table matching this [Query].
@@ -679,6 +707,7 @@ final class _$UpsertValueLink extends UpsertValueLink {
     foreignKeys: [],
     indexes: [],
     readRow: _$UpsertValueLink._$fromDatabase,
+    fieldReaders: [(UpsertValueLink r) => r.a, (UpsertValueLink r) => r.b],
   );
 
   static UpsertValueLink? _$fromDatabase(RowReader row) {
@@ -838,6 +867,28 @@ extension QueryUpsertValueLinkExt on Query<(Expr<UpsertValueLink>,)> {
       ({Expr<int>? a, Expr<int>? b}) =>
           $ForGeneratedCode.buildUpdate<UpsertValueLink>([a, b]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<UpsertValueLink> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    UpsertValueLink? startFrom,
+  }) => pagedBy(
+    (row) => [(row.a, order), (row.b, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `links` table matching this [Query].

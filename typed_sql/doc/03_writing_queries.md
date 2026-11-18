@@ -528,6 +528,103 @@ example above, this is not always possible.
 > `.asQuery` or re-impose the ordering with another `.orderBy`.
 
 
+## Paging through results with `.pagedBy`
+When scanning through many rows it is often desirable to fetch rows in pages,
+rather than holding a single query (and database connection) open with
+`.stream()`. Using `.offset` for this is slow, because the database must skip
+all the rows before the offset for every page. Instead, `package:typed_sql`
+supports _keyset pagination_, where each page is fetched by a separate query
+that is filtered to the rows after the last row of the previous page.
+
+For every table where the fields of the _primary key_ are non-nullable and can
+be ordered, there is a `.pagedByKey` _extension method_ which returns a
+`Stream` of rows ordered by _primary key_, as illustrated below.
+
+```dart bookstore_test.dart#query-pagedbykey
+final titles = <String?>[];
+// Fetch books ordered by primary key in pages of 2 rows.
+await for (final book in db.books.pagedByKey(pageSize: 2)) {
+  titles.add(book.title);
+}
+
+check(titles).deepEquals([
+  'Are Bunnies Unhealthy?',
+  'Cooking with Chocolate Eggs',
+  'Hiding Eggs for dummies',
+  'Vegetarian Dining',
+  'Vegan Dining',
+]);
+```
+
+The `.pagedByKey` method takes an optional `order`, `pageSize` and
+`startFrom`, where `startFrom` is a row after which the results should start.
+Similarly, a `.pagedBy<Name>` method is available for each named `@Unique`
+constraint where all fields are non-nullable and can be ordered.
+
+The equivalent SQL query for the first page would look something like:
+```sql
+SELECT bookId, title, authorId, stock
+FROM books
+ORDER BY bookId ASC
+LIMIT 2
+```
+and for subsequent pages, where `?` is the `bookId` of the last row from the
+previous page:
+```sql
+SELECT bookId, title, authorId, stock
+FROM books
+WHERE bookId > ?
+ORDER BY bookId ASC
+LIMIT 2
+```
+
+For other orderings or for projections and joins, we can use `.pagedBy` on
+any `Query`. The `.pagedBy` method takes the same ordering as `.orderBy`,
+except the expressions must be non-nullable, and filters subsequent pages to
+the rows after the last row of the previous page.
+
+```dart bookstore_test.dart#query-pagedby
+final books = db.books.pagedBy(
+  // Order by stock, with bookId as tie-breaker to make the order unique.
+  (b) => [(b.stock, .descending), (b.bookId, .ascending)],
+  pageSize: 2,
+);
+
+final result = await books.map((b) => (b.title, b.stock)).toList();
+
+check(result).deepEquals([
+  // title, stock
+  ('Vegetarian Dining', 42),
+  ('Hiding Eggs for dummies', 12),
+  ('Are Bunnies Unhealthy?', 10),
+  ('Vegan Dining', 3),
+  ('Cooking with Chocolate Eggs', 0),
+]);
+```
+
+The equivalent SQL for subsequent pages would look something like:
+```sql
+SELECT bookId, title, authorId, stock
+FROM books
+WHERE stock <= ? AND (stock < ? OR bookId > ?)
+ORDER BY stock DESC, bookId ASC
+LIMIT 2
+```
+where the leading `stock <= ?` allows the database to use an index on `stock`,
+if there is one, to find the first row of each page.
+
+> [!WARNING]
+> The ordering used with `.pagedBy` must be _unique_, otherwise rows may be
+> skipped when a page ends in the middle of rows with the same ordering.
+> Always include a _primary key_ or unique column as the final tie-breaker, as
+> done with `bookId` above. When paging through a table, prefer `.pagedByKey`.
+>
+> Values from the last row are sent back to the database, so they must
+> round-trip the database unaltered. The default data types in
+> `package:typed_sql` do, but take care when using `CustomDataType` or
+> `@SqlOverride` on columns used for paging.
+
+
 ## Point queries with `.byKey`, `.first` and `db.select()`
 `package:typed_sql` generates a `.byKey()` method convenient for looking up a
 row by _primary key_.

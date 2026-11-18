@@ -32,6 +32,10 @@ library;
 ///    - [JsonValue].
 ///  * have a `fromDatabase(T value)` constructor.
 ///
+/// Loading and saving must not alter the value: `fromDatabase(v).toDatabase()`
+/// **must** return `v`. If values should be normalized, do so when they are
+/// created in Dart, not in `fromDatabase`.
+///
 /// If a subclass implements [Comparable] then the encoded values returned by
 /// [toDatabase] **must** also be comparable and have the same ordering!
 ///

@@ -142,6 +142,14 @@ final class _$ComplexItem extends ComplexItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$ComplexItem._$fromDatabase,
+    fieldReaders: [
+      (ComplexItem r) => r.id,
+      (ComplexItem r) => r.createdAt,
+      (ComplexItem r) => r.name,
+      (ComplexItem r) => r.doubleValue,
+      (ComplexItem r) => r.boolValue,
+      (ComplexItem r) => r.value,
+    ],
   );
 
   static ComplexItem? _$fromDatabase(RowReader row) {
@@ -428,6 +436,28 @@ extension QueryComplexItemExt on Query<(Expr<ComplexItem>,)> {
         complexItem.doubleValue.equalsValue(doubleValue) &
         complexItem.boolValue.equalsValue(boolValue),
   ).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<ComplexItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    ComplexItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order), (row.createdAt, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `complexItems` table matching this [Query].
   ///

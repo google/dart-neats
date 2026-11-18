@@ -80,6 +80,7 @@ final class _$Item extends Item {
     foreignKeys: [],
     indexes: [],
     readRow: _$Item._$fromDatabase,
+    fieldReaders: [(Item r) => r.id, (Item r) => r.value],
   );
 
   static Item? _$fromDatabase(RowReader row) {
@@ -246,6 +247,50 @@ extension QueryItemExt on Query<(Expr<Item>,)> {
   /// when `.fetch()` is called.
   QuerySingle<(Expr<Item>,)> byValue(int value) =>
       where((item) => item.value.equalsValue(value)).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Item> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Item? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique `value` field, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Item> pagedByValue({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Item? startFrom,
+  }) => pagedBy(
+    (row) => [(row.value, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `items` table matching this [Query].
   ///

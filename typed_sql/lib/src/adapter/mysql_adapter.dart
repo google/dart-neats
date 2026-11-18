@@ -519,7 +519,14 @@ final _paramPattern = RegExp(r'\?([0-9]+)');
   newParams = newParams
       .map(
         (p) => switch (p) {
-          DateTime d => d.toUtc(),
+          // Encode DateTime as string, because package:mysql1 drops the
+          // fractional seconds when encoding DateTime parameters.
+          DateTime d =>
+            d
+                .toUtc()
+                .toIso8601String()
+                .replaceFirst('T', ' ')
+                .replaceAll('Z', ''),
           Uint8List b => Blob.fromBytes(b),
           // TODO: Consider forking JsonEncoder from 'dart:convert' and
           //       normalize while we encode for increased performance

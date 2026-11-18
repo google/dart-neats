@@ -107,6 +107,11 @@ final class _$CompositePkItem extends CompositePkItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$CompositePkItem._$fromDatabase,
+    fieldReaders: [
+      (CompositePkItem r) => r.pkA,
+      (CompositePkItem r) => r.pkB,
+      (CompositePkItem r) => r.data,
+    ],
   );
 
   static CompositePkItem? _$fromDatabase(RowReader row) {
@@ -284,6 +289,28 @@ extension QueryCompositePkItemExt on Query<(Expr<CompositePkItem>,)> {
       ({Expr<int>? pkA, Expr<String>? pkB, Expr<String>? data}) =>
           $ForGeneratedCode.buildUpdate<CompositePkItem>([pkA, pkB, data]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<CompositePkItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    CompositePkItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.pkA, order), (row.pkB, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `compositePkItems` table matching this [Query].
@@ -646,6 +673,12 @@ final class _$MultiUniqueItem extends MultiUniqueItem {
     foreignKeys: [],
     indexes: [],
     readRow: _$MultiUniqueItem._$fromDatabase,
+    fieldReaders: [
+      (MultiUniqueItem r) => r.id,
+      (MultiUniqueItem r) => r.fieldA,
+      (MultiUniqueItem r) => r.fieldB,
+      (MultiUniqueItem r) => r.data,
+    ],
   );
 
   static MultiUniqueItem? _$fromDatabase(RowReader row) {
@@ -869,6 +902,50 @@ extension QueryMultiUniqueItemExt on Query<(Expr<MultiUniqueItem>,)> {
         multiUniqueItem.fieldA.equalsValue(fieldA) &
         multiUniqueItem.fieldB.equalsValue(fieldB),
   ).first;
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<MultiUniqueItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    MultiUniqueItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the unique combination of `fieldA`, `fieldB`, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<MultiUniqueItem> pagedByMultiUnique({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    MultiUniqueItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.fieldA, order), (row.fieldB, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
+  );
 
   /// Delete all rows in the `multiUniqueItems` table matching this [Query].
   ///
@@ -1281,6 +1358,12 @@ final class _$ForeignKeyItem extends ForeignKeyItem {
     ],
     indexes: [],
     readRow: _$ForeignKeyItem._$fromDatabase,
+    fieldReaders: [
+      (ForeignKeyItem r) => r.id,
+      (ForeignKeyItem r) => r.refPkA,
+      (ForeignKeyItem r) => r.refPkB,
+      (ForeignKeyItem r) => r.data,
+    ],
   );
 
   static ForeignKeyItem? _$fromDatabase(RowReader row) {
@@ -1486,6 +1569,28 @@ extension QueryForeignKeyItemExt on Query<(Expr<ForeignKeyItem>,)> {
         data,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<ForeignKeyItem> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    ForeignKeyItem? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `foreignKeyItems` table matching this [Query].

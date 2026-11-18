@@ -82,6 +82,17 @@ void main() {
     check(item.i).equals(42);
   });
 
+  r.addTest('DefaultValue.now equals the same value from Dart', (db) async {
+    await db.defaultsItems.insertValue().execute();
+
+    final item = await db.defaultsItems.first.fetch();
+    final count = await db.defaultsItems
+        .where((i) => i.dtNow.equals(toExpr(item!.dtNow)))
+        .count()
+        .fetch();
+    check(count).equals(1);
+  }, skipMysql: 'package:mysql1 drops fractional seconds when decoding');
+
   r.addTest('insertValuesMapped with defaults (omitted fields)', (db) async {
     final data = [
       (id: 1),

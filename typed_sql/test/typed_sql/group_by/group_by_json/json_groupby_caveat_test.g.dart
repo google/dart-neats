@@ -86,6 +86,11 @@ final class _$Product extends Product {
     foreignKeys: [],
     indexes: [],
     readRow: _$Product._$fromDatabase,
+    fieldReaders: [
+      (Product r) => r.id,
+      (Product r) => r.name,
+      (Product r) => r.metadata,
+    ],
   );
 
   static Product? _$fromDatabase(RowReader row) {
@@ -266,6 +271,28 @@ extension QueryProductExt on Query<(Expr<Product>,)> {
       ({Expr<int>? id, Expr<String>? name, Expr<JsonValue>? metadata}) =>
           $ForGeneratedCode.buildUpdate<Product>([id, name, metadata]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Product> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Product? startFrom,
+  }) => pagedBy(
+    (row) => [(row.id, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `products` table matching this [Query].

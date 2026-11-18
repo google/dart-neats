@@ -102,6 +102,11 @@ final class _$Post extends Post {
     foreignKeys: [],
     indexes: [],
     readRow: _$Post._$fromDatabase,
+    fieldReaders: [
+      (Post r) => r.author,
+      (Post r) => r.slug,
+      (Post r) => r.content,
+    ],
   );
 
   static Post? _$fromDatabase(RowReader row) {
@@ -280,6 +285,28 @@ extension QueryPostExt on Query<(Expr<Post>,)> {
       ({Expr<String>? author, Expr<String>? slug, Expr<String>? content}) =>
           $ForGeneratedCode.buildUpdate<Post>([author, slug, content]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Post> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Post? startFrom,
+  }) => pagedBy(
+    (row) => [(row.author, order), (row.slug, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `posts` table matching this [Query].
@@ -717,6 +744,12 @@ final class _$Comment extends Comment {
     ],
     indexes: [],
     readRow: _$Comment._$fromDatabase,
+    fieldReaders: [
+      (Comment r) => r.commentId,
+      (Comment r) => r.author,
+      (Comment r) => r.postSlug,
+      (Comment r) => r.comment,
+    ],
   );
 
   static Comment? _$fromDatabase(RowReader row) {
@@ -937,6 +970,28 @@ extension QueryCommentExt on Query<(Expr<Comment>,)> {
         comment,
       ]),
     ),
+  );
+
+  /// Query the database for rows in this [Query] in pages of [pageSize]
+  /// rows, ordered by the _primary key_, using _keyset pagination_.
+  ///
+  /// This is a shorthand for `.pagedBy(...)`, where each page is fetched by
+  /// a separate query. If [startFrom] is given, only rows after [startFrom]
+  /// in the given [order] are returned.
+  ///
+  /// > [!WARNING]
+  /// > Rows in this [Query] must be unique, otherwise rows may be skipped.
+  /// > Avoid using this on a `.join` projected to a single row or on a
+  /// > `.unionAll`. Never use this after `.limit` or `.offset`, instead
+  /// > use `.take` on the returned [Stream].
+  $Stream<Comment> pagedByKey({
+    $Order order = $Order.ascending,
+    int pageSize = 100,
+    Comment? startFrom,
+  }) => pagedBy(
+    (row) => [(row.commentId, order)],
+    pageSize: pageSize,
+    startFrom: startFrom,
   );
 
   /// Delete all rows in the `comments` table matching this [Query].
