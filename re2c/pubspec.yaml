@@ -1,0 +1,28 @@
+name: re2c
+version: 0.1.0
+description: >-
+  Compile re2c lexer definitions (.re files) to fast Dart scanners from the
+  command line or build_runner.
+homepage: https://github.com/google/dart-neats/tree/master/re2c
+repository: https://github.com/google/dart-neats.git
+issue_tracker: https://github.com/google/dart-neats/labels/pkg:re2c
+topics:
+ - codegen
+ - build-runner
+ - lexer
+ - parser
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  args: ^2.5.0
+  build: '>=3.0.0 <6.0.0'
+  cli_util: ^0.6.0
+  path: ^1.9.0
+
+dev_dependencies:
+  checks: ^0.3.0
+  test: ^1.25.0
+
+resolution: workspace
