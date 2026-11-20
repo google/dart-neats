@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import 'package:checks/checks.dart';
-import 'package:example/src/update.dart';
+import 'package:snippets/src/update.dart';
 import 'package:test/scaffolding.dart';
 
 import 'checks_ext.dart';

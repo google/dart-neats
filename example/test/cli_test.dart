@@ -21,7 +21,7 @@
 library;
 
 import 'package:checks/checks.dart';
-import 'package:example/src/cli/cli.dart';
+import 'package:snippets/src/cli/cli.dart';
 import 'package:test/scaffolding.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -39,7 +39,7 @@ void main() {
         .create();
 
     final out = StringBuffer();
-    await check(runExample(['update', '-C', d.sandbox], out: out))
+    await check(runSnippets(['update', '-C', d.sandbox], out: out))
         .completes((it) => it.equals(0));
 
     check(out.toString()).contains('updated README.md');
@@ -61,7 +61,7 @@ void main() {
 
     final out = StringBuffer();
     await check(
-      runExample(['update', '--dry-run', '-C', d.sandbox], out: out),
+      runSnippets(['update', '--dry-run', '-C', d.sandbox], out: out),
     ).completes((it) => it.equals(0));
 
     check(out.toString()).contains('would update README.md');
@@ -71,7 +71,7 @@ void main() {
   test('update is quiet when everything is up to date', () async {
     await d.file('README.md', '# nothing to do\n').create();
     final out = StringBuffer();
-    await check(runExample(['update', '-C', d.sandbox], out: out))
+    await check(runSnippets(['update', '-C', d.sandbox], out: out))
         .completes((it) => it.equals(0));
     check(out.toString()).contains('1 markdown files are up to date');
   });
@@ -84,7 +84,7 @@ void main() {
     await d.file('README.md', stale).create();
 
     final err = StringBuffer();
-    await check(runExample(['validate', '-C', d.sandbox], err: err))
+    await check(runSnippets(['validate', '-C', d.sandbox], err: err))
         .completes((it) => it.equals(1));
 
     check(err.toString()).contains('out of date');
@@ -99,9 +99,9 @@ void main() {
         .file('README.md', '```dart @example example/hello.dart\n```\n')
         .create();
 
-    await check(runExample(['update', '-C', d.sandbox], out: StringBuffer()))
+    await check(runSnippets(['update', '-C', d.sandbox], out: StringBuffer()))
         .completes((it) => it.equals(0));
-    await check(runExample(['validate', '-C', d.sandbox], out: StringBuffer()))
+    await check(runSnippets(['validate', '-C', d.sandbox], out: StringBuffer()))
         .completes((it) => it.equals(0));
   });
 
@@ -110,7 +110,7 @@ void main() {
         .file('README.md', '```dart @example example/missing.dart\n```\n')
         .create();
     final err = StringBuffer();
-    await check(runExample(['update', '-C', d.sandbox], err: err))
+    await check(runSnippets(['update', '-C', d.sandbox], err: err))
         .completes((it) => it.equals(1));
     check(err.toString())
       ..contains('README.md')
@@ -129,7 +129,7 @@ void main() {
       ]),
     ]).create();
 
-    await check(runExample(['update', '-C', d.sandbox], out: StringBuffer()))
+    await check(runSnippets(['update', '-C', d.sandbox], out: StringBuffer()))
         .completes((it) => it.equals(0));
     await d.dir('example', [
       d.dir('app', [
@@ -149,7 +149,7 @@ void main() {
       ]),
     ]).create();
 
-    await check(runExample(['update', '-C', d.sandbox], out: StringBuffer()))
+    await check(runSnippets(['update', '-C', d.sandbox], out: StringBuffer()))
         .completes((it) => it.equals(0));
     await d.dir('pkgs', [
       d.dir('a', [
@@ -169,7 +169,7 @@ void main() {
     d.file('pubspec.yaml').io.deleteSync();
 
     await check(
-      runExample(['validate', '-C', isolated.io.path], out: StringBuffer()),
+      runSnippets(['validate', '-C', isolated.io.path], out: StringBuffer()),
     ).completes((it) => it.equals(0));
 
     await d
@@ -180,7 +180,7 @@ void main() {
         .create();
     final err = StringBuffer();
     await check(
-      runExample(['validate', '-C', isolated.io.path], err: err),
+      runSnippets(['validate', '-C', isolated.io.path], err: err),
     ).completes((it) => it.equals(1));
     check(err.toString())
       ..contains('line 3')
@@ -193,9 +193,9 @@ void main() {
     await d.dir('.dart_tool', [d.file('stale.md', stale)]).create();
     await d.dir('build', [d.file('stale.md', stale)]).create();
 
-    await check(runExample(['validate', '-C', d.sandbox], out: StringBuffer()))
+    await check(runSnippets(['validate', '-C', d.sandbox], out: StringBuffer()))
         .completes((it) => it.equals(0));
-    await check(runExample(['update', '-C', d.sandbox], out: StringBuffer()))
+    await check(runSnippets(['update', '-C', d.sandbox], out: StringBuffer()))
         .completes((it) => it.equals(0));
     await d.dir('.dart_tool', [d.file('stale.md', stale)]).validate();
     await d.dir('build', [d.file('stale.md', stale)]).validate();
@@ -203,18 +203,18 @@ void main() {
 
   test('-C may come before the command', () async {
     await d.file('README.md', '# hello\n').create();
-    await check(runExample(['-C', d.sandbox, 'validate'], out: StringBuffer()))
+    await check(runSnippets(['-C', d.sandbox, 'validate'], out: StringBuffer()))
         .completes((it) => it.equals(0));
   });
 
   test('a directory that does not exist is an error', () async {
     await check(
-      runExample(['validate', '-C', d.path('nope')], err: StringBuffer()),
+      runSnippets(['validate', '-C', d.path('nope')], err: StringBuffer()),
     ).completes((it) => it.equals(1));
   });
 
   test('an unknown command is a usage error', () async {
-    await check(runExample(['nonsense'], err: StringBuffer()))
+    await check(runSnippets(['nonsense'], err: StringBuffer()))
         .completes((it) => it.equals(64));
   });
 }

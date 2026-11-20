@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// `dart run example …`
+/// `dart run snippets@ …`
 library;
 
 import 'dart:io';
@@ -30,7 +30,7 @@ CommandRunner<int> _commandRunner({
   required StringSink err,
 }) {
   final runner = CommandRunner<int>(
-    'example',
+    'snippets',
     'Keep the code samples in your markdown up to date with real programs.',
   )
     ..argParser.addOption(
@@ -45,7 +45,7 @@ CommandRunner<int> _commandRunner({
 }
 
 /// Runs the CLI and returns the process exit code.
-Future<int> runExample(
+Future<int> runSnippets(
   List<String> arguments, {
   StringSink? out,
   StringSink? err,

@@ -41,4 +41,4 @@ jobs:
         shell: bash
         env:
           DIRECTORY: ${{ inputs.directory }}
-        run: dart run example@ validate -C "$DIRECTORY"
+        run: dart run snippets@ validate -C "$DIRECTORY"

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import 'package:checks/checks.dart';
-import 'package:example/src/indent.dart';
+import 'package:snippets/src/indent.dart';
 import 'package:test/scaffolding.dart';
 
 void main() {

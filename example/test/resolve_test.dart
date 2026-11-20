@@ -19,8 +19,8 @@
 library;
 
 import 'package:checks/checks.dart';
-import 'package:example/src/diagnostic.dart';
-import 'package:example/src/resolve.dart';
+import 'package:snippets/src/diagnostic.dart';
+import 'package:snippets/src/resolve.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/scaffolding.dart';
 
