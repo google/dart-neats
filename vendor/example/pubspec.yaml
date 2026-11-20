@@ -1,4 +1,4 @@
-name: vendor_example
+name: example
 publish_to: none
 dependencies:
   petitparser: ^4.0.2
