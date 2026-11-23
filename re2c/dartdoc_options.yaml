@@ -1,0 +1,7 @@
+dartdoc:
+  categories:
+    guide:
+      markdown: doc/guide.md
+      displayName: 'Writing scanners'
+  categoryOrder:
+  - guide

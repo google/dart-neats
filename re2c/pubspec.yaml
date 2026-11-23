@@ -1,5 +1,5 @@
 name: re2c
-version: 0.1.0
+version: 0.1.1
 description: >-
   Compile re2c lexer definitions (.re files) to fast Dart scanners from the
   command line or build_runner.

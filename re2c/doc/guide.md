@@ -1,5 +1,3 @@
-# Writing scanners with `package:re2c`
-
 [re2c][1] compiles regular expressions with actions into a deterministic finite
 automaton emitted as a `while` loop over a `switch` on the current state. The
 generated scanner allocates nothing and runs in linear time. `package:re2c`
@@ -10,6 +8,7 @@ to `scanner.dart` next to it.
 
 ```sh
 dart pub add dev:build_runner dev:re2c
+dart run skills@ get  # optional agent skill
 ```
 
 Install `re2c` >= 4.4 and make sure it is on `PATH`, or set `RE2C_EXECUTABLE`:
@@ -154,11 +153,12 @@ Exits with status 1 if any `.dart` file is out of date with its `.re` source.
 
 ## Examples
 
- * [example/tokenizer.re](../example/tokenizer.re): expression tokenizer.
- * [test/scanners/](../test/scanners/): runnable test scanners covering tags,
-   captures, trailing contexts, UTF-16 surrogate pairs, and NUL-sentinel
-   scanners.
+ * [example/tokenizer.re][3]: expression tokenizer.
+ * [test/scanners/][4]: runnable test scanners covering tags, captures, trailing
+   contexts, UTF-16 surrogate pairs, and NUL-sentinel scanners.
  * [re2c manual][2]: regular expression syntax, configurations, and directives.
 
 [1]: https://re2c.org/
 [2]: https://re2c.org/manual/manual_c.html
+[3]: https://github.com/google/dart-neats/blob/master/re2c/example/tokenizer.re
+[4]: https://github.com/google/dart-neats/tree/master/re2c/test/scanners
