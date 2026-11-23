@@ -12,15 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:checks/checks.dart';
-import 'package:example/src/cli/cli.dart';
-import 'package:test/scaffolding.dart';
+import 'dart:io';
 
-void main() {
-  test('examples in this package are up to date', () async {
-    final err = StringBuffer();
-    await check(runExample(['validate'], out: StringBuffer(), err: err))
-        .completes((it) => it.equals(0));
-    check(err.toString()).isEmpty();
-  });
+import 'package:snippets/src/cli/cli.dart';
+
+Future<void> main(List<String> arguments) async {
+  exitCode = await runSnippets(arguments);
 }

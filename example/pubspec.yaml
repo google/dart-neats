@@ -1,5 +1,5 @@
-name: example
-version: 0.9.1
+name: snippets
+version: 0.9.0-wip
 description: >-
   Keep the code samples in your markdown files up to date with real, analyzed
   code in example/ and test/.
@@ -27,6 +27,6 @@ dev_dependencies:
   test_descriptor: ^2.0.0
 
 executables:
-  example:
+  snippets:
 
 resolution: workspace

@@ -39,7 +39,7 @@ leading indentation.
 Update all markdown files locally (requires Dart 3.12+):
 
 ```console
-$ dart run example@ update
+$ dart run snippets@ update
 ```
 
 ## Validating in CI
@@ -47,7 +47,7 @@ $ dart run example@ update
 Check that no markdown code block is out of date:
 
 ```console
-$ dart run example@ validate
+$ dart run snippets@ validate
 ```
 
 In GitHub Actions, call the reusable workflow (pinned to a commit SHA):

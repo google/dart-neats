@@ -1,5 +1,5 @@
 ---
-name: example
+name: snippets
 description: >-
   Write, organize, and update code examples in Dart and Flutter packages.
 ---
@@ -80,7 +80,7 @@ void main() {
 
 ## 2. Marking Regions and Hiding Lines (`#region`, `#endregion`, `#hide`)
 
-Both `dartdoc` (`{@example}`) and `package:example` (`dart run example update`)
+Both `dartdoc` (`{@example}`) and `package:snippets` (`dart run snippets@ update`)
 use the same region extraction rules:
 
 - **`// #region <name>` and `// #endregion [<name>]`**:
@@ -143,10 +143,10 @@ class Cache {
 
 ---
 
-## 4. Updating Examples in `README.md` (`package:example`)
+## 4. Updating Examples in `README.md` (`package:snippets`)
 
 Standard markdown viewers (GitHub, pub.dev, IDEs) do not evaluate `{@example}`
-directives. Instead, `package:example` keeps real fenced code blocks in
+directives. Instead, `package:snippets` keeps real fenced code blocks in
 `README.md` and `doc/*.md` up to date with your source files so the markdown
 renders everywhere and is still backed by analyzed/tested code.
 
@@ -178,13 +178,13 @@ After editing an example or adding a new `@example` code block in markdown, run
 (requires Dart 3.12+):
 
 ```console
-$ dart run example@ update
+$ dart run snippets@ update
 ```
 
 In CI, verify that no markdown code block has drifted out of date:
 
 ```console
-$ dart run example@ validate
+$ dart run snippets@ validate
 ```
 
 Or call the reusable GitHub Actions workflow (pinned to a commit SHA):

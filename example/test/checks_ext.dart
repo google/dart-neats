@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import 'package:checks/checks.dart';
-import 'package:example/src/diagnostic.dart';
-import 'package:example/src/markdown/fenced_code_block.dart';
-import 'package:example/src/markdown/references.dart';
-import 'package:example/src/update.dart';
+import 'package:snippets/src/diagnostic.dart';
+import 'package:snippets/src/markdown/fenced_code_block.dart';
+import 'package:snippets/src/markdown/references.dart';
+import 'package:snippets/src/update.dart';
 import 'package:source_span/source_span.dart';
 
 extension ExampleFormatExceptionChecks on Subject<ExampleFormatException> {

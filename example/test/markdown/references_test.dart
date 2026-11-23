@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'package:checks/checks.dart';
-import 'package:example/src/diagnostic.dart';
-import 'package:example/src/markdown/locator.dart';
-import 'package:example/src/markdown/references.dart';
+import 'package:snippets/src/diagnostic.dart';
+import 'package:snippets/src/markdown/locator.dart';
+import 'package:snippets/src/markdown/references.dart';
 import 'package:source_span/source_span.dart';
 import 'package:test/scaffolding.dart';
 

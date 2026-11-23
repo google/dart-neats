@@ -33,7 +33,7 @@ final class _ValidateCommand extends _Base {
     for (final MapEntry(key: file, value: count) in outcome.stale.entries) {
       err.writeln('$file: error: $count code '
           '${count == 1 ? 'block is' : 'blocks are'} out of date; run '
-          '`dart run example update`');
+          '`dart run snippets@ update`');
     }
     if (outcome.stale.isEmpty && !failed) {
       out.writeln('${outcome.scanned} markdown files are up to date');

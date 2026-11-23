@@ -18,8 +18,8 @@
 library;
 
 import 'package:checks/checks.dart';
-import 'package:example/src/diagnostic.dart';
-import 'package:example/src/region.dart';
+import 'package:snippets/src/diagnostic.dart';
+import 'package:snippets/src/region.dart';
 import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 import 'package:test/scaffolding.dart';

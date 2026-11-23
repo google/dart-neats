@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'package:checks/checks.dart';
-import 'package:example/src/markdown/fenced_code_block.dart';
-import 'package:example/src/markdown/locator.dart';
-import 'package:example/src/markdown/splice.dart';
+import 'package:snippets/src/markdown/fenced_code_block.dart';
+import 'package:snippets/src/markdown/locator.dart';
+import 'package:snippets/src/markdown/splice.dart';
 import 'package:source_span/source_span.dart';
 import 'package:test/scaffolding.dart';
 
