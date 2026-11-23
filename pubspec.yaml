@@ -4,7 +4,6 @@ workspace:
  - acyclic_steps/
  - canonical_json/
  - chunked_stream/
- - example/
  - http_methods/
  - neat_cache/
  - neat_periodic_task/
