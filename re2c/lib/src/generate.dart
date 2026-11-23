@@ -14,40 +14,57 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:cli_util/cli_util.dart' show dartExecutable;
 import 'package:path/path.dart' as p;
 
 import 'exception.dart';
 import 'executable.dart';
+import 'syntax/dart_syntax.g.dart';
 
 /// Compiles the `.re` [source] at [path] to formatted Dart code.
 ///
-/// [re2c] is the `re2c` executable path (see [findRe2c]).
+/// [re2c] is the `re2c` executable path (see [findRe2c]). When [files] is
+/// provided (under `build_runner`), those POSIX-keyed package files are
+/// materialized into the temporary workspace instead of resolving includes from
+/// disk, and [languageVersion] is passed to `dart format`.
 ///
 /// Throws [Re2cException] if `re2c` or `dart format` fails.
 Future<({String dart, String warnings})> generateDart(
   String re2c,
   String source, {
   required String path,
+  Map<String, String>? files,
+  String? languageVersion,
 }) async {
-  final syntax = File.fromUri(
-    (await Isolate.resolvePackageUri(
-      Uri.parse('package:re2c/src/syntax/dart.syntax'),
-    ))!,
-  );
-
   // re2c does not accept an absolute path for --syntax (it is resolved
   // relative to the working directory and include paths), so run it in a
-  // temporary directory holding a copy of the syntax file. The source is
-  // copied there as well, with the real directory on the include path so
-  // `/*!include:re2c "..." */` still resolves relative to the real file.
+  // temporary directory holding a copy of the syntax file.
   final tmp = await Directory.systemTemp.createTemp('re2c-');
   try {
-    await syntax.copy(p.join(tmp.path, 'dart.syntax'));
-    final input = File(p.join(tmp.path, p.basename(path)));
-    await input.writeAsString(source);
+    await File(p.join(tmp.path, 'dart.syntax')).writeAsString(dartSyntax);
+    final srcRoot = p.join(tmp.path, 'src');
+    final File input;
+    final String includeDir;
+    final pathMappings = <(String, String)>[];
+
+    if (files != null) {
+      for (final MapEntry(:key, :value) in files.entries) {
+        final file = File(p.join(srcRoot, p.joinAll(p.posix.split(key))));
+        await file.parent.create(recursive: true);
+        await file.writeAsString(value);
+        pathMappings.add((file.path, key));
+      }
+      input = File(p.join(srcRoot, p.joinAll(p.posix.split(path))));
+      includeDir = p.dirname(input.path);
+    } else {
+      await Directory(srcRoot).create(recursive: true);
+      input = File(p.join(srcRoot, p.basename(path)));
+      await input.writeAsString(source);
+      includeDir = p.dirname(p.absolute(path));
+      pathMappings.add((input.path, path));
+    }
+
     final result = await Process.run(
       re2c,
       [
@@ -55,16 +72,19 @@ Future<({String dart, String warnings})> generateDart(
         // 16-bit code units; re2c ignores `re2c:encoding:ucs2` in syntax files.
         '-w',
         '-W',
-        '-I', p.dirname(p.absolute(path)),
+        '-I', includeDir,
         input.path,
       ],
       workingDirectory: tmp.path,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     );
-    final stderr = (result.stderr as String)
-        .replaceAll(input.path.replaceAll(r'\', r'\\'), path)
-        .replaceAll(input.path, path);
+    var stderr = result.stderr as String;
+    for (final (tempPath, displayPath) in pathMappings) {
+      stderr = stderr
+          .replaceAll(tempPath.replaceAll(r'\', r'\\'), displayPath)
+          .replaceAll(tempPath, displayPath);
+    }
     if (result.exitCode != 0) {
       throw Re2cException(
         'Failed to compile $path (re2c exited with ${result.exitCode})\n'
@@ -75,6 +95,7 @@ Future<({String dart, String warnings})> generateDart(
       dart: await _format(
         result.stdout as String,
         p.setExtension(path, '.dart'),
+        languageVersion: languageVersion,
       ),
       warnings: stderr,
     );
@@ -84,7 +105,11 @@ Future<({String dart, String warnings})> generateDart(
 }
 
 /// Formats [dart] as `dart format` would format the file at [path].
-Future<String> _format(String dart, String path) async {
+Future<String> _format(
+  String dart,
+  String path, {
+  String? languageVersion,
+}) async {
   // Platform.resolvedExecutable is not `dart` when running from an AOT
   // snapshot, as build_runner does, hence package:cli_util.
   final executable = dartExecutable;
@@ -95,16 +120,24 @@ Future<String> _format(String dart, String path) async {
     'format',
     '--output=show',
     '--summary=none',
-    '--stdin-name=${p.absolute(path)}',
+    if (languageVersion != null) '--language-version=$languageVersion',
+    '--stdin-name=${languageVersion != null ? path : p.absolute(path)}',
   ]);
-  final stdout = process.stdout.transform(utf8.decoder).join();
-  final stderr = process.stderr.transform(utf8.decoder).join();
-  process.stdin.write(dart);
-  await process.stdin.close();
-  if (await process.exitCode != 0) {
+  final stdoutFuture = process.stdout.transform(utf8.decoder).join();
+  final stderrFuture = process.stderr.transform(utf8.decoder).join();
+  try {
+    process.stdin.write(dart);
+    await process.stdin.close();
+  } on IOException {
+    // If `dart format` exits early on invalid syntax, ignore broken pipe so we
+    // report its stderr below.
+  }
+  final (exitCode, stdout, stderr) =
+      await (process.exitCode, stdoutFuture, stderrFuture).wait;
+  if (exitCode != 0) {
     throw Re2cException(
-      'Generated Dart code for $path failed to parse:\n${await stderr}',
+      'Generated Dart code for $path failed to parse:\n$stderr',
     );
   }
-  return (await stdout).replaceAll('\r\n', '\n');
+  return stdout.replaceAll('\r\n', '\n');
 }

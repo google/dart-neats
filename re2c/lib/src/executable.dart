@@ -25,13 +25,13 @@ it is on PATH, or set RE2C_EXECUTABLE to point to it. For example:
   * brew install re2c
   * conda install -c conda-forge re2c''';
 
-/// Finds a usable `re2c` executable.
+/// Finds a usable `re2c` executable and its reported `--version` string.
 ///
 /// Looks at `RE2C_EXECUTABLE` first, then `PATH`, and checks the version
 /// of whatever it finds.
 ///
 /// Throws [Re2cException] if no executable is found, or if it is too old.
-Future<String> findRe2c() async {
+Future<({String executable, String version})> findRe2c() async {
   var executable = Platform.environment['RE2C_EXECUTABLE'];
   if (executable == null || executable.isEmpty) {
     executable = 're2c';
@@ -59,5 +59,5 @@ Future<String> findRe2c() async {
       major == minimumVersion.major && minor < minimumVersion.minor) {
     throw Re2cException('"$executable" is too old: $output\n$_installHint');
   }
-  return executable;
+  return (executable: executable, version: output);
 }

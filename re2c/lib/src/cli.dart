@@ -72,7 +72,7 @@ Future<int> run(List<String> arguments) async {
       stderr.writeln('No .re files found.');
       return 0;
     }
-    final re2c = await findRe2c();
+    final (:executable, :version) = await findRe2c();
     final stale = <String>[];
     for (final file in files) {
       final String source;
@@ -81,7 +81,7 @@ Future<int> run(List<String> arguments) async {
       } on FileSystemException catch (e) {
         throw Re2cException('Could not read ${file.path}: ${e.message}');
       }
-      final result = await generateDart(re2c, source, path: file.path);
+      final result = await generateDart(executable, source, path: file.path);
       if (result.warnings.isNotEmpty) {
         stderr.write(result.warnings);
       }
@@ -106,7 +106,7 @@ Future<int> run(List<String> arguments) async {
       stderr.writeln(
         'The following files are out of date, run `dart run re2c`:\n'
         '${stale.map((f) => '  $f').join('\n')}\n'
-        '(re2c: ${(await Process.run(re2c, ['--version'])).stdout.toString().trim()})',
+        '(re2c: $version)',
       );
       return 1;
     }
@@ -120,19 +120,37 @@ Future<int> run(List<String> arguments) async {
 /// The `.re` files named by [paths], or all `.re` files in the current
 /// package if [paths] is empty.
 List<File> _findInputs(List<String> paths) {
+  final root = _packageRoot();
+  final topLevelBuild = p.join(root, 'build');
   if (paths.isEmpty) {
-    paths = [p.relative(_packageRoot())];
+    paths = [p.relative(root)];
   }
-  return [
-    for (final path in paths)
-      if (Directory(path).existsSync())
-        ...Directory(path)
-            .listSync(recursive: true, followLinks: false)
-            .whereType<File>()
-            .where((f) => p.extension(f.path) == '.re')
-      else
-        File(path),
-  ];
+  final files = <File>[];
+  void walk(Directory dir) {
+    final entries = dir.listSync(followLinks: false)
+      ..sort((a, b) => a.path.compareTo(b.path));
+    for (final entry in entries) {
+      final name = p.basename(entry.path);
+      if (name.startsWith('.')) continue;
+      if (entry is Directory) {
+        if (p.equals(entry.path, topLevelBuild)) continue;
+        walk(entry);
+      } else if (entry is File && p.extension(name) == '.re') {
+        files.add(File(p.normalize(entry.path)));
+      }
+    }
+  }
+
+  for (final path in paths) {
+    if (Directory(path).existsSync()) {
+      walk(Directory(path));
+    } else if (p.extension(path) != '.re') {
+      throw Re2cException('Expected a .re file, got: $path');
+    } else {
+      files.add(File(path));
+    }
+  }
+  return files;
 }
 
 /// The nearest directory containing a `pubspec.yaml`, or the current one.
