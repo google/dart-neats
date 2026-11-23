@@ -1,3 +1,6 @@
+## v1.2.0
+ * Add `QUERY` method ([RFC 10008](https://www.rfc-editor.org/rfc/rfc10008)).
+
 ## v1.1.1
  * Add `topics` to `pubspec.yaml`.
 
