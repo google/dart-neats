@@ -39,11 +39,11 @@ jobs:
           - stable
           - dev
     steps:
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-    - uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+    - uses: dart-lang/setup-dart@2286a0c042b44434fe26d292bbce8d34f7ec662b
       with:
         sdk: ${{ matrix.sdk }}
-    - uses: mamba-org/setup-micromamba@b09ef9b599704322748535812ca03efb2625677b
+    - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39
       with:
         environment-name: re2c
         create-args: re2c=4.4
