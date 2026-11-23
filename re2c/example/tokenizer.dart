@@ -18,7 +18,7 @@
 /// Kinds of tokens produced by [nextToken].
 enum TokenKind { number, identifier, string, operator, whitespace, error, end }
 
-/// A token in the input, from [start] to [end] (exclusive).
+/// A token in the input, from `start` to `end` (exclusive).
 typedef Token = ({TokenKind kind, int start, int end});
 
 /// Scans the token starting at [start] in [input].
@@ -46,7 +46,7 @@ Token nextToken(String input, int start) {
                 if (yych <= 0x000A) {
                   if (yych <= 0x0000) {
                     if (yylimit - yycursor < 1) {
-                      yystate = 23;
+                      yystate = 22;
                       continue;
                     }
                     yycursor++;
@@ -230,7 +230,12 @@ Token nextToken(String input, int start) {
             yymarker = yycursor;
             yych = yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0;
             if (yych <= 0x0000) {
-              yystate = 2;
+              if (yylimit - yycursor < 1) {
+                yystate = 2;
+                continue;
+              }
+              yycursor++;
+              yystate = 13;
               continue;
             }
             yystate = 14;
@@ -253,7 +258,7 @@ Token nextToken(String input, int start) {
               } else {
                 if (yych <= 0x002E) {
                   yycursor++;
-                  yystate = 18;
+                  yystate = 16;
                   continue;
                 }
                 if (yych >= 0x0030) {
@@ -268,7 +273,7 @@ Token nextToken(String input, int start) {
               if (yych <= 0x0045) {
                 if (yych >= 0x0045) {
                   yycursor++;
-                  yystate = 19;
+                  yystate = 18;
                   continue;
                 }
                 yystate = 10;
@@ -276,7 +281,7 @@ Token nextToken(String input, int start) {
               } else {
                 if (yych == 0x0065) {
                   yycursor++;
-                  yystate = 19;
+                  yystate = 18;
                   continue;
                 }
                 yystate = 10;
@@ -345,7 +350,12 @@ Token nextToken(String input, int start) {
           case 14:
             if (yych <= 0x0022) {
               if (yych <= 0x0000) {
-                yystate = 15;
+                if (yylimit - yycursor < 1) {
+                  yystate = 17;
+                  continue;
+                }
+                yycursor++;
+                yystate = 13;
                 continue;
               }
               if (yych <= 0x0021) {
@@ -354,11 +364,23 @@ Token nextToken(String input, int start) {
                 continue;
               }
               yycursor++;
-              yystate = 16;
-              continue;
             } else {
               if (yych == 0x005C) {
                 yycursor++;
+                yystate = 15;
+                continue;
+              }
+              yycursor++;
+              yystate = 13;
+              continue;
+            }
+            {
+              return _token(TokenKind.string, start, yycursor);
+            }
+          case 15:
+            yych = yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0;
+            if (yych <= 0x0000) {
+              if (yylimit - yycursor < 1) {
                 yystate = 17;
                 continue;
               }
@@ -366,7 +388,27 @@ Token nextToken(String input, int start) {
               yystate = 13;
               continue;
             }
-          case 15:
+            yycursor++;
+            yystate = 13;
+            continue;
+          case 16:
+            yych = yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0;
+            if (yych <= 0x0000) {
+              yystate = 17;
+              continue;
+            }
+            if (yych <= 0x002F) {
+              yystate = 17;
+              continue;
+            }
+            if (yych <= 0x0039) {
+              yycursor++;
+              yystate = 19;
+              continue;
+            }
+            yystate = 17;
+            continue;
+          case 17:
             yycursor = yymarker;
             if (yyaccept == 0) {
               yystate = 2;
@@ -375,69 +417,39 @@ Token nextToken(String input, int start) {
               yystate = 10;
               continue;
             }
-          case 16:
-            {
-              return _token(TokenKind.string, start, yycursor);
-            }
-          case 17:
-            yych = yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0;
-            if (yych <= 0x0000) {
-              yystate = 15;
-              continue;
-            }
-            yycursor++;
-            yystate = 13;
-            continue;
           case 18:
-            yych = yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0;
-            if (yych <= 0x0000) {
-              yystate = 15;
-              continue;
-            }
-            if (yych <= 0x002F) {
-              yystate = 15;
-              continue;
-            }
-            if (yych <= 0x0039) {
-              yycursor++;
-              yystate = 20;
-              continue;
-            }
-            yystate = 15;
-            continue;
-          case 19:
             yych = yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0;
             if (yych <= 0x002C) {
               if (yych <= 0x0000) {
-                yystate = 15;
+                yystate = 17;
                 continue;
               }
               if (yych == 0x002B) {
                 yycursor++;
-                yystate = 21;
+                yystate = 20;
                 continue;
               }
-              yystate = 15;
+              yystate = 17;
               continue;
             } else {
               if (yych <= 0x002D) {
                 yycursor++;
-                yystate = 21;
+                yystate = 20;
                 continue;
               }
               if (yych <= 0x002F) {
-                yystate = 15;
+                yystate = 17;
                 continue;
               }
               if (yych <= 0x0039) {
                 yycursor++;
-                yystate = 22;
+                yystate = 21;
                 continue;
               }
-              yystate = 15;
+              yystate = 17;
               continue;
             }
-          case 20:
+          case 19:
             yyaccept = 1;
             yymarker = yycursor;
             yych = yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0;
@@ -452,7 +464,7 @@ Token nextToken(String input, int start) {
               }
               if (yych <= 0x0039) {
                 yycursor++;
-                yystate = 20;
+                yystate = 19;
                 continue;
               }
               yystate = 10;
@@ -460,35 +472,35 @@ Token nextToken(String input, int start) {
             } else {
               if (yych <= 0x0045) {
                 yycursor++;
-                yystate = 19;
+                yystate = 18;
                 continue;
               }
               if (yych == 0x0065) {
                 yycursor++;
-                yystate = 19;
+                yystate = 18;
                 continue;
               }
               yystate = 10;
               continue;
             }
-          case 21:
+          case 20:
             yych = yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0;
             if (yych <= 0x0000) {
-              yystate = 15;
+              yystate = 17;
               continue;
             }
             if (yych <= 0x002F) {
-              yystate = 15;
+              yystate = 17;
               continue;
             }
             if (yych >= 0x003A) {
-              yystate = 15;
+              yystate = 17;
               continue;
             }
             yycursor++;
-            yystate = 22;
+            yystate = 21;
             continue;
-          case 22:
+          case 21:
             yych = yycursor < yylimit ? yyinput.codeUnitAt(yycursor) : 0;
             if (yych <= 0x0000) {
               yystate = 10;
@@ -500,12 +512,12 @@ Token nextToken(String input, int start) {
             }
             if (yych <= 0x0039) {
               yycursor++;
-              yystate = 22;
+              yystate = 21;
               continue;
             }
             yystate = 10;
             continue;
-          case 23:
+          case 22:
             {
               return _token(TokenKind.end, start, start);
             }

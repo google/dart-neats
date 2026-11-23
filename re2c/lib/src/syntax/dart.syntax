@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// re2c syntax file for Dart (re2c >= 4.0, `--lang none --syntax dart.syntax`).
+// re2c syntax file for Dart (re2c >= 4.4, `--lang none --syntax dart.syntax`).
 //
 // Defaults assume a `String` input scanned by UTF-16 code unit:
 //  * yyinput  -> the `String`
@@ -105,7 +105,7 @@ re2c:cond:enumprefix = "yyc";
 re2c:YYFILL = "yyfill()";
 re2c:YYMTAGN = sigil "{tag} = yymtagn(" sigil "{tag});";
 re2c:YYMTAGP = sigil "{tag} = yymtagp(" sigil "{tag}, yycursor);";
-re2c:YYSHIFTMTAG = "yyshiftmtag(" sigil "{tag}, " sigil "{shift});";
+re2c:YYSHIFTMTAG = sigil "{tag} = yyshiftmtag(" sigil "{tag}, " sigil "{shift});";
 re2c:YYDEBUG = "yydebug";
 
 // Restating re2c defaults -----------------------------------------------------
@@ -341,10 +341,12 @@ code:yyshift =
     topindent (.api.generic ? YYSHIFT : YYCURSOR " -= " offset ";") nl;
 
 code:yyshiftstag =
-    topindent (.nested ? "if (" tag " != " neg ") ") (.api.generic
-        ? YYSHIFTSTAG
-        : tag " -= " offset ";"
-    ) nl;
+    (.nested ? topindent "if (" tag " != " neg ") {" nl indent)
+        topindent (.api.generic
+            ? YYSHIFTSTAG
+            : tag " -= " offset ";"
+        ) nl
+    (.nested ? dedent topindent "}" nl);
 
 code:yyshiftmtag = topindent YYSHIFTMTAG nl;
 

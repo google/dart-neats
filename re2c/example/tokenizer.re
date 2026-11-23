@@ -15,7 +15,7 @@
 /// Kinds of tokens produced by [nextToken].
 enum TokenKind { number, identifier, string, operator, whitespace, error, end }
 
-/// A token in the input, from [start] to [end] (exclusive).
+/// A token in the input, from `start` to `end` (exclusive).
 typedef Token = ({TokenKind kind, int start, int end});
 
 /// Scans the token starting at [start] in [input].
@@ -32,7 +32,7 @@ Token nextToken(String input, int start) {
     digit  = [0-9];
     number = digit+ ("." digit+)? ([eE] [+-]? digit+)?;
     ident  = [a-zA-Z_][a-zA-Z0-9_]*;
-    string = "\"" ([^"\\\x00] | "\\" [^\x00])* "\"";
+    string = "\"" ([^"\\] | "\\" [^])* "\"";
 
     number                  { return _token(TokenKind.number, start, yycursor); }
     ident                   { return _token(TokenKind.identifier, start, yycursor); }

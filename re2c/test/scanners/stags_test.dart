@@ -261,14 +261,15 @@ Version? parseVersion(String yyinput) {
   }
 }
 
-/// Parses an optional fixed-length prefix `(@a [a-z] @b ":")?` before `[0-9]+`,
-/// exercising nested fixed-offset tag shifting (`code:yyshiftstag` with `.nested`).
+/// Parses an optional fixed-length prefix before `[0-9]+`, exercising nested
+/// fixed-offset tag shifting (`code:yyshiftstag` with `.nested`) with long tag
+/// names that wrap across lines when formatted.
 (int, int)? parseOptionalPrefix(String yyinput) {
   var yycursor = 0;
   final yylimit = yyinput.length;
   var yymarker = 0;
-  var a = -1;
-  var b = -1;
+  var optionalPrefixEndIndex = -1;
+  var optionalPrefixStartIndex = -1;
 
   var yyt1 = -1;
 
@@ -400,12 +401,14 @@ Version? parseVersion(String yyinput) {
               return null;
             }
           case 10:
-            b = yyt1;
-            a = yyt1;
+            optionalPrefixEndIndex = yyt1;
+            optionalPrefixStartIndex = yyt1;
             yyt1 = -1;
-            if (a != yyt1) a += -1;
+            if (optionalPrefixStartIndex != yyt1) {
+              optionalPrefixStartIndex += -1;
+            }
             {
-              return (a, b);
+              return (optionalPrefixStartIndex, optionalPrefixEndIndex);
             }
           default:
             throw AssertionError('unreachable');

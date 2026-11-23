@@ -55,7 +55,7 @@ Each generated block is wrapped in `{ ... }`, so `yych`, `yystate`, and
 | `YYCOPYSTAG` / `YYCOPYMTAG` | `@@{lhs} = @@{rhs};` | Copy tag variable |
 | `YYMTAGP` | `@@{tag} = yymtagp(@@{tag}, yycursor);` | User defines `List<int> yymtagp(List<int> tag, int pos) => [...tag, pos];` |
 | `YYMTAGN` | `@@{tag} = yymtagn(@@{tag});` | User defines `List<int> yymtagn(List<int> tag) => [...tag, -1];` |
-| `YYSHIFTMTAG` | `yyshiftmtag(@@{tag}, @@{shift});` | User defines `yyshiftmtag` |
+| `YYSHIFTMTAG` | `@@{tag} = yyshiftmtag(@@{tag}, @@{shift});` | User defines `yyshiftmtag` |
 | `YYFILL` | `yyfill()` | User defines `bool yyfill()` (`re2c:yyfill:enable = 1;`, or `re2c:YYFILL = "yyfill(@@{len});";` with `re2c:eof = -1;`) |
 | `YYDEBUG` | `yydebug` | User defines `yydebug(int state, int yych)` (`re2c:debug-output = 1;`) |
 

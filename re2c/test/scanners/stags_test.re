@@ -45,8 +45,9 @@ Version? parseVersion(String yyinput) {
   */
 }
 
-/// Parses an optional fixed-length prefix `(@a [a-z] @b ":")?` before `[0-9]+`,
-/// exercising nested fixed-offset tag shifting (`code:yyshiftstag` with `.nested`).
+/// Parses an optional fixed-length prefix before `[0-9]+`, exercising nested
+/// fixed-offset tag shifting (`code:yyshiftstag` with `.nested`) with long tag
+/// names that wrap across lines when formatted.
 (int, int)? parseOptionalPrefix(String yyinput) {
   var yycursor = 0;
   final yylimit = yyinput.length;
@@ -56,9 +57,11 @@ Version? parseVersion(String yyinput) {
   /*!local:re2c:pfx
     re2c:tags = 1;
 
-    (@a [a-z] @b ":")? [0-9]+ $ { return (a, b); }
-    $                           { return null; }
-    *                           { return null; }
+    (@optionalPrefixStartIndex [a-z] @optionalPrefixEndIndex ":")? [0-9]+ $ {
+      return (optionalPrefixStartIndex, optionalPrefixEndIndex);
+    }
+    $ { return null; }
+    * { return null; }
   */
 }
 
