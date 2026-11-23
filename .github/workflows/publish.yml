@@ -5,6 +5,9 @@ on:
     tags:
       - '*-v[0-9]+.[0-9]+.[0-9]+*'
 
+permissions:
+  contents: read
+
 jobs:
   find-package:
     runs-on: ubuntu-latest
@@ -27,11 +30,12 @@ jobs:
       working-directory: ${{needs.find-package.outputs.package}}
   publish:
     permissions:
+      contents: read
       id-token: write
     needs:
     - find-package
     - pana
-    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@2286a0c042b44434fe26d292bbce8d34f7ec662b
     with:
       environment: pub.dev
       working-directory: ${{needs.find-package.outputs.package}}
