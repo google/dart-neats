@@ -24,6 +24,8 @@ import 'src/executable.dart';
 import 'src/generate.dart';
 
 /// Creates the builder compiling `<name>.re` to `<name>.dart`.
+///
+/// {@category guide}
 Builder re2cBuilder(BuilderOptions options) => _Re2cBuilder();
 
 Future<({String executable, String version})>? _re2c;
