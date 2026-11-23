@@ -9,6 +9,7 @@ workspace:
  - neat_cache/
  - neat_periodic_task/
  - pem/
+ - re2c/
  - retry/
  - safe_url_check/
  - sanitize_html/

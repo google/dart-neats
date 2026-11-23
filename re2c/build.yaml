@@ -1,0 +1,7 @@
+builders:
+  re2c:
+    import: "package:re2c/builder.dart"
+    builder_factories: ["re2cBuilder"]
+    build_extensions: {".re": [".dart"]}
+    build_to: source
+    auto_apply: dependents
