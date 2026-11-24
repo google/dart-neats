@@ -1,3 +1,6 @@
+## 0.1.15
+ * Fixed code generator for self-referencing foreign keys.
+
 ## 0.1.14
  * Support `upsertValue` as a shortcut to `insertValue` + `onConflict` + `update`.
  * Support `upsert` as a shortcut to `insert` + `onConflict` + `update`.
